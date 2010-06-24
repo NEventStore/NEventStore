@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Core.Sql.UnitTes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Core.Sql.MsSqlServer", "proj\EventStore.Core.Sql.MsSqlServer\EventStore.Core.Sql.MsSqlServer.csproj", "{93301501-4E3C-4F75-AA18-A7739B0AB4F7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApplication1", "ConsoleApplication1\ConsoleApplication1.csproj", "{158E3E99-69B6-4536-B939-7C97D9B0C089}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{93301501-4E3C-4F75-AA18-A7739B0AB4F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93301501-4E3C-4F75-AA18-A7739B0AB4F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{93301501-4E3C-4F75-AA18-A7739B0AB4F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{158E3E99-69B6-4536-B939-7C97D9B0C089}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{158E3E99-69B6-4536-B939-7C97D9B0C089}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{158E3E99-69B6-4536-B939-7C97D9B0C089}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{158E3E99-69B6-4536-B939-7C97D9B0C089}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

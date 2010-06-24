@@ -43,6 +43,7 @@
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CommandExtensions.cs" />
+    <Compile Include="FormattingExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlDialect.cs" />
     <Compile Include="SqlEventStore.cs" />

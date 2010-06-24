@@ -4,7 +4,6 @@ namespace EventStore.Core.Sql
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Data;
-	using System.Globalization;
 	using System.Text;
 
 	public class SqlEventStore : IStoreEvents
@@ -33,7 +32,7 @@ namespace EventStore.Core.Sql
 			}
 		}
 
-		public int StoreEvents<T>(Guid id, Type aggregate, IEnumerable<T> events)
+		public int StoreEvents(Guid id, Type aggregate, IEnumerable events)
 		{
 			using (var command = this.connection.CreateCommand())
 			{
@@ -53,19 +52,17 @@ namespace EventStore.Core.Sql
 			foreach (var @event in events)
 			{
 				command.AddWithValue(
-					this.dialect.RuntimeTypeParameter + index.ToString(CultureInfo.InvariantCulture),
+					this.dialect.RuntimeTypeParameter.Append(index),
 					@event.GetType().FullName);
 
 				command.AddWithValue(
-					this.dialect.PayloadParameter + index.ToString(CultureInfo.InvariantCulture),
+					this.dialect.PayloadParameter.Append(index),
 					this.serializer.Serialize(@event));
 
-				eventInsertStatements.AppendFormat(
-					CultureInfo.InvariantCulture, this.dialect.StoreEvent, index++);
+				eventInsertStatements.AppendWithFormat(this.dialect.StoreEvent, index++);
 			}
 
-			command.CommandText = string.Format(
-				CultureInfo.InvariantCulture, this.dialect.StoreEvents, eventInsertStatements);
+			command.CommandText = this.dialect.StoreEvents.FormatWith(eventInsertStatements);
 			command.ExecuteNonQuery();
 		}
 
@@ -80,7 +77,7 @@ namespace EventStore.Core.Sql
 			}
 		}
 
-		public void StoreSnapshot<T>(Guid id, int version, T snapshot)
+		public void StoreSnapshot(Guid id, int version, object snapshot)
 		{
 			using (var command = this.connection.CreateCommand())
 			{
