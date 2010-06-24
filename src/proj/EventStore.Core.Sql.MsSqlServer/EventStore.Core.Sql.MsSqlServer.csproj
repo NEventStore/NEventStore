@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}</ProjectGuid>
+    <ProjectGuid>{93301501-4E3C-4F75-AA18-A7739B0AB4F7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EventStore.Core.Sql</RootNamespace>
-    <AssemblyName>EventStore.Core.Sql</AssemblyName>
+    <RootNamespace>EventStore.Core.Sql.MsSqlServer</RootNamespace>
+    <AssemblyName>EventStore.Core.Sql.MsSqlServer</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SignAssembly>true</SignAssembly>
@@ -42,10 +42,29 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="CommandExtensions.cs" />
+    <Compile Include="MsSqlServerDialect.cs" />
+    <Compile Include="MsSqlServerStatements.Designer.cs">
+      <DependentUpon>MsSqlServerStatements.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SqlDialect.cs" />
-    <Compile Include="SqlEventStore.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MsSqlServerStatements.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MsSqlServerStatements.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EventStore.Core.Sql\EventStore.Core.Sql.csproj">
+      <Project>{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}</Project>
+      <Name>EventStore.Core.Sql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EventStore\EventStore.csproj">
+      <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
+      <Name>EventStore</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\CustomDictionary.xml">
@@ -53,17 +72,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EventStore\EventStore.csproj">
-      <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
-      <Name>EventStore</Name>
-    </ProjectReference>
+    <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
+    <None Include="Schema.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,11 +1,11 @@
 namespace EventStore.Core.Sql
 {
 	using System;
+	using System.Collections;
 	using System.Collections.Generic;
 	using System.Data;
-	using System.Linq;
-	using System.Text;
 	using System.Globalization;
+	using System.Text;
 
 	public class SqlEventStore : IStoreEvents
 	{
@@ -21,82 +21,73 @@ namespace EventStore.Core.Sql
 		}
 
 		public IEnumerable<T> LoadEvents<T>(Guid id, int startingVersion)
-			where T : class
 		{
-			using (var command = this.CreateCommand(this.dialect.LoadEvents, id))
+			using (var command = this.connection.CreateCommand())
 			{
+				command.CommandText = this.dialect.LoadEvents;
+				command.AddWithValue(this.dialect.IdParameter, id);
 				command.AddWithValue(this.dialect.VersionParameter, startingVersion);
 				using (var reader = command.ExecuteReader())
 					while (reader.Read())
 						yield return this.serializer.Deserialize<T>(reader[0] as byte[]);
 			}
 		}
-		private IDbCommand CreateCommand(string commandText, Guid id)
-		{
-			var command = this.connection.CreateCommand();
-			command.CommandText = commandText;
-			command.AddWithValue(this.dialect.IdParameter, id);
-			return command;
-		}
 
-		public int StoreEvents<T>(Guid id, IEnumerable<T> events)
-			where T : class
+		public int StoreEvents<T>(Guid id, Type aggregate, IEnumerable<T> events)
 		{
-			using (var command = this.CreateCommand(this.dialect.StoreEvents, id))
+			using (var command = this.connection.CreateCommand())
 			{
-				command.AddWithValue(this.dialect.VersionParameter, 0);
-				((IDataParameter)command.Parameters[1]).Direction = ParameterDirection.Output;
-
-				command.AddWithValue(this.dialect.RuntimeTypeParameter, string.Empty); // Aggregate Type: TODO
+				command.CommandText = this.dialect.StoreEvents;
+				command.AddWithValue(this.dialect.IdParameter, id);
+				command.AddWithValue(this.dialect.RuntimeTypeParameter, aggregate.FullName);
 				command.AddWithValue(this.dialect.CreatedParameter, DateTime.UtcNow);
-
+				var version = command.AddWithValue(this.dialect.VersionParameter, 0, ParameterDirection.Output);
 				this.AddEventsToCommand(command, events);
+				command.ExecuteNonQuery();
 
-				return (int)command.ExecuteScalar();
+				return (int)version.Value;
 			}
 		}
-		private void AddEventsToCommand<T>(IDbCommand command, IEnumerable<T> events)
+		private void AddEventsToCommand(IDbCommand command, IEnumerable events)
 		{
-			var insertText = new StringBuilder();
+			var eventInsertStatements = new StringBuilder();
 			var index = 0;
 
 			foreach (var @event in events)
 			{
 				command.AddWithValue(
-					GetParameterName(this.dialect.RuntimeTypeParameter, index),
+					this.dialect.RuntimeTypeParameter + index.ToString(CultureInfo.InvariantCulture),
 					@event.GetType().FullName);
 
 				command.AddWithValue(
-					GetParameterName(this.dialect.PayloadParameter, index),
+					this.dialect.PayloadParameter + index.ToString(CultureInfo.InvariantCulture),
 					this.serializer.Serialize(@event));
 
-				insertText.AppendFormat(CultureInfo.InvariantCulture, this.dialect.StoreEvent, index++);
+				eventInsertStatements.AppendFormat(
+					CultureInfo.InvariantCulture, this.dialect.StoreEvent, index++);
 			}
 
 			command.CommandText = string.Format(
-				CultureInfo.InvariantCulture, command.CommandText, insertText);
-
-		}
-		private static string GetParameterName(string parameterNameFormat, int index)
-		{
-			return string.Format(CultureInfo.InvariantCulture, parameterNameFormat, index);
+				CultureInfo.InvariantCulture, command.CommandText, eventInsertStatements);
 		}
 
 		public T LoadSnapshot<T>(Guid id)
-			where T : class
 		{
-			using (var command = this.CreateCommand(this.dialect.LoadSnapshot, id))
+			using (var command = this.connection.CreateCommand())
 			{
+				command.CommandText = this.dialect.LoadSnapshot;
+				command.AddWithValue(this.dialect.IdParameter, id);
 				var selected = command.ExecuteScalar();
 				return this.serializer.Deserialize<T>(selected == DBNull.Value ? null : selected as byte[]);
 			}
 		}
 
 		public void StoreSnapshot<T>(Guid id, int version, T snapshot)
-			where T : class
 		{
-			using (var command = this.CreateCommand(this.dialect.StoreSnapshot, id))
+			using (var command = this.connection.CreateCommand())
 			{
+				command.CommandText = this.dialect.StoreSnapshot;
+				command.AddWithValue(this.dialect.IdParameter, id);
 				command.AddWithValue(this.dialect.VersionParameter, version);
 				command.AddWithValue(this.dialect.RuntimeTypeParameter, snapshot.GetType().FullName);
 				command.AddWithValue(this.dialect.CreatedParameter, DateTime.UtcNow);

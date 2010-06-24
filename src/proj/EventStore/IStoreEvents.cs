@@ -5,10 +5,10 @@ namespace EventStore
 
 	public interface IStoreEvents
 	{
-		IEnumerable<T> LoadEvents<T>(Guid id, int startingVersion) where T : class;
-		int StoreEvents<T>(Guid id, IEnumerable<T> events) where T : class;
+		IEnumerable<T> LoadEvents<T>(Guid id, int startingVersion);
+		int StoreEvents<T>(Guid id, Type aggregate, IEnumerable<T> events);
 
-		T LoadSnapshot<T>(Guid id) where T : class;
-		void StoreSnapshot<T>(Guid id, int version, T snapshot) where T : class;
+		T LoadSnapshot<T>(Guid id);
+		void StoreSnapshot<T>(Guid id, int version, T snapshot);
 	}
 }
