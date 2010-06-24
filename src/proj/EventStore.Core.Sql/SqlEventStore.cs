@@ -37,18 +37,15 @@ namespace EventStore.Core.Sql
 		{
 			using (var command = this.connection.CreateCommand())
 			{
-				command.CommandText = this.dialect.StoreEvents;
 				command.AddWithValue(this.dialect.IdParameter, id);
 				command.AddWithValue(this.dialect.RuntimeTypeParameter, aggregate.FullName);
 				command.AddWithValue(this.dialect.CreatedParameter, DateTime.UtcNow);
 				var version = command.AddWithValue(this.dialect.VersionParameter, 0, ParameterDirection.Output);
-				this.AddEventsToCommand(command, events);
-				command.ExecuteNonQuery();
-
+				this.StoreEvents(command, events);
 				return (int)version.Value;
 			}
 		}
-		private void AddEventsToCommand(IDbCommand command, IEnumerable events)
+		private void StoreEvents(IDbCommand command, IEnumerable events)
 		{
 			var eventInsertStatements = new StringBuilder();
 			var index = 0;
@@ -68,7 +65,8 @@ namespace EventStore.Core.Sql
 			}
 
 			command.CommandText = string.Format(
-				CultureInfo.InvariantCulture, command.CommandText, eventInsertStatements);
+				CultureInfo.InvariantCulture, this.dialect.StoreEvents, eventInsertStatements);
+			command.ExecuteNonQuery();
 		}
 
 		public T LoadSnapshot<T>(Guid id)

@@ -11,7 +11,6 @@ namespace EventStore.Core.Sql
 		public abstract string LoadEvents { get; }
 		public abstract string StoreEvents { get; }
 		public abstract string StoreEvent { get; }
-
 		public abstract string LoadSnapshot { get; }
 		public abstract string StoreSnapshot { get; }
 	}
