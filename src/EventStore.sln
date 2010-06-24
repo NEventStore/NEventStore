@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{D3C17830
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Core.Sql", "proj\EventStore.Core.Sql\EventStore.Core.Sql.csproj", "{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Core.Sql.UnitTests", "tests\EventStore.Core.Sql.UnitTests\EventStore.Core.Sql.UnitTests.csproj", "{882CB5B7-5851-4AB9-8BB1-2EDD2AF41C6D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{882CB5B7-5851-4AB9-8BB1-2EDD2AF41C6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{882CB5B7-5851-4AB9-8BB1-2EDD2AF41C6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{882CB5B7-5851-4AB9-8BB1-2EDD2AF41C6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{882CB5B7-5851-4AB9-8BB1-2EDD2AF41C6D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -30,5 +36,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{03946843-F343-419C-88EF-3E446D08DFA6} = {9DE51CC0-6902-49F5-9B69-B29454DE7164}
 		{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1} = {9DE51CC0-6902-49F5-9B69-B29454DE7164}
+		{882CB5B7-5851-4AB9-8BB1-2EDD2AF41C6D} = {D3C17830-A461-4BA5-A672-461B19B33936}
 	EndGlobalSection
 EndGlobal
