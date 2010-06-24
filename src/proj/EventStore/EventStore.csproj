@@ -42,6 +42,10 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DefaultSerializer.cs" />
+    <Compile Include="ConcurrencyException.cs" />
+    <Compile Include="ISerialize.cs" />
+    <Compile Include="IStoreEvents.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
