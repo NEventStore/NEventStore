@@ -21,7 +21,7 @@ namespace EventStore
 		/// <summary>
 		/// Gets or sets the starting version of the event stream.
 		/// </summary>
-		public int Version { get; set; }
+		public long Version { get; set; }
 
 		/// <summary>
 		/// Gets or sets the set of events to be persisted.

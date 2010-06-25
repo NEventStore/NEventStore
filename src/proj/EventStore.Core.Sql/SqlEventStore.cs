@@ -12,7 +12,7 @@ namespace EventStore.Core.Sql
 		private const int SerializedDataIndex = 0;
 		private const int TypeIndex = 1;
 		private const int VersionIndex = 2;
-		private readonly IDictionary<Guid, int> versions = new Dictionary<Guid, int>();
+		private readonly IDictionary<Guid, long> versions = new Dictionary<Guid, long>();
 		private readonly IDbConnection connection;
 		private readonly SqlDialect dialect;
 		private readonly ISerialize serializer;
@@ -31,11 +31,11 @@ namespace EventStore.Core.Sql
 		{
 			return this.Read(id, 0, this.dialect.SelectEvents);
 		}
-		public CommittedEventStream ReadFrom(Guid id, int startingVersion)
+		public CommittedEventStream ReadFrom(Guid id, long startingVersion)
 		{
 			return this.Read(id, startingVersion, this.dialect.SelectEventsWhere);
 		}
-		private CommittedEventStream Read(Guid id, int version, string queryStatement)
+		private CommittedEventStream Read(Guid id, long version, string queryStatement)
 		{
 			using (var command = this.connection.CreateCommand())
 			{
@@ -46,7 +46,7 @@ namespace EventStore.Core.Sql
 					return this.BuildStream(id, version, reader);
 			}
 		}
-		private CommittedEventStream BuildStream(Guid id, int version, IDataReader reader)
+		private CommittedEventStream BuildStream(Guid id, long version, IDataReader reader)
 		{
 			ICollection<object> events = new LinkedList<object>();
 			var stream = new CommittedEventStream
@@ -61,7 +61,7 @@ namespace EventStore.Core.Sql
 			if (reader.NextResult() && reader.Read())
 			{
 				stream.Snapshot = this.serializer.Deserialize<object>(reader[SerializedDataIndex] as byte[]);
-				version = (int)reader[VersionIndex];
+				version = (long)reader[VersionIndex];
 			}
 
 			this.versions[id] = stream.Version = version + events.Count;
@@ -72,7 +72,7 @@ namespace EventStore.Core.Sql
 		{
 			using (var command = this.connection.CreateCommand())
 			{
-				int versionWhenLoaded;
+				long versionWhenLoaded;
 				this.versions.TryGetValue(stream.Id, out versionWhenLoaded);
 				this.versions[stream.Id] = versionWhenLoaded + stream.Events.Count;
 

@@ -121,54 +121,50 @@
     <value>SELECT @version = @version + 1;
 INSERT
   INTO [dbo].[Events]
-SELECT @id, @version, @type{0}, @created, @payload{0};</value>
+SELECT @id, @version, @created, @type{0}, @payload{0};</value>
   </data>
   <data name="InsertEvents" xml:space="preserve">
     <value>INSERT
     INTO [dbo].[Aggregates]
-  SELECT @id, @version, 0, @type, @created
+  SELECT @id, @version, 0, @created, @type
    WHERE @version = 0;
+
+{0}
 
 INSERT
   INTO [dbo].[Snapshots]
-SELECT @id, @version, @momento_type, @created, @payload
+SELECT @id, @version, @created, @momento_type, @payload
  WHERE @payload IS NOT NULL
    AND NOT EXISTS -- snapshots don't need to be overwritten
      ( SELECT *
          FROM [dbo].[Snapshots]
-        WHERE [AggregateId] = @id
+        WHERE [Id] = @id
           AND [Version] = @version );
 
-{0}
-
 UPDATE [dbo].[Aggregates]
-   SET [Version] = @version
- WHERE [AggregateId] = @id;</value>
+   SET [Version] = @version,
+       [Snapshot] = CASE WHEN @payload IS NOT NULL THEN @version ELSE [Snapshot] END
+ WHERE [Id] = @id;</value>
   </data>
   <data name="SelectEvents" xml:space="preserve">
-    <value>DECLARE @momento varbinary(max), @momento_type varchar(256);
-SELECT TOP 1 
-       @version = [Version],
-       @momento = [Payload],
-       @momento_type = [RuntimeType]
-  FROM [dbo].[Snapshots]
- WHERE [AggregateId] = @id
- ORDER BY [Version] DESC;
-
-SELECT [Payload], [RuntimeType]
+    <value>SELECT [Payload], [RuntimeType]
   FROM [dbo].[Events]
- WHERE [AggregateId] = @id
-   AND [Version] &gt; @version
-   AND @version IS NOT NULL
+ WHERE [Id] = @id
+   AND [Version] &gt; (SELECT [Snapshot] FROM [dbo].[Aggregates] WHERE [Id] = @id)
  ORDER BY [Version];
-
-SELECT @momento, @momento_type, @version
- WHERE @momento IS NOT NULL;</value>
+ 
+SELECT TOP 1
+       [Payload],
+       [RuntimeType],
+       [Version]
+  FROM [dbo].[Snapshots]
+ WHERE [Id] = @id
+ ORDER BY [Version] DESC;</value>
   </data>
   <data name="SelectEventsWhere" xml:space="preserve">
     <value>SELECT [Payload], [RuntimeType]
   FROM [dbo].[Events]
- WHERE [AggregateId] = @id
+ WHERE [Id] = @id
    AND [Version] &gt;= @version
  ORDER BY [Version];</value>
   </data>

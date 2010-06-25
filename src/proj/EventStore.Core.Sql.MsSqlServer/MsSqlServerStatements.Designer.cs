@@ -64,7 +64,7 @@ namespace EventStore.Core.Sql.MsSqlServer {
         ///   Looks up a localized string similar to SELECT @version = @version + 1;
         ///INSERT
         ///  INTO [dbo].[Events]
-        ///SELECT @id, @version, @type{0}, @created, @payload{0};.
+        ///SELECT @id, @version, @created, @type{0}, @payload{0};.
         /// </summary>
         internal static string InsertEvent {
             get {
@@ -75,24 +75,24 @@ namespace EventStore.Core.Sql.MsSqlServer {
         /// <summary>
         ///   Looks up a localized string similar to INSERT
         ///    INTO [dbo].[Aggregates]
-        ///  SELECT @id, @version, 0, @type, @created
+        ///  SELECT @id, @version, 0, @created, @type
         ///   WHERE @version = 0;
+        ///
+        ///{0}
         ///
         ///INSERT
         ///  INTO [dbo].[Snapshots]
-        ///SELECT @id, @version, @momento_type, @created, @payload
+        ///SELECT @id, @version, @created, @momento_type, @payload
         /// WHERE @payload IS NOT NULL
         ///   AND NOT EXISTS -- snapshots don&apos;t need to be overwritten
         ///     ( SELECT *
         ///         FROM [dbo].[Snapshots]
-        ///        WHERE [AggregateId] = @id
+        ///        WHERE [Id] = @id
         ///          AND [Version] = @version );
         ///
-        ///{0}
-        ///
         ///UPDATE [dbo].[Aggregates]
-        ///   SET [Version] = @version
-        /// WHERE [AggregateId] = @id;.
+        ///   SET [Version] = @version,
+        ///       [Snapshot] = CASE WHEN @payload IS N [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InsertEvents {
             get {
@@ -101,24 +101,19 @@ namespace EventStore.Core.Sql.MsSqlServer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DECLARE @momento varbinary(max), @momento_type varchar(256);
-        ///SELECT TOP 1 
-        ///       @version = [Version],
-        ///       @momento = [Payload],
-        ///       @momento_type = [RuntimeType]
-        ///  FROM [dbo].[Snapshots]
-        /// WHERE [AggregateId] = @id
-        /// ORDER BY [Version] DESC;
-        ///
-        ///SELECT [Payload], [RuntimeType]
+        ///   Looks up a localized string similar to SELECT [Payload], [RuntimeType]
         ///  FROM [dbo].[Events]
-        /// WHERE [AggregateId] = @id
-        ///   AND [Version] &gt; @version
-        ///   AND @version IS NOT NULL
+        /// WHERE [Id] = @id
+        ///   AND [Version] &gt; (SELECT [Snapshot] FROM [dbo].[Aggregates] WHERE [Id] = @id)
         /// ORDER BY [Version];
-        ///
-        ///SELECT @momento, @momento_type, @version
-        /// WHERE @momento IS NOT NULL;.
+        /// 
+        ///SELECT TOP 1
+        ///       [Payload],
+        ///       [RuntimeType],
+        ///       [Version]
+        ///  FROM [dbo].[Snapshots]
+        /// WHERE [Id] = @id
+        /// ORDER BY [Version] DESC;.
         /// </summary>
         internal static string SelectEvents {
             get {
@@ -129,7 +124,7 @@ namespace EventStore.Core.Sql.MsSqlServer {
         /// <summary>
         ///   Looks up a localized string similar to SELECT [Payload], [RuntimeType]
         ///  FROM [dbo].[Events]
-        /// WHERE [AggregateId] = @id
+        /// WHERE [Id] = @id
         ///   AND [Version] &gt;= @version
         /// ORDER BY [Version];.
         /// </summary>

@@ -1,5 +1,6 @@
 namespace EventStore.Core.Sql
 {
+	using System;
 	using System.Globalization;
 	using System.Text;
 
@@ -10,7 +11,7 @@ namespace EventStore.Core.Sql
 			return string.Format(CultureInfo.InvariantCulture, format, values);
 		}
 
-		public static string Append(this string value, int number)
+		public static string Append(this string value, IConvertible number)
 		{
 			return value + number.ToString(CultureInfo.InvariantCulture);
 		}
