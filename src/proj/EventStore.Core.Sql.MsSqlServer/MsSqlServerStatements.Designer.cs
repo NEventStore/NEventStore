@@ -99,8 +99,13 @@ namespace EventStore.Core.Sql.MsSqlServer {
         
         /// <summary>
         ///   Looks up a localized string similar to INSERT
-        ///  INTO [dbo].[Events]
-        ///SELECT @id, @version, @type, @created, @payload;.
+        ///  INTO [dbo].[Snapshots]
+        ///SELECT @id, @version, @type, @created, @payload
+        /// WHERE NOT EXISTS
+        ///     ( SELECT *
+        ///         FROM [dbo].[Snapshots]
+        ///        WHERE [AggregateId] = @id
+        ///          AND [Version] = @version );.
         /// </summary>
         internal static string InsertSnapshot {
             get {
@@ -109,10 +114,10 @@ namespace EventStore.Core.Sql.MsSqlServer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT Payload
+        ///   Looks up a localized string similar to SELECT [Payload]
         ///    FROM [dbo].[Events]
         ///   WHERE [AggregateId] = @id
-        ///     AND [version] &gt;= @version;.
+        ///     AND [Version] &gt;= @version;.
         /// </summary>
         internal static string SelectEvents {
             get {
@@ -121,10 +126,10 @@ namespace EventStore.Core.Sql.MsSqlServer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT TOP 1 Payload
+        ///   Looks up a localized string similar to SELECT TOP 1 [Payload]
         ///    FROM [dbo].[Events]
         ///   WHERE [AggregateId] = @id
-        ///   ORDER BY [version];.
+        ///   ORDER BY [Version];.
         /// </summary>
         internal static string SelectSnapshot {
             get {

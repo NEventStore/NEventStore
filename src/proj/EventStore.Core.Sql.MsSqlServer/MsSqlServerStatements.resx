@@ -144,19 +144,24 @@ UPDATE [dbo].[Aggregates]
   </data>
   <data name="InsertSnapshot" xml:space="preserve">
     <value>INSERT
-  INTO [dbo].[Events]
-SELECT @id, @version, @type, @created, @payload;</value>
+  INTO [dbo].[Snapshots]
+SELECT @id, @version, @type, @created, @payload
+ WHERE NOT EXISTS
+     ( SELECT *
+         FROM [dbo].[Snapshots]
+        WHERE [AggregateId] = @id
+          AND [Version] = @version );</value>
   </data>
   <data name="SelectEvents" xml:space="preserve">
-    <value>SELECT Payload
+    <value>SELECT [Payload]
     FROM [dbo].[Events]
    WHERE [AggregateId] = @id
-     AND [version] &gt;= @version;</value>
+     AND [Version] &gt;= @version;</value>
   </data>
   <data name="SelectSnapshot" xml:space="preserve">
-    <value>SELECT TOP 1 Payload
+    <value>SELECT TOP 1 [Payload]
     FROM [dbo].[Events]
    WHERE [AggregateId] = @id
-   ORDER BY [version];</value>
+   ORDER BY [Version];</value>
   </data>
 </root>
