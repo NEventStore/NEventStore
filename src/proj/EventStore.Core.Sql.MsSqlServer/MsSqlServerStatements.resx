@@ -126,15 +126,8 @@ SELECT @id, @version, @type{0}, @created, @payload{0};</value>
   <data name="InsertEvents" xml:space="preserve">
     <value>INSERT
     INTO [dbo].[Aggregates]
-  SELECT @id, 0, 0, @type, @created
-   WHERE NOT EXISTS
-       ( SELECT *
-           FROM [dbo].[Aggregates]
-          WHERE [AggregateId] = @id );
-
-SELECT @version = [Version]
-  FROM [dbo].[Aggregates]
- WHERE [AggregateId] = @id;
+  SELECT @id, @version, 0, @type, @created
+   WHERE @version = 0;
 
 {0}
 
@@ -153,13 +146,13 @@ SELECT @id, @version, @type, @created, @payload
           AND [Version] = @version );</value>
   </data>
   <data name="SelectEvents" xml:space="preserve">
-    <value>SELECT [Payload]
+    <value>SELECT [Payload], [RuntimeType]
     FROM [dbo].[Events]
    WHERE [AggregateId] = @id
      AND [Version] &gt;= @version;</value>
   </data>
   <data name="SelectSnapshot" xml:space="preserve">
-    <value>SELECT TOP 1 [Payload]
+    <value>SELECT TOP 1 [Payload], [RuntimeType]
     FROM [dbo].[Events]
    WHERE [AggregateId] = @id
    ORDER BY [Version];</value>

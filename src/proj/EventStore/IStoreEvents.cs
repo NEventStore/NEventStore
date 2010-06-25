@@ -22,10 +22,10 @@ namespace EventStore
 		/// Saves all events provided to persistent storage.
 		/// </summary>
 		/// <param name="id">The value which uniquely identifies the aggregate being persisted.</param>
+		/// <param name="expectedVersion">The value representing the expected version of the aggregate being persisted.</param>
 		/// <param name="aggregate">The type representing the aggregate being persisted.</param>
 		/// <param name="events">The events to be committed.</param>
-		/// <returns>The version of the last event committed.</returns>
-		int StoreEvents(Guid id, Type aggregate, IEnumerable events);
+		void StoreEvents(Guid id, int expectedVersion, Type aggregate, IEnumerable events);
 
 		/// <summary>
 		/// Loads the snapshot for the aggregate specified.

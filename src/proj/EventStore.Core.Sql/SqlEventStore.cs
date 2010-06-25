@@ -33,16 +33,15 @@ namespace EventStore.Core.Sql
 			}
 		}
 
-		public int StoreEvents(Guid id, Type aggregate, IEnumerable events)
+		public void StoreEvents(Guid id, int expectedVersion, Type aggregate, IEnumerable events)
 		{
 			using (var command = this.connection.CreateCommand())
 			{
 				command.AddWithValue(this.dialect.IdParameter, id);
+				command.AddWithValue(this.dialect.VersionParameter, expectedVersion);
 				command.AddWithValue(this.dialect.RuntimeTypeParameter, aggregate.FullName);
 				command.AddWithValue(this.dialect.CreatedParameter, DateTime.UtcNow);
-				var version = command.AddWithValue(this.dialect.VersionParameter, 0, ParameterDirection.Output);
 				this.StoreEvents(command, events);
-				return (int)version.Value;
 			}
 		}
 		private void StoreEvents(IDbCommand command, IEnumerable events)

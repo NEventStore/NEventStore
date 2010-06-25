@@ -75,15 +75,8 @@ namespace EventStore.Core.Sql.MsSqlServer {
         /// <summary>
         ///   Looks up a localized string similar to INSERT
         ///    INTO [dbo].[Aggregates]
-        ///  SELECT @id, 0, 0, @type, @created
-        ///   WHERE NOT EXISTS
-        ///       ( SELECT *
-        ///           FROM [dbo].[Aggregates]
-        ///          WHERE [AggregateId] = @id );
-        ///
-        ///SELECT @version = [Version]
-        ///  FROM [dbo].[Aggregates]
-        /// WHERE [AggregateId] = @id;
+        ///  SELECT @id, @version, 0, @type, @created
+        ///   WHERE @version = 0;
         ///
         ///{0}
         ///
@@ -114,7 +107,7 @@ namespace EventStore.Core.Sql.MsSqlServer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT [Payload]
+        ///   Looks up a localized string similar to SELECT [Payload], [RuntimeType]
         ///    FROM [dbo].[Events]
         ///   WHERE [AggregateId] = @id
         ///     AND [Version] &gt;= @version;.
@@ -126,7 +119,7 @@ namespace EventStore.Core.Sql.MsSqlServer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT TOP 1 [Payload]
+        ///   Looks up a localized string similar to SELECT TOP 1 [Payload], [RuntimeType]
         ///    FROM [dbo].[Events]
         ///   WHERE [AggregateId] = @id
         ///   ORDER BY [Version];.
