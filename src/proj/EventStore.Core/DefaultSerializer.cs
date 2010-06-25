@@ -12,7 +12,7 @@ namespace EventStore.Core
 		{
 			using (var stream = new MemoryStream())
 			{
-				this.Serialize(graph);
+				this.Serialize(graph, stream);
 				return stream.ToArray();
 			}
 		}
@@ -21,14 +21,14 @@ namespace EventStore.Core
 			this.formatter.Serialize(output, graph);
 		}
 
-		public virtual T Deserialize<T>(Stream input)
-		{
-			return (T)this.formatter.Deserialize(input);
-		}
 		public T Deserialize<T>(byte[] serialized)
 		{
 			using (var stream = new MemoryStream(serialized))
 				return this.Deserialize<T>(stream);
+		}
+		public virtual T Deserialize<T>(Stream input)
+		{
+			return (T)this.formatter.Deserialize(input);
 		}
 	}
 }
