@@ -13,6 +13,6 @@ SET FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore/bin/Release/EventStore.
 SET FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Core/bin/Release/EventStore.Core.dll"
 SET FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Core.Sql/bin/Release/EventStore.Core.Sql.dll"
 SET FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Core.Sql.MsSqlServer/bin/Release/EventStore.Core.Sql.MsSqlServer.dll"
-bin\ilmerge-bin\ILMerge.exe /keyfile:src/EventStore.snk /v2 /out:output/EventStore.dll %FILES_TO_MERGE%
+bin\ilmerge-bin\ILMerge.exe /keyfile:src/EventStore.snk /v2 /xmldocs /out:output/EventStore.dll %FILES_TO_MERGE%
 
 echo Done
