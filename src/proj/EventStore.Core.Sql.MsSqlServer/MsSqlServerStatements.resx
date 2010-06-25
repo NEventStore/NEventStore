@@ -129,32 +129,47 @@ SELECT @id, @version, @type{0}, @created, @payload{0};</value>
   SELECT @id, @version, 0, @type, @created
    WHERE @version = 0;
 
+INSERT
+  INTO [dbo].[Snapshots]
+SELECT @id, @version, @momento_type, @created, @payload
+ WHERE @payload IS NOT NULL
+   AND NOT EXISTS -- snapshots don't need to be overwritten
+     ( SELECT *
+         FROM [dbo].[Snapshots]
+        WHERE [AggregateId] = @id
+          AND [Version] = @version );
+
 {0}
 
 UPDATE [dbo].[Aggregates]
    SET [Version] = @version
  WHERE [AggregateId] = @id;</value>
   </data>
-  <data name="InsertSnapshot" xml:space="preserve">
-    <value>INSERT
-  INTO [dbo].[Snapshots]
-SELECT @id, @version, @type, @created, @payload
- WHERE NOT EXISTS
-     ( SELECT *
-         FROM [dbo].[Snapshots]
-        WHERE [AggregateId] = @id
-          AND [Version] = @version );</value>
-  </data>
   <data name="SelectEvents" xml:space="preserve">
-    <value>SELECT [Payload], [RuntimeType]
-    FROM [dbo].[Events]
-   WHERE [AggregateId] = @id
-     AND [Version] &gt;= @version;</value>
+    <value>DECLARE @momento varbinary(max), @momento_type varchar(256);
+SELECT TOP 1 
+       @version = [Version],
+       @momento = [Payload],
+       @momento_type = [RuntimeType]
+  FROM [dbo].[Snapshots]
+ WHERE [AggregateId] = @id
+ ORDER BY [Version];
+
+SELECT [Payload], [RuntimeType]
+  FROM [dbo].[Events]
+ WHERE [AggregateId] = @id
+   AND [Version] &gt; @version
+   AND @version IS NOT NULL
+ ORDER BY [Version];
+
+SELECT @momento, @momento_type
+ WHERE @momento IS NOT NULL;</value>
   </data>
-  <data name="SelectSnapshot" xml:space="preserve">
-    <value>SELECT TOP 1 [Payload], [RuntimeType]
-    FROM [dbo].[Events]
-   WHERE [AggregateId] = @id
-   ORDER BY [Version];</value>
+  <data name="SelectEventsWhere" xml:space="preserve">
+    <value>SELECT [Payload], [RuntimeType]
+  FROM [dbo].[Events]
+ WHERE [AggregateId] = @id
+   AND [Version] &gt;= @version
+ ORDER BY [Version];</value>
   </data>
 </root>

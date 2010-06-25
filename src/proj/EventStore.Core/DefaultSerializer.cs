@@ -10,6 +10,9 @@ namespace EventStore.Core
 
 		public byte[] Serialize(object graph)
 		{
+			if (null == graph)
+				return null;
+
 			using (var stream = new MemoryStream())
 			{
 				this.Serialize(graph, stream);
@@ -23,6 +26,9 @@ namespace EventStore.Core
 
 		public T Deserialize<T>(byte[] serialized)
 		{
+			if (null == serialized || 0 == serialized.Length)
+				return default(T);
+
 			using (var stream = new MemoryStream(serialized))
 				return this.Deserialize<T>(stream);
 		}

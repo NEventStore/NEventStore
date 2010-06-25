@@ -78,6 +78,16 @@ namespace EventStore.Core.Sql.MsSqlServer {
         ///  SELECT @id, @version, 0, @type, @created
         ///   WHERE @version = 0;
         ///
+        ///INSERT
+        ///  INTO [dbo].[Snapshots]
+        ///SELECT @id, @version, @momento_type, @created, @payload
+        /// WHERE @payload IS NOT NULL
+        ///   AND NOT EXISTS -- snapshots don&apos;t need to be overwritten
+        ///     ( SELECT *
+        ///         FROM [dbo].[Snapshots]
+        ///        WHERE [AggregateId] = @id
+        ///          AND [Version] = @version );
+        ///
         ///{0}
         ///
         ///UPDATE [dbo].[Aggregates]
@@ -91,26 +101,24 @@ namespace EventStore.Core.Sql.MsSqlServer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INSERT
-        ///  INTO [dbo].[Snapshots]
-        ///SELECT @id, @version, @type, @created, @payload
-        /// WHERE NOT EXISTS
-        ///     ( SELECT *
-        ///         FROM [dbo].[Snapshots]
-        ///        WHERE [AggregateId] = @id
-        ///          AND [Version] = @version );.
-        /// </summary>
-        internal static string InsertSnapshot {
-            get {
-                return ResourceManager.GetString("InsertSnapshot", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SELECT [Payload], [RuntimeType]
-        ///    FROM [dbo].[Events]
-        ///   WHERE [AggregateId] = @id
-        ///     AND [Version] &gt;= @version;.
+        ///   Looks up a localized string similar to DECLARE @momento varbinary(max), @momento_type varchar(256);
+        ///SELECT TOP 1 
+        ///       @version = [Version],
+        ///       @momento = [Payload],
+        ///       @momento_type = [RuntimeType]
+        ///  FROM [dbo].[Snapshots]
+        /// WHERE [AggregateId] = @id
+        /// ORDER BY [Version];
+        ///
+        ///SELECT [Payload], [RuntimeType]
+        ///  FROM [dbo].[Events]
+        /// WHERE [AggregateId] = @id
+        ///   AND [Version] &gt; @version
+        ///   AND @version IS NOT NULL
+        /// ORDER BY [Version];
+        ///
+        ///SELECT @momento, @momento_type
+        /// WHERE @momento IS NOT NULL;.
         /// </summary>
         internal static string SelectEvents {
             get {
@@ -119,14 +127,15 @@ namespace EventStore.Core.Sql.MsSqlServer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT TOP 1 [Payload], [RuntimeType]
-        ///    FROM [dbo].[Events]
-        ///   WHERE [AggregateId] = @id
-        ///   ORDER BY [Version];.
+        ///   Looks up a localized string similar to SELECT [Payload], [RuntimeType]
+        ///  FROM [dbo].[Events]
+        /// WHERE [AggregateId] = @id
+        ///   AND [Version] &gt;= @version
+        /// ORDER BY [Version];.
         /// </summary>
-        internal static string SelectSnapshot {
+        internal static string SelectEventsWhere {
             get {
-                return ResourceManager.GetString("SelectSnapshot", resourceCulture);
+                return ResourceManager.GetString("SelectEventsWhere", resourceCulture);
             }
         }
     }
