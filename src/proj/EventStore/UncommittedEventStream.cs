@@ -1,13 +1,12 @@
 namespace EventStore
 {
 	using System;
-	using System.Collections.Generic;
+	using System.Collections;
 
 	/// <summary>
-	/// The stream representing the set of events to be persisted.
+	/// Represents a stream of events that have not yet been committed to persistent storage.
 	/// </summary>
-	/// <typeparam name="TEvent">The class supertype or interface which all events implement.</typeparam>
-	public class EventStream<TEvent>
+	public class UncommittedEventStream
 	{
 		/// <summary>
 		/// Gets or sets the value which uniquely identifies the aggregate to which the event stream belongs.
@@ -20,14 +19,9 @@ namespace EventStore
 		public Type Type { get; set; }
 
 		/// <summary>
-		/// Gets or sets the starting version of the event stream.
-		/// </summary>
-		public int Version { get; set; }
-
-		/// <summary>
 		/// Gets or sets the set of events to be persisted.
 		/// </summary>
-		public ICollection<TEvent> Events { get; set; }
+		public ICollection Events { get; set; }
 
 		/// <summary>
 		/// Gets or sets the snapshot of the aggregate, if any.

@@ -1,12 +1,13 @@
 namespace EventStore.Core.Sql
 {
 	using System;
+	using System.Collections;
 	using System.Collections.Generic;
 	using System.Data;
 	using System.Data.Common;
 	using System.Text;
 
-	public class SqlEventStore<T> : IStoreEvents<T>
+	public class SqlEventStore : IStoreEvents
 	{
 		private const int SerializedDataIndex = 0;
 		private const int VersionIndex = 1;
@@ -25,15 +26,15 @@ namespace EventStore.Core.Sql
 			this.now = now;
 		}
 
-		public EventStream<T> Read(Guid id)
+		public CommittedEventStream Read(Guid id)
 		{
-			return Read(id, 0, this.dialect.SelectEvents);
+			return this.Read(id, 0, this.dialect.SelectEvents);
 		}
-		public EventStream<T> ReadFrom(Guid id, int startingVersion)
+		public CommittedEventStream ReadFrom(Guid id, int startingVersion)
 		{
-			return Read(id, startingVersion, this.dialect.SelectEventsWhere);
+			return this.Read(id, startingVersion, this.dialect.SelectEventsWhere);
 		}
-		private EventStream<T> Read(Guid id, int version, string queryStatement)
+		private CommittedEventStream Read(Guid id, int version, string queryStatement)
 		{
 			using (var command = this.connection.CreateCommand())
 			{
@@ -41,20 +42,20 @@ namespace EventStore.Core.Sql
 				command.AddParameter(this.dialect.Id, id);
 				command.AddParameter(this.dialect.Version, version);
 				using (var reader = this.WrapOnFailure(() => command.ExecuteReader()))
-					return BuildStream(id, version, reader);
+					return this.BuildStream(id, version, reader);
 			}
 		}
-		private EventStream<T> BuildStream(Guid id, int version, IDataReader reader)
+		private CommittedEventStream BuildStream(Guid id, int version, IDataReader reader)
 		{
-			ICollection<T> events = new LinkedList<T>();
-			var stream = new EventStream<T>
+			ICollection<object> events = new LinkedList<object>();
+			var stream = new CommittedEventStream
 			{
 				Id = id,
-				Events = events
+				Events = (ICollection)events
 			};
 
 			while (reader.Read())
-				events.Add(this.serializer.Deserialize<T>(reader[SerializedDataIndex] as byte[]));
+				events.Add(this.serializer.Deserialize<object>(reader[SerializedDataIndex] as byte[]));
 
 			if (reader.NextResult() && reader.Read())
 			{
@@ -66,15 +67,16 @@ namespace EventStore.Core.Sql
 			return stream;
 		}
 
-		public void Write(EventStream<T> stream)
+		public void Write(UncommittedEventStream stream)
 		{
 			using (var command = this.connection.CreateCommand())
 			{
 				int versionWhenLoaded;
 				this.versions.TryGetValue(stream.Id, out versionWhenLoaded);
+				this.versions[stream.Id] = versionWhenLoaded + stream.Events.Count;
 
 				command.AddParameter(this.dialect.Id, stream.Id);
-				command.AddParameter(this.dialect.Version, stream.Version);
+				command.AddParameter(this.dialect.Version, versionWhenLoaded);
 				command.AddParameter(this.dialect.Type, stream.Type.FullName);
 				command.AddParameter(this.dialect.Created, this.now());
 				command.AddParameter(this.dialect.MomentoType, stream.Snapshot.GetTypeName());
@@ -82,10 +84,9 @@ namespace EventStore.Core.Sql
 
 				this.WriteEventsToCommand(command, stream);
 				this.WrapOnFailure(() => command.ExecuteNonQuery());
-				this.versions[stream.Id] = stream.Version = versionWhenLoaded + stream.Events.Count;
 			}
 		}
-		private void WriteEventsToCommand(IDbCommand command, EventStream<T> stream)
+		private void WriteEventsToCommand(IDbCommand command, UncommittedEventStream stream)
 		{
 			var eventInsertStatements = new StringBuilder();
 			var index = 0;

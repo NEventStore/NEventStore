@@ -45,7 +45,8 @@
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ConcurrencyException.cs" />
-    <Compile Include="EventStream.cs" />
+    <Compile Include="CommittedEventStream.cs" />
+    <Compile Include="UncommittedEventStream.cs" />
     <Compile Include="EventStoreException.cs" />
     <Compile Include="ISerialize.cs" />
     <Compile Include="IStoreEvents.cs" />
