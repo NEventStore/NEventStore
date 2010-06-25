@@ -19,7 +19,7 @@ namespace EventStore
 		public Type Type { get; set; }
 
 		/// <summary>
-		/// Gets or sets the set of events to be persisted.
+		/// Gets or sets the collection of events to be persisted.
 		/// </summary>
 		public ICollection Events { get; set; }
 

@@ -14,19 +14,14 @@ namespace EventStore
 		public Guid Id { get; set; }
 
 		/// <summary>
-		/// Gets or sets the type of aggregate to which the event stream belongs.
-		/// </summary>
-		public Type Type { get; set; }
-
-		/// <summary>
-		/// Gets or sets the starting version of the event stream.
+		/// Gets or sets the version of the aggregate.
 		/// </summary>
 		public long Version { get; set; }
 
 		/// <summary>
-		/// Gets or sets the set of events to be persisted.
+		/// Gets or sets the collection of persisted events.
 		/// </summary>
-		public ICollection Events { get; set; }
+		public IEnumerable Events { get; set; }
 
 		/// <summary>
 		/// Gets or sets the snapshot of the aggregate, if any.
