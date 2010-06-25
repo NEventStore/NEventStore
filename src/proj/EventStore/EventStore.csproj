@@ -43,6 +43,7 @@
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ConcurrencyException.cs" />
+    <Compile Include="EventStoreException.cs" />
     <Compile Include="ISerialize.cs" />
     <Compile Include="IStoreEvents.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

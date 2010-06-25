@@ -27,7 +27,7 @@ namespace EventStore.Core.Sql
 				command.CommandText = this.dialect.LoadEvents;
 				command.AddWithValue(this.dialect.IdParameter, id);
 				command.AddWithValue(this.dialect.VersionParameter, startingVersion);
-				using (var reader = command.ExecuteReader())
+				using (var reader = this.WrapOnFailure(() => command.ExecuteReader()))
 					while (reader.Read())
 						yield return this.serializer.Deserialize<T>(reader[0] as byte[]);
 			}
@@ -65,7 +65,7 @@ namespace EventStore.Core.Sql
 
 			command.CommandText = this.dialect.StoreEvents.FormatWith(eventInsertStatements);
 
-			this.CatchAndWrapConcurrencyException(() => command.ExecuteNonQuery());
+			this.WrapOnFailure(() => command.ExecuteNonQuery());
 		}
 
 		public T LoadSnapshot<T>(Guid id)
@@ -74,7 +74,7 @@ namespace EventStore.Core.Sql
 			{
 				command.CommandText = this.dialect.LoadSnapshot;
 				command.AddWithValue(this.dialect.IdParameter, id);
-				var selected = command.ExecuteScalar();
+				var selected = this.WrapOnFailure(() => command.ExecuteScalar());
 				return this.serializer.Deserialize<T>(selected == DBNull.Value ? null : selected as byte[]);
 			}
 		}
@@ -89,22 +89,22 @@ namespace EventStore.Core.Sql
 				command.AddWithValue(this.dialect.RuntimeTypeParameter, snapshot.GetType().FullName);
 				command.AddWithValue(this.dialect.CreatedParameter, DateTime.UtcNow);
 				command.AddWithValue(this.dialect.PayloadParameter, this.serializer.Serialize(snapshot));
-				command.ExecuteNonQuery();
+				this.WrapOnFailure(() => command.ExecuteNonQuery());
 			}
 		}
 
-		private void CatchAndWrapConcurrencyException(Action action)
+		private T WrapOnFailure<T>(Func<T> action)
 		{
 			try
 			{
-				action();
+				return action();
 			}
 			catch (DbException exception)
 			{
 				if (this.dialect.IsConcurrencyException(exception))
 					throw new ConcurrencyException(exception.Message, exception);
 
-				throw;
+				throw new EventStoreException(exception.Message, exception);
 			}
 		}
 	}
