@@ -10,7 +10,8 @@ namespace EventStore.Core.Sql
 	public class SqlEventStore : IStoreEvents
 	{
 		private const int SerializedDataIndex = 0;
-		private const int VersionIndex = 1;
+		private const int TypeIndex = 1;
+		private const int VersionIndex = 2;
 		private readonly IDictionary<Guid, int> versions = new Dictionary<Guid, int>();
 		private readonly IDbConnection connection;
 		private readonly SqlDialect dialect;

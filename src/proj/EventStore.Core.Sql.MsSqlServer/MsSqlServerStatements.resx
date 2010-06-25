@@ -153,7 +153,7 @@ SELECT TOP 1
        @momento_type = [RuntimeType]
   FROM [dbo].[Snapshots]
  WHERE [AggregateId] = @id
- ORDER BY [Version];
+ ORDER BY [Version] DESC;
 
 SELECT [Payload], [RuntimeType]
   FROM [dbo].[Events]
@@ -162,7 +162,7 @@ SELECT [Payload], [RuntimeType]
    AND @version IS NOT NULL
  ORDER BY [Version];
 
-SELECT @momento, @momento_type
+SELECT @momento, @momento_type, @version
  WHERE @momento IS NOT NULL;</value>
   </data>
   <data name="SelectEventsWhere" xml:space="preserve">
