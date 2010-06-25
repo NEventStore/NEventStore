@@ -1,7 +1,12 @@
 namespace EventStore.Core.Sql.MsSqlServer
 {
+	using System.Data.Common;
+
 	public sealed class MsSqlServerDialect : SqlDialect
 	{
+		private const int PrimaryKeyViolation = 2627;
+		private const int UniqueIndexViolation = 2601;
+
 		public override string IdParameter
 		{
 			get { return "@id"; }
@@ -43,6 +48,11 @@ namespace EventStore.Core.Sql.MsSqlServer
 		public override string StoreSnapshot
 		{
 			get { return MsSqlServerStatements.InsertSnapshot; }
+		}
+
+		public override bool IsConcurrencyException(DbException exception)
+		{
+			return exception.ErrorCode == PrimaryKeyViolation || exception.ErrorCode == UniqueIndexViolation;
 		}
 	}
 }

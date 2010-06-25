@@ -1,5 +1,7 @@
 namespace EventStore.Core.Sql
 {
+	using System.Data.Common;
+
 	public abstract class SqlDialect
 	{
 		public abstract string IdParameter { get; }
@@ -13,5 +15,7 @@ namespace EventStore.Core.Sql
 		public abstract string StoreEvent { get; }
 		public abstract string LoadSnapshot { get; }
 		public abstract string StoreSnapshot { get; }
+
+		public abstract bool IsConcurrencyException(DbException exception);
 	}
 }

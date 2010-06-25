@@ -4,6 +4,7 @@ namespace EventStore.Core.Sql
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Data;
+	using System.Data.Common;
 	using System.Text;
 
 	public class SqlEventStore : IStoreEvents
@@ -63,7 +64,8 @@ namespace EventStore.Core.Sql
 			}
 
 			command.CommandText = this.dialect.StoreEvents.FormatWith(eventInsertStatements);
-			command.ExecuteNonQuery();
+
+			this.CatchAndWrapConcurrencyException(() => command.ExecuteNonQuery());
 		}
 
 		public T LoadSnapshot<T>(Guid id)
@@ -88,6 +90,21 @@ namespace EventStore.Core.Sql
 				command.AddWithValue(this.dialect.CreatedParameter, DateTime.UtcNow);
 				command.AddWithValue(this.dialect.PayloadParameter, this.serializer.Serialize(snapshot));
 				command.ExecuteNonQuery();
+			}
+		}
+
+		private void CatchAndWrapConcurrencyException(Action action)
+		{
+			try
+			{
+				action();
+			}
+			catch (DbException exception)
+			{
+				if (this.dialect.IsConcurrencyException(exception))
+					throw new ConcurrencyException(exception.Message, exception);
+
+				throw;
 			}
 		}
 	}
