@@ -1,4 +1,4 @@
-namespace EventStore
+namespace EventStore.Core
 {
 	using System.IO;
 	using System.IO.Compression;
