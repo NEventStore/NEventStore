@@ -8,18 +8,27 @@ namespace EventStore
 	{
 		private readonly IFormatter formatter = new BinaryFormatter();
 
-		public byte[] Serialize<T>(T graph)
+		public byte[] Serialize(object graph)
 		{
 			using (var stream = new MemoryStream())
 			{
-				this.formatter.Serialize(stream, graph);
+				this.Serialize(graph);
 				return stream.ToArray();
 			}
+		}
+		public virtual void Serialize(object graph, Stream output)
+		{
+			this.formatter.Serialize(output, graph);
+		}
+
+		public virtual T Deserialize<T>(Stream input)
+		{
+			return (T)this.formatter.Deserialize(input);
 		}
 		public T Deserialize<T>(byte[] serialized)
 		{
 			using (var stream = new MemoryStream(serialized))
-				return (T)this.formatter.Deserialize(stream);
+				return this.Deserialize<T>(stream);
 		}
 	}
 }

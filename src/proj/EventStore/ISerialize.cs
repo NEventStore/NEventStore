@@ -2,7 +2,7 @@ namespace EventStore
 {
 	public interface ISerialize
 	{
-		byte[] Serialize<T>(T graph);
-		T Deserialize<T>(byte[] serialized);
+		byte[] Serialize(object graph);
+		T Deserialize<T>(byte[] input);
 	}
 }

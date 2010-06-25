@@ -42,6 +42,7 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="CompressedSerializer.cs" />
     <Compile Include="DefaultSerializer.cs" />
     <Compile Include="ConcurrencyException.cs" />
     <Compile Include="ISerialize.cs" />
