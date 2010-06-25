@@ -33,15 +33,15 @@ namespace EventStore.Core.Sql
 			}
 		}
 
-		public void StoreEvents(Guid id, int expectedVersion, Type aggregate, IEnumerable events)
+		public void StoreEvents<T>(EventStream<T> events)
 		{
 			using (var command = this.connection.CreateCommand())
 			{
-				command.AddWithValue(this.dialect.IdParameter, id);
-				command.AddWithValue(this.dialect.VersionParameter, expectedVersion);
-				command.AddWithValue(this.dialect.RuntimeTypeParameter, aggregate.FullName);
+				command.AddWithValue(this.dialect.IdParameter, events.Id);
+				command.AddWithValue(this.dialect.VersionParameter, events.Version);
+				command.AddWithValue(this.dialect.RuntimeTypeParameter, events.Type.FullName);
 				command.AddWithValue(this.dialect.CreatedParameter, DateTime.UtcNow);
-				this.StoreEvents(command, events);
+				this.StoreEvents(command, events.Events);
 			}
 		}
 		private void StoreEvents(IDbCommand command, IEnumerable events)
@@ -78,16 +78,16 @@ namespace EventStore.Core.Sql
 			}
 		}
 
-		public void StoreSnapshot(Guid id, int version, object snapshot)
+		public void StoreSnapshot(SnapshotPayload snapshot)
 		{
 			using (var command = this.connection.CreateCommand())
 			{
 				command.CommandText = this.dialect.StoreSnapshot;
-				command.AddWithValue(this.dialect.IdParameter, id);
-				command.AddWithValue(this.dialect.VersionParameter, version);
-				command.AddWithValue(this.dialect.RuntimeTypeParameter, snapshot.GetType().FullName);
+				command.AddWithValue(this.dialect.IdParameter, snapshot.Id);
+				command.AddWithValue(this.dialect.VersionParameter, snapshot.Version);
+				command.AddWithValue(this.dialect.RuntimeTypeParameter, snapshot.Memento.GetType().FullName);
 				command.AddWithValue(this.dialect.CreatedParameter, DateTime.UtcNow);
-				command.AddWithValue(this.dialect.PayloadParameter, this.serializer.Serialize(snapshot));
+				command.AddWithValue(this.dialect.PayloadParameter, this.serializer.Serialize(snapshot.Memento));
 				this.WrapOnFailure(() => command.ExecuteNonQuery());
 			}
 		}

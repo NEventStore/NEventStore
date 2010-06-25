@@ -21,11 +21,9 @@ namespace EventStore
 		/// <summary>
 		/// Saves all events provided to persistent storage.
 		/// </summary>
-		/// <param name="id">The value which uniquely identifies the aggregate being persisted.</param>
-		/// <param name="expectedVersion">The value representing the expected version of the aggregate being persisted.</param>
-		/// <param name="aggregate">The type representing the aggregate being persisted.</param>
-		/// <param name="events">The events to be committed.</param>
-		void StoreEvents(Guid id, int expectedVersion, Type aggregate, IEnumerable events);
+		/// <typeparam name="T">The class supertype or interface which all events implement.</typeparam>
+		/// <param name="stream">The stream of events to be persisted.</param>
+		void StoreEvents<T>(EventStream<T> stream);
 
 		/// <summary>
 		/// Loads the snapshot for the aggregate specified.
@@ -38,9 +36,7 @@ namespace EventStore
 		/// <summary>
 		/// Saves the snapshot for a particular aggregate.
 		/// </summary>
-		/// <param name="id">The value which uniquely identifies the aggregate to which the snapshot belongs.</param>
-		/// <param name="version">The version of the snapshot.</param>
-		/// <param name="snapshot">The snapshot momento to be saved.</param>
-		void StoreSnapshot(Guid id, int version, object snapshot);
+		/// <param name="snapshot">The snapshot to be persisted.</param>
+		void StoreSnapshot(SnapshotPayload snapshot);
 	}
 }
