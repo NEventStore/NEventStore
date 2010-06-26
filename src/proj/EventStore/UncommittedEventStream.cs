@@ -4,7 +4,7 @@ namespace EventStore
 	using System.Collections;
 
 	/// <summary>
-	/// Represents a stream of events that have not yet been committed to persistent storage.
+	/// Represents a stream of events which has not yet been committed to persistent storage.
 	/// </summary>
 	public class UncommittedEventStream
 	{

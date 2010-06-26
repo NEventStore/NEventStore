@@ -1,7 +1,6 @@
 namespace EventStore.Core.Sql
 {
 	using System;
-	using System.Collections;
 	using System.Collections.Generic;
 	using System.Data;
 	using System.Data.Common;
@@ -45,23 +44,19 @@ namespace EventStore.Core.Sql
 		private CommittedEventStream BuildStream(Guid id, long version, IDataReader reader)
 		{
 			ICollection<object> events = new LinkedList<object>();
-			var stream = new CommittedEventStream
-			{
-				Id = id,
-				Events = (ICollection)events
-			};
+			object snapshot = null;
 
 			while (reader.Read())
 				events.Add(this.serializer.Deserialize<object>(reader[SerializedDataIndex] as byte[]));
 
 			if (reader.NextResult() && reader.Read())
 			{
-				stream.Snapshot = this.serializer.Deserialize<object>(reader[SerializedDataIndex] as byte[]);
+				snapshot = this.serializer.Deserialize<object>(reader[SerializedDataIndex] as byte[]);
 				version = (long)reader[VersionIndex];
 			}
 
-			this.versions[id] = stream.Version = version + events.Count;
-			return stream;
+			this.versions[id] = version + events.Count;
+			return new CommittedEventStream(id, version + events.Count, events, snapshot);
 		}
 
 		public void Write(UncommittedEventStream stream)

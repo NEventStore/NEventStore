@@ -4,28 +4,43 @@ namespace EventStore
 	using System.Collections;
 
 	/// <summary>
-	/// Represents a stream of events that have been already been committed to persistent storage.
+	/// Represents a stream of events which has been already been committed to persistent storage.
 	/// </summary>
 	public class CommittedEventStream
 	{
 		/// <summary>
-		/// Gets or sets the value which uniquely identifies the aggregate to which the event stream belongs.
+		/// Initializes a new instance of the CommittedEventStream class.
 		/// </summary>
-		public Guid Id { get; set; }
+		/// <param name="id">The value which uniquely identifies the aggregate to which the event stream belongs.</param>
+		/// <param name="version">The version of the aggregate</param>
+		/// <param name="events">The set of persisted events</param>
+		/// <param name="snapshot">The most recent snapshot of the aggregate, if any.</param>
+		public CommittedEventStream(Guid id, long version, IEnumerable events, object snapshot)
+		{
+			this.Id = id;
+			this.Version = version;
+			this.Events = events;
+			this.Snapshot = snapshot;
+		}
 
 		/// <summary>
-		/// Gets or sets the version of the aggregate.
+		/// Gets the value which uniquely identifies the aggregate to which the event stream belongs.
 		/// </summary>
-		public long Version { get; set; }
+		public Guid Id { get; private set; }
 
 		/// <summary>
-		/// Gets or sets the collection of persisted events.
+		/// Gets the version of the aggregate.
 		/// </summary>
-		public IEnumerable Events { get; set; }
+		public long Version { get; private set; }
 
 		/// <summary>
-		/// Gets or sets the snapshot of the aggregate, if any.
+		/// Gets the set of persisted events.
 		/// </summary>
-		public object Snapshot { get; set; }
+		public IEnumerable Events { get; private set; }
+
+		/// <summary>
+		/// Gets the most recent snapshot of the aggregate, if any.
+		/// </summary>
+		public object Snapshot { get; private set; }
 	}
 }
