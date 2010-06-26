@@ -1,8 +1,8 @@
-namespace EventStore.Core.Sql.MsSqlServer
+namespace EventStore.Core.Sql.MsSql
 {
 	using System.Data.Common;
 
-	public sealed class MsSqlServerDialect : SqlDialect
+	public sealed class MsSqlDialect : SqlDialect
 	{
 		private const int PrimaryKeyViolation = 2627;
 		private const int UniqueIndexViolation = 2601;
@@ -34,19 +34,19 @@ namespace EventStore.Core.Sql.MsSqlServer
 
 		public override string SelectEvents
 		{
-			get { return MsSqlServerStatements.SelectEvents; }
+			get { return MsSqlStatements.SelectEvents; }
 		}
 		public override string SelectEventsWhere
 		{
-			get { return MsSqlServerStatements.SelectEventsWhere; }
+			get { return MsSqlStatements.SelectEventsWhere; }
 		}
 		public override string InsertEvents
 		{
-			get { return MsSqlServerStatements.InsertEvents; }
+			get { return MsSqlStatements.InsertEvents; }
 		}
 		public override string InsertEvent
 		{
-			get { return MsSqlServerStatements.InsertEvent; }
+			get { return MsSqlStatements.InsertEvent; }
 		}
 
 		public override bool IsConcurrencyException(DbException exception)

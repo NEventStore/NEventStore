@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace EventStore.Core.Sql.MsSqlServer {
+namespace EventStore.Core.Sql.MsSql {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace EventStore.Core.Sql.MsSqlServer {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "2.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class MsSqlServerStatements {
+    internal class MsSqlStatements {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal MsSqlServerStatements() {
+        internal MsSqlStatements() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace EventStore.Core.Sql.MsSqlServer {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.Core.Sql.MsSqlServer.MsSqlServerStatements", typeof(MsSqlServerStatements).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.Core.Sql.MsSql.MsSqlStatements", typeof(MsSqlStatements).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
