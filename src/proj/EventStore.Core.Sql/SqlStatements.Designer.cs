@@ -85,14 +85,13 @@ namespace EventStore.Core.Sql {
         ///
         ///UPDATE [Aggregates]
         ///   SET [Version] = @current_version,
-        ///       [Snapshot] = CASE WHEN @payload IS NULL THEN [Snapshot] ELSE @current_version END
+        ///       [Snapshot] = CASE WHEN @payload IS NULL THEN [Snapshot] ELSE @current_version END,
+        ///       [RuntimeType] = COALESCE(@type, [RuntimeType])
         /// WHERE [Id] = @id
-        ///   AND @initial_version != 0;
+        ///   AND [Version] = @initial_version
+        ///   AND @initial_version &gt; 0;
         ///
-        ///INSERT
-        ///  INTO [Snapshots]
-        ///SELECT @id, @current_version, @created, @snapshot_type, @payload
-        /// W [rest of string was truncated]&quot;;.
+        ///INSE [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InsertEvents {
             get {
