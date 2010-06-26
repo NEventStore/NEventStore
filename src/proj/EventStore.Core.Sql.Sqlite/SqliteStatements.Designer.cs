@@ -61,14 +61,13 @@ namespace EventStore.Core.Sql.Sqlite {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT [Payload], [RuntimeType]
+        ///   Looks up a localized string similar to SELECT [Payload]
         ///  FROM [Events]
         /// WHERE [Id] = @id
         ///   AND [Version] &gt; (SELECT [Snapshot] FROM [Aggregates] WHERE [Id] = @id)
         /// ORDER BY [Version];
         /// 
         ///SELECT [Payload],
-        ///       [RuntimeType],
         ///       [Version]
         ///  FROM [Snapshots]
         /// WHERE [Id] = @id

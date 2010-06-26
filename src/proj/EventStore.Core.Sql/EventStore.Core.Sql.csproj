@@ -52,7 +52,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>SqlStatements.resx</DependentUpon>
     </Compile>
-    <Compile Include="TypeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\CustomDictionary.xml">

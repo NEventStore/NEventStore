@@ -3,7 +3,7 @@
     [Id] [uniqueidentifier] NOT NULL,
     [Version] [bigint] NOT NULL CHECK ([Version] >= 0),
     [Snapshot] [bigint] NOT NULL CHECK ([Snapshot] >= 0),
-    [Created] [datetime] NOT NULL,
+    [Created] [datetime] NOT NULL DEFAULT (GETUTCDATE()),
     [RuntimeType] [nvarchar](256) NOT NULL,
     CONSTRAINT [PK_Aggregates] PRIMARY KEY CLUSTERED ([Id])
 )
@@ -12,9 +12,8 @@ CREATE TABLE [dbo].[Snapshots]
 (
     [Id] [uniqueidentifier] NOT NULL,
     [Version] [bigint] NOT NULL CHECK ([Version] > 0),
-    [Created] [datetime] NOT NULL,
-    [RuntimeType] [nvarchar](256) NOT NULL,
-    [Payload] [varbinary](max) NOT NULL,
+    [Created] [datetime] NOT NULL DEFAULT (GETUTCDATE()),
+    [Payload] [varbinary](MAX) NOT NULL,
     CONSTRAINT [PK_Snapshots] PRIMARY KEY CLUSTERED ([Id], [Version])
 )
 
@@ -23,9 +22,8 @@ CREATE TABLE [dbo].[Events]
     [Id] [uniqueidentifier] NOT NULL,
     [Version] [bigint] NOT NULL CHECK ([Version] > 0),
     [Sequence] [bigint] IDENTITY(1,1) NOT NULL CHECK ([Sequence] > 0),
-    [Created] [datetime] NOT NULL,
-    [RuntimeType] [nvarchar](256) NOT NULL,
-    [Payload] [varbinary](max) NOT NULL,
+    [Created] [datetime] NOT NULL DEFAULT (GETUTCDATE()),
+    [Payload] [varbinary](MAX) NOT NULL,
     CONSTRAINT [PK_Events] PRIMARY KEY CLUSTERED ([Id], [Version])
 )
 

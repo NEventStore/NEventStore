@@ -120,17 +120,17 @@
   <data name="InsertEvent" xml:space="preserve">
     <value>INSERT
   INTO [Events]
-     ( [Id], [Version], [Created], [RuntimeType], [Payload] )
+     ( [Id], [Version], [Payload] )
 VALUES
-     ( @id, @initial_version{0}, @created, @type{0}, @payload{0} );</value>
+     ( @id, @initial_version{0}, @payload{0} );</value>
   </data>
   <data name="InsertEvents" xml:space="preserve">
     <value>INSERT
   INTO [Aggregates]
+     ( [Id], [Version], [Snapshot], [RuntimeType] )
 SELECT @id,
        @current_version,
        CASE WHEN @payload IS NULL THEN 0 ELSE @current_version END AS [Snapshot],
-       @created,
        @type
  WHERE @initial_version = 0;
 
@@ -144,7 +144,8 @@ UPDATE [Aggregates]
 
 INSERT
   INTO [Snapshots]
-SELECT @id, @current_version, @created, @snapshot_type, @payload
+     ( [Id], [Version], [Payload] )
+SELECT @id, @current_version, @payload
  WHERE @payload IS NOT NULL
    AND NOT EXISTS -- snapshots don't need to be overwritten
      ( SELECT *
@@ -155,7 +156,7 @@ SELECT @id, @current_version, @created, @snapshot_type, @payload
 {0}</value>
   </data>
   <data name="SelectEventsWhere" xml:space="preserve">
-    <value>SELECT [Payload], [RuntimeType]
+    <value>SELECT [Payload]
   FROM [Events]
  WHERE [Id] = @id
    AND [Version] &gt;= @current_version

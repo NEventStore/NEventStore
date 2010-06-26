@@ -10,21 +10,17 @@ namespace EventStore.Core.Sql
 	public class SqlEventStore : IStoreEvents
 	{
 		private const int SerializedDataIndex = 0;
-		private const int TypeIndex = 1;
-		private const int VersionIndex = 2;
+		private const int VersionIndex = 1;
 		private readonly IDictionary<Guid, long> versions = new Dictionary<Guid, long>();
 		private readonly IDbConnection connection;
 		private readonly SqlDialect dialect;
 		private readonly ISerialize serializer;
-		private readonly Func<DateTime> now;
 
-		public SqlEventStore(
-			IDbConnection connection, SqlDialect dialect, ISerialize serializer, Func<DateTime> now)
+		public SqlEventStore(IDbConnection connection, SqlDialect dialect, ISerialize serializer)
 		{
 			this.connection = connection;
 			this.dialect = dialect;
 			this.serializer = serializer;
-			this.now = now;
 		}
 
 		public CommittedEventStream Read(Guid id)
@@ -72,31 +68,28 @@ namespace EventStore.Core.Sql
 		{
 			using (var command = this.connection.CreateCommand())
 			{
-				long versionWhenLoaded;
-				this.versions.TryGetValue(stream.Id, out versionWhenLoaded);
-				this.versions[stream.Id] = versionWhenLoaded + stream.Events.Count;
+				long initialVersion;
+				this.versions.TryGetValue(stream.Id, out initialVersion);
+				this.versions[stream.Id] = initialVersion + stream.Events.Count;
 
 				command.AddParameter(this.dialect.Id, stream.Id);
-				command.AddParameter(this.dialect.InitialVersion, versionWhenLoaded);
-				command.AddParameter(this.dialect.CurrentVersion, versionWhenLoaded + stream.Events.Count);
-				command.AddParameter(this.dialect.Type, stream.Type.FullName);
-				command.AddParameter(this.dialect.Created, this.now());
-				command.AddParameter(this.dialect.SnapshotType, stream.Snapshot.GetTypeName());
+				command.AddParameter(this.dialect.InitialVersion, initialVersion);
+				command.AddParameter(this.dialect.CurrentVersion, initialVersion + stream.Events.Count);
+				command.AddParameter(this.dialect.Type, stream.Type == null ? null : stream.Type.FullName);
 				command.AddParameter(this.dialect.Payload, this.serializer.Serialize(stream.Snapshot));
 
-				this.WriteEventsToCommand(command, stream, versionWhenLoaded);
+				this.WriteEventsToCommand(command, stream, initialVersion);
 				this.WrapOnFailure(() => command.ExecuteNonQuery());
 			}
 		}
-		private void WriteEventsToCommand(IDbCommand command, UncommittedEventStream stream, long versionWhenLoaded)
+		private void WriteEventsToCommand(IDbCommand command, UncommittedEventStream stream, long initialVersion)
 		{
 			var eventInsertStatements = new StringBuilder();
 			var index = 0;
 
 			foreach (var @event in stream.Events)
 			{
-				command.AddParameter(this.dialect.InitialVersion.Append(index), versionWhenLoaded + index + 1);
-				command.AddParameter(this.dialect.Type.Append(index), @event.GetTypeName());
+				command.AddParameter(this.dialect.InitialVersion.Append(index), initialVersion + index + 1);
 				command.AddParameter(this.dialect.Payload.Append(index), this.serializer.Serialize(@event));
 				eventInsertStatements.AppendWithFormat(this.dialect.InsertEvent, index++);
 			}

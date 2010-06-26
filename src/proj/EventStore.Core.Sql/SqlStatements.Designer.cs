@@ -63,9 +63,9 @@ namespace EventStore.Core.Sql {
         /// <summary>
         ///   Looks up a localized string similar to INSERT
         ///  INTO [Events]
-        ///     ( [Id], [Version], [Created], [RuntimeType], [Payload] )
+        ///     ( [Id], [Version], [Payload] )
         ///VALUES
-        ///     ( @id, @initial_version{0}, @created, @type{0}, @payload{0} );.
+        ///     ( @id, @initial_version{0}, @payload{0} );.
         /// </summary>
         internal static string InsertEvent {
             get {
@@ -76,10 +76,10 @@ namespace EventStore.Core.Sql {
         /// <summary>
         ///   Looks up a localized string similar to INSERT
         ///  INTO [Aggregates]
+        ///     ( [Id], [Version], [Snapshot], [RuntimeType] )
         ///SELECT @id,
         ///       @current_version,
         ///       CASE WHEN @payload IS NULL THEN 0 ELSE @current_version END AS [Snapshot],
-        ///       @created,
         ///       @type
         /// WHERE @initial_version = 0;
         ///
@@ -89,9 +89,7 @@ namespace EventStore.Core.Sql {
         ///       [RuntimeType] = COALESCE(@type, [RuntimeType])
         /// WHERE [Id] = @id
         ///   AND [Version] = @initial_version
-        ///   AND @initial_version &gt; 0;
-        ///
-        ///INSE [rest of string was truncated]&quot;;.
+        ///  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InsertEvents {
             get {
@@ -100,7 +98,7 @@ namespace EventStore.Core.Sql {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT [Payload], [RuntimeType]
+        ///   Looks up a localized string similar to SELECT [Payload]
         ///  FROM [Events]
         /// WHERE [Id] = @id
         ///   AND [Version] &gt;= @current_version

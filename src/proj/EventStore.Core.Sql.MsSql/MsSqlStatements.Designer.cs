@@ -61,7 +61,7 @@ namespace EventStore.Core.Sql.MsSql {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT [Payload], [RuntimeType]
+        ///   Looks up a localized string similar to SELECT [Payload]
         ///  FROM [Events]
         /// WHERE [Id] = @id
         ///   AND [Version] &gt; (SELECT [Snapshot] FROM [Aggregates] WHERE [Id] = @id)
@@ -69,7 +69,6 @@ namespace EventStore.Core.Sql.MsSql {
         /// 
         ///SELECT TOP 1
         ///       [Payload],
-        ///       [RuntimeType],
         ///       [Version]
         ///  FROM [Snapshots]
         /// WHERE [Id] = @id

@@ -20,10 +20,6 @@ namespace EventStore.Core.Sql
 		{
 			get { return "@type"; }
 		}
-		public virtual string Created
-		{
-			get { return "@created"; }
-		}
 		public virtual string Payload
 		{
 			get { return "@payload"; }
