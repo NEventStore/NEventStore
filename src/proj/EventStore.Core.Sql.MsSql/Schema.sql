@@ -1,47 +1,40 @@
-﻿CREATE TABLE [dbo].[Aggregates](
-	[Id] [uniqueidentifier] NOT NULL,
-	[Version] [bigint] NOT NULL,
-	[Snapshot] [bigint] NOT NULL,
-	[Created] [datetime] NOT NULL,
-	[RuntimeType] [nvarchar](256) NOT NULL,
- CONSTRAINT [PK_Aggregates] PRIMARY KEY CLUSTERED 
+﻿CREATE TABLE [dbo].[Aggregates]
 (
-	[Id] ASC
-))
+    [Id] [uniqueidentifier] NOT NULL,
+    [Version] [bigint] NOT NULL CHECK ([Version] >= 0),
+    [Snapshot] [bigint] NOT NULL CHECK ([Snapshot] >= 0),
+    [Created] [datetime] NOT NULL,
+    [RuntimeType] [nvarchar](256) NOT NULL,
+    CONSTRAINT [PK_Aggregates] PRIMARY KEY CLUSTERED ([Id])
+)
 
-CREATE TABLE [dbo].[Snapshots](
-	[Id] [uniqueidentifier] NOT NULL,
-	[Version] [bigint] NOT NULL,
-	[Created] [datetime] NOT NULL,
-	[RuntimeType] [nvarchar](256) NOT NULL,
-	[Payload] [varbinary](max) NOT NULL,
- CONSTRAINT [PK_Snapshots] PRIMARY KEY CLUSTERED 
+CREATE TABLE [dbo].[Snapshots]
 (
-	[Id] ASC,
-	[Version] ASC
-))
+    [Id] [uniqueidentifier] NOT NULL,
+    [Version] [bigint] NOT NULL CHECK ([Version] > 0),
+    [Created] [datetime] NOT NULL,
+    [RuntimeType] [nvarchar](256) NOT NULL,
+    [Payload] [varbinary](max) NOT NULL,
+    CONSTRAINT [PK_Snapshots] PRIMARY KEY CLUSTERED ([Id], [Version])
+)
 
-CREATE TABLE [dbo].[Events](
-	[Id] [uniqueidentifier] NOT NULL,
-	[Version] [bigint] NOT NULL,
-	[Created] [datetime] NOT NULL,
-	[RuntimeType] [nvarchar](256) NOT NULL,
-	[Payload] [varbinary](max) NOT NULL,
- CONSTRAINT [PK_Events] PRIMARY KEY CLUSTERED 
+CREATE TABLE [dbo].[Events]
 (
-	[Id] ASC,
-	[Version] ASC
-))
+    [Id] [uniqueidentifier] NOT NULL,
+    [Version] [bigint] NOT NULL CHECK ([Version] > 0),
+    [Sequence] [bigint] IDENTITY(1,1) NOT NULL CHECK ([Sequence] > 0),
+    [Created] [datetime] NOT NULL,
+    [RuntimeType] [nvarchar](256) NOT NULL,
+    [Payload] [varbinary](max) NOT NULL,
+    CONSTRAINT [PK_Events] PRIMARY KEY CLUSTERED ([Id], [Version])
+)
 
-ALTER TABLE [dbo].[Aggregates]  WITH CHECK ADD  CONSTRAINT [CK_Aggregates_Min_Version] CHECK  (([Version]>=(0)))
-ALTER TABLE [dbo].[Aggregates] CHECK CONSTRAINT [CK_Aggregates_Min_Version]
-ALTER TABLE [dbo].[Events]  WITH CHECK ADD  CONSTRAINT [CK_Events_Min_Version] CHECK  (([Version]>=(1)))
-ALTER TABLE [dbo].[Events] CHECK CONSTRAINT [CK_Events_Min_Version]
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Events] ON [dbo].[Events] ([Sequence])
 
-ALTER TABLE [dbo].[Events]  WITH CHECK ADD  CONSTRAINT [FK_Events_Aggregates] FOREIGN KEY([Id])
+ALTER TABLE [dbo].[Events] WITH CHECK ADD CONSTRAINT [FK_Events_Aggregates] FOREIGN KEY([Id])
 REFERENCES [dbo].[Aggregates] ([Id])
 ALTER TABLE [dbo].[Events] CHECK CONSTRAINT [FK_Events_Aggregates]
 
-ALTER TABLE [dbo].[Snapshots]  WITH CHECK ADD  CONSTRAINT [FK_Snapshots_Aggregates] FOREIGN KEY([Id])
+ALTER TABLE [dbo].[Snapshots] WITH CHECK ADD CONSTRAINT [FK_Snapshots_Aggregates] FOREIGN KEY([Id])
 REFERENCES [dbo].[Aggregates] ([Id])
 ALTER TABLE [dbo].[Snapshots] CHECK CONSTRAINT [FK_Snapshots_Aggregates]

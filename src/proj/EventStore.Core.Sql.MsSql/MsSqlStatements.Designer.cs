@@ -61,7 +61,11 @@ namespace EventStore.Core.Sql.MsSql {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INSERT INTO [dbo].[Events] VALUES (@id, @initial_version{0}, @created, @type{0}, @payload{0});.
+        ///   Looks up a localized string similar to INSERT
+        ///  INTO [dbo].[Events]
+        ///     ( [Id], [Version], [Created], [RuntimeType], [Payload] )
+        ///VALUES
+        ///     ( @id, @initial_version{0}, @created, @type{0}, @payload{0} );.
         /// </summary>
         internal static string InsertEvent {
             get {
@@ -71,25 +75,23 @@ namespace EventStore.Core.Sql.MsSql {
         
         /// <summary>
         ///   Looks up a localized string similar to INSERT
-        ///    INTO [dbo].[Aggregates]
-        ///  SELECT @id, 0, 0, @created, @type
-        ///   WHERE @initial_version = 0;
-        ///
-        ///{0}
-        ///
-        ///INSERT
-        ///  INTO [dbo].[Snapshots]
-        ///SELECT @id, @current_version, @created, @snapshot_type, @payload
-        /// WHERE @payload IS NOT NULL
-        ///   AND NOT EXISTS -- snapshots don&apos;t need to be overwritten
-        ///     ( SELECT *
-        ///         FROM [dbo].[Snapshots]
-        ///        WHERE [Id] = @id
-        ///          AND [Version] = @current_version );
+        ///  INTO [dbo].[Aggregates]
+        ///SELECT @id,
+        ///       @current_version,
+        ///       CASE WHEN @payload IS NULL THEN 0 ELSE @current_version END AS [Snapshot],
+        ///       @created,
+        ///       @type
+        /// WHERE @initial_version = 0;
         ///
         ///UPDATE [dbo].[Aggregates]
         ///   SET [Version] = @current_version,
-        ///       [Snapshot] [rest of string was truncated]&quot;;.
+        ///       [Snapshot] = CASE WHEN @payload IS NULL THEN [Snapshot] ELSE @current_version END
+        /// WHERE [Id] = @id
+        ///   AND @initial_version != 0;
+        ///
+        ///INSERT
+        ///  INTO [dbo].[Snapshots]
+        ///SELECT @id, @current_version, @created, @snapshot_ [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InsertEvents {
             get {

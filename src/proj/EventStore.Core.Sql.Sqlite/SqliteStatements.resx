@@ -118,15 +118,26 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="InsertEvent" xml:space="preserve">
-    <value>INSERT INTO [Events] VALUES (@id, @initial_version{0}, @created, @type{0}, @payload{0});</value>
+    <value>INSERT
+  INTO [Events]
+     ( [Id], [Version], [Created], [RuntimeType], [Payload] )
+VALUES
+     ( @id, @initial_version{0}, @created, @type{0}, @payload{0} );</value>
   </data>
   <data name="InsertEvents" xml:space="preserve">
     <value>INSERT
-    INTO [Aggregates]
-  SELECT @id, 0, 0, @created, @type
-   WHERE @initial_version = 0;
+  INTO [Aggregates]
+SELECT @id,
+       @current_version,
+       CASE WHEN @payload IS NULL THEN 0 ELSE @current_version END AS [Snapshot],
+       @created,
+       @type
+ WHERE @initial_version = 0;
 
-{0}
+UPDATE [Aggregates]
+   SET [Version] = @current_version,
+       [Snapshot] = CASE WHEN @payload IS NULL THEN [Snapshot] ELSE @current_version END
+ WHERE [Id] = @id;
 
 INSERT
   INTO [Snapshots]
@@ -138,10 +149,7 @@ SELECT @id, @current_version, @created, @snapshot_type, @payload
         WHERE [Id] = @id
           AND [Version] = @current_version );
 
-UPDATE [Aggregates]
-   SET [Version] = @current_version,
-       [Snapshot] = CASE WHEN @payload IS NOT NULL THEN @current_version ELSE [Snapshot] END
- WHERE [Id] = @id;</value>
+{0}</value>
   </data>
   <data name="SelectEvents" xml:space="preserve">
     <value>SELECT [Payload], [RuntimeType]
