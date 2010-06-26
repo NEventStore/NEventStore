@@ -4,13 +4,34 @@ namespace EventStore.Core.Sql
 
 	public abstract class SqlDialect
 	{
-		public abstract string Id { get; }
-		public abstract string InitialVersion { get; }
-		public abstract string CurrentVersion { get; }
-		public abstract string Type { get; }
-		public abstract string Created { get; }
-		public abstract string Payload { get; }
-		public abstract string SnapshotType { get; }
+		public virtual string Id
+		{
+			get { return "@id"; }
+		}
+		public virtual string InitialVersion
+		{
+			get { return "@initial_version"; }
+		}
+		public virtual string CurrentVersion
+		{
+			get { return "@current_version"; }
+		}
+		public virtual string Type
+		{
+			get { return "@type"; }
+		}
+		public virtual string Created
+		{
+			get { return "@created"; }
+		}
+		public virtual string Payload
+		{
+			get { return "@payload"; }
+		}
+		public virtual string SnapshotType
+		{
+			get { return "@snapshot_type"; }
+		}
 
 		public abstract string SelectEvents { get; }
 		public abstract string SelectEventsWhere { get; }
