@@ -33,11 +33,20 @@ namespace EventStore.Core.Sql
 			get { return "@snapshot_type"; }
 		}
 
-		public abstract string SelectEvents { get; }
-		public abstract string SelectEventsWhere { get; }
-		public abstract string InsertEvents { get; }
-		public abstract string InsertEvent { get; }
+		public virtual string SelectEventsWhere
+		{
+			get { return SqlStatements.SelectEventsWhere; }
+		}
+		public virtual string InsertEvents
+		{
+			get { return SqlStatements.InsertEvents; }
+		}
+		public virtual string InsertEvent
+		{
+			get { return SqlStatements.InsertEvent; }
+		}
 
+		public abstract string SelectEvents { get; }
 		public abstract bool IsConcurrencyException(DbException exception);
 	}
 }

@@ -61,46 +61,6 @@ namespace EventStore.Core.Sql.Sqlite {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INSERT
-        ///  INTO [Events]
-        ///     ( [Id], [Version], [Created], [RuntimeType], [Payload] )
-        ///VALUES
-        ///     ( @id, @initial_version{0}, @created, @type{0}, @payload{0} );.
-        /// </summary>
-        internal static string InsertEvent {
-            get {
-                return ResourceManager.GetString("InsertEvent", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to INSERT
-        ///  INTO [Aggregates]
-        ///SELECT @id,
-        ///       @current_version,
-        ///       CASE WHEN @payload IS NULL THEN 0 ELSE @current_version END AS [Snapshot],
-        ///       @created,
-        ///       @type
-        /// WHERE @initial_version = 0;
-        ///
-        ///UPDATE [Aggregates]
-        ///   SET [Version] = @current_version,
-        ///       [Snapshot] = CASE WHEN @payload IS NULL THEN [Snapshot] ELSE @current_version END
-        /// WHERE [Id] = @id;
-        ///
-        ///INSERT
-        ///  INTO [Snapshots]
-        ///SELECT @id, @current_version, @created, @snapshot_type, @payload
-        /// WHERE @payload IS NOT NULL
-        ///    [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string InsertEvents {
-            get {
-                return ResourceManager.GetString("InsertEvents", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to SELECT [Payload], [RuntimeType]
         ///  FROM [Events]
         /// WHERE [Id] = @id
@@ -118,19 +78,6 @@ namespace EventStore.Core.Sql.Sqlite {
         internal static string SelectEvents {
             get {
                 return ResourceManager.GetString("SelectEvents", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SELECT [Payload], [RuntimeType]
-        ///  FROM [Events]
-        /// WHERE [Id] = @id
-        ///   AND [Version] &gt;= @current_version
-        /// ORDER BY [Version];.
-        /// </summary>
-        internal static string SelectEventsWhere {
-            get {
-                return ResourceManager.GetString("SelectEventsWhere", resourceCulture);
             }
         }
     }

@@ -11,18 +11,6 @@ namespace EventStore.Core.Sql.MsSql
 		{
 			get { return MsSqlStatements.SelectEvents; }
 		}
-		public override string SelectEventsWhere
-		{
-			get { return MsSqlStatements.SelectEventsWhere; }
-		}
-		public override string InsertEvents
-		{
-			get { return MsSqlStatements.InsertEvents; }
-		}
-		public override string InsertEvent
-		{
-			get { return MsSqlStatements.InsertEvent; }
-		}
 
 		public override bool IsConcurrencyException(DbException exception)
 		{

@@ -54,6 +54,7 @@
     <EmbeddedResource Include="MsSqlStatements.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>MsSqlStatements.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -117,19 +117,46 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="SelectEvents" xml:space="preserve">
+  <data name="InsertEvent" xml:space="preserve">
+    <value>INSERT
+  INTO [Events]
+     ( [Id], [Version], [Created], [RuntimeType], [Payload] )
+VALUES
+     ( @id, @initial_version{0}, @created, @type{0}, @payload{0} );</value>
+  </data>
+  <data name="InsertEvents" xml:space="preserve">
+    <value>INSERT
+  INTO [Aggregates]
+SELECT @id,
+       @current_version,
+       CASE WHEN @payload IS NULL THEN 0 ELSE @current_version END AS [Snapshot],
+       @created,
+       @type
+ WHERE @initial_version = 0;
+
+UPDATE [Aggregates]
+   SET [Version] = @current_version,
+       [Snapshot] = CASE WHEN @payload IS NULL THEN [Snapshot] ELSE @current_version END
+ WHERE [Id] = @id
+   AND @initial_version != 0;
+
+INSERT
+  INTO [Snapshots]
+SELECT @id, @current_version, @created, @snapshot_type, @payload
+ WHERE @payload IS NOT NULL
+   AND NOT EXISTS -- snapshots don't need to be overwritten
+     ( SELECT *
+         FROM [Snapshots]
+        WHERE [Id] = @id
+          AND [Version] = @current_version );
+
+{0}</value>
+  </data>
+  <data name="SelectEventsWhere" xml:space="preserve">
     <value>SELECT [Payload], [RuntimeType]
   FROM [Events]
  WHERE [Id] = @id
-   AND [Version] &gt; (SELECT [Snapshot] FROM [Aggregates] WHERE [Id] = @id)
- ORDER BY [Version];
- 
-SELECT [Payload],
-       [RuntimeType],
-       [Version]
-  FROM [Snapshots]
- WHERE [Id] = @id
- ORDER BY [Version] DESC
- LIMIT 1;</value>
+   AND [Version] &gt;= @current_version
+ ORDER BY [Version];</value>
   </data>
 </root>

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace EventStore.Core.Sql.MsSql {
+namespace EventStore.Core.Sql {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace EventStore.Core.Sql.MsSql {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "2.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class MsSqlStatements {
+    internal class SqlStatements {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal MsSqlStatements() {
+        internal SqlStatements() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace EventStore.Core.Sql.MsSql {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.Core.Sql.MsSql.MsSqlStatements", typeof(MsSqlStatements).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.Core.Sql.SqlStatements", typeof(SqlStatements).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,23 +61,55 @@ namespace EventStore.Core.Sql.MsSql {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to INSERT
+        ///  INTO [Events]
+        ///     ( [Id], [Version], [Created], [RuntimeType], [Payload] )
+        ///VALUES
+        ///     ( @id, @initial_version{0}, @created, @type{0}, @payload{0} );.
+        /// </summary>
+        internal static string InsertEvent {
+            get {
+                return ResourceManager.GetString("InsertEvent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to INSERT
+        ///  INTO [Aggregates]
+        ///SELECT @id,
+        ///       @current_version,
+        ///       CASE WHEN @payload IS NULL THEN 0 ELSE @current_version END AS [Snapshot],
+        ///       @created,
+        ///       @type
+        /// WHERE @initial_version = 0;
+        ///
+        ///UPDATE [Aggregates]
+        ///   SET [Version] = @current_version,
+        ///       [Snapshot] = CASE WHEN @payload IS NULL THEN [Snapshot] ELSE @current_version END
+        /// WHERE [Id] = @id
+        ///   AND @initial_version != 0;
+        ///
+        ///INSERT
+        ///  INTO [Snapshots]
+        ///SELECT @id, @current_version, @created, @snapshot_type, @payload
+        /// W [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string InsertEvents {
+            get {
+                return ResourceManager.GetString("InsertEvents", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SELECT [Payload], [RuntimeType]
         ///  FROM [Events]
         /// WHERE [Id] = @id
-        ///   AND [Version] &gt; (SELECT [Snapshot] FROM [Aggregates] WHERE [Id] = @id)
-        /// ORDER BY [Version];
-        /// 
-        ///SELECT TOP 1
-        ///       [Payload],
-        ///       [RuntimeType],
-        ///       [Version]
-        ///  FROM [Snapshots]
-        /// WHERE [Id] = @id
-        /// ORDER BY [Version] DESC;.
+        ///   AND [Version] &gt;= @current_version
+        /// ORDER BY [Version];.
         /// </summary>
-        internal static string SelectEvents {
+        internal static string SelectEventsWhere {
             get {
-                return ResourceManager.GetString("SelectEvents", resourceCulture);
+                return ResourceManager.GetString("SelectEventsWhere", resourceCulture);
             }
         }
     }

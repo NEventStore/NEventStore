@@ -1,22 +1,21 @@
 ﻿CREATE TABLE [Aggregates]
 (
-    [Id] GUID,
-    [Version] BIGINT CHECK ([Version] >= 0),
-    [Snapshot] BIGINT CHECK ([Snapshot] >= 0),
-    [Created] DATETIME,
-    [RuntimeType] NVARCHAR(256),
+    [Id] GUID NOT NULL,
+    [Version] BIGINT NOT NULL CHECK ([Version] >= 0),
+    [Snapshot] BIGINT NOT NULL CHECK ([Snapshot] >= 0),
+    [Created] DATETIME NOT NULL,
+    [RuntimeType] NVARCHAR(256) NOT NULL,
     CONSTRAINT [PK_Aggregates] PRIMARY KEY ([Id])
 );
 
 CREATE TABLE [Events]
 (
-    [Id] GUID NOT NULL, 
+    [Id] GUID NOT NULL,
     [Version] BIGINT NOT NULL CHECK ([Version] > 0),
-    [Sequence] AUTOINC CHECK ([Sequence] > 0), 
-    [Created] DATETIME NOT NULL, 
-    [RuntimeType] NVARCHAR(256) NOT NULL, 
-    [Payload] BLOB NOT NULL, 
-    CONSTRAINT [PK_Events] PRIMARY KEY ([Id], [Version])
+    [Sequence] INTEGER PRIMARY KEY,
+    [Created] DATETIME NOT NULL,
+    [RuntimeType] NVARCHAR(256) NOT NULL,
+    [Payload] BLOB NOT NULL
 );
 
 CREATE TABLE [Snapshots]
@@ -29,4 +28,4 @@ CREATE TABLE [Snapshots]
     CONSTRAINT [PK_Snapshots] PRIMARY KEY ([Id], [Version])
 );
 
-CREATE UNIQUE INDEX [IX_Events] ON [Events] ([Sequence]);
+CREATE UNIQUE INDEX [PK_Events] ON [Events] ([Id], [Version]);
