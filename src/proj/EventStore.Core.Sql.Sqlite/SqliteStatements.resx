@@ -118,52 +118,49 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="InsertEvent" xml:space="preserve">
-    <value>SELECT @version = @version + 1;
-INSERT
- INTO [dbo].[Events]
-SELECT @id, @version, @created, @type{0}, @payload{0};</value>
+    <value>INSERT INTO [Events] VALUES (@id, @version{0}, @created, @type{0}, @payload{0});</value>
   </data>
   <data name="InsertEvents" xml:space="preserve">
     <value>INSERT
-    INTO [dbo].[Aggregates]
+    INTO [Aggregates]
   SELECT @id, @version, 0, @created, @type
    WHERE @version = 0;
 
 {0}
 
 INSERT
-  INTO [dbo].[Snapshots]
+  INTO [Snapshots]
 SELECT @id, @version, @created, @snapshot_type, @payload
  WHERE @payload IS NOT NULL
    AND NOT EXISTS -- snapshots don't need to be overwritten
      ( SELECT *
-         FROM [dbo].[Snapshots]
+         FROM [Snapshots]
         WHERE [Id] = @id
           AND [Version] = @version );
 
-UPDATE [dbo].[Aggregates]
+UPDATE [Aggregates]
    SET [Version] = @version,
        [Snapshot] = CASE WHEN @payload IS NOT NULL THEN @version ELSE [Snapshot] END
  WHERE [Id] = @id;</value>
   </data>
   <data name="SelectEvents" xml:space="preserve">
     <value>SELECT [Payload], [RuntimeType]
-  FROM [dbo].[Events]
+  FROM [Events]
  WHERE [Id] = @id
-   AND [Version] &gt; (SELECT [Snapshot] FROM [dbo].[Aggregates] WHERE [Id] = @id)
+   AND [Version] &gt; (SELECT [Snapshot] FROM [Aggregates] WHERE [Id] = @id)
  ORDER BY [Version];
  
-SELECT TOP 1
-       [Payload],
+SELECT [Payload],
        [RuntimeType],
        [Version]
-  FROM [dbo].[Snapshots]
+  FROM [Snapshots]
  WHERE [Id] = @id
- ORDER BY [Version] DESC;</value>
+ ORDER BY [Version] DESC
+ LIMIT 1;</value>
   </data>
   <data name="SelectEventsWhere" xml:space="preserve">
     <value>SELECT [Payload], [RuntimeType]
-  FROM [dbo].[Events]
+  FROM [Events]
  WHERE [Id] = @id
    AND [Version] &gt;= @version
  ORDER BY [Version];</value>

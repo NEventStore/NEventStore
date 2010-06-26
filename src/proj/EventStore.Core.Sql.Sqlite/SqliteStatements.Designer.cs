@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace EventStore.Core.Sql.MsSql {
+namespace EventStore.Core.Sql.Sqlite {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace EventStore.Core.Sql.MsSql {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "2.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class MsSqlStatements {
+    internal class SqliteStatements {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal MsSqlStatements() {
+        internal SqliteStatements() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace EventStore.Core.Sql.MsSql {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.Core.Sql.MsSql.MsSqlStatements", typeof(MsSqlStatements).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.Core.Sql.Sqlite.SqliteStatements", typeof(SqliteStatements).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,10 +61,7 @@ namespace EventStore.Core.Sql.MsSql {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT @version = @version + 1;
-        ///INSERT
-        /// INTO [dbo].[Events]
-        ///SELECT @id, @version, @created, @type{0}, @payload{0};.
+        ///   Looks up a localized string similar to INSERT INTO [Events] VALUES (@id, @version{0}, @created, @type{0}, @payload{0});.
         /// </summary>
         internal static string InsertEvent {
             get {
@@ -74,25 +71,25 @@ namespace EventStore.Core.Sql.MsSql {
         
         /// <summary>
         ///   Looks up a localized string similar to INSERT
-        ///    INTO [dbo].[Aggregates]
+        ///    INTO [Aggregates]
         ///  SELECT @id, @version, 0, @created, @type
         ///   WHERE @version = 0;
         ///
         ///{0}
         ///
         ///INSERT
-        ///  INTO [dbo].[Snapshots]
+        ///  INTO [Snapshots]
         ///SELECT @id, @version, @created, @snapshot_type, @payload
         /// WHERE @payload IS NOT NULL
         ///   AND NOT EXISTS -- snapshots don&apos;t need to be overwritten
         ///     ( SELECT *
-        ///         FROM [dbo].[Snapshots]
+        ///         FROM [Snapshots]
         ///        WHERE [Id] = @id
         ///          AND [Version] = @version );
         ///
-        ///UPDATE [dbo].[Aggregates]
+        ///UPDATE [Aggregates]
         ///   SET [Version] = @version,
-        ///       [Snapshot] = CASE WHEN @payload IS  [rest of string was truncated]&quot;;.
+        ///       [Snapshot] = CASE WHEN @payload IS NOT NULL THEN @version E [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InsertEvents {
             get {
@@ -102,18 +99,18 @@ namespace EventStore.Core.Sql.MsSql {
         
         /// <summary>
         ///   Looks up a localized string similar to SELECT [Payload], [RuntimeType]
-        ///  FROM [dbo].[Events]
+        ///  FROM [Events]
         /// WHERE [Id] = @id
-        ///   AND [Version] &gt; (SELECT [Snapshot] FROM [dbo].[Aggregates] WHERE [Id] = @id)
+        ///   AND [Version] &gt; (SELECT [Snapshot] FROM [Aggregates] WHERE [Id] = @id)
         /// ORDER BY [Version];
         /// 
-        ///SELECT TOP 1
-        ///       [Payload],
+        ///SELECT [Payload],
         ///       [RuntimeType],
         ///       [Version]
-        ///  FROM [dbo].[Snapshots]
+        ///  FROM [Snapshots]
         /// WHERE [Id] = @id
-        /// ORDER BY [Version] DESC;.
+        /// ORDER BY [Version] DESC
+        /// LIMIT 1;.
         /// </summary>
         internal static string SelectEvents {
             get {
@@ -123,7 +120,7 @@ namespace EventStore.Core.Sql.MsSql {
         
         /// <summary>
         ///   Looks up a localized string similar to SELECT [Payload], [RuntimeType]
-        ///  FROM [dbo].[Events]
+        ///  FROM [Events]
         /// WHERE [Id] = @id
         ///   AND [Version] &gt;= @version
         /// ORDER BY [Version];.

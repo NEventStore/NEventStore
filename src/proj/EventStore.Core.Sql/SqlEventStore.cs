@@ -77,10 +77,11 @@ namespace EventStore.Core.Sql
 				this.versions[stream.Id] = versionWhenLoaded + stream.Events.Count;
 
 				command.AddParameter(this.dialect.Id, stream.Id);
+				// TODO: SQLite doesn't support modifying parameters, we therefore must supply all of them
 				command.AddParameter(this.dialect.Version, versionWhenLoaded);
 				command.AddParameter(this.dialect.Type, stream.Type.FullName);
 				command.AddParameter(this.dialect.Created, this.now());
-				command.AddParameter(this.dialect.MomentoType, stream.Snapshot.GetTypeName());
+				command.AddParameter(this.dialect.SnapshotType, stream.Snapshot.GetTypeName());
 				command.AddParameter(this.dialect.Payload, this.serializer.Serialize(stream.Snapshot));
 
 				this.WriteEventsToCommand(command, stream);
@@ -96,6 +97,7 @@ namespace EventStore.Core.Sql
 			{
 				command.AddParameter(this.dialect.Type.Append(index), @event.GetTypeName());
 				command.AddParameter(this.dialect.Payload.Append(index), this.serializer.Serialize(@event));
+				// TODO: SQLite doesn't support modifying parameters, we therefore must supply all of them
 				eventInsertStatements.AppendWithFormat(this.dialect.InsertEvent, index++);
 			}
 

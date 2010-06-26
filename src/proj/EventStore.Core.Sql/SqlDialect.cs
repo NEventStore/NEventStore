@@ -9,7 +9,7 @@ namespace EventStore.Core.Sql
 		public abstract string Type { get; }
 		public abstract string Created { get; }
 		public abstract string Payload { get; }
-		public abstract string MomentoType { get; }
+		public abstract string SnapshotType { get; }
 
 		public abstract string SelectEvents { get; }
 		public abstract string SelectEventsWhere { get; }
