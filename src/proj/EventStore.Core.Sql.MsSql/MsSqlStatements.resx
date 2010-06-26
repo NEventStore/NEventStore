@@ -118,32 +118,29 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="InsertEvent" xml:space="preserve">
-    <value>SELECT @version = @version + 1;
-INSERT
- INTO [dbo].[Events]
-SELECT @id, @version, @created, @type{0}, @payload{0};</value>
+    <value>INSERT INTO [dbo].[Events] VALUES (@id, @initial_version{0}, @created, @type{0}, @payload{0});</value>
   </data>
   <data name="InsertEvents" xml:space="preserve">
     <value>INSERT
     INTO [dbo].[Aggregates]
-  SELECT @id, @version, 0, @created, @type
-   WHERE @version = 0;
+  SELECT @id, 0, 0, @created, @type
+   WHERE @initial_version = 0;
 
 {0}
 
 INSERT
   INTO [dbo].[Snapshots]
-SELECT @id, @version, @created, @snapshot_type, @payload
+SELECT @id, @current_version, @created, @snapshot_type, @payload
  WHERE @payload IS NOT NULL
    AND NOT EXISTS -- snapshots don't need to be overwritten
      ( SELECT *
          FROM [dbo].[Snapshots]
         WHERE [Id] = @id
-          AND [Version] = @version );
+          AND [Version] = @current_version );
 
 UPDATE [dbo].[Aggregates]
-   SET [Version] = @version,
-       [Snapshot] = CASE WHEN @payload IS NOT NULL THEN @version ELSE [Snapshot] END
+   SET [Version] = @current_version,
+       [Snapshot] = CASE WHEN @payload IS NOT NULL THEN @current_version ELSE [Snapshot] END
  WHERE [Id] = @id;</value>
   </data>
   <data name="SelectEvents" xml:space="preserve">
@@ -165,7 +162,7 @@ SELECT TOP 1
     <value>SELECT [Payload], [RuntimeType]
   FROM [dbo].[Events]
  WHERE [Id] = @id
-   AND [Version] &gt;= @version
+   AND [Version] &gt;= @current_version
  ORDER BY [Version];</value>
   </data>
 </root>

@@ -11,9 +11,13 @@ namespace EventStore.Core.Sql.Sqlite
 		{
 			get { return "@id"; }
 		}
-		public override string Version
+		public override string InitialVersion
 		{
-			get { return "@version"; }
+			get { return "@initial_version"; }
+		}
+		public override string CurrentVersion
+		{
+			get { return "@current_version"; }
 		}
 		public override string Type
 		{

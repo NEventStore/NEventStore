@@ -5,7 +5,8 @@ namespace EventStore.Core.Sql
 	public abstract class SqlDialect
 	{
 		public abstract string Id { get; }
-		public abstract string Version { get; }
+		public abstract string InitialVersion { get; }
+		public abstract string CurrentVersion { get; }
 		public abstract string Type { get; }
 		public abstract string Created { get; }
 		public abstract string Payload { get; }

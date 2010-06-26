@@ -41,7 +41,7 @@ namespace EventStore.Core.Sql
 			{
 				command.CommandText = queryStatement;
 				command.AddParameter(this.dialect.Id, id);
-				command.AddParameter(this.dialect.Version, version);
+				command.AddParameter(this.dialect.CurrentVersion, version);
 				using (var reader = this.WrapOnFailure(() => command.ExecuteReader()))
 					return this.BuildStream(id, version, reader);
 			}
@@ -77,27 +77,27 @@ namespace EventStore.Core.Sql
 				this.versions[stream.Id] = versionWhenLoaded + stream.Events.Count;
 
 				command.AddParameter(this.dialect.Id, stream.Id);
-				// TODO: SQLite doesn't support modifying parameters, we therefore must supply all of them
-				command.AddParameter(this.dialect.Version, versionWhenLoaded);
+				command.AddParameter(this.dialect.InitialVersion, versionWhenLoaded);
+				command.AddParameter(this.dialect.CurrentVersion, versionWhenLoaded + stream.Events.Count);
 				command.AddParameter(this.dialect.Type, stream.Type.FullName);
 				command.AddParameter(this.dialect.Created, this.now());
 				command.AddParameter(this.dialect.SnapshotType, stream.Snapshot.GetTypeName());
 				command.AddParameter(this.dialect.Payload, this.serializer.Serialize(stream.Snapshot));
 
-				this.WriteEventsToCommand(command, stream);
+				this.WriteEventsToCommand(command, stream, versionWhenLoaded);
 				this.WrapOnFailure(() => command.ExecuteNonQuery());
 			}
 		}
-		private void WriteEventsToCommand(IDbCommand command, UncommittedEventStream stream)
+		private void WriteEventsToCommand(IDbCommand command, UncommittedEventStream stream, long versionWhenLoaded)
 		{
 			var eventInsertStatements = new StringBuilder();
 			var index = 0;
 
 			foreach (var @event in stream.Events)
 			{
+				command.AddParameter(this.dialect.InitialVersion.Append(index), versionWhenLoaded + index + 1);
 				command.AddParameter(this.dialect.Type.Append(index), @event.GetTypeName());
 				command.AddParameter(this.dialect.Payload.Append(index), this.serializer.Serialize(@event));
-				// TODO: SQLite doesn't support modifying parameters, we therefore must supply all of them
 				eventInsertStatements.AppendWithFormat(this.dialect.InsertEvent, index++);
 			}
 

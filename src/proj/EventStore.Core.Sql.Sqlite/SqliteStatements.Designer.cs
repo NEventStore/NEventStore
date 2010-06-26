@@ -61,7 +61,7 @@ namespace EventStore.Core.Sql.Sqlite {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INSERT INTO [Events] VALUES (@id, @version{0}, @created, @type{0}, @payload{0});.
+        ///   Looks up a localized string similar to INSERT INTO [Events] VALUES (@id, @initial_version{0}, @created, @type{0}, @payload{0});.
         /// </summary>
         internal static string InsertEvent {
             get {
@@ -72,24 +72,24 @@ namespace EventStore.Core.Sql.Sqlite {
         /// <summary>
         ///   Looks up a localized string similar to INSERT
         ///    INTO [Aggregates]
-        ///  SELECT @id, @version, 0, @created, @type
-        ///   WHERE @version = 0;
+        ///  SELECT @id, 0, 0, @created, @type
+        ///   WHERE @initial_version = 0;
         ///
         ///{0}
         ///
         ///INSERT
         ///  INTO [Snapshots]
-        ///SELECT @id, @version, @created, @snapshot_type, @payload
+        ///SELECT @id, @current_version, @created, @snapshot_type, @payload
         /// WHERE @payload IS NOT NULL
         ///   AND NOT EXISTS -- snapshots don&apos;t need to be overwritten
         ///     ( SELECT *
         ///         FROM [Snapshots]
         ///        WHERE [Id] = @id
-        ///          AND [Version] = @version );
+        ///          AND [Version] = @current_version );
         ///
         ///UPDATE [Aggregates]
-        ///   SET [Version] = @version,
-        ///       [Snapshot] = CASE WHEN @payload IS NOT NULL THEN @version E [rest of string was truncated]&quot;;.
+        ///   SET [Version] = @current_version,
+        ///       [Snapshot] = CASE WHEN @payload IS [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InsertEvents {
             get {
@@ -122,7 +122,7 @@ namespace EventStore.Core.Sql.Sqlite {
         ///   Looks up a localized string similar to SELECT [Payload], [RuntimeType]
         ///  FROM [Events]
         /// WHERE [Id] = @id
-        ///   AND [Version] &gt;= @version
+        ///   AND [Version] &gt;= @current_version
         /// ORDER BY [Version];.
         /// </summary>
         internal static string SelectEventsWhere {
