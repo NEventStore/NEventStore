@@ -31,9 +31,9 @@ namespace EventStore.Core.Sql
 		{
 			return this.Read(id, 0, this.dialect.SelectEvents);
 		}
-		public CommittedEventStream ReadFrom(Guid id, long startingVersion)
+		public CommittedEventStream ReadStartingFrom(Guid id, long version)
 		{
-			return this.Read(id, startingVersion, this.dialect.SelectEventsWhere);
+			return this.Read(id, version, this.dialect.SelectEventsWhere);
 		}
 		private CommittedEventStream Read(Guid id, long version, string queryStatement)
 		{

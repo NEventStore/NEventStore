@@ -11,16 +11,16 @@ namespace EventStore
 		/// Reads all events for the specified aggregate.
 		/// </summary>
 		/// <param name="id">The value which uniquely identifies the aggregate of the events to be loaded.</param>
-		/// <returns>A stream of committed events for the aggregate indicated.</returns>
+		/// <returns>A stream of committed events for the specified aggregate.</returns>
 		CommittedEventStream Read(Guid id);
 
 		/// <summary>
 		/// Reads all events for the specified aggregate starting at the indicated version.
 		/// </summary>
 		/// <param name="id">The value which uniquely identifies the aggregate of the events to be loaded.</param>
-		/// <param name="startingVersion">The version at which the loaded event stream should begin.</param>
-		/// <returns>A stream of committed events for the aggregate indicated.</returns>
-		CommittedEventStream ReadFrom(Guid id, long startingVersion);
+		/// <param name="version">The version at which the loaded event stream should begin.</param>
+		/// <returns>A stream of committed events for the specified aggregate.</returns>
+		CommittedEventStream ReadStartingFrom(Guid id, long version);
 
 		/// <summary>
 		/// Writes the stream of uncommitted events to persistent storage.
