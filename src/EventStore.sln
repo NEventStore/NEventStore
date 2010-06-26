@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Core.Sql.Sqlite"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Core.Sql.Postgresql", "proj\EventStore.Core.Sql.Postgresql\EventStore.Core.Sql.Postgresql.csproj", "{5F9D0893-BC32-432F-9D97-5C51816F0F9C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApplication1", "ConsoleApplication1\ConsoleApplication1.csproj", "{FD274DE1-9FCB-4CAD-BF5D-2A18DD518585}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,6 +67,10 @@ Global
 		{5F9D0893-BC32-432F-9D97-5C51816F0F9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F9D0893-BC32-432F-9D97-5C51816F0F9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F9D0893-BC32-432F-9D97-5C51816F0F9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD274DE1-9FCB-4CAD-BF5D-2A18DD518585}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD274DE1-9FCB-4CAD-BF5D-2A18DD518585}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD274DE1-9FCB-4CAD-BF5D-2A18DD518585}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD274DE1-9FCB-4CAD-BF5D-2A18DD518585}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

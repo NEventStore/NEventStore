@@ -29,12 +29,12 @@ namespace EventStore
 		public Guid Id { get; private set; }
 
 		/// <summary>
-		/// Gets the version of the aggregate.
+		/// Gets the committed version of the aggregate.
 		/// </summary>
 		public long Version { get; private set; }
 
 		/// <summary>
-		/// Gets the set of persisted events.
+		/// Gets the enumerable list of committed events.
 		/// </summary>
 		public IEnumerable Events { get; private set; }
 
