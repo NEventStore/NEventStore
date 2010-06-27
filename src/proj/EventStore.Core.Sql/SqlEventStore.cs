@@ -61,6 +61,13 @@ namespace EventStore.Core.Sql
 
 		public void Write(UncommittedEventStream stream)
 		{
+			if (null == stream)
+				return; // nothing to do
+
+			stream.Events = stream.Events ?? new object[0]; // null protection
+			if (stream.Events.Count == 0 && stream.Snapshot == null)
+				return; // nothing to do
+
 			using (var command = this.connection.CreateCommand())
 			{
 				long initialVersion;
