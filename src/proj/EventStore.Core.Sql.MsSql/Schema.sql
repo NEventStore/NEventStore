@@ -12,7 +12,7 @@ CREATE TABLE [dbo].[Events]
 (
     [Id] [uniqueidentifier] NOT NULL,
     [Version] [bigint] NOT NULL CHECK ([Version] > 0),
-    [PartitionSequence] [bigint] IDENTITY(1,1) NOT NULL,
+    [CommitSequence] [bigint] IDENTITY(1,1) NOT NULL,
     [Created] [datetime] NOT NULL DEFAULT (GETUTCDATE()),
     [Payload] [varbinary](MAX) NOT NULL,
     CONSTRAINT [PK_Events] PRIMARY KEY CLUSTERED ([Id], [Version])
@@ -27,7 +27,7 @@ CREATE TABLE [dbo].[Snapshots]
     CONSTRAINT [PK_Snapshots] PRIMARY KEY CLUSTERED ([Id], [Version])
 )
 
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Events] ON [dbo].[Events] ([PartitionSequence])
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Events] ON [dbo].[Events] ([CommitSequence])
 
 ALTER TABLE [dbo].[Events] WITH CHECK ADD CONSTRAINT [FK_Events_Aggregates] FOREIGN KEY([Id])
 REFERENCES [dbo].[Aggregates] ([Id])
