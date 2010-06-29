@@ -12,7 +12,7 @@ CREATE TABLE [Events]
 (
     [Id] GUID NOT NULL,
     [Version] BIGINT NOT NULL CHECK ([Version] > 0),
-    [GlobalSequence] INTEGER PRIMARY KEY NOT NULL,
+    [PartitionSequence] INTEGER PRIMARY KEY NOT NULL,
     [Created] DATETIME NOT NULL DEFAULT (datetime('now')),
     [Payload] BLOB NOT NULL
 );
