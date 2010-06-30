@@ -63,9 +63,9 @@ namespace EventStore.Core.Sql {
         /// <summary>
         ///   Looks up a localized string similar to INSERT
         ///  INTO [Events]
-        ///     ( [Id], [Version], [Payload] )
+        ///     ( [Id], [Version], [CorrelationId], [Payload] )
         ///VALUES
-        ///     ( @id, @initial_version{0}, @payload{0} );.
+        ///     ( @id, @initial_version{0}, @correlation_id, @payload{0} );.
         /// </summary>
         internal static string InsertEvent {
             get {
@@ -100,13 +100,25 @@ namespace EventStore.Core.Sql {
         /// <summary>
         ///   Looks up a localized string similar to SELECT [Payload]
         ///  FROM [Events]
+        /// WHERE [CorrelationId] = @id
+        /// ORDER BY [Version];.
+        /// </summary>
+        internal static string SelectEventsForCorrelation {
+            get {
+                return ResourceManager.GetString("SelectEventsForCorrelation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT [Payload]
+        ///  FROM [Events]
         /// WHERE [Id] = @id
         ///   AND [Version] &gt;= @current_version
         /// ORDER BY [Version];.
         /// </summary>
-        internal static string SelectEventsWhere {
+        internal static string SelectEventsForVersion {
             get {
-                return ResourceManager.GetString("SelectEventsWhere", resourceCulture);
+                return ResourceManager.GetString("SelectEventsForVersion", resourceCulture);
             }
         }
     }

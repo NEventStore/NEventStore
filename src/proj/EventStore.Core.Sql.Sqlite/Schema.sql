@@ -8,12 +8,20 @@
     CONSTRAINT [PK_Aggregates] PRIMARY KEY ([Id])
 );
 
+CREATE TABLE [Commands]
+(
+    [Id] GUID NOT NULL,
+    [Payload] BLOB NOT NULL,
+    CONSTRAINT [PK_Commands] PRIMARY KEY ([Id])
+);
+
 CREATE TABLE [Events]
 (
     [Id] GUID NOT NULL,
     [Version] BIGINT NOT NULL CHECK ([Version] > 0),
     [CommitSequence] INTEGER PRIMARY KEY NOT NULL,
     [Created] DATETIME NOT NULL DEFAULT (datetime('now')),
+    [CorrelationId] GUID, -- can be null
     [Payload] BLOB NOT NULL
 );
 

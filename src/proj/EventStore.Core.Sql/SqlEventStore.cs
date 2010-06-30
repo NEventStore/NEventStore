@@ -28,7 +28,11 @@ namespace EventStore.Core.Sql
 		}
 		public CommittedEventStream ReadStartingFrom(Guid id, long version)
 		{
-			return this.Read(id, version, this.dialect.SelectEventsWhere);
+			return this.Read(id, version, this.dialect.SelectEventsForVersion);
+		}
+		public CommittedEventStream ReadByCorrelationId(Guid correlationId)
+		{
+			return this.Read(correlationId, 0, this.dialect.SelectEventsForCorrelation);
 		}
 		private CommittedEventStream Read(Guid id, long version, string queryStatement)
 		{
@@ -78,6 +82,8 @@ namespace EventStore.Core.Sql
 				command.AddParameter(this.dialect.InitialVersion, initialVersion);
 				command.AddParameter(this.dialect.CurrentVersion, initialVersion + stream.Events.Count);
 				command.AddParameter(this.dialect.Type, stream.Type == null ? null : stream.Type.FullName);
+				command.AddParameter(this.dialect.CorrelationId, stream.CorrelationId.ToNull());
+				command.AddParameter(this.dialect.CorrelationPayload, this.serializer.Serialize(stream.CorrelationSource));
 				command.AddParameter(this.dialect.Payload, this.serializer.Serialize(stream.Snapshot));
 
 				this.WriteEventsToCommand(command, stream, initialVersion);

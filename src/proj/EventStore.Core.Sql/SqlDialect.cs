@@ -28,10 +28,23 @@ namespace EventStore.Core.Sql
 		{
 			get { return "@snapshot_type"; }
 		}
-
-		public virtual string SelectEventsWhere
+		public virtual string CorrelationId
 		{
-			get { return SqlStatements.SelectEventsWhere; }
+			get { return "@correlation_id"; }
+		}
+		public virtual string CorrelationPayload
+		{
+			get { return "@correlation_payload"; }
+		}
+
+		public abstract string SelectEvents { get; }
+		public virtual string SelectEventsForCorrelation
+		{
+			get { return SqlStatements.SelectEventsForCorrelation; }
+		}
+		public virtual string SelectEventsForVersion
+		{
+			get { return SqlStatements.SelectEventsForVersion; }
 		}
 		public virtual string InsertEvents
 		{
@@ -42,7 +55,6 @@ namespace EventStore.Core.Sql
 			get { return SqlStatements.InsertEvent; }
 		}
 
-		public abstract string SelectEvents { get; }
 		public abstract bool IsConcurrencyException(DbException exception);
 	}
 }

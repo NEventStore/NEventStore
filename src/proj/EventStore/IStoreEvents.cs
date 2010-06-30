@@ -23,6 +23,13 @@ namespace EventStore
 		CommittedEventStream ReadStartingFrom(Guid id, long version);
 
 		/// <summary>
+		/// Reads all events associated with the specified correlation identifier.
+		/// </summary>
+		/// <param name="correlationId">The value which uniquely identifies the set of events to be loaded.</param>
+		/// <returns>A stream of committed events for the specified correlation identifier.</returns>
+		CommittedEventStream ReadByCorrelationId(Guid correlationId);
+
+		/// <summary>
 		/// Writes the stream of uncommitted events to persistent storage.
 		/// </summary>
 		/// <param name="stream">The stream of uncomitted events to be persisted.</param>

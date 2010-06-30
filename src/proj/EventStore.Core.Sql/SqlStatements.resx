@@ -120,9 +120,9 @@
   <data name="InsertEvent" xml:space="preserve">
     <value>INSERT
   INTO [Events]
-     ( [Id], [Version], [Payload] )
+     ( [Id], [Version], [CorrelationId], [Payload] )
 VALUES
-     ( @id, @initial_version{0}, @payload{0} );</value>
+     ( @id, @initial_version{0}, @correlation_id, @payload{0} );</value>
   </data>
   <data name="InsertEvents" xml:space="preserve">
     <value>INSERT
@@ -143,6 +143,12 @@ UPDATE [Aggregates]
    AND @initial_version &gt; 0;
 
 INSERT
+  INTO [Commands]
+SELECT @correlation_id, @correlation_payload
+ WHERE @correlation_id IS NOT NULL
+   AND @correlation_payload IS NOT NULL;
+
+INSERT
   INTO [Snapshots]
      ( [Id], [Version], [Payload] )
 SELECT @id, @current_version, @payload
@@ -155,7 +161,13 @@ SELECT @id, @current_version, @payload
 
 {0}</value>
   </data>
-  <data name="SelectEventsWhere" xml:space="preserve">
+  <data name="SelectEventsForCorrelation" xml:space="preserve">
+    <value>SELECT [Payload]
+  FROM [Events]
+ WHERE [CorrelationId] = @id
+ ORDER BY [Version];</value>
+  </data>
+  <data name="SelectEventsForVersion" xml:space="preserve">
     <value>SELECT [Payload]
   FROM [Events]
  WHERE [Id] = @id
