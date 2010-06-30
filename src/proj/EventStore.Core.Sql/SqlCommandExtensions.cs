@@ -3,7 +3,7 @@ namespace EventStore.Core.Sql
 	using System;
 	using System.Data;
 
-	internal static class CommandExtensions
+	internal static class SqlCommandExtensions
 	{
 		public static IDataParameter AddParameter(this IDbCommand command, string parameterName, object value)
 		{
