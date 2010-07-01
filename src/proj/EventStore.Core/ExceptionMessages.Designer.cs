@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace EventStore.Core.Sql {
+namespace EventStore.Core {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace EventStore.Core.Sql {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "2.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class SqlStatements {
+    internal class ExceptionMessages {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal SqlStatements() {
+        internal ExceptionMessages() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace EventStore.Core.Sql {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.Core.Sql.SqlStatements", typeof(SqlStatements).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.Core.ExceptionMessages", typeof(ExceptionMessages).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,63 +61,20 @@ namespace EventStore.Core.Sql {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INSERT
-        ///  INTO [Events]
-        ///     ( [Id], [Version], [CommandId], [Payload] )
-        ///SELECT @id, @initial_version{0}, @command_id, @payload{0};.
+        ///   Looks up a localized string similar to The command which resulted in the to-be-committed events has already been handled..
         /// </summary>
-        internal static string InsertEvent {
+        internal static string AlreadyHandledCommand {
             get {
-                return ResourceManager.GetString("InsertEvent", resourceCulture);
+                return ResourceManager.GetString("AlreadyHandledCommand", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INSERT
-        ///  INTO [Aggregates]
-        ///     ( [Id], [Version], [Snapshot], [RuntimeType] )
-        ///SELECT @id,
-        ///       @current_version,
-        ///       CASE WHEN @payload IS NULL THEN 0 ELSE @current_version END AS [Snapshot],
-        ///       @type
-        /// WHERE @initial_version = 0;
-        ///
-        ///UPDATE [Aggregates]
-        ///   SET [Version] = @current_version,
-        ///       [Snapshot] = CASE WHEN @payload IS NULL THEN [Snapshot] ELSE @current_version END,
-        ///       [RuntimeType] = COALESCE(@type, [RuntimeType])
-        /// WHERE [Id] = @id
-        ///   AND [Version] = @initial_version
-        ///  [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to The aggregate has changed by another writer since it was loaded..
         /// </summary>
-        internal static string InsertEvents {
+        internal static string Concurrency {
             get {
-                return ResourceManager.GetString("InsertEvents", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SELECT [Payload]
-        ///  FROM [Events]
-        /// WHERE [CommandId] = @id
-        /// ORDER BY [Version];.
-        /// </summary>
-        internal static string SelectEventsForCommand {
-            get {
-                return ResourceManager.GetString("SelectEventsForCommand", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SELECT [Payload]
-        ///  FROM [Events]
-        /// WHERE [Id] = @id
-        ///   AND [Version] &gt; @current_version
-        /// ORDER BY [Version];.
-        /// </summary>
-        internal static string SelectEventsForVersion {
-            get {
-                return ResourceManager.GetString("SelectEventsForVersion", resourceCulture);
+                return ResourceManager.GetString("Concurrency", resourceCulture);
             }
         }
     }

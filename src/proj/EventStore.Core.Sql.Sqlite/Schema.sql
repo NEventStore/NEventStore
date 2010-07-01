@@ -11,7 +11,7 @@
 CREATE TABLE [Commands]
 (
     [Id] GUID NOT NULL,
-    [Payload] BLOB NOT NULL,
+    [Payload] BLOB,
     CONSTRAINT [PK_Commands] PRIMARY KEY ([Id])
 );
 
@@ -21,7 +21,7 @@ CREATE TABLE [Events]
     [Version] BIGINT NOT NULL CHECK ([Version] > 0),
     [CommitSequence] INTEGER PRIMARY KEY NOT NULL,
     [Created] DATETIME NOT NULL DEFAULT (datetime('now')),
-    [CorrelationId] GUID, -- can be null
+    [CommandId] GUID,
     [Payload] BLOB NOT NULL
 );
 
@@ -35,3 +35,4 @@ CREATE TABLE [Snapshots]
 );
 
 CREATE UNIQUE INDEX [PK_Events] ON [Events] ([Id], [Version]);
+CREATE INDEX [IX_Events_CommandId] ON [Events] ([CommandId]);

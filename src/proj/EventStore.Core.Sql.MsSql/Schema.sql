@@ -11,7 +11,7 @@
 CREATE TABLE [dbo].[Commands]
 (
     [Id] [uniqueidentifier] NOT NULL,
-    [Payload] [varbinary](MAX) NOT NULL,
+    [Payload] [varbinary](MAX),
     CONSTRAINT [PK_Commands] PRIMARY KEY CLUSTERED ([Id])
 )
 
@@ -21,7 +21,7 @@ CREATE TABLE [dbo].[Events]
     [Version] [bigint] NOT NULL CHECK ([Version] > 0),
     [CommitSequence] [bigint] IDENTITY(1,1) NOT NULL,
     [Created] [datetime] NOT NULL DEFAULT (GETUTCDATE()),
-    [CorrelationId] [uniqueidentifier], -- can be null
+    [CommandId] [uniqueidentifier],
     [Payload] [varbinary](MAX) NOT NULL,
     CONSTRAINT [PK_Events] PRIMARY KEY CLUSTERED ([Id], [Version])
 )
@@ -36,6 +36,7 @@ CREATE TABLE [dbo].[Snapshots]
 )
 
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Events] ON [dbo].[Events] ([CommitSequence])
+CREATE INDEX [IX_Events_CommandId] ON [Events] ([CommandId])
 
 ALTER TABLE [dbo].[Events] WITH CHECK ADD CONSTRAINT [FK_Events_Aggregates] FOREIGN KEY([Id])
 REFERENCES [dbo].[Aggregates] ([Id])
@@ -45,6 +46,6 @@ ALTER TABLE [dbo].[Snapshots] WITH CHECK ADD CONSTRAINT [FK_Snapshots_Aggregates
 REFERENCES [dbo].[Aggregates] ([Id])
 ALTER TABLE [dbo].[Snapshots] CHECK CONSTRAINT [FK_Snapshots_Aggregates]
 
-ALTER TABLE [dbo].[Events] WITH CHECK ADD CONSTRAINT [FK_Events_Commands] FOREIGN KEY([CorrelationId])
+ALTER TABLE [dbo].[Events] WITH CHECK ADD CONSTRAINT [FK_Events_Commands] FOREIGN KEY([CommandId])
 REFERENCES [dbo].[Commands] ([Id])
 ALTER TABLE [dbo].[Events] CHECK CONSTRAINT [FK_Events_Aggregates]

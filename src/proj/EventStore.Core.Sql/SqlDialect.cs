@@ -1,9 +1,17 @@
 namespace EventStore.Core.Sql
 {
+	using System.Data;
 	using System.Data.Common;
 
 	public abstract class SqlDialect
 	{
+		protected SqlDialect(IDbConnection connection)
+		{
+			this.Connection = connection;
+		}
+
+		public IDbConnection Connection { get; private set; }
+
 		public virtual string Id
 		{
 			get { return "@id"; }
@@ -28,19 +36,19 @@ namespace EventStore.Core.Sql
 		{
 			get { return "@snapshot_type"; }
 		}
-		public virtual string CorrelationId
+		public virtual string CommandId
 		{
-			get { return "@correlation_id"; }
+			get { return "@command_id"; }
 		}
-		public virtual string CorrelationPayload
+		public virtual string CommandPayload
 		{
-			get { return "@correlation_payload"; }
+			get { return "@command_payload"; }
 		}
 
 		public abstract string SelectEvents { get; }
-		public virtual string SelectEventsForCorrelation
+		public virtual string SelectEventsForCommand
 		{
-			get { return SqlStatements.SelectEventsForCorrelation; }
+			get { return SqlStatements.SelectEventsForCommand; }
 		}
 		public virtual string SelectEventsForVersion
 		{
@@ -55,6 +63,6 @@ namespace EventStore.Core.Sql
 			get { return SqlStatements.InsertEvent; }
 		}
 
-		public abstract bool IsConcurrencyException(DbException exception);
+		public abstract bool IsDuplicateKey(DbException exception);
 	}
 }

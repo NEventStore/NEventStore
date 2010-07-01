@@ -4,7 +4,7 @@ namespace EventStore
 	using System.Collections;
 
 	/// <summary>
-	/// Represents a stream of events which has been already been committed to persistent storage.
+	/// Represents a stream of events which has been committed to persistent storage.
 	/// </summary>
 	public class CommittedEventStream
 	{
@@ -13,9 +13,9 @@ namespace EventStore
 		/// </summary>
 		/// <param name="id">The value which uniquely identifies the aggregate to which the event stream belongs.</param>
 		/// <param name="version">The version of the aggregate</param>
-		/// <param name="events">The set of persisted events</param>
+		/// <param name="events">The collection of committed events</param>
 		/// <param name="snapshot">The most recent snapshot of the aggregate, if any.</param>
-		public CommittedEventStream(Guid id, long version, IEnumerable events, object snapshot)
+		public CommittedEventStream(Guid id, long version, ICollection events, object snapshot)
 		{
 			this.Id = id;
 			this.Version = version;
@@ -34,9 +34,9 @@ namespace EventStore
 		public long Version { get; private set; }
 
 		/// <summary>
-		/// Gets the enumerable list of committed events.
+		/// Gets the collection of committed events.
 		/// </summary>
-		public IEnumerable Events { get; private set; }
+		public ICollection Events { get; private set; }
 
 		/// <summary>
 		/// Gets the most recent snapshot of the aggregate, if any.

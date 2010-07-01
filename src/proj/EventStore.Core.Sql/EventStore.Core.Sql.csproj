@@ -46,7 +46,7 @@
     <Compile Include="StringFormattingExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlDialect.cs" />
-    <Compile Include="SqlEventStore.cs" />
+    <Compile Include="SqlStorageEngine.cs" />
     <Compile Include="SqlStatements.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

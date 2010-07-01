@@ -46,10 +46,13 @@
     </Compile>
     <Compile Include="ConcurrencyException.cs" />
     <Compile Include="CommittedEventStream.cs" />
-    <Compile Include="UncommittedEventStream.cs" />
-    <Compile Include="EventStoreException.cs" />
-    <Compile Include="ISerialize.cs" />
+    <Compile Include="AlreadyHandledCommandException.cs" />
+    <Compile Include="DuplicateKeyException.cs" />
     <Compile Include="IStoreEvents.cs" />
+    <Compile Include="UncommittedEventStream.cs" />
+    <Compile Include="StorageEngineException.cs" />
+    <Compile Include="ISerialize.cs" />
+    <Compile Include="IStorageEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

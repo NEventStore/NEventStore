@@ -19,14 +19,14 @@ namespace EventStore
 		public Type Type { get; set; }
 
 		/// <summary>
-		/// Gets or sets the optional value which uniquely identifies the correlation identifier for the events being persisted.
+		/// Gets or sets the optional value which uniquely identifies the command identifier for the events being persisted.
 		/// </summary>
-		public Guid CorrelationId { get; set; }
+		public Guid CommandId { get; set; }
 
 		/// <summary>
 		/// Gets or sets the optional object which caused the uncommitted events, such as a command message.
 		/// </summary>
-		public object CorrelationSource { get; set; }
+		public object Command { get; set; }
 
 		/// <summary>
 		/// Gets or sets the collection of events to be persisted.
@@ -34,7 +34,7 @@ namespace EventStore
 		public ICollection Events { get; set; }
 
 		/// <summary>
-		/// Gets or sets the snapshot of the aggregate, if any.
+		/// Gets or sets the optional snapshot of the aggregate.
 		/// </summary>
 		public object Snapshot { get; set; }
 	}
