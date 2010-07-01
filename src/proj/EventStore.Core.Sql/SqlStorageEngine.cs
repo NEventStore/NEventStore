@@ -40,9 +40,8 @@ namespace EventStore.Core.Sql
 		}
 		private CommittedEventStream Read(Guid id, long version, string queryStatement)
 		{
-			using (var command = this.dialect.Connection.CreateCommand())
+			using (var command = this.dialect.CreateCommand(queryStatement))
 			{
-				command.CommandText = queryStatement;
 				command.AddParameter(this.dialect.Id, id);
 				command.AddParameter(this.dialect.CurrentVersion, version);
 				using (var reader = this.WrapOnFailure(() => command.ExecuteReader()))
@@ -68,7 +67,7 @@ namespace EventStore.Core.Sql
 
 		public void Save(UncommittedEventStream stream, long initialVersion)
 		{
-			using (var command = this.dialect.Connection.CreateCommand())
+			using (var command = this.dialect.CreateCommand(this.dialect.InsertEvents))
 			{
 				command.AddParameter(this.dialect.Id, stream.Id);
 				command.AddParameter(this.dialect.InitialVersion, initialVersion);
@@ -94,7 +93,7 @@ namespace EventStore.Core.Sql
 				eventInsertStatements.AppendWithFormat(this.dialect.InsertEvent, index++);
 			}
 
-			command.CommandText = this.dialect.InsertEvents.FormatWith(eventInsertStatements);
+			command.CommandText = command.CommandText.FormatWith(eventInsertStatements);
 		}
 
 		private TResult WrapOnFailure<TResult>(Func<TResult> action)

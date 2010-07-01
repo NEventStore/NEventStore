@@ -9,14 +9,22 @@ namespace EventStore.Core.Sql.MsSql
 		private const int PrimaryKeyViolation = 2627;
 		private const int UniqueIndexViolation = 2601;
 
-		public MsSqlDialect(IDbConnection connection)
-			: base(connection)
+		public MsSqlDialect(IDbConnection connection, IDbTransaction transaction)
+			: base(connection, transaction)
 		{
 		}
 
 		public override string SelectEvents
 		{
 			get { return MsSqlStatements.SelectEvents; }
+		}
+		public override string InsertEvent
+		{
+			get { return MsSqlStatements.InsertEvent; }
+		}
+		public override string InsertEvents
+		{
+			get { return MsSqlStatements.InsertEvents; }
 		}
 
 		public override bool IsDuplicateKey(DbException exception)

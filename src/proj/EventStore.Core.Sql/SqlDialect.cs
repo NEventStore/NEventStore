@@ -5,12 +5,14 @@ namespace EventStore.Core.Sql
 
 	public abstract class SqlDialect
 	{
-		protected SqlDialect(IDbConnection connection)
-		{
-			this.Connection = connection;
-		}
+		private readonly IDbConnection connection;
+		private readonly IDbTransaction transaction;
 
-		public IDbConnection Connection { get; private set; }
+		protected SqlDialect(IDbConnection connection, IDbTransaction transaction)
+		{
+			this.connection = connection;
+			this.transaction = transaction;
+		}
 
 		public virtual string Id
 		{
@@ -54,13 +56,15 @@ namespace EventStore.Core.Sql
 		{
 			get { return SqlStatements.SelectEventsForVersion; }
 		}
-		public virtual string InsertEvents
+		public abstract string InsertEvents { get; }
+		public abstract string InsertEvent { get; }
+
+		public virtual IDbCommand CreateCommand(string commandText)
 		{
-			get { return SqlStatements.InsertEvents; }
-		}
-		public virtual string InsertEvent
-		{
-			get { return SqlStatements.InsertEvent; }
+			var command = this.connection.CreateCommand();
+			command.CommandText = commandText;
+			command.Transaction = this.transaction;
+			return command;
 		}
 
 		public abstract bool IsDuplicateKey(DbException exception);

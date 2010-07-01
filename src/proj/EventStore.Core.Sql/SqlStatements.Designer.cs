@@ -61,42 +61,6 @@ namespace EventStore.Core.Sql {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INSERT
-        ///  INTO [Events]
-        ///     ( [Id], [Version], [CommandId], [Payload] )
-        ///SELECT @id, @initial_version{0}, @command_id, @payload{0};.
-        /// </summary>
-        internal static string InsertEvent {
-            get {
-                return ResourceManager.GetString("InsertEvent", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to INSERT
-        ///  INTO [Aggregates]
-        ///     ( [Id], [Version], [Snapshot], [RuntimeType] )
-        ///SELECT @id,
-        ///       @current_version,
-        ///       CASE WHEN @payload IS NULL THEN 0 ELSE @current_version END AS [Snapshot],
-        ///       @type
-        /// WHERE @initial_version = 0;
-        ///
-        ///UPDATE [Aggregates]
-        ///   SET [Version] = @current_version,
-        ///       [Snapshot] = CASE WHEN @payload IS NULL THEN [Snapshot] ELSE @current_version END,
-        ///       [RuntimeType] = COALESCE(@type, [RuntimeType])
-        /// WHERE [Id] = @id
-        ///   AND [Version] = @initial_version
-        ///  [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string InsertEvents {
-            get {
-                return ResourceManager.GetString("InsertEvents", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to SELECT [Payload]
         ///  FROM [Events]
         /// WHERE [CommandId] = @id
