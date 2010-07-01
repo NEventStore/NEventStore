@@ -82,13 +82,17 @@ namespace EventStore.Core.Sql.Sqlite {
         ///       @type
         /// WHERE @initial_version = 0;
         ///
+        ///INSERT
+        ///  INTO [Commands]
+        ///SELECT @command_id, @command_payload
+        /// WHERE @command_id IS NOT NULL;
+        ///
+        ///{0}
+        ///
         ///UPDATE [Aggregates]
         ///   SET [Version] = @current_version,
         ///       [Snapshot] = CASE WHEN @payload IS NULL THEN [Snapshot] ELSE @current_version END,
-        ///       [RuntimeType] = COALESCE(@type, [RuntimeType])
-        /// WHERE [Id] = @id
-        ///   AND [Version] = @initial_version
-        ///  [rest of string was truncated]&quot;;.
+        ///      [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InsertEvents {
             get {

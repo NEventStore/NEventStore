@@ -121,8 +121,7 @@
     <value>INSERT
   INTO [Events]
      ( [Id], [Version], [CommandId], [Payload] )
-SELECT @id, @initial_version{0}, @command_id, @payload{0}
- WHERE @@ERROR = 0;</value>
+SELECT @id, @initial_version{0}, @command_id, @payload{0};</value>
   </data>
   <data name="InsertEvents" xml:space="preserve">
     <value>INSERT
@@ -133,6 +132,17 @@ SELECT @id,
        CASE WHEN @payload IS NULL THEN 0 ELSE @current_version END AS [Snapshot],
        @type
  WHERE @initial_version = 0;
+
+IF @@ERROR &gt; 0 RETURN;
+
+INSERT
+  INTO [Commands]
+SELECT @command_id, @command_payload
+ WHERE @command_id IS NOT NULL;
+
+IF @@ERROR &gt; 0 RETURN;
+
+{0}
 
 IF @@ERROR &gt; 0 RETURN;
 
@@ -153,14 +163,7 @@ SELECT @id, @current_version, @payload
      ( SELECT *
          FROM [Snapshots]
         WHERE [Id] = @id
-          AND [Version] = @current_version );
-
-INSERT
-  INTO [Commands]
-SELECT @command_id, @command_payload
- WHERE @command_id IS NOT NULL;
-
-{0}</value>
+          AND [Version] = @current_version );</value>
   </data>
   <data name="SelectEvents" xml:space="preserve">
     <value>SELECT [Payload]

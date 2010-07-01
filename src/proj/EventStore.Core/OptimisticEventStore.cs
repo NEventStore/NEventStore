@@ -60,7 +60,7 @@ namespace EventStore.Core
 				throw new ConcurrencyException(ExceptionMessages.Concurrency, innerException, events);
 
 			events = this.storage.LoadByCommandId(stream.CommandId);
-			throw new AlreadyHandledCommandException(
+			throw new DuplicateCommandException(
 				ExceptionMessages.AlreadyHandledCommand, innerException, events);
 		}
 	}

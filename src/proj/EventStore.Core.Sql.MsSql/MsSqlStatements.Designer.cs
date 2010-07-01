@@ -64,8 +64,7 @@ namespace EventStore.Core.Sql.MsSql {
         ///   Looks up a localized string similar to INSERT
         ///  INTO [Events]
         ///     ( [Id], [Version], [CommandId], [Payload] )
-        ///SELECT @id, @initial_version{0}, @command_id, @payload{0}
-        /// WHERE @@ERROR = 0;.
+        ///SELECT @id, @initial_version{0}, @command_id, @payload{0};.
         /// </summary>
         internal static string InsertEvent {
             get {
@@ -85,12 +84,20 @@ namespace EventStore.Core.Sql.MsSql {
         ///
         ///IF @@ERROR &gt; 0 RETURN;
         ///
+        ///INSERT
+        ///  INTO [Commands]
+        ///SELECT @command_id, @command_payload
+        /// WHERE @command_id IS NOT NULL;
+        ///
+        ///IF @@ERROR &gt; 0 RETURN;
+        ///
+        ///{0}
+        ///
+        ///IF @@ERROR &gt; 0 RETURN;
+        ///
         ///UPDATE [Aggregates]
         ///   SET [Version] = @current_version,
-        ///       [Snapshot] = CASE WHEN @payload IS NULL THEN [Snapshot] ELSE @current_version END,
-        ///       [RuntimeType] = COALESCE(@type, [RuntimeType])
-        /// WHERE [Id] = @id
-        ///   AND [Vers [rest of string was truncated]&quot;;.
+        ///       [Snapshot]  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InsertEvents {
             get {

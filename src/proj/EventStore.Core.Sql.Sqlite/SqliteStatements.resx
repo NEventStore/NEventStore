@@ -133,6 +133,13 @@ SELECT @id,
        @type
  WHERE @initial_version = 0;
 
+INSERT
+  INTO [Commands]
+SELECT @command_id, @command_payload
+ WHERE @command_id IS NOT NULL;
+
+{0}
+
 UPDATE [Aggregates]
    SET [Version] = @current_version,
        [Snapshot] = CASE WHEN @payload IS NULL THEN [Snapshot] ELSE @current_version END,
@@ -150,14 +157,7 @@ SELECT @id, @current_version, @payload
      ( SELECT *
          FROM [Snapshots]
         WHERE [Id] = @id
-          AND [Version] = @current_version );
-
-INSERT
-  INTO [Commands]
-SELECT @command_id, @command_payload
- WHERE @command_id IS NOT NULL;
-
-{0}</value>
+          AND [Version] = @current_version );</value>
   </data>
   <data name="SelectEvents" xml:space="preserve">
     <value>SELECT [Payload]

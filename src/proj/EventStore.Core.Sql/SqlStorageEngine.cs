@@ -62,7 +62,7 @@ namespace EventStore.Core.Sql
 				version = (long)reader[VersionColumnIndex];
 			}
 
-			return new CommittedEventStream(id, version, (ICollection)events, snapshot);
+			return new CommittedEventStream(id, version + events.Count, (ICollection)events, snapshot);
 		}
 
 		public void Save(UncommittedEventStream stream, long initialVersion)
