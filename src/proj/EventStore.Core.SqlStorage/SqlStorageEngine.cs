@@ -22,23 +22,23 @@ namespace EventStore.Core.SqlStorage
 
 		public CommittedEventStream LoadById(Guid id)
 		{
-			return this.Read(id, 0, this.dialect.SelectEvents);
+			return this.Load(id, 0, this.dialect.SelectEvents);
 		}
 		public ICollection LoadStartingAfter(Guid id, long version)
 		{
 			if (id == Guid.Empty)
 				return new object[0];
 
-			return this.Read(id, version, this.dialect.SelectEventsForVersion).Events;
+			return this.Load(id, version, this.dialect.SelectEventsForVersion).Events;
 		}
 		public ICollection LoadByCommandId(Guid commandId)
 		{
 			if (commandId == Guid.Empty)
 				return new object[0];
 
-			return this.Read(commandId, 0, this.dialect.SelectEventsForCommand).Events;
+			return this.Load(commandId, 0, this.dialect.SelectEventsForCommand).Events;
 		}
-		private CommittedEventStream Read(Guid id, long version, string queryStatement)
+		private CommittedEventStream Load(Guid id, long version, string queryStatement)
 		{
 			using (var command = this.dialect.CreateCommand(queryStatement))
 			{
