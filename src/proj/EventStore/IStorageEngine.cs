@@ -13,6 +13,7 @@ namespace EventStore
 		/// </summary>
 		/// <param name="id">The value which uniquely identifies the aggregate of the events to be loaded.</param>
 		/// <returns>A stream of committed events for the specified aggregate.</returns>
+		/// <exception cref="StorageEngineException" />
 		CommittedEventStream LoadById(Guid id);
 
 		/// <summary>
@@ -20,6 +21,7 @@ namespace EventStore
 		/// </summary>
 		/// <param name="commandId">The value which uniquely identifies the set of events to be loaded.</param>
 		/// <returns>A collection of committed events for the specified command identifier.</returns>
+		/// <exception cref="StorageEngineException" />
 		ICollection LoadByCommandId(Guid commandId);
 
 		/// <summary>
@@ -28,6 +30,7 @@ namespace EventStore
 		/// <param name="id">The value which uniquely identifies the aggregate of the events to be loaded.</param>
 		/// <param name="version">The version after which the loaded event collection should begin.</param>
 		/// <returns>A collection of committed events for the specified aggregate.</returns>
+		/// <exception cref="StorageEngineException" />
 		ICollection LoadStartingAfter(Guid id, long version);
 
 		/// <summary>
@@ -35,6 +38,9 @@ namespace EventStore
 		/// </summary>
 		/// <param name="stream">The stream of uncomitted events to be persisted.</param>
 		/// <param name="initialVersion">The version when the aggregate was loaded.</param>
+		/// <exception cref="ConcurrencyException" />
+		/// <exception cref="DuplicateCommandException" />
+		/// <exception cref="StorageEngineException" />
 		void Save(UncommittedEventStream stream, long initialVersion);
 	}
 }
