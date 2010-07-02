@@ -37,8 +37,7 @@ namespace EventStore.Core.SqlStorage.Sqlite
 		public override bool IsDuplicateKey(DbException exception)
 		{
 			var message = exception.Message.ToLowerInvariant();
-			return message.IndexOf(ConstraintViolation) > 0
-			       && message.IndexOf(UniqueViolation) > 0;
+			return message.Contains(ConstraintViolation) && message.Contains(UniqueViolation);
 		}
 	}
 }

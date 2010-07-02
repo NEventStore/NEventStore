@@ -26,7 +26,7 @@ CREATE TABLE Events
 (
     Id BINARY(16) NOT NULL,
     Version BIGINT NOT NULL CHECK (Version > 0),
-    CommitSequence INTEGER PRIMARY KEY NOT NULL,
+    CommitSequence BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT CHECK (CommitSequence > 0),
     Created DATETIME NOT NULL,
     CommandId BINARY(16),
     Payload BLOB NOT NULL

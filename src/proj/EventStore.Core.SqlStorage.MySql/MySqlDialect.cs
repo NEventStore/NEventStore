@@ -1,11 +1,13 @@
 namespace EventStore.Core.SqlStorage.MySql
 {
-	using System;
 	using System.Data;
 	using System.Data.Common;
 
 	public sealed class MySqlDialect : SqlDialect
 	{
+		private const string DuplicateEntryText = "Duplicate entry";
+		private const string KeyViolationText = "for key";
+
 		public MySqlDialect(IDbConnection connection, IDbTransaction transaction)
 			: base(connection, transaction)
 		{
@@ -67,8 +69,11 @@ namespace EventStore.Core.SqlStorage.MySql
 
 		public override bool IsDuplicateKey(DbException exception)
 		{
-			return true;
-			throw new NotImplementedException();
+			if (exception == null)
+				return false;
+
+			var message = exception.Message;
+			return message.Contains(DuplicateEntryText) && message.Contains(KeyViolationText);
 		}
 	}
 }
