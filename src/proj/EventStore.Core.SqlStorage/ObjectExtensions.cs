@@ -4,9 +4,9 @@ namespace EventStore.Core.SqlStorage
 
 	public static class ObjectExtensions
 	{
-		public static object ToNull(this Guid value)
+		public static byte[] ToNull(this Guid value)
 		{
-			return Guid.Empty == value ? null : (object)value;
+			return value == Guid.Empty ? null : value.ToByteArray();
 		}
 	}
 }

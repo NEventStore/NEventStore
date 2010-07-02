@@ -42,7 +42,7 @@ namespace EventStore.Core.SqlStorage
 		{
 			using (var command = this.dialect.CreateCommand(queryStatement))
 			{
-				command.AddParameter(this.dialect.Id, id);
+				command.AddParameter(this.dialect.Id, id.ToByteArray());
 				command.AddParameter(this.dialect.CurrentVersion, version);
 				using (var reader = this.WrapOnFailure(() => command.ExecuteReader()))
 					return this.BuildStream(id, version, reader);
@@ -69,7 +69,7 @@ namespace EventStore.Core.SqlStorage
 		{
 			using (var command = this.dialect.CreateCommand(this.dialect.InsertEvents))
 			{
-				command.AddParameter(this.dialect.Id, stream.Id);
+				command.AddParameter(this.dialect.Id, stream.Id.ToByteArray());
 				command.AddParameter(this.dialect.InitialVersion, initialVersion);
 				command.AddParameter(this.dialect.CurrentVersion, initialVersion + stream.Events.Count);
 				command.AddParameter(this.dialect.Type, stream.Type == null ? null : stream.Type.FullName);

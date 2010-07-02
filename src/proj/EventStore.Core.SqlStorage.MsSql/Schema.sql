@@ -1,4 +1,11 @@
-﻿CREATE TABLE [dbo].[Aggregates]
+﻿/*
+DROP TABLE Events;
+DROP TABLE Commands;
+DROP TABLE Snapshots;
+DROP TABLE Aggregates;
+*/
+
+CREATE TABLE [dbo].[Aggregates]
 (
     [Id] [uniqueidentifier] NOT NULL,
     [Version] [bigint] NOT NULL CHECK ([Version] >= 0),

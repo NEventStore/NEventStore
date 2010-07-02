@@ -1,4 +1,11 @@
-﻿CREATE TABLE [Aggregates]
+﻿/*
+DROP TABLE Events;
+DROP TABLE Commands;
+DROP TABLE Snapshots;
+DROP TABLE Aggregates;
+*/
+
+CREATE TABLE [Aggregates]
 (
     [Id] GUID NOT NULL,
     [Version] BIGINT NOT NULL CHECK ([Version] >= 0),
