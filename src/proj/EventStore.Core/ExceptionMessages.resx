@@ -117,10 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AlreadyHandledCommand" xml:space="preserve">
-    <value>The command which resulted in the to-be-committed events has already been handled.</value>
-  </data>
   <data name="Concurrency" xml:space="preserve">
     <value>The aggregate has changed by another writer since it was loaded.</value>
+  </data>
+  <data name="Duplicate" xml:space="preserve">
+    <value>The command which resulted in the to-be-committed events has already been handled.</value>
   </data>
 </root>

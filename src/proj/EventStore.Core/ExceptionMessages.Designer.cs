@@ -61,20 +61,20 @@ namespace EventStore.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The command which resulted in the to-be-committed events has already been handled..
-        /// </summary>
-        internal static string AlreadyHandledCommand {
-            get {
-                return ResourceManager.GetString("AlreadyHandledCommand", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The aggregate has changed by another writer since it was loaded..
         /// </summary>
         internal static string Concurrency {
             get {
                 return ResourceManager.GetString("Concurrency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The command which resulted in the to-be-committed events has already been handled..
+        /// </summary>
+        internal static string Duplicate {
+            get {
+                return ResourceManager.GetString("Duplicate", resourceCulture);
             }
         }
     }

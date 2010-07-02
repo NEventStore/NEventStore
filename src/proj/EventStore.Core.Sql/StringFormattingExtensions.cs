@@ -21,9 +21,6 @@ namespace EventStore.Core.Sql
 			builder.AppendFormat(CultureInfo.InvariantCulture, format, values);
 		}
 
-		public static string ToNull(this Guid value)
-		{
-			return Guid.Empty == value ? null : value.ToString();
-		}
+		
 	}
 }

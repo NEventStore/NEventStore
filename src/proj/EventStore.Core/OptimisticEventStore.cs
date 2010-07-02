@@ -44,6 +44,7 @@ namespace EventStore.Core
 
 			return (stream.Events != null && stream.Events.Count > 0) || stream.Snapshot != null;
 		}
+
 		private long GetVersion(Guid id)
 		{
 			long initialVersion;
@@ -60,8 +61,7 @@ namespace EventStore.Core
 				throw new ConcurrencyException(ExceptionMessages.Concurrency, innerException, events);
 
 			events = this.storage.LoadByCommandId(stream.CommandId);
-			throw new DuplicateCommandException(
-				ExceptionMessages.AlreadyHandledCommand, innerException, events);
+			throw new DuplicateCommandException(ExceptionMessages.Duplicate, innerException, events);
 		}
 	}
 }
