@@ -140,11 +140,43 @@ namespace EventStore.Core.UnitTests
 	[Subject("OptimisticEventStore")]
 	public class when_writing_events_for_a_previously_handled_command : with_the_event_stream
 	{
-		Establish context;
-		Because of;
-		It should_query_the_underlying_storage_for_the_committed_events_resulting_from_the_command;
-		It should_throw_a_duplicate_command_exception;
-		It should_populate_the_exception_with_the_committed_events;
+		static readonly ICollection DuplicateEvents = new object[0];
+		static readonly UncommittedEventStream stream = new UncommittedEventStream()
+		{
+			Id = Guid.NewGuid(),
+			Command = Guid.NewGuid(),
+			Events = new object[1]
+		};
+
+		static DuplicateCommandException expected;
+
+		Establish context = () =>
+		{
+			storageEngine.Setup(x => x.Save(stream, 0)).Throws(new DuplicateKeyException());
+			storageEngine.Setup(x => x.LoadStartingAfter(stream.Id, 0)).Returns(new object[0]);
+			storageEngine.Setup(x => x.LoadByCommandId(stream.CommandId)).Returns(DuplicateEvents);
+		};
+
+		Because of = () =>
+		{
+			try
+			{
+				eventStore.Write(stream);
+			}
+			catch (DuplicateCommandException e)
+			{
+				expected = e;
+			}
+		};
+
+		It should_query_the_underlying_storage_for_the_committed_events_resulting_from_the_command = () =>
+			storageEngine.Verify(x => x.LoadByCommandId(stream.CommandId));
+
+		It should_throw_a_duplicate_command_exception = () =>
+			expected.ShouldNotBeNull();
+
+		It should_populate_the_exception_with_the_committed_events = () =>
+			expected.CommittedEvents.ShouldEqual(DuplicateEvents);
 	}
 
 	public abstract class with_the_event_stream
