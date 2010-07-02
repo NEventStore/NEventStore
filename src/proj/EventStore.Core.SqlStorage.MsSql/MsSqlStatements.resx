@@ -179,4 +179,17 @@ SELECT TOP 1
  WHERE [Id] = @id
  ORDER BY [Version] DESC;</value>
   </data>
+  <data name="SelectEventsForCommand" xml:space="preserve">
+    <value>SELECT [Payload]
+  FROM [Events]
+ WHERE [CommandId] = @id
+ ORDER BY [Version];</value>
+  </data>
+  <data name="SelectEventsForVersion" xml:space="preserve">
+    <value>SELECT [Payload]
+  FROM [Events]
+ WHERE [Id] = @id
+   AND [Version] &gt; @current_version
+ ORDER BY [Version];</value>
+  </data>
 </root>

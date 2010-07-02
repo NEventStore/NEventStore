@@ -124,5 +124,30 @@ namespace EventStore.Core.SqlStorage.MsSql {
                 return ResourceManager.GetString("SelectEvents", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT [Payload]
+        ///  FROM [Events]
+        /// WHERE [CommandId] = @id
+        /// ORDER BY [Version];.
+        /// </summary>
+        internal static string SelectEventsForCommand {
+            get {
+                return ResourceManager.GetString("SelectEventsForCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT [Payload]
+        ///  FROM [Events]
+        /// WHERE [Id] = @id
+        ///   AND [Version] &gt; @current_version
+        /// ORDER BY [Version];.
+        /// </summary>
+        internal static string SelectEventsForVersion {
+            get {
+                return ResourceManager.GetString("SelectEventsForVersion", resourceCulture);
+            }
+        }
     }
 }

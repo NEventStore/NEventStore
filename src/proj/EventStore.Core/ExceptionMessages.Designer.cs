@@ -70,7 +70,7 @@ namespace EventStore.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The command which resulted in the to-be-committed events has already been handled..
+        ///   Looks up a localized string similar to The command indicated has been handled previously..
         /// </summary>
         internal static string Duplicate {
             get {

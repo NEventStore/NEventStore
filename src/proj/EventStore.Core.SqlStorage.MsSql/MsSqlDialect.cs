@@ -18,6 +18,14 @@ namespace EventStore.Core.SqlStorage.MsSql
 		{
 			get { return MsSqlStatements.SelectEvents; }
 		}
+		public override string SelectEventsForCommand
+		{
+			get { return MsSqlStatements.SelectEventsForCommand; }
+		}
+		public override string SelectEventsForVersion
+		{
+			get { return MsSqlStatements.SelectEventsForVersion; }
+		}
 		public override string InsertEvent
 		{
 			get { return MsSqlStatements.InsertEvent; }

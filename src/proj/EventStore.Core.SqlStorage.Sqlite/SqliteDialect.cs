@@ -17,6 +17,14 @@ namespace EventStore.Core.SqlStorage.Sqlite
 		{
 			get { return SqliteStatements.SelectEvents; }
 		}
+		public override string SelectEventsForCommand
+		{
+			get { return SqliteStatements.SelectEventsForCommand; }
+		}
+		public override string SelectEventsForVersion
+		{
+			get { return SqliteStatements.SelectEventsForVersion; }
+		}
 		public override string InsertEvent
 		{
 			get { return SqliteStatements.InsertEvent; }

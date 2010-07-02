@@ -48,14 +48,8 @@ namespace EventStore.Core.SqlStorage
 		}
 
 		public abstract string SelectEvents { get; }
-		public virtual string SelectEventsForCommand
-		{
-			get { return SqlStatements.SelectEventsForCommand; }
-		}
-		public virtual string SelectEventsForVersion
-		{
-			get { return SqlStatements.SelectEventsForVersion; }
-		}
+		public abstract string SelectEventsForCommand { get; }
+		public abstract string SelectEventsForVersion { get; }
 		public abstract string InsertEvents { get; }
 		public abstract string InsertEvent { get; }
 

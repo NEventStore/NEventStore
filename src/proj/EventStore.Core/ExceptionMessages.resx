@@ -121,6 +121,6 @@
     <value>The aggregate has changed by another writer since it was loaded.</value>
   </data>
   <data name="Duplicate" xml:space="preserve">
-    <value>The command which resulted in the to-be-committed events has already been handled.</value>
+    <value>The command indicated has been handled previously.</value>
   </data>
 </root>
