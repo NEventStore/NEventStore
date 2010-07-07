@@ -7,7 +7,7 @@ namespace EventStore.Core.SqlStorage
 	using System.Data.Common;
 	using System.Text;
 
-	public class SqlStorageEngine : IStorageEngine
+	public class SqlStorageEngine : IAdaptStorage
 	{
 		private const int SerializedDataColumnIndex = 0;
 		private const int VersionColumnIndex = 1;
@@ -20,9 +20,9 @@ namespace EventStore.Core.SqlStorage
 			this.serializer = serializer;
 		}
 
-		public CommittedEventStream LoadById(Guid id)
+		public CommittedEventStream LoadById(Guid id, long maxStartingVersion)
 		{
-			return this.Load(id, 0, this.dialect.SelectEvents);
+			return this.Load(id, maxStartingVersion, this.dialect.SelectEvents);
 		}
 		public ICollection LoadStartingAfter(Guid id, long version)
 		{
@@ -42,8 +42,8 @@ namespace EventStore.Core.SqlStorage
 		{
 			using (var command = this.dialect.CreateCommand(queryStatement))
 			{
-				command.AddParameter(this.dialect.Id, id.ToByteArray());
-				command.AddParameter(this.dialect.CurrentVersion, version);
+				command.AddParameter(this.dialect.Id, id.ToNull());
+				command.AddParameter(this.dialect.CurrentVersion, version.ToNull());
 				using (var reader = this.WrapOnFailure(() => command.ExecuteReader()))
 					return this.BuildStream(id, version, reader);
 			}
@@ -65,19 +65,19 @@ namespace EventStore.Core.SqlStorage
 			return new CommittedEventStream(id, version + events.Count, (ICollection)events, snapshot);
 		}
 
-		public void Save(UncommittedEventStream stream, long initialVersion)
+		public void Save(UncommittedEventStream stream)
 		{
 			using (var command = this.dialect.CreateCommand(this.dialect.InsertEvents))
 			{
-				command.AddParameter(this.dialect.Id, stream.Id.ToByteArray());
-				command.AddParameter(this.dialect.InitialVersion, initialVersion);
-				command.AddParameter(this.dialect.CurrentVersion, initialVersion + stream.Events.Count);
+				command.AddParameter(this.dialect.Id, stream.Id.ToNull());
+				command.AddParameter(this.dialect.InitialVersion, stream.ExpectedVersion);
+				command.AddParameter(this.dialect.CurrentVersion, stream.ExpectedVersion + stream.Events.Count);
 				command.AddParameter(this.dialect.Type, stream.Type == null ? null : stream.Type.FullName);
 				command.AddParameter(this.dialect.CommandId, stream.CommandId.ToNull());
 				command.AddParameter(this.dialect.CommandPayload, this.serializer.Serialize(stream.Command));
 				command.AddParameter(this.dialect.Payload, this.serializer.Serialize(stream.Snapshot));
 
-				this.AddEventsToDbCommand(command, stream, initialVersion);
+				this.AddEventsToDbCommand(command, stream, stream.ExpectedVersion);
 				this.WrapOnFailure(() => command.ExecuteNonQuery());
 			}
 		}

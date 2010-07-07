@@ -77,5 +77,14 @@ namespace EventStore.Core {
                 return ResourceManager.GetString("Duplicate", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot write an empty stream of events..
+        /// </summary>
+        internal static string NoWork {
+            get {
+                return ResourceManager.GetString("NoWork", resourceCulture);
+            }
+        }
     }
 }

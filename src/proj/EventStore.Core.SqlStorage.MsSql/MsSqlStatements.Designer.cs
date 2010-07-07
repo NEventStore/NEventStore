@@ -109,7 +109,11 @@ namespace EventStore.Core.SqlStorage.MsSql {
         ///   Looks up a localized string similar to SELECT [Payload]
         ///  FROM [Events]
         /// WHERE [Id] = @id
-        ///   AND [Version] &gt; (SELECT [Snapshot] FROM [Aggregates] WHERE [Id] = @id)
+        ///   AND [Version] &gt;
+        ///     ( SELECT COALESCE(MAX([Version]), 0)
+        ///         FROM [Snapshots]
+        ///        WHERE [Id] = @id
+        ///          AND [Version] &lt;= COALESCE(@version, [Version]) )
         /// ORDER BY [Version];
         /// 
         ///SELECT TOP 1
@@ -141,7 +145,7 @@ namespace EventStore.Core.SqlStorage.MsSql {
         ///   Looks up a localized string similar to SELECT [Payload]
         ///  FROM [Events]
         /// WHERE [Id] = @id
-        ///   AND [Version] &gt; @current_version
+        ///   AND [Version] &gt; COALESCE(@current_version, 0)
         /// ORDER BY [Version];.
         /// </summary>
         internal static string SelectEventsForVersion {

@@ -1,42 +1,35 @@
 namespace EventStore.Core
 {
 	using System;
-	using System.Collections.Generic;
 
 	public class OptimisticEventStore : IStoreEvents
 	{
-		private readonly IDictionary<Guid, long> versions = new Dictionary<Guid, long>();
-		private readonly IStorageEngine storage;
+		private readonly IAdaptStorage storage;
 
-		public OptimisticEventStore(IStorageEngine storage)
+		public OptimisticEventStore(IAdaptStorage storage)
 		{
 			this.storage = storage;
 		}
 
-		public CommittedEventStream Read(Guid id)
+		public CommittedEventStream Read(Guid id, long maxStartingVersion)
 		{
-			var committed = this.storage.LoadById(id);
-			this.versions[committed.Id] = committed.Version;
-			return committed;
+			return this.storage.LoadById(id, maxStartingVersion);
 		}
 
 		public void Write(UncommittedEventStream stream)
 		{
 			if (!CanWrite(stream))
-				return;
+				throw new ArgumentException(ExceptionMessages.NoWork, "stream");
 
 			try
 			{
-				var initialVersion = this.GetVersion(stream.Id);
-				this.storage.Save(stream, initialVersion);
-				this.versions[stream.Id] = initialVersion + stream.Events.Count;
+				this.storage.Save(stream);
 			}
 			catch (DuplicateKeyException e)
 			{
 				this.WrapAndThrow(stream, e);
 			}
 		}
-
 		private static bool CanWrite(UncommittedEventStream stream)
 		{
 			if (stream == null)
@@ -44,19 +37,9 @@ namespace EventStore.Core
 
 			return (stream.Events != null && stream.Events.Count > 0) || stream.Snapshot != null;
 		}
-
-		private long GetVersion(Guid id)
-		{
-			long initialVersion;
-			if (!this.versions.TryGetValue(id, out initialVersion))
-				this.versions[id] = initialVersion;
-
-			return initialVersion;
-		}
-
 		private void WrapAndThrow(UncommittedEventStream stream, Exception innerException)
 		{
-			var events = this.storage.LoadStartingAfter(stream.Id, this.GetVersion(stream.Id));
+			var events = this.storage.LoadStartingAfter(stream.Id, stream.ExpectedVersion);
 			if (events.Count > 0)
 				throw new ConcurrencyException(ExceptionMessages.Concurrency, innerException, events);
 

@@ -4,17 +4,18 @@ namespace EventStore
 	using System.Collections;
 
 	/// <summary>
-	/// Provides the ability to load and save objects which utilize event sourcing.
+	/// Adapts the underlying persistence infrastructure to facilitate event sourcing.
 	/// </summary>
-	public interface IStorageEngine
+	public interface IAdaptStorage
 	{
 		/// <summary>
 		/// Reads all events for the specified aggregate.
 		/// </summary>
 		/// <param name="id">The value which uniquely identifies the aggregate of the events to be loaded.</param>
+		/// <param name="maxStartingVersion">The maxium version at which to start reading the aggregate event stream.</param>
 		/// <returns>A stream of committed events for the specified aggregate.</returns>
 		/// <exception cref="StorageEngineException" />
-		CommittedEventStream LoadById(Guid id);
+		CommittedEventStream LoadById(Guid id, long maxStartingVersion);
 
 		/// <summary>
 		/// Reads all events associated with the specified command identifier.
@@ -37,10 +38,9 @@ namespace EventStore
 		/// Writes the stream of uncommitted events to persistent storage.
 		/// </summary>
 		/// <param name="stream">The stream of uncomitted events to be persisted.</param>
-		/// <param name="initialVersion">The version when the aggregate was loaded.</param>
 		/// <exception cref="ConcurrencyException" />
 		/// <exception cref="DuplicateCommandException" />
 		/// <exception cref="StorageEngineException" />
-		void Save(UncommittedEventStream stream, long initialVersion);
+		void Save(UncommittedEventStream stream);
 	}
 }

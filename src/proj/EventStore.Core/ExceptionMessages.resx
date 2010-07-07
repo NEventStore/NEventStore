@@ -123,4 +123,7 @@
   <data name="Duplicate" xml:space="preserve">
     <value>The command indicated has been handled previously.</value>
   </data>
+  <data name="NoWork" xml:space="preserve">
+    <value>Cannot write an empty stream of events.</value>
+  </data>
 </root>
