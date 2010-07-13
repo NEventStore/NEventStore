@@ -35,7 +35,7 @@ namespace EventStore.Core
 			if (stream == null)
 				return false;
 
-			return (stream.Events != null && stream.Events.Count > 0) || stream.Snapshot != null;
+			return stream.Snapshot != null || stream.Events != null && stream.Events.Count > 0;
 		}
 		private void WrapAndThrow(UncommittedEventStream stream, Exception innerException)
 		{
