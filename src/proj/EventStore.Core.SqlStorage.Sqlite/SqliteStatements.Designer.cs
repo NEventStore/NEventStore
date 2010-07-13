@@ -108,7 +108,7 @@ namespace EventStore.Core.SqlStorage.Sqlite {
         ///     ( SELECT COALESCE(MAX([Version]), 0)
         ///         FROM [Snapshots]
         ///        WHERE [Id] = @id
-        ///          AND [Version] &lt;= COALESCE(@version, [Version]) )
+        ///          AND [Version] &lt;= COALESCE(@current_version, [Version]) )
         /// ORDER BY [Version];
         /// 
         ///SELECT [Payload],
