@@ -11,6 +11,7 @@ namespace EventStore.Core.SqlStorage
 	{
 		private const int SerializedDataColumnIndex = 0;
 		private const int VersionColumnIndex = 1;
+		private const int TypeColumnIndex = 2;
 		private readonly SqlDialect dialect;
 		private readonly ISerialize serializer;
 
@@ -56,13 +57,16 @@ namespace EventStore.Core.SqlStorage
 			while (reader.Read())
 				events.Add(this.serializer.Deserialize<object>(reader[SerializedDataColumnIndex] as byte[]));
 
+			Type type = null;
 			if (reader.NextResult() && reader.Read())
 			{
 				snapshot = this.serializer.Deserialize<object>(reader[SerializedDataColumnIndex] as byte[]);
 				version = (long)reader[VersionColumnIndex];
+				type = Type.GetType((string)reader[TypeColumnIndex]);
 			}
 
-			return new CommittedEventStream(id, version + events.Count, (ICollection)events, snapshot);
+			return new CommittedEventStream(
+				id, version + events.Count, type, (ICollection)events, snapshot);
 		}
 
 		public void Save(UncommittedEventStream stream)

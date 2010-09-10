@@ -13,11 +13,13 @@ namespace EventStore
 		/// </summary>
 		/// <param name="id">The value which uniquely identifies the aggregate to which the event stream belongs.</param>
 		/// <param name="version">The version of the aggregate</param>
+		/// <param name="type">The type of aggregate to which the event stream belongs.</param>
 		/// <param name="events">The collection of committed events</param>
 		/// <param name="snapshot">The most recent snapshot of the aggregate, if any.</param>
-		public CommittedEventStream(Guid id, long version, ICollection events, object snapshot)
+		public CommittedEventStream(Guid id, long version, Type type, ICollection events, object snapshot)
 		{
 			this.Id = id;
+			this.Type = type;
 			this.Version = version;
 			this.Events = events;
 			this.Snapshot = snapshot;
@@ -32,6 +34,11 @@ namespace EventStore
 		/// Gets the committed version of the aggregate.
 		/// </summary>
 		public long Version { get; private set; }
+
+		/// <summary>
+		/// Gets the type of aggregate to which the event stream belongs.
+		/// </summary>
+		public Type Type { get; private set; }
 
 		/// <summary>
 		/// Gets the collection of committed events.
