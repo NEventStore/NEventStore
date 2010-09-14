@@ -21,6 +21,7 @@ namespace EventStore.Core.SqlStorage
 		string InsertEvent { get; }
 
 		IDbCommand CreateCommand(string commandText);
+		bool IsConstraintViolation(DbException exception);
 		bool IsDuplicateKey(DbException exception);
 	}
 }

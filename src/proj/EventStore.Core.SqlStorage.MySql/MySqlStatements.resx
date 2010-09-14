@@ -126,7 +126,7 @@ SELECT @id, @initial_version{0}, UTC_TIMESTAMP(), @command_id, @payload{0} UNION
    SET Version = 0
  WHERE @initial_version &gt; 0
    AND Id = @id
-   AND TenantId != @tenant_id;
+   AND (TenantId != @tenant_id OR @initial_version &gt; Version);
 
 INSERT
   INTO Aggregates

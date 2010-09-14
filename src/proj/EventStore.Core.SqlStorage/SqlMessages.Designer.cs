@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace EventStore.Core {
+namespace EventStore.Core.SqlStorage {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace EventStore.Core {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "2.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ExceptionMessages {
+    internal class SqlMessages {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal ExceptionMessages() {
+        internal SqlMessages() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace EventStore.Core {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.Core.ExceptionMessages", typeof(ExceptionMessages).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.Core.SqlStorage.SqlMessages", typeof(SqlMessages).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,38 +61,11 @@ namespace EventStore.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The aggregate has changed by another writer since it was loaded..
+        ///   Looks up a localized string similar to This exception is most likely the result of either cross-tenant access or an ExpectedVersion value greater than the actual version of the aggregate..
         /// </summary>
-        internal static string Concurrency {
+        internal static string ConstraintViolation {
             get {
-                return ResourceManager.GetString("Concurrency", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The command indicated has been handled previously..
-        /// </summary>
-        internal static string Duplicate {
-            get {
-                return ResourceManager.GetString("Duplicate", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The stream expects a non-negative version number..
-        /// </summary>
-        internal static string MalformedStream {
-            get {
-                return ResourceManager.GetString("MalformedStream", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot write an empty stream of events..
-        /// </summary>
-        internal static string NoWork {
-            get {
-                return ResourceManager.GetString("NoWork", resourceCulture);
+                return ResourceManager.GetString("ConstraintViolation", resourceCulture);
             }
         }
     }

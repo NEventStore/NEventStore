@@ -75,7 +75,7 @@ namespace EventStore.Core.SqlStorage.Sqlite {
         ///   SET [Version] = 0
         /// WHERE @initial_version &gt; 0
         ///   AND [Id] = @id
-        ///   AND [TenantId] != @tenant_id;
+        ///   AND ([TenantId] != @tenant_id OR @initial_version &gt; [Version]);
         ///
         ///INSERT
         ///  INTO [Aggregates]
@@ -90,9 +90,7 @@ namespace EventStore.Core.SqlStorage.Sqlite {
         ///INSERT
         ///  INTO [Commands]
         ///SELECT @command_id, @command_payload
-        /// WHERE @command_id IS NOT NULL;
-        ///
-        ///INS [rest of string was truncated]&quot;;.
+        /// WHE [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InsertEvents {
             get {

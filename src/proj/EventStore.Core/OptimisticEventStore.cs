@@ -21,6 +21,9 @@ namespace EventStore.Core
 			if (!CanWrite(stream))
 				throw new ArgumentException(ExceptionMessages.NoWork, "stream");
 
+			if (!ValidStream(stream))
+				throw new ArgumentException(ExceptionMessages.MalformedStream, "stream");
+
 			try
 			{
 				this.storage.Save(stream);
@@ -34,6 +37,10 @@ namespace EventStore.Core
 		{
 			return stream != null
 				&& (stream.Snapshot != null || (stream.Events != null && stream.Events.Count > 0));
+		}
+		private static bool ValidStream(UncommittedEventStream stream)
+		{
+			return stream.ExpectedVersion >= 0;
 		}
 		private void WrapAndThrow(UncommittedEventStream stream, Exception innerException)
 		{

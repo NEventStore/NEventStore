@@ -75,7 +75,7 @@ namespace EventStore.Core.SqlStorage.MySql {
         ///   SET Version = 0
         /// WHERE @initial_version &gt; 0
         ///   AND Id = @id
-        ///   AND TenantId != @tenant_id;
+        ///   AND (TenantId != @tenant_id OR @initial_version &gt; Version);
         ///
         ///INSERT
         ///  INTO Aggregates
@@ -91,9 +91,7 @@ namespace EventStore.Core.SqlStorage.MySql {
         ///
         ///INSERT
         ///  INTO Commands
-        ///SELECT @command_id, @command_payload
-        ///  FROM DUAL
-        /// W [rest of string was truncated]&quot;;.
+        ///SELECT @command_id, @ [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InsertEvents {
             get {

@@ -45,6 +45,11 @@
     <Compile Include="ISqlDialect.cs" />
     <Compile Include="ObjectExtensions.cs" />
     <Compile Include="SqlCommandExtensions.cs" />
+    <Compile Include="SqlMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SqlMessages.resx</DependentUpon>
+    </Compile>
     <Compile Include="StringFormattingExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BaseDialect.cs" />
@@ -67,6 +72,12 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="SqlMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SqlMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

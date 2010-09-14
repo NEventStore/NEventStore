@@ -108,7 +108,10 @@ namespace EventStore.Core.SqlStorage
 				if (this.dialect.IsDuplicateKey(exception))
 					throw new DuplicateKeyException(exception.Message, exception);
 
-				throw new StorageEngineException(exception.Message, exception);
+				var message = this.dialect.IsConstraintViolation(exception)
+					? SqlMessages.ConstraintViolation : exception.Message;
+
+				throw new StorageEngineException(message, exception);
 			}
 		}
 	}

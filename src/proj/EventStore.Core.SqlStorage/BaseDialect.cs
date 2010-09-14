@@ -6,6 +6,7 @@ namespace EventStore.Core.SqlStorage
 
 	public abstract class BaseDialect : ISqlDialect
 	{
+		private const string ConstraintViolation = "constraint";
 		private readonly IDbConnection connection;
 		private readonly IDbTransaction transaction;
 		private readonly Guid tenantId;
@@ -68,6 +69,10 @@ namespace EventStore.Core.SqlStorage
 			command.AddParameter(this.TenantId, this.tenantId);
 
 			return command;
+		}
+		public virtual bool IsConstraintViolation(DbException exception)
+		{
+			return exception.Message.ToLowerInvariant().Contains(ConstraintViolation);
 		}
 
 		public abstract bool IsDuplicateKey(DbException exception);
