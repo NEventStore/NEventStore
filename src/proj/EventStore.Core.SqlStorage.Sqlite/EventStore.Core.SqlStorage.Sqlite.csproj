@@ -54,7 +54,9 @@
     <Content Include="..\CustomDictionary.xml">
       <Link>Properties\CustomDictionary.xml</Link>
     </Content>
-    <None Include="Schema.sql" />
+    <None Include="Sqlite.Schema.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EventStore.Core.SqlStorage\EventStore.Core.SqlStorage.csproj">
