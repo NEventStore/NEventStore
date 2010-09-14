@@ -72,8 +72,7 @@ namespace EventStore.Core.SqlStorage.MsSql {
         
         /// <summary>
         ///   Looks up a localized string similar to UPDATE [Aggregates]
-        ///   SET @initial_version = 0,
-        ///       @current_version = 0
+        ///   SET [Version] = 0
         /// WHERE @initial_version &gt; 0
         ///   AND [Id] = @id
         ///   AND [TenantId] != @tenant_id;
@@ -92,7 +91,8 @@ namespace EventStore.Core.SqlStorage.MsSql {
         ///
         ///INSERT
         ///  INTO [Commands]
-        ///SELECT @comma [rest of string was truncated]&quot;;.
+        ///SELECT @command_id, @command_payload
+        /// WHERE @comm [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InsertEvents {
             get {

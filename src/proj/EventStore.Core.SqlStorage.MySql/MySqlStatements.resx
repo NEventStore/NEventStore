@@ -123,8 +123,7 @@ SELECT @id, @initial_version{0}, UTC_TIMESTAMP(), @command_id, @payload{0} UNION
   </data>
   <data name="InsertEvents" xml:space="preserve">
     <value>UPDATE Aggregates
-   SET @initial_version = 0,
-       @current_version = 0
+   SET Version = 0
  WHERE @initial_version &gt; 0
    AND Id = @id
    AND TenantId != @tenant_id;

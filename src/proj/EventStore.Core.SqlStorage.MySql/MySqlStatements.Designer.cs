@@ -72,8 +72,7 @@ namespace EventStore.Core.SqlStorage.MySql {
         
         /// <summary>
         ///   Looks up a localized string similar to UPDATE Aggregates
-        ///   SET @initial_version = 0,
-        ///       @current_version = 0
+        ///   SET Version = 0
         /// WHERE @initial_version &gt; 0
         ///   AND Id = @id
         ///   AND TenantId != @tenant_id;
@@ -92,7 +91,9 @@ namespace EventStore.Core.SqlStorage.MySql {
         ///
         ///INSERT
         ///  INTO Commands
-        ///SELECT @comman [rest of string was truncated]&quot;;.
+        ///SELECT @command_id, @command_payload
+        ///  FROM DUAL
+        /// W [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InsertEvents {
             get {
