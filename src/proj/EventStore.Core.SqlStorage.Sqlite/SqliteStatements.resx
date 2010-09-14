@@ -118,10 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="InsertEvent" xml:space="preserve">
-    <value>INSERT
-  INTO [Events]
-     ( [Id], [Version], [CommandId], [Payload] )
-SELECT @id, @initial_version{0}, @command_id, @payload{0};</value>
+    <value>SELECT @id, @initial_version{0}, @command_id, @payload{0}</value>
   </data>
   <data name="InsertEvents" xml:space="preserve">
     <value>INSERT
@@ -138,7 +135,11 @@ INSERT
 SELECT @command_id, @command_payload
  WHERE @command_id IS NOT NULL;
 
+INSERT
+  INTO [Events]
+     ( [Id], [Version], [CommandId], [Payload] )
 {0}
+SELECT NULL, NULL, NULL, NULL WHERE 1=0;
 
 UPDATE [Aggregates]
    SET [Version] = @current_version,

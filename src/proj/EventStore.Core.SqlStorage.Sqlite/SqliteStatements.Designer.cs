@@ -61,10 +61,7 @@ namespace EventStore.Core.SqlStorage.Sqlite {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INSERT
-        ///  INTO [Events]
-        ///     ( [Id], [Version], [CommandId], [Payload] )
-        ///SELECT @id, @initial_version{0}, @command_id, @payload{0};.
+        ///   Looks up a localized string similar to SELECT @id, @initial_version{0}, @command_id, @payload{0}.
         /// </summary>
         internal static string InsertEvent {
             get {
@@ -87,12 +84,14 @@ namespace EventStore.Core.SqlStorage.Sqlite {
         ///SELECT @command_id, @command_payload
         /// WHERE @command_id IS NOT NULL;
         ///
+        ///INSERT
+        ///  INTO [Events]
+        ///     ( [Id], [Version], [CommandId], [Payload] )
         ///{0}
+        ///SELECT NULL, NULL, NULL, NULL WHERE 1=0;
         ///
         ///UPDATE [Aggregates]
-        ///   SET [Version] = @current_version,
-        ///       [Snapshot] = CASE WHEN @payload IS NULL THEN [Snapshot] ELSE @current_version END,
-        ///      [rest of string was truncated]&quot;;.
+        ///   SET [Version]  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InsertEvents {
             get {
