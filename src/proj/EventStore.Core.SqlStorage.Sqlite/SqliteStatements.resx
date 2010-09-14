@@ -181,8 +181,7 @@ SELECT @id, @current_version, @payload
  ORDER BY [Version];
  
 SELECT [Payload],
-       [Version],
-       [RuntimeType]
+       [Version]
   FROM [Snapshots]
  WHERE [Id] = @id
  ORDER BY [Version] DESC

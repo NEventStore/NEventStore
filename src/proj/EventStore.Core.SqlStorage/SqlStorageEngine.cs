@@ -57,16 +57,14 @@ namespace EventStore.Core.SqlStorage
 			while (reader.Read())
 				events.Add(this.serializer.Deserialize<object>(reader[SerializedDataColumnIndex] as byte[]));
 
-			Type type = null;
 			if (reader.NextResult() && reader.Read())
 			{
 				snapshot = this.serializer.Deserialize<object>(reader[SerializedDataColumnIndex] as byte[]);
 				version = (long)reader[VersionColumnIndex];
-				type = Type.GetType((string)reader[TypeColumnIndex]);
 			}
 
 			return new CommittedEventStream(
-				id, version + events.Count, type, (ICollection)events, snapshot);
+				id, version + events.Count, (ICollection)events, snapshot);
 		}
 
 		public void Save(UncommittedEventStream stream)

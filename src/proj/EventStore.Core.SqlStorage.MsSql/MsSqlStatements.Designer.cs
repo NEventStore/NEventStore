@@ -113,8 +113,7 @@ namespace EventStore.Core.SqlStorage.MsSql {
         /// 
         ///SELECT TOP 1
         ///       [Payload],
-        ///       [Version],
-        ///       [RuntimeType]
+        ///       [Version]
         ///  FROM [Snapshots]
         /// WHERE [Id] = @id
         /// ORDER BY [Version] DESC;.

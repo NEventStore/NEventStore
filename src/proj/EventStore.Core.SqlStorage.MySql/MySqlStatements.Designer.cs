@@ -112,8 +112,7 @@ namespace EventStore.Core.SqlStorage.MySql {
         /// ORDER BY Version;
         ///
         ///SELECT Payload,
-        ///       Version,
-        ///       RuntimeType
+        ///       Version
         ///  FROM Snapshots
         /// WHERE Id = @id
         /// ORDER BY Version DESC

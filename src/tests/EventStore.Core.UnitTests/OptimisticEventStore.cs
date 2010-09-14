@@ -14,7 +14,7 @@ namespace EventStore.Core.UnitTests
 	{
 		const int StartingVerion = 17;
 		static readonly Guid id = Guid.NewGuid();
-		static readonly CommittedEventStream fromStorage = new CommittedEventStream(id, 0, null, null, null);
+		static readonly CommittedEventStream fromStorage = new CommittedEventStream(id, 0, null, null);
 
 		static CommittedEventStream actual;
 
@@ -56,7 +56,7 @@ namespace EventStore.Core.UnitTests
 		const long StartingVersion = 15;
 		const long ExpectedVersion = 17;
 		static readonly CommittedEventStream Committed = new CommittedEventStream(
-			Guid.NewGuid(), ExpectedVersion, null, null, null);
+			Guid.NewGuid(), ExpectedVersion, null, null);
 		static readonly UncommittedEventStream Uncommitted = new UncommittedEventStream
 		{
 			Id = Committed.Id,
@@ -106,7 +106,7 @@ namespace EventStore.Core.UnitTests
 		const long StartingVersion = 17;
 		const long ExpectedVersion = 42;
 		static readonly CommittedEventStream Committed = new CommittedEventStream(
-			Guid.NewGuid(), ExpectedVersion, null, null, null);
+			Guid.NewGuid(), ExpectedVersion, null, null);
 		static readonly ICollection EventsOnConcurrencyException = new object[1];
 		static readonly UncommittedEventStream Uncommitted = new UncommittedEventStream
 		{

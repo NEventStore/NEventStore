@@ -111,8 +111,7 @@ namespace EventStore.Core.SqlStorage.Sqlite {
         /// ORDER BY [Version];
         /// 
         ///SELECT [Payload],
-        ///       [Version],
-        ///       [RuntimeType]
+        ///       [Version]
         ///  FROM [Snapshots]
         /// WHERE [Id] = @id
         /// ORDER BY [Version] DESC
