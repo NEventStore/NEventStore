@@ -33,7 +33,7 @@ namespace EventStore.Core
 		private static bool CanWrite(UncommittedEventStream stream)
 		{
 			return stream != null
-				&& (stream.Snapshot != null || stream.Events != null && stream.Events.Count > 0);
+				&& (stream.Snapshot != null || (stream.Events != null && stream.Events.Count > 0));
 		}
 		private void WrapAndThrow(UncommittedEventStream stream, Exception innerException)
 		{

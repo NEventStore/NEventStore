@@ -1,15 +1,16 @@
 namespace EventStore.Core.SqlStorage.MySql
 {
+	using System;
 	using System.Data;
 	using System.Data.Common;
 
-	public sealed class MySqlDialect : SqlDialect
+	public sealed class MySqlDialect : BaseDialect
 	{
 		private const string DuplicateEntryText = "Duplicate entry";
 		private const string KeyViolationText = "for key";
 
-		public MySqlDialect(IDbConnection connection, IDbTransaction transaction)
-			: base(connection, transaction)
+		public MySqlDialect(IDbConnection connection, IDbTransaction transaction, Guid tenantId)
+			: base(connection, transaction, tenantId)
 		{
 		}
 

@@ -12,10 +12,10 @@ namespace EventStore.Core.SqlStorage
 		private const int SerializedDataColumnIndex = 0;
 		private const int VersionColumnIndex = 1;
 		private const int TypeColumnIndex = 2;
-		private readonly SqlDialect dialect;
+		private readonly ISqlDialect dialect;
 		private readonly ISerialize serializer;
 
-		public SqlStorageEngine(SqlDialect dialect, ISerialize serializer)
+		public SqlStorageEngine(ISqlDialect dialect, ISerialize serializer)
 		{
 			this.dialect = dialect;
 			this.serializer = serializer;

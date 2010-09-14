@@ -1,22 +1,29 @@
 namespace EventStore.Core.SqlStorage
 {
+	using System;
 	using System.Data;
 	using System.Data.Common;
 
-	public abstract class SqlDialect
+	public abstract class BaseDialect : ISqlDialect
 	{
 		private readonly IDbConnection connection;
 		private readonly IDbTransaction transaction;
+		private readonly Guid tenantId;
 
-		protected SqlDialect(IDbConnection connection, IDbTransaction transaction)
+		protected BaseDialect(IDbConnection connection, IDbTransaction transaction, Guid tenantId)
 		{
 			this.connection = connection;
 			this.transaction = transaction;
+			this.tenantId = tenantId; // shared schema: http://msdn.microsoft.com/en-us/library/aa479086.aspx
 		}
 
 		public virtual string Id
 		{
 			get { return "@id"; }
+		}
+		public virtual string TenantId
+		{
+			get { return "@tenant_id"; }
 		}
 		public virtual string InitialVersion
 		{
@@ -58,6 +65,8 @@ namespace EventStore.Core.SqlStorage
 			var command = this.connection.CreateCommand();
 			command.CommandText = commandText;
 			command.Transaction = this.transaction;
+			command.AddParameter(this.TenantId, this.tenantId);
+
 			return command;
 		}
 

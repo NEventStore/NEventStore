@@ -8,7 +8,8 @@ DROP TABLE Aggregates;
 CREATE TABLE Aggregates
 (
     Id BINARY(16) NOT NULL,
-    Version BIGINT NOT NULL CHECK (Version >= 0),
+    TenantId BINARY(16) NOT NULL,
+    Version BIGINT NOT NULL CHECK (Version > 0),
     Snapshot BIGINT NOT NULL CHECK (Snapshot >= 0),
     Created DATETIME NOT NULL,
     RuntimeType NVARCHAR(256) NOT NULL,

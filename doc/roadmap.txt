@@ -1,4 +1,3 @@
-Optional multi-tenant support
 Better transaction management/better API for SqlDialect
 Make OptimisticEventStore multi-threaded and singleton scoped?
 Refactor weird and optional "command" stuff on the uncommitted event stream

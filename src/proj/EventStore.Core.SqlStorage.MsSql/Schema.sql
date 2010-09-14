@@ -8,7 +8,8 @@ DROP TABLE Aggregates;
 CREATE TABLE [dbo].[Aggregates]
 (
     [Id] [uniqueidentifier] NOT NULL,
-    [Version] [bigint] NOT NULL CHECK ([Version] >= 0),
+    [TenantId] [uniqueidentifier] NOT NULL,
+    [Version] [bigint] NOT NULL CHECK ([Version] > 0),
     [Snapshot] [bigint] NOT NULL CHECK ([Snapshot] >= 0),
     [Created] [datetime] NOT NULL DEFAULT (GETUTCDATE()),
     [RuntimeType] [nvarchar](256) NOT NULL,

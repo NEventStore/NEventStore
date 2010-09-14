@@ -1,16 +1,17 @@
 namespace EventStore.Core.SqlStorage.MsSql
 {
+	using System;
 	using System.Data;
 	using System.Data.Common;
 	using System.Data.SqlClient;
 
-	public sealed class MsSqlDialect : SqlDialect
+	public sealed class MsSqlDialect : BaseDialect
 	{
 		private const int PrimaryKeyViolation = 2627;
 		private const int UniqueIndexViolation = 2601;
 
-		public MsSqlDialect(IDbConnection connection, IDbTransaction transaction)
-			: base(connection, transaction)
+		public MsSqlDialect(IDbConnection connection, IDbTransaction transaction, Guid tenantId)
+			: base(connection, transaction, tenantId)
 		{
 		}
 

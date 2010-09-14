@@ -121,10 +121,18 @@
     <value>SELECT @id, @initial_version{0}, @command_id, @payload{0}</value>
   </data>
   <data name="InsertEvents" xml:space="preserve">
-    <value>INSERT
+    <value>UPDATE [Aggregates]
+   SET @initial_version = 0,
+       @current_versio = 0
+ WHERE @initial_version &gt; 0
+   AND [Id] = @id
+   AND [TenantId] != @tenant_id;
+
+INSERT
   INTO [Aggregates]
-     ( [Id], [Version], [Snapshot], [RuntimeType] )
+     ( [Id], [TenantId], [Version], [Snapshot], [RuntimeType] )
 SELECT @id,
+       @tenant_id,
        @current_version,
        CASE WHEN @payload IS NULL THEN 0 ELSE @current_version END AS [Snapshot],
        @type

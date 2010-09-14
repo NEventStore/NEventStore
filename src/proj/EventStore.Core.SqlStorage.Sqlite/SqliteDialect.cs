@@ -1,15 +1,16 @@
 namespace EventStore.Core.SqlStorage.Sqlite
 {
+	using System;
 	using System.Data;
 	using System.Data.Common;
 
-	public sealed class SqliteDialect : SqlDialect
+	public sealed class SqliteDialect : BaseDialect
 	{
 		private const string ConstraintViolation = "constraint";
 		private const string UniqueViolation = "unique";
 
-		public SqliteDialect(IDbConnection connection, IDbTransaction transaction)
-			: base(connection, transaction)
+		public SqliteDialect(IDbConnection connection, IDbTransaction transaction, Guid tenantId)
+			: base(connection, transaction, tenantId)
 		{
 		}
 

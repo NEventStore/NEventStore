@@ -8,7 +8,8 @@ DROP TABLE Aggregates;
 CREATE TABLE [Aggregates]
 (
     [Id] GUID NOT NULL,
-    [Version] BIGINT NOT NULL CHECK ([Version] >= 0),
+    [TenantId] GUID NOT NULL,
+    [Version] BIGINT NOT NULL CHECK ([Version] > 0),
     [Snapshot] BIGINT NOT NULL CHECK ([Snapshot] >= 0),
     [Created] DATETIME NOT NULL DEFAULT (datetime('now')),
     [RuntimeType] NVARCHAR(256) NOT NULL,

@@ -71,10 +71,18 @@ namespace EventStore.Core.SqlStorage.MySql {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INSERT
+        ///   Looks up a localized string similar to UPDATE Aggregates
+        ///   SET @initial_version = 0,
+        ///       @current_version = 0
+        /// WHERE @initial_version &gt; 0
+        ///   AND Id = @id
+        ///   AND TenantId != @tenant_id;
+        ///
+        ///INSERT
         ///  INTO Aggregates
-        ///     ( Id, Version, Snapshot, Created, RuntimeType )
+        ///     ( Id, TenantId, Version, Snapshot, Created, RuntimeType )
         ///SELECT @id,
+        ///       @tenant_id,
         ///       @current_version,
         ///       CASE WHEN @payload IS NULL THEN 0 ELSE @current_version END AS Snapshot,
         ///       UTC_TIMESTAMP(),
@@ -84,15 +92,7 @@ namespace EventStore.Core.SqlStorage.MySql {
         ///
         ///INSERT
         ///  INTO Commands
-        ///SELECT @command_id, @command_payload
-        ///  FROM DUAL
-        /// WHERE @command_id IS NOT NULL;
-        ///
-        ///INSERT
-        ///  INTO Events
-        ///     ( Id, Version, Created, CommandId, Payload )
-        ///{0}
-        ///SELECT NULL, NULL, NULL, NULL, NULL W [rest of string was truncated]&quot;;.
+        ///SELECT @comman [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InsertEvents {
             get {
