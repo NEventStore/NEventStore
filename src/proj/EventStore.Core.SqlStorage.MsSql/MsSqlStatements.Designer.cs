@@ -61,7 +61,8 @@ namespace EventStore.Core.SqlStorage.MsSql {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT @id, @initial_version{0}, @command_id, @payload{0} UNION ALL.
+        ///   Looks up a localized string similar to 
+        ///SELECT @id, @initial_version{0},@command_id, @payload{0} UNION ALL.
         /// </summary>
         internal static string InsertEvent {
             get {
