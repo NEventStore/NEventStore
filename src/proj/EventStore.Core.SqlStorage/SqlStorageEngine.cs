@@ -11,7 +11,6 @@ namespace EventStore.Core.SqlStorage
 	{
 		private const int SerializedDataColumnIndex = 0;
 		private const int VersionColumnIndex = 1;
-		private const int TypeColumnIndex = 2;
 		private readonly ISqlDialect dialect;
 		private readonly ISerialize serializer;
 
