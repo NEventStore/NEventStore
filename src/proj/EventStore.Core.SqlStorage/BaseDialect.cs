@@ -13,9 +13,15 @@ namespace EventStore.Core.SqlStorage
 
 		protected BaseDialect(IDbConnection connection, IDbTransaction transaction, Guid tenantId)
 		{
+			// Guid.Empty = no paritioning whatsoever.
+			// Note that the shared schema approach is utilized here
+			// http://msdn.microsoft.com/en-us/library/aa479086.aspx
+			// If another paritioning schema is desired, you'll want to implement a custom
+			// ISqlDialect that has its own unique constructor as well as its own
+			// batch of that fit your partitioning scheme.
 			this.connection = connection;
 			this.transaction = transaction;
-			this.tenantId = tenantId; // shared schema: http://msdn.microsoft.com/en-us/library/aa479086.aspx
+			this.tenantId = tenantId;
 		}
 
 		public virtual string Id
@@ -66,7 +72,7 @@ namespace EventStore.Core.SqlStorage
 			var command = this.connection.CreateCommand();
 			command.CommandText = commandText;
 			command.Transaction = this.transaction;
-			command.AddParameter(this.TenantId, this.tenantId);
+			command.AddParameter(this.TenantId, this.tenantId.ToNull());
 
 			return command;
 		}
