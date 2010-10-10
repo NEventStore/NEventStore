@@ -24,7 +24,7 @@ namespace EventStore
 		public long ExpectedVersion { get; set; }
 
 		/// <summary>
-		/// Gets or sets the optional value which uniquely identifies the command identifier for the events being persisted.
+		/// Gets or sets the optional value which uniquely identifies the command for the events being persisted.
 		/// </summary>
 		public Guid CommandId { get; set; }
 

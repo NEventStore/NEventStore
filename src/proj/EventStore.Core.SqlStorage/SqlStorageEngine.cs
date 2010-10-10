@@ -7,14 +7,14 @@ namespace EventStore.Core.SqlStorage
 	using System.Data.Common;
 	using System.Text;
 
-	public class SqlStorageEngine : IAdaptStorage
+	public class SqlStorageEngine : IStorageEngine
 	{
 		private const int SerializedDataColumnIndex = 0;
 		private const int VersionColumnIndex = 1;
 		private readonly ISqlDialect dialect;
-		private readonly ISerialize serializer;
+		private readonly ISerializeObjects serializer;
 
-		public SqlStorageEngine(ISqlDialect dialect, ISerialize serializer)
+		public SqlStorageEngine(ISqlDialect dialect, ISerializeObjects serializer)
 		{
 			this.dialect = dialect;
 			this.serializer = serializer;
@@ -34,7 +34,7 @@ namespace EventStore.Core.SqlStorage
 		public ICollection LoadByCommandId(Guid commandId)
 		{
 			if (commandId == Guid.Empty)
-				return new object[0];
+				return new object[] {};
 
 			return this.Load(commandId, 0, this.dialect.SelectEventsForCommand).Events;
 		}
@@ -44,7 +44,7 @@ namespace EventStore.Core.SqlStorage
 			{
 				command.AddParameter(this.dialect.Id, id.ToNull());
 				command.AddParameter(this.dialect.CurrentVersion, version.ToNull());
-				using (var reader = this.WrapOnFailure(() => command.ExecuteReader()))
+				using (var reader = this.WrapOnFailure(command.ExecuteReader))
 					return this.BuildStream(id, version, reader);
 			}
 		}
@@ -62,8 +62,7 @@ namespace EventStore.Core.SqlStorage
 				version = (long)reader[VersionColumnIndex];
 			}
 
-			return new CommittedEventStream(
-				id, version + events.Count, (ICollection)events, snapshot);
+			return new CommittedEventStream(id, version + events.Count, (ICollection)events, snapshot);
 		}
 
 		public void Save(UncommittedEventStream stream)
@@ -79,7 +78,7 @@ namespace EventStore.Core.SqlStorage
 				command.AddParameter(this.dialect.Payload, this.serializer.Serialize(stream.Snapshot));
 
 				this.AddEventsToDbCommand(command, stream, stream.ExpectedVersion);
-				this.WrapOnFailure(() => command.ExecuteNonQuery());
+				this.WrapOnFailure(command.ExecuteNonQuery);
 			}
 		}
 		private void AddEventsToDbCommand(IDbCommand command, UncommittedEventStream stream, long version)

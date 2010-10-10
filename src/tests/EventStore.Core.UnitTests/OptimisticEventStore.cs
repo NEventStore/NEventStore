@@ -192,12 +192,12 @@ namespace EventStore.Core.UnitTests
 
 	public abstract class with_the_event_stream
 	{
-		protected static Mock<IAdaptStorage> storageEngine;
+		protected static Mock<IStorageEngine> storageEngine;
 		protected static OptimisticEventStore eventStore;
 
 		Establish context = () =>
 		{
-			storageEngine = new Mock<IAdaptStorage>();
+			storageEngine = new Mock<IStorageEngine>();
 			eventStore = new OptimisticEventStore(storageEngine.Object);
 		};
 	}

@@ -4,7 +4,7 @@ namespace EventStore.Core
 	using System.Runtime.Serialization;
 	using System.Runtime.Serialization.Formatters.Binary;
 
-	public class DefaultSerializer : ISerialize
+	public class DefaultSerializer : ISerializeObjects
 	{
 		private readonly IFormatter formatter = new BinaryFormatter();
 

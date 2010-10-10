@@ -3,7 +3,7 @@ namespace EventStore
 	/// <summary>
 	/// Provides the ability to serialize and deserialize an object graph.
 	/// </summary>
-	public interface ISerialize
+	public interface ISerializeObjects
 	{
 		/// <summary>
 		/// Serializes the object graph provided.

@@ -55,8 +55,8 @@
     <Compile Include="IStoreEvents.cs" />
     <Compile Include="UncommittedEventStream.cs" />
     <Compile Include="StorageEngineException.cs" />
-    <Compile Include="ISerialize.cs" />
-    <Compile Include="IAdaptStorage.cs" />
+    <Compile Include="ISerializeObjects.cs" />
+    <Compile Include="IStorageEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

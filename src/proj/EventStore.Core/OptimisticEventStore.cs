@@ -4,9 +4,9 @@ namespace EventStore.Core
 
 	public class OptimisticEventStore : IStoreEvents
 	{
-		private readonly IAdaptStorage storage;
+		private readonly IStorageEngine storage;
 
-		public OptimisticEventStore(IAdaptStorage storage)
+		public OptimisticEventStore(IStorageEngine storage)
 		{
 			this.storage = storage;
 		}

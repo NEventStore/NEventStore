@@ -47,8 +47,7 @@
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ISqlDialect.cs" />
-    <Compile Include="ObjectExtensions.cs" />
-    <Compile Include="SqlCommandExtensions.cs" />
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="SqlMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

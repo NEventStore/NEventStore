@@ -6,7 +6,7 @@ namespace EventStore
 	/// <summary>
 	/// Adapts the underlying persistence infrastructure to facilitate event sourcing.
 	/// </summary>
-	public interface IAdaptStorage
+	public interface IStorageEngine
 	{
 		/// <summary>
 		/// Reads all events for the specified aggregate.
