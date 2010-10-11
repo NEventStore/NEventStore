@@ -43,8 +43,27 @@
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CommandBuilder.cs" />
+    <Compile Include="DialectAdapters\MsSqlDialectAdapter.cs" />
+    <Compile Include="DialectAdapters\MsSqlStatements.Designer.cs">
+      <DependentUpon>MsSqlStatements.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="DialectAdapters\MySqlDialectAdapter.cs" />
+    <Compile Include="DialectAdapters\MySqlStatements.Designer.cs">
+      <DependentUpon>MySqlStatements.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="DialectAdapters\SqliteDialectAdapter.cs" />
+    <Compile Include="DialectAdapters\SqliteStatements.Designer.cs">
+      <DependentUpon>SqliteStatements.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="DynamicSqlStatementBuilder.cs" />
     <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="IAdaptDynamicSqlDialect.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -65,6 +84,21 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DialectAdapters\MsSqlStatements.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MsSqlStatements.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DialectAdapters\MySqlStatements.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MySqlStatements.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DialectAdapters\SqliteStatements.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SqliteStatements.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

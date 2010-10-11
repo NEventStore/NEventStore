@@ -8,11 +8,5 @@ namespace EventStore.SqlStorage
 
 		bool IsConstraintViolation(DbException exception);
 		bool IsDuplicateKey(DbException exception);
-
-		string GetSelectEventsQuery { get; }
-		string GetSelectEventsForCommandQuery { get; }
-		string GetSelectEventsForVersionQuery { get; }
-		string GetInsertEventsCommand { get; }
-		string GetInsertEventCommand { get; }
 	}
 }

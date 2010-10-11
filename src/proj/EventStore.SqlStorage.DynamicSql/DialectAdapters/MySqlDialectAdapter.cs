@@ -1,8 +1,8 @@
-namespace EventStore.SqlStorage.DialectAdapters
+namespace EventStore.SqlStorage.DynamicSql.DialectAdapters
 {
 	using System.Data.Common;
 
-	public class MySqlDialectAdapter : CommonSqlDialectAdapter
+	public class MySqlDialectAdapter : CommonSqlDialectAdapter, IAdaptDynamicSqlDialect
 	{
 		private const string DuplicateEntryText = "Duplicate entry";
 		private const string KeyViolationText = "for key";
@@ -16,23 +16,23 @@ namespace EventStore.SqlStorage.DialectAdapters
 			return message.Contains(DuplicateEntryText) && message.Contains(KeyViolationText);
 		}
 
-		public override string GetSelectEventsQuery
+		public virtual string GetSelectEventsQuery
 		{
 			get { return MySqlStatements.SelectEvents; }
 		}
-		public override string GetSelectEventsForCommandQuery
+		public virtual string GetSelectEventsForCommandQuery
 		{
 			get { return MySqlStatements.SelectEventsForCommand; }
 		}
-		public override string GetSelectEventsForVersionQuery
+		public virtual string GetSelectEventsForVersionQuery
 		{
 			get { return MySqlStatements.SelectEventsForVersion; }
 		}
-		public override string GetInsertEventsCommand
+		public virtual string GetInsertEventsCommand
 		{
 			get { return MySqlStatements.InsertEvents; }
 		}
-		public override string GetInsertEventCommand
+		public virtual string GetInsertEventCommand
 		{
 			get { return MySqlStatements.InsertEvent; }
 		}

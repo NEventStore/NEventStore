@@ -1,4 +1,4 @@
-namespace EventStore.SqlStorage.DialectAdapters
+namespace EventStore.SqlStorage
 {
 	using System.Data.Common;
 
@@ -17,11 +17,5 @@ namespace EventStore.SqlStorage.DialectAdapters
 			return exception.Message.ToLowerInvariant().Contains(ConstraintViolation);
 		}
 		public abstract bool IsDuplicateKey(DbException exception);
-
-		public abstract string GetSelectEventsQuery { get; }
-		public abstract string GetSelectEventsForCommandQuery { get; }
-		public abstract string GetSelectEventsForVersionQuery { get; }
-		public abstract string GetInsertEventsCommand { get; }
-		public abstract string GetInsertEventCommand { get; }
 	}
 }

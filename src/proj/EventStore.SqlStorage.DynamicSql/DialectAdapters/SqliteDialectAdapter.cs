@@ -1,8 +1,8 @@
-namespace EventStore.SqlStorage.DialectAdapters
+namespace EventStore.SqlStorage.DynamicSql.DialectAdapters
 {
 	using System.Data.Common;
 
-	public class SqliteDialectAdapter : CommonSqlDialectAdapter
+	public class SqliteDialectAdapter : CommonSqlDialectAdapter, IAdaptDynamicSqlDialect
 	{
 		private const string ConstraintViolation = "constraint";
 		private const string UniqueViolation = "unique";
@@ -13,23 +13,23 @@ namespace EventStore.SqlStorage.DialectAdapters
 			return message.Contains(ConstraintViolation) && message.Contains(UniqueViolation);
 		}
 
-		public override string GetSelectEventsQuery
+		public virtual string GetSelectEventsQuery
 		{
 			get { return SqliteStatements.SelectEvents; }
 		}
-		public override string GetSelectEventsForCommandQuery
+		public virtual string GetSelectEventsForCommandQuery
 		{
 			get { return SqliteStatements.SelectEventsForCommand; }
 		}
-		public override string GetSelectEventsForVersionQuery
+		public virtual string GetSelectEventsForVersionQuery
 		{
 			get { return SqliteStatements.SelectEventsForVersion; }
 		}
-		public override string GetInsertEventsCommand
+		public virtual string GetInsertEventsCommand
 		{
 			get { return SqliteStatements.InsertEvents; }
 		}
-		public override string GetInsertEventCommand
+		public virtual string GetInsertEventCommand
 		{
 			get { return SqliteStatements.InsertEvent; }
 		}
