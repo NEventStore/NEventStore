@@ -1,6 +1,7 @@
-namespace EventStore.SqlStorage.MySql
+namespace EventStore.SqlStorage.DynamicSql
 {
 	using System.Data.Common;
+	using DynamicSql;
 
 	public sealed class DynamicMySqlStatementPreparer : DynamicSqlStatementPreparer
 	{

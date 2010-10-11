@@ -15,6 +15,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.SqlStorage", "pr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.SqlStorage.UnitTests", "tests\EventStore.SqlStorage.UnitTests\EventStore.SqlStorage.UnitTests.csproj", "{882CB5B7-5851-4AB9-8BB1-2EDD2AF41C6D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.SqlStorage.DynamicSql", "proj\EventStore.SqlStorage.DynamicSql\EventStore.SqlStorage.DynamicSql.csproj", "{974B43B4-27FD-4CA4-85BF-4225210BDD70}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{CD37080A-F48D-4E5D-B7C6-B9F86BB05A38}"
+	ProjectSection(SolutionItems) = preProject
+		..\doc\license.txt = ..\doc\license.txt
+		..\doc\MsSql.Schema.sql = ..\doc\MsSql.Schema.sql
+		..\doc\MySql.Schema.sql = ..\doc\MySql.Schema.sql
+		..\doc\roadmap.txt = ..\doc\roadmap.txt
+		..\doc\Sqlite.Schema.sql = ..\doc\Sqlite.Schema.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +52,10 @@ Global
 		{882CB5B7-5851-4AB9-8BB1-2EDD2AF41C6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{882CB5B7-5851-4AB9-8BB1-2EDD2AF41C6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{882CB5B7-5851-4AB9-8BB1-2EDD2AF41C6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{974B43B4-27FD-4CA4-85BF-4225210BDD70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{974B43B4-27FD-4CA4-85BF-4225210BDD70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{974B43B4-27FD-4CA4-85BF-4225210BDD70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{974B43B4-27FD-4CA4-85BF-4225210BDD70}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -49,6 +64,7 @@ Global
 		{03946843-F343-419C-88EF-3E446D08DFA6} = {9DE51CC0-6902-49F5-9B69-B29454DE7164}
 		{D6413244-42F5-4233-B347-D0A804B09CC9} = {9DE51CC0-6902-49F5-9B69-B29454DE7164}
 		{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1} = {9DE51CC0-6902-49F5-9B69-B29454DE7164}
+		{974B43B4-27FD-4CA4-85BF-4225210BDD70} = {9DE51CC0-6902-49F5-9B69-B29454DE7164}
 		{3B5F8277-F29E-4114-AE81-4A4FBF2D7FA5} = {D3C17830-A461-4BA5-A672-461B19B33936}
 		{882CB5B7-5851-4AB9-8BB1-2EDD2AF41C6D} = {D3C17830-A461-4BA5-A672-461B19B33936}
 	EndGlobalSection

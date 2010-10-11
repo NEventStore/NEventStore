@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace EventStore.SqlStorage.MySql {
+namespace EventStore.SqlStorage.DynamicSql {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace EventStore.SqlStorage.MySql {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.SqlStorage.MySql.MySqlStatements", typeof(MySqlStatements).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.SqlStorage.DynamicSql.MySqlStatements", typeof(MySqlStatements).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

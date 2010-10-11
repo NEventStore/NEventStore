@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace EventStore.SqlStorage.Sqlite {
+namespace EventStore.SqlStorage.DynamicSql {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace EventStore.SqlStorage.Sqlite {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class SqliteStatements {
+    internal class MsSqlStatements {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal SqliteStatements() {
+        internal MsSqlStatements() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace EventStore.SqlStorage.Sqlite {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.SqlStorage.Sqlite.SqliteStatements", typeof(SqliteStatements).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.SqlStorage.DynamicSql.MsSqlStatements", typeof(MsSqlStatements).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -62,7 +62,7 @@ namespace EventStore.SqlStorage.Sqlite {
         
         /// <summary>
         ///   Looks up a localized string similar to 
-        ///SELECT @id, @initial_version{0}, @command_id, @payload{0} UNION ALL.
+        ///SELECT @id, @initial_version{0},@command_id, @payload{0} UNION ALL.
         /// </summary>
         internal static string InsertEvent {
             get {
@@ -87,8 +87,7 @@ namespace EventStore.SqlStorage.Sqlite {
         ///       @type
         /// WHERE @initial_version = 0;
         ///
-        ///INSERT
-        ///  INTO [Comman [rest of string was truncated]&quot;;.
+        ///IF @@ERROR &gt; 0 RETURN; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InsertEvents {
             get {
@@ -107,12 +106,12 @@ namespace EventStore.SqlStorage.Sqlite {
         ///          AND [Version] &lt;= COALESCE(@current_version, [Version]) )
         /// ORDER BY [Version];
         /// 
-        ///SELECT [Payload],
+        ///SELECT TOP 1
+        ///       [Payload],
         ///       [Version]
         ///  FROM [Snapshots]
         /// WHERE [Id] = @id
-        /// ORDER BY [Version] DESC
-        /// LIMIT 1;.
+        /// ORDER BY [Version] DESC;.
         /// </summary>
         internal static string SelectEvents {
             get {
@@ -136,7 +135,7 @@ namespace EventStore.SqlStorage.Sqlite {
         ///   Looks up a localized string similar to SELECT [Payload]
         ///  FROM [Events]
         /// WHERE [Id] = @id
-        ///   AND [Version] &gt; COALESCE(@current_version, [Version])
+        ///   AND [Version] &gt; COALESCE(@current_version, 0)
         /// ORDER BY [Version];.
         /// </summary>
         internal static string SelectEventsForVersion {

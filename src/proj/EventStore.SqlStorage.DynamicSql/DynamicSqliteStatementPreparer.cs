@@ -1,4 +1,4 @@
-namespace EventStore.SqlStorage.Sqlite
+namespace EventStore.SqlStorage.DynamicSql
 {
 	using System.Data.Common;
 
