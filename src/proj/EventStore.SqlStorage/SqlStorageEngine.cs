@@ -21,29 +21,29 @@ namespace EventStore.SqlStorage
 
 		public CommittedEventStream LoadById(Guid id, long maxStartingVersion)
 		{
-			return this.Load(id, this.builder.BuildLoadByIdQuery(id, maxStartingVersion));
+			using (var query = this.builder.BuildLoadByIdQuery(id, maxStartingVersion))
+			using (var reader = this.WrapOnFailure(query.ExecuteReader))
+				return this.BuildStream(reader, id);
 		}
 		public ICollection LoadStartingAfter(Guid id, long version)
 		{
 			if (id == Guid.Empty)
 				return new object[0];
 
-			return this.Load(id, this.builder.BuildLoadStartingAfterQuery(id, version)).Events;
+			using (var query = this.builder.BuildLoadStartingAfterQuery(id, version))
+			using (var reader = this.WrapOnFailure(query.ExecuteReader))
+				return this.BuildStream(reader, Guid.Empty).Events;
 		}
 		public ICollection LoadByCommandId(Guid commandId)
 		{
 			if (commandId == Guid.Empty)
 				return new object[] { };
 
-			return this.Load(Guid.Empty, this.builder.BuildLoadByCommandIdQuery(commandId)).Events;
-		}
-		private CommittedEventStream Load(Guid id, IDbCommand query)
-		{
-			using (query)
+			using (var query = this.builder.BuildLoadByCommandIdQuery(commandId))
 			using (var reader = this.WrapOnFailure(query.ExecuteReader))
-				return this.BuildStream(id, reader);
+				return this.BuildStream(reader, Guid.Empty).Events;
 		}
-		private CommittedEventStream BuildStream(Guid id, IDataReader reader)
+		private CommittedEventStream BuildStream(IDataReader reader, Guid id)
 		{
 			ICollection<object> events = new LinkedList<object>();
 			object snapshot = null;
@@ -78,8 +78,8 @@ namespace EventStore.SqlStorage
 					throw new DuplicateKeyException(exception.Message, exception);
 
 				var message = this.builder.Dialect.IsConstraintViolation(exception)
-				              	? SqlMessages.ConstraintViolation
-				              	: exception.Message;
+					? SqlMessages.ConstraintViolation
+					: exception.Message;
 
 				throw new StorageEngineException(message, exception);
 			}
