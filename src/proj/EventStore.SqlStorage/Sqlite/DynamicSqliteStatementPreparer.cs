@@ -1,4 +1,4 @@
-namespace EventStore.Core.SqlStorage.Sqlite
+namespace EventStore.SqlStorage.Sqlite
 {
 	using System.Data.Common;
 

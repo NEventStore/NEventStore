@@ -8,8 +8,8 @@
     <ProjectGuid>{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EventStore.Core.SqlStorage</RootNamespace>
-    <AssemblyName>EventStore.Core.SqlStorage</AssemblyName>
+    <RootNamespace>EventStore.SqlStorage</RootNamespace>
+    <AssemblyName>EventStore.SqlStorage</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SignAssembly>true</SignAssembly>

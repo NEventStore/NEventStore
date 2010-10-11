@@ -1,7 +1,7 @@
 #pragma warning disable 169
 // ReSharper disable InconsistentNaming
 
-namespace EventStore.Core.SqlStorage.UnitTests
+namespace EventStore.SqlStorage.UnitTests
 {
 	using Machine.Specifications;
 

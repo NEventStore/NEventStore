@@ -1,4 +1,4 @@
-namespace EventStore.Core.SqlStorage.MsSql
+namespace EventStore.SqlStorage.MsSql
 {
 	using System.Data.Common;
 	using System.Data.SqlClient;

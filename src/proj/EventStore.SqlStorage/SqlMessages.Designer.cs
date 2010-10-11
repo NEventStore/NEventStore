@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace EventStore.Core.SqlStorage {
+namespace EventStore.SqlStorage {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace EventStore.Core.SqlStorage {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.Core.SqlStorage.SqlMessages", typeof(SqlMessages).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.SqlStorage.SqlMessages", typeof(SqlMessages).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

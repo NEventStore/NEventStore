@@ -1,4 +1,4 @@
-namespace EventStore.Core.SqlStorage.MySql
+namespace EventStore.SqlStorage.MySql
 {
 	using System.Data.Common;
 

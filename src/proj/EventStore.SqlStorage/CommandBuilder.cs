@@ -1,4 +1,4 @@
-namespace EventStore.Core.SqlStorage
+namespace EventStore.SqlStorage
 {
 	using System.Data;
 
