@@ -4,12 +4,12 @@ namespace EventStore.SqlStorage.DynamicSql
 	using System.Data;
 	using System.Text;
 
-	public abstract class DynamicSqlStatementBuilder : IBuildStatements
+	public class DynamicSqlStatementBuilder : IBuildStatements
 	{
 		private readonly CommandBuilder builder;
 		private readonly IAdaptDynamicSqlDialect dialect;
 
-		protected DynamicSqlStatementBuilder(CommandBuilder builder, IAdaptDynamicSqlDialect dialect)
+		public DynamicSqlStatementBuilder(CommandBuilder builder, IAdaptDynamicSqlDialect dialect)
 		{
 			this.builder = builder;
 			this.dialect = dialect;

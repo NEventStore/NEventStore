@@ -3,21 +3,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{882CB5B7-5851-4AB9-8BB1-2EDD2AF41C6D}</ProjectGuid>
+    <ProjectGuid>{1F70CE1A-79EC-44B1-B71F-ED0C04D51520}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EventStore.SqlStorage.UnitTests</RootNamespace>
-    <AssemblyName>EventStore.SqlStorage.UnitTests</AssemblyName>
+    <RootNamespace>EventStore.Core.IntegrationTests</RootNamespace>
+    <AssemblyName>EventStore.Core.IntegrationTests</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-	  <SignAssembly>true</SignAssembly>
-	  <AssemblyOriginatorKeyFile>..\..\EventStore.snk</AssemblyOriginatorKeyFile>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <UpgradeBackupLocation />
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\EventStore.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -46,25 +42,23 @@
     <Compile Include="..\..\proj\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="EventStoreFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SqlStorageEngine.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Machine.Specifications, Version=0.3.0.0, Culture=neutral, PublicKeyToken=5c474de7a495cff1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\bin\machine.specifications-bin\Machine.Specifications.dll</HintPath>
-    </Reference>
-    <Reference Include="Moq, Version=4.0.10531.7, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\bin\moq-bin\Moq.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
+    <Content Include="..\..\proj\CustomDictionary.xml">
+      <Link>Properties\CustomDictionary.xml</Link>
+    </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\proj\EventStore.Core\EventStore.Core.csproj">
+      <Project>{D6413244-42F5-4233-B347-D0A804B09CC9}</Project>
+      <Name>EventStore.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\proj\EventStore.SqlStorage.DynamicSql\EventStore.SqlStorage.DynamicSql.csproj">
+      <Project>{974B43B4-27FD-4CA4-85BF-4225210BDD70}</Project>
+      <Name>EventStore.SqlStorage.DynamicSql</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\proj\EventStore.SqlStorage\EventStore.SqlStorage.csproj">
       <Project>{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}</Project>
       <Name>EventStore.SqlStorage</Name>
@@ -75,9 +69,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\proj\CustomDictionary.xml">
-      <Link>Properties\CustomDictionary.xml</Link>
-    </Content>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
