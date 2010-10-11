@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace EventStore.SqlStorage.DynamicSql {
+namespace EventStore.SqlStorage.DialectAdapters {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace EventStore.SqlStorage.DynamicSql {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class MySqlStatements {
+    internal class SqliteStatements {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal MySqlStatements() {
+        internal SqliteStatements() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace EventStore.SqlStorage.DynamicSql {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.SqlStorage.DynamicSql.MySqlStatements", typeof(MySqlStatements).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.SqlStorage.DialectAdapters.SqliteStatements", typeof(SqliteStatements).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -62,7 +62,7 @@ namespace EventStore.SqlStorage.DynamicSql {
         
         /// <summary>
         ///   Looks up a localized string similar to 
-        ///SELECT @id, @initial_version{0}, UTC_TIMESTAMP(), @command_id, @payload{0} UNION ALL.
+        ///SELECT @id, @initial_version{0}, @command_id, @payload{0} UNION ALL.
         /// </summary>
         internal static string InsertEvent {
             get {
@@ -71,24 +71,24 @@ namespace EventStore.SqlStorage.DynamicSql {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to UPDATE Aggregates
-        ///   SET Version = NULL
+        ///   Looks up a localized string similar to UPDATE [Aggregates]
+        ///   SET [Version] = NULL
         /// WHERE @initial_version &gt; 0
-        ///   AND Id = @id
-        ///   AND ((@tenant_id IS NOT NULL AND TenantId != @tenant_id) OR @initial_version &gt; Version);
+        ///   AND [Id] = @id
+        ///   AND ((@tenant_id IS NOT NULL AND [TenantId] != @tenant_id) OR @initial_version &gt; [Version]);
         ///
         ///INSERT
-        ///  INTO Aggregates
-        ///     ( Id, TenantId, Version, Snapshot, Created, RuntimeType )
+        ///  INTO [Aggregates]
+        ///     ( [Id], [TenantId], [Version], [Snapshot], [RuntimeType] )
         ///SELECT @id,
         ///       COALESCE(@tenant_id, 0x0),
         ///       @current_version,
-        ///       CASE WHEN @payload IS NULL THEN 0 ELSE @current_version END AS Snapshot,
-        ///       UTC_TIMESTAMP(),
+        ///       CASE WHEN @payload IS NULL THEN 0 ELSE @current_version END AS [Snapshot],
         ///       @type
-        ///  FROM DUAL
         /// WHERE @initial_version = 0;
-        ///        /// [rest of string was truncated]&quot;;.
+        ///
+        ///INSERT
+        ///  INTO [Comman [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InsertEvents {
             get {
@@ -97,21 +97,21 @@ namespace EventStore.SqlStorage.DynamicSql {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT Payload
-        ///  FROM Events
-        /// WHERE Id = @id
-        ///   AND Version &gt;
-        ///     ( SELECT COALESCE(MAX(Version), 0)
-        ///         FROM Snapshots
-        ///        WHERE Id = @id
-        ///          AND Version &lt;= COALESCE(@current_version, Version) )
-        /// ORDER BY Version;
-        ///
-        ///SELECT Payload,
-        ///       Version
-        ///  FROM Snapshots
-        /// WHERE Id = @id
-        /// ORDER BY Version DESC
+        ///   Looks up a localized string similar to SELECT [Payload]
+        ///  FROM [Events]
+        /// WHERE [Id] = @id
+        ///   AND [Version] &gt;
+        ///     ( SELECT COALESCE(MAX([Version]), 0)
+        ///         FROM [Snapshots]
+        ///        WHERE [Id] = @id
+        ///          AND [Version] &lt;= COALESCE(@current_version, [Version]) )
+        /// ORDER BY [Version];
+        /// 
+        ///SELECT [Payload],
+        ///       [Version]
+        ///  FROM [Snapshots]
+        /// WHERE [Id] = @id
+        /// ORDER BY [Version] DESC
         /// LIMIT 1;.
         /// </summary>
         internal static string SelectEvents {
@@ -121,10 +121,10 @@ namespace EventStore.SqlStorage.DynamicSql {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT Payload
-        ///  FROM Events
-        /// WHERE CommandId = @id
-        /// ORDER BY Version;.
+        ///   Looks up a localized string similar to SELECT [Payload]
+        ///  FROM [Events]
+        /// WHERE [CommandId] = @id
+        /// ORDER BY [Version];.
         /// </summary>
         internal static string SelectEventsForCommand {
             get {
@@ -133,11 +133,11 @@ namespace EventStore.SqlStorage.DynamicSql {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT Payload
-        ///  FROM Events
-        /// WHERE Id = @id
-        ///   AND Version &gt; COALESCE(@current_version, Version)
-        /// ORDER BY Version;.
+        ///   Looks up a localized string similar to SELECT [Payload]
+        ///  FROM [Events]
+        /// WHERE [Id] = @id
+        ///   AND [Version] &gt; COALESCE(@current_version, [Version])
+        /// ORDER BY [Version];.
         /// </summary>
         internal static string SelectEventsForVersion {
             get {

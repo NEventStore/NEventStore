@@ -43,28 +43,9 @@
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CommandBuilder.cs" />
-    <Compile Include="DynamicMsSqlStatementBuilder.cs" />
     <Compile Include="DynamicSqlStatementBuilder.cs" />
     <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="MsSqlStatements.Designer.cs">
-      <DependentUpon>MsSqlStatements.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="DynamicMySqlStatementBuilder.cs" />
-    <Compile Include="MultitenantStatementBuilder.cs" />
-    <Compile Include="MySqlStatements.Designer.cs">
-      <DependentUpon>MySqlStatements.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DynamicSqliteStatementBuilder.cs" />
-    <Compile Include="SqliteStatements.Designer.cs">
-      <DependentUpon>SqliteStatements.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EventStore.SqlStorage\EventStore.SqlStorage.csproj">
@@ -80,21 +61,6 @@
     <Content Include="..\CustomDictionary.xml">
       <Link>Properties\CustomDictionary.xml</Link>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="MsSqlStatements.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>MsSqlStatements.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MySqlStatements.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>MySqlStatements.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SqliteStatements.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>SqliteStatements.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

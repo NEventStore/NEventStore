@@ -2,30 +2,35 @@ namespace EventStore.SqlStorage.DynamicSql
 {
 	using System;
 	using System.Data;
-	using System.Data.Common;
 	using System.Text;
 
 	public abstract class DynamicSqlStatementBuilder : IBuildStatements
 	{
-		private const string ConstraintViolation = "constraint";
 		private readonly CommandBuilder builder;
+		private readonly IAdaptSqlDialect dialect;
 
-		protected DynamicSqlStatementBuilder(CommandBuilder builder)
+		protected DynamicSqlStatementBuilder(CommandBuilder builder, IAdaptSqlDialect dialect)
 		{
 			this.builder = builder;
+			this.dialect = dialect;
+		}
+
+		public IAdaptSqlDialect Dialect
+		{
+			get { return this.dialect; }
 		}
 
 		public virtual IDbCommand BuildLoadByIdQuery(Guid id, long maxStartingVersion)
 		{
-			return this.BuildLoadQuery(this.SelectEvents, id, maxStartingVersion);
+			return this.BuildLoadQuery(this.dialect.GetSelectEventsQuery, id, maxStartingVersion);
 		}
 		public virtual IDbCommand BuildLoadByCommandIdQuery(Guid commandId)
 		{
-			return this.BuildLoadQuery(this.SelectEventsForCommand, commandId, 0);
+			return this.BuildLoadQuery(this.dialect.GetSelectEventsForCommandQuery, commandId, 0);
 		}
 		public virtual IDbCommand BuildLoadStartingAfterQuery(Guid id, long version)
 		{
-			return this.BuildLoadQuery(this.SelectEventsForVersion, id, version);
+			return this.BuildLoadQuery(this.dialect.GetSelectEventsForVersionQuery, id, version);
 		}
 		private IDbCommand BuildLoadQuery(string commandText, Guid id, long version)
 		{
@@ -37,7 +42,7 @@ namespace EventStore.SqlStorage.DynamicSql
 
 		public virtual IDbCommand BuildSaveCommand(UncommittedEventStream stream, ISerializeObjects serializer)
 		{
-			var command = this.builder.Build(this.InsertEvents);
+			var command = this.builder.Build(this.dialect.GetInsertEventsCommand);
 			command.AddParameter(this.Id, stream.Id.ToNull());
 			command.AddParameter(this.InitialVersion, stream.ExpectedVersion);
 			command.AddParameter(this.CurrentVersion, stream.ExpectedVersion + stream.Events.Count);
@@ -57,60 +62,43 @@ namespace EventStore.SqlStorage.DynamicSql
 			{
 				command.AddParameter(this.InitialVersion.Append(index), stream.ExpectedVersion + index + 1);
 				command.AddParameter(this.Payload.Append(index), serializer.Serialize(@event));
-				commandText.AppendWithFormat(this.InsertEvent, index++);
+				commandText.AppendWithFormat(this.dialect.GetInsertEventCommand, index++);
 			}
 
 			command.CommandText = command.CommandText.FormatWith(commandText);
 		}
 
-		public virtual bool IsConstraintViolation(DbException exception)
-		{
-			return exception.Message.ToLowerInvariant().Contains(ConstraintViolation);
-		}
-		public abstract bool IsDuplicateKey(DbException exception);
-
-		public virtual string NormalizeParameterName(string parameterName)
-		{
-			return "@" + parameterName;
-		}
-
 		protected virtual string Id
 		{
-			get { return "@id"; }
+			get { return this.dialect.NormalizeParameterName("id"); }
 		}
 		protected virtual string InitialVersion
 		{
-			get { return "@initial_version"; }
+			get { return this.dialect.NormalizeParameterName("initial_version"); }
 		}
 		protected virtual string CurrentVersion
 		{
-			get { return "@current_version"; }
+			get { return this.dialect.NormalizeParameterName("current_version"); }
 		}
 		protected virtual string Type
 		{
-			get { return "@type"; }
+			get { return this.dialect.NormalizeParameterName("type"); }
 		}
 		protected virtual string Payload
 		{
-			get { return "@payload"; }
+			get { return this.dialect.NormalizeParameterName("payload"); }
 		}
 		protected virtual string SnapshotType
 		{
-			get { return "@snapshot_type"; }
+			get { return this.dialect.NormalizeParameterName("snapshot_type"); }
 		}
 		protected virtual string CommandId
 		{
-			get { return "@command_id"; }
+			get { return this.dialect.NormalizeParameterName("command_id"); }
 		}
 		protected virtual string CommandPayload
 		{
-			get { return "@command_payload"; }
+			get { return this.dialect.NormalizeParameterName("command_payload"); }
 		}
-
-		protected abstract string SelectEvents { get; }
-		protected abstract string SelectEventsForCommand { get; }
-		protected abstract string SelectEventsForVersion { get; }
-		protected abstract string InsertEvents { get; }
-		protected abstract string InsertEvent { get; }
 	}
 }

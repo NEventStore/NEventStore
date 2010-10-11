@@ -74,10 +74,10 @@ namespace EventStore.SqlStorage
 			}
 			catch (DbException exception)
 			{
-				if (this.builder.IsDuplicateKey(exception))
+				if (this.builder.Dialect.IsDuplicateKey(exception))
 					throw new DuplicateKeyException(exception.Message, exception);
 
-				var message = this.builder.IsConstraintViolation(exception)
+				var message = this.builder.Dialect.IsConstraintViolation(exception)
 				              	? SqlMessages.ConstraintViolation
 				              	: exception.Message;
 

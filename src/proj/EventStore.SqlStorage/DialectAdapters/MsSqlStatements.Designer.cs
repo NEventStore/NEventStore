@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace EventStore.SqlStorage.DynamicSql {
+namespace EventStore.SqlStorage.DialectAdapters {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace EventStore.SqlStorage.DynamicSql {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.SqlStorage.DynamicSql.MsSqlStatements", typeof(MsSqlStatements).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.SqlStorage.DialectAdapters.MsSqlStatements", typeof(MsSqlStatements).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
