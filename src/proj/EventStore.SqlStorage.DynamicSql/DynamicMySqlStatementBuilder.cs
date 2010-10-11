@@ -3,12 +3,12 @@ namespace EventStore.SqlStorage.DynamicSql
 	using System.Data.Common;
 	using DynamicSql;
 
-	public sealed class DynamicMySqlStatementPreparer : DynamicSqlStatementPreparer
+	public sealed class DynamicMySqlStatementBuilder : DynamicSqlStatementBuilder
 	{
 		private const string DuplicateEntryText = "Duplicate entry";
 		private const string KeyViolationText = "for key";
 
-		public DynamicMySqlStatementPreparer(CommandBuilder builder)
+		public DynamicMySqlStatementBuilder(CommandBuilder builder)
 			: base(builder)
 		{
 		}

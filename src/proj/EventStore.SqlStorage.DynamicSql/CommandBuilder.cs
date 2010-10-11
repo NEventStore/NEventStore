@@ -1,4 +1,4 @@
-namespace EventStore.SqlStorage
+namespace EventStore.SqlStorage.DynamicSql
 {
 	using System.Data;
 

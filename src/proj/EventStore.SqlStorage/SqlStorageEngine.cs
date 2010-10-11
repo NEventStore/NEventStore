@@ -10,10 +10,10 @@ namespace EventStore.SqlStorage
 	{
 		private const int SerializedDataColumnIndex = 0;
 		private const int VersionColumnIndex = 1;
-		private readonly IPrepareStatements builder;
+		private readonly IBuildStatements builder;
 		private readonly ISerializeObjects serializer;
 
-		public SqlStorageEngine(IPrepareStatements builder, ISerializeObjects serializer)
+		public SqlStorageEngine(IBuildStatements builder, ISerializeObjects serializer)
 		{
 			this.builder = builder;
 			this.serializer = serializer;
@@ -21,21 +21,21 @@ namespace EventStore.SqlStorage
 
 		public CommittedEventStream LoadById(Guid id, long maxStartingVersion)
 		{
-			return this.Load(id, this.builder.PrepareLoadByIdQuery(id, maxStartingVersion));
+			return this.Load(id, this.builder.BuildLoadByIdQuery(id, maxStartingVersion));
 		}
 		public ICollection LoadStartingAfter(Guid id, long version)
 		{
 			if (id == Guid.Empty)
 				return new object[0];
 
-			return this.Load(id, this.builder.PrepareLoadStartingAfterQuery(id, version)).Events;
+			return this.Load(id, this.builder.BuildLoadStartingAfterQuery(id, version)).Events;
 		}
 		public ICollection LoadByCommandId(Guid commandId)
 		{
 			if (commandId == Guid.Empty)
 				return new object[] { };
 
-			return this.Load(Guid.Empty, this.builder.PrepareLoadByCommandIdQuery(commandId)).Events;
+			return this.Load(Guid.Empty, this.builder.BuildLoadByCommandIdQuery(commandId)).Events;
 		}
 		private CommittedEventStream Load(Guid id, IDbCommand query)
 		{
@@ -63,7 +63,7 @@ namespace EventStore.SqlStorage
 
 		public void Save(UncommittedEventStream stream)
 		{
-			using (var query = this.builder.PrepareSaveCommand(stream, this.serializer))
+			using (var query = this.builder.BuildSaveCommand(stream, this.serializer))
 				this.WrapOnFailure(query.ExecuteNonQuery);
 		}
 		private TResult WrapOnFailure<TResult>(Func<TResult> func)

@@ -42,20 +42,24 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="DynamicMsSqlStatementPreparer.cs" />
+    <Compile Include="CommandBuilder.cs" />
+    <Compile Include="DynamicMsSqlStatementBuilder.cs" />
+    <Compile Include="DynamicSqlStatementBuilder.cs" />
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="MsSqlStatements.Designer.cs">
       <DependentUpon>MsSqlStatements.resx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="DynamicMySqlStatementPreparer.cs" />
+    <Compile Include="DynamicMySqlStatementBuilder.cs" />
+    <Compile Include="MultitenantStatementBuilder.cs" />
     <Compile Include="MySqlStatements.Designer.cs">
       <DependentUpon>MySqlStatements.resx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DynamicSqliteStatementPreparer.cs" />
+    <Compile Include="DynamicSqliteStatementBuilder.cs" />
     <Compile Include="SqliteStatements.Designer.cs">
       <DependentUpon>SqliteStatements.resx</DependentUpon>
       <AutoGen>True</AutoGen>

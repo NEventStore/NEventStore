@@ -3,12 +3,12 @@ namespace EventStore.SqlStorage.DynamicSql
 	using System.Data.Common;
 	using System.Data.SqlClient;
 
-	public sealed class DynamicMsSqlStatementPreparer : DynamicSqlStatementPreparer
+	public sealed class DynamicMsSqlStatementBuilder : DynamicSqlStatementBuilder
 	{
 		private const int PrimaryKeyViolation = 2627;
 		private const int UniqueIndexViolation = 2601;
 
-		public DynamicMsSqlStatementPreparer(CommandBuilder builder)
+		public DynamicMsSqlStatementBuilder(CommandBuilder builder)
 			: base(builder)
 		{
 		}

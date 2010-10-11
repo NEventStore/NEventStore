@@ -2,12 +2,12 @@ namespace EventStore.SqlStorage.DynamicSql
 {
 	using System.Data.Common;
 
-	public sealed class DynamicSqliteStatementPreparer : DynamicSqlStatementPreparer
+	public sealed class DynamicSqliteStatementBuilder : DynamicSqlStatementBuilder
 	{
 		private const string ConstraintViolation = "constraint";
 		private const string UniqueViolation = "unique";
 
-		public DynamicSqliteStatementPreparer(CommandBuilder builder)
+		public DynamicSqliteStatementBuilder(CommandBuilder builder)
 			: base(builder)
 		{
 		}

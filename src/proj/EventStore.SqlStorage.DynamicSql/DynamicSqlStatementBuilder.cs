@@ -1,33 +1,33 @@
-namespace EventStore.SqlStorage
+namespace EventStore.SqlStorage.DynamicSql
 {
 	using System;
 	using System.Data;
 	using System.Data.Common;
 	using System.Text;
 
-	public abstract class DynamicSqlStatementPreparer : IPrepareStatements
+	public abstract class DynamicSqlStatementBuilder : IBuildStatements
 	{
 		private const string ConstraintViolation = "constraint";
 		private readonly CommandBuilder builder;
 
-		protected DynamicSqlStatementPreparer(CommandBuilder builder)
+		protected DynamicSqlStatementBuilder(CommandBuilder builder)
 		{
 			this.builder = builder;
 		}
 
-		public virtual IDbCommand PrepareLoadByIdQuery(Guid id, long maxStartingVersion)
+		public virtual IDbCommand BuildLoadByIdQuery(Guid id, long maxStartingVersion)
 		{
-			return this.PrepareLoadQuery(this.SelectEvents, id, maxStartingVersion);
+			return this.BuildLoadQuery(this.SelectEvents, id, maxStartingVersion);
 		}
-		public virtual IDbCommand PrepareLoadByCommandIdQuery(Guid commandId)
+		public virtual IDbCommand BuildLoadByCommandIdQuery(Guid commandId)
 		{
-			return this.PrepareLoadQuery(this.SelectEventsForCommand, commandId, 0);
+			return this.BuildLoadQuery(this.SelectEventsForCommand, commandId, 0);
 		}
-		public virtual IDbCommand PrepareLoadStartingAfterQuery(Guid id, long version)
+		public virtual IDbCommand BuildLoadStartingAfterQuery(Guid id, long version)
 		{
-			return this.PrepareLoadQuery(this.SelectEventsForVersion, id, version);
+			return this.BuildLoadQuery(this.SelectEventsForVersion, id, version);
 		}
-		private IDbCommand PrepareLoadQuery(string commandText, Guid id, long version)
+		private IDbCommand BuildLoadQuery(string commandText, Guid id, long version)
 		{
 			var command = this.builder.Build(commandText);
 			command.AddParameter(this.Id, id.ToNull());
@@ -35,7 +35,7 @@ namespace EventStore.SqlStorage
 			return command;
 		}
 
-		public virtual IDbCommand PrepareSaveCommand(UncommittedEventStream stream, ISerializeObjects serializer)
+		public virtual IDbCommand BuildSaveCommand(UncommittedEventStream stream, ISerializeObjects serializer)
 		{
 			var command = this.builder.Build(this.InsertEvents);
 			command.AddParameter(this.Id, stream.Id.ToNull());
