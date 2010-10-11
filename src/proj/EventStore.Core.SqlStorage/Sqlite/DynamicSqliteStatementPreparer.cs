@@ -1,36 +1,34 @@
 namespace EventStore.Core.SqlStorage.Sqlite
 {
-	using System;
-	using System.Data;
 	using System.Data.Common;
 
-	public sealed class SqliteDialect : BaseDialect
+	public sealed class DynamicSqliteStatementPreparer : DynamicSqlStatementPreparer
 	{
 		private const string ConstraintViolation = "constraint";
 		private const string UniqueViolation = "unique";
 
-		public SqliteDialect(IDbConnection connection, IDbTransaction transaction, Guid tenantId)
-			: base(connection, transaction, tenantId)
+		public DynamicSqliteStatementPreparer(CommandBuilder builder)
+			: base(builder)
 		{
 		}
 
-		public override string SelectEvents
+		protected override string SelectEvents
 		{
 			get { return SqliteStatements.SelectEvents; }
 		}
-		public override string SelectEventsForCommand
+		protected override string SelectEventsForCommand
 		{
 			get { return SqliteStatements.SelectEventsForCommand; }
 		}
-		public override string SelectEventsForVersion
+		protected override string SelectEventsForVersion
 		{
 			get { return SqliteStatements.SelectEventsForVersion; }
 		}
-		public override string InsertEvent
+		protected override string InsertEvent
 		{
 			get { return SqliteStatements.InsertEvent; }
 		}
-		public override string InsertEvents
+		protected override string InsertEvents
 		{
 			get { return SqliteStatements.InsertEvents; }
 		}

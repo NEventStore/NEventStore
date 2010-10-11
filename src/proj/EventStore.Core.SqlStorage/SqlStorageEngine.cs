@@ -5,50 +5,45 @@ namespace EventStore.Core.SqlStorage
 	using System.Collections.Generic;
 	using System.Data;
 	using System.Data.Common;
-	using System.Text;
 
 	public class SqlStorageEngine : IStorageEngine
 	{
 		private const int SerializedDataColumnIndex = 0;
 		private const int VersionColumnIndex = 1;
-		private readonly ISqlDialect dialect;
+		private readonly IPrepareStatements builder;
 		private readonly ISerializeObjects serializer;
 
-		public SqlStorageEngine(ISqlDialect dialect, ISerializeObjects serializer)
+		public SqlStorageEngine(IPrepareStatements builder, ISerializeObjects serializer)
 		{
-			this.dialect = dialect;
+			this.builder = builder;
 			this.serializer = serializer;
 		}
 
 		public CommittedEventStream LoadById(Guid id, long maxStartingVersion)
 		{
-			return this.Load(id, maxStartingVersion, this.dialect.SelectEvents);
+			return this.Load(id, this.builder.PrepareLoadByIdQuery(id, maxStartingVersion));
 		}
 		public ICollection LoadStartingAfter(Guid id, long version)
 		{
 			if (id == Guid.Empty)
 				return new object[0];
 
-			return this.Load(id, version, this.dialect.SelectEventsForVersion).Events;
+			return this.Load(id, this.builder.PrepareLoadStartingAfterQuery(id, version)).Events;
 		}
 		public ICollection LoadByCommandId(Guid commandId)
 		{
 			if (commandId == Guid.Empty)
-				return new object[] {};
+				return new object[] { };
 
-			return this.Load(commandId, 0, this.dialect.SelectEventsForCommand).Events;
+			return this.Load(Guid.Empty, this.builder.PrepareLoadByCommandIdQuery(commandId)).Events;
 		}
-		private CommittedEventStream Load(Guid id, long version, string queryStatement)
+		private CommittedEventStream Load(Guid id, IDbCommand query)
 		{
-			using (var command = this.dialect.CreateCommand(queryStatement))
-			{
-				command.AddParameter(this.dialect.Id, id.ToNull());
-				command.AddParameter(this.dialect.CurrentVersion, version.ToNull());
-				using (var reader = this.WrapOnFailure(command.ExecuteReader))
-					return this.BuildStream(id, version, reader);
-			}
+			using (query)
+			using (var reader = this.WrapOnFailure(query.ExecuteReader))
+				return this.BuildStream(id, reader);
 		}
-		private CommittedEventStream BuildStream(Guid id, long version, IDataReader reader)
+		private CommittedEventStream BuildStream(Guid id, IDataReader reader)
 		{
 			ICollection<object> events = new LinkedList<object>();
 			object snapshot = null;
@@ -56,6 +51,7 @@ namespace EventStore.Core.SqlStorage
 			while (reader.Read())
 				events.Add(this.serializer.Deserialize<object>(reader[SerializedDataColumnIndex] as byte[]));
 
+			long version = 0;
 			if (reader.NextResult() && reader.Read())
 			{
 				snapshot = this.serializer.Deserialize<object>(reader[SerializedDataColumnIndex] as byte[]);
@@ -67,48 +63,23 @@ namespace EventStore.Core.SqlStorage
 
 		public void Save(UncommittedEventStream stream)
 		{
-			using (var command = this.dialect.CreateCommand(this.dialect.InsertEvents))
-			{
-				command.AddParameter(this.dialect.Id, stream.Id.ToNull());
-				command.AddParameter(this.dialect.InitialVersion, stream.ExpectedVersion);
-				command.AddParameter(this.dialect.CurrentVersion, stream.ExpectedVersion + stream.Events.Count);
-				command.AddParameter(this.dialect.Type, stream.Type == null ? null : stream.Type.FullName);
-				command.AddParameter(this.dialect.CommandId, stream.CommandId.ToNull());
-				command.AddParameter(this.dialect.CommandPayload, this.serializer.Serialize(stream.Command));
-				command.AddParameter(this.dialect.Payload, this.serializer.Serialize(stream.Snapshot));
-
-				this.AddEventsToDbCommand(command, stream, stream.ExpectedVersion);
-				this.WrapOnFailure(command.ExecuteNonQuery);
-			}
+			using (var query = this.builder.PrepareSaveCommand(stream, this.serializer))
+				this.WrapOnFailure(query.ExecuteNonQuery);
 		}
-		private void AddEventsToDbCommand(IDbCommand command, UncommittedEventStream stream, long version)
-		{
-			var eventInsertStatements = new StringBuilder();
-			var index = 0;
-
-			foreach (var @event in stream.Events)
-			{
-				command.AddParameter(this.dialect.InitialVersion.Append(index), version + index + 1);
-				command.AddParameter(this.dialect.Payload.Append(index), this.serializer.Serialize(@event));
-				eventInsertStatements.AppendWithFormat(this.dialect.InsertEvent, index++);
-			}
-
-			command.CommandText = command.CommandText.FormatWith(eventInsertStatements);
-		}
-
-		private TResult WrapOnFailure<TResult>(Func<TResult> action)
+		private TResult WrapOnFailure<TResult>(Func<TResult> func)
 		{
 			try
 			{
-				return action();
+				return func();
 			}
 			catch (DbException exception)
 			{
-				if (this.dialect.IsDuplicateKey(exception))
+				if (this.builder.IsDuplicateKey(exception))
 					throw new DuplicateKeyException(exception.Message, exception);
 
-				var message = this.dialect.IsConstraintViolation(exception)
-					? SqlMessages.ConstraintViolation : exception.Message;
+				var message = this.builder.IsConstraintViolation(exception)
+				              	? SqlMessages.ConstraintViolation
+				              	: exception.Message;
 
 				throw new StorageEngineException(message, exception);
 			}

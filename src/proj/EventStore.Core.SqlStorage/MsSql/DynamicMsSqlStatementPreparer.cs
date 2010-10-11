@@ -1,37 +1,35 @@
 namespace EventStore.Core.SqlStorage.MsSql
 {
-	using System;
-	using System.Data;
 	using System.Data.Common;
 	using System.Data.SqlClient;
 
-	public sealed class MsSqlDialect : BaseDialect
+	public sealed class DynamicMsSqlStatementPreparer : DynamicSqlStatementPreparer
 	{
 		private const int PrimaryKeyViolation = 2627;
 		private const int UniqueIndexViolation = 2601;
 
-		public MsSqlDialect(IDbConnection connection, IDbTransaction transaction, Guid tenantId)
-			: base(connection, transaction, tenantId)
+		public DynamicMsSqlStatementPreparer(CommandBuilder builder)
+			: base(builder)
 		{
 		}
 
-		public override string SelectEvents
+		protected override string SelectEvents
 		{
 			get { return MsSqlStatements.SelectEvents; }
 		}
-		public override string SelectEventsForCommand
+		protected override string SelectEventsForCommand
 		{
 			get { return MsSqlStatements.SelectEventsForCommand; }
 		}
-		public override string SelectEventsForVersion
+		protected override string SelectEventsForVersion
 		{
 			get { return MsSqlStatements.SelectEventsForVersion; }
 		}
-		public override string InsertEvent
+		protected override string InsertEvent
 		{
 			get { return MsSqlStatements.InsertEvent; }
 		}
-		public override string InsertEvents
+		protected override string InsertEvents
 		{
 			get { return MsSqlStatements.InsertEvents; }
 		}
