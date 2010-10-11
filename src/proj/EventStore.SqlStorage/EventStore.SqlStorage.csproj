@@ -46,7 +46,6 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="CommonSqlDialectAdapter.cs" />
     <Compile Include="IAdaptSqlDialect.cs" />
     <Compile Include="IBuildStatements.cs">
       <SubType>Code</SubType>

@@ -43,6 +43,7 @@
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CommandBuilder.cs" />
+    <Compile Include="DialectAdapters\CommonSqlDialectAdapter.cs" />
     <Compile Include="DialectAdapters\MsSqlDialectAdapter.cs" />
     <Compile Include="DialectAdapters\MsSqlStatements.Designer.cs">
       <DependentUpon>MsSqlStatements.resx</DependentUpon>
