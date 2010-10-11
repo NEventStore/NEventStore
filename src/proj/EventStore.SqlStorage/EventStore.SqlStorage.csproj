@@ -46,10 +46,12 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="IAdaptSqlDialect.cs" />
     <Compile Include="IBuildStatements.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MultitenantStatementBuilderDecorator.cs" />
     <Compile Include="SqlMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

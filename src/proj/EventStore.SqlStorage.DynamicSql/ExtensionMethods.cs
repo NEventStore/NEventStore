@@ -1,7 +1,6 @@
 namespace EventStore.SqlStorage.DynamicSql
 {
 	using System;
-	using System.Data;
 	using System.Globalization;
 	using System.Text;
 
@@ -29,19 +28,6 @@ namespace EventStore.SqlStorage.DynamicSql
 		public static void AppendWithFormat(this StringBuilder builder, string format, params object[] values)
 		{
 			builder.AppendFormat(CultureInfo.InvariantCulture, format, values);
-		}
-
-		public static IDataParameter AddParameter(this IDbCommand command, string parameterName, object value)
-		{
-			var parameter = command.CreateParameter();
-			parameter.ParameterName = parameterName;
-			parameter.Value = value ?? DBNull.Value;
-
-			if (parameter.Value == DBNull.Value)
-				parameter.DbType = DbType.Binary;
-
-			command.Parameters.Add(parameter);
-			return parameter;
 		}
 	}
 }
