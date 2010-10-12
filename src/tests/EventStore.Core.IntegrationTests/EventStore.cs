@@ -10,13 +10,19 @@ namespace EventStore.Core.IntegrationTests
 	public class when_saving_to_the_event_store : from_an_event_stream
 	{
 		private Establish context = () =>
-			store = EventStoreFactory.Build("SQLite");
+			store = EventStoreFactory.Build("SQL Server");
 
 		private Because of = () =>
 			store.Write(uncomitted);
 
 		private It should_persist_the_snapshot = () =>
 		    store.Read(StreamId, 0).Snapshot.ShouldEqual(Snapshot);
+
+		private It should_persist_the_events = () =>
+			store.Read(StreamId, 0).Events.Count.ShouldEqual(Events.Length);
+
+		private It should_increment_the_expected_version = () =>
+			store.Read(StreamId, 0).Version.ShouldEqual(Events.Length);
 	}
 
 	public abstract class from_an_event_stream

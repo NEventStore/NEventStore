@@ -4,3 +4,26 @@ Refactor weird and optional "command" stuff on the uncommitted event stream
 Fluent builder/configuration
 Full example code
 
+
+Integration Tests:
+1. When saving an event stream, it should
+   a) Persist the correct number of events
+   a) Persist the contents of the events correctly
+   b) Increment the expected version
+
+2. When saving the same command more than once, it should
+   a) Throw a DuplicateCommandException
+   b) The exception should contain the events that were committed.
+
+3. When another writer increments the version committed stream, it should
+   a) Throw an OptimisticConcurrencyException
+   b) The exception should contain the events that were committed.
+  
+4. When attempting to save a stream across tenant boundaries, it should
+   a) Throw an EventStoreException
+
+5. When loading a stream from version zero, it should
+   a) Get all events for that stream.
+
+6. When loading a stream from a point in time, it should
+   a) Only go back to the prior snapshot
