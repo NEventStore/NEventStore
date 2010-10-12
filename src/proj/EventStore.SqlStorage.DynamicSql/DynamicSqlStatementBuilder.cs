@@ -46,7 +46,7 @@ namespace EventStore.SqlStorage.DynamicSql
 			command.AddParameter(this.IdParam, stream.Id.ToNull());
 			command.AddParameter(this.InitialVersionParam, stream.ExpectedVersion);
 			command.AddParameter(this.CurrentVersionParam, stream.ExpectedVersion + stream.Events.Count);
-			command.AddParameter(this.TypeParam, stream.Type == null ? null : stream.Type.FullName);
+			command.AddParameter(this.TypeParam, stream.Type == null ? string.Empty : stream.Type.FullName);
 			command.AddParameter(this.CommandIdParam, stream.CommandId.ToNull());
 			command.AddParameter(this.CommandPayloadParam, serializer.Serialize(stream.Command));
 			command.AddParameter(this.PayloadParam, serializer.Serialize(stream.Snapshot));
