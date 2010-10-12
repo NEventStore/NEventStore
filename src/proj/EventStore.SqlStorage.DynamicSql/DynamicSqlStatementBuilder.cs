@@ -50,6 +50,7 @@ namespace EventStore.SqlStorage.DynamicSql
 		{
 			var command = this.builder.Build(this.dialect.GetInsertEventsCommand);
 			command.AddParameter(this.IdParam, stream.Id.ToNull());
+			command.AddParameter(this.TenantIdParam, this.tenantId.ToNull());
 			command.AddParameter(this.InitialVersionParam, stream.ExpectedVersion);
 			command.AddParameter(this.CurrentVersionParam, stream.ExpectedVersion + stream.Events.Count);
 			command.AddParameter(this.TypeParam, stream.Type == null ? string.Empty : stream.Type.FullName);
