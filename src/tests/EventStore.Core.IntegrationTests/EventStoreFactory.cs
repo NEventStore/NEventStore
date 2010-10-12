@@ -1,5 +1,6 @@
 namespace EventStore.Core.IntegrationTests
 {
+	using System;
 	using System.Collections.Generic;
 	using System.Configuration;
 	using System.Data;
@@ -10,6 +11,13 @@ namespace EventStore.Core.IntegrationTests
 
 	public class EventStoreFactory
 	{
+		public static IStoreEvents Build(string connectionName)
+		{
+			var settings = ConfigurationManager.ConnectionStrings[connectionName];
+			var connection = OpenConnection(settings);
+			return Build(connection, null);
+		}
+
 		public static IEnumerable<IStoreEvents> ForEach()
 		{
 			foreach (ConnectionStringSettings settings in ConfigurationManager.ConnectionStrings)
@@ -35,7 +43,9 @@ namespace EventStore.Core.IntegrationTests
 		{
 			var commandBuilder = new CommandBuilder(connection, transaction);
 			var dialect = DiscoverDialect(connection);
-			var statementBuilder = new DynamicSqlStatementBuilder(commandBuilder, dialect);
+			var dynamicBuilder = new DynamicSqlStatementBuilder(commandBuilder, dialect);
+			var statementBuilder = new MultitenantStatementBuilderDecorator(dynamicBuilder, Guid.NewGuid());
+
 			var storageEngine = new SqlStorageEngine(statementBuilder, new DefaultSerializer());
 			return new OptimisticEventStore(storageEngine);
 		}
