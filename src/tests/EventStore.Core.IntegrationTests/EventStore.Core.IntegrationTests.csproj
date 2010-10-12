@@ -45,6 +45,8 @@
     <Compile Include="EventStore.cs" />
     <Compile Include="EventStoreFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="when_savings_an_event_stream.cs" />
+    <Compile Include="with_an_event_store.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\proj\CustomDictionary.xml">
@@ -86,6 +88,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\bin\sqlite-bin\System.Data.SQLite.DLL</HintPath>
     </Reference>
+    <Reference Include="System.Transactions" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
