@@ -111,6 +111,8 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters {
         ///       [Version]
         ///  FROM [Snapshots]
         /// WHERE [Id] = @id
+        ///   AND @current_version &gt; 0
+        ///   AND [Version] &lt;= @current_version
         /// ORDER BY [Version] DESC
         /// LIMIT 1;.
         /// </summary>

@@ -190,6 +190,8 @@ SELECT TOP 1
        [Version]
   FROM [Snapshots]
  WHERE [Id] = @id
+   AND @current_version &gt; 0
+   AND [Version] &lt;= @current_version
  ORDER BY [Version] DESC;</value>
   </data>
   <data name="SelectEventsForCommand" xml:space="preserve">
