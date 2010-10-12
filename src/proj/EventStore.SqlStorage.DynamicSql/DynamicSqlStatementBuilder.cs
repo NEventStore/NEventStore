@@ -8,11 +8,17 @@ namespace EventStore.SqlStorage.DynamicSql
 	{
 		private readonly CommandBuilder builder;
 		private readonly IAdaptDynamicSqlDialect dialect;
+		private readonly Guid tenantId;
 
 		public DynamicSqlStatementBuilder(CommandBuilder builder, IAdaptDynamicSqlDialect dialect)
+			: this(builder, dialect, Guid.Empty)
+		{
+		}
+		public DynamicSqlStatementBuilder(CommandBuilder builder, IAdaptDynamicSqlDialect dialect, Guid tenantId)
 		{
 			this.builder = builder;
 			this.dialect = dialect;
+			this.tenantId = tenantId;
 		}
 
 		public IAdaptSqlDialect Dialect
@@ -71,6 +77,10 @@ namespace EventStore.SqlStorage.DynamicSql
 		protected virtual string IdParam
 		{
 			get { return this.dialect.NormalizeParameterName("id"); }
+		}
+		protected virtual string TenantIdParam
+		{
+			get { return this.dialect.NormalizeParameterName("tenant_id"); }
 		}
 		protected virtual string InitialVersionParam
 		{

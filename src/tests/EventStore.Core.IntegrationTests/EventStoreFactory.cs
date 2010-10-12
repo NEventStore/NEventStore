@@ -43,9 +43,7 @@ namespace EventStore.Core.IntegrationTests
 		{
 			var commandBuilder = new CommandBuilder(connection, transaction);
 			var dialect = DiscoverDialect(connection);
-			var dynamicBuilder = new DynamicSqlStatementBuilder(commandBuilder, dialect);
-			var statementBuilder = new MultitenantStatementBuilderDecorator(dynamicBuilder, Guid.NewGuid());
-
+			var statementBuilder = new DynamicSqlStatementBuilder(commandBuilder, dialect, Guid.NewGuid());
 			var storageEngine = new SqlStorageEngine(statementBuilder, new DefaultSerializer());
 			return new OptimisticEventStore(storageEngine);
 		}

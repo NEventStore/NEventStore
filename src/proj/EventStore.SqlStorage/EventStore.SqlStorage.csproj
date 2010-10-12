@@ -51,7 +51,6 @@
     <Compile Include="IBuildStatements.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MultitenantStatementBuilderDecorator.cs" />
     <Compile Include="SqlMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
