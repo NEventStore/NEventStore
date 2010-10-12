@@ -63,9 +63,9 @@ namespace EventStore.Core.IntegrationTests
 
 	public class within_a_transaction
 	{
-		//static TransactionScope scope;
-		//Establish context = () => scope = new TransactionScope();
-		//Cleanup after = () => scope.Dispose();
+		// static TransactionScope scope;
+		// Establish context = () => scope = new TransactionScope();
+		// Cleanup after = () => scope.Dispose();
 	}
 }
 

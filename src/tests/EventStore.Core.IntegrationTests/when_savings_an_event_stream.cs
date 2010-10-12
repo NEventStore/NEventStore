@@ -8,20 +8,10 @@ namespace EventStore.Core.IntegrationTests
 
 	public class when_savings_an_event_stream : with_an_event_store
 	{
-		static readonly Guid StreamId = Guid.NewGuid();
-		static readonly Guid CommandId = Guid.NewGuid();
-		static readonly object Command = "command message";
-		static readonly object Snapshot = "snapshot";
-		static readonly string[] Events = new[] { "1st event", "2nd event" };
 		static readonly UncommittedEventStream uncomitted = new UncommittedEventStream
 		{
-			Id = StreamId,
-			Command = Command,
-			CommandId = CommandId,
-			Events = Events,
-			ExpectedVersion = 0,
-			Snapshot = Snapshot,
-			Type = typeof(string)
+			Id = Guid.NewGuid(),
+			Events = new[] { "1", "2" }
 		};
 
 		static CommittedEventStream result;
