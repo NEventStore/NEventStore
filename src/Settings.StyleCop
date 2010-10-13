@@ -20,6 +20,21 @@
       </Rules>
       <AnalyzerSettings />
     </Analyzer>
+	<Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.ReadabilityRules">
+      <Rules>
+        <Rule Name="SplitParametersMustStartOnLineAfterDeclaration">
+          <RuleSettings>
+            <BooleanProperty Name="Enabled">False</BooleanProperty>
+          </RuleSettings>
+        </Rule>
+        <Rule Name="ParameterMustFollowComma">
+          <RuleSettings>
+            <BooleanProperty Name="Enabled">False</BooleanProperty>
+          </RuleSettings>
+        </Rule>
+      </Rules>
+      <AnalyzerSettings />
+    </Analyzer>
     <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.SpacingRules">
       <Rules>
         <Rule Name="TabsMustNotBeUsed">
@@ -48,6 +63,11 @@
           </RuleSettings>
         </Rule>
         <Rule Name="PartialElementsMustBeDocumented">
+          <RuleSettings>
+            <BooleanProperty Name="Enabled">False</BooleanProperty>
+          </RuleSettings>
+        </Rule>
+		<Rule Name="FileHeaderMustShowCopyright">
           <RuleSettings>
             <BooleanProperty Name="Enabled">False</BooleanProperty>
           </RuleSettings>

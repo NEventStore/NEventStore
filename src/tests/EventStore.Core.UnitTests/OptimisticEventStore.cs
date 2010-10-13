@@ -151,7 +151,7 @@ namespace EventStore.Core.UnitTests
 	[Subject("OptimisticEventStore")]
 	public class when_writing_events_for_a_previously_handled_command : with_the_event_stream
 	{
-		static readonly ICollection DuplicateEvents = new[] { "", "" };
+		static readonly ICollection DuplicateEvents = new[] { "1", "2" };
 		static readonly UncommittedEventStream stream = new UncommittedEventStream
 		{
 			Id = Guid.NewGuid(),
