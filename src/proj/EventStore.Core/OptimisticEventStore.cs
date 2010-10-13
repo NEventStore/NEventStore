@@ -44,11 +44,11 @@ namespace EventStore.Core
 		}
 		private static bool ValidStream(UncommittedEventStream stream)
 		{
-			return stream.ExpectedVersion >= 0;
+			return stream.CommittedVersion >= 0;
 		}
 		private void WrapAndThrow(UncommittedEventStream stream, Exception innerException)
 		{
-			var events = this.storage.LoadStartingAfter(stream.Id, stream.ExpectedVersion);
+			var events = this.storage.LoadStartingAfter(stream.Id, stream.CommittedVersion);
 			if (events.Count > 0)
 				throw new ConcurrencyException(ExceptionMessages.Concurrency, innerException, events);
 

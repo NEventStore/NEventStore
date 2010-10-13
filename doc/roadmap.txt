@@ -22,12 +22,15 @@ Integration Tests:
 [DONE] 4. When attempting to write to a non-existant "ExpectedVersion" of the stream, it should
    a) Throw a StorageEngineException
   
-[1/2 DONE] 5. When attempting to save a stream across tenant boundaries, it should
-   a) Throw an EventStoreException
+5. When attempting to overwrite an existing stream across tenant boundaries, it should
+   a) Throw an CrossTenantAccessException
 
-6. When loading a stream from version zero, it should
+6. When attempting to update an existing stream across tenant boundaries, it should
+   a) Throw an CrossTenantAccessException
+
+7. When loading a stream from version zero, it should
    a) Get all events for that stream.
 
-7. When loading a stream from a point in time, it should
+8. When loading a stream from a point in time, it should
    a) Only go back to the prior snapshot
    b) Load all events up to now

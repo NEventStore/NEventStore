@@ -19,7 +19,7 @@ namespace EventStore.Core.IntegrationTests
 		Because of = () =>
 		{
 			store.Write(uncomitted);
-			uncomitted.ExpectedVersion = uncomitted.Events.Count;
+			uncomitted.CommittedVersion = uncomitted.Events.Count;
 			exception = Catch.Exception(() => store.Write(uncomitted));
 		};
 

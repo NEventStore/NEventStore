@@ -43,7 +43,7 @@ namespace EventStore.Core.IntegrationTests
 			store.Write(uncomitted);
 
 			var anotherTenantStore = Build(Guid.NewGuid());
-			uncomitted.ExpectedVersion = 1; // update the stream, don't create a new one
+			uncomitted.CommittedVersion = 1; // update the stream, don't create a new one
 			exception = Catch.Exception(() => anotherTenantStore.Write(uncomitted));
 		};
 

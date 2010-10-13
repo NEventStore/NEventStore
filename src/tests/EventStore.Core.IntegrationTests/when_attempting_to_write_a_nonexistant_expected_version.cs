@@ -6,7 +6,7 @@ namespace EventStore.Core.IntegrationTests
 	using System;
 	using Machine.Specifications;
 
-	public class when_attempting_to_write_a_nonexistant_expected_version : with_an_event_store
+	public class when_attempting_to_write_beyond_the_end_of_a_stream : with_an_event_store
 	{
 		static readonly UncommittedEventStream uncomitted = new UncommittedEventStream
 		{
@@ -18,12 +18,12 @@ namespace EventStore.Core.IntegrationTests
 		Because of = () =>
 		{
 			store.Write(uncomitted);
-			uncomitted.ExpectedVersion = uncomitted.Events.Count + 15; // crazy optimistic concurrency value
+			uncomitted.CommittedVersion = uncomitted.Events.Count + 15; // crazy optimistic concurrency value
 			exception = Catch.Exception(() => store.Write(uncomitted));
 		};
 
-		It should_fail_by_throwing_a_StorageEngineException = () =>
-			exception.ShouldBeOfType(typeof(StorageEngineException));
+		It should_fail_by_throwing_a_CrossTenantAccessException = () =>
+			exception.ShouldBeOfType(typeof(CrossTenantAccessException));
 	}
 }
 

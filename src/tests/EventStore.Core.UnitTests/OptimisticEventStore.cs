@@ -112,7 +112,7 @@ namespace EventStore.Core.UnitTests
 		{
 			Id = Committed.Id,
 			Events = new object[1],
-			ExpectedVersion = ExpectedVersion
+			CommittedVersion = ExpectedVersion
 		};
 
 		static ConcurrencyException expectedException;

@@ -21,7 +21,7 @@ namespace EventStore
 		/// <summary>
 		/// Gets or sets the version of the stream of events when it was originally loaded.
 		/// </summary>
-		public long ExpectedVersion { get; set; }
+		public long CommittedVersion { get; set; }
 
 		/// <summary>
 		/// Gets or sets the optional value which uniquely identifies the command for the events being persisted.
