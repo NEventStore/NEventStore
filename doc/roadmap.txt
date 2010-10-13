@@ -6,23 +6,23 @@ Full example code
 
 
 Integration Tests:
-1. When saving an event stream, it should
+[DONE] 1. When saving an event stream, it should
    a) Persist the correct number of events
    a) Persist the contents of the events correctly
    b) Increment the expected version
 
-2. When saving the same command more than once, it should
+[DONE] 2. When saving the same command more than once, it should
    a) Throw a DuplicateCommandException
    b) The exception should contain the events that were committed.
 
-3. When attempting to overwrite an already committed version of the stream, it should
+[DONE] 3. When attempting to overwrite an already committed version of the stream, it should
    a) Throw an OptimisticConcurrencyException
    b) The exception should contain the events that were committed.
 
-4. When attempting to write to a non-existant "ExpectedVersion" of the stream, it should
+[DONE] 4. When attempting to write to a non-existant "ExpectedVersion" of the stream, it should
    a) Throw a StorageEngineException
   
-5. When attempting to save a stream across tenant boundaries, it should
+[1/2 DONE] 5. When attempting to save a stream across tenant boundaries, it should
    a) Throw an EventStoreException
 
 6. When loading a stream from version zero, it should

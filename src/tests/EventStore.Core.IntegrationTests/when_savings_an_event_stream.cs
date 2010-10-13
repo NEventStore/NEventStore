@@ -13,7 +13,6 @@ namespace EventStore.Core.IntegrationTests
 		{
 			Id = Guid.NewGuid(),
 			Events = new[] { "1", "2", "3" }
-
 		};
 
 		static CommittedEventStream result;
