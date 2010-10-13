@@ -149,7 +149,7 @@ SELECT NULL, NULL, NULL, NULL, NULL FROM DUAL WHERE 1=0;
 UPDATE Aggregates
    SET Version = CASE WHEN TenantId = COALESCE(@tenant_id, TenantId)
                        AND Version = @committed_version
-                   THEN @new_version ELSE NULL END,
+                   THEN @new_version ELSE -1 END,
        Snapshot = CASE WHEN @payload IS NULL THEN Snapshot ELSE @new_version END,
        RuntimeType = COALESCE(@type, RuntimeType)
  WHERE Id = @id
