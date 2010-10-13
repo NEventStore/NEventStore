@@ -42,7 +42,7 @@ namespace EventStore.Core.IntegrationTests
 
 	public abstract class open_a_connection : within_a_transaction
 	{
-		protected static string connectionName = "SQL Server"; // default
+		protected static string connectionName = ConfigurationManager.AppSettings["UnderTest"] ?? "SQLite";
 		protected static IDbConnection connection;
 
 		Establish content = () =>

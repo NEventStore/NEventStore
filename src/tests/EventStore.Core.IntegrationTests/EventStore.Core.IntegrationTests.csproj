@@ -48,6 +48,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PersistenceTests.cs" />
     <Compile Include="Base.cs" />
+    <Compile Include="ReadTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\proj\CustomDictionary.xml">

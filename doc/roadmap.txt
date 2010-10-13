@@ -3,34 +3,3 @@ Make OptimisticEventStore multi-threaded and singleton scoped?
 Refactor weird and optional "command" stuff on the uncommitted event stream
 Fluent builder/configuration
 Full example code
-
-
-Integration Tests:
-[DONE] 1. When saving an event stream, it should
-   a) Persist the correct number of events
-   a) Persist the contents of the events correctly
-   b) Increment the expected version
-
-[DONE] 2. When saving the same command more than once, it should
-   a) Throw a DuplicateCommandException
-   b) The exception should contain the events that were committed.
-
-[DONE] 3. When attempting to overwrite an already committed version of the stream, it should
-   a) Throw an OptimisticConcurrencyException
-   b) The exception should contain the events that were committed.
-
-[DONE] 4. When attempting to write to a non-existant "ExpectedVersion" of the stream, it should
-   a) Throw a StorageEngineException
-  
-5. When attempting to overwrite an existing stream across tenant boundaries, it should
-   a) Throw an CrossTenantAccessException
-
-6. When attempting to update an existing stream across tenant boundaries, it should
-   a) Throw an CrossTenantAccessException
-
-7. When loading a stream from version zero, it should
-   a) Get all events for that stream.
-
-8. When loading a stream from a point in time, it should
-   a) Only go back to the prior snapshot
-   b) Load all events up to now
