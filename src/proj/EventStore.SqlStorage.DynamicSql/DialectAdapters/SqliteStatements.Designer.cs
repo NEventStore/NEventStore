@@ -81,14 +81,14 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters {
         ///  INTO [Aggregates]
         ///     ( [Id], [TenantId], [Version], [Snapshot], [RuntimeType] )
         ///SELECT @id,
-        ///       COALESCE(@tenant_id, 0x0),
+        ///       COALESCE(@tenant_id, 0),
         ///       @current_version,
         ///       CASE WHEN @payload IS NULL THEN 0 ELSE @current_version END AS [Snapshot],
         ///       @type
         /// WHERE @initial_version = 0;
         ///
         ///INSERT
-        ///  INTO [Comman [rest of string was truncated]&quot;;.
+        ///  INTO [Commands [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InsertEvents {
             get {
