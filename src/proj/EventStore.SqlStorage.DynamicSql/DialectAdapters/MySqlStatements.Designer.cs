@@ -71,13 +71,7 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to UPDATE Aggregates
-        ///   SET Version = NULL
-        /// WHERE @initial_version &gt; 0
-        ///   AND Id = @id
-        ///   AND ((@tenant_id IS NOT NULL AND TenantId != @tenant_id) OR @initial_version &gt; Version);
-        ///
-        ///INSERT
+        ///   Looks up a localized string similar to INSERT
         ///  INTO Aggregates
         ///     ( Id, TenantId, Version, Snapshot, Created, RuntimeType )
         ///SELECT @id,
@@ -88,7 +82,16 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters {
         ///       @type
         ///  FROM DUAL
         /// WHERE @initial_version = 0;
-        ///        /// [rest of string was truncated]&quot;;.
+        ///
+        ///INSERT
+        ///  INTO Commands
+        ///SELECT @command_id, @command_payload
+        ///  FROM DUAL
+        /// WHERE @command_id IS NOT NULL;
+        ///
+        ///INSERT
+        ///  INTO Events
+        ///     ( Id, Version, Created, CommandId, Payload  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InsertEvents {
             get {
@@ -144,7 +147,7 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters {
         ///     ( SELECT *
         ///         FROM Aggregates
         ///        WHERE Id = @id
-        ///          AND TenantId = @tenant_id )
+        ///          AND TenantId = COALESCE(@tenant_id, TenantId) )
         /// ORDER BY Version;.
         /// </summary>
         internal static string SelectEventsSinceVersion {

@@ -6,6 +6,7 @@ namespace EventStore.Core.IntegrationTests
 	using System;
 	using Machine.Specifications;
 
+	[Ignore]
 	public class when_attempting_to_write_beyond_the_end_of_a_stream : with_an_event_store
 	{
 		static readonly UncommittedEventStream uncomitted = new UncommittedEventStream

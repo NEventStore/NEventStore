@@ -43,7 +43,7 @@
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CrossTenantSecurity.cs" />
-    <Compile Include="when_attempting_to_write_a_nonexistant_expected_version.cs" />
+    <Compile Include="when_attempting_to_write_beyond_the_end_of_a_stream.cs" />
     <Compile Include="when_attempting_to_overwrite_a_committed_version.cs" />
     <Compile Include="when_saving_a_command_more_than_once.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
