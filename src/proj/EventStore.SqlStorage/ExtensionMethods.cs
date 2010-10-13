@@ -7,6 +7,9 @@ namespace EventStore.SqlStorage
 	{
 		public static IDataParameter AddParameter(this IDbCommand command, string parameterName, object value)
 		{
+			if (value is Guid)
+				value = ((Guid)value).ToByteArray();
+
 			var parameter = command.CreateParameter();
 			parameter.ParameterName = parameterName;
 			parameter.Value = value ?? DBNull.Value;
