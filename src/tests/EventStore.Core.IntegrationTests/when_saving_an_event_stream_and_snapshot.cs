@@ -6,7 +6,7 @@ namespace EventStore.Core.IntegrationTests
 	using System;
 	using Machine.Specifications;
 
-	public class when_saving_an_event_stream_and_snapshot : with_an_event_store
+	public class when_saving_an_event_stream_containing_a__snapshot : with_an_event_store
 	{
 		static readonly UncommittedEventStream uncomitted = new UncommittedEventStream
 		{

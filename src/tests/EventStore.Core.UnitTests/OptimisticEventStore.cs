@@ -101,7 +101,7 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_writing_to_an_aggregate_that_has_been_updated_by_another_session : with_the_event_stream
+	public class when_writing_to_a_stream_that_has_been_updated_by_another_session : with_the_event_stream
 	{
 		const long StartingVersion = 17;
 		const long ExpectedVersion = 42;
@@ -151,7 +151,7 @@ namespace EventStore.Core.UnitTests
 	[Subject("OptimisticEventStore")]
 	public class when_writing_events_for_a_previously_handled_command : with_the_event_stream
 	{
-		static readonly ICollection DuplicateEvents = new object[0];
+		static readonly ICollection DuplicateEvents = new[] { "", "" };
 		static readonly UncommittedEventStream stream = new UncommittedEventStream
 		{
 			Id = Guid.NewGuid(),

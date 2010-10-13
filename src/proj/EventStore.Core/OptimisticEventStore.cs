@@ -31,6 +31,8 @@ namespace EventStore.Core
 			catch (DuplicateKeyException e)
 			{
 				this.WrapAndThrow(stream, e);
+
+				throw new StorageEngineException(e.InnerException.Message, e.InnerException);
 			}
 		}
 		private static bool CanWrite(UncommittedEventStream stream)
@@ -49,7 +51,8 @@ namespace EventStore.Core
 				throw new ConcurrencyException(ExceptionMessages.Concurrency, innerException, events);
 
 			events = this.storage.LoadByCommandId(stream.CommandId);
-			throw new DuplicateCommandException(ExceptionMessages.Duplicate, innerException, events);
+			if (events.Count > 0)
+				throw new DuplicateCommandException(ExceptionMessages.Duplicate, innerException, events);
 		}
 	}
 }
