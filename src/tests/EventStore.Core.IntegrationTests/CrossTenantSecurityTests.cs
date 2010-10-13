@@ -25,7 +25,7 @@ namespace EventStore.Core.IntegrationTests
 		};
 
 		It should_fail_by_throwing_a_CrossTenantAccessException = () =>
-			exception.ShouldBeOfType(typeof(CrossTenantAccessException));
+			exception.ShouldBeOfType(typeof(StorageConstraintViolationException));
 	}
 
 	[Subject("Cross-tenant Security")]
@@ -48,7 +48,7 @@ namespace EventStore.Core.IntegrationTests
 		};
 
 		It should_fail_by_throwing_a_CrossTenantAccessException = () =>
-			exception.ShouldBeOfType(typeof(CrossTenantAccessException));
+			exception.ShouldBeOfType(typeof(StorageConstraintViolationException));
 	}
 }
 

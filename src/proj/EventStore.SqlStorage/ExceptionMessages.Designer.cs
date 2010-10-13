@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace EventStore.Core {
+namespace EventStore.SqlStorage {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace EventStore.Core {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.Core.ExceptionMessages", typeof(ExceptionMessages).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.SqlStorage.ExceptionMessages", typeof(ExceptionMessages).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,38 +61,11 @@ namespace EventStore.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The aggregate has changed by another writer since it was loaded..
+        ///   Looks up a localized string similar to One or more storage constraints were in violation.  This will often occur when attempting to write beyond the end of a stream or attempting to write to a stream across a cross-tenant partition boundary..
         /// </summary>
-        internal static string Concurrency {
+        internal static string ConstraintViolation {
             get {
-                return ResourceManager.GetString("Concurrency", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The command indicated has been handled previously..
-        /// </summary>
-        internal static string Duplicate {
-            get {
-                return ResourceManager.GetString("Duplicate", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The stream expects a non-negative version number..
-        /// </summary>
-        internal static string MalformedStream {
-            get {
-                return ResourceManager.GetString("MalformedStream", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot write an empty stream of events..
-        /// </summary>
-        internal static string NoWork {
-            get {
-                return ResourceManager.GetString("NoWork", resourceCulture);
+                return ResourceManager.GetString("ConstraintViolation", resourceCulture);
             }
         }
     }

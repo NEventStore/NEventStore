@@ -47,7 +47,7 @@ namespace EventStore.Core.IntegrationTests
 		};
 
 		It should_fail_by_throwing_a_StorageEngineException = () =>
-			exception.ShouldBeOfType(typeof(StorageEngineException));
+			exception.ShouldBeOfType(typeof(StorageConstraintViolationException));
 	}
 }
 

@@ -78,7 +78,7 @@ namespace EventStore.SqlStorage
 					throw new DuplicateKeyException(exception.Message, exception);
 
 				if (this.builder.Dialect.IsConstraintViolation(exception))
-					throw new CrossTenantAccessException();
+					throw new StorageConstraintViolationException(ExceptionMessages.ConstraintViolation);
 
 				throw new StorageEngineException(exception.Message, exception);
 			}

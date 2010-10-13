@@ -46,9 +46,8 @@
     <Compile Include="ConcurrencyTests.cs" />
     <Compile Include="DuplicateCommandTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="when_savings_an_event_stream.cs" />
-    <Compile Include="when_saving_an_event_stream_and_snapshot.cs" />
-    <Compile Include="TestBase.cs" />
+    <Compile Include="PersistenceTests.cs" />
+    <Compile Include="Base.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\proj\CustomDictionary.xml">

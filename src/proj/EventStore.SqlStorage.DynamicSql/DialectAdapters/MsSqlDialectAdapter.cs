@@ -7,6 +7,7 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters
 	{
 		private const int PrimaryKeyViolation = 2627;
 		private const int UniqueIndexViolation = 2601;
+		private const int ConstraintViolation = 515;
 
 		public override bool IsDuplicateKey(DbException exception)
 		{
@@ -15,6 +16,13 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters
 				return false;
 
 			return sqlException.Number == PrimaryKeyViolation || sqlException.Number == UniqueIndexViolation;
+		}
+
+		public override bool IsConstraintViolation(DbException exception)
+		{
+			var sqlException = exception as SqlException;
+			return null != sqlException && sqlException.Number == ConstraintViolation
+				|| base.IsConstraintViolation(exception);
 		}
 
 		public virtual string GetSelectEventsQuery

@@ -7,6 +7,7 @@ namespace EventStore.Core.IntegrationTests
 	using System.Linq;
 	using Machine.Specifications;
 
+	[Subject("Persistence")]
 	public class when_savings_an_event_stream : with_an_event_store
 	{
 		static readonly UncommittedEventStream uncomitted = new UncommittedEventStream
@@ -31,6 +32,26 @@ namespace EventStore.Core.IntegrationTests
 			for (var i = 0; i < committedEvents.Length; i++)
 				committedEvents[i].ShouldEqual(uncomitted.Events.Cast<object>().ToArray()[i]);
 		};
+	}
+
+	[Subject("Persistence")]
+	public class when_saving_an_event_stream_containing_a__snapshot : with_an_event_store
+	{
+		static readonly UncommittedEventStream uncomitted = new UncommittedEventStream
+		{
+			Id = Guid.NewGuid(),
+			Events = new[] { "1" },
+			Snapshot = "snap"
+		};
+
+		static CommittedEventStream result;
+		Because of = () =>
+		{
+			store.Write(uncomitted);
+			result = store.Read(uncomitted.Id, uncomitted.Events.Count);
+		};
+
+		It should_persist_the_snapshot = () => result.Snapshot.ShouldEqual(uncomitted.Snapshot);
 	}
 }
 
