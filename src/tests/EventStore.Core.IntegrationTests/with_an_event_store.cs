@@ -17,15 +17,16 @@ namespace EventStore.Core.IntegrationTests
 	{
 		protected static IStoreEvents store;
 
-		Establish context = () =>
+		Establish context = () => store = Build(Guid.NewGuid());
+
+		protected static IStoreEvents Build(Guid tenantId)
 		{
 			var commandBuilder = new CommandBuilder(connection, null);
 			var dialect = DiscoverDialect();
 			var statementBuilder = new DynamicSqlStatementBuilder(commandBuilder, dialect, Guid.NewGuid());
 			var storageEngine = new SqlStorageEngine(statementBuilder, new DefaultSerializer());
-			store = new OptimisticEventStore(storageEngine);
-		};
-
+			return new OptimisticEventStore(storageEngine);
+		}
 		private static IAdaptDynamicSqlDialect DiscoverDialect()
 		{
 			switch (connectionName)
@@ -41,7 +42,7 @@ namespace EventStore.Core.IntegrationTests
 
 	public abstract class open_a_connection : within_a_transaction
 	{
-		protected static string connectionName = "SQLite"; // default
+		protected static string connectionName = "SQL Server"; // default
 		protected static IDbConnection connection;
 
 		Establish content = () =>
