@@ -4,6 +4,7 @@
 namespace EventStore.Core.IntegrationTests
 {
 	using System;
+	using System.Linq;
 	using Machine.Specifications;
 
 	public class when_savings_an_event_stream : with_an_event_store
@@ -11,7 +12,8 @@ namespace EventStore.Core.IntegrationTests
 		static readonly UncommittedEventStream uncomitted = new UncommittedEventStream
 		{
 			Id = Guid.NewGuid(),
-			Events = new[] { "1", "2" }
+			Events = new[] { "1", "2", "3" }
+
 		};
 
 		static CommittedEventStream result;
@@ -21,8 +23,15 @@ namespace EventStore.Core.IntegrationTests
 			result = store.Read(uncomitted.Id, 0);
 		};
 
-		It should_increment_the_committed_version_number = () => result.Version.ShouldEqual(2);
-		It should_persist_the_correct_number_of_events = () => result.Events.Count.ShouldEqual(2);
+		It should_have_the_correct_identifier = () => result.Id.ShouldEqual(uncomitted.Id);
+		It should_increment_the_version_number = () => result.Version.ShouldEqual(uncomitted.Events.Count);
+		It should_persist_the_all_events = () => result.Events.Count.ShouldEqual(uncomitted.Events.Count);
+		It should_persist_events_correctly = () =>
+		{
+			var committedEvents = result.Events.Cast<object>().ToArray();
+			for (var i = 0; i < committedEvents.Length; i++)
+				committedEvents[i].ShouldEqual(uncomitted.Events.Cast<object>().ToArray()[i]);
+		};
 	}
 }
 

@@ -63,8 +63,8 @@ namespace EventStore.SqlStorage
 
 		public void Save(UncommittedEventStream stream)
 		{
-			using (var query = this.builder.BuildSaveCommand(stream, this.serializer))
-				this.WrapOnFailure(query.ExecuteNonQuery);
+			using (var command = this.builder.BuildSaveCommand(stream, this.serializer))
+				this.WrapOnFailure(command.ExecuteNonQuery);
 		}
 		private TResult WrapOnFailure<TResult>(Func<TResult> func)
 		{

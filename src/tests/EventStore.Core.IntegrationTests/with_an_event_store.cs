@@ -13,7 +13,7 @@ namespace EventStore.Core.IntegrationTests
 	using SqlStorage.DynamicSql;
 	using SqlStorage.DynamicSql.DialectAdapters;
 
-	public class with_an_event_store : open_a_connection
+	public abstract class with_an_event_store : open_a_connection
 	{
 		protected static IStoreEvents store;
 
@@ -39,12 +39,12 @@ namespace EventStore.Core.IntegrationTests
 		}
 	}
 
-	public class open_a_connection : within_a_transaction
+	public abstract class open_a_connection : within_a_transaction
 	{
-		protected static string connectionName = "SQL Server"; // default
+		protected static string connectionName = "SQLite"; // default
 		protected static IDbConnection connection;
 
-		private Establish content = () =>
+		Establish content = () =>
 		{
 			AppDomain.CurrentDomain.SetData("DataDirectory", Environment.CurrentDirectory);
 			var settings = ConfigurationManager.ConnectionStrings[connectionName];
@@ -54,14 +54,14 @@ namespace EventStore.Core.IntegrationTests
 			connection.Open();
 		};
 
-		private Cleanup after = () =>
+		Cleanup after = () =>
 		{
 			if (null != connection)
 				connection.Dispose();
 		};
 	}
 
-	public class within_a_transaction
+	public abstract class within_a_transaction
 	{
 		// static TransactionScope scope;
 		// Establish context = () => scope = new TransactionScope();
