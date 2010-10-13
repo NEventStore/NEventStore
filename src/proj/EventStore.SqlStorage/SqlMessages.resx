@@ -118,6 +118,6 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ConstraintViolation" xml:space="preserve">
-    <value>This exception is most likely the result of either cross-tenant access or an ExpectedVersion value greater than the actual version of the aggregate.</value>
+    <value>Version provided would save beyond the end of the committed event stream.</value>
   </data>
 </root>

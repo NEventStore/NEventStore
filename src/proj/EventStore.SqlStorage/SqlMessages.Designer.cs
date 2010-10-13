@@ -61,7 +61,7 @@ namespace EventStore.SqlStorage {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This exception is most likely the result of either cross-tenant access or an ExpectedVersion value greater than the actual version of the aggregate..
+        ///   Looks up a localized string similar to Version provided would save beyond the end of the committed event stream..
         /// </summary>
         internal static string ConstraintViolation {
             get {
