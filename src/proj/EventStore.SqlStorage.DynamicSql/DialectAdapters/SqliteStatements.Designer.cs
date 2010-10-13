@@ -104,7 +104,8 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters {
         ///     ( SELECT COALESCE(MAX([Version]), 0)
         ///         FROM [Snapshots]
         ///        WHERE [Id] = @id
-        ///          AND [Version] &lt;= COALESCE(@current_version, [Version]) )
+        ///          AND @current_version &gt; 0
+        ///          AND [Version] &lt;= @current_version )
         /// ORDER BY [Version];
         /// 
         ///SELECT [Payload],
@@ -138,12 +139,12 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters {
         ///   Looks up a localized string similar to SELECT [Payload]
         ///  FROM [Events]
         /// WHERE [Id] = @id
-        ///   AND [Version] &gt; COALESCE(@current_version, [Version])
+        ///   AND [Version] &gt; @current_version
         /// ORDER BY [Version];.
         /// </summary>
-        internal static string SelectEventsForVersion {
+        internal static string SelectEventsSinceVersion {
             get {
-                return ResourceManager.GetString("SelectEventsForVersion", resourceCulture);
+                return ResourceManager.GetString("SelectEventsSinceVersion", resourceCulture);
             }
         }
     }

@@ -36,20 +36,20 @@ namespace EventStore.SqlStorage.DynamicSql
 		}
 		public virtual IDbCommand BuildLoadStartingAfterQuery(Guid id, long version)
 		{
-			return this.BuildLoadQuery(this.dialect.GetSelectEventsForVersionQuery, id, version);
+			return this.BuildLoadQuery(this.dialect.GetSelectEventsSinceVersionQuery, id, version);
 		}
 		private IDbCommand BuildLoadQuery(string commandText, Guid id, long version)
 		{
 			var command = this.builder.Build(commandText);
-			command.AddParameter(this.IdParam, id.ToNull());
-			command.AddParameter(this.CurrentVersionParam, version.ToNull());
+			command.AddParameter(this.IdParam, id);
+			command.AddParameter(this.CurrentVersionParam, version);
 			return command;
 		}
 
 		public virtual IDbCommand BuildSaveCommand(UncommittedEventStream stream, ISerializeObjects serializer)
 		{
 			var command = this.builder.Build(this.dialect.GetInsertEventsCommand);
-			command.AddParameter(this.IdParam, stream.Id.ToNull());
+			command.AddParameter(this.IdParam, stream.Id);
 			command.AddParameter(this.TenantIdParam, this.tenantId.ToNull());
 			command.AddParameter(this.InitialVersionParam, stream.ExpectedVersion);
 			command.AddParameter(this.CurrentVersionParam, stream.ExpectedVersion + stream.Events.Count);

@@ -4,7 +4,7 @@ namespace EventStore.SqlStorage.DynamicSql
 	{
 		string GetSelectEventsQuery { get; }
 		string GetSelectEventsForCommandQuery { get; }
-		string GetSelectEventsForVersionQuery { get; }
+		string GetSelectEventsSinceVersionQuery { get; }
 		string GetInsertEventsCommand { get; }
 		string GetInsertEventCommand { get; }
 	}

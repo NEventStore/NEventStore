@@ -21,9 +21,9 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters
 		{
 			get { return SqliteStatements.SelectEventsForCommand; }
 		}
-		public virtual string GetSelectEventsForVersionQuery
+		public virtual string GetSelectEventsSinceVersionQuery
 		{
-			get { return SqliteStatements.SelectEventsForVersion; }
+			get { return SqliteStatements.SelectEventsSinceVersion; }
 		}
 		public virtual string GetInsertEventsCommand
 		{
