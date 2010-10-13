@@ -139,6 +139,11 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters {
         ///  FROM [Events]
         /// WHERE [Id] = @id
         ///   AND [Version] &gt; @current_version
+        ///   AND EXISTS
+        ///     ( SELECT *
+        ///         FROM [Aggregates]
+        ///        WHERE [Id] = @id
+        ///          AND [TenantId] = @tenant_id )
         /// ORDER BY [Version];.
         /// </summary>
         internal static string SelectEventsSinceVersion {

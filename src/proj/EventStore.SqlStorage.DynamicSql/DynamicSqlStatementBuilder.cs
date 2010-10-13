@@ -28,22 +28,24 @@ namespace EventStore.SqlStorage.DynamicSql
 
 		public virtual IDbCommand BuildLoadByIdQuery(Guid id, long maxStartingVersion)
 		{
-			return this.BuildLoadQuery(this.dialect.GetSelectEventsQuery, id, maxStartingVersion);
+			var query = this.builder.Build(this.dialect.GetSelectEventsQuery);
+			query.AddParameter(this.IdParam, id);
+			query.AddParameter(this.CurrentVersionParam, maxStartingVersion);
+			return query;
 		}
 		public virtual IDbCommand BuildLoadByCommandIdQuery(Guid commandId)
 		{
-			return this.BuildLoadQuery(this.dialect.GetSelectEventsForCommandQuery, commandId, 0);
+			var query = this.builder.Build(this.dialect.GetSelectEventsForCommandQuery);
+			query.AddParameter(this.IdParam, commandId);
+			return query;
 		}
 		public virtual IDbCommand BuildLoadStartingAfterQuery(Guid id, long version)
 		{
-			return this.BuildLoadQuery(this.dialect.GetSelectEventsSinceVersionQuery, id, version);
-		}
-		private IDbCommand BuildLoadQuery(string commandText, Guid id, long version)
-		{
-			var command = this.builder.Build(commandText);
-			command.AddParameter(this.IdParam, id);
-			command.AddParameter(this.CurrentVersionParam, version);
-			return command;
+			var query = this.builder.Build(this.dialect.GetSelectEventsSinceVersionQuery);
+			query.AddParameter(this.IdParam, id);
+			query.AddParameter(this.CurrentVersionParam, version);
+			query.AddParameter(this.TenantIdParam, this.tenantId);
+			return query;
 		}
 
 		public virtual IDbCommand BuildSaveCommand(UncommittedEventStream stream, ISerializeObjects serializer)

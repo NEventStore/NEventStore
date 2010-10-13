@@ -22,7 +22,7 @@ namespace EventStore.SqlStorage
 		public CommittedEventStream LoadById(Guid id, long maxStartingVersion)
 		{
 			using (var query = this.builder.BuildLoadByIdQuery(id, maxStartingVersion))
-			using (var reader = this.WrapOnFailure(query.ExecuteReader))
+			using (var reader = this.WrapOnFailure(query.ExecuteReader, 0))
 				return this.BuildStream(reader, id);
 		}
 		public ICollection LoadStartingAfter(Guid id, long version)
@@ -31,7 +31,7 @@ namespace EventStore.SqlStorage
 				return new object[0];
 
 			using (var query = this.builder.BuildLoadStartingAfterQuery(id, version))
-			using (var reader = this.WrapOnFailure(query.ExecuteReader))
+			using (var reader = this.WrapOnFailure(query.ExecuteReader, 0))
 				return this.BuildStream(reader, Guid.Empty).Events;
 		}
 		public ICollection LoadByCommandId(Guid commandId)
@@ -40,7 +40,7 @@ namespace EventStore.SqlStorage
 				return new object[] { };
 
 			using (var query = this.builder.BuildLoadByCommandIdQuery(commandId))
-			using (var reader = this.WrapOnFailure(query.ExecuteReader))
+			using (var reader = this.WrapOnFailure(query.ExecuteReader, 0))
 				return this.BuildStream(reader, Guid.Empty).Events;
 		}
 		private CommittedEventStream BuildStream(IDataReader reader, Guid id)
@@ -64,9 +64,9 @@ namespace EventStore.SqlStorage
 		public void Save(UncommittedEventStream stream)
 		{
 			using (var command = this.builder.BuildSaveCommand(stream, this.serializer))
-				this.WrapOnFailure(command.ExecuteNonQuery);
+				this.WrapOnFailure(command.ExecuteNonQuery, stream.ExpectedVersion);
 		}
-		private TResult WrapOnFailure<TResult>(Func<TResult> func)
+		private TResult WrapOnFailure<TResult>(Func<TResult> func, long version)
 		{
 			try
 			{
@@ -77,10 +77,11 @@ namespace EventStore.SqlStorage
 				if (this.builder.Dialect.IsDuplicateKey(exception))
 					throw new DuplicateKeyException(exception.Message, exception);
 
-				var message = this.builder.Dialect.IsConstraintViolation(exception)
-					? SqlMessages.ConstraintViolation
-					: exception.Message;
+				var constraintViolation = this.builder.Dialect.IsConstraintViolation(exception);
+				if (constraintViolation && version > 0)
+					throw new CrossTenantAccessException();
 
+				var message = constraintViolation ? SqlMessages.ConstraintViolation : exception.Message;
 				throw new StorageEngineException(message, exception);
 			}
 		}

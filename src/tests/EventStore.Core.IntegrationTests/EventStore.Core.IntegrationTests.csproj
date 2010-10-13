@@ -42,14 +42,14 @@
     <Compile Include="..\..\proj\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="when_attempting_to_save_across_tenant_boundaries.cs" />
+    <Compile Include="CrossTenantSecurity.cs" />
     <Compile Include="when_attempting_to_write_a_nonexistant_expected_version.cs" />
     <Compile Include="when_attempting_to_overwrite_a_committed_version.cs" />
     <Compile Include="when_saving_a_command_more_than_once.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="when_savings_an_event_stream.cs" />
     <Compile Include="when_saving_an_event_stream_and_snapshot.cs" />
-    <Compile Include="with_an_event_store.cs" />
+    <Compile Include="TestBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\proj\CustomDictionary.xml">

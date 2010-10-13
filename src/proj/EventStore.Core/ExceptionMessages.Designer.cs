@@ -70,6 +70,15 @@ namespace EventStore.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An unauthorized attempt was made to reach across multi-tenant partitioning bounaries..
+        /// </summary>
+        internal static string CrossTenant {
+            get {
+                return ResourceManager.GetString("CrossTenant", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The command indicated has been handled previously..
         /// </summary>
         internal static string Duplicate {

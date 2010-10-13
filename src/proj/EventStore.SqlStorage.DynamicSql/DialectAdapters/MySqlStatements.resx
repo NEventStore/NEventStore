@@ -204,6 +204,11 @@ SELECT Payload,
   FROM Events
  WHERE Id = @id
    AND Version &gt; @current_version
+   AND EXISTS
+     ( SELECT *
+         FROM Aggregates
+        WHERE Id = @id
+          AND TenantId = @tenant_id )
  ORDER BY Version;</value>
   </data>
 </root>

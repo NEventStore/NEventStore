@@ -50,6 +50,7 @@
     </Compile>
     <Compile Include="ConcurrencyException.cs" />
     <Compile Include="CommittedEventStream.cs" />
+    <Compile Include="CrossTenantAccessException.cs" />
     <Compile Include="DuplicateCommandException.cs" />
     <Compile Include="DuplicateKeyException.cs" />
     <Compile Include="IStoreEvents.cs" />

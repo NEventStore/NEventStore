@@ -31,8 +31,10 @@ namespace EventStore.Core
 			catch (DuplicateKeyException e)
 			{
 				this.WrapAndThrow(stream, e);
-
-				throw new StorageEngineException(e.InnerException.Message, e.InnerException);
+			}
+			catch (CrossTenantAccessException e)
+			{
+				throw new CrossTenantAccessException(ExceptionMessages.CrossTenant, e.InnerException);
 			}
 		}
 		private static bool CanWrite(UncommittedEventStream stream)
@@ -53,6 +55,8 @@ namespace EventStore.Core
 			events = this.storage.LoadByCommandId(stream.CommandId);
 			if (events.Count > 0)
 				throw new DuplicateCommandException(ExceptionMessages.Duplicate, innerException, events);
+
+			throw new CrossTenantAccessException(ExceptionMessages.CrossTenant, innerException);
 		}
 	}
 }
