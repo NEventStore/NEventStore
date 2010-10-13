@@ -144,11 +144,11 @@ INSERT
   INTO Events
      ( Id, Version, Created, CommandId, Payload )
 {0}
-SELECT NULL, NULL, NULL, NULL, NULL WHERE 1=0;
+SELECT NULL, NULL, NULL, NULL, NULL FROM DUAL WHERE 1=0;
 
 UPDATE Aggregates
    SET Version = CASE WHEN TenantId = COALESCE(@tenant_id, TenantId)
-                         AND Version = @committed_version
+                       AND Version = @committed_version
                    THEN @new_version ELSE NULL END,
        Snapshot = CASE WHEN @payload IS NULL THEN Snapshot ELSE @new_version END,
        RuntimeType = COALESCE(@type, RuntimeType)
