@@ -144,12 +144,13 @@ INSERT
 SELECT NULL, NULL, NULL, NULL WHERE 1=0;
 
 UPDATE [Aggregates]
-   SET [Version] = CASE WHEN [TenantId] = COALESCE(@tenant_id, [TenantId]) THEN @current_version
-                   ELSE NULL END,
+   SET [Version] = CASE WHEN [TenantId] = COALESCE(@tenant_id, [TenantId])
+                         AND [Version] = @initial_version
+                   THEN @current_version ELSE NULL END,
        [Snapshot] = CASE WHEN @payload IS NULL THEN [Snapshot] ELSE @current_version END,
        [RuntimeType] = COALESCE(@type, [RuntimeType])
  WHERE [Id] = @id
-   AND [Version] = @initial_version
+   AND [Version] &lt;= @initial_version
    AND @initial_version &gt; 0;
 
 INSERT

@@ -6,7 +6,7 @@ namespace EventStore.Core.IntegrationTests
 	using System;
 	using Machine.Specifications;
 
-	[Subject("Cross-tenant Security:")]
+	[Subject("Cross-tenant Security")]
 	public class when_attempting_to_overwrite_a_new_stream_across_tenant_boundaries : with_an_event_store
 	{
 		static readonly UncommittedEventStream uncomitted = new UncommittedEventStream
@@ -28,7 +28,7 @@ namespace EventStore.Core.IntegrationTests
 			exception.ShouldBeOfType(typeof(CrossTenantAccessException));
 	}
 
-	[Subject("Cross-tenant Security:")]
+	[Subject("Cross-tenant Security")]
 	public class when_attempting_to_update_an_existing_stream_across_tenant_boundaries : with_an_event_store
 	{
 		static readonly UncommittedEventStream uncomitted = new UncommittedEventStream
