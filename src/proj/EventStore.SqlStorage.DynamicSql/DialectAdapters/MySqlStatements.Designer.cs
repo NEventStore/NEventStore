@@ -62,7 +62,7 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters {
         
         /// <summary>
         ///   Looks up a localized string similar to 
-        ///SELECT @id, @initial_version{0}, UTC_TIMESTAMP(), @command_id, @payload{0} UNION ALL.
+        ///SELECT @id, @committed_version{0}, UTC_TIMESTAMP(), @command_id, @payload{0} UNION ALL.
         /// </summary>
         internal static string InsertEvent {
             get {
@@ -76,12 +76,12 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters {
         ///     ( Id, TenantId, Version, Snapshot, Created, RuntimeType )
         ///SELECT @id,
         ///       COALESCE(@tenant_id, 0x0),
-        ///       @current_version,
-        ///       CASE WHEN @payload IS NULL THEN 0 ELSE @current_version END AS Snapshot,
+        ///       @new_version,
+        ///       CASE WHEN @payload IS NULL THEN 0 ELSE @new_version END AS Snapshot,
         ///       UTC_TIMESTAMP(),
         ///       @type
         ///  FROM DUAL
-        /// WHERE @initial_version = 0;
+        /// WHERE @committed_version = 0;
         ///
         ///INSERT
         ///  INTO Commands
@@ -91,7 +91,8 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters {
         ///
         ///INSERT
         ///  INTO Events
-        ///     ( Id, Version, Created, CommandId, Payload  [rest of string was truncated]&quot;;.
+        ///     ( Id, Version, Created, CommandId, Payload )
+        ///{0} [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InsertEvents {
             get {
@@ -107,16 +108,16 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters {
         ///     ( SELECT COALESCE(MAX(Version), 0)
         ///         FROM Snapshots
         ///        WHERE Id = @id
-        ///          AND @current_version &gt; 0
-        ///          AND Version &lt;= @current_version )
+        ///          AND @committed_version &gt; 0
+        ///          AND Version &lt;= @committed_version )
         /// ORDER BY Version;
         ///
         ///SELECT Payload,
         ///       Version
         ///  FROM Snapshots
         /// WHERE Id = @id
-        ///   AND @current_version &gt; 0
-        ///   AND Version &lt;= @current_version
+        ///   AND @committed_version &gt; 0
+        ///   AND Version &lt;= @committed_version
         /// ORDER BY Version DESC
         /// LIMIT 1;.
         /// </summary>
@@ -142,7 +143,7 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters {
         ///   Looks up a localized string similar to SELECT Payload
         ///  FROM Events
         /// WHERE Id = @id
-        ///   AND Version &gt; @current_version
+        ///   AND Version &gt; @committed_version
         ///   AND EXISTS
         ///     ( SELECT *
         ///         FROM Aggregates

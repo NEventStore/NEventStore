@@ -42,10 +42,9 @@
     <Compile Include="..\..\proj\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="CrossTenantSecurity.cs" />
-    <Compile Include="when_attempting_to_write_beyond_the_end_of_a_stream.cs" />
-    <Compile Include="when_attempting_to_overwrite_a_committed_version.cs" />
-    <Compile Include="when_saving_a_command_more_than_once.cs" />
+    <Compile Include="CrossTenantSecurityTests.cs" />
+    <Compile Include="ConcurrencyTests.cs" />
+    <Compile Include="DuplicateCommandTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="when_savings_an_event_stream.cs" />
     <Compile Include="when_saving_an_event_stream_and_snapshot.cs" />

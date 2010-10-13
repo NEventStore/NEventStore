@@ -30,7 +30,7 @@ namespace EventStore.SqlStorage.DynamicSql
 		{
 			var query = this.builder.Build(this.dialect.GetSelectEventsQuery);
 			query.AddParameter(this.IdParam, id);
-			query.AddParameter(this.CurrentVersionParam, maxStartingVersion);
+			query.AddParameter(this.CommittedVersionParam, maxStartingVersion);
 			return query;
 		}
 		public virtual IDbCommand BuildLoadByCommandIdQuery(Guid commandId)
@@ -43,7 +43,7 @@ namespace EventStore.SqlStorage.DynamicSql
 		{
 			var query = this.builder.Build(this.dialect.GetSelectEventsSinceVersionQuery);
 			query.AddParameter(this.IdParam, id);
-			query.AddParameter(this.CurrentVersionParam, version);
+			query.AddParameter(this.CommittedVersionParam, version);
 			query.AddParameter(this.TenantIdParam, this.tenantId.ToNull());
 			return query;
 		}
@@ -53,8 +53,8 @@ namespace EventStore.SqlStorage.DynamicSql
 			var command = this.builder.Build(this.dialect.GetInsertEventsCommand);
 			command.AddParameter(this.IdParam, stream.Id);
 			command.AddParameter(this.TenantIdParam, this.tenantId.ToNull());
-			command.AddParameter(this.InitialVersionParam, stream.CommittedVersion);
-			command.AddParameter(this.CurrentVersionParam, stream.CommittedVersion + stream.Events.Count);
+			command.AddParameter(this.CommittedVersionParam, stream.CommittedVersion);
+			command.AddParameter(this.NewVersionParam, stream.CommittedVersion + stream.Events.Count);
 			command.AddParameter(this.TypeParam, stream.Type == null ? string.Empty : stream.Type.FullName);
 			command.AddParameter(this.CommandIdParam, stream.CommandId.ToNull());
 			command.AddParameter(this.CommandPayloadParam, serializer.Serialize(stream.Command));
@@ -69,7 +69,7 @@ namespace EventStore.SqlStorage.DynamicSql
 
 			foreach (var @event in stream.Events)
 			{
-				command.AddParameter(this.InitialVersionParam.Append(index), stream.CommittedVersion + index + 1);
+				command.AddParameter(this.CommittedVersionParam.Append(index), stream.CommittedVersion + index + 1);
 				command.AddParameter(this.PayloadParam.Append(index), serializer.Serialize(@event));
 				commandText.AppendWithFormat(this.dialect.GetInsertEventCommand, index++);
 			}
@@ -85,13 +85,13 @@ namespace EventStore.SqlStorage.DynamicSql
 		{
 			get { return this.dialect.NormalizeParameterName("tenant_id"); }
 		}
-		protected virtual string InitialVersionParam
+		protected virtual string CommittedVersionParam
 		{
-			get { return this.dialect.NormalizeParameterName("initial_version"); }
+			get { return this.dialect.NormalizeParameterName("committed_version"); }
 		}
-		protected virtual string CurrentVersionParam
+		protected virtual string NewVersionParam
 		{
-			get { return this.dialect.NormalizeParameterName("current_version"); }
+			get { return this.dialect.NormalizeParameterName("new_version"); }
 		}
 		protected virtual string TypeParam
 		{

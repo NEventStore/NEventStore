@@ -119,7 +119,7 @@
   </resheader>
   <data name="InsertEvent" xml:space="preserve">
     <value>
-SELECT @id, @initial_version{0}, @command_id, @payload{0} UNION ALL</value>
+SELECT @id, @committed_version{0}, @command_id, @payload{0} UNION ALL</value>
   </data>
   <data name="InsertEvents" xml:space="preserve">
     <value>INSERT
@@ -127,10 +127,10 @@ SELECT @id, @initial_version{0}, @command_id, @payload{0} UNION ALL</value>
      ( [Id], [TenantId], [Version], [Snapshot], [RuntimeType] )
 SELECT @id,
        COALESCE(@tenant_id, 0),
-       @current_version,
-       CASE WHEN @payload IS NULL THEN 0 ELSE @current_version END AS [Snapshot],
+       @new_version,
+       CASE WHEN @payload IS NULL THEN 0 ELSE @new_version END AS [Snapshot],
        @type
- WHERE @initial_version = 0;
+ WHERE @committed_version = 0;
 
 INSERT
   INTO [Commands]
@@ -145,24 +145,24 @@ SELECT NULL, NULL, NULL, NULL WHERE 1=0;
 
 UPDATE [Aggregates]
    SET [Version] = CASE WHEN [TenantId] = COALESCE(@tenant_id, [TenantId])
-                         AND [Version] = @initial_version
-                   THEN @current_version ELSE NULL END,
-       [Snapshot] = CASE WHEN @payload IS NULL THEN [Snapshot] ELSE @current_version END,
+                         AND [Version] = @committed_version
+                   THEN @new_version ELSE NULL END,
+       [Snapshot] = CASE WHEN @payload IS NULL THEN [Snapshot] ELSE @new_version END,
        [RuntimeType] = COALESCE(@type, [RuntimeType])
  WHERE [Id] = @id
-   AND [Version] &lt;= @initial_version
-   AND @initial_version &gt; 0;
+   AND [Version] &lt;= @committed_version
+   AND @committed_version &gt; 0;
 
 INSERT
   INTO [Snapshots]
      ( [Id], [Version], [Payload] )
-SELECT @id, @current_version, @payload
+SELECT @id, @new_version, @payload
  WHERE @payload IS NOT NULL
    AND NOT EXISTS -- snapshots don't need to be overwritten
      ( SELECT *
          FROM [Snapshots]
         WHERE [Id] = @id
-          AND [Version] = @current_version );</value>
+          AND [Version] = @new_version );</value>
   </data>
   <data name="SelectEvents" xml:space="preserve">
     <value>SELECT [Payload]
@@ -172,16 +172,16 @@ SELECT @id, @current_version, @payload
      ( SELECT COALESCE(MAX([Version]), 0)
          FROM [Snapshots]
         WHERE [Id] = @id
-          AND @current_version &gt; 0
-          AND [Version] &lt;= @current_version )
+          AND @committed_version &gt; 0
+          AND [Version] &lt;= @committed_version )
  ORDER BY [Version];
  
 SELECT [Payload],
        [Version]
   FROM [Snapshots]
  WHERE [Id] = @id
-   AND @current_version &gt; 0
-   AND [Version] &lt;= @current_version
+   AND @committed_version &gt; 0
+   AND [Version] &lt;= @committed_version
  ORDER BY [Version] DESC
  LIMIT 1;</value>
   </data>
@@ -195,7 +195,7 @@ SELECT [Payload],
     <value>SELECT [Payload]
   FROM [Events]
  WHERE [Id] = @id
-   AND [Version] &gt; @current_version
+   AND [Version] &gt; @committed_version
    AND EXISTS
      ( SELECT *
          FROM [Aggregates]
