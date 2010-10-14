@@ -21,7 +21,7 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters
 		public override bool IsConstraintViolation(DbException exception)
 		{
 			var sqlException = exception as SqlException;
-			return null != sqlException && sqlException.Number == ConstraintViolation
+			return (null != sqlException && sqlException.Number == ConstraintViolation)
 				|| base.IsConstraintViolation(exception);
 		}
 
