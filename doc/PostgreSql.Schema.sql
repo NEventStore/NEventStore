@@ -7,8 +7,8 @@ DROP TABLE Aggregates;
 
 CREATE TABLE Aggregates
 (
-    Id UUID NOT NULL,
-    TenantId UUID NOT NULL,
+    Id BYTEA NOT NULL,
+    TenantId BYTEA NOT NULL,
     Version BIGINT NOT NULL CHECK (Version > 0),
     Snapshot BIGINT NOT NULL CHECK (Snapshot >= 0),
     Created TIMESTAMPTZ NOT NULL DEFAULT (CURRENT_TIMESTAMP),
@@ -18,24 +18,24 @@ CREATE TABLE Aggregates
 
 CREATE TABLE Commands
 (
-    Id UUID NOT NULL,
+    Id BYTEA NOT NULL,
     Payload TEXT,
     CONSTRAINT PK_Commands PRIMARY KEY (Id)
 );
 
 CREATE TABLE Events
 (
-    Id UUID NOT NULL,
+    Id BYTEA NOT NULL,
     Version BIGINT NOT NULL CHECK (Version > 0),
     CommitSequence BIGSERIAL NOT NULL PRIMARY KEY CHECK (CommitSequence > 0),
     Created TIMESTAMPTZ NOT NULL DEFAULT (CURRENT_TIMESTAMP),
-    CommandId UUID,
+    CommandId BYTEA,
     Payload BYTEA NOT NULL
 );
 
 CREATE TABLE Snapshots
 (
-    Id UUID NOT NULL,
+    Id BYTEA NOT NULL,
     Version BIGINT NOT NULL CHECK (Version > 0),
     Created TIMESTAMPTZ NOT NULL DEFAULT (CURRENT_TIMESTAMP),
     Payload BYTEA NOT NULL,

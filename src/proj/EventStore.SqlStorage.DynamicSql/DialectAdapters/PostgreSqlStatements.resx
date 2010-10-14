@@ -126,7 +126,7 @@ SELECT @id, @committed_version{0}, @command_id, @payload{0} UNION ALL</value>
   INTO Aggregates
      ( Id, TenantId, Version, Snapshot, RuntimeType )
 SELECT @id,
-       COALESCE(@tenant_id, E'00000000-0000-0000-0000-000000000000'::uuid),
+       COALESCE(@tenant_id, E'0'::bytea),
        @new_version,
        CASE WHEN @payload IS NULL THEN 0 ELSE @new_version END AS Snapshot,
        @type

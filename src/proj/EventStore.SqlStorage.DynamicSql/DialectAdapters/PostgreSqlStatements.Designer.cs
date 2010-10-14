@@ -75,7 +75,7 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters {
         ///  INTO Aggregates
         ///     ( Id, TenantId, Version, Snapshot, RuntimeType )
         ///SELECT @id,
-        ///       COALESCE(@tenant_id, E&apos;00000000-0000-0000-0000-000000000000&apos;::uuid),
+        ///       COALESCE(@tenant_id, E&apos;0&apos;::bytea),
         ///       @new_version,
         ///       CASE WHEN @payload IS NULL THEN 0 ELSE @new_version END AS Snapshot,
         ///       @type
@@ -90,7 +90,9 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters {
         ///  INTO Events
         ///     ( Id, Version, CommandId, Payload )
         ///{0}
-        ///SELECT NULL, NULL, NULL,  [rest of string was truncated]&quot;;.
+        ///SELECT NULL, NULL, NULL, NULL WHERE 1=0;
+        ///
+        ///UPDATE Aggregat [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InsertEvents {
             get {

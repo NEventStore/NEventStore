@@ -4,16 +4,13 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters
 
 	public class PostgreSqlDialectAdapter : CommonSqlDialectAdapter, IAdaptDynamicSqlDialect
 	{
-		private const string DuplicateEntryText = "Duplicate entry";
-		private const string KeyViolationText = "for key";
+		private const string DuplicateEntryText = "duplicate key";
 
 		public override bool IsDuplicateKey(DbException exception)
 		{
-			if (exception == null)
-				return false;
-
-			var message = exception.Message;
-			return message.Contains(DuplicateEntryText) && message.Contains(KeyViolationText);
+			return exception != null
+				&& !string.IsNullOrEmpty(exception.Message)
+				&& exception.Message.ToLowerInvariant().Contains(DuplicateEntryText);
 		}
 
 		public virtual string GetSelectEventsQuery

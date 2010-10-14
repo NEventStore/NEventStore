@@ -14,7 +14,7 @@ namespace EventStore.SqlStorage
 			parameter.ParameterName = parameterName;
 			parameter.Value = value ?? DBNull.Value;
 
-			if (parameter.Value == DBNull.Value)
+			if (parameter.Value == DBNull.Value || value is byte[])
 				parameter.DbType = DbType.Binary;
 
 			command.Parameters.Add(parameter);
