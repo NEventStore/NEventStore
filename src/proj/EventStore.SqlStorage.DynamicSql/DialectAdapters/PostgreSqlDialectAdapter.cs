@@ -16,6 +16,11 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters
 			return message.Contains(DuplicateEntryText) && message.Contains(KeyViolationText);
 		}
 
+		public override string NormalizeParameterName(string parameterName)
+		{
+			return ":" + parameterName;
+		}
+
 		public virtual string GetSelectEventsQuery
 		{
 			get { return PostgreSqlStatements.SelectEvents; }
