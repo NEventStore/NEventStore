@@ -30,7 +30,7 @@ CREATE TABLE Events
     CommitSequence BIGSERIAL NOT NULL PRIMARY KEY CHECK (CommitSequence > 0),
     Created TIMESTAMPTZ NOT NULL DEFAULT (CURRENT_TIMESTAMP),
     CommandId UUID,
-    Payload TEXT NOT NULL
+    Payload BYTEA NOT NULL
 );
 
 CREATE TABLE Snapshots
@@ -38,7 +38,7 @@ CREATE TABLE Snapshots
     Id UUID NOT NULL,
     Version BIGINT NOT NULL CHECK (Version > 0),
     Created TIMESTAMPTZ NOT NULL DEFAULT (CURRENT_TIMESTAMP),
-    Payload TEXT NOT NULL,
+    Payload BYTEA NOT NULL,
     CONSTRAINT PK_Snapshots PRIMARY KEY (Id, Version)
 );
 

@@ -62,7 +62,7 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters {
         
         /// <summary>
         ///   Looks up a localized string similar to 
-        ///SELECT :id, :committed_version{0}, :command_id, :payload{0} UNION ALL.
+        ///SELECT @id, @committed_version{0}, @command_id, @payload{0} UNION ALL.
         /// </summary>
         internal static string InsertEvent {
             get {
@@ -74,26 +74,23 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters {
         ///   Looks up a localized string similar to INSERT
         ///  INTO Aggregates
         ///     ( Id, TenantId, Version, Snapshot, RuntimeType )
-        ///SELECT :id,
-        ///       COALESCE(:tenant_id, 0),
-        ///       :new_version,
-        ///       CASE WHEN :payload IS NULL THEN 0 ELSE :new_version END AS Snapshot,
-        ///       :type
-        /// WHERE :committed_version = 0;
+        ///SELECT @id,
+        ///       COALESCE(@tenant_id, E&apos;00000000-0000-0000-0000-000000000000&apos;::uuid),
+        ///       @new_version,
+        ///       CASE WHEN @payload IS NULL THEN 0 ELSE @new_version END AS Snapshot,
+        ///       @type
+        /// WHERE @committed_version = 0;
         ///
         ///INSERT
         ///  INTO Commands
-        ///SELECT :command_id, :command_payload
-        /// WHERE :command_id IS NOT NULL;
+        ///SELECT @command_id, @command_payload
+        /// WHERE @command_id IS NOT NULL;
         ///
         ///INSERT
         ///  INTO Events
         ///     ( Id, Version, CommandId, Payload )
         ///{0}
-        ///SELECT NULL, NULL, NULL, NULL WHERE 1=0;
-        ///
-        ///UPDATE Aggregates
-        ///   SET [rest of string was truncated]&quot;;.
+        ///SELECT NULL, NULL, NULL,  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InsertEvents {
             get {
@@ -104,21 +101,21 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters {
         /// <summary>
         ///   Looks up a localized string similar to SELECT Payload
         ///  FROM Events
-        /// WHERE Id = :id
+        /// WHERE Id = @id
         ///   AND Version &gt;
         ///     ( SELECT COALESCE(MAX(Version), 0)
         ///         FROM Snapshots
-        ///        WHERE Id = :id
-        ///          AND :committed_version &gt; 0
-        ///          AND Version &lt;= :committed_version )
+        ///        WHERE Id = @id
+        ///          AND @committed_version &gt; 0
+        ///          AND Version &lt;= @committed_version )
         /// ORDER BY Version;
         /// 
         ///SELECT Payload,
         ///       Version
         ///  FROM Snapshots
-        /// WHERE Id = :id
-        ///   AND :committed_version &gt; 0
-        ///   AND Version &lt;= :committed_version
+        /// WHERE Id = @id
+        ///   AND @committed_version &gt; 0
+        ///   AND Version &lt;= @committed_version
         /// ORDER BY Version DESC
         /// LIMIT 1;.
         /// </summary>
@@ -131,7 +128,7 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters {
         /// <summary>
         ///   Looks up a localized string similar to SELECT Payload
         ///  FROM Events
-        /// WHERE CommandId = :id
+        /// WHERE CommandId = @id
         /// ORDER BY Version;.
         /// </summary>
         internal static string SelectEventsForCommand {
@@ -143,13 +140,13 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters {
         /// <summary>
         ///   Looks up a localized string similar to SELECT Payload
         ///  FROM Events
-        /// WHERE Id = :id
-        ///   AND Version &gt; :committed_version
+        /// WHERE Id = @id
+        ///   AND Version &gt; @committed_version
         ///   AND EXISTS
         ///     ( SELECT *
         ///         FROM Aggregates
-        ///        WHERE Id = :id
-        ///          AND TenantId = COALESCE(:tenant_id, TenantId) )
+        ///        WHERE Id = @id
+        ///          AND TenantId = COALESCE(@tenant_id, TenantId) )
         /// ORDER BY Version;.
         /// </summary>
         internal static string SelectEventsSinceVersion {
