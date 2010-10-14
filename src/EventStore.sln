@@ -20,6 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{CD37080A-F48
 		..\doc\license.txt = ..\doc\license.txt
 		..\doc\MsSql.Schema.sql = ..\doc\MsSql.Schema.sql
 		..\doc\MySql.Schema.sql = ..\doc\MySql.Schema.sql
+		..\doc\PostgreSql.Schema.sql = ..\doc\PostgreSql.Schema.sql
 		..\doc\roadmap.txt = ..\doc\roadmap.txt
 		..\doc\Sqlite.Schema.sql = ..\doc\Sqlite.Schema.sql
 	EndProjectSection

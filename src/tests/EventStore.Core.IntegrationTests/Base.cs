@@ -32,6 +32,7 @@ namespace EventStore.Core.IntegrationTests
 			switch (connectionName)
 			{
 				case "MySQL": return new MySqlDialectAdapter();
+				case "PostgreSQL": return new PostgreSqlDialectAdapter();
 				case "SQLite": return new SqliteDialectAdapter();
 				case "SQL Server": return new MsSqlDialectAdapter();
 			}
