@@ -122,7 +122,9 @@
 SELECT @id, @committed_version{0}, UTC_TIMESTAMP(), @command_id, @payload{0} UNION ALL</value>
   </data>
   <data name="InsertEvents" xml:space="preserve">
-    <value>INSERT
+    <value>SET SESSION sql_mode='STRICT_ALL_TABLES';
+
+INSERT
   INTO Aggregates
      ( Id, TenantId, Version, Snapshot, Created, RuntimeType )
 SELECT @id,
@@ -149,7 +151,7 @@ SELECT NULL, NULL, NULL, NULL, NULL FROM DUAL WHERE 1=0;
 UPDATE Aggregates
    SET Version = CASE WHEN TenantId = COALESCE(@tenant_id, TenantId)
                        AND Version = @committed_version
-                   THEN @new_version ELSE -1 END,
+                   THEN @new_version ELSE NULL END,
        Snapshot = CASE WHEN @payload IS NULL THEN Snapshot ELSE @new_version END,
        RuntimeType = COALESCE(@type, RuntimeType)
  WHERE Id = @id
@@ -158,8 +160,8 @@ UPDATE Aggregates
 
 INSERT
   INTO Snapshots
-     ( Id, Version, Payload )
-SELECT @id, @new_version, @payload
+     ( Id, Version, Created, Payload )
+SELECT @id, @new_version, UTC_TIMESTAMP(), @payload
   FROM DUAL
  WHERE @payload IS NOT NULL
    AND NOT EXISTS -- snapshots don't need to be overwritten

@@ -6,6 +6,7 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters
 	{
 		private const string DuplicateEntryText = "Duplicate entry";
 		private const string KeyViolationText = "for key";
+		private const string ConstraintViolationText = "cannot be null";
 
 		public override bool IsDuplicateKey(DbException exception)
 		{
@@ -14,6 +15,12 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters
 
 			var message = exception.Message;
 			return message.Contains(DuplicateEntryText) && message.Contains(KeyViolationText);
+		}
+
+		public override bool IsConstraintViolation(DbException exception)
+		{
+			var violation = base.IsConstraintViolation(exception);
+			return violation || exception.Message.ToLowerInvariant().Contains(ConstraintViolationText);
 		}
 
 		public virtual string GetSelectEventsQuery

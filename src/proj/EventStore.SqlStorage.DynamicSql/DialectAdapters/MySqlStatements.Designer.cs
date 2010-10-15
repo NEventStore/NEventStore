@@ -71,7 +71,9 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INSERT
+        ///   Looks up a localized string similar to SET SESSION sql_mode=&apos;STRICT_ALL_TABLES&apos;;
+        ///
+        ///INSERT
         ///  INTO Aggregates
         ///     ( Id, TenantId, Version, Snapshot, Created, RuntimeType )
         ///SELECT @id,
@@ -91,8 +93,7 @@ namespace EventStore.SqlStorage.DynamicSql.DialectAdapters {
         ///
         ///INSERT
         ///  INTO Events
-        ///     ( Id, Version, Created, CommandId, Payload )
-        ///{0} [rest of string was truncated]&quot;;.
+        ///     ( Id [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InsertEvents {
             get {
