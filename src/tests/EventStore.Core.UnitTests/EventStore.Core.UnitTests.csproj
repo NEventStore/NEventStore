@@ -63,7 +63,7 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
       <HintPath>..\..\..\bin\moq-bin\.NET 3.5\Moq.dll</HintPath>
     </Reference>
-	<Reference Include="Moq">
+	<Reference Include="Moq" Condition="$(TargetFrameworkVersion)=='v4.0'">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
       <HintPath>..\..\..\bin\moq-bin\.NET 4.0\Moq.dll</HintPath>
     </Reference>
