@@ -30,13 +30,19 @@ mkdir output\bin
 SET FILES_TO_MERGE=
 SET FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore\bin\%TARGET_CONFIG%\EventStore.dll"
 SET FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Core\bin\%TARGET_CONFIG%\EventStore.Core.dll"
+SET FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Core\bin\%TARGET_CONFIG%\protobuf-net.dll"
 SET FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.SqlStorage\bin\%TARGET_CONFIG%\EventStore.SqlStorage.dll"
 SET FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.SqlStorage.DynamicSql\bin\%TARGET_CONFIG%\EventStore.SqlStorage.DynamicSql.dll"
-bin\ilmerge-bin\ILMerge.exe /keyfile:src/EventStore.snk /xmldocs /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.dll %FILES_TO_MERGE%
+
+REM Echo exclude regex to exclude file *WITHOUT* any line breaks
+(echo.|set /p =EventStore.*)>exclude.txt
+bin\ilmerge-bin\ILMerge.exe /keyfile:src/EventStore.snk /internalize:"exclude.txt" /xmldocs /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.dll %FILES_TO_MERGE%
+del exclude.txt
 
 echo Copying
 mkdir output\doc
 copy doc\*.* output\doc
+copy "lib\protobuf-net\license.txt" "output\doc\protobuf-net license.txt"
 
 echo Cleaning
 msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=%TARGET_CONFIG% /t:Clean
