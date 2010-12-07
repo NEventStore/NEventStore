@@ -43,6 +43,7 @@
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CompressedSerializer.cs" />
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="ProtocolBufferSerializer.cs" />
     <Compile Include="OptimisticEventStore.cs" />
     <Compile Include="DefaultSerializer.cs" />

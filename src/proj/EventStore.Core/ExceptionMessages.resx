@@ -112,10 +112,10 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Concurrency" xml:space="preserve">
     <value>The aggregate has changed by another writer since it was loaded.</value>
@@ -128,5 +128,11 @@
   </data>
   <data name="NoWork" xml:space="preserve">
     <value>Cannot write an empty stream of events.</value>
+  </data>
+  <data name="UnableToDeserialize" xml:space="preserve">
+    <value>The hash key found, '{0}' does not match any registered types.</value>
+  </data>
+  <data name="UnableToSerialize" xml:space="preserve">
+    <value>Unable to serialize the type provided: '{0}'.  It has not been registered or does not support [DataContract].</value>
   </data>
 </root>

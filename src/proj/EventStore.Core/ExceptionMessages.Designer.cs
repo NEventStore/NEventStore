@@ -95,5 +95,23 @@ namespace EventStore.Core {
                 return ResourceManager.GetString("NoWork", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The hash key found, &apos;{0}&apos; does not match any registered types..
+        /// </summary>
+        internal static string UnableToDeserialize {
+            get {
+                return ResourceManager.GetString("UnableToDeserialize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to serialize the type provided: &apos;{0}&apos;.  It has not been registered or does not support [DataContract]..
+        /// </summary>
+        internal static string UnableToSerialize {
+            get {
+                return ResourceManager.GetString("UnableToSerialize", resourceCulture);
+            }
+        }
     }
 }

@@ -15,35 +15,34 @@ namespace EventStore.Core
 		private readonly Dictionary<Type, Func<Stream, object>> deserializers =
 			new Dictionary<Type, Func<Stream, object>>();
 
-		public ProtocolBufferSerializer(params Assembly[] assemblies)
+		public ProtocolBufferSerializer(params Assembly[] contractAssemblies)
 		{
-			foreach (var assembly in assemblies)
-				foreach (var type in assembly.GetTypes())
-					this.RegisterType(type);
+			foreach (var type in contractAssemblies.SelectMany(assembly => assembly.GetTypes()))
+				this.RegisterContract(type);
 		}
-		public ProtocolBufferSerializer(params Type[] types)
+		public ProtocolBufferSerializer(params Type[] dataContracts)
 		{
-			foreach (var type in types ?? new Type[] { })
-				this.RegisterType(type);
+			foreach (var contract in dataContracts ?? new Type[] { })
+				this.RegisterContract(contract);
 		}
-		private void RegisterType(Type type)
+		private void RegisterContract(Type contract)
 		{
-			if (!this.CanRegisterType(type) || string.IsNullOrEmpty(type.FullName))
+			if (!this.CanRegisterContract(contract) || string.IsNullOrEmpty(contract.FullName))
 				return;
 
-			var hash = type.FullName.GetHashCode();
-			this.hashes[hash] = type;
-			this.types[type] = hash;
+			var hash = contract.FullName.GetHashCode();
+			this.hashes[hash] = contract;
+			this.types[contract] = hash;
 
 			// TODO: make this faster by using reflection to create a delegate and then invoking the delegate
-			var deserialize = typeof(Serializer).GetMethod("Deserialize").MakeGenericMethod(type);
-			this.deserializers[type] = stream => deserialize.Invoke(null, new object[] { stream });
+			var deserialize = typeof(Serializer).GetMethod("Deserialize").MakeGenericMethod(contract);
+			this.deserializers[contract] = stream => deserialize.Invoke(null, new object[] { stream });
 		}
-		private bool CanRegisterType(Type type)
+		private bool CanRegisterContract(Type contract)
 		{
-			return null != type
-			       && !this.types.ContainsKey(type)
-			       && type.GetCustomAttributes(typeof(DataContractAttribute), false).Any();
+			return contract != null
+				&& !this.types.ContainsKey(contract)
+				&& contract.HasAttribute<DataContractAttribute>();
 		}
 
 		public virtual void Serialize(Stream output, object graph)
@@ -51,15 +50,15 @@ namespace EventStore.Core
 			if (null == graph)
 				return;
 
-			var type = graph.GetType();
-			this.WriteTypeToStream(output, type);
+			var contract = graph.GetType();
+			this.WriteContractTypeToStream(output, contract);
 			Serializer.Serialize(output, graph);
 		}
-		private void WriteTypeToStream(Stream output, Type type)
+		private void WriteContractTypeToStream(Stream output, Type contract)
 		{
 			int hash;
-			if (!this.types.TryGetValue(type, out hash))
-				throw new SerializationException("Unable to serialize"); // TODO
+			if (!this.types.TryGetValue(contract, out hash))
+				throw new SerializationException(ExceptionMessages.UnableToSerialize.FormatWith(contract));
 
 			var header = BitConverter.GetBytes(hash);
 			output.Write(header, 0, header.Length);
@@ -67,20 +66,20 @@ namespace EventStore.Core
 
 		public virtual object Deserialize(Stream serialized)
 		{
-			var type = this.ReadType(serialized);
-			return this.deserializers[type](serialized);
+			var contractType = this.ReadContractType(serialized);
+			return this.deserializers[contractType](serialized);
 		}
-		private Type ReadType(Stream serialized)
+		private Type ReadContractType(Stream serialized)
 		{
 			var header = new byte[4];
 			serialized.Read(header, 0, header.Length);
 			var hash = BitConverter.ToInt32(header, 0);
 
-			Type type;
-			if (!this.hashes.TryGetValue(hash, out type))
-				throw new SerializationException("Unable to deserialize"); // TODO
+			Type contract;
+			if (!this.hashes.TryGetValue(hash, out contract))
+				throw new SerializationException(ExceptionMessages.UnableToDeserialize.FormatWith(hash));
 
-			return type;
+			return contract;
 		}
 	}
 }
