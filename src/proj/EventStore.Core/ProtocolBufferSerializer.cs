@@ -15,6 +15,10 @@ namespace EventStore.Core
 		private readonly Dictionary<Type, Func<Stream, object>> deserializers =
 			new Dictionary<Type, Func<Stream, object>>();
 
+		public ProtocolBufferSerializer(params string[] contractAssemblyFileNamePatterns)
+			: this(contractAssemblyFileNamePatterns.LoadAssemblies())
+		{
+		}
 		public ProtocolBufferSerializer(params Assembly[] contractAssemblies)
 		{
 			foreach (var type in contractAssemblies.SelectMany(assembly => assembly.GetTypes()))
