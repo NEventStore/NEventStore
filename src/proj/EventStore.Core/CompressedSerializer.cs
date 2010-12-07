@@ -3,7 +3,7 @@ namespace EventStore.Core
 	using System.IO;
 	using System.IO.Compression;
 
-	public class CompressedSerializer : DefaultSerializer
+	public class CompressedSerializer : ISerializeObjects
 	{
 		private readonly DefaultSerializer inner;
 
@@ -12,16 +12,15 @@ namespace EventStore.Core
 			this.inner = inner;
 		}
 
-		public override void Serialize(object graph, Stream output)
+		public virtual void Serialize(Stream output, object graph)
 		{
 			using (var compress = new DeflateStream(output, CompressionMode.Compress, true))
-				this.inner.Serialize(graph, compress);
+				this.inner.Serialize(compress, graph);
 		}
-
-		public override T Deserialize<T>(Stream input)
+		public virtual object Deserialize(Stream serialized)
 		{
-			using (var decompress = new DeflateStream(input, CompressionMode.Decompress, true))
-				return this.inner.Deserialize<T>(decompress);
+			using (var decompress = new DeflateStream(serialized, CompressionMode.Decompress, true))
+				return this.inner.Deserialize(decompress);
 		}
 	}
 }

@@ -2,6 +2,7 @@ namespace EventStore.SqlStorage.DynamicSql
 {
 	using System;
 	using System.Globalization;
+	using System.IO;
 	using System.Text;
 
 	internal static class ExtensionMethods
@@ -28,6 +29,15 @@ namespace EventStore.SqlStorage.DynamicSql
 		public static void AppendWithFormat(this StringBuilder builder, string format, params object[] values)
 		{
 			builder.AppendFormat(CultureInfo.InvariantCulture, format, values);
+		}
+
+		public static byte[] Serialize(this ISerializeObjects serializer, object graph)
+		{
+			using (var stream = new MemoryStream())
+			{
+				serializer.Serialize(stream, graph);
+				return stream.ToArray();
+			}
 		}
 	}
 }

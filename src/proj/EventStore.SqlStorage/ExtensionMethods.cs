@@ -2,6 +2,7 @@ namespace EventStore.SqlStorage
 {
 	using System;
 	using System.Data;
+	using System.IO;
 
 	public static class ExtensionMethods
 	{
@@ -19,6 +20,12 @@ namespace EventStore.SqlStorage
 
 			command.Parameters.Add(parameter);
 			return parameter;
+		}
+
+		internal static object Deserialize(this ISerializeObjects serializer, byte[] serialized)
+		{
+			using (var stream = new MemoryStream(serialized))
+				return serializer.Deserialize(stream);
 		}
 	}
 }

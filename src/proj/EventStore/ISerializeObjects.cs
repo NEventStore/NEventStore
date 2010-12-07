@@ -1,5 +1,7 @@
 namespace EventStore
 {
+	using System.IO;
+
 	/// <summary>
 	/// Provides the ability to serialize and deserialize an object graph.
 	/// </summary>
@@ -8,16 +10,15 @@ namespace EventStore
 		/// <summary>
 		/// Serializes the object graph provided.
 		/// </summary>
+		/// <param name="output">The stream into which the serialized object graph should be written.</param>
 		/// <param name="graph">The object graph to be serialized.</param>
-		/// <returns>The serialized or byte representation of the serialized object.</returns>
-		byte[] Serialize(object graph);
+		void Serialize(Stream output, object graph);
 
 		/// <summary>
-		/// Deserializes the bytes provided.
+		/// Deserializes the stream provided.
 		/// </summary>
-		/// <typeparam name="T">The type of object to reconstruct.</typeparam>
-		/// <param name="input">The bytes from which the object will be reconstructed.</param>
+		/// <param name="serialized">The stream of bytes from which the object will be reconstructed.</param>
 		/// <returns>The reconstructed object.</returns>
-		T Deserialize<T>(byte[] input);
+		object Deserialize(Stream serialized);
 	}
 }

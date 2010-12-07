@@ -49,12 +49,12 @@ namespace EventStore.SqlStorage
 			object snapshot = null;
 
 			while (reader.Read())
-				events.Add(this.serializer.Deserialize<object>(reader[SerializedDataColumnIndex] as byte[]));
+				events.Add(this.serializer.Deserialize(reader[SerializedDataColumnIndex] as byte[]));
 
 			long version = 0;
 			if (reader.NextResult() && reader.Read())
 			{
-				snapshot = this.serializer.Deserialize<object>(reader[SerializedDataColumnIndex] as byte[]);
+				snapshot = this.serializer.Deserialize(reader[SerializedDataColumnIndex] as byte[]);
 				version = (long)reader[VersionColumnIndex];
 			}
 

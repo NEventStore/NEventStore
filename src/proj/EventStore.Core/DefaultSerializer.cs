@@ -8,33 +8,14 @@ namespace EventStore.Core
 	{
 		private readonly IFormatter formatter = new BinaryFormatter();
 
-		public byte[] Serialize(object graph)
+		public virtual void Serialize(Stream output, object graph)
 		{
-			if (null == graph)
-				return null;
-
-			using (var stream = new MemoryStream())
-			{
-				this.Serialize(graph, stream);
-				return stream.ToArray();
-			}
+			if (null != graph)
+				this.formatter.Serialize(output, graph);
 		}
-		public virtual void Serialize(object graph, Stream output)
+		public virtual object Deserialize(Stream serialized)
 		{
-			this.formatter.Serialize(output, graph);
-		}
-
-		public T Deserialize<T>(byte[] serialized)
-		{
-			if (null == serialized || 0 == serialized.Length)
-				return default(T);
-
-			using (var stream = new MemoryStream(serialized))
-				return this.Deserialize<T>(stream);
-		}
-		public virtual T Deserialize<T>(Stream input)
-		{
-			return (T)this.formatter.Deserialize(input);
+			return this.formatter.Deserialize(serialized);
 		}
 	}
 }
