@@ -1,3 +1,23 @@
-Make OptimisticEventStore multi-threaded and singleton scoped?
-Fluent builder/configuration
-Full example code
+- Create fluent configuration code leveraging an IoC container.
+	Autofac (1.4, 2.1, 2.2. 2.3), .NET 3.5 and .NET 4.0
+	StructureMap
+	Castle
+	Ninject
+	Windsor
+	Unity
+
+- Add additional samples and quickstart examples
+
+- Create adapters for the following storage engines (in no particular order)
+	CouchDB
+	MongoDB
+	RavenDB
+	Azure Table Storage
+	Amazon SimpleDB
+	Cassandra
+	Riak
+	HBase
+	Redis?
+	Tokyo Cabinet?
+	Membase?
+	Memcached
