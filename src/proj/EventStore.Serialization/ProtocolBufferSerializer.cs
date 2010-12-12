@@ -8,7 +8,7 @@ namespace EventStore.Serialization
 	using System.Runtime.Serialization;
 	using ProtoBuf;
 
-	public class ProtocolBufferSerializer : ISerializeObjects
+	public class ProtocolBufferSerializer : ISerialize
 	{
 		private readonly Dictionary<int, Type> hashes = new Dictionary<int, Type>();
 		private readonly Dictionary<Type, int> types = new Dictionary<Type, int>();
@@ -68,13 +68,13 @@ namespace EventStore.Serialization
 			output.Write(header, 0, header.Length);
 		}
 
-		public virtual object Deserialize(Stream serialized)
+		public virtual object Deserialize(Stream input)
 		{
-			if (serialized == null)
+			if (input == null)
 				return null;
 
-			var contractType = this.ReadContractType(serialized);
-			return this.deserializers[contractType](serialized);
+			var contractType = this.ReadContractType(input);
+			return this.deserializers[contractType](input);
 		}
 		private Type ReadContractType(Stream serialized)
 		{

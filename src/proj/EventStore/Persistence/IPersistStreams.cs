@@ -1,0 +1,34 @@
+namespace EventStore.Persistence
+{
+	using System;
+	using System.Collections.Generic;
+	using Dispatcher;
+
+	/// <summary>
+	/// Indicates the ability to adapt the underlying persistence infrastructure to act as stream of events.
+	/// </summary>
+	public interface IPersistStreams : ITrackDispatchedEvents
+	{
+		/// <summary>
+		/// Gets the corresponding commits from the stream indicated starting at the most recent snapshot, if any, up to and including the revision specified.
+		/// </summary>
+		/// <param name="streamId">The stream from which the events will be read.</param>
+		/// <param name="maxRevision">The maximum revision of the stream to be read.</param>
+		/// <returns>A series of committed events from the stream specified.</returns>
+		IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision);
+
+		/// <summary>
+		/// Gets the corresponding commits from the stream indicated starting at the revision specified until the end of the stream.
+		/// </summary>
+		/// <param name="streamId">The stream from which the events will be read.</param>
+		/// <param name="minRevision">The minimum revision of the stream to be read.</param>
+		/// <returns>A series of committed events from the stream specified.</returns>
+		IEnumerable<Commit> GetFrom(Guid streamId, long minRevision); // this needs to track commit ids for duplicatecommitexceptions
+
+		/// <summary>
+		/// Writes the to-be-commited events provided to the underlying persistence mechanism.
+		/// </summary>
+		/// <param name="uncommitted">The series of events and associated metadata to be commited.</param>
+		void Persist(Commit uncommitted);
+	}
+}

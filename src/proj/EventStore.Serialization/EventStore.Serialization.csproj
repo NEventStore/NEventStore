@@ -34,7 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CompressedSerializer.cs" />
-    <Compile Include="DefaultSerializer.cs" />
+    <Compile Include="BinarySerializer.cs" />
     <Compile Include="ExceptionMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

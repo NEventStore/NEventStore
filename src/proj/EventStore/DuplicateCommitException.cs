@@ -1,4 +1,4 @@
-namespace EventStore.StorageEngine
+namespace EventStore
 {
 	using System;
 	using System.Runtime.Serialization;

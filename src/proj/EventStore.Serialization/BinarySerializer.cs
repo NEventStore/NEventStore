@@ -4,7 +4,7 @@ namespace EventStore.Serialization
 	using System.Runtime.Serialization;
 	using System.Runtime.Serialization.Formatters.Binary;
 
-	public class DefaultSerializer : ISerializeObjects
+	public class BinarySerializer : ISerialize
 	{
 		private readonly IFormatter formatter = new BinaryFormatter();
 
@@ -13,9 +13,9 @@ namespace EventStore.Serialization
 			if (null != graph)
 				this.formatter.Serialize(output, graph);
 		}
-		public virtual object Deserialize(Stream serialized)
+		public virtual object Deserialize(Stream input)
 		{
-			return this.formatter.Deserialize(serialized);
+			return this.formatter.Deserialize(input);
 		}
 	}
 }

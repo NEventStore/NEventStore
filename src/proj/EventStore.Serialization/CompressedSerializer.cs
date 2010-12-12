@@ -3,11 +3,11 @@ namespace EventStore.Serialization
 	using System.IO;
 	using System.IO.Compression;
 
-	public class CompressedSerializer : ISerializeObjects
+	public class CompressedSerializer : ISerialize
 	{
-		private readonly DefaultSerializer inner;
+		private readonly BinarySerializer inner;
 
-		public CompressedSerializer(DefaultSerializer inner)
+		public CompressedSerializer(BinarySerializer inner)
 		{
 			this.inner = inner;
 		}
@@ -17,9 +17,9 @@ namespace EventStore.Serialization
 			using (var compress = new DeflateStream(output, CompressionMode.Compress, true))
 				this.inner.Serialize(compress, graph);
 		}
-		public virtual object Deserialize(Stream serialized)
+		public virtual object Deserialize(Stream input)
 		{
-			using (var decompress = new DeflateStream(serialized, CompressionMode.Decompress, true))
+			using (var decompress = new DeflateStream(input, CompressionMode.Decompress, true))
 				return this.inner.Deserialize(decompress);
 		}
 	}

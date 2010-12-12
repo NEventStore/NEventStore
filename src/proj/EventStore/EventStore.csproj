@@ -53,11 +53,11 @@
     <Compile Include="IStoreEvents.cs" />
     <Compile Include="EventMessage.cs" />
     <Compile Include="Commit.cs" />
-    <Compile Include="Serialization\ISerializeObjects.cs" />
+    <Compile Include="Serialization\ISerialize.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StorageEngine\DuplicateCommitException.cs" />
-    <Compile Include="StorageEngine\IStorageEngine.cs" />
-    <Compile Include="StorageEngine\StorageEngineException.cs" />
+    <Compile Include="DuplicateCommitException.cs" />
+    <Compile Include="Persistence\IPersistStreams.cs" />
+    <Compile Include="Persistence\PersistenceException.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\CustomDictionary.xml">
