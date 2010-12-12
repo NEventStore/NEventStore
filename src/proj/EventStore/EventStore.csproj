@@ -23,7 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\EventStore.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\EventStore.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,7 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\EventStore.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\EventStore.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\GlobalAssemblyInfo.cs">
@@ -44,31 +44,29 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="ConcurrencyException.cs" />
     <Compile Include="CommittedEventStream.cs" />
-    <Compile Include="StorageConstraintViolationException.cs" />
-    <Compile Include="DuplicateCommandException.cs" />
-    <Compile Include="DuplicateKeyException.cs" />
+    <Compile Include="ConcurrencyException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Dispatcher\IDispatchEvents.cs" />
+    <Compile Include="Dispatcher\ITrackDispatchedEvents.cs" />
     <Compile Include="IStoreEvents.cs" />
-    <Compile Include="UncommittedEventStream.cs" />
-    <Compile Include="StorageEngineException.cs" />
-    <Compile Include="ISerializeObjects.cs" />
-    <Compile Include="IStorageEngine.cs" />
+    <Compile Include="EventMessage.cs" />
+    <Compile Include="Commit.cs" />
+    <Compile Include="Serialization\ISerializeObjects.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
+    <Compile Include="StorageEngine\DuplicateCommitException.cs" />
+    <Compile Include="StorageEngine\IStorageEngine.cs" />
+    <Compile Include="StorageEngine\StorageEngineException.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\CustomDictionary.xml">
       <Link>Properties\CustomDictionary.xml</Link>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

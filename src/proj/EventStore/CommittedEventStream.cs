@@ -1,45 +1,45 @@
-namespace EventStore
+﻿namespace EventStore
 {
 	using System;
 	using System.Collections;
 
 	/// <summary>
-	/// Represents a stream of events which has been committed to persistent storage.
+	/// Represents a series of events which have been fully committed and applied to the stream indicated.
 	/// </summary>
 	public class CommittedEventStream
 	{
 		/// <summary>
 		/// Initializes a new instance of the CommittedEventStream class.
 		/// </summary>
-		/// <param name="id">The value which uniquely identifies the aggregate to which the event stream belongs.</param>
-		/// <param name="version">The version of the aggregate</param>
-		/// <param name="events">The collection of committed events</param>
-		/// <param name="snapshot">The most recent snapshot of the aggregate, if any.</param>
-		public CommittedEventStream(Guid id, long version, ICollection events, object snapshot)
+		/// <param name="streamId">The value which uniquely identifies the stream to which the series of committed events apply.</param>
+		/// <param name="commitSequence">The value indicating the most recent commit applied to the stream for the events retreived.</param>
+		/// <param name="events">The series of committed events.</param>
+		/// <param name="snapshot">The snapshot, if any, containing a serialized revision of the stream upon which the events provided can be applied.</param>
+		public CommittedEventStream(Guid streamId, long commitSequence, ICollection events, object snapshot)
 		{
-			this.Id = id;
-			this.Version = version;
-			this.Events = events;
+			this.StreamId = streamId;
+			this.CommitSequence = commitSequence;
+			this.Events = events ?? new object[] { };
 			this.Snapshot = snapshot;
 		}
 
 		/// <summary>
-		/// Gets the value which uniquely identifies the aggregate to which the event stream belongs.
+		/// Gets a value which uniquely identifies the stream to which the series of committed events apply.
 		/// </summary>
-		public Guid Id { get; private set; }
+		public Guid StreamId { get; private set; }
 
 		/// <summary>
-		/// Gets the committed version of the aggregate.
+		/// Gets a value indicating the most recent commit applied to the stream for the events retreived.
 		/// </summary>
-		public long Version { get; private set; }
+		public long CommitSequence { get; private set; }
 
 		/// <summary>
-		/// Gets the collection of committed events.
+		/// Gets the series of committed events.
 		/// </summary>
 		public ICollection Events { get; private set; }
 
 		/// <summary>
-		/// Gets the most recent snapshot of the aggregate, if any.
+		/// Gets the snapshot, if any, containing a serialized revision of the stream upon which the events provided can be applied.
 		/// </summary>
 		public object Snapshot { get; private set; }
 	}

@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="VersionAssemblyInfo.cs" company="Exact Wave, LLC">
+// <copyright file="VersionAssemblyInfo.cs" company="Jonathan Oliver">
 //     Copyright (c) Jonathan Oliver. All rights reserved.
 // </copyright>
 // <author>Rake Build Script</author>
@@ -17,6 +17,6 @@ using System.Reflection;
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: AssemblyVersion("1.1.0.0")]
-[assembly: AssemblyFileVersion("1.1.0.0")]
-//// [assembly: AssemblyInformationalVersion("1.1.0.0 Alpha")]
+[assembly: AssemblyVersion("2.0.0.0")]
+[assembly: AssemblyFileVersion("2.0.0.0")]
+//// [assembly: AssemblyInformationalVersion("2.0.0.0 Alpha")]

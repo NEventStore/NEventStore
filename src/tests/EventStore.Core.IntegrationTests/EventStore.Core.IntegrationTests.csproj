@@ -42,65 +42,12 @@
     <Compile Include="..\..\proj\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="CrossTenantSecurityTests.cs" />
-    <Compile Include="ConcurrencyTests.cs" />
-    <Compile Include="DuplicateCommandTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PersistenceTests.cs" />
-    <Compile Include="Base.cs" />
-    <Compile Include="ReadTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\proj\CustomDictionary.xml">
       <Link>Properties\CustomDictionary.xml</Link>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\proj\EventStore.Core\EventStore.Core.csproj">
-      <Project>{D6413244-42F5-4233-B347-D0A804B09CC9}</Project>
-      <Name>EventStore.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\proj\EventStore.SqlStorage.DynamicSql\EventStore.SqlStorage.DynamicSql.csproj">
-      <Project>{974B43B4-27FD-4CA4-85BF-4225210BDD70}</Project>
-      <Name>EventStore.SqlStorage.DynamicSql</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\proj\EventStore.SqlStorage\EventStore.SqlStorage.csproj">
-      <Project>{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}</Project>
-      <Name>EventStore.SqlStorage</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\proj\EventStore\EventStore.csproj">
-      <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
-      <Name>EventStore</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Storage\EventStore.sqlite">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Machine.Specifications">
-      <HintPath>..\..\..\bin\machine.specifications-bin\Machine.Specifications.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Security">
-      <HintPath>..\..\..\bin\npgsql-bin\Mono.Security.dll</HintPath>
-    </Reference>
-    <Reference Include="MySql.Data">
-      <HintPath>..\..\..\bin\mysql-bin\MySql.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="Npgsql">
-      <HintPath>..\..\..\bin\npgsql-bin\Npgsql.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.configuration" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.SQLite">
-      <HintPath>..\..\..\bin\sqlite-bin\System.Data.SQLite.DLL</HintPath>
-    </Reference>
-    <Reference Include="System.Transactions" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

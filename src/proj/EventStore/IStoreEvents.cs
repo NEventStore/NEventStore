@@ -3,22 +3,30 @@ namespace EventStore
 	using System;
 
 	/// <summary>
-	/// Represents the mechanism used to read from and write to persistent event storage.
+	/// Indicates the ability to store and retreive a stream of events.
 	/// </summary>
 	public interface IStoreEvents
 	{
 		/// <summary>
-		/// Reads all events for the specified aggregate.
+		/// Reads the events from the stream indicated from the last snapshot, if any, up to and including the revision specified.
 		/// </summary>
-		/// <param name="id">The value which uniquely identifies the aggregate of the events to be loaded.</param>
-		/// <param name="maxStartingVersion">The maximum version at which to start reading the aggregate event stream.</param>
-		/// <returns>A stream of committed events for the specified aggregate.</returns>
-		CommittedEventStream Read(Guid id, long maxStartingVersion);
+		/// <param name="streamId">The stream from which the events will be read.</param>
+		/// <param name="maxRevision">The maximum revision of the stream to be read.</param>
+		/// <returns>A stream of of committed events from the stream specified.</returns>
+		CommittedEventStream ReadUntil(Guid streamId, long maxRevision);
 
 		/// <summary>
-		/// Writes the stream of uncommitted events to persistent storage.
+		/// Reads the events from the stream indicated from the revision specified until the end of the stream.
 		/// </summary>
-		/// <param name="stream">The stream of uncomitted events to be persisted.</param>
-		void Write(UncommittedEventStream stream);
+		/// <param name="streamId">The stream from which the events will be read.</param>
+		/// <param name="minRevision">The minimum revision of the stream to be read.</param>
+		/// <returns>A stream of of committed events from the stream specified.</returns>
+		CommittedEventStream ReadSince(Guid streamId, long minRevision); // this needs to track commit ids for duplicatecommitexceptions
+		
+		/// <summary>
+		/// Writes the commit provided to the underlying storage engine.
+		/// </summary>
+		/// <param name="uncommitted">The set of events and associated metadata to be commited.</param>
+		void Write(Commit uncommitted);
 	}
 }

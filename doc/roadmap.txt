@@ -1,4 +1,3 @@
 Make OptimisticEventStore multi-threaded and singleton scoped?
-Refactor weird and optional "command" stuff on the uncommitted event stream
 Fluent builder/configuration
 Full example code

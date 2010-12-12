@@ -30,7 +30,8 @@ mkdir output\bin
 SET FILES_TO_MERGE=
 SET FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore\bin\%TARGET_CONFIG%\EventStore.dll"
 SET FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Core\bin\%TARGET_CONFIG%\EventStore.Core.dll"
-SET FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Core\bin\%TARGET_CONFIG%\protobuf-net.dll"
+SET FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization\bin\%TARGET_CONFIG%\EventStore.Serialization.dll"
+SET FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization\bin\%TARGET_CONFIG%\protobuf-net.dll"
 SET FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.SqlStorage\bin\%TARGET_CONFIG%\EventStore.SqlStorage.dll"
 SET FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.SqlStorage.DynamicSql\bin\%TARGET_CONFIG%\EventStore.SqlStorage.DynamicSql.dll"
 
