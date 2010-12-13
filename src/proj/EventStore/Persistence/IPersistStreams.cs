@@ -10,19 +10,21 @@ namespace EventStore.Persistence
 	public interface IPersistStreams : ITrackDispatchedEvents
 	{
 		/// <summary>
-		/// Gets the corresponding commits from the stream indicated starting at the most recent snapshot, if any, up to and including the revision specified.
+		/// Gets the corresponding commits from the stream indicated starting at the most recent snapshot, if any,
+		/// up to and including the revision specified sorted in ascending order--from oldest to newest.
 		/// </summary>
 		/// <param name="streamId">The stream from which the events will be read.</param>
 		/// <param name="maxRevision">The maximum revision of the stream to be read.</param>
-		/// <returns>A series of committed events from the stream specified.</returns>
+		/// <returns>A series of committed events from the stream specified sorted in ascending order.</returns>
 		IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision);
 
 		/// <summary>
-		/// Gets the corresponding commits from the stream indicated starting at the revision specified until the end of the stream.
+		/// Gets the corresponding commits from the stream indicated starting at the revision specified until the
+		/// end of the stream sorted in ascending order--from oldest to newest.
 		/// </summary>
 		/// <param name="streamId">The stream from which the events will be read.</param>
 		/// <param name="minRevision">The minimum revision of the stream to be read.</param>
-		/// <returns>A series of committed events from the stream specified.</returns>
+		/// <returns>A series of committed events from the stream specified sorted in ascending order..</returns>
 		IEnumerable<Commit> GetFrom(Guid streamId, long minRevision); // this needs to track commit ids for duplicatecommitexceptions
 
 		/// <summary>

@@ -16,6 +16,7 @@ namespace EventStore.Core
 
 		public CommittedEventStream ReadUntil(Guid streamId, long maxRevision)
 		{
+			var commits = this.persistence.GetUntil(streamId, maxRevision);
 			return null;
 		}
 		public CommittedEventStream ReadFrom(Guid streamId, long minRevision)
