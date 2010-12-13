@@ -1,6 +1,6 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("EventStore.SqlStorage")]
+[assembly: AssemblyTitle("EventStore.SqlPersistence")]
 [assembly: AssemblyDescription("")]
 [assembly: Guid("54e3cc86-6f17-4271-89da-4772beda6b8b")]
