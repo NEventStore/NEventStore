@@ -31,6 +31,6 @@ namespace EventStore.Persistence
 		/// Writes the to-be-commited events provided to the underlying persistence mechanism.
 		/// </summary>
 		/// <param name="uncommitted">The series of events and associated metadata to be commited.</param>
-		void Persist(Commit uncommitted);
+		void Persist(CommitAttempt uncommitted);
 	}
 }

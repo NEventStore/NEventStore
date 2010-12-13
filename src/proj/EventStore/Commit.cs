@@ -4,38 +4,49 @@ namespace EventStore
 	using System.Collections.Generic;
 
 	/// <summary>
-	/// Represents a series of events committed as a single unit which apply to the stream indicated.
+	/// Represents a series of events which have been fully committed as a single unit and which apply to the stream indicated.
 	/// </summary>
 	public class Commit
 	{
 		/// <summary>
 		/// Initializes a new instance of the Commit class.
 		/// </summary>
-		public Commit()
+		/// <param name="streamId">The value which uniquely identifies the stream to which the commit belongs.</param>
+		/// <param name="commitId">The value which uniquely identifies the commit within the stream.</param>
+		/// <param name="commitSequence">The value which indicates the sequence (or position) in the stream to which this commit applies.</param>
+		/// <param name="headers">The metadata which provides additional, unstructured information about this commit.</param>
+		/// <param name="events">The collection of event messages to be committed as a single unit.</param>
+		/// <param name="snapshot">The snapshot, if any, which represents a materialization of the stream at the last event of the commit.</param>
+		public Commit(
+			Guid streamId,
+			Guid commitId,
+			long commitSequence,
+			IDictionary<string, object> headers,
+			ICollection<EventMessage> events,
+			object snapshot)
 		{
-			this.Headers = new Dictionary<string, object>();
-			this.Events = new LinkedList<EventMessage>();
+			this.StreamId = streamId;
+			this.CommitId = commitId;
+			this.CommitSequence = commitSequence;
+			this.Headers = headers;
+			this.Events = events;
+			this.Snapshot = snapshot;
 		}
 
 		/// <summary>
-		/// Gets or sets the value which uniquely identifies the stream to which the commit belongs.
+		/// Gets the value which uniquely identifies the stream to which the commit belongs.
 		/// </summary>
-		public Guid StreamId { get; set; }
+		public Guid StreamId { get; private set; }
 
 		/// <summary>
-		/// Gets or sets the friendly name of the stream.
+		/// Gets the value which uniquely identifies the commit within the stream.
 		/// </summary>
-		public string StreamName { get; set; }
+		public Guid CommitId { get; private set; }
 
 		/// <summary>
-		/// Gets or sets the value which uniquely identifies the commit within the stream.
+		/// Gets the value which indicates the sequence (or position) in the stream to which this commit applies.
 		/// </summary>
-		public Guid CommitId { get; set; }
-
-		/// <summary>
-		/// Gets or sets the value which indicates the sequence (or position) in the stream to which this commit applies.
-		/// </summary>
-		public long CommitSequence { get; set; }
+		public long CommitSequence { get; private set; }
 
 		/// <summary>
 		/// Gets the metadata which provides additional, unstructured information about this commit.
@@ -46,5 +57,10 @@ namespace EventStore
 		/// Gets the collection of event messages to be committed as a single unit.
 		/// </summary>
 		public ICollection<EventMessage> Events { get; private set; }
+
+		/// <summary>
+		/// Gets the snapshot, if any, which represents a materialization of the stream at the last event of the commit.
+		/// </summary>
+		public object Snapshot { get; private set; }
 	}
 }

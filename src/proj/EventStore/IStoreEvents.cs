@@ -27,6 +27,6 @@ namespace EventStore
 		/// Writes the to-be-commited events provided to the underlying storage infrastructure.
 		/// </summary>
 		/// <param name="uncommitted">The series of events and associated metadata to be commited.</param>
-		void Write(Commit uncommitted);
+		void Write(CommitAttempt uncommitted);
 	}
 }

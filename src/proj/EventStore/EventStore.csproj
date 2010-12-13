@@ -48,6 +48,7 @@
     <Compile Include="ConcurrencyException.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CommitAttempt.cs" />
     <Compile Include="Dispatcher\IDispatchEvents.cs" />
     <Compile Include="Dispatcher\ITrackDispatchedEvents.cs" />
     <Compile Include="IStoreEvents.cs" />

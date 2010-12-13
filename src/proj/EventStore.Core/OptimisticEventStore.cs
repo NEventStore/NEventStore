@@ -23,7 +23,7 @@ namespace EventStore.Core
 		{
 			return null;
 		}
-		public void Write(Commit uncommitted)
+		public void Write(CommitAttempt uncommitted)
 		{
 		}
 	}

@@ -13,11 +13,7 @@ namespace EventStore.Core.UnitTests
 	public class when_reading_a_stream_until_a_maximum_revision : from_persistence
 	{
 		const long MaxRevision = 1234;
-		static readonly Commit[] commits = new[]
-		{
-			new Commit { Events = { }, },
-			new Commit { Events = { }, }
-		}; // TODO
+		static readonly Commit[] commits = new Commit[] { }; // TODO
 
 		static CommittedEventStream actual;
 
