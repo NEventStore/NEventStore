@@ -5,6 +5,7 @@
 
 - Ensure SQL statements from the dynamic SQL adapter: SET TRANSACTION ISOLATION LEVEL READ COMMITTED
 - Ensure SQL statements from the dynamic SQL adapter: BEGIN TRANSACTION and COMMIT TRANSACTION
+- Potentially use stored procedures (or some variant) to make SqlPersistence code fully database agnostic.
 
 - Create fluent configuration code leveraging an IoC container.
 	Autofac (1.4, 2.2, and 2.3) using .NET 3.5 and .NET 4.0
