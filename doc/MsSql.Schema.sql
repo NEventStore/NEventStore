@@ -119,3 +119,44 @@ AS BEGIN
        END
 
 END;
+
+GO
+CREATE PROCEDURE [dbo].[GetUndispatchedCommits]
+AS BEGIN
+
+       SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+       SELECT [C].[StreamId],
+              [C].[Sequence],
+              [C].[CommitId],
+              [C].[Revision],
+              [C].[Payload]
+         FROM [dbo].[Commits] AS [C]
+        WHERE EXISTS
+            ( SELECT *
+                FROM [dbo].[Dispatch] AS [D]
+               WHERE [C].[StreamId] = [D].[StreamId]
+                 AND [C].[Sequence] = [D].[Sequence] );
+
+END;
+
+GO
+CREATE PROCEDURE [dbo].[MarkCommitAsDispatched]
+(
+       @CommitId uniqueidentifier
+)
+AS BEGIN
+
+       SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+       
+       DELETE
+         FROM [dbo].[Dispatch]
+        WHERE EXISTS
+            ( SELECT *
+                FROM [dbo].[Commits] AS [C]
+               WHERE [C].[StreamId] = [dbo].[Dispatch].[StreamId]
+                 AND [C].[Sequence] = [dbo].[Dispatch].[Sequence]
+                 AND [C].[CommitId] = @CommitId );
+                 
+       COMMIT TRANSACTION;
+
+END;
