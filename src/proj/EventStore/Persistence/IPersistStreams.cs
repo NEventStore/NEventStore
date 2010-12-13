@@ -5,7 +5,7 @@ namespace EventStore.Persistence
 	using Dispatcher;
 
 	/// <summary>
-	/// Indicates the ability to adapt the underlying persistence infrastructure to act as stream of events.
+	/// Indicates the ability to adapt the underlying persistence infrastructure to behave like a stream of events.
 	/// </summary>
 	public interface IPersistStreams : ITrackDispatchedEvents
 	{
@@ -25,7 +25,7 @@ namespace EventStore.Persistence
 		/// <param name="streamId">The stream from which the events will be read.</param>
 		/// <param name="minRevision">The minimum revision of the stream to be read.</param>
 		/// <returns>A series of committed events from the stream specified sorted in ascending order..</returns>
-		IEnumerable<Commit> GetFrom(Guid streamId, long minRevision); // this needs to track commit ids for duplicatecommitexceptions
+		IEnumerable<Commit> GetFrom(Guid streamId, long minRevision);
 
 		/// <summary>
 		/// Writes the to-be-commited events provided to the underlying persistence mechanism.
