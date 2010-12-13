@@ -4,6 +4,7 @@
 namespace EventStore.Core.UnitTests
 {
 	using System;
+	using System.Linq;
 	using Machine.Specifications;
 	using Moq;
 	using Persistence;
@@ -13,12 +14,26 @@ namespace EventStore.Core.UnitTests
 	public class when_reading_a_stream_until_a_maximum_revision : from_persistence
 	{
 		const long MaxRevision = 1234;
-		static readonly Commit[] commits = new Commit[] { }; // TODO
+		static readonly Commit[] Commits = new[]
+		{
+			new Commit(StreamId, Guid.NewGuid(), 1, null, null, "ignore this snapshot")
+			{
+				Events = { new EventMessage { StreamRevision = 1, Body = "ignore this event" } }
+			}, 
+			new Commit(StreamId, Guid.NewGuid(), 2, null, null, "use this snapshot")
+			{
+				Events = { new EventMessage { StreamRevision = 2, Body = "ignore this event too" } }
+			}, 
+			new Commit(StreamId, Guid.NewGuid(), 3, null, null, null)
+			{
+				Events = { new EventMessage { StreamRevision = 3, Body = "use this event" } }
+			}, 
+		};
 
 		static CommittedEventStream actual;
 
 		Establish context = () =>
-			Persistence.Setup(x => x.GetUntil(StreamId, MaxRevision)).Returns(commits);
+			Persistence.Setup(x => x.GetUntil(StreamId, MaxRevision)).Returns(Commits);
 
 		Because of = () =>
 			actual = Store.ReadUntil(StreamId, MaxRevision);
@@ -26,9 +41,14 @@ namespace EventStore.Core.UnitTests
 		It should_query_the_configured_persistence_engine = () =>
 			Persistence.VerifyAll();
 
-		It should_ignore_events_prior_to_the_most_recent_snapshot_retreived;
-		It should_populate_the_stream_with_the_most_recent_snapshot;
-		It should_ignore_an_earlier_snapshot;
+		It should_ignore_events_prior_to_the_most_recent_snapshot_retreived = () =>
+			actual.StreamRevision.ShouldEqual(Commits.Last().Events.Last().StreamRevision);
+
+		It should_populate_the_stream_with_the_most_recent_snapshot = () =>
+			actual.Snapshot.ShouldEqual(Commits.Where(x => x.Snapshot != null).Last().Snapshot);
+
+		It should_ignore_an_earlier_snapshot = () =>
+			actual.Snapshot.ShouldNotEqual(Commits[0].Snapshot);
 	}
 
 	[Subject("OptimisticEventStore")]

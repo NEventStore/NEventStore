@@ -28,8 +28,8 @@ namespace EventStore
 			this.StreamId = streamId;
 			this.CommitId = commitId;
 			this.CommitSequence = commitSequence;
-			this.Headers = headers;
-			this.Events = events;
+			this.Headers = headers ?? new Dictionary<string, object>();
+			this.Events = events ?? new LinkedList<EventMessage>();
 			this.Snapshot = snapshot;
 		}
 

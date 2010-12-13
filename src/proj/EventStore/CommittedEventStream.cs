@@ -12,12 +12,15 @@
 		/// Initializes a new instance of the CommittedEventStream class.
 		/// </summary>
 		/// <param name="streamId">The value which uniquely identifies the stream to which the series of committed events apply.</param>
+		/// <param name="streamRevision">The value indicating the most recent revision of the stream for the events retreived.</param>
 		/// <param name="commitSequence">The value indicating the most recent commit applied to the stream for the events retreived.</param>
 		/// <param name="events">The series of committed events.</param>
 		/// <param name="snapshot">The snapshot, if any, containing a serialized revision of the stream upon which the events provided can be applied.</param>
-		public CommittedEventStream(Guid streamId, long commitSequence, ICollection events, object snapshot)
+		public CommittedEventStream(
+			Guid streamId, long streamRevision, long commitSequence, ICollection events, object snapshot)
 		{
 			this.StreamId = streamId;
+			this.StreamRevision = streamRevision;
 			this.CommitSequence = commitSequence;
 			this.Events = events ?? new object[] { };
 			this.Snapshot = snapshot;
@@ -27,6 +30,11 @@
 		/// Gets a value which uniquely identifies the stream to which the series of committed events apply.
 		/// </summary>
 		public Guid StreamId { get; private set; }
+
+		/// <summary>
+		/// Gets a value indicating the most recent revision of the stream for the events retreived.
+		/// </summary>
+		public long StreamRevision { get; private set; }
 
 		/// <summary>
 		/// Gets a value indicating the most recent commit applied to the stream for the events retreived.
