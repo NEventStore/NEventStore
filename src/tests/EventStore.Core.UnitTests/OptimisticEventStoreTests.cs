@@ -148,8 +148,8 @@ namespace EventStore.Core.UnitTests
 		{
 			StreamId = streamId,
 			CommitId = Guid.NewGuid(),
-			StreamRevision = 1,
-			CommitSequence = -1
+			PreviousStreamRevision = 1,
+			PreviousCommitSequence = -1
 		};
 		static Exception thrown;
 
@@ -167,8 +167,8 @@ namespace EventStore.Core.UnitTests
 		{
 			StreamId = streamId,
 			CommitId = Guid.NewGuid(),
-			CommitSequence = 1,
-			StreamRevision = -1
+			PreviousCommitSequence = 1,
+			PreviousStreamRevision = -1
 		};
 		static Exception thrown;
 
@@ -180,14 +180,26 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_writing_an_empty_commit_attempt_back_to_the_stream : using_persistence
+	public class when_writing_a_commit_attempt_whose_sequence_is_beyond_the_end_of_a_stream
+	{
+		// ensure this doesn't conflict with using an identity map
+		It should_throw_a_PersistenceException;
+	}
+
+	[Subject("OptimisticEventStore")]
+	public class when_writing_a_commit_attempt_whose_revision_is_beyond_the_end_of_a_stream
+	{
+		// ensure this doesn't conflict with using an identity map
+		It should_throw_a_PersistenceException;
+	}
+
+	[Subject("OptimisticEventStore")]
+	public class when_writing_an_empty_commit_attempt_to_a_stream : using_persistence
 	{
 		static readonly CommitAttempt attemptWithNoEvents = new CommitAttempt
 		{
 			StreamId = streamId,
-			CommitId = Guid.NewGuid(),
-			CommitSequence = 1,
-			StreamRevision = 1
+			CommitId = Guid.NewGuid()
 		};
 
 		Establish context = () =>
@@ -201,14 +213,12 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_writing_a_valid_and_populated_commit_attempt_back_to_the_stream : using_persistence
+	public class when_writing_a_valid_and_populated_commit_attempt_to_a_stream : using_persistence
 	{
 		static readonly CommitAttempt populatedAttempt = new CommitAttempt
 		{
 			StreamId = streamId,
 			CommitId = Guid.NewGuid(),
-			CommitSequence = 1,
-			StreamRevision = 1,
 			Events = { new EventMessage() }
 		};
 
@@ -252,8 +262,8 @@ namespace EventStore.Core.UnitTests
 		{
 			StreamId = streamId,
 			CommitId = DuplicateCommitId,
-			CommitSequence = 3,
-			StreamRevision = 3,
+			PreviousCommitSequence = Commits.Last().CommitSequence,
+			PreviousStreamRevision = Commits.Last().StreamRevision,
 			Events = { new EventMessage() }
 		};
 		static Exception thrown;
@@ -291,8 +301,8 @@ namespace EventStore.Core.UnitTests
 		{
 			StreamId = streamId,
 			CommitId = DuplicateCommitId,
-			CommitSequence = 2,
-			StreamRevision = 2,
+			PreviousCommitSequence = Commits.Last().CommitSequence,
+			PreviousStreamRevision = Commits.Last().StreamRevision,
 			Events = { new EventMessage() }
 		};
 		static Exception thrown;
@@ -311,14 +321,12 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_writing_an_attempt_it_should_track_the_identifying_value_of_each_commit : using_persistence
+	public class when_attempting_to_commit_the_same_commit_identifier_more_than_once : using_persistence
 	{
 		static readonly CommitAttempt Attempt = new CommitAttempt
 		{
 			StreamId = streamId,
 			CommitId = Guid.NewGuid(), // will be duplicate
-			CommitSequence = 2,
-			StreamRevision = 2,
 			Events = { new EventMessage() }
 		};
 		static Exception thrown;
@@ -326,19 +334,19 @@ namespace EventStore.Core.UnitTests
 		Establish context = () =>
 		{
 			store.Write(Attempt);
-			Attempt.CommitSequence++;
-			Attempt.StreamRevision++;
+			Attempt.PreviousCommitSequence++;
+			Attempt.PreviousStreamRevision++;
 		};
 
 		Because of = () =>
 			thrown = Catch.Exception(() => store.Write(Attempt));
 
-		It should_throw_a_DuplicateCommitException = () =>
+		It throw_a_DuplicateCommitException = () =>
 			thrown.ShouldBeOfType<DuplicateCommitException>();
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_writing_an_attempt_with_a_sequence_less_than_or_equal_to_the_most_recent_sequence_for_the_stream : using_persistence
+	public class when_writing_an_attempt_with_a_sequence_less_than_the_most_recent_sequence_for_the_stream : using_persistence
 	{
 		const long StreamRevision = 1;
 		const long MostRecentSequence = 42;
@@ -350,8 +358,8 @@ namespace EventStore.Core.UnitTests
 		{
 			StreamId = streamId,
 			CommitId = Guid.NewGuid(),
-			CommitSequence = MostRecentSequence, // here's the problem
-			StreamRevision = StreamRevision + 1,
+			PreviousCommitSequence = MostRecentSequence - 1, // here's the problem
+			PreviousStreamRevision = StreamRevision,
 			Events = { new EventMessage() }
 		};
 
@@ -371,7 +379,7 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_writing_an_attempt_with_a_revision_less_than_or_equal_to_the_most_recent_revision_read_for_the_stream : using_persistence
+	public class when_writing_an_attempt_with_a_revision_less_than_the_most_recent_revision_read_for_the_stream : using_persistence
 	{
 		const long MostRecentStreamRevision = 1;
 		const long CommitSequence = 1;
@@ -383,8 +391,8 @@ namespace EventStore.Core.UnitTests
 		{
 			StreamId = streamId,
 			CommitId = Guid.NewGuid(),
-			CommitSequence = CommitSequence + 1,
-			StreamRevision = MostRecentStreamRevision,  // here's the problem
+			PreviousCommitSequence = CommitSequence,
+			PreviousStreamRevision = MostRecentStreamRevision - 1,  // here's the problem
 			Events = { new EventMessage() }
 		};
 
@@ -410,8 +418,6 @@ namespace EventStore.Core.UnitTests
 		{
 			StreamId = streamId,
 			CommitId = Guid.NewGuid(),
-			CommitSequence = 1,
-			StreamRevision = 1,
 			Events = { new EventMessage() }
 		};
 		static Exception thrown;
@@ -419,7 +425,7 @@ namespace EventStore.Core.UnitTests
 		Establish context = () =>
 		{
 			store.Write(Attempt);
-			Attempt.CommitId = Guid.NewGuid(); // different attempt, but with the same sequence and revision values
+			Attempt.CommitId = Guid.NewGuid(); // new attempt but with same sequence and revision values
 		};
 
 		Because of = () =>
@@ -427,18 +433,6 @@ namespace EventStore.Core.UnitTests
 
 		It should_throw_a_ConcurrencyException = () =>
 			thrown.ShouldBeOfType<ConcurrencyException>();
-	}
-
-	[Subject("OptimisticEventStore")]
-	public class when_attempting_a_commit_whose_sequence_is_beyond_the_end_of_a_stream
-	{
-		It should_throw_a_PersistenceException;
-	}
-
-	[Subject("OptimisticEventStore")]
-	public class when_attempting_a_commit_whose_revision_is_beyond_the_end_of_a_stream
-	{
-		It should_throw_a_PersistenceException;
 	}
 
 	public abstract class using_persistence

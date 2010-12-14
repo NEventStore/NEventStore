@@ -9,7 +9,7 @@ namespace EventStore.Core
 
 	public class OptimisticEventStore : IStoreEvents
 	{
-		private readonly IDictionary<Guid, Commit> latest = new Dictionary<Guid, Commit>();
+		private readonly IDictionary<Guid, Commit> streamHeads = new Dictionary<Guid, Commit>();
 		private readonly ICollection<Guid> commitIdentifiers = new HashSet<Guid>();
 		private readonly IPersistStreams persistence;
 		private readonly IDispatchCommits dispatcher;
@@ -51,7 +51,7 @@ namespace EventStore.Core
 			}
 
 			if (last != null)
-				this.latest[streamId] = last;
+				this.streamHeads[streamId] = last;
 
 			snapshot = applySnapshot ? snapshot : null;
 			return new CommittedEventStream(streamId, revision, sequence, events.ToArray(), snapshot);
@@ -71,13 +71,13 @@ namespace EventStore.Core
 				throw new DuplicateCommitException();
 
 			Commit previousCommitForStream;
-			if (!this.latest.TryGetValue(attempt.StreamId, out previousCommitForStream))
+			if (!this.streamHeads.TryGetValue(attempt.StreamId, out previousCommitForStream))
 				return;
 
-			 if (previousCommitForStream.CommitSequence >= attempt.CommitSequence)
+			 if (previousCommitForStream.CommitSequence > attempt.PreviousCommitSequence)
 				throw new ConcurrencyException();
 
-			if (previousCommitForStream.StreamRevision >= attempt.StreamRevision)
+			if (previousCommitForStream.StreamRevision > attempt.PreviousStreamRevision)
 				throw new ConcurrencyException();
 		}
 		private void PersistAndDispatch(CommitAttempt attempt)
@@ -88,7 +88,7 @@ namespace EventStore.Core
 			this.dispatcher.Dispatch(commit);
 
 			this.commitIdentifiers.Add(commit.CommitId);
-			this.latest[commit.StreamId] = commit;
+			this.streamHeads[commit.StreamId] = commit;
 		}
 	}
 }

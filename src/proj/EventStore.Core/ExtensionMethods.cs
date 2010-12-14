@@ -28,11 +28,11 @@ namespace EventStore.Core
 			if (!attempt.HasIdentifier())
 				throw new ArgumentException("The commit must be uniquely identified.", "attempt");
 
-			if (!attempt.CommitSequence.IsPositive())
-				throw new ArgumentException("The commit sequence must be a positive number.", "attempt");
+			if (attempt.PreviousCommitSequence < 0)
+				throw new ArgumentException("The commit sequence cannot be a negative number.", "attempt");
 
-			if (!attempt.StreamRevision.IsPositive())
-				throw new ArgumentException("The stream revision must be a positive number.", "attempt");
+			if (attempt.PreviousStreamRevision < 0)
+				throw new ArgumentException("The stream revision cannot be a negative number.", "attempt");
 
 			return true;
 		}
@@ -40,11 +40,6 @@ namespace EventStore.Core
 		public static bool HasIdentifier(this CommitAttempt attempt)
 		{
 			return attempt.StreamId != Guid.Empty && attempt.CommitId != Guid.Empty;
-		}
-
-		public static bool IsPositive(this long value)
-		{
-			return value > 0;
 		}
 
 		public static bool IsEmpty(this CommitAttempt attempt)
