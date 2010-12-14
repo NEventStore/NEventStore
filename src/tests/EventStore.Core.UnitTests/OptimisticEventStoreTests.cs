@@ -173,8 +173,6 @@ namespace EventStore.Core.UnitTests
 
 		It should_throw_an_ArgumentException = () =>
 			thrown.ShouldBeOfType<ArgumentException>();
-
-		It should_throw_an_ArgumentNullException;
 	}
 
 	[Subject("OptimisticEventStore")]
@@ -198,7 +196,7 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_writing_a_commit_attempt_back_to_the_stream : using_persistence
+	public class when_writing_a_valid_and_populated_commit_attempt_back_to_the_stream : using_persistence
 	{
 		static readonly CommitAttempt populatedAttempt = new CommitAttempt
 		{
@@ -214,7 +212,7 @@ namespace EventStore.Core.UnitTests
 		Because of = () =>
 			Store.Write(populatedAttempt);
 
-		It should_provide_the_valid_commit_attempt_to_the_configured_persistence_mechanism = () =>
+		It should_provide_the_commit_attempt_to_the_configured_persistence_mechanism = () =>
 			Persistence.Verify(x => x.Persist(populatedAttempt), Times.Exactly(1));
 	}
 
