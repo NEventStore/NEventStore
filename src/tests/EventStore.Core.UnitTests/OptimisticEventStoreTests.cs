@@ -128,9 +128,26 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
+	public class when_writing_an_unidentified_commit_attempt_back_to_the_stream : using_persistence
+	{
+		static readonly CommitAttempt unidentified = new CommitAttempt();
+		static Exception thrown;
+
+		Because of = () =>
+			thrown = Catch.Exception(() => Store.Write(unidentified));
+
+		It should_throw_an_ArgumentException = () =>
+			thrown.ShouldBeOfType<ArgumentException>();
+	}
+
+	[Subject("OptimisticEventStore")]
 	public class when_writing_commit_attempt_with_a_negative_commit_sequence_back_to_the_stream : using_persistence
 	{
-		static readonly CommitAttempt negativeCommitSequence = new CommitAttempt { CommitSequence = -1 };
+		static readonly CommitAttempt negativeCommitSequence = new CommitAttempt
+		{
+			CommitId = Guid.NewGuid(),
+			CommitSequence = -1
+		};
 		static Exception thrown;
 
 		Because of = () =>
@@ -145,6 +162,7 @@ namespace EventStore.Core.UnitTests
 	{
 		static readonly CommitAttempt negativeStreamRevision = new CommitAttempt
 		{
+			CommitId = Guid.NewGuid(),
 			CommitSequence = 1,
 			StreamRevision = -1
 		};
@@ -164,6 +182,7 @@ namespace EventStore.Core.UnitTests
 	{
 		static readonly CommitAttempt emptyAttempt = new CommitAttempt
 		{
+			CommitId = Guid.NewGuid(),
 			CommitSequence = 1,
 			StreamRevision = 1,
 			Events = { } // no events
@@ -184,6 +203,7 @@ namespace EventStore.Core.UnitTests
 	{
 		static readonly CommitAttempt populatedAttempt = new CommitAttempt
 		{
+			CommitId = Guid.NewGuid(),
 			CommitSequence = 1,
 			StreamRevision = 1,
 			Events = { new EventMessage() }

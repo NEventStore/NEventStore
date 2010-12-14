@@ -1,5 +1,6 @@
 namespace EventStore.Core
 {
+	using System;
 	using System.Collections.Generic;
 
 	internal static class ExtensionMethods
@@ -16,6 +17,11 @@ namespace EventStore.Core
 		{
 			foreach (var @event in commit.Events)
 				events.Add(@event.Body);
+		}
+
+		public static bool HasIdentifier(this CommitAttempt attempt)
+		{
+			return attempt.CommitId != Guid.Empty;
 		}
 
 		public static bool IsPositive(this long value)

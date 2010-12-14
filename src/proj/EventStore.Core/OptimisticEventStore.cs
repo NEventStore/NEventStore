@@ -57,6 +57,9 @@ namespace EventStore.Core
 			if (uncommitted == null)
 				throw new ArgumentNullException("uncommitted");
 
+			if (!uncommitted.HasIdentifier())
+				throw new ArgumentException("The commit must be uniquely identified.", "uncommitted");
+
 			if (!uncommitted.CommitSequence.IsPositive())
 				throw new ArgumentException("The commit sequence must be a positive number.", "uncommitted");
 
