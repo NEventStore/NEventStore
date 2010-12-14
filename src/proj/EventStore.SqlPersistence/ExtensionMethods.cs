@@ -10,6 +10,13 @@ namespace EventStore.SqlPersistence
 
 	public static class ExtensionMethods
 	{
+		private const int StreamIdIndex = 0;
+		private const int CommitIdIndex = 1;
+		private const int StreamRevisionIndex = 2;
+		private const int CommitSequenceIndex = 3;
+		private const int PayloadIndex = 4;
+		private const int SnapshotIndex = 5;
+
 		public static IDataParameter AddParameter(this IDbCommand command, string parameterName, object value)
 		{
 			if (value is Guid)
@@ -24,15 +31,6 @@ namespace EventStore.SqlPersistence
 
 			command.Parameters.Add(parameter);
 			return parameter;
-		}
-
-		public static long CommitSequence(this CommitAttempt attempt)
-		{
-			return attempt.PreviousCommitSequence + 1;
-		}
-		public static long NewRevision(this CommitAttempt attempt)
-		{
-			return attempt.PreviousStreamRevision + attempt.Events.Count;
 		}
 
 		public static byte[] Serialize(this ISerialize serializer, object value)
@@ -69,6 +67,34 @@ namespace EventStore.SqlPersistence
 			catch (DbException)
 			{
 			}
+		}
+
+		public static Commit GetCommit(this IDataRecord record, ISerialize serializer)
+		{
+			var serializedCommit = (byte[])record[PayloadIndex];
+			var commit = (Commit)serializer.Deserialize(serializedCommit);
+
+			var serializedSnapshot = record[SnapshotIndex].GetBytes();
+			var snapshot = serializer.Deserialize(serializedSnapshot);
+
+			return new Commit(
+				(Guid)record[StreamIdIndex],
+				(Guid)record[CommitIdIndex],
+				(long)record[StreamRevisionIndex],
+				(long)record[CommitSequenceIndex],
+				commit.Headers,
+				commit.Events,
+				snapshot);
+		}
+		private static byte[] GetBytes(this object value)
+		{
+			return value == null || value == DBNull.Value ? null : (byte[])value;
+		}
+
+		public static bool IsDuplicateKeyException(this DbException exception)
+		{
+			var msg = exception.Message.ToUpperInvariant();
+			return msg.Contains("DUPLICATE") || msg.Contains("UNIQUE");
 		}
 	}
 }

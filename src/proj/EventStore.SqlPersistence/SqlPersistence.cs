@@ -10,15 +10,6 @@ namespace EventStore.SqlPersistence
 
 	public class SqlPersistence : IPersistStreams
 	{
-		private const string DuplicateKeyText = "DUPLICATE";
-		private const string UniqueKeyText = "UNIQUE";
-		private const int StreamIdIndex = 0;
-		private const int CommitIdIndex = 1;
-		private const int StreamRevisionIndex = 2;
-		private const int CommitSequenceIndex = 3;
-		private const int PayloadIndex = 4;
-		private const int SnapshotIndex = 5;
-
 		private readonly IConnectionFactory factory;
 		private readonly ISerialize serializer;
 
@@ -43,35 +34,24 @@ namespace EventStore.SqlPersistence
 				query.CommandText = queryText;
 				query.AddParameter(SqlParameters.StreamId, streamId);
 				query.AddParameter(SqlParameters.OldRevision, revision);
-				return query.ExecuteQuery(this.GetCommitFromRecord);
+				return query.ExecuteQuery(x => x.GetCommit(this.serializer));
 			});
-		}
-		private Commit GetCommitFromRecord(IDataRecord record)
-		{
-			var payload = (byte[])record[PayloadIndex]; // TODO
-
-			return new Commit(
-				(Guid)record[StreamIdIndex],
-				(Guid)record[CommitIdIndex],
-				(long)record[StreamRevisionIndex],
-				(long)record[CommitSequenceIndex],
-				null,
-				null,
-				this.serializer.Deserialize((byte[])record[SnapshotIndex]));
 		}
 
 		public void Persist(CommitAttempt uncommitted)
 		{
 			this.Execute(uncommitted.StreamId, cmd =>
 			{
+				var commit = uncommitted.ToCommit();
+
 				cmd.CommandText = SqlStatements.Persist;
-				cmd.AddParameter(SqlParameters.StreamId, uncommitted.StreamId);
+				cmd.AddParameter(SqlParameters.StreamId, commit.StreamId);
 				cmd.AddParameter(SqlParameters.StreamName, uncommitted.StreamName);
-				cmd.AddParameter(SqlParameters.CommitId, uncommitted.CommitId);
-				cmd.AddParameter(SqlParameters.CommitSequence, uncommitted.CommitSequence());
+				cmd.AddParameter(SqlParameters.CommitId, commit.CommitId);
+				cmd.AddParameter(SqlParameters.CommitSequence, commit.CommitSequence);
 				cmd.AddParameter(SqlParameters.OldRevision, uncommitted.PreviousCommitSequence);
-				cmd.AddParameter(SqlParameters.NewRevision, uncommitted.NewRevision());
-				cmd.AddParameter(SqlParameters.Payload, null); // TODO
+				cmd.AddParameter(SqlParameters.NewRevision, commit.StreamRevision);
+				cmd.AddParameter(SqlParameters.Payload, this.serializer.Serialize(commit));
 
 				TryPersist(cmd);
 			});
@@ -86,8 +66,7 @@ namespace EventStore.SqlPersistence
 			}
 			catch (DbException e)
 			{
-				var msg = e.Message.ToUpperInvariant();
-				if (msg.Contains(DuplicateKeyText) || msg.Contains(UniqueKeyText))
+				if (e.IsDuplicateKeyException())
 					throw new DuplicateCommitException(e.Message, e);
 
 				throw;
@@ -99,7 +78,7 @@ namespace EventStore.SqlPersistence
 			return this.Execute(Guid.Empty, query =>
 			{
 				query.CommandText = SqlStatements.GetUndispatched;
-				return query.ExecuteQuery(this.GetCommitFromRecord);
+				return query.ExecuteQuery(x => x.GetCommit(this.serializer));
 			});
 		}
 		public void MarkCommitAsDispatched(Commit commit)
@@ -119,7 +98,7 @@ namespace EventStore.SqlPersistence
 			{
 				query.CommandText = SqlStatements.GetStreamsToSnapshot;
 				query.AddParameter(SqlParameters.Threshold, maxThreshold);
-				return query.ExecuteQuery(record => (Guid)record[StreamIdIndex]);
+				return query.ExecuteQuery(record => (Guid)record[0]);
 			});
 		}
 		public void AddSnapshot(Guid streamId, long commitSequence, object snapshot)
