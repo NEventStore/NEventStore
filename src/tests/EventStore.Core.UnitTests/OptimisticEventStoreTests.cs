@@ -429,6 +429,18 @@ namespace EventStore.Core.UnitTests
 			thrown.ShouldBeOfType<ConcurrencyException>();
 	}
 
+	[Subject("OptimisticEventStore")]
+	public class when_attempting_a_commit_whose_sequence_is_beyond_the_end_of_a_stream
+	{
+		It should_throw_a_PersistenceException;
+	}
+
+	[Subject("OptimisticEventStore")]
+	public class when_attempting_a_commit_whose_revision_is_beyond_the_end_of_a_stream
+	{
+		It should_throw_a_PersistenceException;
+	}
+
 	public abstract class using_persistence
 	{
 		protected static Guid streamId = Guid.NewGuid();

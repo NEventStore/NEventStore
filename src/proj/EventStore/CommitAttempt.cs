@@ -33,12 +33,12 @@ namespace EventStore
 		public Guid CommitId { get; set; }
 
 		/// <summary>
-		/// Gets or sets the value which indicates the revision of the most recent event in the stream to which this commit attempt applies.
+		/// Gets or sets the value which indicates the most recent, known head revision of the stream to which this commit attempt applies.
 		/// </summary>
 		public long StreamRevision { get; set; }
 
 		/// <summary>
-		/// Gets or sets the value which indicates the sequence (or position) in the stream to which this commit attempt applies.
+		/// Gets or sets the value which indicates the most recent, known committed sequence for the stream to which this commit attempt applies.
 		/// </summary>
 		public long CommitSequence { get; set; }
 

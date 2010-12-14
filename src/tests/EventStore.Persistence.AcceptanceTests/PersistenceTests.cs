@@ -14,22 +14,6 @@ namespace EventStore.Persistence.AcceptanceTests
 	}
 
 	[Subject("Persistence")]
-	public class when_reading_from_a_given_revision
-	{
-		It should_return_the_commits_in_commit_sequence_order_from_oldest_first_to_newest_last;
-		It should_start_from_the_commit_which_contains_the_given_revision;
-		It should_read_and_return_up_to_the_end_of_the_stream;
-	}
-
-	[Subject("Persistence")]
-	public class when_reading_until_a_given_revision
-	{
-		It should_return_the_commits_in_commit_sequence_order_from_oldest_first_to_newest_last;
-		It should_start_from_the_commit_of_the_most_recent_snapshot_on_or_before_the_given_revision;
-		It should_read_and_return_up_to_the_commit_containing_the_given_revision;
-	}
-
-	[Subject("Persistence")]
 	public class when_a_commit_has_been_marked_as_dispatched
 	{
 		It should_no_longer_be_found_in_the_set_of_undispatched_commits;
@@ -38,6 +22,24 @@ namespace EventStore.Persistence.AcceptanceTests
 	[Subject("Persistence")]
 	public class when_a_snapshot_has_been_added_at_a_specific_commit
 	{
+		It should_start_reads_from_that_commit;
+		It should_no_longer_include_the_corresponding_stream_in_the_set_of_streams_to_snapshot;
+	}
+
+	[Subject("Persistence")]
+	public class when_reading_from_a_given_revision
+	{
+		It should_start_from_the_commit_which_contains_the_given_stream_revision;
+		It should_read_up_to_the_end_of_the_stream;
+		It should_return_the_commits_in_commit_sequence_order_from_oldest_first_to_newest_last;
+	}
+
+	[Subject("Persistence")]
+	public class when_reading_until_a_given_revision
+	{
+		It should_start_from_the_commit_of_the_most_recent_snapshot_on_or_before_the_given_revision;
+		It should_read_up_to_the_commit_containing_the_given_revision;
+		It should_return_the_commits_in_commit_sequence_order_from_oldest_first_to_newest_last;
 	}
 
 	[Subject("Persistence")]
@@ -50,11 +52,6 @@ namespace EventStore.Persistence.AcceptanceTests
 	public class when_attempting_to_commit_an_already_committed_attempt
 	{
 		It should_throw_a_DuplicateCommitException;
-	}
-
-	[Subject("Persistence")]
-	public class when_
-	{
 	}
 }
 
