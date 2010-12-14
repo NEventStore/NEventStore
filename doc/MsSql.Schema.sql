@@ -125,6 +125,7 @@ CREATE PROCEDURE [dbo].[GetUndispatchedCommits]
 AS BEGIN
 
        SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+
        SELECT [C].[StreamId],
               [C].[Sequence],
               [C].[CommitId],
@@ -157,6 +158,4 @@ AS BEGIN
                  AND [C].[Sequence] = [dbo].[Dispatch].[Sequence]
                  AND [C].[CommitId] = @CommitId );
                  
-       COMMIT TRANSACTION;
-
 END;

@@ -32,5 +32,13 @@ namespace EventStore.Persistence
 		/// </summary>
 		/// <param name="uncommitted">The series of events and associated metadata to be commited.</param>
 		void Persist(CommitAttempt uncommitted);
+
+		/// <summary>
+		/// Adds the snapshot provided to the stream indicated the commit sequence specified.
+		/// </summary>
+		/// <param name="streamId">The stream to which the snapshot provided should be added.</param>
+		/// <param name="commitSequence">The sequence in the series of commits at which the snapshot should be added.</param>
+		/// <param name="snapshot">The snapshot or materialized view of the stream.</param>
+		void AddSnapshot(Guid streamId, long commitSequence, object snapshot);
 	}
 }
