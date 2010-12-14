@@ -180,17 +180,69 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_writing_a_commit_attempt_whose_sequence_is_beyond_the_end_of_a_stream
+	public class when_writing_a_commit_attempt_whose_sequence_is_beyond_the_end_of_a_known_stream : using_persistence
 	{
-		// ensure this doesn't conflict with using an identity map
-		It should_throw_a_PersistenceException;
+		static readonly Commit[] commits = new[]
+		{
+			new Commit(streamId, Guid.NewGuid(), 1, 1, null, null, null)
+			{
+				Events = { new EventMessage() }
+			}
+		};
+		static readonly CommitAttempt attempt = new CommitAttempt
+		{
+			StreamId = streamId,
+			CommitId = Guid.NewGuid(),
+			PreviousCommitSequence = 2, // *beyond* the end of the known stream
+			PreviousStreamRevision = 1,
+			Events = { new EventMessage() }
+		};
+		static Exception thrown;
+
+		Establish context = () =>
+			persistence.Setup(x => x.GetFrom(streamId, 0)).Returns(commits);
+
+		Because of = () =>
+		{
+			store.ReadFrom(streamId, 0);
+			thrown = Catch.Exception(() => store.Write(attempt));
+		};
+
+		It should_throw_a_PersistenceException = () =>
+			thrown.ShouldBeOfType<PersistenceException>();
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_writing_a_commit_attempt_whose_revision_is_beyond_the_end_of_a_stream
+	public class when_writing_a_commit_attempt_whose_revision_is_beyond_the_end_of_a_known_stream : using_persistence
 	{
-		// ensure this doesn't conflict with using an identity map
-		It should_throw_a_PersistenceException;
+		static readonly Commit[] commits = new[]
+		{
+			new Commit(streamId, Guid.NewGuid(), 1, 1, null, null, null)
+			{
+				Events = { new EventMessage() }
+			}
+		};
+		static readonly CommitAttempt attempt = new CommitAttempt
+		{
+			StreamId = streamId,
+			CommitId = Guid.NewGuid(),
+			PreviousCommitSequence = 1,
+			PreviousStreamRevision = 2, // *beyond* the end of the known stream
+			Events = { new EventMessage() }
+		};
+		static Exception thrown;
+
+		Establish context = () =>
+			persistence.Setup(x => x.GetFrom(streamId, 0)).Returns(commits);
+
+		Because of = () =>
+		{
+			store.ReadFrom(streamId, 0);
+			thrown = Catch.Exception(() => store.Write(attempt));
+		};
+
+		It should_throw_a_PersistenceException = () =>
+			thrown.ShouldBeOfType<PersistenceException>();
 	}
 
 	[Subject("OptimisticEventStore")]

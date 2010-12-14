@@ -74,11 +74,17 @@ namespace EventStore.Core
 			if (!this.streamHeads.TryGetValue(attempt.StreamId, out previousCommitForStream))
 				return;
 
-			 if (previousCommitForStream.CommitSequence > attempt.PreviousCommitSequence)
+			if (previousCommitForStream.CommitSequence > attempt.PreviousCommitSequence)
 				throw new ConcurrencyException();
 
 			if (previousCommitForStream.StreamRevision > attempt.PreviousStreamRevision)
 				throw new ConcurrencyException();
+
+			if (previousCommitForStream.CommitSequence < attempt.PreviousCommitSequence)
+				throw new PersistenceException();
+
+			if (previousCommitForStream.StreamRevision < attempt.PreviousStreamRevision)
+				throw new PersistenceException();
 		}
 		private void PersistAndDispatch(CommitAttempt attempt)
 		{
