@@ -8,10 +8,11 @@ CREATE TABLE [dbo].[Streams]
 (
        [StreamId] [uniqueidentifier] NOT NULL CHECK ([StreamId] != 0x0),
        [Name] [nvarchar](256) NOT NULL,
-       [Revision] [bigint] NOT NULL CHECK ([Revision] > 0),
-       [Snapshot] [bigint] NOT NULL CHECK ([Snapshot] >= 0),
+       [HeadRevision] [bigint] NOT NULL CHECK ([HeadRevision] > 0),
+       [SnapshotRevision] [bigint] NOT NULL CHECK ([SnapshotRevision] >= 0),
        CONSTRAINT [PK_Streams] PRIMARY KEY CLUSTERED ([StreamId])
 )
+-- TODO: should stream + head as well as streamid + snapshot be a foreign key to the commits table?
 
 CREATE TABLE [dbo].[Commits]
 (
@@ -63,11 +64,11 @@ AS BEGIN
        SET NOCOUNT ON;
        
        UPDATE [dbo].[Streams]
-          SET [Revision] = [I].[Revision]
+          SET [HeadRevision] = [I].[Revision]
          FROM [dbo].[Streams] AS [S]
         INNER JOIN [Inserted] AS [I]
            ON [S].[StreamId] = [I].[StreamId]
-        WHERE [S].[Revision] < [I].[Revision];
+        WHERE [S].[HeadRevision] < [I].[Revision];
 
 END;
 
@@ -82,17 +83,17 @@ AS BEGIN
        -- if a snapshot was supplied, point the Snapshots column of the associated row in the
        -- Streams table to it.
        UPDATE [dbo].[Streams]
-          SET [Snapshot] = [U].[Revision]
+          SET [SnapshotRevision] = [U].[Revision]
          FROM [dbo].[Streams] AS [S]
         INNER JOIN [Updated] AS [U]
            ON [S].[StreamId] = [U].[StreamId]
         WHERE [U].[Snapshot] IS NOT NULL
-          AND [S].[Snapshot] < [U].[Revision];
+          AND [S].[SnapshotRevision] < [U].[Revision];
 
        -- if the snapshot was set to null/removed, point the Snapshots column of the associated row in the
        -- Streams table to the most recent snapshot, if any.
        UPDATE [dbo].[Streams]
-          SET [Snapshot] = COALESCE(MAX([M].[Revision]), 0)
+          SET [SnapshotRevision] = COALESCE(MAX([M].[Revision]), 0)
          FROM [dbo].[Streams] AS [S]
         INNER JOIN [Updated] AS [U]
            ON [S].[StreamId] = [U].[StreamId]
