@@ -11,7 +11,7 @@ namespace EventStore.Core.UnitTests
 	using It = Machine.Specifications.It;
 
 	[Subject("OptimisticEventStore")]
-	public class when_reading_a_stream_until_a_maximum_revision : from_persistence
+	public class when_reading_a_stream_until_a_maximum_revision : using_persistence
 	{
 		const long MaxRevision = 1234;
 		static readonly Commit[] Commits = new[]
@@ -66,7 +66,7 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_reading_a_stream_from_a_minimum_revision : from_persistence
+	public class WhenReadingAStreamUsingAMinimumRevision : using_persistence
 	{
 		const long MinRevision = 42;
 		static readonly Commit[] Commits = new[]
@@ -116,36 +116,108 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_writing_an_invalid_commit_back_to_the_stream : from_persistence
+	public class when_writing_null_commit_attempt_back_to_the_stream : using_persistence
 	{
-		It should_drop_the_commit_provided;
+		static Exception thrown;
+
+		Because of = () =>
+			thrown = Catch.Exception(() => Store.Write(null));
+
+		It should_throw_an_ArgumentNullException = () =>
+			thrown.ShouldBeOfType<ArgumentNullException>();
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_writing_a_commit_back_to_the_stream : from_persistence
+	public class when_writing_commit_attempt_with_a_negative_commit_sequence_back_to_the_stream : using_persistence
 	{
-		It should_write_the_commit_to_the_configured_persistence_mechanism;
+		static readonly CommitAttempt negativeCommitSequence = new CommitAttempt { CommitSequence = -1 };
+		static Exception thrown;
+
+		Because of = () =>
+			thrown = Catch.Exception(() => Store.Write(negativeCommitSequence));
+
+		It should_throw_an_ArgumentException = () =>
+			thrown.ShouldBeOfType<ArgumentException>();
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_writing_a_commit_with_an_identifier_that_has_already_been_read : from_persistence
+	public class when_writing_commit_attempt_with_a_negative_stream_revision_back_to_the_stream : using_persistence
+	{
+		static readonly CommitAttempt negativeStreamRevision = new CommitAttempt
+		{
+			CommitSequence = 1,
+			StreamRevision = -1
+		};
+		static Exception thrown;
+
+		Because of = () =>
+			thrown = Catch.Exception(() => Store.Write(negativeStreamRevision));
+
+		It should_throw_an_ArgumentException = () =>
+			thrown.ShouldBeOfType<ArgumentException>();
+
+		It should_throw_an_ArgumentNullException;
+	}
+
+	[Subject("OptimisticEventStore")]
+	public class when_writing_an_empty_commit_attempt_back_to_the_stream : using_persistence
+	{
+		static readonly CommitAttempt emptyAttempt = new CommitAttempt
+		{
+			CommitSequence = 1,
+			StreamRevision = 1,
+			Events = { } // no events
+		};
+
+		Establish context = () =>
+			Persistence.Setup(x => x.Persist(emptyAttempt));
+
+		Because of = () =>
+			Store.Write(emptyAttempt);
+
+		It should_drop_the_commit_provided = () =>
+			Persistence.Verify(x => x.Persist(emptyAttempt), Times.AtMost(0));
+	}
+
+	[Subject("OptimisticEventStore")]
+	public class when_writing_a_commit_attempt_back_to_the_stream : using_persistence
+	{
+		static readonly CommitAttempt populatedAttempt = new CommitAttempt
+		{
+			CommitSequence = 1,
+			StreamRevision = 1,
+			Events = { new EventMessage() }
+		};
+
+		Establish context = () =>
+			Persistence.Setup(x => x.Persist(populatedAttempt));
+
+		Because of = () =>
+			Store.Write(populatedAttempt);
+
+		It should_provide_the_valid_commit_attempt_to_the_configured_persistence_mechanism = () =>
+			Persistence.Verify(x => x.Persist(populatedAttempt), Times.Exactly(1));
+	}
+
+	[Subject("OptimisticEventStore")]
+	public class when_writing_a_commit_attempt_with_an_identifier_that_has_already_been_read : using_persistence
 	{
 		It should_throw_a_DuplicateCommitException;
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_writing_a_commit_with_a_commit_sequence_less_than_or_equal_to_the_most_recent_commit_read : from_persistence
+	public class when_writing_a_commit_attempt_with_a_commit_sequence_less_than_or_equal_to_the_most_recent_commit_read : using_persistence
 	{
 		It should_throw_a_ConcurrencyException;
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_writing_a_commit_with_a_stream_revision_less_than_or_equal_to_the_most_stream_revision_read : from_persistence
+	public class when_writing_a_commit_attempt_with_a_stream_revision_less_than_or_equal_to_the_most_stream_revision_read : using_persistence
 	{
 		It should_throw_a_ConcurrencyException;
 	}
 
-	public abstract class from_persistence
+	public abstract class using_persistence
 	{
 		protected static readonly Guid StreamId = Guid.NewGuid();
 		protected static readonly Mock<IPersistStreams> Persistence = new Mock<IPersistStreams>();

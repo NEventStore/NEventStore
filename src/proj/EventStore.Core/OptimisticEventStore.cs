@@ -54,6 +54,19 @@ namespace EventStore.Core
 
 		public virtual void Write(CommitAttempt uncommitted)
 		{
+			if (uncommitted == null)
+				throw new ArgumentNullException("uncommitted");
+
+			if (!uncommitted.CommitSequence.IsPositive())
+				throw new ArgumentException("The commit sequence must be a positive number.", "uncommitted");
+
+			if (!uncommitted.StreamRevision.IsPositive())
+				throw new ArgumentException("The stream revision must be a positive number.", "uncommitted");
+
+			if (!uncommitted.HasEvents())
+				return;
+
+			this.persistence.Persist(uncommitted);
 		}
 	}
 }
