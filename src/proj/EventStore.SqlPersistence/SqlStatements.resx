@@ -118,24 +118,66 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AddSnapshot" xml:space="preserve">
-    <value />
+    <value>UPDATE Commits
+   SET Snapshot = @Payload
+ WHERE StreamId = @StreamId
+   AND Sequence = @CommitSequence;</value>
   </data>
   <data name="GetFrom" xml:space="preserve">
-    <value />
+    <value>SELECT StreamId, CommitId, Revision, Sequence, Payload, null
+  FROM Commits
+ WHERE StreamId = @StreamId
+   AND Revision &gt;= @Revision;</value>
   </data>
   <data name="GetStreamsToSnapshot" xml:space="preserve">
-    <value />
+    <value>SELECT StreamId
+  FROM Streams
+ WHERE HeadRevision &gt;= SnapshotRevision + @Threshold;</value>
   </data>
   <data name="GetUndispatched" xml:space="preserve">
-    <value />
+    <value>SELECT C.StreamId, C.CommitId, C.Revision, C.Sequence, C.Payload, C.Snapshot
+  FROM Commits AS C
+ INNER JOIN Dispatch AS D
+    ON C.StreamId = D.StreamId
+   AND C.Sequence = D.Sequence;</value>
   </data>
   <data name="GetUntil" xml:space="preserve">
-    <value />
+    <value>-- TODO</value>
   </data>
   <data name="MarkAsDispatched" xml:space="preserve">
-    <value />
+    <value>DELETE
+  FROM Dispatch
+ WHERE StreamId = @StreamId
+   AND Sequence = @CommitSequence;</value>
   </data>
   <data name="Persist" xml:space="preserve">
-    <value />
+    <value>SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+BEGIN TRANSACTION;
+
+INSERT
+  INTO Commits
+     ( StreamId, Sequence, CommitId, Revision, Payload )
+SELECT @StreamId, @Sequence, @CommitId, @NewRevision, @Payload
+  FROM Commits
+ WHERE NOT EXISTS
+     ( SELECT *
+         FROM Commits
+        WHERE StreamId = StreamId
+          AND Sequence &gt;= @Sequence );
+
+INSERT
+  INTO Streams
+     ( StreamId, Name, HeadRevision, SnapshotRevision )
+SELECT @StreamId, @StreamName, @NewRevision, 0
+ WHERE @OldRevision = 0;
+
+UPDATE Streams
+   SET HeadRevision = @NewRevision
+  FROM Streams
+ WHERE StreamId = @StreamId
+   AND HeadRevision = @OldRevision
+   AND @NewRevision &gt; 0;
+
+COMMIT TRANSACTION;</value>
   </data>
 </root>

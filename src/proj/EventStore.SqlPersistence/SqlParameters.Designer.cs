@@ -79,15 +79,6 @@ namespace EventStore.SqlPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to @NewRevision.
-        /// </summary>
-        internal static string NewRevision {
-            get {
-                return ResourceManager.GetString("NewRevision", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to @OldRevision.
         /// </summary>
         internal static string OldRevision {
@@ -102,6 +93,15 @@ namespace EventStore.SqlPersistence {
         internal static string Payload {
             get {
                 return ResourceManager.GetString("Payload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @Revision.
+        /// </summary>
+        internal static string Revision {
+            get {
+                return ResourceManager.GetString("Revision", resourceCulture);
             }
         }
         

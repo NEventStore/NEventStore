@@ -61,7 +61,10 @@ namespace EventStore.SqlPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to UPDATE Commits
+        ///   SET Snapshot = @Payload
+        /// WHERE StreamId = @StreamId
+        ///   AND Sequence = @CommitSequence;.
         /// </summary>
         internal static string AddSnapshot {
             get {
@@ -70,7 +73,10 @@ namespace EventStore.SqlPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to SELECT StreamId, CommitId, Revision, Sequence, Payload, null
+        ///  FROM Commits
+        /// WHERE StreamId = @StreamId
+        ///   AND Revision &gt;= @Revision;.
         /// </summary>
         internal static string GetFrom {
             get {
@@ -79,7 +85,9 @@ namespace EventStore.SqlPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to SELECT StreamId
+        ///  FROM Streams
+        /// WHERE HeadRevision &gt;= SnapshotRevision + @Threshold;.
         /// </summary>
         internal static string GetStreamsToSnapshot {
             get {
@@ -88,7 +96,11 @@ namespace EventStore.SqlPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to SELECT C.StreamId, C.CommitId, C.Revision, C.Sequence, C.Payload, C.Snapshot
+        ///  FROM Commits AS C
+        /// INNER JOIN Dispatch AS D
+        ///    ON C.StreamId = D.StreamId
+        ///   AND C.Sequence = D.Sequence;.
         /// </summary>
         internal static string GetUndispatched {
             get {
@@ -97,7 +109,7 @@ namespace EventStore.SqlPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to -- TODO.
         /// </summary>
         internal static string GetUntil {
             get {
@@ -106,7 +118,10 @@ namespace EventStore.SqlPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to DELETE
+        ///  FROM Dispatch
+        /// WHERE StreamId = @StreamId
+        ///   AND Sequence = @CommitSequence;.
         /// </summary>
         internal static string MarkAsDispatched {
             get {
@@ -115,7 +130,25 @@ namespace EventStore.SqlPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+        ///BEGIN TRANSACTION;
+        ///
+        ///INSERT
+        ///  INTO Commits
+        ///     ( StreamId, Sequence, CommitId, Revision, Payload )
+        ///SELECT @StreamId, @Sequence, @CommitId, @NewRevision, @Payload
+        ///  FROM Commits
+        /// WHERE NOT EXISTS
+        ///     ( SELECT *
+        ///         FROM Commits
+        ///        WHERE StreamId = StreamId
+        ///          AND Sequence &gt;= @Sequence );
+        ///
+        ///INSERT
+        ///  INTO Streams
+        ///     ( StreamId, Name, HeadRevision, SnapshotRevision )
+        ///SELECT @StreamId, @StreamName, @NewRevision, 0
+        /// WHERE @OldRev [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Persist {
             get {

@@ -123,14 +123,14 @@
   <data name="CommitSequence" xml:space="preserve">
     <value>@CommitSequence</value>
   </data>
-  <data name="NewRevision" xml:space="preserve">
-    <value>@NewRevision</value>
-  </data>
   <data name="OldRevision" xml:space="preserve">
     <value>@OldRevision</value>
   </data>
   <data name="Payload" xml:space="preserve">
     <value>@Payload</value>
+  </data>
+  <data name="Revision" xml:space="preserve">
+    <value>@Revision</value>
   </data>
   <data name="StreamId" xml:space="preserve">
     <value>@StreamId</value>

@@ -12,7 +12,6 @@ CREATE TABLE [dbo].[Streams]
        [SnapshotRevision] [bigint] NOT NULL CHECK ([SnapshotRevision] >= 0),
        CONSTRAINT [PK_Streams] PRIMARY KEY CLUSTERED ([StreamId])
 )
--- TODO: should stream + head as well as streamid + snapshot be a foreign key to the commits table?
 
 CREATE TABLE [dbo].[Commits]
 (
@@ -26,6 +25,7 @@ CREATE TABLE [dbo].[Commits]
        CONSTRAINT [PK_Commits] PRIMARY KEY CLUSTERED ([StreamId], [Sequence])
 )
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Commits] ON [dbo].[Commits] ([StreamId], [CommitId])
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Commits_Revisions] ON [dbo].[Commits] ([StreamId], [Sequence])
 
 CREATE TABLE [dbo].[Dispatch]
 (
@@ -44,67 +44,6 @@ REFERENCES [dbo].[Commits] ([StreamId], [Sequence])
 ALTER TABLE [dbo].[Dispatch] CHECK CONSTRAINT [FK_Dispatch_Commits]
 
 GO
-CREATE TRIGGER [dbo].[AddCommitsToDispatch] ON [dbo].[Commits] AFTER INSERT
-AS BEGIN
-
-       SET NOCOUNT ON;
-
-       INSERT
-         INTO [dbo].[Dispatch]
-            ( [StreamId], [Sequence] )
-       SELECT [StreamId], [Sequence]
-         FROM [Inserted];
-
-END;
-
-GO
-CREATE TRIGGER [dbo].[PointToLatestCommits] ON [dbo].[Commits] AFTER INSERT
-AS BEGIN
-
-       SET NOCOUNT ON;
-       
-       UPDATE [dbo].[Streams]
-          SET [HeadRevision] = [I].[Revision]
-         FROM [dbo].[Streams] AS [S]
-        INNER JOIN [Inserted] AS [I]
-           ON [S].[StreamId] = [I].[StreamId]
-        WHERE [S].[HeadRevision] < [I].[Revision];
-
-END;
-
-GO
-CREATE TRIGGER [dbo].[PointToLatestSnapshots] ON [dbo].[Commits] AFTER UPDATE
-AS BEGIN
-
-       SET NOCOUNT ON;
-
-       IF NOT UPDATE([Snapshot]) RETURN;
-
-       -- if a snapshot was supplied, point the Snapshots column of the associated row in the
-       -- Streams table to it.
-       UPDATE [dbo].[Streams]
-          SET [SnapshotRevision] = [U].[Revision]
-         FROM [dbo].[Streams] AS [S]
-        INNER JOIN [Updated] AS [U]
-           ON [S].[StreamId] = [U].[StreamId]
-        WHERE [U].[Snapshot] IS NOT NULL
-          AND [S].[SnapshotRevision] < [U].[Revision];
-
-       -- if the snapshot was set to null/removed, point the Snapshots column of the associated row in the
-       -- Streams table to the most recent snapshot, if any.
-       UPDATE [dbo].[Streams]
-          SET [SnapshotRevision] = COALESCE(MAX([M].[Revision]), 0)
-         FROM [dbo].[Streams] AS [S]
-        INNER JOIN [Updated] AS [U]
-           ON [S].[StreamId] = [U].[StreamId]
-        INNER JOIN [dbo].[Streams] AS [M]
-           ON [S].[StreamId] = [M].[StreamId]
-        WHERE [U].[Snapshot] IS NULL
-          AND [M].[Snapshot] IS NOT NULL;
-          
-END;
-
-GO
 CREATE TRIGGER [dbo].[PreventChangesToCommits] ON [dbo].[Commits] FOR UPDATE
 AS BEGIN
 
@@ -119,44 +58,4 @@ AS BEGIN
               ROLLBACK TRANSACTION
        END
 
-END;
-
-GO
-CREATE PROCEDURE [dbo].[GetUndispatchedCommits]
-AS BEGIN
-
-       SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
-
-       SELECT [C].[StreamId],
-              [C].[Sequence],
-              [C].[CommitId],
-              [C].[Revision],
-              [C].[Payload]
-         FROM [dbo].[Commits] AS [C]
-        WHERE EXISTS
-            ( SELECT *
-                FROM [dbo].[Dispatch] AS [D]
-               WHERE [C].[StreamId] = [D].[StreamId]
-                 AND [C].[Sequence] = [D].[Sequence] );
-
-END;
-
-GO
-CREATE PROCEDURE [dbo].[MarkCommitAsDispatched]
-(
-       @CommitId uniqueidentifier
-)
-AS BEGIN
-
-       SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
-       
-       DELETE
-         FROM [dbo].[Dispatch]
-        WHERE EXISTS
-            ( SELECT *
-                FROM [dbo].[Commits] AS [C]
-               WHERE [C].[StreamId] = [dbo].[Dispatch].[StreamId]
-                 AND [C].[Sequence] = [dbo].[Dispatch].[Sequence]
-                 AND [C].[CommitId] = @CommitId );
-                 
 END;

@@ -33,7 +33,7 @@ namespace EventStore.SqlPersistence
 			{
 				query.CommandText = queryText;
 				query.AddParameter(SqlParameters.StreamId, streamId);
-				query.AddParameter(SqlParameters.OldRevision, revision);
+				query.AddParameter(SqlParameters.Revision, revision);
 				return query.ExecuteQuery(x => x.GetCommit(this.serializer));
 			});
 		}
@@ -50,7 +50,7 @@ namespace EventStore.SqlPersistence
 				cmd.AddParameter(SqlParameters.CommitId, commit.CommitId);
 				cmd.AddParameter(SqlParameters.CommitSequence, commit.CommitSequence);
 				cmd.AddParameter(SqlParameters.OldRevision, uncommitted.PreviousCommitSequence);
-				cmd.AddParameter(SqlParameters.NewRevision, commit.StreamRevision);
+				cmd.AddParameter(SqlParameters.Revision, commit.StreamRevision);
 				cmd.AddParameter(SqlParameters.Payload, this.serializer.Serialize(commit));
 
 				TryPersist(cmd);
