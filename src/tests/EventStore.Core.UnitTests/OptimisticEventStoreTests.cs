@@ -310,7 +310,19 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
+	public class when_writing_a_commit_attempt_with_a_commit_sequence_less_than_or_equal_to_the_most_recent_commit_written : using_persistence
+	{
+		It should_throw_a_ConcurrencyException;
+	}
+
+	[Subject("OptimisticEventStore")]
 	public class when_writing_a_commit_attempt_with_a_stream_revision_less_than_or_equal_to_the_most_stream_revision_read : using_persistence
+	{
+		It should_throw_a_ConcurrencyException;
+	}
+
+	[Subject("OptimisticEventStore")]
+	public class when_writing_a_commit_attempt_with_a_stream_revision_less_than_or_equal_to_the_most_stream_revision_written : using_persistence
 	{
 		It should_throw_a_ConcurrencyException;
 	}
