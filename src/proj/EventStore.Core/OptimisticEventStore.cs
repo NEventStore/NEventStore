@@ -3,6 +3,7 @@ namespace EventStore.Core
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
+	using System.Linq;
 	using Persistence;
 
 	public class OptimisticEventStore : IStoreEvents
@@ -15,38 +16,31 @@ namespace EventStore.Core
 			this.persistence = persistence;
 		}
 
-		public CommittedEventStream ReadUntil(Guid streamId, long maxRevision)
+		public virtual CommittedEventStream ReadUntil(Guid streamId, long maxRevision)
 		{
-			long latestCommitSequence = 0;
-			long latestStreamRevision = 0;
-			object latestSnapshot = null;
+			long sequence = 0;
+			long revision = 0;
+			object snapshot = null;
 			ICollection<object> events = new LinkedList<object>();
 
 			foreach (var commit in this.persistence.GetUntil(streamId, maxRevision))
 			{
-				latestCommitSequence = commit.CommitSequence;
-
-				foreach (var @event in commit.Events)
-				{
-					events.Add(@event.Body);
-					latestStreamRevision = @event.StreamRevision;
-				}
-
-				if (commit.Snapshot == null)
-					continue;
-
-				latestSnapshot = commit.Snapshot;
-				events.Clear();
+				sequence = commit.CommitSequence;
+				revision = commit.StreamRevision;
+				snapshot = commit.Snapshot ?? snapshot;
+				events.AddEventsOrClearOnSnapshot(commit);
 			}
 
 			return new CommittedEventStream(
-				streamId, latestStreamRevision, latestCommitSequence, (ICollection)events, latestSnapshot);
+				streamId, revision, sequence, events.ToArray(), snapshot);
 		}
-		public CommittedEventStream ReadFrom(Guid streamId, long minRevision)
+
+		public virtual CommittedEventStream ReadFrom(Guid streamId, long minRevision)
 		{
 			return null;
 		}
-		public void Write(CommitAttempt uncommitted)
+
+		public virtual void Write(CommitAttempt uncommitted)
 		{
 		}
 	}

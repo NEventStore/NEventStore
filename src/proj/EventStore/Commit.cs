@@ -13,6 +13,7 @@ namespace EventStore
 		/// </summary>
 		/// <param name="streamId">The value which uniquely identifies the stream to which the commit belongs.</param>
 		/// <param name="commitId">The value which uniquely identifies the commit within the stream.</param>
+		/// <param name="streamRevision">The value which indicates the revision of the most recent event in the stream to which this commit applies.</param>
 		/// <param name="commitSequence">The value which indicates the sequence (or position) in the stream to which this commit applies.</param>
 		/// <param name="headers">The metadata which provides additional, unstructured information about this commit.</param>
 		/// <param name="events">The collection of event messages to be committed as a single unit.</param>
@@ -20,6 +21,7 @@ namespace EventStore
 		public Commit(
 			Guid streamId,
 			Guid commitId,
+			long streamRevision,
 			long commitSequence,
 			IDictionary<string, object> headers,
 			ICollection<EventMessage> events,
@@ -27,6 +29,7 @@ namespace EventStore
 		{
 			this.StreamId = streamId;
 			this.CommitId = commitId;
+			this.StreamRevision = streamRevision;
 			this.CommitSequence = commitSequence;
 			this.Headers = headers ?? new Dictionary<string, object>();
 			this.Events = events ?? new LinkedList<EventMessage>();
@@ -42,6 +45,11 @@ namespace EventStore
 		/// Gets the value which uniquely identifies the commit within the stream.
 		/// </summary>
 		public Guid CommitId { get; private set; }
+
+		/// <summary>
+		/// Gets the value which indicates the revision of the most recent event in the stream to which this commit applies.
+		/// </summary>
+		public long StreamRevision { get; private set; }
 
 		/// <summary>
 		/// Gets the value which indicates the sequence (or position) in the stream to which this commit applies.

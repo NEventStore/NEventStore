@@ -4,7 +4,6 @@
 namespace EventStore.Core.UnitTests
 {
 	using System;
-	using System.Linq;
 	using Machine.Specifications;
 	using Moq;
 	using Persistence;
@@ -16,18 +15,22 @@ namespace EventStore.Core.UnitTests
 		const long MaxRevision = 1234;
 		static readonly Commit[] Commits = new[]
 		{
-			new Commit(StreamId, Guid.NewGuid(), 1, null, null, "ignore this snapshot")
+			new Commit(StreamId, Guid.NewGuid(), 1, 1, null, null, "ignore this snapshot")
 			{
-				Events = { new EventMessage { StreamRevision = 1, Body = "ignore this event" } }
+				Events = { new EventMessage { Body = "ignore this event" } }
 			}, 
-			new Commit(StreamId, Guid.NewGuid(), 2, null, null, "use this snapshot")
+			new Commit(StreamId, Guid.NewGuid(), 2, 2, null, null, "use this snapshot")
 			{
-				Events = { new EventMessage { StreamRevision = 2, Body = "ignore this event too" } }
+				Events = { new EventMessage { Body = "ignore this event too" } }
 			}, 
-			new Commit(StreamId, Guid.NewGuid(), 3, null, null, null)
+			new Commit(StreamId, Guid.NewGuid(), 3, 3, null, null, null)
 			{
-				Events = { new EventMessage { StreamRevision = 3, Body = "use this event" } }
-			}, 
+				Events =
+				{
+					new EventMessage { Body = "include this event" },
+					new EventMessage { Body = "and this event too" }
+				}
+			}
 		};
 
 		static CommittedEventStream actual;
@@ -42,13 +45,16 @@ namespace EventStore.Core.UnitTests
 			Persistence.VerifyAll();
 
 		It should_ignore_events_prior_to_the_most_recent_snapshot_retreived = () =>
-			actual.StreamRevision.ShouldEqual(Commits.Last().Events.Last().StreamRevision);
+			actual.StreamRevision.ShouldEqual(Commits.MostRecentRevision());
 
 		It should_populate_the_stream_with_the_most_recent_snapshot = () =>
-			actual.Snapshot.ShouldEqual(Commits.Where(x => x.Snapshot != null).Last().Snapshot);
+			actual.Snapshot.ShouldEqual(Commits.MostRecentSnapshot());
 
 		It should_ignore_an_earlier_snapshot = () =>
 			actual.Snapshot.ShouldNotEqual(Commits[0].Snapshot);
+
+		It should_contain_the_most_recent_event_after_the_snapshot = () =>
+			actual.Events.Last().ShouldEqual(Commits.MostRecentEvent());
 	}
 
 	[Subject("OptimisticEventStore")]
@@ -74,6 +80,18 @@ namespace EventStore.Core.UnitTests
 	public class when_writing_a_commit_with_an_identifier_that_has_already_been_read
 	{
 		It should_throw_a_DuplicateCommitException;
+	}
+
+	[Subject("OptimisticEventStore")]
+	public class when_writing_a_commit_with_a_commit_sequence_less_than_or_equal_to_the_most_recent_commit_read
+	{
+		It should_throw_a_ConcurrencyException;
+	}
+
+	[Subject("OptimisticEventStore")]
+	public class when_writing_a_commit_with_a_stream_revision_less_than_or_equal_to_the_most_stream_revision_read
+	{
+		It should_throw_a_ConcurrencyException;
 	}
 
 	public abstract class from_persistence
