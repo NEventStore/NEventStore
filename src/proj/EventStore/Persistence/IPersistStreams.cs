@@ -34,18 +34,18 @@ namespace EventStore.Persistence
 		void Persist(CommitAttempt uncommitted);
 
 		/// <summary>
+		/// Gets identifiers for all streams whose head and last snapshot revisions differ by at least the threshold specified.
+		/// </summary>
+		/// <param name="maxThreshold">The maximum difference between the head and most recent snapshot revisions.</param>
+		/// <returns>The streams for which the head and snapshot revisions differ by at least the threshold specified.</returns>
+		IEnumerable<Guid> GetStreamsToSnapshot(int maxThreshold);
+
+		/// <summary>
 		/// Adds the snapshot provided to the stream indicated the commit sequence specified.
 		/// </summary>
 		/// <param name="streamId">The stream to which the snapshot provided should be added.</param>
 		/// <param name="commitSequence">The sequence in the series of commits at which the snapshot should be added.</param>
 		/// <param name="snapshot">The snapshot or materialized view of the stream.</param>
 		void AddSnapshot(Guid streamId, long commitSequence, object snapshot);
-
-		/// <summary>
-		/// Gets identifiers for all streams whose head and last snapshot revisions differ by at least the threshold specified.
-		/// </summary>
-		/// <param name="maxThreshold">The maximum difference between the head and most recent snapshot revisions.</param>
-		/// <returns>The streams for which the head and snapshot revisions differ by at least the threshold specified.</returns>
-		IEnumerable<Guid> GetStreamsToSnapshot(int maxThreshold);
 	}
 }
