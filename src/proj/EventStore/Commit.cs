@@ -70,5 +70,25 @@ namespace EventStore
 		/// Gets the snapshot, if any, which represents a materialization of the stream at the last event of the commit.
 		/// </summary>
 		public object Snapshot { get; private set; }
+
+		/// <summary>
+		/// Determines whether the specified object is equal to the current object.
+		/// </summary>
+		/// <param name="obj">The object to compare with the current object.</param>
+		/// <returns>If the two objects are equal, returns true; otherwise false.</returns>
+		public override bool Equals(object obj)
+		{
+			var commit = obj as Commit;
+			return commit != null && commit.CommitId == this.CommitId;
+		}
+
+		/// <summary>
+		/// Returns the hash code for this instance.
+		/// </summary>
+		/// <returns>The hash code for this instance.</returns>
+		public override int GetHashCode()
+		{
+			return this.CommitId.GetHashCode();
+		}
 	}
 }

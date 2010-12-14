@@ -7,7 +7,7 @@ namespace EventStore.Persistence
 	/// <summary>
 	/// Indicates the ability to adapt the underlying persistence infrastructure to behave like a stream of events.
 	/// </summary>
-	public interface IPersistStreams : ITrackDispatchedEvents
+	public interface IPersistStreams : ITrackDispatchedCommits
 	{
 		/// <summary>
 		/// Gets the corresponding commits from the stream indicated starting at the most recent snapshot, if any,

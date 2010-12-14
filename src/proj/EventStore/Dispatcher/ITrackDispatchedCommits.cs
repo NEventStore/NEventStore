@@ -5,13 +5,13 @@ namespace EventStore.Dispatcher
 	/// <summary>
 	/// Indicates the ability to keep track of which commits have or have not been dispatched.
 	/// </summary>
-	public interface ITrackDispatchedEvents
+	public interface ITrackDispatchedCommits
 	{
 		/// <summary>
 		/// Marks the commit specified as dispatched.
 		/// </summary>
 		/// <param name="commit">The commit to be marked as dispatched.</param>
-		void MarkAsDispatched(Commit commit);
+		void MarkCommitAsDispatched(Commit commit);
 
 		/// <summary>
 		/// Gets a set of commits that has not yet been dispatched.

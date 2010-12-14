@@ -5,6 +5,7 @@ namespace EventStore.Core.UnitTests
 {
 	using System;
 	using System.Linq;
+	using Dispatcher;
 	using Machine.Specifications;
 	using Moq;
 	using Persistence;
@@ -207,19 +208,99 @@ namespace EventStore.Core.UnitTests
 		};
 
 		Establish context = () =>
+		{
 			Persistence.Setup(x => x.Persist(populatedAttempt));
+			Dispatcher.Setup(x => x.Dispatch(populatedAttempt.ToCommit()));
+		};
 
 		Because of = () =>
 			Store.Write(populatedAttempt);
 
 		It should_provide_the_commit_attempt_to_the_configured_persistence_mechanism = () =>
 			Persistence.Verify(x => x.Persist(populatedAttempt), Times.Exactly(1));
+
+		It should_provide_the_commit_to_the_dispatcher = () =>
+			Dispatcher.Verify(x => x.Dispatch(populatedAttempt.ToCommit()), Times.Exactly(1));
 	}
 
+	/// <summary>
+	/// This behavior is primarily to support a NoSQL storage solution where CommitId is not being used as the "primary key"
+	/// in a NoSQL environment, we'll most likely use StreamId + CommitSequence, which also enables optimistic concurrency.
+	/// </summary>
 	[Subject("OptimisticEventStore")]
-	public class when_writing_a_commit_attempt_with_an_identifier_that_has_already_been_read : using_persistence
+	public class when_writing_a_commit_attempt_with_an_identifier_that_was_previously_read_from_a_max_revision_read : using_persistence
 	{
-		It should_throw_a_DuplicateCommitException;
+		const long MaxRevision = 2;
+		static readonly Guid DuplicateCommitId = Guid.NewGuid();
+		static readonly Commit[] Commits = new[]
+		{
+			new Commit(StreamId, DuplicateCommitId, 1, 1, null, null, null)
+			{
+				Events = { new EventMessage { Body = 1 } }
+			},
+			new Commit(StreamId, Guid.NewGuid(), 2, 2, null, null, "commit from before this snapshot should be remembered.")
+			{
+				Events = { new EventMessage { Body = 1 } }
+			}
+		};
+		static readonly CommitAttempt Attempt = new CommitAttempt
+		{
+			CommitId = DuplicateCommitId,
+			CommitSequence = 3,
+			StreamRevision = 3,
+			Events = { new EventMessage() }
+		};
+		static Exception thrown;
+
+		Establish context = () =>
+			Persistence.Setup(x => x.GetUntil(StreamId, MaxRevision)).Returns(Commits);
+
+		Because of = () => thrown = Catch.Exception(() =>
+		{
+			Store.ReadUntil(StreamId, MaxRevision);
+			Store.Write(Attempt);
+		});
+
+		It should_throw_a_DuplicateCommitException = () =>
+			thrown.ShouldBeOfType<DuplicateCommitException>();
+	}
+
+	/// <summary>
+	/// This behavior is primarily to support a NoSQL storage solution where CommitId is not being used as the "primary key"
+	/// in a NoSQL environment, we'll most likely use StreamId + CommitSequence, which also enables optimistic concurrency.
+	/// </summary>
+	[Subject("OptimisticEventStore")]
+	public class when_writing_a_commit_attempt_with_an_identifier_that_was_previously_read_from_a_min_revision_read : using_persistence
+	{
+		const long MinRevision = 1;
+		static readonly Guid DuplicateCommitId = Guid.NewGuid();
+		static readonly Commit[] Commits = new[]
+		{
+			new Commit(StreamId, DuplicateCommitId, 1, 1, null, null, null)
+			{
+				Events = { new EventMessage { Body = 1 } }
+			}
+		};
+		static readonly CommitAttempt Attempt = new CommitAttempt
+		{
+			CommitId = DuplicateCommitId,
+			CommitSequence = 2,
+			StreamRevision = 2,
+			Events = { new EventMessage() }
+		};
+		static Exception thrown;
+
+		Establish context = () =>
+			Persistence.Setup(x => x.GetFrom(StreamId, MinRevision)).Returns(Commits);
+
+		Because of = () => thrown = Catch.Exception(() =>
+		{
+			Store.ReadFrom(StreamId, MinRevision);
+			Store.Write(Attempt);
+		});
+
+		It should_throw_a_DuplicateCommitException = () =>
+			thrown.ShouldBeOfType<DuplicateCommitException>();
 	}
 
 	[Subject("OptimisticEventStore")]
@@ -238,7 +319,9 @@ namespace EventStore.Core.UnitTests
 	{
 		protected static readonly Guid StreamId = Guid.NewGuid();
 		protected static readonly Mock<IPersistStreams> Persistence = new Mock<IPersistStreams>();
-		protected static readonly OptimisticEventStore Store = new OptimisticEventStore(Persistence.Object);
+		protected static readonly Mock<IDispatchCommits> Dispatcher = new Mock<IDispatchCommits>();
+		protected static readonly OptimisticEventStore Store =
+			new OptimisticEventStore(Persistence.Object, Dispatcher.Object);
 	}
 }
 

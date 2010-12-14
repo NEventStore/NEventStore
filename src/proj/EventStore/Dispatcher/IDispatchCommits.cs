@@ -3,7 +3,7 @@ namespace EventStore.Dispatcher
 	/// <summary>
 	/// Indicates the ability to dispatch or publish all messages associated with a particular commit.
 	/// </summary>
-	public interface IDispatchEvents
+	public interface IDispatchCommits
 	{
 		/// <summary>
 		/// Dispatches the series of messages contained within the commit provided to all interested parties.

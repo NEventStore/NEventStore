@@ -49,8 +49,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CommitAttempt.cs" />
-    <Compile Include="Dispatcher\IDispatchEvents.cs" />
-    <Compile Include="Dispatcher\ITrackDispatchedEvents.cs" />
+    <Compile Include="Dispatcher\IDispatchCommits.cs" />
+    <Compile Include="Dispatcher\ITrackDispatchedCommits.cs" />
     <Compile Include="IStoreEvents.cs" />
     <Compile Include="EventMessage.cs" />
     <Compile Include="Commit.cs" />

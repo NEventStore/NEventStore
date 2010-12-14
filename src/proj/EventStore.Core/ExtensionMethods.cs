@@ -19,6 +19,23 @@ namespace EventStore.Core
 				events.Add(@event.Body);
 		}
 
+		public static bool IsValid(this CommitAttempt attempt)
+		{
+			if (attempt == null)
+				throw new ArgumentNullException("attempt");
+
+			if (!attempt.HasIdentifier())
+				throw new ArgumentException("The commit must be uniquely identified.", "attempt");
+
+			if (!attempt.CommitSequence.IsPositive())
+				throw new ArgumentException("The commit sequence must be a positive number.", "attempt");
+
+			if (!attempt.StreamRevision.IsPositive())
+				throw new ArgumentException("The stream revision must be a positive number.", "attempt");
+
+			return true;
+		}
+
 		public static bool HasIdentifier(this CommitAttempt attempt)
 		{
 			return attempt.CommitId != Guid.Empty;
