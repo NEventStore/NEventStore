@@ -22,78 +22,73 @@ namespace EventStore.Core
 
 		public virtual CommittedEventStream ReadUntil(Guid streamId, long maxRevision)
 		{
-			Commit mostRecent = null;
+			return this.Read(this.persistence.GetUntil(streamId, maxRevision), true);
+		}
+		public virtual CommittedEventStream ReadFrom(Guid streamId, long minRevision)
+		{
+			return this.Read(this.persistence.GetFrom(streamId, minRevision), false);
+		}
+		private CommittedEventStream Read(IEnumerable<Commit> commits, bool applySnapshot)
+		{
+			var streamId = Guid.Empty;
+			Commit last = null;
 			long sequence = 0;
 			long revision = 0;
 			object snapshot = null;
 			ICollection<object> events = new LinkedList<object>();
 
-			foreach (var commit in this.persistence.GetUntil(streamId, maxRevision))
+			foreach (var commit in commits)
 			{
-				this.commitIdentifiers.Add(commit.CommitId);
-				mostRecent = commit;
+				streamId = commit.StreamId;
+				last = commit;
 				sequence = commit.CommitSequence;
 				revision = commit.StreamRevision;
+
 				snapshot = commit.Snapshot ?? snapshot;
-				events.AddEventsOrClearOnSnapshot(commit);
-			}
+				events.AddEventsOrClearOnSnapshot(commit, applySnapshot ? commit.Snapshot : null);
 
-			if (mostRecent != null)
-				this.latest[streamId] = mostRecent;
-
-			return new CommittedEventStream(
-				streamId, revision, sequence, events.ToArray(), snapshot);
-		}
-
-		public virtual CommittedEventStream ReadFrom(Guid streamId, long minRevision)
-		{
-			Commit mostRecent = null;
-			long sequence = 0;
-			long revision = 0;
-			ICollection<object> events = new LinkedList<object>();
-
-			foreach (var commit in this.persistence.GetFrom(streamId, minRevision))
-			{
 				this.commitIdentifiers.Add(commit.CommitId);
-				mostRecent = commit;
-				sequence = commit.CommitSequence;
-				revision = commit.StreamRevision;
-				events.AddEvents(commit);
 			}
 
-			if (mostRecent != null)
-				this.latest[streamId] = mostRecent;
+			if (last != null)
+				this.latest[streamId] = last;
 
-			return new CommittedEventStream(
-				streamId, revision, sequence, events.ToArray(), null);
+			snapshot = applySnapshot ? snapshot : null;
+			return new CommittedEventStream(streamId, revision, sequence, events.ToArray(), snapshot);
 		}
 
 		public virtual void Write(CommitAttempt attempt)
 		{
-			if (!attempt.IsValid() || !attempt.HasEvents())
+			if (!attempt.IsValid() || !attempt.IsEmpty())
 				return;
 
+			this.ThrowOnDuplicateOrConcurrentWrites(attempt);
+			this.PersistAndDispatch(attempt);
+		}
+		private void ThrowOnDuplicateOrConcurrentWrites(CommitAttempt attempt)
+		{
 			if (this.commitIdentifiers.Contains(attempt.CommitId))
 				throw new DuplicateCommitException();
 
-			Commit previous;
-			if (this.latest.TryGetValue(attempt.StreamId, out previous) && previous.CommitSequence >= attempt.CommitSequence)
+			Commit previousCommitForStream;
+			if (!this.latest.TryGetValue(attempt.StreamId, out previousCommitForStream))
+				return;
+
+			 if (previousCommitForStream.CommitSequence >= attempt.CommitSequence)
 				throw new ConcurrencyException();
 
-			if (previous != null && previous.StreamRevision >= attempt.StreamRevision)
+			if (previousCommitForStream.StreamRevision >= attempt.StreamRevision)
 				throw new ConcurrencyException();
-
-			this.persistence.Persist(attempt);
-			var commit = this.Dispatch(attempt);
-
-			this.commitIdentifiers.Add(commit.CommitId);
-			this.latest[attempt.StreamId] = commit;
 		}
-		private Commit Dispatch(CommitAttempt attempt)
+		private void PersistAndDispatch(CommitAttempt attempt)
 		{
+			this.persistence.Persist(attempt);
+
 			var commit = attempt.ToCommit();
 			this.dispatcher.Dispatch(commit);
-			return commit;
+
+			this.commitIdentifiers.Add(commit.CommitId);
+			this.latest[commit.StreamId] = commit;
 		}
 	}
 }

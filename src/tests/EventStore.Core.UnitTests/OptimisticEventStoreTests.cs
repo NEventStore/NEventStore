@@ -146,7 +146,9 @@ namespace EventStore.Core.UnitTests
 	{
 		static readonly CommitAttempt negativeCommitSequence = new CommitAttempt
 		{
+			StreamId = streamId,
 			CommitId = Guid.NewGuid(),
+			StreamRevision = 1,
 			CommitSequence = -1
 		};
 		static Exception thrown;
@@ -163,6 +165,7 @@ namespace EventStore.Core.UnitTests
 	{
 		static readonly CommitAttempt negativeStreamRevision = new CommitAttempt
 		{
+			StreamId = streamId,
 			CommitId = Guid.NewGuid(),
 			CommitSequence = 1,
 			StreamRevision = -1
