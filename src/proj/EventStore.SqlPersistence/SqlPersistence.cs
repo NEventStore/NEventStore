@@ -3,12 +3,22 @@ namespace EventStore.SqlPersistence
 	using System;
 	using System.Collections.Generic;
 	using System.Data;
+	using System.Data.Common;
 	using System.Transactions;
 	using Persistence;
 	using Serialization;
 
 	public class SqlPersistence : IPersistStreams
 	{
+		private const string DuplicateKeyText = "DUPLICATE";
+		private const string UniqueKeyText = "UNIQUE";
+		private const int StreamIdIndex = 0;
+		private const int CommitIdIndex = 1;
+		private const int StreamRevisionIndex = 2;
+		private const int CommitSequenceIndex = 3;
+		private const int PayloadIndex = 4;
+		private const int SnapshotIndex = 5;
+
 		private readonly IConnectionFactory factory;
 		private readonly ISerialize serializer;
 
@@ -20,17 +30,17 @@ namespace EventStore.SqlPersistence
 
 		public IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision)
 		{
-			return this.ReadStream(streamId, maxRevision, SqlStatements.GetUntil);
+			return this.Fetch(streamId, maxRevision, SqlStatements.GetUntil);
 		}
 		public IEnumerable<Commit> GetFrom(Guid streamId, long minRevision)
 		{
-			return this.ReadStream(streamId, minRevision, SqlStatements.GetFrom);
+			return this.Fetch(streamId, minRevision, SqlStatements.GetFrom);
 		}
-		private IEnumerable<Commit> ReadStream(Guid streamId, long revision, string sqlStatement)
+		private IEnumerable<Commit> Fetch(Guid streamId, long revision, string queryText)
 		{
 			return this.Execute(streamId, query =>
 			{
-				query.CommandText = sqlStatement;
+				query.CommandText = queryText;
 				query.AddParameter(SqlParameters.StreamId, streamId);
 				query.AddParameter(SqlParameters.OldRevision, revision);
 				return query.ExecuteQuery(this.GetCommitFromRecord);
@@ -38,15 +48,16 @@ namespace EventStore.SqlPersistence
 		}
 		private Commit GetCommitFromRecord(IDataRecord record)
 		{
-			// TODO
+			var payload = (byte[])record[PayloadIndex]; // TODO
+
 			return new Commit(
-				(Guid)record[0],
-				(Guid)record[1],
-				(long)record[2],
-				(long)record[3],
+				(Guid)record[StreamIdIndex],
+				(Guid)record[CommitIdIndex],
+				(long)record[StreamRevisionIndex],
+				(long)record[CommitSequenceIndex],
 				null,
 				null,
-				this.serializer.Deserialize((byte[])record[6]));
+				this.serializer.Deserialize((byte[])record[SnapshotIndex]));
 		}
 
 		public void Persist(CommitAttempt uncommitted)
@@ -62,8 +73,25 @@ namespace EventStore.SqlPersistence
 				cmd.AddParameter(SqlParameters.NewRevision, uncommitted.NewRevision());
 				cmd.AddParameter(SqlParameters.Payload, null); // TODO
 
-				cmd.ExecuteNonQuery(); // catch duplicate persists, concurrency exceptions, etc.
+				TryPersist(cmd);
 			});
+		}
+		private static void TryPersist(IDbCommand command)
+		{
+			try
+			{
+				var affectedRows = command.ExecuteNonQuery();
+				if (affectedRows == 0)
+					throw new ConcurrencyException();
+			}
+			catch (DbException e)
+			{
+				var msg = e.Message.ToUpperInvariant();
+				if (msg.Contains(DuplicateKeyText) || msg.Contains(UniqueKeyText))
+					throw new DuplicateCommitException(e.Message, e);
+
+				throw;
+			}
 		}
 
 		public IEnumerable<Commit> GetUndispatchedCommits()
@@ -81,7 +109,7 @@ namespace EventStore.SqlPersistence
 				cmd.CommandText = SqlStatements.MarkAsDispatched;
 				cmd.AddParameter(SqlParameters.StreamId, commit.StreamId);
 				cmd.AddParameter(SqlParameters.CommitSequence, commit.CommitSequence);
-				cmd.ExecuteNonQuery(); // TODO: make this so that it never throws
+				cmd.ExecuteAndSuppressExceptions();
 			});
 		}
 
@@ -91,7 +119,7 @@ namespace EventStore.SqlPersistence
 			{
 				query.CommandText = SqlStatements.GetStreamsToSnapshot;
 				query.AddParameter(SqlParameters.Threshold, maxThreshold);
-				return query.ExecuteQuery(record => (Guid)record[0]);
+				return query.ExecuteQuery(record => (Guid)record[StreamIdIndex]);
 			});
 		}
 		public void AddSnapshot(Guid streamId, long commitSequence, object snapshot)
@@ -102,7 +130,7 @@ namespace EventStore.SqlPersistence
 				cmd.AddParameter(SqlParameters.StreamId, streamId);
 				cmd.AddParameter(SqlParameters.CommitSequence, commitSequence);
 				cmd.AddParameter(SqlParameters.Payload, this.serializer.Serialize(snapshot));
-				cmd.ExecuteNonQuery(); // TODO: make this so that it never throws
+				cmd.ExecuteAndSuppressExceptions();
 			});
 		}
 
@@ -132,7 +160,7 @@ namespace EventStore.SqlPersistence
 				}
 				catch (Exception e)
 				{
-					throw new PersistenceException(string.Empty, e); // TODO: message
+					throw new PersistenceException(e.Message, e);
 				}
 
 				scope.Complete();

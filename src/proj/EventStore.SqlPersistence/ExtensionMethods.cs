@@ -3,6 +3,7 @@ namespace EventStore.SqlPersistence
 	using System;
 	using System.Collections.Generic;
 	using System.Data;
+	using System.Data.Common;
 	using System.IO;
 	using System.Linq;
 	using Serialization;
@@ -57,6 +58,17 @@ namespace EventStore.SqlPersistence
 			using (reader)
 				while (reader.Read())
 					yield return reader;
+		}
+
+		public static void ExecuteAndSuppressExceptions(this IDbCommand command)
+		{
+			try
+			{
+				command.ExecuteNonQuery();
+			}
+			catch (DbException)
+			{
+			}
 		}
 	}
 }
