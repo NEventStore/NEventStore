@@ -9,8 +9,12 @@ namespace EventStore.Core
 			if (commit.Snapshot != null)
 				events.Clear();
 			else
-				foreach (var @event in commit.Events)
-					events.Add(@event.Body);
+				events.AddEvents(commit);
+		}
+		public static void AddEvents(this ICollection<object> @events, Commit commit)
+		{
+			foreach (var @event in commit.Events)
+				events.Add(@event.Body);
 		}
 	}
 }

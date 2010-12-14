@@ -37,7 +37,19 @@ namespace EventStore.Core
 
 		public virtual CommittedEventStream ReadFrom(Guid streamId, long minRevision)
 		{
-			return null;
+			long sequence = 0;
+			long revision = 0;
+			ICollection<object> events = new LinkedList<object>();
+
+			foreach (var commit in this.persistence.GetFrom(streamId, minRevision))
+			{
+				sequence = commit.CommitSequence;
+				revision = commit.StreamRevision;
+				events.AddEvents(commit);
+			}
+
+			return new CommittedEventStream(
+				streamId, revision, sequence, events.ToArray(), null);
 		}
 
 		public virtual void Write(CommitAttempt uncommitted)

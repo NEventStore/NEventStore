@@ -38,13 +38,17 @@ namespace EventStore.Core.UnitTests
 		{
 			return commits.Where(x => x.Snapshot != null).Last().Snapshot;
 		}
-		public static object Last(this ICollection collection)
+		public static object OldestEvent(this IEnumerable<Commit> commits)
 		{
-			return collection.Cast<object>().Last();
+			return commits.First().Events.First().Body;
 		}
-		public static object MostRecentEvent(this IEnumerable<Commit> commits)
+		public static object NewestEvent(this IEnumerable<Commit> commits)
 		{
 			return commits.Last().Events.Last().Body;
+		}
+		public static int CountEvents(this IEnumerable<Commit> commits)
+		{
+			return commits.Sum(x => x.Events.Count);
 		}
 	}
 }
