@@ -1,7 +1,6 @@
 namespace EventStore
 {
 	using System;
-	using System.Collections;
 	using System.Runtime.Serialization;
 
 	/// <summary>
@@ -10,11 +9,6 @@ namespace EventStore
 	[Serializable]
 	public class ConcurrencyException : Exception
 	{
-		/// <summary>
-		/// Gets the collection of events committed by another session which caused this exception to be thrown.
-		/// </summary>
-		public ICollection CommittedEvents { get; private set; }
-
 		/// <summary>
 		/// Initializes a new instance of the ConcurrencyException class.
 		/// </summary>
@@ -39,18 +33,6 @@ namespace EventStore
 		public ConcurrencyException(string message, Exception innerException)
 			: base(message, innerException)
 		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the ConcurrencyException class.
-		/// </summary>
-		/// <param name="message">The message that describes the error.</param>
-		/// <param name="innerException">The message that is the cause of the current exception.</param>
-		/// <param name="committedEvents">The events committed by another session which caused this exception exception.</param>
-		public ConcurrencyException(string message, Exception innerException, ICollection committedEvents)
-			: this(message, innerException)
-		{
-			this.CommittedEvents = committedEvents;
 		}
 
 		/// <summary>
