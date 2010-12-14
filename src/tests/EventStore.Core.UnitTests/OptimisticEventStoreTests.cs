@@ -17,11 +17,11 @@ namespace EventStore.Core.UnitTests
 		const long MaxRevision = 1234;
 		static readonly Commit[] Commits = new[]
 		{
-			new Commit(StreamId, Guid.NewGuid(), 1, 1, null, null, "ignore this snapshot")
+			new Commit(streamId, Guid.NewGuid(), 1, 1, null, null, "ignore this snapshot")
 			{
 				Events = { new EventMessage { Body = 1 } }
 			}, 
-			new Commit(StreamId, Guid.NewGuid(), 3, 2, null, null, "use this snapshot")
+			new Commit(streamId, Guid.NewGuid(), 3, 2, null, null, "use this snapshot")
 			{
 				Events =
 				{
@@ -29,7 +29,7 @@ namespace EventStore.Core.UnitTests
 					new EventMessage { Body = 3 }
 				}
 			}, 
-			new Commit(StreamId, Guid.NewGuid(), 5, 3, null, null, null)
+			new Commit(streamId, Guid.NewGuid(), 5, 3, null, null, null)
 			{
 				Events =
 				{
@@ -42,13 +42,13 @@ namespace EventStore.Core.UnitTests
 		static CommittedEventStream actual;
 
 		Establish context = () =>
-			Persistence.Setup(x => x.GetUntil(StreamId, MaxRevision)).Returns(Commits);
+			persistence.Setup(x => x.GetUntil(streamId, MaxRevision)).Returns(Commits);
 
 		Because of = () =>
-			actual = Store.ReadUntil(StreamId, MaxRevision);
+			actual = store.ReadUntil(streamId, MaxRevision);
 
 		It should_query_the_configured_persistence_mechanism = () =>
-			Persistence.VerifyAll();
+			persistence.VerifyAll();
 
 		It should_ignore_events_prior_to_the_most_recent_snapshot_retreived = () =>
 			actual.StreamRevision.ShouldEqual(Commits.MostRecentRevision());
@@ -72,11 +72,11 @@ namespace EventStore.Core.UnitTests
 		const long MinRevision = 42;
 		static readonly Commit[] Commits = new[]
 		{
-			new Commit(StreamId, Guid.NewGuid(), 1, 1, null, null, "ignore this snapshot")
+			new Commit(streamId, Guid.NewGuid(), 1, 1, null, null, "ignore this snapshot")
 			{
 				Events = { new EventMessage { Body = 1 } }
 			}, 
-			new Commit(StreamId, Guid.NewGuid(), 3, 2, null, null, "ignore this snapshot too")
+			new Commit(streamId, Guid.NewGuid(), 3, 2, null, null, "ignore this snapshot too")
 			{
 				Events =
 				{
@@ -84,7 +84,7 @@ namespace EventStore.Core.UnitTests
 					new EventMessage { Body = 3 }
 				}
 			}, 
-			new Commit(StreamId, Guid.NewGuid(), 6, 3, null, null, null)
+			new Commit(streamId, Guid.NewGuid(), 6, 3, null, null, null)
 			{
 				Events =
 				{
@@ -98,13 +98,13 @@ namespace EventStore.Core.UnitTests
 		static CommittedEventStream actual;
 
 		Establish context = () =>
-			Persistence.Setup(x => x.GetFrom(StreamId, MinRevision)).Returns(Commits);
+			persistence.Setup(x => x.GetFrom(streamId, MinRevision)).Returns(Commits);
 
 		Because of = () =>
-			actual = Store.ReadFrom(StreamId, MinRevision);
+			actual = store.ReadFrom(streamId, MinRevision);
 
 		It should_query_the_configured_persistence_mechanism = () =>
-			Persistence.VerifyAll();
+			persistence.VerifyAll();
 
 		It should_completely_ignore_snapshots_during_stream_reconstruction = () =>
 			actual.Events.Count.ShouldEqual(Commits.CountEvents());
@@ -122,7 +122,7 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Because of = () =>
-			thrown = Catch.Exception(() => Store.Write(null));
+			thrown = Catch.Exception(() => store.Write(null));
 
 		It should_throw_an_ArgumentNullException = () =>
 			thrown.ShouldBeOfType<ArgumentNullException>();
@@ -135,7 +135,7 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Because of = () =>
-			thrown = Catch.Exception(() => Store.Write(unidentified));
+			thrown = Catch.Exception(() => store.Write(unidentified));
 
 		It should_throw_an_ArgumentException = () =>
 			thrown.ShouldBeOfType<ArgumentException>();
@@ -152,7 +152,7 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Because of = () =>
-			thrown = Catch.Exception(() => Store.Write(negativeCommitSequence));
+			thrown = Catch.Exception(() => store.Write(negativeCommitSequence));
 
 		It should_throw_an_ArgumentException = () =>
 			thrown.ShouldBeOfType<ArgumentException>();
@@ -170,7 +170,7 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Because of = () =>
-			thrown = Catch.Exception(() => Store.Write(negativeStreamRevision));
+			thrown = Catch.Exception(() => store.Write(negativeStreamRevision));
 
 		It should_throw_an_ArgumentException = () =>
 			thrown.ShouldBeOfType<ArgumentException>();
@@ -181,19 +181,20 @@ namespace EventStore.Core.UnitTests
 	{
 		static readonly CommitAttempt attemptWithNoEvents = new CommitAttempt
 		{
+			StreamId = streamId,
 			CommitId = Guid.NewGuid(),
 			CommitSequence = 1,
 			StreamRevision = 1
 		};
 
 		Establish context = () =>
-			Persistence.Setup(x => x.Persist(attemptWithNoEvents));
+			persistence.Setup(x => x.Persist(attemptWithNoEvents));
 
 		Because of = () =>
-			Store.Write(attemptWithNoEvents);
+			store.Write(attemptWithNoEvents);
 
 		It should_drop_the_commit_provided = () =>
-			Persistence.Verify(x => x.Persist(attemptWithNoEvents), Times.AtMost(0));
+			persistence.Verify(x => x.Persist(attemptWithNoEvents), Times.AtMost(0));
 	}
 
 	[Subject("OptimisticEventStore")]
@@ -201,6 +202,7 @@ namespace EventStore.Core.UnitTests
 	{
 		static readonly CommitAttempt populatedAttempt = new CommitAttempt
 		{
+			StreamId = streamId,
 			CommitId = Guid.NewGuid(),
 			CommitSequence = 1,
 			StreamRevision = 1,
@@ -209,18 +211,18 @@ namespace EventStore.Core.UnitTests
 
 		Establish context = () =>
 		{
-			Persistence.Setup(x => x.Persist(populatedAttempt));
-			Dispatcher.Setup(x => x.Dispatch(populatedAttempt.ToCommit()));
+			persistence.Setup(x => x.Persist(populatedAttempt));
+			dispatcher.Setup(x => x.Dispatch(populatedAttempt.ToCommit()));
 		};
 
 		Because of = () =>
-			Store.Write(populatedAttempt);
+			store.Write(populatedAttempt);
 
 		It should_provide_the_commit_attempt_to_the_configured_persistence_mechanism = () =>
-			Persistence.Verify(x => x.Persist(populatedAttempt), Times.Exactly(1));
+			persistence.Verify(x => x.Persist(populatedAttempt), Times.Exactly(1));
 
 		It should_provide_the_commit_to_the_dispatcher = () =>
-			Dispatcher.Verify(x => x.Dispatch(populatedAttempt.ToCommit()), Times.Exactly(1));
+			dispatcher.Verify(x => x.Dispatch(populatedAttempt.ToCommit()), Times.Exactly(1));
 	}
 
 	/// <summary>
@@ -228,23 +230,24 @@ namespace EventStore.Core.UnitTests
 	/// in a NoSQL environment, we'll most likely use StreamId + CommitSequence, which also enables optimistic concurrency.
 	/// </summary>
 	[Subject("OptimisticEventStore")]
-	public class when_writing_a_commit_attempt_with_an_identifier_that_was_previously_read_from_a_max_revision_read : using_persistence
+	public class when_writing_a_commit_attempt_with_an_identifier_that_was_previously_read_up_to_a_max_revision : using_persistence
 	{
 		const long MaxRevision = 2;
 		static readonly Guid DuplicateCommitId = Guid.NewGuid();
 		static readonly Commit[] Commits = new[]
 		{
-			new Commit(StreamId, DuplicateCommitId, 1, 1, null, null, null)
+			new Commit(streamId, DuplicateCommitId, 1, 1, null, null, null)
 			{
 				Events = { new EventMessage { Body = 1 } }
 			},
-			new Commit(StreamId, Guid.NewGuid(), 2, 2, null, null, "commit from before this snapshot should be remembered.")
+			new Commit(streamId, Guid.NewGuid(), 2, 2, null, null, "commit from before this snapshot should be remembered.")
 			{
 				Events = { new EventMessage { Body = 1 } }
 			}
 		};
 		static readonly CommitAttempt Attempt = new CommitAttempt
 		{
+			StreamId = streamId,
 			CommitId = DuplicateCommitId,
 			CommitSequence = 3,
 			StreamRevision = 3,
@@ -253,13 +256,13 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Establish context = () =>
-			Persistence.Setup(x => x.GetUntil(StreamId, MaxRevision)).Returns(Commits);
+			persistence.Setup(x => x.GetUntil(streamId, MaxRevision)).Returns(Commits);
 
-		Because of = () => thrown = Catch.Exception(() =>
+		Because of = () =>
 		{
-			Store.ReadUntil(StreamId, MaxRevision);
-			Store.Write(Attempt);
-		});
+			store.ReadUntil(streamId, MaxRevision);
+			thrown = Catch.Exception(() => store.Write(Attempt));
+		};
 
 		It should_throw_a_DuplicateCommitException = () =>
 			thrown.ShouldBeOfType<DuplicateCommitException>();
@@ -270,19 +273,20 @@ namespace EventStore.Core.UnitTests
 	/// in a NoSQL environment, we'll most likely use StreamId + CommitSequence, which also enables optimistic concurrency.
 	/// </summary>
 	[Subject("OptimisticEventStore")]
-	public class when_writing_a_commit_attempt_with_an_identifier_that_was_previously_read_from_a_min_revision_read : using_persistence
+	public class when_writing_a_commit_attempt_with_an_identifier_that_was_previously_read_from_a_min_revision : using_persistence
 	{
 		const long MinRevision = 1;
 		static readonly Guid DuplicateCommitId = Guid.NewGuid();
 		static readonly Commit[] Commits = new[]
 		{
-			new Commit(StreamId, DuplicateCommitId, 1, 1, null, null, null)
+			new Commit(streamId, DuplicateCommitId, 1, 1, null, null, null)
 			{
 				Events = { new EventMessage { Body = 1 } }
 			}
 		};
 		static readonly CommitAttempt Attempt = new CommitAttempt
 		{
+			StreamId = streamId,
 			CommitId = DuplicateCommitId,
 			CommitSequence = 2,
 			StreamRevision = 2,
@@ -291,12 +295,12 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Establish context = () =>
-			Persistence.Setup(x => x.GetFrom(StreamId, MinRevision)).Returns(Commits);
+			persistence.Setup(x => x.GetFrom(streamId, MinRevision)).Returns(Commits);
 
 		Because of = () => thrown = Catch.Exception(() =>
 		{
-			Store.ReadFrom(StreamId, MinRevision);
-			Store.Write(Attempt);
+			store.ReadFrom(streamId, MinRevision);
+			store.Write(Attempt);
 		});
 
 		It should_throw_a_DuplicateCommitException = () =>
@@ -304,36 +308,137 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_writing_a_commit_attempt_with_a_commit_sequence_less_than_or_equal_to_the_most_recent_commit_read : using_persistence
+	public class when_writing_an_attempt_it_should_track_the_identifying_value_of_each_commit : using_persistence
 	{
-		It should_throw_a_ConcurrencyException;
+		static readonly CommitAttempt Attempt = new CommitAttempt
+		{
+			StreamId = streamId,
+			CommitId = Guid.NewGuid(), // will be duplicate
+			CommitSequence = 2,
+			StreamRevision = 2,
+			Events = { new EventMessage() }
+		};
+		static Exception thrown;
+
+		Establish context = () =>
+		{
+			store.Write(Attempt);
+			Attempt.CommitSequence++;
+			Attempt.StreamRevision++;
+		};
+
+		Because of = () =>
+			thrown = Catch.Exception(() => store.Write(Attempt));
+
+		It should_throw_a_DuplicateCommitException = () =>
+			thrown.ShouldBeOfType<DuplicateCommitException>();
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_writing_a_commit_attempt_with_a_commit_sequence_less_than_or_equal_to_the_most_recent_commit_written : using_persistence
+	public class when_writing_an_attempt_with_a_sequence_less_than_or_equal_to_the_most_recent_sequence_for_the_stream : using_persistence
 	{
-		It should_throw_a_ConcurrencyException;
+		const long StreamRevision = 1;
+		const long MostRecentSequence = 42;
+		static readonly Commit[] Commits = new[]
+		{
+			new Commit(streamId, Guid.NewGuid(), StreamRevision, MostRecentSequence, null, null, null), 
+		};
+		static readonly CommitAttempt Attempt = new CommitAttempt
+		{
+			StreamId = streamId,
+			CommitId = Guid.NewGuid(),
+			CommitSequence = MostRecentSequence, // here's the problem
+			StreamRevision = StreamRevision + 1,
+			Events = { new EventMessage() }
+		};
+
+		static Exception thrown;
+
+		Establish context = () =>
+			persistence.Setup(x => x.GetFrom(streamId, StreamRevision)).Returns(Commits);
+
+		Because of = () =>
+		{
+			store.ReadFrom(streamId, StreamRevision);
+			thrown = Catch.Exception(() => store.Write(Attempt));
+		};
+
+		It should_throw_a_ConcurrencyException = () =>
+			thrown.ShouldBeOfType<ConcurrencyException>();
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_writing_a_commit_attempt_with_a_stream_revision_less_than_or_equal_to_the_most_stream_revision_read : using_persistence
+	public class when_writing_an_attempt_with_a_revision_less_than_or_equal_to_the_most_recent_revision_read_for_the_stream : using_persistence
 	{
-		It should_throw_a_ConcurrencyException;
+		const long MostRecentStreamRevision = 1;
+		const long CommitSequence = 1;
+		static readonly Commit[] Commits = new[]
+		{
+			new Commit(streamId, Guid.NewGuid(), MostRecentStreamRevision, CommitSequence, null, null, null), 
+		};
+		static readonly CommitAttempt Attempt = new CommitAttempt
+		{
+			StreamId = streamId,
+			CommitId = Guid.NewGuid(),
+			CommitSequence = CommitSequence + 1,
+			StreamRevision = MostRecentStreamRevision,  // here's the problem
+			Events = { new EventMessage() }
+		};
+
+		static Exception thrown;
+
+		Establish context = () =>
+			persistence.Setup(x => x.GetUntil(streamId, MostRecentStreamRevision)).Returns(Commits);
+
+		Because of = () =>
+		{
+			store.ReadUntil(streamId, MostRecentStreamRevision);
+			thrown = Catch.Exception(() => store.Write(Attempt));
+		};
+
+		It should_throw_a_ConcurrencyException = () =>
+			thrown.ShouldBeOfType<ConcurrencyException>();
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_writing_a_commit_attempt_with_a_stream_revision_less_than_or_equal_to_the_most_stream_revision_written : using_persistence
+	public class when_writing_an_attempt_with_sequence_and_revision_values_less_than_or_equal_to_the_most_recent_commit_for_the_stream : using_persistence
 	{
-		It should_throw_a_ConcurrencyException;
+		static readonly CommitAttempt Attempt = new CommitAttempt
+		{
+			StreamId = streamId,
+			CommitId = Guid.NewGuid(),
+			CommitSequence = 1,
+			StreamRevision = 1,
+			Events = { new EventMessage() }
+		};
+		static Exception thrown;
+
+		Establish context = () =>
+		{
+			store.Write(Attempt);
+			Attempt.CommitId = Guid.NewGuid(); // different attempt, but with the same sequence and revision values
+		};
+
+		Because of = () =>
+			thrown = Catch.Exception(() => store.Write(Attempt));
+
+		It should_throw_a_ConcurrencyException = () =>
+			thrown.ShouldBeOfType<ConcurrencyException>();
 	}
 
 	public abstract class using_persistence
 	{
-		protected static readonly Guid StreamId = Guid.NewGuid();
-		protected static readonly Mock<IPersistStreams> Persistence = new Mock<IPersistStreams>();
-		protected static readonly Mock<IDispatchCommits> Dispatcher = new Mock<IDispatchCommits>();
-		protected static readonly OptimisticEventStore Store =
-			new OptimisticEventStore(Persistence.Object, Dispatcher.Object);
+		protected static Guid streamId = Guid.NewGuid();
+		protected static Mock<IPersistStreams> persistence;
+		protected static Mock<IDispatchCommits> dispatcher;
+		protected static OptimisticEventStore store;
+
+		Establish context = () =>
+		{
+			persistence = new Mock<IPersistStreams>();
+			dispatcher = new Mock<IDispatchCommits>();
+			store = new OptimisticEventStore(persistence.Object, dispatcher.Object);
+		};
 	}
 }
 

@@ -38,7 +38,7 @@ namespace EventStore.Core
 
 		public static bool HasIdentifier(this CommitAttempt attempt)
 		{
-			return attempt.CommitId != Guid.Empty;
+			return attempt.StreamId != Guid.Empty && attempt.CommitId != Guid.Empty;
 		}
 
 		public static bool IsPositive(this long value)

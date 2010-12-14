@@ -79,7 +79,9 @@ namespace EventStore
 		public override bool Equals(object obj)
 		{
 			var commit = obj as Commit;
-			return commit != null && commit.CommitId == this.CommitId;
+			return commit != null
+				&& commit.StreamId == this.StreamId
+				&& commit.CommitId == this.CommitId;
 		}
 
 		/// <summary>
@@ -88,7 +90,7 @@ namespace EventStore
 		/// <returns>The hash code for this instance.</returns>
 		public override int GetHashCode()
 		{
-			return this.CommitId.GetHashCode();
+			return this.StreamId.GetHashCode() ^ this.CommitId.GetHashCode();
 		}
 	}
 }
