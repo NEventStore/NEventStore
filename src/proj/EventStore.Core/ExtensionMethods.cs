@@ -6,9 +6,9 @@ namespace EventStore.Core
 	internal static class ExtensionMethods
 	{
 		public static void AddEventsOrClearOnSnapshot(
-			this ICollection<object> events, Commit commit, object snapshot)
+			this ICollection<object> events, Commit commit, bool applySnapshot)
 		{
-			if (snapshot != null)
+			if (applySnapshot && commit.Snapshot != null)
 				events.Clear();
 			else
 				events.AddEvents(commit);

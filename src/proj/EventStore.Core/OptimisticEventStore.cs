@@ -45,7 +45,7 @@ namespace EventStore.Core
 				revision = commit.StreamRevision;
 
 				snapshot = commit.Snapshot ?? snapshot;
-				events.AddEventsOrClearOnSnapshot(commit, applySnapshot ? commit.Snapshot : null);
+				events.AddEventsOrClearOnSnapshot(commit, applySnapshot);
 
 				this.commitIdentifiers.Add(commit.CommitId);
 			}
