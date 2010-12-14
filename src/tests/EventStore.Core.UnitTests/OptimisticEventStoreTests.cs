@@ -11,7 +11,7 @@ namespace EventStore.Core.UnitTests
 	using It = Machine.Specifications.It;
 
 	[Subject("OptimisticEventStore")]
-	public class when_reading_a_stream_until_a_maximum_revision : using_persistence
+	public class when_reading_a_stream_up_to_a_maximum_revision : using_persistence
 	{
 		const long MaxRevision = 1234;
 		static readonly Commit[] Commits = new[]
@@ -58,7 +58,7 @@ namespace EventStore.Core.UnitTests
 		It should_ignore_an_earlier_snapshot = () =>
 			actual.Snapshot.ShouldNotEqual(Commits[0].Snapshot);
 
-		It should_contain_the_most_recent_events_after_the_snapshot = () =>
+		It should_only_contain_the_events_from_commits_after_the_most_recent_snapshot = () =>
 			actual.Events.Count.ShouldEqual(Commits.Last().Events.Count);
 
 		It should_order_the_events_from_oldest_to_newest = () =>
@@ -66,7 +66,7 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class WhenReadingAStreamUsingAMinimumRevision : using_persistence
+	public class when_reading_a_stream_from_a_minimum_revision : using_persistence
 	{
 		const long MinRevision = 42;
 		static readonly Commit[] Commits = new[]
@@ -180,22 +180,21 @@ namespace EventStore.Core.UnitTests
 	[Subject("OptimisticEventStore")]
 	public class when_writing_an_empty_commit_attempt_back_to_the_stream : using_persistence
 	{
-		static readonly CommitAttempt emptyAttempt = new CommitAttempt
+		static readonly CommitAttempt attemptWithNoEvents = new CommitAttempt
 		{
 			CommitId = Guid.NewGuid(),
 			CommitSequence = 1,
-			StreamRevision = 1,
-			Events = { } // no events
+			StreamRevision = 1
 		};
 
 		Establish context = () =>
-			Persistence.Setup(x => x.Persist(emptyAttempt));
+			Persistence.Setup(x => x.Persist(attemptWithNoEvents));
 
 		Because of = () =>
-			Store.Write(emptyAttempt);
+			Store.Write(attemptWithNoEvents);
 
 		It should_drop_the_commit_provided = () =>
-			Persistence.Verify(x => x.Persist(emptyAttempt), Times.AtMost(0));
+			Persistence.Verify(x => x.Persist(attemptWithNoEvents), Times.AtMost(0));
 	}
 
 	[Subject("OptimisticEventStore")]

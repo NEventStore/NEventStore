@@ -21,12 +21,12 @@ namespace EventStore
 		/// <param name="streamId">The stream from which the events will be read.</param>
 		/// <param name="minRevision">The minimum revision of the stream to be read.</param>
 		/// <returns>A series of committed events from the stream specified.</returns>
-		CommittedEventStream ReadFrom(Guid streamId, long minRevision); // TODO: this needs to track commit ids, re: DuplicateCommitException
+		CommittedEventStream ReadFrom(Guid streamId, long minRevision);
 		
 		/// <summary>
 		/// Writes the to-be-commited events provided to the underlying storage infrastructure.
 		/// </summary>
-		/// <param name="uncommitted">The series of events and associated metadata to be commited.</param>
-		void Write(CommitAttempt uncommitted);
+		/// <param name="attempt">The series of events and associated metadata to be commited.</param>
+		void Write(CommitAttempt attempt);
 	}
 }

@@ -8,6 +8,7 @@ namespace EventStore.Core
 
 	public class OptimisticEventStore : IStoreEvents
 	{
+		private readonly IDictionary<Guid, Commit> latest = new Dictionary<Guid, Commit>();
 		private readonly ICollection<Guid> commitIdentifiers = new HashSet<Guid>();
 		private readonly IPersistStreams persistence;
 
@@ -52,24 +53,24 @@ namespace EventStore.Core
 				streamId, revision, sequence, events.ToArray(), null);
 		}
 
-		public virtual void Write(CommitAttempt uncommitted)
+		public virtual void Write(CommitAttempt attempt)
 		{
-			if (uncommitted == null)
-				throw new ArgumentNullException("uncommitted");
+			if (attempt == null)
+				throw new ArgumentNullException("attempt");
 
-			if (!uncommitted.HasIdentifier())
-				throw new ArgumentException("The commit must be uniquely identified.", "uncommitted");
+			if (!attempt.HasIdentifier())
+				throw new ArgumentException("The commit must be uniquely identified.", "attempt");
 
-			if (!uncommitted.CommitSequence.IsPositive())
-				throw new ArgumentException("The commit sequence must be a positive number.", "uncommitted");
+			if (!attempt.CommitSequence.IsPositive())
+				throw new ArgumentException("The commit sequence must be a positive number.", "attempt");
 
-			if (!uncommitted.StreamRevision.IsPositive())
-				throw new ArgumentException("The stream revision must be a positive number.", "uncommitted");
+			if (!attempt.StreamRevision.IsPositive())
+				throw new ArgumentException("The stream revision must be a positive number.", "attempt");
 
-			if (!uncommitted.HasEvents())
+			if (!attempt.HasEvents())
 				return;
 
-			this.persistence.Persist(uncommitted);
+			this.persistence.Persist(attempt);
 		}
 	}
 }
