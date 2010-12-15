@@ -127,7 +127,7 @@
     <value>SELECT StreamId, CommitId, Revision, Sequence, Payload, null
   FROM Commits
  WHERE StreamId = @StreamId
-   AND (Revision - Items) &gt;= @Revision;</value>
+   AND Revision &gt;= @Revision;</value>
   </data>
   <data name="GetStreamsToSnapshot" xml:space="preserve">
     <value>SELECT StreamId
@@ -150,7 +150,7 @@
          FROM Commits
         WHERE StreamId = @StreamId
           AND Revision &lt;= @Revision
-          AND Snapshot IS NOT NULL ) AND (Revision - Items);</value>
+          AND Snapshot IS NOT NULL ) AND Revision;</value>
   </data>
   <data name="MarkAsDispatched" xml:space="preserve">
     <value>DELETE
@@ -163,8 +163,8 @@
 
 INSERT
   INTO Commits
-     ( StreamId, Sequence, CommitId, Revision, Items, Payload )
-SELECT @StreamId, @Sequence, @CommitId, @NewRevision, (@NewRevision - @OldRevision + 1), @Payload
+     ( StreamId, Sequence, CommitId, Revision, Payload )
+SELECT @StreamId, @Sequence, @CommitId, @NewRevision,@Payload
   FROM Commits
  WHERE NOT EXISTS
      ( SELECT *

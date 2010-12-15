@@ -20,13 +20,12 @@ CREATE TABLE [dbo].[Commits]
        [CommitId] [uniqueidentifier] NOT NULL,
        [SystemSequence] [bigint] IDENTITY(1,1) NOT NULL,
        [Revision] [bigint] NOT NULL CHECK ([Revision] > 0),
-       [Items] [smallint] NOT NULL CHECK ([Items] > 0) DEFAULT(0),
        [Payload] [varbinary](MAX) NOT NULL CHECK (DATALENGTH([Payload]) > 0),
        [Snapshot] [varbinary](MAX) NULL CHECK ([Snapshot] IS NULL OR DATALENGTH([Snapshot]) > 0),
        CONSTRAINT [PK_Commits] PRIMARY KEY CLUSTERED ([StreamId], [Sequence])
 )
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Commits] ON [dbo].[Commits] ([StreamId], [CommitId])
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Commits_Revisions] ON [dbo].[Commits] ([StreamId], [Revision], [Items])
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Commits_Revisions] ON [dbo].[Commits] ([StreamId], [Revision])
 
 CREATE TABLE [dbo].[Dispatch]
 (
@@ -53,7 +52,6 @@ AS BEGIN
        OR UPDATE([CommitId])
        OR UPDATE([SystemSequence])
        OR UPDATE([Revision])
-       OR UPDATE([Items])
        OR UPDATE([Payload]))
        BEGIN
               RAISERROR('Commits cannot be modified.', 16, 1)
