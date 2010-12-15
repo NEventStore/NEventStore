@@ -11,29 +11,31 @@ namespace EventStore.SqlPersistence
 	public class SqlPersistence : IPersistStreams
 	{
 		private readonly IConnectionFactory factory;
+		private readonly ISqlDialect dialect;
 		private readonly ISerialize serializer;
 
-		public SqlPersistence(IConnectionFactory factory, ISerialize serializer)
+		public SqlPersistence(IConnectionFactory factory, ISqlDialect dialect, ISerialize serializer)
 		{
 			this.factory = factory;
+			this.dialect = dialect;
 			this.serializer = serializer;
 		}
 
 		public virtual IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision)
 		{
-			return this.Fetch(streamId, maxRevision, SqlStatements.GetCommitsFromSnapshotUntilRevision);
+			return this.Fetch(streamId, maxRevision, this.dialect.GetCommitsFromSnapshotUntilRevision);
 		}
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, long minRevision)
 		{
-			return this.Fetch(streamId, minRevision, SqlStatements.GetCommitsFromStartingRevision);
+			return this.Fetch(streamId, minRevision, this.dialect.GetCommitsFromStartingRevision);
 		}
-		private IEnumerable<Commit> Fetch(Guid streamId, long revision, string queryText)
+		protected virtual IEnumerable<Commit> Fetch(Guid streamId, long revision, string queryText)
 		{
 			return this.Execute(streamId, query =>
 			{
 				query.CommandText = queryText;
-				query.AddParameter(SqlParameters.StreamId, streamId);
-				query.AddParameter(SqlParameters.Revision, revision);
+				query.AddParameter(this.dialect.StreamId, streamId);
+				query.AddParameter(this.dialect.Revision, revision);
 				return query.ExecuteQuery(x => x.GetCommit(this.serializer));
 			});
 		}
@@ -44,19 +46,19 @@ namespace EventStore.SqlPersistence
 			{
 				var commit = uncommitted.ToCommit();
 
-				cmd.CommandText = SqlStatements.PersistCommitAttempt;
-				cmd.AddParameter(SqlParameters.StreamId, commit.StreamId);
-				cmd.AddParameter(SqlParameters.StreamName, uncommitted.StreamName);
-				cmd.AddParameter(SqlParameters.CommitId, commit.CommitId);
-				cmd.AddParameter(SqlParameters.CommitSequence, commit.CommitSequence);
-				cmd.AddParameter(SqlParameters.OldRevision, uncommitted.PreviousCommitSequence);
-				cmd.AddParameter(SqlParameters.Revision, commit.StreamRevision);
-				cmd.AddParameter(SqlParameters.Payload, this.serializer.Serialize(commit));
+				cmd.CommandText = this.dialect.PersistCommitAttempt;
+				cmd.AddParameter(this.dialect.StreamId, commit.StreamId);
+				cmd.AddParameter(this.dialect.StreamName, uncommitted.StreamName);
+				cmd.AddParameter(this.dialect.CommitId, commit.CommitId);
+				cmd.AddParameter(this.dialect.CommitSequence, commit.CommitSequence);
+				cmd.AddParameter(this.dialect.ExpectedRevision, uncommitted.PreviousStreamRevision);
+				cmd.AddParameter(this.dialect.Revision, commit.StreamRevision);
+				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(commit));
 
-				TryPersist(cmd);
+				this.TryPersist(cmd);
 			});
 		}
-		private static void TryPersist(IDbCommand command)
+		protected virtual void TryPersist(IDbCommand command)
 		{
 			try
 			{
@@ -66,7 +68,7 @@ namespace EventStore.SqlPersistence
 			}
 			catch (DbException e)
 			{
-				if (e.IsDuplicateKeyException())
+				if (this.dialect.IsDuplicateException(e))
 					throw new DuplicateCommitException(e.Message, e);
 
 				throw;
@@ -77,7 +79,7 @@ namespace EventStore.SqlPersistence
 		{
 			return this.Execute(Guid.Empty, query =>
 			{
-				query.CommandText = SqlStatements.GetUndispatchedCommits;
+				query.CommandText = this.dialect.GetUndispatchedCommits;
 				return query.ExecuteQuery(x => x.GetCommit(this.serializer));
 			});
 		}
@@ -85,9 +87,9 @@ namespace EventStore.SqlPersistence
 		{
 			this.Execute(commit.StreamId, cmd =>
 			{
-				cmd.CommandText = SqlStatements.MarkCommitAsDispatched;
-				cmd.AddParameter(SqlParameters.StreamId, commit.StreamId);
-				cmd.AddParameter(SqlParameters.CommitSequence, commit.CommitSequence);
+				cmd.CommandText = this.dialect.MarkCommitAsDispatched;
+				cmd.AddParameter(this.dialect.StreamId, commit.StreamId);
+				cmd.AddParameter(this.dialect.CommitSequence, commit.CommitSequence);
 				cmd.ExecuteAndSuppressExceptions();
 			});
 		}
@@ -96,8 +98,8 @@ namespace EventStore.SqlPersistence
 		{
 			return this.Execute(Guid.Empty, query =>
 			{
-				query.CommandText = SqlStatements.GetStreamsRequiringSnaphots;
-				query.AddParameter(SqlParameters.Threshold, maxThreshold);
+				query.CommandText = this.dialect.GetStreamsRequiringSnaphots;
+				query.AddParameter(this.dialect.Threshold, maxThreshold);
 				return query.ExecuteQuery(record => (Guid)record[0]);
 			});
 		}
@@ -105,10 +107,10 @@ namespace EventStore.SqlPersistence
 		{
 			this.Execute(streamId, cmd =>
 			{
-				cmd.CommandText = SqlStatements.AppendSnapshotToCommit;
-				cmd.AddParameter(SqlParameters.StreamId, streamId);
-				cmd.AddParameter(SqlParameters.CommitSequence, commitSequence);
-				cmd.AddParameter(SqlParameters.Payload, this.serializer.Serialize(snapshot));
+				cmd.CommandText = this.dialect.AppendSnapshotToCommit;
+				cmd.AddParameter(this.dialect.StreamId, streamId);
+				cmd.AddParameter(this.dialect.CommitSequence, commitSequence);
+				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(snapshot));
 				cmd.ExecuteAndSuppressExceptions();
 			});
 		}
@@ -119,7 +121,7 @@ namespace EventStore.SqlPersistence
 			this.Execute(streamId, command => { results = callback(command); });
 			return results;
 		}
-		protected virtual void Execute(Guid streamId, Action<IDbCommand> callback)
+		protected virtual void Execute(Guid streamId, Action<IDbCommand> execute)
 		{
 			using (var scope = new TransactionScope(TransactionScopeOption.Suppress))
 			using (var connection = this.factory.Open(streamId))
@@ -127,7 +129,7 @@ namespace EventStore.SqlPersistence
 			{
 				try
 				{
-					callback(command);
+					execute(command);
 				}
 				catch (ConcurrencyException)
 				{

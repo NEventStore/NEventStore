@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace EventStore.SqlPersistence {
+namespace EventStore.SqlPersistence.SqlDialects {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace EventStore.SqlPersistence {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class SqlStatements {
+    internal class CommonSqlStatements {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal SqlStatements() {
+        internal CommonSqlStatements() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace EventStore.SqlPersistence {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.SqlPersistence.SqlStatements", typeof(SqlStatements).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.SqlPersistence.SqlDialects.CommonSqlStatements", typeof(CommonSqlStatements).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -144,14 +144,14 @@ namespace EventStore.SqlPersistence {
         ///  INTO Streams
         ///     ( StreamId, Name, HeadRevision )
         ///SELECT @StreamId, @StreamName, @Revision
-        /// WHERE @OldRevision = 0;
+        /// WHERE @ExpectedRevision = 0;
         ///
         ///UPDATE Streams
         ///   SET HeadRevision = @Revision
         ///  FROM Streams
         /// WHERE StreamId = @StreamId
-        ///   AND HeadRevision = @OldRevision
-        ///   AND @OldRevision &gt; 0;
+        ///   AND HeadRevision = @ExpectedRevision
+        ///   AND @ExpectedRevision &gt; 0;
         ///
         ///INSERT
         ///  INTO Commits
@@ -159,7 +159,7 @@ namespace EventStore.SqlPersistence {
         ///SELECT @StreamId, @Sequence, @CommitId, @Revision, @Payload
         /// WHERE NOT EXISTS
         ///     ( SELECT *
-        ///         FROM Commit [rest of string was truncated]&quot;;.
+        ///      [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string PersistCommitAttempt {
             get {

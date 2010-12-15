@@ -12,6 +12,7 @@ namespace EventStore.Persistence.AcceptanceTests
 	using Machine.Specifications;
 	using Serialization;
 	using SqlPersistence;
+	using SqlPersistence.SqlDialects;
 
 	[Subject("Persistence")]
 	public class when_a_commit_attempt_is_successfully_committed : using_a_persistence_engine
@@ -84,6 +85,7 @@ namespace EventStore.Persistence.AcceptanceTests
 		{
 			persistence = new SqlPersistence(
 				new DelegateConnectionFactory(id => OpenConnection()),
+				new CommonSqlDialect(),
 				new BinarySerializer());
 		};
 

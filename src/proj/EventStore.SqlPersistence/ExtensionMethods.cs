@@ -94,11 +94,5 @@ namespace EventStore.SqlPersistence
 		{
 			return value == null || value == DBNull.Value ? null : (byte[])value;
 		}
-
-		public static bool IsDuplicateKeyException(this DbException exception)
-		{
-			var msg = exception.Message.ToUpperInvariant();
-			return msg.Contains("DUPLICATE") || msg.Contains("UNIQUE");
-		}
 	}
 }

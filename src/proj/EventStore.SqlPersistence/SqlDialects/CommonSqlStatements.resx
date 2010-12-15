@@ -117,28 +117,82 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="CommitId" xml:space="preserve">
-    <value>@CommitId</value>
+  <data name="AppendSnapshotToCommit" xml:space="preserve">
+    <value>UPDATE Commits
+   SET Snapshot = @Payload
+ WHERE StreamId = @StreamId
+   AND Sequence = @Sequence;</value>
   </data>
-  <data name="CommitSequence" xml:space="preserve">
-    <value>@Sequence</value>
+  <data name="GetCommitsFromSnapshotUntilRevision" xml:space="preserve">
+    <value>SELECT StreamId, CommitId, Revision, Sequence, Payload, Snapshot
+  FROM Commits
+ WHERE StreamId = @StreamId
+   AND @Revision BETWEEN 
+     ( SELECT MAX(Revision)
+         FROM Commits
+        WHERE StreamId = @StreamId
+          AND Revision &lt;= @Revision
+          AND Snapshot IS NOT NULL ) AND Revision;</value>
   </data>
-  <data name="OldRevision" xml:space="preserve">
-    <value>@OldRevision</value>
+  <data name="GetCommitsFromStartingRevision" xml:space="preserve">
+    <value>SELECT StreamId, CommitId, Revision, Sequence, Payload, null
+  FROM Commits
+ WHERE StreamId = @StreamId
+   AND Revision &gt;= @Revision;</value>
   </data>
-  <data name="Payload" xml:space="preserve">
-    <value>@Payload</value>
+  <data name="GetStreamsRequiringSnaphots" xml:space="preserve">
+    <value>SELECT StreamId
+  FROM Streams
+ WHERE HeadRevision &gt;= SnapshotRevision + @Threshold;</value>
   </data>
-  <data name="Revision" xml:space="preserve">
-    <value>@Revision</value>
+  <data name="GetUndispatchedCommits" xml:space="preserve">
+    <value>SELECT C.StreamId, C.CommitId, C.Revision, C.Sequence, C.Payload, null
+  FROM Commits AS C
+ INNER JOIN Dispatch AS D
+    ON C.StreamId = D.StreamId
+   AND C.Sequence = D.Sequence;</value>
   </data>
-  <data name="StreamId" xml:space="preserve">
-    <value>@StreamId</value>
+  <data name="MarkCommitAsDispatched" xml:space="preserve">
+    <value>DELETE
+  FROM Dispatch
+ WHERE StreamId = @StreamId
+   AND Sequence = @Sequence;</value>
   </data>
-  <data name="StreamName" xml:space="preserve">
-    <value>@StreamName</value>
-  </data>
-  <data name="Threshold" xml:space="preserve">
-    <value>@Threshold</value>
+  <data name="PersistCommitAttempt" xml:space="preserve">
+    <value>BEGIN TRANSACTION;
+
+INSERT
+  INTO Streams
+     ( StreamId, Name, HeadRevision )
+SELECT @StreamId, @StreamName, @Revision
+ WHERE @ExpectedRevision = 0;
+
+UPDATE Streams
+   SET HeadRevision = @Revision
+  FROM Streams
+ WHERE StreamId = @StreamId
+   AND HeadRevision = @ExpectedRevision
+   AND @ExpectedRevision &gt; 0;
+
+INSERT
+  INTO Commits
+     ( StreamId, Sequence, CommitId, Revision, Payload )
+SELECT @StreamId, @Sequence, @CommitId, @Revision, @Payload
+ WHERE NOT EXISTS
+     ( SELECT *
+         FROM Commits
+        WHERE StreamId = @StreamId
+          AND Sequence &gt;= @Sequence );
+
+INSERT
+  INTO Dispatch
+     ( StreamId, Sequence)
+SELECT @StreamId, @Sequence
+  FROM Commits
+ WHERE StreamId = @StreamId
+   AND Sequence = @Sequence
+   AND CommitId = @CommitId;
+
+COMMIT TRANSACTION;</value>
   </data>
 </root>

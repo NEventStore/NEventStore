@@ -45,18 +45,15 @@
     <Compile Include="DelegateConnectionFactory.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="IConnectionFactory.cs" />
+    <Compile Include="ISqlDialect.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SqlParameters.Designer.cs">
+    <Compile Include="SqlDialects\CommonSqlDialect.cs" />
+    <Compile Include="SqlDialects\CommonSqlStatements.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>SqlParameters.resx</DependentUpon>
+      <DependentUpon>CommonSqlStatements.resx</DependentUpon>
     </Compile>
     <Compile Include="SqlPersistence.cs" />
-    <Compile Include="SqlStatements.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>SqlStatements.resx</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\CustomDictionary.xml">
@@ -75,17 +72,13 @@
     <Reference Include="System.Transactions" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="SqlParameters.resx">
+    <EmbeddedResource Include="SqlDialects\CommonSqlStatements.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>SqlParameters.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SqlStatements.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>SqlStatements.Designer.cs</LastGenOutput>
+      <LastGenOutput>CommonSqlStatements.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
