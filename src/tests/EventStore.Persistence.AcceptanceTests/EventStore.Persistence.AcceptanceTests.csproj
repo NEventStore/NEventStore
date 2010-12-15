@@ -61,5 +61,8 @@
       <HintPath>..\..\..\bin\machine.specifications-bin\Machine.Specifications.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
