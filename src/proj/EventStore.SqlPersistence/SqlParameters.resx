@@ -121,7 +121,7 @@
     <value>@CommitId</value>
   </data>
   <data name="CommitSequence" xml:space="preserve">
-    <value>@CommitSequence</value>
+    <value>@Sequence</value>
   </data>
   <data name="OldRevision" xml:space="preserve">
     <value>@OldRevision</value>

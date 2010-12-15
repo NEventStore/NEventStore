@@ -78,10 +78,12 @@
     <EmbeddedResource Include="SqlParameters.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>SqlParameters.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="SqlStatements.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>SqlStatements.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

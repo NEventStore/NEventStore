@@ -70,7 +70,7 @@ namespace EventStore.SqlPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to @CommitSequence.
+        ///   Looks up a localized string similar to @Sequence.
         /// </summary>
         internal static string CommitSequence {
             get {

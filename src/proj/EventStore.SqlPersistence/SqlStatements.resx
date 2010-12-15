@@ -121,7 +121,7 @@
     <value>UPDATE Commits
    SET Snapshot = @Payload
  WHERE StreamId = @StreamId
-   AND Sequence = @CommitSequence;</value>
+   AND Sequence = @Sequence;</value>
   </data>
   <data name="GetFromStartingRevision" xml:space="preserve">
     <value>SELECT StreamId, CommitId, Revision, Sequence, Payload, null
@@ -145,34 +145,42 @@
     <value>DELETE
   FROM Dispatch
  WHERE StreamId = @StreamId
-   AND Sequence = @CommitSequence;</value>
+   AND Sequence = @Sequence;</value>
   </data>
   <data name="PersistCommitAttempt" xml:space="preserve">
     <value>BEGIN TRANSACTION;
 
 INSERT
-  INTO Commits
-     ( StreamId, Sequence, CommitId, Revision, Payload )
-SELECT @StreamId, @Sequence, @CommitId, @NewRevision,@Payload
-  FROM Commits
- WHERE NOT EXISTS
-     ( SELECT *
-         FROM Commits
-        WHERE StreamId = StreamId
-          AND Sequence &gt;= @Sequence );
-
-INSERT
   INTO Streams
      ( StreamId, Name, HeadRevision )
-SELECT @StreamId, @StreamName, @NewRevision
+SELECT @StreamId, @StreamName, @Revision
  WHERE @OldRevision = 0;
 
 UPDATE Streams
-   SET HeadRevision = @NewRevision
+   SET HeadRevision = @Revision
   FROM Streams
  WHERE StreamId = @StreamId
    AND HeadRevision = @OldRevision
-   AND @NewRevision &gt; 0;
+   AND @OldRevision &gt; 0;
+
+INSERT
+  INTO Commits
+     ( StreamId, Sequence, CommitId, Revision, Payload )
+SELECT @StreamId, @Sequence, @CommitId, @Revision, @Payload
+ WHERE NOT EXISTS
+     ( SELECT *
+         FROM Commits
+        WHERE StreamId = @StreamId
+          AND Sequence &gt;= @Sequence );
+
+INSERT
+  INTO Dispatch
+     ( StreamId, Sequence)
+SELECT @StreamId, @Sequence
+  FROM Commits
+ WHERE StreamId = @StreamId
+   AND Sequence = @Sequence
+   AND CommitId = @CommitId;
 
 COMMIT TRANSACTION;</value>
   </data>

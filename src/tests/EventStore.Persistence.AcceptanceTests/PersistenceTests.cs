@@ -3,12 +3,33 @@
 
 namespace EventStore.Persistence.AcceptanceTests
 {
+	using System;
+	using System.Configuration;
+	using System.Data;
+	using System.Data.Common;
+	using System.Data.SqlClient;
+	using System.Linq;
 	using Machine.Specifications;
+	using Serialization;
+	using SqlPersistence;
 
 	[Subject("Persistence")]
-	public class when_a_commit_attempt_is_successfully_committed
+	public class when_a_commit_attempt_is_successfully_committed : using_a_persistence_engine
 	{
-		It should_make_the_commit_available_to_be_read_from_the_stream;
+		static readonly CommitAttempt attempt = new CommitAttempt
+		{
+			StreamId = streamId,
+			CommitId = Guid.NewGuid(),
+			StreamName = "Testing",
+			Events = { new EventMessage() }
+		};
+
+		Because of = () =>
+			persistence.Persist(attempt);
+
+		It should_make_the_commit_available_to_be_read_from_the_stream = () =>
+			persistence.GetFrom(streamId, 0).First().CommitId.ShouldEqual(attempt.CommitId);
+
 		It should_add_the_commit_to_the_set_of_undispatched_commits;
 		It should_increment_the_head_revision_of_the_stream;
 	}
@@ -52,6 +73,30 @@ namespace EventStore.Persistence.AcceptanceTests
 	public class when_attempting_to_commit_an_already_committed_attempt
 	{
 		It should_throw_a_DuplicateCommitException;
+	}
+
+	public abstract class using_a_persistence_engine
+	{
+		protected static Guid streamId = Guid.NewGuid();
+		protected static IPersistStreams persistence;
+
+		Establish context = () =>
+		{
+			persistence = new SqlPersistence(
+				new DelegateConnectionFactory(id => OpenConnection()),
+				new BinarySerializer());
+		};
+
+		private static IDbConnection OpenConnection()
+		{
+			var connectionName = ConfigurationManager.AppSettings["UnderTest"];
+			var setting = ConfigurationManager.ConnectionStrings[connectionName];
+			var factory = DbProviderFactories.GetFactory(setting.ProviderName);
+			var connection = factory.CreateConnection() ?? new SqlConnection();
+			connection.ConnectionString = setting.ConnectionString;
+			connection.Open();
+			return connection;
+		}
 	}
 }
 

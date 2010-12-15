@@ -51,6 +51,14 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\proj\EventStore.Serialization\EventStore.Serialization.csproj">
+      <Project>{A5BF4B86-26F6-418D-BE35-C6CC3A623D27}</Project>
+      <Name>EventStore.Serialization</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\proj\EventStore.SqlPersistence\EventStore.SqlPersistence.csproj">
+      <Project>{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}</Project>
+      <Name>EventStore.SqlPersistence</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\proj\EventStore\EventStore.csproj">
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
       <Name>EventStore</Name>
@@ -60,6 +68,9 @@
     <Reference Include="Machine.Specifications">
       <HintPath>..\..\..\bin\machine.specifications-bin\Machine.Specifications.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

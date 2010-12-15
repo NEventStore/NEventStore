@@ -64,7 +64,7 @@ namespace EventStore.SqlPersistence {
         ///   Looks up a localized string similar to UPDATE Commits
         ///   SET Snapshot = @Payload
         /// WHERE StreamId = @StreamId
-        ///   AND Sequence = @CommitSequence;.
+        ///   AND Sequence = @Sequence;.
         /// </summary>
         internal static string AddSnapshotToCommit {
             get {
@@ -112,7 +112,7 @@ namespace EventStore.SqlPersistence {
         ///   Looks up a localized string similar to DELETE
         ///  FROM Dispatch
         /// WHERE StreamId = @StreamId
-        ///   AND Sequence = @CommitSequence;.
+        ///   AND Sequence = @Sequence;.
         /// </summary>
         internal static string MarkCommitAsDispatched {
             get {
@@ -124,25 +124,25 @@ namespace EventStore.SqlPersistence {
         ///   Looks up a localized string similar to BEGIN TRANSACTION;
         ///
         ///INSERT
-        ///  INTO Commits
-        ///     ( StreamId, Sequence, CommitId, Revision, Payload )
-        ///SELECT @StreamId, @Sequence, @CommitId, @NewRevision,@Payload
-        ///  FROM Commits
-        /// WHERE NOT EXISTS
-        ///     ( SELECT *
-        ///         FROM Commits
-        ///        WHERE StreamId = StreamId
-        ///          AND Sequence &gt;= @Sequence );
-        ///
-        ///INSERT
         ///  INTO Streams
         ///     ( StreamId, Name, HeadRevision )
-        ///SELECT @StreamId, @StreamName, @NewRevision
+        ///SELECT @StreamId, @StreamName, @Revision
         /// WHERE @OldRevision = 0;
         ///
         ///UPDATE Streams
-        ///   SET HeadRevision = @NewRevision
-        ///  FRO [rest of string was truncated]&quot;;.
+        ///   SET HeadRevision = @Revision
+        ///  FROM Streams
+        /// WHERE StreamId = @StreamId
+        ///   AND HeadRevision = @OldRevision
+        ///   AND @OldRevision &gt; 0;
+        ///
+        ///INSERT
+        ///  INTO Commits
+        ///     ( StreamId, Sequence, CommitId, Revision, Payload )
+        ///SELECT @StreamId, @Sequence, @CommitId, @Revision, @Payload
+        /// WHERE NOT EXISTS
+        ///     ( SELECT *
+        ///         FROM Commit [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string PersistCommitAttempt {
             get {

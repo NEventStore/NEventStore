@@ -43,6 +43,10 @@ namespace EventStore.SqlPersistence
 		}
 		public static object Deserialize(this ISerialize serializer, byte[] serialized)
 		{
+			serialized = serialized ?? new byte[] { };
+			if (serialized.Length == 0)
+				return null;
+
 			using (var stream = new MemoryStream(serialized))
 				return serializer.Deserialize(stream);
 		}
