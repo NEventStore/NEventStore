@@ -47,7 +47,7 @@ namespace EventStore.SqlPersistence.SqlDialects
 		}
 		public string CommitSequence
 		{
-			get { return "@Sequence"; }
+			get { return "@CommitSequence"; }
 		}
 		public string ExpectedRevision
 		{

@@ -121,10 +121,10 @@
     <value>UPDATE Commits
    SET Snapshot = @Payload
  WHERE StreamId = @StreamId
-   AND Sequence = @Sequence;</value>
+   AND CommitSequence = @CommitSequence;</value>
   </data>
   <data name="GetCommitsFromSnapshotUntilRevision" xml:space="preserve">
-    <value>SELECT StreamId, CommitId, Revision, Sequence, Payload, Snapshot
+    <value>SELECT StreamId, CommitId, Revision, CommitSequence, Payload, Snapshot
   FROM Commits
  WHERE StreamId = @StreamId
    AND @Revision BETWEEN 
@@ -135,7 +135,7 @@
           AND Snapshot IS NOT NULL ) AND Revision;</value>
   </data>
   <data name="GetCommitsFromStartingRevision" xml:space="preserve">
-    <value>SELECT StreamId, CommitId, Revision, Sequence, Payload, null
+    <value>SELECT StreamId, CommitId, Revision, CommitSequence, Payload, null
   FROM Commits
  WHERE StreamId = @StreamId
    AND Revision &gt;= @Revision;</value>
@@ -146,7 +146,7 @@
  WHERE HeadRevision &gt;= SnapshotRevision + @Threshold;</value>
   </data>
   <data name="GetUndispatchedCommits" xml:space="preserve">
-    <value>SELECT C.StreamId, C.CommitId, C.Revision, C.Sequence, C.Payload, null
+    <value>SELECT C.StreamId, C.CommitId, C.Revision, C.CommitSequence, C.Payload, null
   FROM Commits AS C
  INNER JOIN Dispatch AS D
     ON C.StreamId = D.StreamId
@@ -156,7 +156,7 @@
     <value>DELETE
   FROM Dispatch
  WHERE StreamId = @StreamId
-   AND Sequence = @Sequence;</value>
+   AND CommitSequence = @CommitSequence;</value>
   </data>
   <data name="PersistCommitAttempt" xml:space="preserve">
     <value>BEGIN TRANSACTION;
@@ -176,21 +176,21 @@ UPDATE Streams
 
 INSERT
   INTO Commits
-     ( StreamId, Sequence, CommitId, Revision, Payload )
-SELECT @StreamId, @Sequence, @CommitId, @Revision, @Payload
+     ( StreamId, CommitId, Revision, CommitSequence, Payload )
+SELECT @StreamId, @CommitId, @Revision, @CommitSequence, @Payload
  WHERE NOT EXISTS
      ( SELECT *
          FROM Commits
         WHERE StreamId = @StreamId
-          AND Sequence &gt;= @Sequence );
+          AND CommitSequence &gt;= @CommitSequence );
 
 INSERT
   INTO Dispatch
-     ( StreamId, Sequence)
-SELECT @StreamId, @Sequence
+     ( StreamId, CommitSequence)
+SELECT @StreamId, @CommitSequence
   FROM Commits
  WHERE StreamId = @StreamId
-   AND Sequence = @Sequence
+   AND CommitSequence = @CommitSequence
    AND CommitId = @CommitId;
 
 COMMIT TRANSACTION;</value>

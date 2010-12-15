@@ -16,13 +16,13 @@ CREATE TABLE [dbo].[Streams]
 CREATE TABLE [dbo].[Commits]
 (
        [StreamId] [uniqueidentifier] NOT NULL,
-       [Sequence] [bigint] NOT NULL CHECK ([Sequence] > 0),
-       [CommitId] [uniqueidentifier] NOT NULL,
-       [SystemSequence] [bigint] IDENTITY(1,1) NOT NULL,
+       [CommitId] [uniqueidentifier] NOT NULL CHECK ([CommitId] != 0x0),
        [Revision] [bigint] NOT NULL CHECK ([Revision] > 0),
+       [CommitSequence] [bigint] NOT NULL CHECK ([CommitSequence] > 0),
+       [SystemSequence] [bigint] IDENTITY(1,1) NOT NULL,
        [Payload] [varbinary](MAX) NOT NULL CHECK (DATALENGTH([Payload]) > 0),
        [Snapshot] [varbinary](MAX) NULL CHECK ([Snapshot] IS NULL OR DATALENGTH([Snapshot]) > 0),
-       CONSTRAINT [PK_Commits] PRIMARY KEY CLUSTERED ([StreamId], [Sequence])
+       CONSTRAINT [PK_Commits] PRIMARY KEY CLUSTERED ([StreamId], [CommitSequence])
 )
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Commits] ON [dbo].[Commits] ([StreamId], [CommitId])
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Commits_Revisions] ON [dbo].[Commits] ([StreamId], [Revision])
@@ -31,7 +31,7 @@ CREATE TABLE [dbo].[Dispatch]
 (
        [DispatchId] [bigint] IDENTITY(1,1) NOT NULL,
        [StreamId] [uniqueidentifier] NOT NULL,
-       [Sequence] [bigint] NOT NULL,
+       [CommitSequence] [bigint] NOT NULL,
        CONSTRAINT [PK_Dispatch] PRIMARY KEY CLUSTERED ([DispatchId])
 )
 
@@ -39,8 +39,8 @@ ALTER TABLE [dbo].[Commits] WITH CHECK ADD CONSTRAINT [FK_Commits_Streams] FOREI
 REFERENCES [dbo].[Streams] ([StreamId])
 ALTER TABLE [dbo].[Commits] CHECK CONSTRAINT [FK_Commits_Streams]
 
-ALTER TABLE [dbo].[Dispatch] WITH CHECK ADD CONSTRAINT [FK_Dispatch_Commits] FOREIGN KEY([StreamId], [Sequence])
-REFERENCES [dbo].[Commits] ([StreamId], [Sequence])
+ALTER TABLE [dbo].[Dispatch] WITH CHECK ADD CONSTRAINT [FK_Dispatch_Commits] FOREIGN KEY([StreamId], [CommitSequence])
+REFERENCES [dbo].[Commits] ([StreamId], [CommitSequence])
 ALTER TABLE [dbo].[Dispatch] CHECK CONSTRAINT [FK_Dispatch_Commits]
 
 GO
@@ -48,7 +48,7 @@ CREATE TRIGGER [dbo].[PreventChangesToCommits] ON [dbo].[Commits] FOR UPDATE
 AS BEGIN
 
        IF (UPDATE([StreamId])
-       OR UPDATE([Sequence])
+       OR UPDATE([CommitSequence])
        OR UPDATE([CommitId])
        OR UPDATE([SystemSequence])
        OR UPDATE([Revision])
@@ -57,26 +57,5 @@ AS BEGIN
               RAISERROR('Commits cannot be modified.', 16, 1)
               ROLLBACK TRANSACTION
        END
-
-END;
-
-GO
-CREATE TRIGGER [dbo].[PreventChangesToStreamId] ON [dbo].[Streams] FOR UPDATE
-AS BEGIN
-
-       IF UPDATE([StreamId])
-       BEGIN
-              RAISERROR('Stream identifiers cannot be modified.', 16, 1)
-              ROLLBACK TRANSACTION
-       END
-
-END;
-
-GO
-CREATE TRIGGER [dbo].[PreventChangesToDispatches] ON [dbo].[Dispatch] FOR UPDATE
-AS BEGIN
-
-       RAISERROR('Dispatches cannot be modified.', 16, 1)
-       ROLLBACK TRANSACTION
 
 END;

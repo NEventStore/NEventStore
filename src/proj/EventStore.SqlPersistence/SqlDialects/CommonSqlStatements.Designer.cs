@@ -64,7 +64,7 @@ namespace EventStore.SqlPersistence.SqlDialects {
         ///   Looks up a localized string similar to UPDATE Commits
         ///   SET Snapshot = @Payload
         /// WHERE StreamId = @StreamId
-        ///   AND Sequence = @Sequence;.
+        ///   AND CommitSequence = @CommitSequence;.
         /// </summary>
         internal static string AppendSnapshotToCommit {
             get {
@@ -73,7 +73,7 @@ namespace EventStore.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT StreamId, CommitId, Revision, Sequence, Payload, Snapshot
+        ///   Looks up a localized string similar to SELECT StreamId, CommitId, Revision, CommitSequence, Payload, Snapshot
         ///  FROM Commits
         /// WHERE StreamId = @StreamId
         ///   AND @Revision BETWEEN 
@@ -90,7 +90,7 @@ namespace EventStore.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT StreamId, CommitId, Revision, Sequence, Payload, null
+        ///   Looks up a localized string similar to SELECT StreamId, CommitId, Revision, CommitSequence, Payload, null
         ///  FROM Commits
         /// WHERE StreamId = @StreamId
         ///   AND Revision &gt;= @Revision;.
@@ -113,7 +113,7 @@ namespace EventStore.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT C.StreamId, C.CommitId, C.Revision, C.Sequence, C.Payload, null
+        ///   Looks up a localized string similar to SELECT C.StreamId, C.CommitId, C.Revision, C.CommitSequence, C.Payload, null
         ///  FROM Commits AS C
         /// INNER JOIN Dispatch AS D
         ///    ON C.StreamId = D.StreamId
@@ -129,7 +129,7 @@ namespace EventStore.SqlPersistence.SqlDialects {
         ///   Looks up a localized string similar to DELETE
         ///  FROM Dispatch
         /// WHERE StreamId = @StreamId
-        ///   AND Sequence = @Sequence;.
+        ///   AND CommitSequence = @CommitSequence;.
         /// </summary>
         internal static string MarkCommitAsDispatched {
             get {
@@ -155,11 +155,10 @@ namespace EventStore.SqlPersistence.SqlDialects {
         ///
         ///INSERT
         ///  INTO Commits
-        ///     ( StreamId, Sequence, CommitId, Revision, Payload )
-        ///SELECT @StreamId, @Sequence, @CommitId, @Revision, @Payload
+        ///     ( StreamId, CommitId, Revision, CommitSequence, Payload )
+        ///SELECT @StreamId, @CommitId, @Revision, @CommitSequence, @Payload
         /// WHERE NOT EXISTS
-        ///     ( SELECT *
-        ///      [rest of string was truncated]&quot;;.
+        ///     ( SEL [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string PersistCommitAttempt {
             get {
