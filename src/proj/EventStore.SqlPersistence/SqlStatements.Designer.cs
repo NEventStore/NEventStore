@@ -76,7 +76,7 @@ namespace EventStore.SqlPersistence {
         ///   Looks up a localized string similar to SELECT StreamId, CommitId, Revision, Sequence, Payload, null
         ///  FROM Commits
         /// WHERE StreamId = @StreamId
-        ///   AND Revision &gt;= @Revision;.
+        ///   AND (Revision - Items) &gt;= @Revision;.
         /// </summary>
         internal static string GetFrom {
             get {
@@ -96,7 +96,7 @@ namespace EventStore.SqlPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT C.StreamId, C.CommitId, C.Revision, C.Sequence, C.Payload, C.Snapshot
+        ///   Looks up a localized string similar to SELECT C.StreamId, C.CommitId, C.Revision, C.Sequence, C.Payload, null
         ///  FROM Commits AS C
         /// INNER JOIN Dispatch AS D
         ///    ON C.StreamId = D.StreamId
@@ -109,7 +109,15 @@ namespace EventStore.SqlPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to -- TODO.
+        ///   Looks up a localized string similar to SELECT StreamId, CommitId, Revision, Sequence, Payload, Snapshot
+        ///  FROM Commits
+        /// WHERE StreamId = @StreamId
+        ///   AND @Revision BETWEEN 
+        ///     ( SELECT MAX(Revision)
+        ///         FROM Commits
+        ///        WHERE StreamId = @StreamId
+        ///          AND Revision &lt;= @Revision
+        ///          AND Snapshot IS NOT NULL ) AND (Revision - Items);.
         /// </summary>
         internal static string GetUntil {
             get {
@@ -130,13 +138,12 @@ namespace EventStore.SqlPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
-        ///BEGIN TRANSACTION;
+        ///   Looks up a localized string similar to BEGIN TRANSACTION;
         ///
         ///INSERT
         ///  INTO Commits
-        ///     ( StreamId, Sequence, CommitId, Revision, Payload )
-        ///SELECT @StreamId, @Sequence, @CommitId, @NewRevision, @Payload
+        ///     ( StreamId, Sequence, CommitId, Revision, Items, Payload )
+        ///SELECT @StreamId, @Sequence, @CommitId, @NewRevision, (@NewRevision - @OldRevision + 1), @Payload
         ///  FROM Commits
         /// WHERE NOT EXISTS
         ///     ( SELECT *
@@ -146,9 +153,11 @@ namespace EventStore.SqlPersistence {
         ///
         ///INSERT
         ///  INTO Streams
-        ///     ( StreamId, Name, HeadRevision, SnapshotRevision )
-        ///SELECT @StreamId, @StreamName, @NewRevision, 0
-        /// WHERE @OldRev [rest of string was truncated]&quot;;.
+        ///     ( StreamId, Name, HeadRevision )
+        ///SELECT @StreamId, @StreamName, @NewRevision
+        /// WHERE @OldRevision = 0;
+        ///
+        ///UPDATE Streams [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Persist {
             get {

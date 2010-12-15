@@ -19,11 +19,11 @@ namespace EventStore.SqlPersistence
 			this.serializer = serializer;
 		}
 
-		public IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision)
+		public virtual IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision)
 		{
 			return this.Fetch(streamId, maxRevision, SqlStatements.GetUntil);
 		}
-		public IEnumerable<Commit> GetFrom(Guid streamId, long minRevision)
+		public virtual IEnumerable<Commit> GetFrom(Guid streamId, long minRevision)
 		{
 			return this.Fetch(streamId, minRevision, SqlStatements.GetFrom);
 		}
@@ -38,7 +38,7 @@ namespace EventStore.SqlPersistence
 			});
 		}
 
-		public void Persist(CommitAttempt uncommitted)
+		public virtual void Persist(CommitAttempt uncommitted)
 		{
 			this.Execute(uncommitted.StreamId, cmd =>
 			{
@@ -73,7 +73,7 @@ namespace EventStore.SqlPersistence
 			}
 		}
 
-		public IEnumerable<Commit> GetUndispatchedCommits()
+		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
 			return this.Execute(Guid.Empty, query =>
 			{
@@ -81,7 +81,7 @@ namespace EventStore.SqlPersistence
 				return query.ExecuteQuery(x => x.GetCommit(this.serializer));
 			});
 		}
-		public void MarkCommitAsDispatched(Commit commit)
+		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
 			this.Execute(commit.StreamId, cmd =>
 			{
@@ -92,7 +92,7 @@ namespace EventStore.SqlPersistence
 			});
 		}
 
-		public IEnumerable<Guid> GetStreamsToSnapshot(int maxThreshold)
+		public virtual IEnumerable<Guid> GetStreamsToSnapshot(int maxThreshold)
 		{
 			return this.Execute(Guid.Empty, query =>
 			{
@@ -101,7 +101,7 @@ namespace EventStore.SqlPersistence
 				return query.ExecuteQuery(record => (Guid)record[0]);
 			});
 		}
-		public void AddSnapshot(Guid streamId, long commitSequence, object snapshot)
+		public virtual void AddSnapshot(Guid streamId, long commitSequence, object snapshot)
 		{
 			this.Execute(streamId, cmd =>
 			{
@@ -113,13 +113,13 @@ namespace EventStore.SqlPersistence
 			});
 		}
 
-		private T Execute<T>(Guid streamId, Func<IDbCommand, T> callback)
+		protected virtual T Execute<T>(Guid streamId, Func<IDbCommand, T> callback)
 		{
 			var results = default(T);
 			this.Execute(streamId, command => { results = callback(command); });
 			return results;
 		}
-		private void Execute(Guid streamId, Action<IDbCommand> callback)
+		protected virtual void Execute(Guid streamId, Action<IDbCommand> callback)
 		{
 			using (var scope = new TransactionScope(TransactionScopeOption.Suppress))
 			using (var connection = this.factory.Open(streamId))

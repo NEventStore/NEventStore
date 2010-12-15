@@ -127,7 +127,7 @@
     <value>SELECT StreamId, CommitId, Revision, Sequence, Payload, null
   FROM Commits
  WHERE StreamId = @StreamId
-   AND Revision &gt;= @Revision;</value>
+   AND (Revision - Items) &gt;= @Revision;</value>
   </data>
   <data name="GetStreamsToSnapshot" xml:space="preserve">
     <value>SELECT StreamId
@@ -135,14 +135,22 @@
  WHERE HeadRevision &gt;= SnapshotRevision + @Threshold;</value>
   </data>
   <data name="GetUndispatched" xml:space="preserve">
-    <value>SELECT C.StreamId, C.CommitId, C.Revision, C.Sequence, C.Payload, C.Snapshot
+    <value>SELECT C.StreamId, C.CommitId, C.Revision, C.Sequence, C.Payload, null
   FROM Commits AS C
  INNER JOIN Dispatch AS D
     ON C.StreamId = D.StreamId
    AND C.Sequence = D.Sequence;</value>
   </data>
   <data name="GetUntil" xml:space="preserve">
-    <value>-- TODO</value>
+    <value>SELECT StreamId, CommitId, Revision, Sequence, Payload, Snapshot
+  FROM Commits
+ WHERE StreamId = @StreamId
+   AND @Revision BETWEEN 
+     ( SELECT MAX(Revision)
+         FROM Commits
+        WHERE StreamId = @StreamId
+          AND Revision &lt;= @Revision
+          AND Snapshot IS NOT NULL ) AND (Revision - Items);</value>
   </data>
   <data name="MarkAsDispatched" xml:space="preserve">
     <value>DELETE
@@ -151,13 +159,12 @@
    AND Sequence = @CommitSequence;</value>
   </data>
   <data name="Persist" xml:space="preserve">
-    <value>SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
-BEGIN TRANSACTION;
+    <value>BEGIN TRANSACTION;
 
 INSERT
   INTO Commits
-     ( StreamId, Sequence, CommitId, Revision, Payload )
-SELECT @StreamId, @Sequence, @CommitId, @NewRevision, @Payload
+     ( StreamId, Sequence, CommitId, Revision, Items, Payload )
+SELECT @StreamId, @Sequence, @CommitId, @NewRevision, (@NewRevision - @OldRevision + 1), @Payload
   FROM Commits
  WHERE NOT EXISTS
      ( SELECT *
@@ -167,8 +174,8 @@ SELECT @StreamId, @Sequence, @CommitId, @NewRevision, @Payload
 
 INSERT
   INTO Streams
-     ( StreamId, Name, HeadRevision, SnapshotRevision )
-SELECT @StreamId, @StreamName, @NewRevision, 0
+     ( StreamId, Name, HeadRevision )
+SELECT @StreamId, @StreamName, @NewRevision
  WHERE @OldRevision = 0;
 
 UPDATE Streams
