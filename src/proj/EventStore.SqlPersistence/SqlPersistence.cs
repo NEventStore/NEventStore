@@ -21,11 +21,11 @@ namespace EventStore.SqlPersistence
 
 		public virtual IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision)
 		{
-			return this.Fetch(streamId, maxRevision, SqlStatements.ReadFromSnapshotUntil);
+			return this.Fetch(streamId, maxRevision, SqlStatements.GetCommitsFromSnapshotUntilRevision);
 		}
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, long minRevision)
 		{
-			return this.Fetch(streamId, minRevision, SqlStatements.GetFromStartingRevision);
+			return this.Fetch(streamId, minRevision, SqlStatements.GetCommitsFromStartingRevision);
 		}
 		private IEnumerable<Commit> Fetch(Guid streamId, long revision, string queryText)
 		{
@@ -96,7 +96,7 @@ namespace EventStore.SqlPersistence
 		{
 			return this.Execute(Guid.Empty, query =>
 			{
-				query.CommandText = SqlStatements.GetStreamsToSnapshot;
+				query.CommandText = SqlStatements.GetStreamsRequiringSnaphots;
 				query.AddParameter(SqlParameters.Threshold, maxThreshold);
 				return query.ExecuteQuery(record => (Guid)record[0]);
 			});
@@ -105,7 +105,7 @@ namespace EventStore.SqlPersistence
 		{
 			this.Execute(streamId, cmd =>
 			{
-				cmd.CommandText = SqlStatements.AddSnapshotToCommit;
+				cmd.CommandText = SqlStatements.AppendSnapshotToCommit;
 				cmd.AddParameter(SqlParameters.StreamId, streamId);
 				cmd.AddParameter(SqlParameters.CommitSequence, commitSequence);
 				cmd.AddParameter(SqlParameters.Payload, this.serializer.Serialize(snapshot));
