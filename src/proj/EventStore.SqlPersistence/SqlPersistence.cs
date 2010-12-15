@@ -21,11 +21,11 @@ namespace EventStore.SqlPersistence
 
 		public virtual IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision)
 		{
-			return this.Fetch(streamId, maxRevision, SqlStatements.GetUntil);
+			return this.Fetch(streamId, maxRevision, SqlStatements.ReadFromSnapshotUntil);
 		}
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, long minRevision)
 		{
-			return this.Fetch(streamId, minRevision, SqlStatements.GetFrom);
+			return this.Fetch(streamId, minRevision, SqlStatements.GetFromStartingRevision);
 		}
 		private IEnumerable<Commit> Fetch(Guid streamId, long revision, string queryText)
 		{
@@ -44,7 +44,7 @@ namespace EventStore.SqlPersistence
 			{
 				var commit = uncommitted.ToCommit();
 
-				cmd.CommandText = SqlStatements.Persist;
+				cmd.CommandText = SqlStatements.PersistCommitAttempt;
 				cmd.AddParameter(SqlParameters.StreamId, commit.StreamId);
 				cmd.AddParameter(SqlParameters.StreamName, uncommitted.StreamName);
 				cmd.AddParameter(SqlParameters.CommitId, commit.CommitId);
@@ -77,7 +77,7 @@ namespace EventStore.SqlPersistence
 		{
 			return this.Execute(Guid.Empty, query =>
 			{
-				query.CommandText = SqlStatements.GetUndispatched;
+				query.CommandText = SqlStatements.GetUndispatchedCommits;
 				return query.ExecuteQuery(x => x.GetCommit(this.serializer));
 			});
 		}
@@ -85,7 +85,7 @@ namespace EventStore.SqlPersistence
 		{
 			this.Execute(commit.StreamId, cmd =>
 			{
-				cmd.CommandText = SqlStatements.MarkAsDispatched;
+				cmd.CommandText = SqlStatements.MarkCommitAsDispatched;
 				cmd.AddParameter(SqlParameters.StreamId, commit.StreamId);
 				cmd.AddParameter(SqlParameters.CommitSequence, commit.CommitSequence);
 				cmd.ExecuteAndSuppressExceptions();
@@ -105,7 +105,7 @@ namespace EventStore.SqlPersistence
 		{
 			this.Execute(streamId, cmd =>
 			{
-				cmd.CommandText = SqlStatements.AddSnapshot;
+				cmd.CommandText = SqlStatements.AddSnapshotToCommit;
 				cmd.AddParameter(SqlParameters.StreamId, streamId);
 				cmd.AddParameter(SqlParameters.CommitSequence, commitSequence);
 				cmd.AddParameter(SqlParameters.Payload, this.serializer.Serialize(snapshot));

@@ -66,9 +66,9 @@ namespace EventStore.SqlPersistence {
         /// WHERE StreamId = @StreamId
         ///   AND Sequence = @CommitSequence;.
         /// </summary>
-        internal static string AddSnapshot {
+        internal static string AddSnapshotToCommit {
             get {
-                return ResourceManager.GetString("AddSnapshot", resourceCulture);
+                return ResourceManager.GetString("AddSnapshotToCommit", resourceCulture);
             }
         }
         
@@ -78,9 +78,9 @@ namespace EventStore.SqlPersistence {
         /// WHERE StreamId = @StreamId
         ///   AND Revision &gt;= @Revision;.
         /// </summary>
-        internal static string GetFrom {
+        internal static string GetFromStartingRevision {
             get {
-                return ResourceManager.GetString("GetFrom", resourceCulture);
+                return ResourceManager.GetString("GetFromStartingRevision", resourceCulture);
             }
         }
         
@@ -102,26 +102,9 @@ namespace EventStore.SqlPersistence {
         ///    ON C.StreamId = D.StreamId
         ///   AND C.Sequence = D.Sequence;.
         /// </summary>
-        internal static string GetUndispatched {
+        internal static string GetUndispatchedCommits {
             get {
-                return ResourceManager.GetString("GetUndispatched", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SELECT StreamId, CommitId, Revision, Sequence, Payload, Snapshot
-        ///  FROM Commits
-        /// WHERE StreamId = @StreamId
-        ///   AND @Revision BETWEEN 
-        ///     ( SELECT MAX(Revision)
-        ///         FROM Commits
-        ///        WHERE StreamId = @StreamId
-        ///          AND Revision &lt;= @Revision
-        ///          AND Snapshot IS NOT NULL ) AND Revision;.
-        /// </summary>
-        internal static string GetUntil {
-            get {
-                return ResourceManager.GetString("GetUntil", resourceCulture);
+                return ResourceManager.GetString("GetUndispatchedCommits", resourceCulture);
             }
         }
         
@@ -131,9 +114,9 @@ namespace EventStore.SqlPersistence {
         /// WHERE StreamId = @StreamId
         ///   AND Sequence = @CommitSequence;.
         /// </summary>
-        internal static string MarkAsDispatched {
+        internal static string MarkCommitAsDispatched {
             get {
-                return ResourceManager.GetString("MarkAsDispatched", resourceCulture);
+                return ResourceManager.GetString("MarkCommitAsDispatched", resourceCulture);
             }
         }
         
@@ -161,9 +144,26 @@ namespace EventStore.SqlPersistence {
         ///   SET HeadRevision = @NewRevision
         ///  FRO [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string Persist {
+        internal static string PersistCommitAttempt {
             get {
-                return ResourceManager.GetString("Persist", resourceCulture);
+                return ResourceManager.GetString("PersistCommitAttempt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT StreamId, CommitId, Revision, Sequence, Payload, Snapshot
+        ///  FROM Commits
+        /// WHERE StreamId = @StreamId
+        ///   AND @Revision BETWEEN 
+        ///     ( SELECT MAX(Revision)
+        ///         FROM Commits
+        ///        WHERE StreamId = @StreamId
+        ///          AND Revision &lt;= @Revision
+        ///          AND Snapshot IS NOT NULL ) AND Revision;.
+        /// </summary>
+        internal static string ReadFromSnapshotUntil {
+            get {
+                return ResourceManager.GetString("ReadFromSnapshotUntil", resourceCulture);
             }
         }
     }

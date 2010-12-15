@@ -117,13 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AddSnapshot" xml:space="preserve">
+  <data name="AddSnapshotToCommit" xml:space="preserve">
     <value>UPDATE Commits
    SET Snapshot = @Payload
  WHERE StreamId = @StreamId
    AND Sequence = @CommitSequence;</value>
   </data>
-  <data name="GetFrom" xml:space="preserve">
+  <data name="GetFromStartingRevision" xml:space="preserve">
     <value>SELECT StreamId, CommitId, Revision, Sequence, Payload, null
   FROM Commits
  WHERE StreamId = @StreamId
@@ -134,31 +134,20 @@
   FROM Streams
  WHERE HeadRevision &gt;= SnapshotRevision + @Threshold;</value>
   </data>
-  <data name="GetUndispatched" xml:space="preserve">
+  <data name="GetUndispatchedCommits" xml:space="preserve">
     <value>SELECT C.StreamId, C.CommitId, C.Revision, C.Sequence, C.Payload, null
   FROM Commits AS C
  INNER JOIN Dispatch AS D
     ON C.StreamId = D.StreamId
    AND C.Sequence = D.Sequence;</value>
   </data>
-  <data name="GetUntil" xml:space="preserve">
-    <value>SELECT StreamId, CommitId, Revision, Sequence, Payload, Snapshot
-  FROM Commits
- WHERE StreamId = @StreamId
-   AND @Revision BETWEEN 
-     ( SELECT MAX(Revision)
-         FROM Commits
-        WHERE StreamId = @StreamId
-          AND Revision &lt;= @Revision
-          AND Snapshot IS NOT NULL ) AND Revision;</value>
-  </data>
-  <data name="MarkAsDispatched" xml:space="preserve">
+  <data name="MarkCommitAsDispatched" xml:space="preserve">
     <value>DELETE
   FROM Dispatch
  WHERE StreamId = @StreamId
    AND Sequence = @CommitSequence;</value>
   </data>
-  <data name="Persist" xml:space="preserve">
+  <data name="PersistCommitAttempt" xml:space="preserve">
     <value>BEGIN TRANSACTION;
 
 INSERT
@@ -186,5 +175,16 @@ UPDATE Streams
    AND @NewRevision &gt; 0;
 
 COMMIT TRANSACTION;</value>
+  </data>
+  <data name="ReadFromSnapshotUntil" xml:space="preserve">
+    <value>SELECT StreamId, CommitId, Revision, Sequence, Payload, Snapshot
+  FROM Commits
+ WHERE StreamId = @StreamId
+   AND @Revision BETWEEN 
+     ( SELECT MAX(Revision)
+         FROM Commits
+        WHERE StreamId = @StreamId
+          AND Revision &lt;= @Revision
+          AND Snapshot IS NOT NULL ) AND Revision;</value>
   </data>
 </root>
