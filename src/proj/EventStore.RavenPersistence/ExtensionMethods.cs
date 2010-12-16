@@ -2,6 +2,8 @@ namespace EventStore.RavenPersistence
 {
 	using System;
 	using System.Globalization;
+	using Raven.Database.Data;
+	using Raven.Database.Json;
 
 	internal static class ExtensionMethods
 	{
@@ -15,17 +17,19 @@ namespace EventStore.RavenPersistence
 			return string.Format(CultureInfo.InvariantCulture, format, values);
 		}
 
-		public static RavenCommit ToRavenCommit(this CommitAttempt attempt)
+		public static PatchCommandData RemoveUndispatchedProperty(this Commit commit)
 		{
-			var commit = attempt.ToCommit();
-			return new RavenCommit
+			return new PatchCommandData
 			{
-				StreamId = commit.StreamId,
-				CommitId = commit.CommitId,
-				StreamRevision = commit.StreamRevision,
-				CommitSequence = commit.CommitSequence,
-				Headers = commit.Headers,
-				Events = commit.Events
+				Key = new RavenCommit(commit).Id,
+				Patches = new[]
+				{
+					new PatchRequest
+					{
+						Type = PatchCommandType.Remove,
+						Name = "PendingDispatch"
+					}
+				}
 			};
 		}
 	}

@@ -29,10 +29,11 @@ namespace EventStore.RavenPersistence
 
 				try
 				{
-					return session.Query<RavenCommit>()
-						.Where(x => x.StreamId == streamId && x.StreamRevision >= minRevision)
-						.ToArray()
-						.Select(x => x.ToCommit());
+					return (from commit in session.Query<RavenCommit>()
+					        where commit.StreamId == streamId
+					              && commit.StreamRevision >= minRevision
+					              && commit.Snapshot == null
+					        select commit.ToCommit()).ToArray();
 				}
 				catch (Exception e)
 				{
@@ -45,7 +46,7 @@ namespace EventStore.RavenPersistence
 			using (var session = this.store.OpenSession())
 			{
 				session.Advanced.UseOptimisticConcurrency = true;
-				session.Store(uncommitted.ToRavenCommit());
+				session.Store(new RavenCommit(uncommitted));
 
 				try
 				{
@@ -68,11 +69,29 @@ namespace EventStore.RavenPersistence
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
-			return null;
+			using (var session = this.store.OpenSession())
+			{
+				try
+				{
+					return session.Query<RavenCommit>()
+						.Where(x => x.PendingDispatch)
+						.Select(x => x.ToCommit())
+						.ToArray();
+				}
+				catch (Exception e)
+				{
+					throw new PersistenceException(e.Message, e);
+				}
+			}
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
-			// patches a commit to flag it as dispatched
+			using (var session = this.store.OpenSession())
+			{
+				var patch = commit.RemoveUndispatchedProperty();
+				session.Advanced.DatabaseCommands.Batch(new[] { patch });
+				session.SaveChanges();
+			}
 		}
 
 		public virtual IEnumerable<Guid> GetStreamsToSnapshot(int maxThreshold)
