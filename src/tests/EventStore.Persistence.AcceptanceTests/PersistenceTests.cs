@@ -73,19 +73,60 @@ namespace EventStore.Persistence.AcceptanceTests
 	}
 
 	[Subject("Persistence")]
-	public class when_reading_from_a_given_revision
+	public class when_reading_from_a_given_revision : using_the_persistence_engine
 	{
-		It should_start_from_the_commit_which_contains_the_given_stream_revision;
-		It should_read_up_to_the_end_of_the_stream;
-		It should_return_the_commits_in_commit_sequence_order_from_oldest_first_to_newest_last;
+		static readonly CommitAttempt oldest = streamId.BuildAttempt();
+		static readonly CommitAttempt oldest2 = oldest.BuildNextAttempt();
+		static readonly CommitAttempt oldest3 = oldest2.BuildNextAttempt();
+		static readonly CommitAttempt newest = oldest3.BuildNextAttempt();
+		static Commit[] committed;
+
+		Establish context = () =>
+		{
+			persistence.Persist(oldest);
+			persistence.Persist(oldest2);
+			persistence.Persist(oldest3);
+			persistence.Persist(newest);
+		};
+
+		Because of = () =>
+			committed = persistence.GetFrom(streamId, oldest2.ToCommit().StreamRevision).ToArray();
+
+		It should_start_from_the_commit_which_contains_the_given_stream_revision = () =>
+			committed.First().CommitId.ShouldEqual(oldest2.CommitId);
+
+		It should_read_up_to_the_end_of_the_stream = () =>
+			committed.Last().CommitId.ShouldEqual(newest.CommitId);
 	}
 
 	[Subject("Persistence")]
-	public class when_reading_until_a_given_revision
+	public class when_reading_until_a_given_revision : using_the_persistence_engine
 	{
-		It should_start_from_the_commit_of_the_most_recent_snapshot_on_or_before_the_given_revision;
-		It should_read_up_to_the_commit_containing_the_given_revision;
-		It should_return_the_commits_in_commit_sequence_order_from_oldest_first_to_newest_last;
+		static readonly CommitAttempt oldest = streamId.BuildAttempt();
+		static readonly CommitAttempt oldest2 = oldest.BuildNextAttempt();
+		static readonly CommitAttempt oldest3 = oldest2.BuildNextAttempt();
+		static readonly CommitAttempt oldest4 = oldest3.BuildNextAttempt();
+		static readonly CommitAttempt newest = oldest4.BuildNextAttempt();
+		static Commit[] committed;
+
+		Establish context = () =>
+		{
+			persistence.Persist(oldest);
+			persistence.Persist(oldest2);
+			persistence.AddSnapshot(streamId, oldest3.PreviousCommitSequence, "snapshot");
+			persistence.Persist(oldest3);
+			persistence.Persist(oldest4);
+			persistence.Persist(newest);
+		};
+
+		Because of = () =>
+			committed = persistence.GetUntil(streamId, oldest4.ToCommit().StreamRevision).ToArray();
+
+		It should_start_from_the_commit_of_the_most_recent_snapshot_on_or_before_the_given_revision = () =>
+			committed.First().StreamRevision.ShouldEqual(oldest2.ToCommit().StreamRevision);
+
+		It should_read_up_to_the_commit_containing_the_given_revision = () =>
+			committed.Last().StreamRevision.ShouldEqual(oldest4.ToCommit().StreamRevision);
 	}
 
 	[Subject("Persistence")]

@@ -32,7 +32,7 @@ namespace EventStore.SqlPersistence
 		}
 		private static object Deserialize(this ISerialize serializer, IDataRecord record, int index)
 		{
-			if (record.FieldCount >= index)
+			if (index >= record.FieldCount)
 				return null;
 
 			var bytes = record[index];

@@ -141,18 +141,20 @@ COMMIT TRANSACTION;</value>
     <value>SELECT StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload, Snapshot
   FROM Commits
  WHERE StreamId = @StreamId
-   AND @StreamRevision BETWEEN 
+   AND StreamRevision BETWEEN 
      ( SELECT MAX(StreamRevision)
          FROM Commits
         WHERE StreamId = @StreamId
           AND StreamRevision &lt;= @StreamRevision
-          AND Snapshot IS NOT NULL ) AND StreamRevision;</value>
+          AND Snapshot IS NOT NULL ) AND @StreamRevision
+ ORDER BY CommitSequence;</value>
   </data>
   <data name="GetCommitsFromStartingRevision" xml:space="preserve">
     <value>SELECT StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload
   FROM Commits
  WHERE StreamId = @StreamId
-   AND StreamRevision &gt;= @StreamRevision;</value>
+   AND StreamRevision &gt;= @StreamRevision
+ ORDER BY CommitSequence;</value>
   </data>
   <data name="GetStreamsRequiringSnaphots" xml:space="preserve">
     <value>SELECT StreamId
@@ -164,7 +166,8 @@ COMMIT TRANSACTION;</value>
   FROM Commits AS C
  INNER JOIN Dispatch AS D
     ON C.StreamId = D.StreamId
-   AND C.CommitSequence = D.CommitSequence;</value>
+   AND C.CommitSequence = D.CommitSequence
+ ORDER BY D.DispatchId;</value>
   </data>
   <data name="MarkCommitAsDispatched" xml:space="preserve">
     <value>DELETE
