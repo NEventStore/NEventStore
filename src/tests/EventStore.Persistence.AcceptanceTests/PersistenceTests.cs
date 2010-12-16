@@ -28,7 +28,8 @@ namespace EventStore.Persistence.AcceptanceTests
 		It should_add_the_commit_to_the_set_of_undispatched_commits = () =>
 			persistence.GetUndispatchedCommits().First(x => x.CommitId == attempt.CommitId).ShouldNotBeNull();
 
-		It should_increment_the_head_revision_of_the_stream;
+		It should_increment_the_head_revision_of_the_stream = () =>
+			persistence.GetStreamsToSnapshot(1).First(x => x == streamId).ShouldNotBeNull();
 	}
 
 	[Subject("Persistence")]
@@ -49,8 +50,18 @@ namespace EventStore.Persistence.AcceptanceTests
 	[Subject("Persistence")]
 	public class when_a_snapshot_has_been_added_at_a_specific_commit : using_the_persistence_engine
 	{
+		static readonly CommitAttempt attempt = streamId.BuildAttempt();
+
+		Establish context = () =>
+			persistence.Persist(attempt);
+
+		Because of = () =>
+			persistence.AddSnapshot(attempt.StreamId, attempt.ToCommit().CommitSequence, "snapshot");
+
 		It should_start_reads_from_that_commit;
-		It should_no_longer_find_it_in_the_set_of_streams_to_be_snapshot;
+
+		It should_no_longer_find_it_in_the_set_of_streams_to_be_snapshot = () =>
+			persistence.GetStreamsToSnapshot(1).Where(x => x == streamId).ShouldNotContain(streamId);
 	}
 
 	[Subject("Persistence")]
@@ -114,8 +125,7 @@ namespace EventStore.Persistence.AcceptanceTests
 				new CommonSqlDialect(),
 				new BinarySerializer());
 		};
-
-		private static IDbConnection OpenConnection()
+		static IDbConnection OpenConnection()
 		{
 			var connectionName = ConfigurationManager.AppSettings["UnderTest"];
 			var setting = ConfigurationManager.ConnectionStrings[connectionName];

@@ -500,6 +500,8 @@ namespace EventStore.Core.UnitTests
 			dispatcher = new Mock<IDispatchCommits>();
 			store = new OptimisticEventStore(persistence.Object, dispatcher.Object);
 		};
+		Cleanup everything = () =>
+			streamId = Guid.NewGuid();
 	}
 }
 
