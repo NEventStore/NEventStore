@@ -144,7 +144,11 @@ namespace EventStore.SqlPersistence.SqlDialects {
         ///  INTO Streams
         ///     ( StreamId, Name, HeadRevision )
         ///SELECT @StreamId, @StreamName, @StreamRevision
-        /// WHERE @ExpectedRevision = 0;
+        /// WHERE @ExpectedRevision = 0
+        ///   AND NOT EXISTS
+        ///     ( SELECT *
+        ///         FROM Streams
+        ///        WHERE StreamId = @StreamId );
         ///
         ///UPDATE Streams
         ///   SET HeadRevision = @StreamRevision
@@ -155,8 +159,7 @@ namespace EventStore.SqlPersistence.SqlDialects {
         ///
         ///INSERT
         ///  INTO Commits
-        ///     ( StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload )
-        ///SELECT @StreamId, @CommitId, @StreamRevision, @CommitSequence, @Head [rest of string was truncated]&quot;;.
+        ///     ( StreamId, CommitId, StreamRevision, CommitS [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string PersistCommitAttempt {
             get {

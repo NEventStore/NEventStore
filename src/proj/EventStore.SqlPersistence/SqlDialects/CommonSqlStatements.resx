@@ -165,7 +165,11 @@ INSERT
   INTO Streams
      ( StreamId, Name, HeadRevision )
 SELECT @StreamId, @StreamName, @StreamRevision
- WHERE @ExpectedRevision = 0;
+ WHERE @ExpectedRevision = 0
+   AND NOT EXISTS
+     ( SELECT *
+         FROM Streams
+        WHERE StreamId = @StreamId );
 
 UPDATE Streams
    SET HeadRevision = @StreamRevision
@@ -182,6 +186,7 @@ SELECT @StreamId, @CommitId, @StreamRevision, @CommitSequence, @Headers, @Payloa
      ( SELECT *
          FROM Commits
         WHERE StreamId = @StreamId
+          AND CommitId != @CommitId
           AND CommitSequence &gt;= @CommitSequence );
 
 INSERT

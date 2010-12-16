@@ -17,13 +17,7 @@ namespace EventStore.Persistence.AcceptanceTests
 	[Subject("Persistence")]
 	public class when_a_commit_attempt_is_successfully_committed : using_the_persistence_engine
 	{
-		static readonly CommitAttempt attempt = new CommitAttempt
-		{
-			StreamId = streamId,
-			CommitId = Guid.NewGuid(),
-			StreamName = "Testing",
-			Events = { new EventMessage() }
-		};
+		static readonly CommitAttempt attempt = streamId.BuildAttempt();
 
 		Because of = () =>
 			persistence.Persist(attempt);
@@ -31,21 +25,32 @@ namespace EventStore.Persistence.AcceptanceTests
 		It should_make_the_commit_available_to_be_read_from_the_stream = () =>
 			persistence.GetFrom(streamId, 0).First().CommitId.ShouldEqual(attempt.CommitId);
 
-		It should_add_the_commit_to_the_set_of_undispatched_commits;
+		It should_add_the_commit_to_the_set_of_undispatched_commits = () =>
+			persistence.GetUndispatchedCommits().First(x => x.CommitId == attempt.CommitId).ShouldNotBeNull();
+
 		It should_increment_the_head_revision_of_the_stream;
 	}
 
 	[Subject("Persistence")]
-	public class when_a_commit_has_been_marked_as_dispatched
+	public class when_a_commit_has_been_marked_as_dispatched : using_the_persistence_engine
 	{
-		It should_no_longer_be_found_in_the_set_of_undispatched_commits;
+		static readonly CommitAttempt attempt = streamId.BuildAttempt();
+
+		Establish context = () =>
+			persistence.Persist(attempt);
+
+		Because of = () =>
+			persistence.MarkCommitAsDispatched(attempt.ToCommit());
+
+		It should_no_longer_be_found_in_the_set_of_undispatched_commits = () =>
+			persistence.GetUndispatchedCommits().FirstOrDefault(x => x.CommitId == attempt.CommitId).ShouldBeNull();
 	}
 
 	[Subject("Persistence")]
-	public class when_a_snapshot_has_been_added_at_a_specific_commit
+	public class when_a_snapshot_has_been_added_at_a_specific_commit : using_the_persistence_engine
 	{
 		It should_start_reads_from_that_commit;
-		It should_no_longer_include_the_corresponding_stream_in_the_set_of_streams_to_snapshot;
+		It should_no_longer_find_it_in_the_set_of_streams_to_be_snapshot;
 	}
 
 	[Subject("Persistence")]
@@ -65,15 +70,36 @@ namespace EventStore.Persistence.AcceptanceTests
 	}
 
 	[Subject("Persistence")]
-	public class when_attempting_to_overwrite_a_committed_sequence
+	public class when_attempting_to_overwrite_a_committed_sequence : using_the_persistence_engine
 	{
-		It should_throw_a_ConcurrencyException;
+		static readonly CommitAttempt successfulAttempt = streamId.BuildAttempt();
+		static readonly CommitAttempt failedAttempt = streamId.BuildAttempt();
+		static Exception thrown;
+
+		Establish context = () =>
+			persistence.Persist(successfulAttempt);
+
+		Because of = () =>
+			thrown = Catch.Exception(() => persistence.Persist(failedAttempt));
+
+		It should_throw_a_ConcurrencyException = () =>
+			thrown.ShouldBeOfType<ConcurrencyException>();
 	}
 
 	[Subject("Persistence")]
-	public class when_attempting_to_commit_an_already_committed_attempt
+	public class when_attempting_to_commit_an_already_committed_attempt : using_the_persistence_engine
 	{
-		It should_throw_a_DuplicateCommitException;
+		static readonly CommitAttempt attemptTwice = streamId.BuildAttempt();
+		static Exception thrown;
+
+		Establish context = () =>
+			persistence.Persist(attemptTwice);
+
+		Because of = () =>
+			thrown = Catch.Exception(() => persistence.Persist(attemptTwice));
+
+		It should_throw_a_DuplicateCommitException = () =>
+			thrown.ShouldBeOfType<DuplicateCommitException>();
 	}
 
 	public abstract class using_the_persistence_engine
@@ -99,6 +125,9 @@ namespace EventStore.Persistence.AcceptanceTests
 			connection.Open();
 			return connection;
 		}
+
+		Cleanup everything = () =>
+			streamId = Guid.NewGuid();
 	}
 }
 
