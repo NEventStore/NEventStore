@@ -79,6 +79,9 @@
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.SQLite">
+      <HintPath>..\..\..\bin\sqlite-bin\System.Data.SQLite.DLL</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

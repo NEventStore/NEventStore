@@ -218,4 +218,51 @@ SELECT @StreamId, @CommitSequence
 
 COMMIT TRANSACTION;</value>
   </data>
+  <data name="SqlitePersistCommitAttempt" xml:space="preserve">
+    <value>BEGIN TRANSACTION;
+
+INSERT
+  INTO Streams
+     ( StreamId, Name, HeadRevision )
+SELECT @StreamId, COALESCE(@StreamName, ''), @StreamRevision
+ WHERE @ExpectedRevision = 0
+   AND NOT EXISTS
+     ( SELECT *
+         FROM Streams
+        WHERE StreamId = @StreamId );
+
+INSERT OR REPLACE
+  INTO Streams
+     ( StreamId, Name, HeadRevision)
+SELECT @StreamId, COALESCE(@StreamName, ''), @StreamRevision
+ WHERE @ExpectedRevision &gt; 0
+   AND StreamId = @StreamId
+   AND HeadRevision = @ExpectedRevision
+   AND NOT EXISTS
+     ( SELECT *
+         FROM Streams
+        WHERE StreamId = @StreamId ); /* TODO */
+
+INSERT
+  INTO Commits
+     ( StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload )
+SELECT @StreamId, @CommitId, @StreamRevision, @CommitSequence, @Headers, @Payload
+ WHERE NOT EXISTS
+     ( SELECT *
+         FROM Commits
+        WHERE StreamId = @StreamId
+          AND CommitId != @CommitId
+          AND CommitSequence &gt;= @CommitSequence );
+
+INSERT
+  INTO Dispatch
+     ( StreamId, CommitSequence)
+SELECT @StreamId, @CommitSequence
+  FROM Commits
+ WHERE StreamId = @StreamId
+   AND CommitSequence = @CommitSequence
+   AND CommitId = @CommitId;
+
+COMMIT TRANSACTION;</value>
+  </data>
 </root>

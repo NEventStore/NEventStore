@@ -4,73 +4,73 @@ namespace EventStore.SqlPersistence.SqlDialects
 
 	public class CommonSqlDialect : ISqlDialect
 	{
-		public string AppendSnapshotToCommit
+		public virtual string AppendSnapshotToCommit
 		{
 			get { return CommonSqlStatements.AppendSnapshotToCommit; }
 		}
-		public string GetCommitsFromSnapshotUntilRevision
+		public virtual string GetCommitsFromSnapshotUntilRevision
 		{
 			get { return CommonSqlStatements.GetCommitsFromSnapshotUntilRevision; }
 		}
-		public string GetCommitsFromStartingRevision
+		public virtual string GetCommitsFromStartingRevision
 		{
 			get { return CommonSqlStatements.GetCommitsFromStartingRevision; }
 		}
-		public string GetStreamsRequiringSnaphots
+		public virtual string GetStreamsRequiringSnaphots
 		{
 			get { return CommonSqlStatements.GetStreamsRequiringSnaphots; }
 		}
-		public string GetUndispatchedCommits
+		public virtual string GetUndispatchedCommits
 		{
 			get { return CommonSqlStatements.GetUndispatchedCommits; }
 		}
-		public string MarkCommitAsDispatched
+		public virtual string MarkCommitAsDispatched
 		{
 			get { return CommonSqlStatements.MarkCommitAsDispatched; }
 		}
-		public string PersistCommitAttempt
+		public virtual string PersistCommitAttempt
 		{
 			get { return CommonSqlStatements.PersistCommitAttempt; }
 		}
 
-		public string StreamId
+		public virtual string StreamId
 		{
 			get { return "@StreamId"; }
 		}
-		public string StreamName
+		public virtual string StreamName
 		{
 			get { return "@StreamName"; }
 		}
-		public string CommitId
+		public virtual string CommitId
 		{
 			get { return "@CommitId"; }
 		}
-		public string CommitSequence
+		public virtual string CommitSequence
 		{
 			get { return "@CommitSequence"; }
 		}
-		public string ExpectedRevision
+		public virtual string ExpectedRevision
 		{
 			get { return "@ExpectedRevision"; }
 		}
-		public string StreamRevision
+		public virtual string StreamRevision
 		{
 			get { return "@StreamRevision"; }
 		}
-		public string Headers
+		public virtual string Headers
 		{
 			get { return "@Headers"; }
 		}
-		public string Payload
+		public virtual string Payload
 		{
 			get { return "@Payload"; }
 		}
-		public string Threshold
+		public virtual string Threshold
 		{
 			get { return "@Threshold"; }
 		}
 
-		public bool IsDuplicateException(DbException exception)
+		public virtual bool IsDuplicateException(DbException exception)
 		{
 			var msg = exception.Message.ToUpperInvariant();
 			return msg.Contains("DUPLICATE") || msg.Contains("UNIQUE");

@@ -183,5 +183,33 @@ namespace EventStore.SqlPersistence.SqlDialects {
                 return ResourceManager.GetString("PersistCommitAttempt", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BEGIN TRANSACTION;
+        ///
+        ///INSERT
+        ///  INTO Streams
+        ///     ( StreamId, Name, HeadRevision )
+        ///SELECT @StreamId, COALESCE(@StreamName, &apos;&apos;), @StreamRevision
+        /// WHERE @ExpectedRevision = 0
+        ///   AND NOT EXISTS
+        ///     ( SELECT *
+        ///         FROM Streams
+        ///        WHERE StreamId = @StreamId );
+        ///
+        ///INSERT OR REPLACE
+        ///  INTO Streams
+        ///     ( StreamId, Name, HeadRevision)
+        ///SELECT @StreamId, COALESCE(@StreamName, &apos;&apos;), @StreamRevision
+        /// WHERE @ExpectedRevision &gt; 0
+        ///   AND StreamId = @StreamId
+        ///   AND HeadRevision = @ExpectedRevision
+        /// [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string SqlitePersistCommitAttempt {
+            get {
+                return ResourceManager.GetString("SqlitePersistCommitAttempt", resourceCulture);
+            }
+        }
     }
 }
