@@ -17,7 +17,7 @@ CREATE TABLE [dbo].[Commits]
 (
        [StreamId] [uniqueidentifier] NOT NULL,
        [CommitId] [uniqueidentifier] NOT NULL CHECK ([CommitId] != 0x0),
-       [Revision] [bigint] NOT NULL CHECK ([Revision] > 0),
+       [StreamRevision] [bigint] NOT NULL CHECK ([StreamRevision] > 0),
        [CommitSequence] [bigint] NOT NULL CHECK ([CommitSequence] > 0),
        [SystemSequence] [bigint] IDENTITY(1,1) NOT NULL,
        [Payload] [varbinary](MAX) NOT NULL CHECK (DATALENGTH([Payload]) > 0),
@@ -25,7 +25,7 @@ CREATE TABLE [dbo].[Commits]
        CONSTRAINT [PK_Commits] PRIMARY KEY CLUSTERED ([StreamId], [CommitSequence])
 )
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Commits] ON [dbo].[Commits] ([StreamId], [CommitId])
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Commits_Revisions] ON [dbo].[Commits] ([StreamId], [Revision])
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Commits_Revisions] ON [dbo].[Commits] ([StreamId], [StreamRevision])
 
 CREATE TABLE [dbo].[Dispatch]
 (
@@ -48,10 +48,10 @@ CREATE TRIGGER [dbo].[PreventChangesToCommits] ON [dbo].[Commits] FOR UPDATE
 AS BEGIN
 
        IF (UPDATE([StreamId])
-       OR UPDATE([CommitSequence])
        OR UPDATE([CommitId])
+       OR UPDATE([StreamRevision])
+       OR UPDATE([CommitSequence])
        OR UPDATE([SystemSequence])
-       OR UPDATE([Revision])
        OR UPDATE([Payload]))
        BEGIN
               RAISERROR('Commits cannot be modified.', 16, 1)

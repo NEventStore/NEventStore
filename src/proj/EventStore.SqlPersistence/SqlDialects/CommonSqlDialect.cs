@@ -53,9 +53,9 @@ namespace EventStore.SqlPersistence.SqlDialects
 		{
 			get { return "@ExpectedRevision"; }
 		}
-		public string Revision
+		public string StreamRevision
 		{
-			get { return "@Revision"; }
+			get { return "@StreamRevision"; }
 		}
 		public string Payload
 		{

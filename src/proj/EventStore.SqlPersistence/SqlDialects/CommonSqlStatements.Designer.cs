@@ -73,15 +73,15 @@ namespace EventStore.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT StreamId, CommitId, Revision, CommitSequence, Payload, Snapshot
+        ///   Looks up a localized string similar to SELECT StreamId, CommitId, StreamRevision, CommitSequence, Payload, Snapshot
         ///  FROM Commits
         /// WHERE StreamId = @StreamId
         ///   AND @Revision BETWEEN 
         ///     ( SELECT MAX(Revision)
         ///         FROM Commits
         ///        WHERE StreamId = @StreamId
-        ///          AND Revision &lt;= @Revision
-        ///          AND Snapshot IS NOT NULL ) AND Revision;.
+        ///          AND StreamRevision &lt;= @StreamRevision
+        ///          AND Snapshot IS NOT NULL ) AND StreamRevision;.
         /// </summary>
         internal static string GetCommitsFromSnapshotUntilRevision {
             get {
@@ -90,10 +90,10 @@ namespace EventStore.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT StreamId, CommitId, Revision, CommitSequence, Payload, null
+        ///   Looks up a localized string similar to SELECT StreamId, CommitId, StreamRevision, CommitSequence, Payload, null
         ///  FROM Commits
         /// WHERE StreamId = @StreamId
-        ///   AND Revision &gt;= @Revision;.
+        ///   AND StreamRevision &gt;= @StreamRevision;.
         /// </summary>
         internal static string GetCommitsFromStartingRevision {
             get {
@@ -113,11 +113,11 @@ namespace EventStore.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT C.StreamId, C.CommitId, C.Revision, C.CommitSequence, C.Payload, null
+        ///   Looks up a localized string similar to SELECT C.StreamId, C.CommitId, C.StreamRevision, C.CommitSequence, C.Payload, null
         ///  FROM Commits AS C
         /// INNER JOIN Dispatch AS D
         ///    ON C.StreamId = D.StreamId
-        ///   AND C.Sequence = D.Sequence;.
+        ///   AND C.CommitSequence = D.CommitSequence;.
         /// </summary>
         internal static string GetUndispatchedCommits {
             get {
@@ -143,22 +143,21 @@ namespace EventStore.SqlPersistence.SqlDialects {
         ///INSERT
         ///  INTO Streams
         ///     ( StreamId, Name, HeadRevision )
-        ///SELECT @StreamId, @StreamName, @Revision
+        ///SELECT @StreamId, @StreamName, @StreamRevision
         /// WHERE @ExpectedRevision = 0;
         ///
         ///UPDATE Streams
-        ///   SET HeadRevision = @Revision
+        ///   SET HeadRevision = @StreamRevision
         ///  FROM Streams
-        /// WHERE StreamId = @StreamId
-        ///   AND HeadRevision = @ExpectedRevision
-        ///   AND @ExpectedRevision &gt; 0;
+        /// WHERE  @ExpectedRevision &gt; 0
+        ///   AND StreamId = @StreamId
+        ///   AND HeadRevision = @ExpectedRevision;
         ///
         ///INSERT
         ///  INTO Commits
-        ///     ( StreamId, CommitId, Revision, CommitSequence, Payload )
-        ///SELECT @StreamId, @CommitId, @Revision, @CommitSequence, @Payload
-        /// WHERE NOT EXISTS
-        ///     ( SEL [rest of string was truncated]&quot;;.
+        ///     ( StreamId, CommitId, StreamRevision, CommitSequence, Payload )
+        ///SELECT @StreamId, @CommitId, @StreamRevision, @CommitSequence, @Payload
+        /// WHE [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string PersistCommitAttempt {
             get {

@@ -15,7 +15,7 @@ namespace EventStore.Persistence.AcceptanceTests
 	using SqlPersistence.SqlDialects;
 
 	[Subject("Persistence")]
-	public class when_a_commit_attempt_is_successfully_committed : using_a_persistence_engine
+	public class when_a_commit_attempt_is_successfully_committed : using_the_persistence_engine
 	{
 		static readonly CommitAttempt attempt = new CommitAttempt
 		{
@@ -76,7 +76,7 @@ namespace EventStore.Persistence.AcceptanceTests
 		It should_throw_a_DuplicateCommitException;
 	}
 
-	public abstract class using_a_persistence_engine
+	public abstract class using_the_persistence_engine
 	{
 		protected static Guid streamId = Guid.NewGuid();
 		protected static IPersistStreams persistence;

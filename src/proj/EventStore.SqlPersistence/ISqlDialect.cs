@@ -17,7 +17,7 @@ namespace EventStore.SqlPersistence
 		string CommitId { get; }
 		string CommitSequence { get; }
 		string ExpectedRevision { get; }
-		string Revision { get; }
+		string StreamRevision { get; }
 		string Payload { get; }
 		string Threshold { get; }
 
