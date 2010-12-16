@@ -2,29 +2,18 @@ namespace EventStore.RavenPersistence
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Net;
-	using System.Reflection;
 	using Persistence;
-	using Raven.Client.Document;
+	using Raven.Client;
+	using Raven.Client.Exceptions;
 
 	public class RavenPersistence : IPersistStreams
 	{
-		private readonly DocumentStore store;
+		private readonly IDocumentStore store;
 
-		public RavenPersistence(DocumentStore store)
+		public RavenPersistence(IDocumentStore store)
 		{
 			this.store = store;
 			this.store.Initialize();
-			this.store.Conventions.FindIdentityProperty = FindIdentityProperty;
-			this.store.Conventions.IdentityPartsSeparator = ".";
-		}
-		private static bool FindIdentityProperty(PropertyInfo property)
-		{
-			if (property.DeclaringType != typeof(Commit))
-				return false;
-
-			// TODO: understand how RavenDB handles composite keys, if at all.
-			return property.Name == "StreamId" || property.Name == "CommitSequence";
 		}
 
 		public virtual IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision)
@@ -39,8 +28,21 @@ namespace EventStore.RavenPersistence
 		{
 			using (var session = this.store.OpenSession())
 			{
-				session.Store(uncommitted);
-				session.SaveChanges();
+				session.Advanced.UseOptimisticConcurrency = true;
+				session.Store(uncommitted.ToRavenCommit());
+
+				try
+				{
+					session.SaveChanges();
+				}
+				catch (ConflictException e)
+				{
+					throw new ConcurrencyException(e.Message, e);
+				}
+				catch (NonUniqueObjectException e)
+				{
+					throw new ConcurrencyException(e.Message, e);
+				}
 			}
 		}
 
@@ -50,6 +52,7 @@ namespace EventStore.RavenPersistence
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
+			// patches a commit to flag it as dispatched
 		}
 
 		public virtual IEnumerable<Guid> GetStreamsToSnapshot(int maxThreshold)
@@ -58,6 +61,7 @@ namespace EventStore.RavenPersistence
 		}
 		public virtual void AddSnapshot(Guid streamId, long commitSequence, object snapshot)
 		{
+			// inserts a snapshot document *between* two commits
 		}
 	}
 }
