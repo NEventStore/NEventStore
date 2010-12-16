@@ -53,7 +53,8 @@ namespace EventStore.SqlPersistence
 				cmd.AddParameter(this.dialect.CommitSequence, commit.CommitSequence);
 				cmd.AddParameter(this.dialect.ExpectedRevision, uncommitted.PreviousStreamRevision);
 				cmd.AddParameter(this.dialect.StreamRevision, commit.StreamRevision);
-				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(commit));
+				cmd.AddParameter(this.dialect.Headers, this.serializer.Serialize(commit.Headers));
+				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(commit.Events));
 
 				this.TryPersist(cmd);
 			});

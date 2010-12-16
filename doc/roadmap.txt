@@ -1,12 +1,3 @@
-- Utilize triggers for SQL persistence to simplify EventStore code and to leverage RDBMS capabilities.
-  a) [DONE] Triggers would be used to insert into the Dispatch table and update the Streams table.
-  b) [1/2 DONE] Triggers would prevent updating rows in the Commits table, except for the Snapshot column.
-  c) [1/2 DONE] Updating the Snapshot column of Commits table would result in Snapshot column of Streams table being updated, if necessary.
-
-- Ensure SQL statements from the dynamic SQL adapter: SET TRANSACTION ISOLATION LEVEL READ COMMITTED
-- Ensure SQL statements from the dynamic SQL adapter: BEGIN TRANSACTION and COMMIT TRANSACTION
-- Potentially use stored procedures (or some variant) to make SqlPersistence code fully database agnostic.
-
 - Create fluent configuration code leveraging an IoC container.
 	Autofac (1.4, 2.2, and 2.3) using .NET 3.5 and .NET 4.0
 	StructureMap (latest)

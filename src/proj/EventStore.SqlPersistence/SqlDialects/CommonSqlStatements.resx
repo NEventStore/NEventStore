@@ -124,7 +124,7 @@
    AND CommitSequence = @CommitSequence;</value>
   </data>
   <data name="GetCommitsFromSnapshotUntilRevision" xml:space="preserve">
-    <value>SELECT StreamId, CommitId, StreamRevision, CommitSequence, Payload, Snapshot
+    <value>SELECT StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload, Snapshot
   FROM Commits
  WHERE StreamId = @StreamId
    AND @Revision BETWEEN 
@@ -135,7 +135,7 @@
           AND Snapshot IS NOT NULL ) AND StreamRevision;</value>
   </data>
   <data name="GetCommitsFromStartingRevision" xml:space="preserve">
-    <value>SELECT StreamId, CommitId, StreamRevision, CommitSequence, Payload, null
+    <value>SELECT StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload
   FROM Commits
  WHERE StreamId = @StreamId
    AND StreamRevision &gt;= @StreamRevision;</value>
@@ -146,7 +146,7 @@
  WHERE HeadRevision &gt;= SnapshotRevision + @Threshold;</value>
   </data>
   <data name="GetUndispatchedCommits" xml:space="preserve">
-    <value>SELECT C.StreamId, C.CommitId, C.StreamRevision, C.CommitSequence, C.Payload, null
+    <value>SELECT C.StreamId, C.CommitId, C.StreamRevision, C.CommitSequence, C.Headers, C.Payload
   FROM Commits AS C
  INNER JOIN Dispatch AS D
     ON C.StreamId = D.StreamId
@@ -176,8 +176,8 @@ UPDATE Streams
 
 INSERT
   INTO Commits
-     ( StreamId, CommitId, StreamRevision, CommitSequence, Payload )
-SELECT @StreamId, @CommitId, @StreamRevision, @CommitSequence, @Payload
+     ( StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload )
+SELECT @StreamId, @CommitId, @StreamRevision, @CommitSequence, @Headers, @Payload
  WHERE NOT EXISTS
      ( SELECT *
          FROM Commits

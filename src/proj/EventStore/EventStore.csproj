@@ -59,6 +59,7 @@
     <Compile Include="DuplicateCommitException.cs" />
     <Compile Include="Persistence\IPersistStreams.cs" />
     <Compile Include="Persistence\PersistenceException.cs" />
+    <Compile Include="Serialization\SerializationExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\CustomDictionary.xml">

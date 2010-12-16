@@ -57,6 +57,10 @@ namespace EventStore.SqlPersistence.SqlDialects
 		{
 			get { return "@StreamRevision"; }
 		}
+		public string Headers
+		{
+			get { return "@Headers"; }
+		}
 		public string Payload
 		{
 			get { return "@Payload"; }

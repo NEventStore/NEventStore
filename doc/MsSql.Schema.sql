@@ -20,6 +20,7 @@ CREATE TABLE [dbo].[Commits]
        [StreamRevision] [bigint] NOT NULL CHECK ([StreamRevision] > 0),
        [CommitSequence] [bigint] NOT NULL CHECK ([CommitSequence] > 0),
        [SystemSequence] [bigint] IDENTITY(1,1) NOT NULL,
+       [Headers] [varbinary](MAX) NULL CHECK ([Headers] IS NULL OR DATALENGTH([Headers]) > 0),
        [Payload] [varbinary](MAX) NOT NULL CHECK (DATALENGTH([Payload]) > 0),
        [Snapshot] [varbinary](MAX) NULL CHECK ([Snapshot] IS NULL OR DATALENGTH([Snapshot]) > 0),
        CONSTRAINT [PK_Commits] PRIMARY KEY CLUSTERED ([StreamId], [CommitSequence])
@@ -52,6 +53,7 @@ AS BEGIN
        OR UPDATE([StreamRevision])
        OR UPDATE([CommitSequence])
        OR UPDATE([SystemSequence])
+       OR UPDATE([Headers])
        OR UPDATE([Payload]))
        BEGIN
               RAISERROR('Commits cannot be modified.', 16, 1)

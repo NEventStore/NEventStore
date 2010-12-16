@@ -42,8 +42,8 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="CommitExtensions.cs" />
     <Compile Include="DelegateConnectionFactory.cs" />
-    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="IConnectionFactory.cs" />
     <Compile Include="ISqlDialect.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -53,6 +53,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CommonSqlStatements.resx</DependentUpon>
     </Compile>
+    <Compile Include="SqlExtensions.cs" />
     <Compile Include="SqlPersistence.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -73,7 +73,7 @@ namespace EventStore.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT StreamId, CommitId, StreamRevision, CommitSequence, Payload, Snapshot
+        ///   Looks up a localized string similar to SELECT StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload, Snapshot
         ///  FROM Commits
         /// WHERE StreamId = @StreamId
         ///   AND @Revision BETWEEN 
@@ -90,7 +90,7 @@ namespace EventStore.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT StreamId, CommitId, StreamRevision, CommitSequence, Payload, null
+        ///   Looks up a localized string similar to SELECT StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload
         ///  FROM Commits
         /// WHERE StreamId = @StreamId
         ///   AND StreamRevision &gt;= @StreamRevision;.
@@ -113,7 +113,7 @@ namespace EventStore.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT C.StreamId, C.CommitId, C.StreamRevision, C.CommitSequence, C.Payload, null
+        ///   Looks up a localized string similar to SELECT C.StreamId, C.CommitId, C.StreamRevision, C.CommitSequence, C.Headers, C.Payload
         ///  FROM Commits AS C
         /// INNER JOIN Dispatch AS D
         ///    ON C.StreamId = D.StreamId
@@ -155,9 +155,8 @@ namespace EventStore.SqlPersistence.SqlDialects {
         ///
         ///INSERT
         ///  INTO Commits
-        ///     ( StreamId, CommitId, StreamRevision, CommitSequence, Payload )
-        ///SELECT @StreamId, @CommitId, @StreamRevision, @CommitSequence, @Payload
-        /// WHE [rest of string was truncated]&quot;;.
+        ///     ( StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload )
+        ///SELECT @StreamId, @CommitId, @StreamRevision, @CommitSequence, @Head [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string PersistCommitAttempt {
             get {
