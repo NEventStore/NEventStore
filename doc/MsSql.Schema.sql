@@ -56,8 +56,19 @@ AS BEGIN
        OR UPDATE([Headers])
        OR UPDATE([Payload]))
        BEGIN
-              RAISERROR('Commits cannot be modified.', 16, 1)
-              ROLLBACK TRANSACTION
-       END
+              RAISERROR('Commits cannot be modified.', 16, 1);
+              ROLLBACK TRANSACTION;
+       END;
+
+END;
+
+/* NOTE: This trigger is recommended for production systems and may get in the way during development
+         as it is designed to prevent removal of commits from EventStore's durable storage. */
+GO
+CREATE TRIGGER [dbo].[PreventDeletionOfCommits] ON [dbo].[Commits] FOR DELETE
+AS BEGIN
+
+	RAISERROR('Commits are immutable and cannot be deleted.', 16, 1);
+	ROLLBACK TRANSACTION;
 
 END;
