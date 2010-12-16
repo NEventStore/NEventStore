@@ -9,15 +9,42 @@
 - Add additional samples and quickstart examples
 
 - Create adapters for the following storage engines (in no particular order)
+
+	- Relational Databases -
+	Microsoft SQL Server (2000 or later)
+	Microsoft SQL Azure
+	MySQL (5 or later)
+	Amazon Relational Database Service (MySQL)
+	SQLite (3 or later)
+	PostgreSQL (8 or later)
+	Microsoft Access 2000 (or later)
+	Microsoft SQL Compact Edition (3.5 or later)
+	Oracle (8 or later)
+	Firebird
+	VistaDB
+	
+	- Document Databases -
 	CouchDB
 	MongoDB
 	RavenDB
-	Azure Table Storage
-	Amazon SimpleDB
+
+	- Dynamo Clones -
 	Cassandra
 	Riak
+	Voldemort
+	Dynomite
+
+	- Other NoSQL -
+	Azure Table Storage
+	Amazon SimpleDB
+	Amazon S3
+	Tokyo Cabinet
 	HBase
-	Redis?
-	Tokyo Cabinet?
-	Membase?
-	Memcached
+	Redis
+	Memcached (and variants)
+	Keyspace
+	OrientDB / OrientKV
+	VoltDB
+	BerkleyDB
+	Hibari
+	HampsterDB
