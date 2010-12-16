@@ -48,17 +48,25 @@ namespace EventStore.Persistence.AcceptanceTests
 	}
 
 	[Subject("Persistence")]
-	public class when_a_snapshot_has_been_added_at_a_specific_commit : using_the_persistence_engine
+	public class when_a_snapshot_has_been_added_to_the_most_recent_commit : using_the_persistence_engine
 	{
-		static readonly CommitAttempt attempt = streamId.BuildAttempt();
+		static readonly CommitAttempt oldest = streamId.BuildAttempt();
+		static readonly CommitAttempt oldest2 = oldest.BuildNextAttempt();
+		static readonly CommitAttempt newest = oldest2.BuildNextAttempt();
+		static readonly Commit head = newest.ToCommit();
 
 		Establish context = () =>
-			persistence.Persist(attempt);
+		{
+			persistence.Persist(oldest);
+			persistence.Persist(oldest2);
+			persistence.Persist(newest);
+		};
 
 		Because of = () =>
-			persistence.AddSnapshot(attempt.StreamId, attempt.ToCommit().CommitSequence, "snapshot");
+			persistence.AddSnapshot(newest.StreamId, head.CommitSequence, "snapshot");
 
-		It should_start_reads_from_that_commit;
+		It should_start_reads_at_the_most_recent_commit = () =>
+			persistence.GetUntil(streamId, head.StreamRevision).First().CommitId.ShouldEqual(newest.CommitId);
 
 		It should_no_longer_find_it_in_the_set_of_streams_to_be_snapshot = () =>
 			persistence.GetStreamsToSnapshot(1).Where(x => x == streamId).ShouldNotContain(streamId);

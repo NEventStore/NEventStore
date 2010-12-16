@@ -6,17 +6,29 @@ namespace EventStore.Persistence.AcceptanceTests
 	{
 		public static CommitAttempt BuildAttempt(this Guid streamId)
 		{
-			return streamId.BuildAttempt(Guid.NewGuid());
-		}
-		public static CommitAttempt BuildAttempt(this Guid streamId, Guid commitId)
-		{
 			return new CommitAttempt
 			{
 				StreamId = streamId,
 				StreamName = "AcceptanceTestAttempt",
-				CommitId = commitId,
+				CommitId = Guid.NewGuid(),
 				PreviousCommitSequence = 0,
 				PreviousStreamRevision = 0,
+				Events =
+				{
+					new EventMessage(),
+					new EventMessage()
+				}
+			};
+		}
+		public static CommitAttempt BuildNextAttempt(this CommitAttempt successful)
+		{
+			var commit = successful.ToCommit();
+			return new CommitAttempt
+			{
+				StreamId = commit.StreamId,
+				CommitId = Guid.NewGuid(),
+				PreviousCommitSequence = commit.CommitSequence,
+				PreviousStreamRevision = commit.StreamRevision,
 				Events =
 				{
 					new EventMessage(),

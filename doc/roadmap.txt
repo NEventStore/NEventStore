@@ -1,3 +1,5 @@
+- Added multi-thread safe tracking of heads for streams to facilitate optimistic concurrency detection
+
 - Create fluent configuration code leveraging an IoC container.
 	Autofac (1.4, 2.2, and 2.3) using .NET 3.5 and .NET 4.0
 	StructureMap (latest)
