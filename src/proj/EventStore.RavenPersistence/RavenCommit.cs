@@ -19,5 +19,21 @@ namespace EventStore.RavenPersistence
 		public IDictionary<string, object> Headers { get; set; }
 		public ICollection<EventMessage> Events { get; set; }
 		public bool Dispatched { get; set; }
+
+		public Commit ToCommit()
+		{
+			return this.ToCommit(null);
+		}
+		public Commit ToCommit(object snapshot)
+		{
+			return new Commit(
+				this.StreamId,
+				this.CommitId,
+				this.StreamRevision,
+				this.CommitSequence,
+				this.Headers,
+				this.Events,
+				snapshot);
+		}
 	}
 }

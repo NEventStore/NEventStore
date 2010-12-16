@@ -2,6 +2,7 @@ namespace EventStore.RavenPersistence
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Linq;
 	using Persistence;
 	using Raven.Client;
 	using Raven.Client.Exceptions;
@@ -22,7 +23,22 @@ namespace EventStore.RavenPersistence
 		}
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, long minRevision)
 		{
-			return null;
+			using (var session = this.store.OpenSession())
+			{
+				session.Advanced.AllowNonAuthoritiveInformation = false;
+
+				try
+				{
+					return session.Query<RavenCommit>()
+						.Where(x => x.StreamId == streamId && x.StreamRevision >= minRevision)
+						.ToArray()
+						.Select(x => x.ToCommit());
+				}
+				catch (Exception e)
+				{
+					throw new PersistenceException(e.Message, e);
+				}
+			}
 		}
 		public virtual void Persist(CommitAttempt uncommitted)
 		{
@@ -42,6 +58,10 @@ namespace EventStore.RavenPersistence
 				catch (NonUniqueObjectException e)
 				{
 					throw new ConcurrencyException(e.Message, e);
+				}
+				catch (Exception e)
+				{
+					throw new PersistenceException(e.Message, e);
 				}
 			}
 		}
