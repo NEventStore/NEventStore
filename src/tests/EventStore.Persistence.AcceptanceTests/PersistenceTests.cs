@@ -169,12 +169,16 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		Establish context = () =>
 		{
-			persistence = new SqlPersistence(
+			persistence = OpenSqlPersistence();
+		};
+		private static IPersistStreams OpenSqlPersistence()
+		{
+			return new SqlPersistence(
 				new DelegateConnectionFactory(id => OpenConnection()),
 				new CommonSqlDialect(),
 				new BinarySerializer());
-		};
-		static IDbConnection OpenConnection()
+		}
+		private static IDbConnection OpenConnection()
 		{
 			var connectionName = ConfigurationManager.AppSettings["UnderTest"];
 			var setting = ConfigurationManager.ConnectionStrings[connectionName];
