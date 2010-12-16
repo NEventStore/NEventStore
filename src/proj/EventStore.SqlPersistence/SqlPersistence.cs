@@ -48,7 +48,7 @@ namespace EventStore.SqlPersistence
 
 				cmd.CommandText = this.dialect.PersistCommitAttempt;
 				cmd.AddParameter(this.dialect.StreamId, commit.StreamId);
-				cmd.AddParameter(this.dialect.StreamName, uncommitted.StreamName);
+				cmd.AddParameter(this.dialect.StreamName, uncommitted.StreamName.ToNull());
 				cmd.AddParameter(this.dialect.CommitId, commit.CommitId);
 				cmd.AddParameter(this.dialect.CommitSequence, commit.CommitSequence);
 				cmd.AddParameter(this.dialect.ExpectedRevision, uncommitted.PreviousStreamRevision);

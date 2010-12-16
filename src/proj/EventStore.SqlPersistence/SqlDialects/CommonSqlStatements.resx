@@ -181,7 +181,7 @@ COMMIT TRANSACTION;</value>
 INSERT
   INTO Streams
      ( StreamId, Name, HeadRevision )
-SELECT @StreamId, @StreamName, @StreamRevision
+SELECT @StreamId, COALESCE(@StreamName, ''), @StreamRevision
  WHERE @ExpectedRevision = 0
    AND NOT EXISTS
      ( SELECT *
@@ -189,7 +189,8 @@ SELECT @StreamId, @StreamName, @StreamRevision
         WHERE StreamId = @StreamId );
 
 UPDATE Streams
-   SET HeadRevision = @StreamRevision
+   SET HeadRevision = @StreamRevision,
+       Name = COALESCE(@StreamName, Name)
   FROM Streams
  WHERE  @ExpectedRevision &gt; 0
    AND StreamId = @StreamId
