@@ -55,7 +55,7 @@
       <DependentUpon>CommonSqlStatements.resx</DependentUpon>
     </Compile>
     <Compile Include="SqlExtensions.cs" />
-    <Compile Include="SqlPersistence.cs" />
+    <Compile Include="SqlPersistenceEngine.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\CustomDictionary.xml">

@@ -5,13 +5,11 @@ namespace EventStore.RavenPersistence
 
 	public class RavenCommit
 	{
+		private const string KeyFormat = "commits/{0}-{1:D8}";
+
 		public string Id
 		{
-			get
-			{
-				return this.StreamId.ToString().Replace("-", string.Empty)
-				       + this.CommitSequence.ToString("D8");
-			}
+			get { return KeyFormat.FormatWith(this.StreamId.ToHexString(), this.CommitSequence); }
 		}
 
 		public Guid StreamId { get; set; }

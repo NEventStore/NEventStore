@@ -8,13 +8,13 @@ namespace EventStore.SqlPersistence
 	using Persistence;
 	using Serialization;
 
-	public class SqlPersistence : IPersistStreams
+	public class SqlPersistenceEngine : IPersistStreams
 	{
 		private readonly IConnectionFactory factory;
 		private readonly ISqlDialect dialect;
 		private readonly ISerialize serializer;
 
-		public SqlPersistence(IConnectionFactory factory, ISqlDialect dialect, ISerialize serializer)
+		public SqlPersistenceEngine(IConnectionFactory factory, ISqlDialect dialect, ISerialize serializer)
 		{
 			this.factory = factory;
 			this.dialect = dialect;

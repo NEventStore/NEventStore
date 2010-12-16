@@ -6,11 +6,11 @@ namespace EventStore.RavenPersistence
 	using Raven.Client;
 	using Raven.Client.Exceptions;
 
-	public class RavenPersistence : IPersistStreams
+	public class RavenPersistenceEngine : IPersistStreams
 	{
 		private readonly IDocumentStore store;
 
-		public RavenPersistence(IDocumentStore store)
+		public RavenPersistenceEngine(IDocumentStore store)
 		{
 			this.store = store;
 			this.store.Initialize();

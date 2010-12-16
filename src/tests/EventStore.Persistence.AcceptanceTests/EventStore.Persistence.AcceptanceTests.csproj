@@ -52,6 +52,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\proj\EventStore.RavenPersistence\EventStore.RavenPersistence.csproj">
+      <Project>{CE782ED8-15BB-49A9-9EBB-288FB5C82A01}</Project>
+      <Name>EventStore.RavenPersistence</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\proj\EventStore.Serialization\EventStore.Serialization.csproj">
       <Project>{A5BF4B86-26F6-418D-BE35-C6CC3A623D27}</Project>
       <Name>EventStore.Serialization</Name>
@@ -68,6 +72,9 @@
   <ItemGroup>
     <Reference Include="Machine.Specifications">
       <HintPath>..\..\..\bin\machine.specifications-bin\Machine.Specifications.dll</HintPath>
+    </Reference>
+    <Reference Include="Raven.Client.Lightweight">
+      <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Raven.Client.Lightweight.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />

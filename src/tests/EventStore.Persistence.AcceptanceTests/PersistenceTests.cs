@@ -10,6 +10,8 @@ namespace EventStore.Persistence.AcceptanceTests
 	using System.Data.SqlClient;
 	using System.Linq;
 	using Machine.Specifications;
+	using Raven.Client.Document;
+	using RavenPersistence;
 	using Serialization;
 	using SqlPersistence;
 	using SqlPersistence.SqlDialects;
@@ -169,11 +171,11 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		Establish context = () =>
 		{
-			persistence = OpenSqlPersistence();
+			persistence = OpenSqlPersistenceEngine();
 		};
-		private static IPersistStreams OpenSqlPersistence()
+		private static IPersistStreams OpenSqlPersistenceEngine()
 		{
-			return new SqlPersistence(
+			return new SqlPersistenceEngine(
 				new DelegateConnectionFactory(id => OpenConnection()),
 				new CommonSqlDialect(),
 				new BinarySerializer());
@@ -187,6 +189,13 @@ namespace EventStore.Persistence.AcceptanceTests
 			connection.ConnectionString = setting.ConnectionString;
 			connection.Open();
 			return connection;
+		}
+
+		private static IPersistStreams OpenRavenPersistenceEngine()
+		{
+			var store = new DocumentStore { Url = "http://localhost:8080" };
+			store.Initialize();
+			return new RavenPersistenceEngine(store);
 		}
 
 		Cleanup everything = () =>
