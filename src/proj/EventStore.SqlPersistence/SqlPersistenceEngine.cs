@@ -101,7 +101,7 @@ namespace EventStore.SqlPersistence
 			{
 				query.CommandText = this.dialect.GetStreamsRequiringSnaphots;
 				query.AddParameter(this.dialect.Threshold, maxThreshold);
-				return query.ExecuteQuery(record => (Guid)record[0]);
+				return query.ExecuteQuery(record => record[0].ToGuid());
 			});
 		}
 		public virtual void AddSnapshot(Guid streamId, long commitSequence, object snapshot)

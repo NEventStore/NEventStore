@@ -15,7 +15,7 @@
 	- Relational Databases -
 	Microsoft SQL Server (2000 or later)
 	Microsoft SQL Azure
-	MySQL (5 or later)
+	MySQL (3 or later) (MyISAM and InnoDB)
 	Amazon Relational Database Service (MySQL)
 	SQLite (3 or later)
 	PostgreSQL (8 or later)

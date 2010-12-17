@@ -22,8 +22,8 @@ namespace EventStore.SqlPersistence
 			var snapshot = serializer.Deserialize(record, SnapshotIndex);
 
 			return new Commit(
-				(Guid)record[StreamIdIndex],
-				(Guid)record[CommitIdIndex],
+				record[StreamIdIndex].ToGuid(),
+				record[CommitIdIndex].ToGuid(),
 				(long)record[StreamRevisionIndex],
 				(long)record[CommitSequenceIndex],
 				headers,
