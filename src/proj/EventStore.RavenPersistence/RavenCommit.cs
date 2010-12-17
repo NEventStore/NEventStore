@@ -5,7 +5,7 @@ namespace EventStore.RavenPersistence
 
 	public class RavenCommit
 	{
-		private const string KeyFormat = "commits/{0}-{1:D8}";
+		private const string KeyFormat = "commits/{0}.{1}";
 
 		public RavenCommit()
 		{
@@ -28,7 +28,7 @@ namespace EventStore.RavenPersistence
 
 		public string Id
 		{
-			get { return KeyFormat.FormatWith(this.StreamId.ToHexString(), this.CommitSequence); }
+			get { return KeyFormat.FormatWith(this.StreamId, this.CommitSequence); }
 		}
 
 		public Guid StreamId { get; set; }
