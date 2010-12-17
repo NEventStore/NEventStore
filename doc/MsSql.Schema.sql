@@ -35,6 +35,7 @@ CREATE TABLE [dbo].[Dispatch]
        [CommitSequence] [bigint] NOT NULL,
        CONSTRAINT [PK_Dispatch] PRIMARY KEY CLUSTERED ([DispatchId])
 )
+CREATE UNIQUE INDEX [IX_Dispatch] ON [dbo].[Dispatch] (StreamId, CommitSequence);
 
 ALTER TABLE [dbo].[Commits] WITH CHECK ADD CONSTRAINT [FK_Commits_Streams] FOREIGN KEY([StreamId])
 REFERENCES [dbo].[Streams] ([StreamId])

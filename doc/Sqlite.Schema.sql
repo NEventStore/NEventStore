@@ -24,8 +24,7 @@ CREATE TABLE Commits
        Payload blob NOT NULL,
        Snapshot blob NULL
 );
-
-CREATE UNIQUE INDEX IX_Commits ON Commits (StreamId, CommitSequence);
+CREATE UNIQUE INDEX PK_Commits ON Commits (StreamId, CommitSequence);
 CREATE UNIQUE INDEX IX_Commits_CommitId ON Commits (StreamId, CommitId);
 CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (StreamId, StreamRevision);
 
@@ -35,5 +34,6 @@ CREATE TABLE Dispatch
        StreamId guid NOT NULL,
        CommitSequence bigint NOT NULL
 );
+CREATE UNIQUE INDEX IX_Dispatch ON Dispatch (StreamId, CommitSequence);
 
 /* TODO: triggers to protect referential integrity as well as commits */
