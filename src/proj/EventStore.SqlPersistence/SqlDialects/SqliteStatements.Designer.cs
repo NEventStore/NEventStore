@@ -63,6 +63,33 @@ namespace EventStore.SqlPersistence.SqlDialects {
         /// <summary>
         ///   Looks up a localized string similar to BEGIN TRANSACTION;
         ///
+        ///UPDATE Commits
+        ///   SET Snapshot = @Payload
+        /// WHERE StreamId = @StreamId
+        ///   AND CommitSequence = @CommitSequence;
+        ///
+        ///
+        ///INSERT OR REPLACE
+        ///  INTO Streams
+        ///     ( StreamId, Name, HeadRevision, SnapshotRevision )
+        ///SELECT @StreamId, S.Name, S.HeadRevision, C.StreamRevision
+        ///  FROM Commits AS C
+        /// INNER JOIN Streams S
+        ///    ON C.StreamId = S.StreamId
+        /// WHERE C.StreamId = @StreamId
+        ///   AND C.CommitSequence = @CommitSequence
+        ///   AND C.Snapshot IS NOT NULL
+        ///   AND C.StreamRevision &gt; S.SnapshotRe [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string AppendSnapshotToCommit {
+            get {
+                return ResourceManager.GetString("AppendSnapshotToCommit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BEGIN TRANSACTION;
+        ///
         ///INSERT
         ///  INTO Streams
         ///     ( StreamId, Name, HeadRevision )
@@ -77,10 +104,10 @@ namespace EventStore.SqlPersistence.SqlDialects {
         ///  INTO Streams
         ///     ( StreamId, Name, HeadRevision)
         ///SELECT @StreamId, COALESCE(@StreamName, &apos;&apos;), @StreamRevision
+        ///  FROM Streams
         /// WHERE @ExpectedRevision &gt; 0
         ///   AND StreamId = @StreamId
-        ///   AND HeadRevision = @ExpectedRevision
-        /// [rest of string was truncated]&quot;;.
+        ///   AND HeadRevision = @Ex [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string PersistCommitAttempt {
             get {

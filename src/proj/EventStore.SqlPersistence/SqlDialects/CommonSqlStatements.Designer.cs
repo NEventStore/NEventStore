@@ -171,12 +171,12 @@ namespace EventStore.SqlPersistence.SqlDialects {
         ///   SET S.HeadRevision = @StreamRevision,
         ///       S.Name = COALESCE(@StreamName, Name)
         ///  FROM Streams AS S
-        /// WHERE  @ExpectedRevision &gt; 0
+        /// WHERE @ExpectedRevision &gt; 0
         ///   AND StreamId = @StreamId
         ///   AND HeadRevision = @ExpectedRevision;
         ///
         ///INSERT
-        ///  INT [rest of string was truncated]&quot;;.
+        ///  INTO [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string PersistCommitAttempt {
             get {

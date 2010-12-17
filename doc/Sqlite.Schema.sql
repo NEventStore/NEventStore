@@ -19,22 +19,21 @@ CREATE TABLE Commits
        CommitId guid NOT NULL CHECK (CommitId != 0),
        StreamRevision bigint NOT NULL CHECK (StreamRevision > 0),
        CommitSequence bigint NOT NULL CHECK (CommitSequence > 0),
-       SystemSequence bigint IDENTITY(1,1) NOT NULL,
+       SystemSequence integer PRIMARY KEY NOT NULL,
        Headers blob NULL,
        Payload blob NOT NULL,
-       Snapshot blob NULL,
-       CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)
+       Snapshot blob NULL
 );
 
-CREATE UNIQUE INDEX IX_Commits ON Commits (StreamId, CommitId);
+CREATE UNIQUE INDEX IX_Commits ON Commits (StreamId, CommitSequence);
+CREATE UNIQUE INDEX IX_Commits_CommitId ON Commits (StreamId, CommitId);
 CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (StreamId, StreamRevision);
 
 CREATE TABLE Dispatch
 (
-       DispatchId bigint IDENTITY(1,1) NOT NULL,
+       DispatchId integer PRIMARY KEY NOT NULL,
        StreamId guid NOT NULL,
-       CommitSequence bigint NOT NULL,
-       CONSTRAINT PK_Dispatch PRIMARY KEY (DispatchId)
+       CommitSequence bigint NOT NULL
 );
 
 /* TODO: triggers to protect referential integrity as well as commits */
