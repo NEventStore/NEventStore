@@ -117,64 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AppendSnapshotToCommit" xml:space="preserve">
-    <value>BEGIN TRANSACTION;
-
-UPDATE Commits
-   SET Snapshot = @Payload
- WHERE StreamId = @StreamId
-   AND CommitSequence = @CommitSequence;
-
-UPDATE S
-   SET S.SnapshotRevision = C.StreamRevision
-  FROM Commits AS C
- INNER JOIN Streams S
-    ON C.StreamId = S.StreamId
- WHERE C.StreamId = @StreamId
-   AND C.CommitSequence = @CommitSequence
-   AND C.Snapshot IS NOT NULL
-   AND C.StreamRevision &gt; S.SnapshotRevision;
-
-COMMIT TRANSACTION;</value>
-  </data>
-  <data name="GetCommitsFromSnapshotUntilRevision" xml:space="preserve">
-    <value>SELECT StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload, Snapshot
-  FROM Commits
- WHERE StreamId = @StreamId
-   AND StreamRevision BETWEEN 
-     ( SELECT MAX(StreamRevision)
-         FROM Commits
-        WHERE StreamId = @StreamId
-          AND StreamRevision &lt;= @StreamRevision
-          AND Snapshot IS NOT NULL ) AND @StreamRevision
- ORDER BY CommitSequence;</value>
-  </data>
-  <data name="GetCommitsFromStartingRevision" xml:space="preserve">
-    <value>SELECT StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload
-  FROM Commits
- WHERE StreamId = @StreamId
-   AND StreamRevision &gt;= @StreamRevision
- ORDER BY CommitSequence;</value>
-  </data>
-  <data name="GetStreamsRequiringSnaphots" xml:space="preserve">
-    <value>SELECT StreamId
-  FROM Streams
- WHERE HeadRevision &gt;= SnapshotRevision + @Threshold;</value>
-  </data>
-  <data name="GetUndispatchedCommits" xml:space="preserve">
-    <value>SELECT C.StreamId, C.CommitId, C.StreamRevision, C.CommitSequence, C.Headers, C.Payload
-  FROM Commits AS C
- INNER JOIN Dispatch AS D
-    ON C.StreamId = D.StreamId
-   AND C.CommitSequence = D.CommitSequence
- ORDER BY D.DispatchId;</value>
-  </data>
-  <data name="MarkCommitAsDispatched" xml:space="preserve">
-    <value>DELETE
-  FROM Dispatch
- WHERE StreamId = @StreamId
-   AND CommitSequence = @CommitSequence;</value>
-  </data>
   <data name="PersistCommitAttempt" xml:space="preserve">
     <value>BEGIN TRANSACTION;
 
@@ -188,13 +130,17 @@ SELECT @StreamId, COALESCE(@StreamName, ''), @StreamRevision
          FROM Streams
         WHERE StreamId = @StreamId );
 
-UPDATE S
-   SET S.HeadRevision = @StreamRevision,
-       S.Name = COALESCE(@StreamName, Name)
-  FROM Streams AS S
+INSERT OR REPLACE
+  INTO Streams
+     ( StreamId, Name, HeadRevision)
+SELECT @StreamId, COALESCE(@StreamName, ''), @StreamRevision
  WHERE @ExpectedRevision &gt; 0
    AND StreamId = @StreamId
-   AND HeadRevision = @ExpectedRevision;
+   AND HeadRevision = @ExpectedRevision
+   AND NOT EXISTS
+     ( SELECT *
+         FROM Streams
+        WHERE StreamId = @StreamId ); /* TODO */
 
 INSERT
   INTO Commits

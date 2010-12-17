@@ -4,7 +4,7 @@ namespace EventStore.SqlPersistence.SqlDialects
 	{
 		public override string PersistCommitAttempt
 		{
-			get { return CommonSqlStatements.SqlitePersistCommitAttempt; }
+			get { return SqliteStatements.PersistCommitAttempt; }
 		}
 	}
 }

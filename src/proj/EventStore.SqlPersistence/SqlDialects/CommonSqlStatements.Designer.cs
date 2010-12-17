@@ -67,9 +67,9 @@ namespace EventStore.SqlPersistence.SqlDialects {
         ///   SET Snapshot = @Payload
         /// WHERE StreamId = @StreamId
         ///   AND CommitSequence = @CommitSequence;
-        ////* TODO: utilize more efficient &quot;UPDATE FROM...&quot; syntax */
-        ///UPDATE Streams
-        ///   SET SnapshotRevision = C.StreamRevision
+        ///
+        ///UPDATE S
+        ///   SET S.SnapshotRevision = C.StreamRevision
         ///  FROM Commits AS C
         /// INNER JOIN Streams S
         ///    ON C.StreamId = S.StreamId
@@ -167,48 +167,20 @@ namespace EventStore.SqlPersistence.SqlDialects {
         ///         FROM Streams
         ///        WHERE StreamId = @StreamId );
         ///
-        ///UPDATE Streams
-        ///   SET HeadRevision = @StreamRevision,
-        ///       Name = COALESCE(@StreamName, Name)
-        ///  FROM Streams
+        ///UPDATE S
+        ///   SET S.HeadRevision = @StreamRevision,
+        ///       S.Name = COALESCE(@StreamName, Name)
+        ///  FROM Streams AS S
         /// WHERE  @ExpectedRevision &gt; 0
         ///   AND StreamId = @StreamId
         ///   AND HeadRevision = @ExpectedRevision;
         ///
         ///INSERT
-        ///  INTO C [rest of string was truncated]&quot;;.
+        ///  INT [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string PersistCommitAttempt {
             get {
                 return ResourceManager.GetString("PersistCommitAttempt", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to BEGIN TRANSACTION;
-        ///
-        ///INSERT
-        ///  INTO Streams
-        ///     ( StreamId, Name, HeadRevision )
-        ///SELECT @StreamId, COALESCE(@StreamName, &apos;&apos;), @StreamRevision
-        /// WHERE @ExpectedRevision = 0
-        ///   AND NOT EXISTS
-        ///     ( SELECT *
-        ///         FROM Streams
-        ///        WHERE StreamId = @StreamId );
-        ///
-        ///INSERT OR REPLACE
-        ///  INTO Streams
-        ///     ( StreamId, Name, HeadRevision)
-        ///SELECT @StreamId, COALESCE(@StreamName, &apos;&apos;), @StreamRevision
-        /// WHERE @ExpectedRevision &gt; 0
-        ///   AND StreamId = @StreamId
-        ///   AND HeadRevision = @ExpectedRevision
-        /// [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string SqlitePersistCommitAttempt {
-            get {
-                return ResourceManager.GetString("SqlitePersistCommitAttempt", resourceCulture);
             }
         }
     }

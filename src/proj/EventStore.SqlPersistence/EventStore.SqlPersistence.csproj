@@ -55,6 +55,11 @@
       <DependentUpon>CommonSqlStatements.resx</DependentUpon>
     </Compile>
     <Compile Include="SqlDialects\SqliteDialect.cs" />
+    <Compile Include="SqlDialects\SqliteStatements.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SqliteStatements.resx</DependentUpon>
+    </Compile>
     <Compile Include="SqlExtensions.cs" />
     <Compile Include="SqlPersistenceEngine.cs" />
   </ItemGroup>
@@ -79,6 +84,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CommonSqlStatements.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SqlDialects\SqliteStatements.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SqliteStatements.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />
