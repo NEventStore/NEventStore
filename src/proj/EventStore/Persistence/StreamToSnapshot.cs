@@ -1,4 +1,4 @@
-namespace EventStore
+namespace EventStore.Persistence
 {
 	using System;
 

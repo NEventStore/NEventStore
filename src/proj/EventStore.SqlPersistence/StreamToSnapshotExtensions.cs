@@ -1,6 +1,7 @@
 namespace EventStore.SqlPersistence
 {
 	using System.Data;
+	using Persistence;
 
 	internal static class StreamToSnapshotExtensions
 	{

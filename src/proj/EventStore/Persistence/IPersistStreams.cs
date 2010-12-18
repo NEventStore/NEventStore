@@ -7,7 +7,7 @@ namespace EventStore.Persistence
 	/// <summary>
 	/// Indicates the ability to adapt the underlying persistence infrastructure to behave like a stream of events.
 	/// </summary>
-	public interface IPersistStreams : ITrackDispatchedCommits
+	public interface IPersistStreams
 	{
 		/// <summary>
 		/// Gets the corresponding commits from the stream indicated starting at the most recent snapshot, if any,
@@ -32,6 +32,18 @@ namespace EventStore.Persistence
 		/// </summary>
 		/// <param name="uncommitted">The series of events and associated metadata to be commited.</param>
 		void Persist(CommitAttempt uncommitted);
+
+		/// <summary>
+		/// Gets a set of commits that has not yet been dispatched.
+		/// </summary>
+		/// <returns>The set of commits to be dispatched.</returns>
+		IEnumerable<Commit> GetUndispatchedCommits();
+
+		/// <summary>
+		/// Marks the commit specified as dispatched.
+		/// </summary>
+		/// <param name="commit">The commit to be marked as dispatched.</param>
+		void MarkCommitAsDispatched(Commit commit);
 
 		/// <summary>
 		/// Gets identifiers for all streams whose head and last snapshot revisions differ by at least the threshold specified.
