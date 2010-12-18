@@ -3,6 +3,7 @@ namespace EventStore.SqlPersistence
 	using System;
 	using System.Collections.Generic;
 	using System.Data;
+	using Persistence;
 	using Serialization;
 
 	internal static class CommitExtensions

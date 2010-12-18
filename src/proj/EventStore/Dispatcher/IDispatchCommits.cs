@@ -1,5 +1,7 @@
 namespace EventStore.Dispatcher
 {
+	using Persistence;
+
 	/// <summary>
 	/// Indicates the ability to dispatch or publish all messages associated with a particular commit.
 	/// </summary>

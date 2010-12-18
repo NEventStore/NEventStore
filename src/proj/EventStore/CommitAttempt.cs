@@ -2,6 +2,7 @@ namespace EventStore
 {
 	using System;
 	using System.Collections.Generic;
+	using Persistence;
 
 	/// <summary>
 	/// Represents a series of events to be committed as a single unit and which apply to the stream indicated.

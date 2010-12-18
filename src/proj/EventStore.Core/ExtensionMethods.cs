@@ -2,6 +2,7 @@ namespace EventStore.Core
 {
 	using System;
 	using System.Collections.Generic;
+	using Persistence;
 
 	internal static class ExtensionMethods
 	{

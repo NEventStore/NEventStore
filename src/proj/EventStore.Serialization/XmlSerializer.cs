@@ -2,6 +2,7 @@ namespace EventStore.Serialization
 {
 	using System.IO;
 	using System.Runtime.Serialization;
+	using Persistence;
 
 	public class XmlSerializer : ISerialize
 	{

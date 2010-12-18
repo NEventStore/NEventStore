@@ -2,6 +2,7 @@ namespace EventStore.RavenPersistence
 {
 	using System;
 	using System.Collections.Generic;
+	using Persistence;
 
 	public class RavenCommit
 	{

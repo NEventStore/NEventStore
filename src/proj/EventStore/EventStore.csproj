@@ -52,7 +52,7 @@
     <Compile Include="Dispatcher\IDispatchCommits.cs" />
     <Compile Include="IStoreEvents.cs" />
     <Compile Include="EventMessage.cs" />
-    <Compile Include="Commit.cs" />
+    <Compile Include="Persistence\Commit.cs" />
     <Compile Include="Serialization\ISerialize.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DuplicateCommitException.cs" />

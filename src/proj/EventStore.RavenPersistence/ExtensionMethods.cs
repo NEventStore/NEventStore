@@ -1,6 +1,7 @@
 namespace EventStore.RavenPersistence
 {
 	using System.Globalization;
+	using Persistence;
 	using Raven.Database.Data;
 	using Raven.Database.Json;
 
