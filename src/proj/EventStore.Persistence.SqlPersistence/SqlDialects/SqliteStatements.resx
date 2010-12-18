@@ -117,29 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AppendSnapshotToCommit" xml:space="preserve">
-    <value>BEGIN TRANSACTION;
-
-UPDATE Commits
-   SET Snapshot = @Payload
- WHERE StreamId = @StreamId
-   AND CommitSequence = @CommitSequence;
-
-
-INSERT OR REPLACE
-  INTO Streams
-     ( StreamId, Name, HeadRevision, SnapshotRevision )
-SELECT @StreamId, S.Name, S.HeadRevision, C.StreamRevision
-  FROM Commits AS C
- INNER JOIN Streams S
-    ON C.StreamId = S.StreamId
- WHERE C.StreamId = @StreamId
-   AND C.CommitSequence = @CommitSequence
-   AND C.Snapshot IS NOT NULL
-   AND C.StreamRevision &gt; S.SnapshotRevision;
-
-COMMIT TRANSACTION;</value>
-  </data>
   <data name="PersistCommitAttempt" xml:space="preserve">
     <value>BEGIN TRANSACTION;
 

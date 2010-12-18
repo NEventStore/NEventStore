@@ -6,9 +6,5 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return SqliteStatements.PersistCommitAttempt; }
 		}
-		public override string AppendSnapshotToCommit
-		{
-			get { return SqliteStatements.AppendSnapshotToCommit; }
-		}
 	}
 }

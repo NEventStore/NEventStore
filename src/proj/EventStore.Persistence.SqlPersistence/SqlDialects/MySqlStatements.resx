@@ -117,28 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AppendSnapshotToCommit" xml:space="preserve">
-    <value>SET autocommit=0;
-SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
-
-START TRANSACTION;
-
-UPDATE Commits
-   SET Snapshot = @Payload
- WHERE StreamId = @StreamId
-   AND CommitSequence = @CommitSequence;
-
-UPDATE Streams AS S
- INNER JOIN Commits AS C
-    ON C.StreamId = S.StreamId
-   SET S.SnapshotRevision = C.StreamRevision
- WHERE C.StreamId = @StreamId
-   AND C.CommitSequence = @CommitSequence
-   AND C.Snapshot IS NOT NULL
-   AND C.StreamRevision &gt; S.SnapshotRevision;
-
-COMMIT;</value>
-  </data>
   <data name="PersistCommitAttempt" xml:space="preserve">
     <value>SET autocommit=0;
 SET TRANSACTION ISOLATION LEVEL READ COMMITTED;

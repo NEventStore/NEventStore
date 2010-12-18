@@ -66,34 +66,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///
         ///START TRANSACTION;
         ///
-        ///UPDATE Commits
-        ///   SET Snapshot = @Payload
-        /// WHERE StreamId = @StreamId
-        ///   AND CommitSequence = @CommitSequence;
-        ///
-        ///UPDATE Streams AS S
-        /// INNER JOIN Commits AS C
-        ///    ON C.StreamId = S.StreamId
-        ///   SET S.SnapshotRevision = C.StreamRevision
-        /// WHERE C.StreamId = @StreamId
-        ///   AND C.CommitSequence = @CommitSequence
-        ///   AND C.Snapshot IS NOT NULL
-        ///   AND C.StreamRevision &gt; S.SnapshotRevision;
-        ///
-        ///COMMIT;.
-        /// </summary>
-        internal static string AppendSnapshotToCommit {
-            get {
-                return ResourceManager.GetString("AppendSnapshotToCommit", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SET autocommit=0;
-        ///SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
-        ///
-        ///START TRANSACTION;
-        ///
         ///INSERT
         ///  INTO Streams
         ///     ( StreamId, Name, HeadRevision )

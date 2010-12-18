@@ -63,33 +63,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         /// <summary>
         ///   Looks up a localized string similar to BEGIN TRANSACTION;
         ///
-        ///UPDATE Commits
-        ///   SET Snapshot = @Payload
-        /// WHERE StreamId = @StreamId
-        ///   AND CommitSequence = @CommitSequence;
-        ///
-        ///
-        ///INSERT OR REPLACE
-        ///  INTO Streams
-        ///     ( StreamId, Name, HeadRevision, SnapshotRevision )
-        ///SELECT @StreamId, S.Name, S.HeadRevision, C.StreamRevision
-        ///  FROM Commits AS C
-        /// INNER JOIN Streams S
-        ///    ON C.StreamId = S.StreamId
-        /// WHERE C.StreamId = @StreamId
-        ///   AND C.CommitSequence = @CommitSequence
-        ///   AND C.Snapshot IS NOT NULL
-        ///   AND C.StreamRevision &gt; S.SnapshotRe [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string AppendSnapshotToCommit {
-            get {
-                return ResourceManager.GetString("AppendSnapshotToCommit", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to BEGIN TRANSACTION;
-        ///
         ///INSERT
         ///  INTO Streams
         ///     ( StreamId, Name, HeadRevision )
