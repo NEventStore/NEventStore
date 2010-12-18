@@ -1,4 +1,5 @@
 - Added multi-thread safe tracking of heads for streams to facilitate optimistic concurrency detection
+- Add interception handler when reading/writing to inspect/modify the headers.
 
 - Create fluent configuration code leveraging an IoC container.
 	Autofac (1.4, 2.2, and 2.3) using .NET 3.5 and .NET 4.0
@@ -13,11 +14,11 @@
 - Create adapters for the following storage engines (in no particular order)
 
 	- Relational Databases -
-	Microsoft SQL Server (2000 or later)
+	[DONE] Microsoft SQL Server (2000 or later)
 	Microsoft SQL Azure
-	MySQL (3 or later) (MyISAM and InnoDB)
+	[DONE] MySQL (3 or later) (MyISAM and InnoDB)
 	Amazon Relational Database Service (MySQL)
-	SQLite (3 or later)
+	[DONE] SQLite (3 or later)
 	PostgreSQL (8 or later)
 	Microsoft Access 2000 (or later)
 	Microsoft SQL Compact Edition (3.5 or later)

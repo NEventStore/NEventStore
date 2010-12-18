@@ -94,7 +94,7 @@ namespace EventStore.RavenPersistence
 			}
 		}
 
-		public virtual IEnumerable<Guid> GetStreamsToSnapshot(int maxThreshold)
+		public virtual IEnumerable<StreamToSnapshot> GetStreamsToSnapshot(int maxThreshold)
 		{
 			return null;
 		}

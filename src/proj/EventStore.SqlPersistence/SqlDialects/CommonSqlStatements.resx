@@ -157,9 +157,10 @@ COMMIT TRANSACTION;</value>
  ORDER BY CommitSequence;</value>
   </data>
   <data name="GetStreamsRequiringSnaphots" xml:space="preserve">
-    <value>SELECT StreamId
+    <value>SELECT StreamId, Name, HeadRevision, SnapshotRevision
   FROM Streams
- WHERE HeadRevision &gt;= SnapshotRevision + @Threshold;</value>
+ WHERE HeadRevision &gt;= SnapshotRevision + @Threshold
+ ORDER BY SnapshotRevision - HeadRevision</value>
   </data>
   <data name="GetUndispatchedCommits" xml:space="preserve">
     <value>SELECT C.StreamId, C.CommitId, C.StreamRevision, C.CommitSequence, C.Headers, C.Payload

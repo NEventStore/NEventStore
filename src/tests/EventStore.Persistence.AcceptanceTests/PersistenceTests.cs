@@ -31,7 +31,7 @@ namespace EventStore.Persistence.AcceptanceTests
 			persistence.GetUndispatchedCommits().First(x => x.CommitId == attempt.CommitId).ShouldNotBeNull();
 
 		It should_increment_the_head_revision_of_the_stream = () =>
-			persistence.GetStreamsToSnapshot(1).First(x => x == streamId).ShouldNotBeNull();
+			persistence.GetStreamsToSnapshot(1).First(x => x.StreamId == streamId).ShouldNotBeNull();
 	}
 
 	[Subject("Persistence")]
@@ -71,7 +71,7 @@ namespace EventStore.Persistence.AcceptanceTests
 			persistence.GetUntil(streamId, head.StreamRevision).First().CommitId.ShouldEqual(newest.CommitId);
 
 		It should_no_longer_find_it_in_the_set_of_streams_to_be_snapshot = () =>
-			persistence.GetStreamsToSnapshot(1).Where(x => x == streamId).ShouldNotContain(streamId);
+			persistence.GetStreamsToSnapshot(1).Where(x => x.StreamId == streamId).ShouldNotContain(streamId);
 	}
 
 	[Subject("Persistence")]

@@ -38,7 +38,7 @@ namespace EventStore.Persistence
 		/// </summary>
 		/// <param name="maxThreshold">The maximum difference between the head and most recent snapshot revisions.</param>
 		/// <returns>The streams for which the head and snapshot revisions differ by at least the threshold specified.</returns>
-		IEnumerable<Guid> GetStreamsToSnapshot(int maxThreshold);
+		IEnumerable<StreamToSnapshot> GetStreamsToSnapshot(int maxThreshold);
 
 		/// <summary>
 		/// Adds the snapshot provided to the stream indicated the commit sequence specified.

@@ -68,6 +68,7 @@
     </Compile>
     <Compile Include="SqlExtensions.cs" />
     <Compile Include="SqlPersistenceEngine.cs" />
+    <Compile Include="StreamToSnapshotExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\CustomDictionary.xml">

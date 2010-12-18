@@ -118,9 +118,10 @@ namespace EventStore.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT StreamId
+        ///   Looks up a localized string similar to SELECT StreamId, Name, HeadRevision, SnapshotRevision
         ///  FROM Streams
-        /// WHERE HeadRevision &gt;= SnapshotRevision + @Threshold;.
+        /// WHERE HeadRevision &gt;= SnapshotRevision + @Threshold
+        /// ORDER BY SnapshotRevision - HeadRevision.
         /// </summary>
         internal static string GetStreamsRequiringSnaphots {
             get {

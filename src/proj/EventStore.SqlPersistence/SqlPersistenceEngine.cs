@@ -95,13 +95,13 @@ namespace EventStore.SqlPersistence
 			});
 		}
 
-		public virtual IEnumerable<Guid> GetStreamsToSnapshot(int maxThreshold)
+		public virtual IEnumerable<StreamToSnapshot> GetStreamsToSnapshot(int maxThreshold)
 		{
 			return this.Execute(Guid.Empty, query =>
 			{
 				query.CommandText = this.dialect.GetStreamsRequiringSnaphots;
 				query.AddParameter(this.dialect.Threshold, maxThreshold);
-				return query.ExecuteQuery(record => record[0].ToGuid());
+				return query.ExecuteQuery(record => record.GetStreamToSnapshot());
 			});
 		}
 		public virtual void AddSnapshot(Commit commit, object snapshot)

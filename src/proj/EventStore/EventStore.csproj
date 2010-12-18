@@ -60,6 +60,7 @@
     <Compile Include="Persistence\IPersistStreams.cs" />
     <Compile Include="Persistence\PersistenceException.cs" />
     <Compile Include="Serialization\SerializationExtensions.cs" />
+    <Compile Include="StreamToSnapshot.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\CustomDictionary.xml">
