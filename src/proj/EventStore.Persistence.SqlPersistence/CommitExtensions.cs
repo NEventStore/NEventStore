@@ -1,4 +1,4 @@
-namespace EventStore.SqlPersistence
+namespace EventStore.Persistence.SqlPersistence
 {
 	using System;
 	using System.Collections.Generic;

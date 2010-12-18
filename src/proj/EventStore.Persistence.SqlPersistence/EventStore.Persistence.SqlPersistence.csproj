@@ -8,8 +8,8 @@
     <ProjectGuid>{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EventStore.SqlPersistence</RootNamespace>
-    <AssemblyName>EventStore.SqlPersistence</AssemblyName>
+    <RootNamespace>EventStore.Persistence.SqlPersistence</RootNamespace>
+    <AssemblyName>EventStore.Persistence.SqlPersistence</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SignAssembly>true</SignAssembly>

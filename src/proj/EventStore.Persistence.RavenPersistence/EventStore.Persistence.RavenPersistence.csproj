@@ -8,8 +8,8 @@
     <ProjectGuid>{CE782ED8-15BB-49A9-9EBB-288FB5C82A01}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EventStore.RavenPersistence</RootNamespace>
-    <AssemblyName>EventStore.RavenPersistence</AssemblyName>
+    <RootNamespace>EventStore.Persistence.RavenPersistence</RootNamespace>
+    <AssemblyName>EventStore.Persistence.RavenPersistence</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SignAssembly>true</SignAssembly>

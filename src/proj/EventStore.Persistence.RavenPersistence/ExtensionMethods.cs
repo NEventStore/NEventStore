@@ -1,4 +1,4 @@
-namespace EventStore.RavenPersistence
+namespace EventStore.Persistence.RavenPersistence
 {
 	using System.Globalization;
 	using Persistence;
