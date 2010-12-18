@@ -7,8 +7,8 @@ namespace EventStore
 	/// <summary>
 	/// Represents a series of events which have been fully committed as a single unit and which apply to the stream indicated.
 	/// </summary>
-	[Serializable]
 	[DataContract]
+	[Serializable]
 	public class Commit
 	{
 		/// <summary>
@@ -42,44 +42,37 @@ namespace EventStore
 		/// <summary>
 		/// Gets the value which uniquely identifies the stream to which the commit belongs.
 		/// </summary>
-		[IgnoreDataMember]
-		public Guid StreamId { get; private set; }
+		[DataMember] public virtual Guid StreamId { get; private set; }
 
 		/// <summary>
 		/// Gets the value which uniquely identifies the commit within the stream.
 		/// </summary>
-		[IgnoreDataMember]
-		public Guid CommitId { get; private set; }
+		[DataMember] public virtual Guid CommitId { get; private set; }
 
 		/// <summary>
 		/// Gets the value which indicates the revision of the most recent event in the stream to which this commit applies.
 		/// </summary>
-		[IgnoreDataMember]
-		public long StreamRevision { get; private set; }
+		[DataMember] public virtual long StreamRevision { get; private set; }
 
 		/// <summary>
 		/// Gets the value which indicates the sequence (or position) in the stream to which this commit applies.
 		/// </summary>
-		[IgnoreDataMember]
-		public long CommitSequence { get; private set; }
+		[DataMember] public virtual long CommitSequence { get; private set; }
 
 		/// <summary>
 		/// Gets the metadata which provides additional, unstructured information about this commit.
 		/// </summary>
-		[DataMember]
-		public IDictionary<string, object> Headers { get; private set; }
+		[DataMember] public virtual IDictionary<string, object> Headers { get; private set; }
 
 		/// <summary>
 		/// Gets the collection of event messages to be committed as a single unit.
 		/// </summary>
-		[DataMember]
-		public ICollection<EventMessage> Events { get; private set; }
+		[DataMember] public virtual ICollection<EventMessage> Events { get; private set; }
 
 		/// <summary>
 		/// Gets the snapshot, if any, which represents a materialization of the stream at the last event of the commit.
 		/// </summary>
-		[IgnoreDataMember]
-		public object Snapshot { get; private set; }
+		[DataMember] public object Snapshot { get; private set; }
 
 		/// <summary>
 		/// Determines whether the specified object is equal to the current object.
