@@ -55,8 +55,8 @@ namespace EventStore.Persistence
 		/// <summary>
 		/// Adds the snapshot provided to the stream indicated the commit sequence specified.
 		/// </summary>
-		/// <param name="commit">The commit, at the end of which, the snapshot applies.</param>
+		/// <param name="stream">The stream of events, at the end of which, the snapshot applies.</param>
 		/// <param name="snapshot">The snapshot or materialized view of the stream.</param>
-		void AddSnapshot(Commit commit, object snapshot);
+		void AddSnapshot(CommittedEventStream stream, object snapshot);
 	}
 }
