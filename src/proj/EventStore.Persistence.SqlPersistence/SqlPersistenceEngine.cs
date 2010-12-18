@@ -104,13 +104,13 @@ namespace EventStore.Persistence.SqlPersistence
 				return query.ExecuteQuery(record => record.GetStreamToSnapshot());
 			});
 		}
-		public virtual void AddSnapshot(CommittedEventStream stream, object snapshot)
+		public virtual void AddSnapshot(Guid streamId, long streamRevision, object snapshot)
 		{
-			this.Execute(stream.StreamId, cmd =>
+			this.Execute(streamId, cmd =>
 			{
 				cmd.CommandText = this.dialect.AppendSnapshotToCommit;
-				cmd.AddParameter(this.dialect.StreamId, stream.StreamId);
-				cmd.AddParameter(this.dialect.CommitSequence, stream.CommitSequence);
+				cmd.AddParameter(this.dialect.StreamId, streamId);
+				cmd.AddParameter(this.dialect.StreamRevision, streamRevision);
 				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(snapshot));
 				cmd.ExecuteAndSuppressExceptions();
 			});

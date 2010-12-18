@@ -118,24 +118,17 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AppendSnapshotToCommit" xml:space="preserve">
-    <value>BEGIN TRANSACTION;
-
-UPDATE Commits
+    <value>UPDATE Commits
    SET Snapshot = @Payload
  WHERE StreamId = @StreamId
-   AND CommitSequence = @CommitSequence;
+   AND StreamRevision = @StreamRevision;
 
-UPDATE S
-   SET S.SnapshotRevision = C.StreamRevision
-  FROM Commits AS C
- INNER JOIN Streams S
-    ON C.StreamId = S.StreamId
- WHERE C.StreamId = @StreamId
-   AND C.CommitSequence = @CommitSequence
-   AND C.Snapshot IS NOT NULL
-   AND C.StreamRevision &gt; S.SnapshotRevision;
-
-COMMIT TRANSACTION;</value>
+/* Transaction integrity is not required */
+UPDATE Streams
+   SET SnapshotRevision = @StreamRevision
+ WHERE StreamId = @StreamId
+   AND @StreamRevision &gt; SnapshotRevision
+   AND @StreamRevision &lt; HeadRevision;</value>
   </data>
   <data name="GetCommitsFromSnapshotUntilRevision" xml:space="preserve">
     <value>SELECT StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload, Snapshot

@@ -56,8 +56,6 @@ namespace EventStore.Persistence.AcceptanceTests
 		static readonly CommitAttempt oldest2 = oldest.BuildNextAttempt();
 		static readonly CommitAttempt newest = oldest2.BuildNextAttempt();
 		static readonly Commit head = newest.ToCommit();
-		static readonly CommittedEventStream stream = 
-			new CommittedEventStream(head.StreamId, 0, head.CommitSequence, null, null);
 
 		Establish context = () =>
 		{
@@ -67,7 +65,7 @@ namespace EventStore.Persistence.AcceptanceTests
 		};
 
 		Because of = () =>
-			persistence.AddSnapshot(stream, "snapshot");
+			persistence.AddSnapshot(streamId, head.StreamRevision, "snapshot");
 
 		It should_start_reads_at_the_most_recent_commit = () =>
 			persistence.GetUntil(streamId, head.StreamRevision).First().CommitId.ShouldEqual(newest.CommitId);
@@ -111,15 +109,13 @@ namespace EventStore.Persistence.AcceptanceTests
 		static readonly CommitAttempt oldest3 = oldest2.BuildNextAttempt();
 		static readonly CommitAttempt oldest4 = oldest3.BuildNextAttempt();
 		static readonly CommitAttempt newest = oldest4.BuildNextAttempt();
-		static readonly CommittedEventStream stream =
-			new CommittedEventStream(streamId, 0, oldest3.PreviousCommitSequence, null, null);
 		static Commit[] committed;
 
 		Establish context = () =>
 		{
 			persistence.Persist(oldest);
 			persistence.Persist(oldest2);
-			persistence.AddSnapshot(stream, "snapshot");
+			persistence.AddSnapshot(streamId, oldest3.PreviousStreamRevision, "snapshot");
 			persistence.Persist(oldest3);
 			persistence.Persist(oldest4);
 			persistence.Persist(newest);

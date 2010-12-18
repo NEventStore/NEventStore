@@ -98,7 +98,7 @@ namespace EventStore.Persistence.RavenPersistence
 		{
 			return null;
 		}
-		public virtual void AddSnapshot(CommittedEventStream stream, object snapshot)
+		public virtual void AddSnapshot(Guid streamId, long streamRevision, object snapshot)
 		{
 			// inserts a snapshot document *between* two commits
 		}
