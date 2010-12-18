@@ -2,7 +2,6 @@ namespace EventStore.Persistence
 {
 	using System;
 	using System.Collections.Generic;
-	using Dispatcher;
 
 	/// <summary>
 	/// Indicates the ability to adapt the underlying persistence infrastructure to behave like a stream of events.
