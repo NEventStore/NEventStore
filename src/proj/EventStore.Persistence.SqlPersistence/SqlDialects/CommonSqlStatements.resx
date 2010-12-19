@@ -163,6 +163,14 @@ UPDATE Streams
    AND C.CommitSequence = D.CommitSequence
  ORDER BY D.DispatchId;</value>
   </data>
+  <data name="InitializeStorage" xml:space="preserve">
+    <value>SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+BEGIN TRANSACTION;
+
+/* TODO */
+
+COMMIT TRANSACTION;</value>
+  </data>
   <data name="MarkCommitAsDispatched" xml:space="preserve">
     <value>DELETE
   FROM Dispatch

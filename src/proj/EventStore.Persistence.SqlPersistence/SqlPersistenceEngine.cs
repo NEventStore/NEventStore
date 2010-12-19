@@ -20,6 +20,15 @@ namespace EventStore.Persistence.SqlPersistence
 			this.dialect = dialect;
 			this.serializer = serializer;
 		}
+		
+		public virtual void Initialize()
+		{
+			this.Execute(Guid.Empty, cmd =>
+			{
+				cmd.CommandText = this.dialect.InitializeStorage;
+				cmd.ExecuteNonQuery();
+			});
+		}
 
 		public virtual IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision)
 		{
@@ -124,7 +133,7 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		protected virtual void Execute(Guid streamId, Action<IDbCommand> execute)
 		{
-			using (var scope = new TransactionScope(TransactionScopeOption.Suppress))
+			using (new TransactionScope(TransactionScopeOption.Suppress))
 			using (var connection = this.factory.Open(streamId))
 			using (var command = connection.CreateCommand())
 			{
@@ -144,8 +153,6 @@ namespace EventStore.Persistence.SqlPersistence
 				{
 					throw new PersistenceException(e.Message, e);
 				}
-
-				scope.Complete();
 			}
 		}
 	}

@@ -4,6 +4,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 	public interface ISqlDialect
 	{
+		string InitializeStorage { get; }
 		string AppendSnapshotToCommit { get; }
 		string GetCommitsFromSnapshotUntilRevision { get; }
 		string GetCommitsFromStartingRevision { get; }

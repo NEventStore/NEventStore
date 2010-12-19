@@ -9,6 +9,11 @@ namespace EventStore.Persistence
 	public interface IPersistStreams
 	{
 		/// <summary>
+		/// Initializes and prepares the storage for use, if not already performed.
+		/// </summary>
+		void Initialize();
+
+		/// <summary>
 		/// Gets the corresponding commits from the stream indicated starting at the most recent snapshot, if any,
 		/// up to and including the revision specified sorted in ascending order--from oldest to newest.
 		/// </summary>

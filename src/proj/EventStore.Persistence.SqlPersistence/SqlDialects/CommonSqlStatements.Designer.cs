@@ -137,6 +137,20 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+        ///BEGIN TRANSACTION;
+        ///
+        ////* TODO */
+        ///
+        ///COMMIT TRANSACTION;.
+        /// </summary>
+        internal static string InitializeStorage {
+            get {
+                return ResourceManager.GetString("InitializeStorage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to DELETE
         ///  FROM Dispatch
         /// WHERE StreamId = @StreamId

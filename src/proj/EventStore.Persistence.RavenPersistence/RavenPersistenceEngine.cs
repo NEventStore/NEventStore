@@ -17,6 +17,10 @@ namespace EventStore.Persistence.RavenPersistence
 			this.store = store;
 		}
 
+		public virtual void Initialize()
+		{
+		}
+
 		public virtual IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision)
 		{
 			using (new TransactionScope(TransactionScopeOption.Suppress))
