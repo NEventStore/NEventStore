@@ -194,9 +194,14 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		private static IPersistStreams OpenRavenPersistenceEngine()
 		{
-			var store = new DocumentStore { Url = "http://localhost:8080" };
-			store.Initialize();
-			return new RavenPersistenceEngine(store);
+			// TODO: we can also run this against a local, embedded RavenDB instance...
+			var store = new DocumentStore
+			{
+				Url = "http://localhost:8080",
+				DefaultDatabase = "EventStore2-AcceptanceTests"
+			};
+
+			return new RavenPersistenceEngine(store, new RavenInitializer());
 		}
 
 		Cleanup everything = () =>

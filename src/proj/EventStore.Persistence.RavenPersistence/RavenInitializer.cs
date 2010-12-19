@@ -2,34 +2,40 @@ namespace EventStore.Persistence.RavenPersistence
 {
 	using System;
 	using System.Transactions;
-	using Raven.Client.Document;
+	using Raven.Client;
 
-	public class RavenInitializer
+	public class RavenInitializer : IInitializeRaven
 	{
-		private readonly DocumentStore store;
-
-		public RavenInitializer(DocumentStore store)
-		{
-			// TODO: define conventions
-			this.store = store;
-		}
-
-		public void Initialize()
+		public void Initialize(IDocumentStore store)
 		{
 			try
 			{
-				this.TryInitialize();
+				TryInitialize(store);
 			}
 			catch (Exception e)
 			{
 				throw new PersistenceException(e.Message, e);
 			}
 		}
-		private void TryInitialize()
+		private static void TryInitialize(IDocumentStore store)
 		{
+			// TODO: define conventions
+			AssignDocumentKeyGenerator(store);
+
 			// TODO: create indexes
 			using (new TransactionScope(TransactionScopeOption.Suppress))
-				this.store.Initialize();
+				store.Initialize();
+		}
+
+		private static void AssignDocumentKeyGenerator(IDocumentStore store)
+		{
+			var generator = store.Conventions.DocumentKeyGenerator;
+			store.Conventions.DocumentKeyGenerator = entity =>
+				AssignIdentity(entity as Commit) ?? generator(entity);
+		}
+		private static string AssignIdentity(Commit commit)
+		{
+			return commit == null ? null : commit.Id();
 		}
 	}
 }

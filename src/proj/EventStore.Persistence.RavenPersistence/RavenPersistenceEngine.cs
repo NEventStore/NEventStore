@@ -11,14 +11,18 @@ namespace EventStore.Persistence.RavenPersistence
 	public class RavenPersistenceEngine : IPersistStreams
 	{
 		private readonly IDocumentStore store;
+		private readonly IInitializeRaven initializer;
 
-		public RavenPersistenceEngine(IDocumentStore store)
+		public RavenPersistenceEngine(
+			IDocumentStore store, IInitializeRaven initializer)
 		{
 			this.store = store;
+			this.initializer = initializer;
 		}
 
 		public virtual void Initialize()
 		{
+			this.initializer.Initialize(this.store);
 		}
 
 		public virtual IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision)
@@ -37,11 +41,11 @@ namespace EventStore.Persistence.RavenPersistence
 
 				try
 				{
-					return (from commit in session.Query<RavenCommit>().Customize(x => x.WaitForNonStaleResultsAsOfNow())
+					return (from commit in session.Query<Commit>().Customize(x => x.WaitForNonStaleResultsAsOfNow())
 					        where commit.StreamId == streamId
 					              && commit.StreamRevision >= minRevision
 					              && commit.Snapshot == null
-					        select commit.ToCommit()).ToArray();
+					        select commit).ToArray();
 				}
 				catch (Exception e)
 				{
@@ -55,7 +59,7 @@ namespace EventStore.Persistence.RavenPersistence
 			using (var session = this.store.OpenSession())
 			{
 				session.Advanced.UseOptimisticConcurrency = true;
-				session.Store(new RavenCommit(uncommitted));
+				session.Store(uncommitted.ToCommit());
 
 				try
 				{
@@ -83,10 +87,8 @@ namespace EventStore.Persistence.RavenPersistence
 			{
 				try
 				{
-					return session.Query<RavenCommit>()
-						.Where(x => x.PendingDispatch)
-						.Select(x => x.ToCommit())
-						.ToArray();
+					// TODO
+					return session.Query<Commit>().Where(x => false).ToArray();
 				}
 				catch (Exception e)
 				{
