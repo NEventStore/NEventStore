@@ -42,6 +42,8 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AsynchronousDispatcher.cs" />
+    <Compile Include="DelegateMessagePublisher.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="OptimisticEventStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
