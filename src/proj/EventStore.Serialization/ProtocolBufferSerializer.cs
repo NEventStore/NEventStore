@@ -34,6 +34,7 @@ namespace EventStore.Serialization
 			if (!this.CanRegisterContract(contract) || string.IsNullOrEmpty(contract.FullName))
 				return;
 
+			// TODO: GetHashCode() is a *terrible* way to get contract "identity".
 			var hash = contract.FullName.GetHashCode();
 			this.hashes[hash] = contract;
 			this.types[contract] = hash;

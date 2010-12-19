@@ -19,12 +19,11 @@ namespace EventStore.Core
 			this.handleException = handleException;
 		}
 
-		public void Dispatch(Commit commit)
+		public virtual void Dispatch(Commit commit)
 		{
 			ThreadPool.QueueUserWorkItem(state => this.BeginDispatch(commit));
 		}
-
-		private void BeginDispatch(Commit commit)
+		protected virtual void BeginDispatch(Commit commit)
 		{
 			try
 			{

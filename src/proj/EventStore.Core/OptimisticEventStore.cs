@@ -27,7 +27,7 @@ namespace EventStore.Core
 		{
 			return this.Read(this.persistence.GetFrom(streamId, minRevision), false);
 		}
-		private CommittedEventStream Read(IEnumerable<Commit> commits, bool applySnapshot)
+		protected virtual CommittedEventStream Read(IEnumerable<Commit> commits, bool applySnapshot)
 		{
 			var streamId = Guid.Empty;
 			Commit last = null;
@@ -64,7 +64,7 @@ namespace EventStore.Core
 			this.ThrowOnDuplicateOrConcurrentWrites(attempt);
 			this.PersistAndDispatch(attempt);
 		}
-		private void ThrowOnDuplicateOrConcurrentWrites(CommitAttempt attempt)
+		protected virtual void ThrowOnDuplicateOrConcurrentWrites(CommitAttempt attempt)
 		{
 			if (this.commitIdentifiers.Contains(attempt.CommitId))
 				throw new DuplicateCommitException();
@@ -85,7 +85,7 @@ namespace EventStore.Core
 			if (previousCommitForStream.StreamRevision < attempt.PreviousStreamRevision)
 				throw new PersistenceException();
 		}
-		private void PersistAndDispatch(CommitAttempt attempt)
+		protected virtual void PersistAndDispatch(CommitAttempt attempt)
 		{
 			this.persistence.Persist(attempt);
 

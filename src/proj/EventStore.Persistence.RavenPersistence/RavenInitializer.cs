@@ -6,7 +6,7 @@ namespace EventStore.Persistence.RavenPersistence
 
 	public class RavenInitializer : IInitializeRaven
 	{
-		public void Initialize(IDocumentStore store)
+		public virtual void Initialize(IDocumentStore store)
 		{
 			try
 			{

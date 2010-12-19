@@ -13,7 +13,7 @@ namespace EventStore.Core
 			this.publish = publish;
 		}
 
-		public void Publish(Commit commit)
+		public virtual void Publish(Commit commit)
 		{
 			this.publish(commit);
 		}

@@ -14,7 +14,7 @@ namespace EventStore.Core
 			this.persistence = persistence;
 		}
 
-		public void Dispatch(Commit commit)
+		public virtual void Dispatch(Commit commit)
 		{
 			this.bus.Publish(commit);
 			this.persistence.MarkCommitAsDispatched(commit);
