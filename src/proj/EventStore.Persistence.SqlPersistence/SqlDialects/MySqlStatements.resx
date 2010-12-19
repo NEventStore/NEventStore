@@ -118,7 +118,8 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="InitializeStorage" xml:space="preserve">
-    <value>SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+    <value>SET autocommit=0;
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 START TRANSACTION;
 
 CREATE TABLE IF NOT EXISTS Streams
@@ -152,8 +153,6 @@ CREATE TABLE IF NOT EXISTS Dispatch
        CommitSequence bigint NOT NULL
 );
 CREATE UNIQUE INDEX IX_Dispatch ON Dispatch (StreamId, CommitSequence);
-
-/* TODO: triggers to protect referential integrity as well as commits */
 
 COMMIT;
 

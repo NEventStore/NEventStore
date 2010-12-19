@@ -15,11 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{CD37080A-F48
 	ProjectSection(SolutionItems) = preProject
 		..\doc\EventStore Architectural Overview.docx = ..\doc\EventStore Architectural Overview.docx
 		..\doc\license.txt = ..\doc\license.txt
-		..\doc\MsSql.Schema.sql = ..\doc\MsSql.Schema.sql
-		..\doc\MySql.Schema.sql = ..\doc\MySql.Schema.sql
-		..\doc\PostgreSql.Schema.sql = ..\doc\PostgreSql.Schema.sql
 		..\doc\roadmap.txt = ..\doc\roadmap.txt
-		..\doc\Sqlite.Schema.sql = ..\doc\Sqlite.Schema.sql
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Serialization", "proj\EventStore.Serialization\EventStore.Serialization.csproj", "{A5BF4B86-26F6-418D-BE35-C6CC3A623D27}"

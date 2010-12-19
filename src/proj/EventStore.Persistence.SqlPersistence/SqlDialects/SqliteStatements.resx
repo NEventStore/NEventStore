@@ -152,8 +152,6 @@ CREATE TABLE IF NOT EXISTS Dispatch
 );
 CREATE UNIQUE INDEX IF NOT EXISTS IX_Dispatch ON Dispatch (StreamId, CommitSequence);
 
-/* TODO: triggers to protect referential integrity as well as commits */
-
 COMMIT TRANSACTION;
 
 /*

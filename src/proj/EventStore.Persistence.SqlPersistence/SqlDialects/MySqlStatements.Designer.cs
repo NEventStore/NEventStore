@@ -61,7 +61,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+        ///   Looks up a localized string similar to SET autocommit=0;
+        ///SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
         ///START TRANSACTION;
         ///
         ///CREATE TABLE IF NOT EXISTS Streams
@@ -76,7 +77,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///CREATE TABLE IF NOT EXISTS Commits
         ///(
         ///       StreamId binary(16) NOT NULL,
-        ///       CommitId binary(16) NOT NULL  [rest of string was truncated]&quot;;.
+        ///       CommitId b [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {

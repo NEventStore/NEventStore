@@ -158,41 +158,12 @@ CREATE TABLE [dbo].[Dispatch]
 CREATE UNIQUE INDEX [IX_Dispatch] ON [dbo].[Dispatch] (StreamId, CommitSequence);
 
 ALTER TABLE [dbo].[Commits] WITH CHECK ADD CONSTRAINT [FK_Commits_Streams] FOREIGN KEY([StreamId])
-REFERENCES [dbo].[Streams] ([StreamId]);
+REFERENCES [dbo].[Streams] ([StreamId])
 ALTER TABLE [dbo].[Commits] CHECK CONSTRAINT [FK_Commits_Streams];
 
 ALTER TABLE [dbo].[Dispatch] WITH CHECK ADD CONSTRAINT [FK_Dispatch_Commits] FOREIGN KEY([StreamId], [CommitSequence])
-REFERENCES [dbo].[Commits] ([StreamId], [CommitSequence]);
+REFERENCES [dbo].[Commits] ([StreamId], [CommitSequence])
 ALTER TABLE [dbo].[Dispatch] CHECK CONSTRAINT [FK_Dispatch_Commits];
-
-GO
-CREATE TRIGGER [dbo].[PreventChangesToCommits] ON [dbo].[Commits] FOR UPDATE
-AS BEGIN
-
-       IF (UPDATE([StreamId])
-       OR UPDATE([CommitId])
-       OR UPDATE([StreamRevision])
-       OR UPDATE([CommitSequence])
-       OR UPDATE([SystemSequence])
-       OR UPDATE([Headers])
-       OR UPDATE([Payload]))
-       BEGIN
-              RAISERROR('Commits cannot be modified.', 16, 1);
-              ROLLBACK TRANSACTION;
-       END;
-
-END;
-
-/* NOTE: This trigger is recommended for production systems and may get in the way during development
-         as it is designed to prevent removal of commits from EventStore's durable storage. */
-GO
-CREATE TRIGGER [dbo].[PreventDeletionOfCommits] ON [dbo].[Commits] FOR DELETE
-AS BEGIN
-
-	RAISERROR('Commits are immutable and cannot be deleted.', 16, 1);
-	ROLLBACK TRANSACTION;
-
-END;
 
 COMMIT TRANSACTION;
 

@@ -172,6 +172,7 @@ namespace EventStore.Persistence.AcceptanceTests
 		Establish context = () =>
 		{
 			persistence = OpenSqlPersistenceEngine();
+			persistence.Initialize();
 		};
 		private static IPersistStreams OpenSqlPersistenceEngine()
 		{
