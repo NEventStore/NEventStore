@@ -45,6 +45,7 @@
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="OptimisticEventStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SynchronousDispatcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\CustomDictionary.xml">

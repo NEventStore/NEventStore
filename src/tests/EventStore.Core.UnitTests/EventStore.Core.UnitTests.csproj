@@ -45,6 +45,7 @@
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="OptimisticEventStoreTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SynchronousDispatcherTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Machine.Specifications">
