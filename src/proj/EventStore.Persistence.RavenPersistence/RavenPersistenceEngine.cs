@@ -3,6 +3,7 @@ namespace EventStore.Persistence.RavenPersistence
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Transactions;
 	using Persistence;
 	using Raven.Client;
 	using Raven.Client.Exceptions;
@@ -14,22 +15,25 @@ namespace EventStore.Persistence.RavenPersistence
 		public RavenPersistenceEngine(IDocumentStore store)
 		{
 			this.store = store;
-			this.store.Initialize();
 		}
 
 		public virtual IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision)
 		{
-			return null;
+			using (new TransactionScope(TransactionScopeOption.Suppress))
+			{
+				return null;
+			}
 		}
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, long minRevision)
 		{
+			using (new TransactionScope(TransactionScopeOption.Suppress))
 			using (var session = this.store.OpenSession())
 			{
 				session.Advanced.AllowNonAuthoritiveInformation = false;
 
 				try
 				{
-					return (from commit in session.Query<RavenCommit>()
+					return (from commit in session.Query<RavenCommit>().Customize(x => x.WaitForNonStaleResultsAsOfNow())
 					        where commit.StreamId == streamId
 					              && commit.StreamRevision >= minRevision
 					              && commit.Snapshot == null
@@ -43,6 +47,7 @@ namespace EventStore.Persistence.RavenPersistence
 		}
 		public virtual void Persist(CommitAttempt uncommitted)
 		{
+			using (new TransactionScope(TransactionScopeOption.Suppress))
 			using (var session = this.store.OpenSession())
 			{
 				session.Advanced.UseOptimisticConcurrency = true;
@@ -69,6 +74,7 @@ namespace EventStore.Persistence.RavenPersistence
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
+			using (new TransactionScope(TransactionScopeOption.Suppress))
 			using (var session = this.store.OpenSession())
 			{
 				try
@@ -86,6 +92,7 @@ namespace EventStore.Persistence.RavenPersistence
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
+			using (new TransactionScope(TransactionScopeOption.Suppress))
 			using (var session = this.store.OpenSession())
 			{
 				var patch = commit.RemoveUndispatchedProperty();
@@ -96,11 +103,17 @@ namespace EventStore.Persistence.RavenPersistence
 
 		public virtual IEnumerable<StreamToSnapshot> GetStreamsToSnapshot(int maxThreshold)
 		{
-			return null;
+			using (new TransactionScope(TransactionScopeOption.Suppress))
+			{
+				return null;
+			}
 		}
 		public virtual void AddSnapshot(Guid streamId, long streamRevision, object snapshot)
 		{
-			// inserts a snapshot document *between* two commits
+			using (new TransactionScope(TransactionScopeOption.Suppress))
+			{
+				// inserts a snapshot document *between* two commits
+			}
 		}
 	}
 }
