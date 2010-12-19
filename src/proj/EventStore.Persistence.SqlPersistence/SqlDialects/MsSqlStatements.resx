@@ -118,92 +118,88 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="InitializeStorage" xml:space="preserve">
-    <value>BEGIN TRANSACTION;
+    <value>IF EXISTS(SELECT * FROM sysobjects WHERE name='Commits' AND xtype = 'U') RETURN;
 
-CREATE TABLE IF NOT EXISTS Streams
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+BEGIN TRANSACTION;
+
+	   
+CREATE TABLE [dbo].[Streams]
 (
-       StreamId guid NOT NULL CHECK (StreamId != 0),
-       Name nvarchar(256) NOT NULL,
-       HeadRevision bigint NOT NULL CHECK (HeadRevision &gt; 0),
-       SnapshotRevision bigint NOT NULL CHECK (SnapshotRevision &gt;= 0) DEFAULT(0),
-       CONSTRAINT PK_Streams PRIMARY KEY (StreamId)
+       [StreamId] [uniqueidentifier] NOT NULL CHECK ([StreamId] != 0x0),
+       [Name] [nvarchar](256) NOT NULL,
+       [HeadRevision] [bigint] NOT NULL CHECK ([HeadRevision] &gt; 0),
+       [SnapshotRevision] [bigint] NOT NULL CHECK ([SnapshotRevision] &gt;= 0) DEFAULT(0),
+       CONSTRAINT [PK_Streams] PRIMARY KEY CLUSTERED ([StreamId])
 );
 
-CREATE TABLE IF NOT EXISTS Commits
+CREATE TABLE [dbo].[Commits]
 (
-       StreamId guid NOT NULL,
-       CommitId guid NOT NULL CHECK (CommitId != 0),
-       StreamRevision bigint NOT NULL CHECK (StreamRevision &gt; 0),
-       CommitSequence bigint NOT NULL CHECK (CommitSequence &gt; 0),
-       SystemSequence integer PRIMARY KEY NOT NULL,
-       Headers blob NULL,
-       Payload blob NOT NULL,
-       Snapshot blob NULL
+       [StreamId] [uniqueidentifier] NOT NULL,
+       [CommitId] [uniqueidentifier] NOT NULL CHECK ([CommitId] != 0x0),
+       [StreamRevision] [bigint] NOT NULL CHECK ([StreamRevision] &gt; 0),
+       [CommitSequence] [bigint] NOT NULL CHECK ([CommitSequence] &gt; 0),
+       [SystemSequence] [bigint] IDENTITY(1,1) NOT NULL,
+       [Headers] [varbinary](MAX) NULL CHECK ([Headers] IS NULL OR DATALENGTH([Headers]) &gt; 0),
+       [Payload] [varbinary](MAX) NOT NULL CHECK (DATALENGTH([Payload]) &gt; 0),
+       [Snapshot] [varbinary](MAX) NULL CHECK ([Snapshot] IS NULL OR DATALENGTH([Snapshot]) &gt; 0),
+       CONSTRAINT [PK_Commits] PRIMARY KEY CLUSTERED ([StreamId], [CommitSequence])
 );
-CREATE UNIQUE INDEX IF NOT EXISTS PK_Commits ON Commits (StreamId, CommitSequence);
-CREATE UNIQUE INDEX IF NOT EXISTS IX_Commits_CommitId ON Commits (StreamId, CommitId);
-CREATE UNIQUE INDEX IF NOT EXISTS IX_Commits_Revisions ON Commits (StreamId, StreamRevision);
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Commits] ON [dbo].[Commits] ([StreamId], [CommitId]);
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Commits_Revisions] ON [dbo].[Commits] ([StreamId], [StreamRevision]);
 
-CREATE TABLE IF NOT EXISTS Dispatch
+CREATE TABLE [dbo].[Dispatch]
 (
-       DispatchId integer PRIMARY KEY NOT NULL,
-       StreamId guid NOT NULL,
-       CommitSequence bigint NOT NULL
+       [DispatchId] [bigint] IDENTITY(1,1) NOT NULL,
+       [StreamId] [uniqueidentifier] NOT NULL,
+       [CommitSequence] [bigint] NOT NULL,
+       CONSTRAINT [PK_Dispatch] PRIMARY KEY CLUSTERED ([DispatchId])
 );
-CREATE UNIQUE INDEX IF NOT EXISTS IX_Dispatch ON Dispatch (StreamId, CommitSequence);
+CREATE UNIQUE INDEX [IX_Dispatch] ON [dbo].[Dispatch] (StreamId, CommitSequence);
 
-/* TODO: triggers to protect referential integrity as well as commits */
+ALTER TABLE [dbo].[Commits] WITH CHECK ADD CONSTRAINT [FK_Commits_Streams] FOREIGN KEY([StreamId])
+REFERENCES [dbo].[Streams] ([StreamId]);
+ALTER TABLE [dbo].[Commits] CHECK CONSTRAINT [FK_Commits_Streams];
+
+ALTER TABLE [dbo].[Dispatch] WITH CHECK ADD CONSTRAINT [FK_Dispatch_Commits] FOREIGN KEY([StreamId], [CommitSequence])
+REFERENCES [dbo].[Commits] ([StreamId], [CommitSequence]);
+ALTER TABLE [dbo].[Dispatch] CHECK CONSTRAINT [FK_Dispatch_Commits];
+
+GO
+CREATE TRIGGER [dbo].[PreventChangesToCommits] ON [dbo].[Commits] FOR UPDATE
+AS BEGIN
+
+       IF (UPDATE([StreamId])
+       OR UPDATE([CommitId])
+       OR UPDATE([StreamRevision])
+       OR UPDATE([CommitSequence])
+       OR UPDATE([SystemSequence])
+       OR UPDATE([Headers])
+       OR UPDATE([Payload]))
+       BEGIN
+              RAISERROR('Commits cannot be modified.', 16, 1);
+              ROLLBACK TRANSACTION;
+       END;
+
+END;
+
+/* NOTE: This trigger is recommended for production systems and may get in the way during development
+         as it is designed to prevent removal of commits from EventStore's durable storage. */
+GO
+CREATE TRIGGER [dbo].[PreventDeletionOfCommits] ON [dbo].[Commits] FOR DELETE
+AS BEGIN
+
+	RAISERROR('Commits are immutable and cannot be deleted.', 16, 1);
+	ROLLBACK TRANSACTION;
+
+END;
 
 COMMIT TRANSACTION;
 
 /*
-DROP TABLE Dispatch;
-DROP TABLE Commits;
-DROP TABLE Streams;
+DROP TABLE [dbo].[Dispatch];
+DROP TABLE [dbo].[Commits];
+DROP TABLE [dbo].[Streams];
 */</value>
-  </data>
-  <data name="PersistCommitAttempt" xml:space="preserve">
-    <value>BEGIN TRANSACTION;
-
-INSERT
-  INTO Streams
-     ( StreamId, Name, HeadRevision )
-SELECT @StreamId, COALESCE(@StreamName, ''), @StreamRevision
- WHERE @ExpectedRevision = 0
-   AND NOT EXISTS
-     ( SELECT *
-         FROM Streams
-        WHERE StreamId = @StreamId );
-
-INSERT OR REPLACE
-  INTO Streams
-     ( StreamId, Name, HeadRevision)
-SELECT @StreamId, COALESCE(@StreamName, ''), @StreamRevision
-  FROM Streams
- WHERE @ExpectedRevision &gt; 0
-   AND StreamId = @StreamId
-   AND HeadRevision = @ExpectedRevision;
-
-INSERT
-  INTO Commits
-     ( StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload )
-SELECT @StreamId, @CommitId, @StreamRevision, @CommitSequence, @Headers, @Payload
- WHERE NOT EXISTS
-     ( SELECT *
-         FROM Commits
-        WHERE StreamId = @StreamId
-          AND CommitId != @CommitId
-          AND CommitSequence &gt;= @CommitSequence );
-
-INSERT
-  INTO Dispatch
-     ( StreamId, CommitSequence)
-SELECT @StreamId, @CommitSequence
-  FROM Commits
- WHERE StreamId = @StreamId
-   AND CommitSequence = @CommitSequence
-   AND CommitId = @CommitId;
-
-COMMIT TRANSACTION;</value>
   </data>
 </root>

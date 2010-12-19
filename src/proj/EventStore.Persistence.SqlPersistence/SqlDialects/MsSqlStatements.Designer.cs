@@ -22,14 +22,14 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class MySqlStatements {
+    internal class MsSqlStatements {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal MySqlStatements() {
+        internal MsSqlStatements() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.Persistence.SqlPersistence.SqlDialects.MySqlStatements", typeof(MySqlStatements).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.Persistence.SqlPersistence.SqlDialects.MsSqlStatements", typeof(MsSqlStatements).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,55 +61,23 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
-        ///START TRANSACTION;
+        ///   Looks up a localized string similar to IF EXISTS(SELECT * FROM sysobjects WHERE name=&apos;Commits&apos; AND xtype = &apos;U&apos;) RETURN;
         ///
-        ///CREATE TABLE IF NOT EXISTS Streams
-        ///(
-        ///       StreamId binary(16) NOT NULL CHECK (StreamId != 0),
-        ///       Name nvarchar(256) NOT NULL,
-        ///       HeadRevision bigint NOT NULL CHECK (HeadRevision &gt; 0),
-        ///       SnapshotRevision bigint NOT NULL CHECK (SnapshotRevision &gt;= 0),
-        ///       CONSTRAINT PK_Streams PRIMARY KEY (StreamId)
-        ///);
+        ///SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+        ///BEGIN TRANSACTION;
         ///
-        ///CREATE TABLE IF NOT EXISTS Commits
+        ///	   
+        ///CREATE TABLE [dbo].[Streams]
         ///(
-        ///       StreamId binary(16) NOT NULL,
-        ///       CommitId binary(16) NOT NULL  [rest of string was truncated]&quot;;.
+        ///       [StreamId] [uniqueidentifier] NOT NULL CHECK ([StreamId] != 0x0),
+        ///       [Name] [nvarchar](256) NOT NULL,
+        ///       [HeadRevision] [bigint] NOT NULL CHECK ([HeadRevision] &gt; 0),
+        ///       [SnapshotRevision] [bigint] NOT NULL CHECK ([SnapshotRevision] &gt;= 0) DEFAULT(0),
+        ///       CONSTRAINT [PK_Streams] PRIMARY KEY CLUS [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {
                 return ResourceManager.GetString("InitializeStorage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SET autocommit=0;
-        ///SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
-        ///
-        ///START TRANSACTION;
-        ///
-        ///INSERT
-        ///  INTO Streams
-        ///     ( StreamId, Name, HeadRevision )
-        ///SELECT @StreamId, COALESCE(@StreamName, &apos;&apos;), @StreamRevision
-        ///  FROM Dual
-        /// WHERE @ExpectedRevision = 0
-        ///   AND NOT EXISTS
-        ///     ( SELECT *
-        ///         FROM Streams
-        ///        WHERE StreamId = @StreamId );
-        ///
-        ///UPDATE Streams
-        ///    SET HeadRevision = @StreamRevision,
-        ///       Name = COALESCE(@StreamName, Name)
-        /// WHERE @ExpectedRevision &gt; 0
-        ///   AND StreamId = @Str [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string PersistCommitAttempt {
-            get {
-                return ResourceManager.GetString("PersistCommitAttempt", resourceCulture);
             }
         }
     }

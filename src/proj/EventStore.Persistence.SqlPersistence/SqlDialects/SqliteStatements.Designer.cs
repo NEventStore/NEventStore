@@ -63,6 +63,30 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         /// <summary>
         ///   Looks up a localized string similar to BEGIN TRANSACTION;
         ///
+        ///CREATE TABLE IF NOT EXISTS Streams
+        ///(
+        ///       StreamId guid NOT NULL CHECK (StreamId != 0),
+        ///       Name nvarchar(256) NOT NULL,
+        ///       HeadRevision bigint NOT NULL CHECK (HeadRevision &gt; 0),
+        ///       SnapshotRevision bigint NOT NULL CHECK (SnapshotRevision &gt;= 0) DEFAULT(0),
+        ///       CONSTRAINT PK_Streams PRIMARY KEY (StreamId)
+        ///);
+        ///
+        ///CREATE TABLE IF NOT EXISTS Commits
+        ///(
+        ///       StreamId guid NOT NULL,
+        ///       CommitId guid NOT NULL CHECK (CommitId != 0),
+        ///       StreamRevision bigint N [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string InitializeStorage {
+            get {
+                return ResourceManager.GetString("InitializeStorage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BEGIN TRANSACTION;
+        ///
         ///INSERT
         ///  INTO Streams
         ///     ( StreamId, Name, HeadRevision )

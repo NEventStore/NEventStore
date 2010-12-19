@@ -177,7 +177,7 @@ namespace EventStore.Persistence.AcceptanceTests
 		{
 			return new SqlPersistenceEngine(
 				new DelegateConnectionFactory(id => OpenConnection()),
-				new CommonSqlDialect(),
+				new MsSqlDialect(),
 				new BinarySerializer());
 		}
 		private static IDbConnection OpenConnection()

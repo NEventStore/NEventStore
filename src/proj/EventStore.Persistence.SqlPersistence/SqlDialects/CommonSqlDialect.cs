@@ -2,12 +2,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
 	using System.Data.Common;
 
-	public class CommonSqlDialect : ISqlDialect
+	public abstract class CommonSqlDialect : ISqlDialect
 	{
-		public virtual string InitializeStorage
-		{
-			get { return CommonSqlStatements.InitializeStorage; }
-		}
+		public abstract string InitializeStorage { get; }
 		public virtual string AppendSnapshotToCommit
 		{
 			get { return CommonSqlStatements.AppendSnapshotToCommit; }
