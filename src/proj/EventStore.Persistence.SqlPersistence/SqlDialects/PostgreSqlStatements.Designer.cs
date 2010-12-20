@@ -61,7 +61,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+        ///   Looks up a localized string similar to SET AUTOCOMMIT=OFF;
+        ///SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
         ///BEGIN TRANSACTION;
         ///
         ///CREATE TABLE Streams
@@ -77,7 +78,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///(
         ///       StreamId bytea NOT NULL,
         ///       CommitId bytea NOT NULL,
-        ///       StreamRevision bigint NOT NULL CHECK (StreamRe [rest of string was truncated]&quot;;.
+        ///       StreamRevision bigint NOT [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {
