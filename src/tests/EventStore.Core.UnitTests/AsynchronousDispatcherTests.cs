@@ -33,6 +33,9 @@ namespace EventStore.Core.UnitTests
 		Because of = () =>
 			dispatcher.Dispatch(commit);
 
+		It should_take_a_few_milliseconds_for_the_other_thread_to_execute = () =>
+			Thread.Sleep(10); // just a precaution because we're doing async tests
+
 		It should_provide_the_commit_to_the_message_bus = () =>
 			bus.Verify(x => x.Publish(commit), Times.Exactly(1));
 
