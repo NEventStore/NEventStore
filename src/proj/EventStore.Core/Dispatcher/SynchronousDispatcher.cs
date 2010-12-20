@@ -1,6 +1,5 @@
-namespace EventStore.Core
+namespace EventStore.Dispatcher
 {
-	using Dispatcher;
 	using Persistence;
 
 	public class SynchronousDispatcher : IDispatchCommits

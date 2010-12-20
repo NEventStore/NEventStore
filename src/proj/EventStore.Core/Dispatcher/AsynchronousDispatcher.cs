@@ -1,8 +1,7 @@
-namespace EventStore.Core
+namespace EventStore.Dispatcher
 {
 	using System;
 	using System.Threading;
-	using Dispatcher;
 	using Persistence;
 
 	public class AsynchronousDispatcher : IDispatchCommits

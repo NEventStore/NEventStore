@@ -8,7 +8,7 @@
     <ProjectGuid>{D6413244-42F5-4233-B347-D0A804B09CC9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EventStore.Core</RootNamespace>
+    <RootNamespace>EventStore</RootNamespace>
     <AssemblyName>EventStore.Core</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -42,16 +42,17 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AsynchronousDispatcher.cs" />
-    <Compile Include="DelegateCommitFilter.cs" />
-    <Compile Include="DelegateMessagePublisher.cs" />
+    <Compile Include="Dispatcher\AsynchronousDispatcher.cs" />
+    <Compile Include="Persistence\DelegateCommitFilter.cs" />
+    <Compile Include="Dispatcher\DelegateMessagePublisher.cs" />
+    <Compile Include="Dispatcher\IPublishMessages.cs" />
     <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="IFilterCommits.cs" />
+    <Compile Include="Persistence\IFilterCommits.cs" />
     <Compile Include="OptimisticEventStore.cs" />
-    <Compile Include="NullCommitFilter.cs" />
-    <Compile Include="CommitFilterPersistence.cs" />
+    <Compile Include="Persistence\NullCommitFilter.cs" />
+    <Compile Include="Persistence\CommitFilterPersistence.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SynchronousDispatcher.cs" />
+    <Compile Include="Dispatcher\SynchronousDispatcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\CustomDictionary.xml">
@@ -67,6 +68,7 @@
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

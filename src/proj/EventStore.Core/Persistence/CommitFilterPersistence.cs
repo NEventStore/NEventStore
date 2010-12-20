@@ -1,9 +1,8 @@
-namespace EventStore.Core
+namespace EventStore.Persistence
 {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using Persistence;
 
 	public class CommitFilterPersistence : IPersistStreams
 	{

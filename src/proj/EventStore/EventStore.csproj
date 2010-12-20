@@ -50,7 +50,6 @@
     </Compile>
     <Compile Include="CommitAttempt.cs" />
     <Compile Include="Dispatcher\IDispatchCommits.cs" />
-    <Compile Include="Dispatcher\IPublishMessages.cs" />
     <Compile Include="IStoreEvents.cs" />
     <Compile Include="EventMessage.cs" />
     <Compile Include="Persistence\Commit.cs" />

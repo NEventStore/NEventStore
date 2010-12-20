@@ -1,4 +1,4 @@
-namespace EventStore.Core
+namespace EventStore.Persistence
 {
 	public interface IFilterCommits<T>
 	{

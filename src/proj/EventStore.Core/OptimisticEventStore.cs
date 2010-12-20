@@ -1,4 +1,4 @@
-namespace EventStore.Core
+namespace EventStore
 {
 	using System;
 	using System.Collections.Generic;
