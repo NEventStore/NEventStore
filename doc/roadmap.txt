@@ -19,8 +19,8 @@
 	- Relational Databases -
 	[DONE] Microsoft SQL Server (2000 or later)
 	[DONE] Microsoft SQL Azure
-	[DONE] MySQL (3 or later) (MyISAM and InnoDB)
-	[DONE] Amazon RDS (MySQL) (TODO: failing unit tests)
+	[DONE] MySQL (4 or later) (InnoDB, Drizzle, MariaDB, etc.)
+	[DONE] Amazon RDS (MySQL)
 	[DONE] SQLite (3 or later)
 	[DONE] PostgreSQL (8 or later) (TODO: failing unit tests)
 	Microsoft Access 2000 (or later)
