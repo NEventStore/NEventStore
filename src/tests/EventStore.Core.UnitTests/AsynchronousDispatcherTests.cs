@@ -4,6 +4,7 @@
 namespace EventStore.Core.UnitTests
 {
 	using System;
+	using System.Threading;
 	using Dispatcher;
 	using Machine.Specifications;
 	using Moq;
@@ -63,6 +64,9 @@ namespace EventStore.Core.UnitTests
 
 		Because of = () =>
 			dispatcher.Dispatch(commit);
+
+		It should_take_a_few_milliseconds_for_the_other_thread_to_execute = () =>
+			Thread.Sleep(10); // just a precaution because we're doing async tests
 
 		It should_handed_back_the_commit_that_caused_the_exception = () =>
 			handedBack.ShouldEqual(commit);
