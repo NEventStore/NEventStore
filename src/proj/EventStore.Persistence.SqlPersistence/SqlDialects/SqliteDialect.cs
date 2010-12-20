@@ -6,9 +6,5 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return SqliteStatements.InitializeStorage; }
 		}
-		public override string PersistCommitAttempt
-		{
-			get { return SqliteStatements.PersistCommitAttempt; }
-		}
 	}
 }
