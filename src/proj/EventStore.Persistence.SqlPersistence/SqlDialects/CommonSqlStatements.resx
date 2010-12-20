@@ -182,10 +182,9 @@ SELECT @StreamId, COALESCE(@StreamName, ''), @StreamRevision
          FROM Streams
         WHERE StreamId = @StreamId );
 
-UPDATE S
-   SET S.HeadRevision = @StreamRevision,
-       S.Name = COALESCE(@StreamName, Name)
-  FROM Streams AS S
+UPDATE Streams
+   SET HeadRevision = @StreamRevision,
+       Name = COALESCE(@StreamName, Name)
  WHERE @ExpectedRevision &gt; 0
    AND StreamId = @StreamId
    AND HeadRevision = @ExpectedRevision;
