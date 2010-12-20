@@ -61,8 +61,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SET autocommit=0;
-        ///SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+        ///   Looks up a localized string similar to SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
         ///START TRANSACTION;
         ///
         ///CREATE TABLE IF NOT EXISTS Streams
@@ -77,7 +76,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///CREATE TABLE IF NOT EXISTS Commits
         ///(
         ///       StreamId binary(16) NOT NULL,
-        ///       CommitId b [rest of string was truncated]&quot;;.
+        ///       CommitId binary(16) NOT NULL  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {
@@ -86,8 +85,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SET autocommit=0;
-        ///SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+        ///   Looks up a localized string similar to SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
         ///
         ///START TRANSACTION;
         ///
@@ -106,7 +104,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///    SET HeadRevision = @StreamRevision,
         ///       Name = COALESCE(@StreamName, Name)
         /// WHERE @ExpectedRevision &gt; 0
-        ///   AND StreamId = @Str [rest of string was truncated]&quot;;.
+        ///   AND StreamId = @StreamId
+        ///   AND HeadR [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string PersistCommitAttempt {
             get {
