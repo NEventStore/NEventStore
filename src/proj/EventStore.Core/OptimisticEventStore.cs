@@ -12,11 +12,18 @@ namespace EventStore.Core
 		private readonly ICollection<Guid> commitIdentifiers = new HashSet<Guid>();
 		private readonly IPersistStreams persistence;
 		private readonly IDispatchCommits dispatcher;
+		private readonly IFilterCommits readFilter;
 
 		public OptimisticEventStore(IPersistStreams persistence, IDispatchCommits dispatcher)
+			: this(persistence, dispatcher, null)
+		{
+		}
+		public OptimisticEventStore(
+			IPersistStreams persistence, IDispatchCommits dispatcher, IFilterCommits readFilter)
 		{
 			this.persistence = persistence;
 			this.dispatcher = dispatcher;
+			this.readFilter = readFilter ?? new NullCommitFilter();
 		}
 
 		public virtual CommittedEventStream ReadUntil(Guid streamId, long maxRevision)
@@ -36,7 +43,7 @@ namespace EventStore.Core
 			object snapshot = null;
 			ICollection<object> events = new LinkedList<object>();
 
-			foreach (var commit in commits)
+			foreach (var commit in commits.Select(this.readFilter.Filter))
 			{
 				streamId = commit.StreamId;
 				last = commit;

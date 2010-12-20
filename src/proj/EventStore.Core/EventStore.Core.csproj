@@ -43,9 +43,12 @@
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AsynchronousDispatcher.cs" />
+    <Compile Include="DelegateCommitFilter.cs" />
     <Compile Include="DelegateMessagePublisher.cs" />
     <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="IFilterCommits.cs" />
     <Compile Include="OptimisticEventStore.cs" />
+    <Compile Include="NullCommitFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SynchronousDispatcher.cs" />
   </ItemGroup>
