@@ -43,7 +43,7 @@ namespace EventStore.Core
 			object snapshot = null;
 			ICollection<object> events = new LinkedList<object>();
 
-			foreach (var commit in commits.Select(this.readFilter.Filter))
+			foreach (var commit in commits.Select(this.readFilter.Filter).Where(x => x != null))
 			{
 				streamId = commit.StreamId;
 				last = commit;
