@@ -65,7 +65,7 @@ namespace EventStore.Core
 
 		public virtual void Write(CommitAttempt attempt)
 		{
-			if (!attempt.IsValid() || !attempt.IsEmpty())
+			if (!attempt.IsValid() || attempt.IsEmpty())
 				return;
 
 			this.ThrowOnDuplicateOrConcurrentWrites(attempt);

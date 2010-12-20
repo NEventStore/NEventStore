@@ -45,7 +45,7 @@ namespace EventStore.Core
 
 		public static bool IsEmpty(this CommitAttempt attempt)
 		{
-			return attempt != null && attempt.Events.Count > 0;
+			return attempt == null || attempt.Events.Count == 0;
 		}
 	}
 }
