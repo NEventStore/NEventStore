@@ -60,11 +60,20 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Raven.Abstractions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=37f41c7f99471593, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Raven.Abstractions" Condition="$(TargetFrameworkVersion)=='v3.5'">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+      <HintPath>..\..\..\lib\RavenDB\.NET 3.5\Raven.Abstractions-3.5.dll</HintPath>
+    </Reference>
+	<Reference Include="Raven.Abstractions" Condition="$(TargetFrameworkVersion)=='v4.0'">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
       <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Raven.Abstractions.dll</HintPath>
     </Reference>
-    <Reference Include="Raven.Client.Lightweight">
+	<Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v3.5'">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+      <HintPath>..\..\..\lib\RavenDB\.NET 3.5\Raven.Client.Lightweight-3.5.dll</HintPath>
+    </Reference>
+	<Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v4.0'">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
       <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Raven.Client.Lightweight.dll</HintPath>
     </Reference>
     <Reference Include="System" />

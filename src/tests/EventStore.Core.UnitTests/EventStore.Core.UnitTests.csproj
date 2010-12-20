@@ -50,10 +50,20 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Machine.Specifications">
-      <HintPath>..\..\..\bin\machine.specifications-bin\Machine.Specifications.dll</HintPath>
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+      <HintPath>..\..\..\bin\machine.specifications-bin\.NET 3.5\Machine.Specifications.dll</HintPath>
+    </Reference>
+    <Reference Include="Machine.Specifications" Condition="$(TargetFrameworkVersion)=='v4.0'">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+      <HintPath>..\..\..\bin\machine.specifications-bin\.NET 4.0\Machine.Specifications.dll</HintPath>
     </Reference>
     <Reference Include="Moq">
-      <HintPath>..\..\..\bin\moq-bin\Moq.dll</HintPath>
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+      <HintPath>..\..\..\bin\moq-bin\.NET 3.5\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="Moq" Condition="$(TargetFrameworkVersion)=='v4.0'">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+      <HintPath>..\..\..\bin\moq-bin\.NET 4.0\Moq.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

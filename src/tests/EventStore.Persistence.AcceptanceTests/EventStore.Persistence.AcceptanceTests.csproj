@@ -74,16 +74,38 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Machine.Specifications">
-      <HintPath>..\..\..\bin\machine.specifications-bin\Machine.Specifications.dll</HintPath>
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+      <HintPath>..\..\..\bin\machine.specifications-bin\.NET 3.5\Machine.Specifications.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data, Version=6.3.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Machine.Specifications" Condition="$(TargetFrameworkVersion)=='v4.0'">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+      <HintPath>..\..\..\bin\machine.specifications-bin\.NET 4.0\Machine.Specifications.dll</HintPath>
+    </Reference>
+    <Reference Include="Moq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+      <HintPath>..\..\..\bin\moq-bin\.NET 3.5\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="Moq" Condition="$(TargetFrameworkVersion)=='v4.0'">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+      <HintPath>..\..\..\bin\moq-bin\.NET 4.0\Moq.dll</HintPath>
+    </Reference>  
+    <Reference Include="MySql.Data">
       <HintPath>..\..\..\bin\mysql-bin\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="Npgsql">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+      <HintPath>..\..\..\bin\npgsql-bin\.NET 3.5\Npgsql.dll</HintPath>
+    </Reference>
+	<Reference Include="Npgsql" Condition="$(TargetFrameworkVersion)=='v4.0'">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
       <HintPath>..\..\..\bin\npgsql-bin\.NET 4.0\Npgsql.dll</HintPath>
     </Reference>
-    <Reference Include="Raven.Client.Lightweight">
+	<Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v3.5'">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+      <HintPath>..\..\..\lib\RavenDB\.NET 3.5\Raven.Client.Lightweight-3.5.dll</HintPath>
+    </Reference>
+	<Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v4.0'">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
       <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Raven.Client.Lightweight.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -92,8 +114,6 @@
     <Reference Include="System.Data.SQLite">
       <HintPath>..\..\..\bin\sqlite-bin\System.Data.SQLite.DLL</HintPath>
     </Reference>
-    <Reference Include="System.Data.SqlServerCe, Version=3.5.1.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
