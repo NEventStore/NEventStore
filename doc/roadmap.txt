@@ -1,4 +1,4 @@
-- Added multi-thread safe tracking of heads for streams to facilitate optimistic concurrency detection with document databases
+- Add multi-thread safe tracking of heads for streams to facilitate optimistic concurrency detection with document databases
   when the application code is using an identity map.
 
 - Add interception handler when reading/writing commits/attempts to inspect/modify the headers.
