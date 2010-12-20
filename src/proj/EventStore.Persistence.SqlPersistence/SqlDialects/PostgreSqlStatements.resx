@@ -1,0 +1,250 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="InitializeStorage" xml:space="preserve">
+    <value>SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+BEGIN TRANSACTION;
+
+CREATE TABLE Streams
+(
+       StreamId bytea NOT NULL,
+       Name varchar(256) NOT NULL,
+       HeadRevision bigint NOT NULL CHECK (HeadRevision &gt; 0),
+       SnapshotRevision bigint NOT NULL CHECK (SnapshotRevision &gt;= 0) DEFAULT(0),
+       CONSTRAINT PK_Streams PRIMARY KEY (StreamId)
+);
+
+CREATE TABLE Commits
+(
+       StreamId bytea NOT NULL,
+       CommitId bytea NOT NULL,
+       StreamRevision bigint NOT NULL CHECK (StreamRevision &gt; 0),
+       CommitSequence bigint NOT NULL CHECK (CommitSequence &gt; 0),
+       SystemSequence bigserial PRIMARY KEY NOT NULL,
+       Headers bytea NULL,
+       Payload bytea NOT NULL,
+       Snapshot bytea NULL
+);
+CREATE UNIQUE INDEX PK_Commits ON Commits (StreamId, CommitSequence);
+CREATE UNIQUE INDEX IX_Commits_CommitId ON Commits (StreamId, CommitId);
+CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (StreamId, StreamRevision);
+
+CREATE TABLE Dispatch
+(
+       DispatchId bigserial PRIMARY KEY NOT NULL,
+       StreamId bytea NOT NULL,
+       CommitSequence bigint NOT NULL
+);
+CREATE UNIQUE INDEX IX_Dispatch ON Dispatch (StreamId, CommitSequence);
+
+COMMIT TRANSACTION;
+
+/*
+DROP TABLE Dispatch;
+DROP TABLE Commits;
+DROP TABLE Streams;
+*/</value>
+  </data>
+  <data name="InsertEvent" xml:space="preserve">
+    <value>
+SELECT @id, @committed_version{0}, @command_id, @payload{0} UNION ALL</value>
+  </data>
+  <data name="InsertEvents" xml:space="preserve">
+    <value>INSERT
+  INTO Aggregates
+     ( Id, TenantId, Version, Snapshot, RuntimeType )
+SELECT @id,
+       COALESCE(@tenant_id, E'0'::bytea),
+       @new_version,
+       CASE WHEN @payload IS NULL THEN 0 ELSE @new_version END AS Snapshot,
+       @type
+ WHERE @committed_version = 0;
+
+INSERT
+  INTO Commands
+SELECT @command_id, @command_payload
+ WHERE @command_id IS NOT NULL;
+
+INSERT
+  INTO Events
+     ( Id, Version, CommandId, Payload )
+{0}
+SELECT NULL, NULL, NULL, NULL WHERE 1=0;
+
+UPDATE Aggregates
+   SET Version = CASE WHEN TenantId = COALESCE(@tenant_id, TenantId)
+                         AND Version = @committed_version
+                   THEN @new_version ELSE NULL END,
+       Snapshot = CASE WHEN @payload IS NULL THEN Snapshot ELSE @new_version END,
+       RuntimeType = COALESCE(@type, RuntimeType)
+ WHERE Id = @id
+   AND Version &lt;= @committed_version
+   AND @committed_version &gt; 0;
+
+INSERT
+  INTO Snapshots
+     ( Id, Version, Payload )
+SELECT @id, @new_version, @payload
+ WHERE @payload IS NOT NULL
+   AND NOT EXISTS -- snapshots don't need to be overwritten
+     ( SELECT *
+         FROM Snapshots
+        WHERE Id = @id
+          AND Version = @new_version );</value>
+  </data>
+  <data name="SelectEvents" xml:space="preserve">
+    <value>SELECT Payload
+  FROM Events
+ WHERE Id = @id
+   AND Version &gt;
+     ( SELECT COALESCE(MAX(Version), 0)
+         FROM Snapshots
+        WHERE Id = @id
+          AND @committed_version &gt; 0
+          AND Version &lt;= @committed_version )
+ ORDER BY Version;
+ 
+SELECT Payload,
+       Version
+  FROM Snapshots
+ WHERE Id = @id
+   AND @committed_version &gt; 0
+   AND Version &lt;= @committed_version
+ ORDER BY Version DESC
+ LIMIT 1;</value>
+  </data>
+  <data name="SelectEventsForCommand" xml:space="preserve">
+    <value>SELECT Payload
+  FROM Events
+ WHERE CommandId = @id
+ ORDER BY Version;</value>
+  </data>
+  <data name="SelectEventsSinceVersion" xml:space="preserve">
+    <value>SELECT Payload
+  FROM Events
+ WHERE Id = @id
+   AND Version &gt; @committed_version
+   AND EXISTS
+     ( SELECT *
+         FROM Aggregates
+        WHERE Id = @id
+          AND TenantId = COALESCE(@tenant_id, TenantId) )
+ ORDER BY Version;</value>
+  </data>
+</root>

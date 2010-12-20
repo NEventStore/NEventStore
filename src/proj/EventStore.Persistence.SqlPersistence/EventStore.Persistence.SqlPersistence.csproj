@@ -54,6 +54,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CommonSqlStatements.resx</DependentUpon>
     </Compile>
+    <Compile Include="SqlDialects\PostgreSqlDialect.cs" />
     <Compile Include="SqlDialects\MsSqlDialect.cs" />
     <Compile Include="SqlDialects\MsSqlStatements.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -66,6 +67,11 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="SqlDialects\MySqlDialect.cs" />
+    <Compile Include="SqlDialects\PostgreSqlStatements.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PostgreSqlStatements.resx</DependentUpon>
+    </Compile>
     <Compile Include="SqlDialects\SqliteDialect.cs" />
     <Compile Include="SqlDialects\SqliteStatements.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -105,6 +111,10 @@
     <EmbeddedResource Include="SqlDialects\MySqlStatements.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>MySqlStatements.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SqlDialects\PostgreSqlStatements.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>PostgreSqlStatements.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="SqlDialects\SqliteStatements.resx">
       <Generator>ResXFileCodeGenerator</Generator>

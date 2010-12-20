@@ -26,7 +26,7 @@ namespace EventStore.Persistence.SqlPersistence
 			this.Execute(Guid.Empty, cmd =>
 			{
 				cmd.CommandText = this.dialect.InitializeStorage;
-				cmd.ExecuteNonQuery();
+				cmd.ExecuteAndSuppressExceptions();
 			});
 		}
 

@@ -77,6 +77,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\bin\mysql-bin\MySql.Data.dll</HintPath>
     </Reference>
+    <Reference Include="Npgsql">
+      <HintPath>..\..\..\bin\npgsql-bin\.NET 4.0\Npgsql.dll</HintPath>
+    </Reference>
     <Reference Include="Raven.Client.Lightweight">
       <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Raven.Client.Lightweight.dll</HintPath>
     </Reference>
