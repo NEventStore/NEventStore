@@ -1,9 +1,7 @@
 namespace EventStore.Core
 {
-	using Persistence;
-
-	public interface IFilterCommits
+	public interface IFilterCommits<T>
 	{
-		Commit Filter(Commit commit);
+		T Filter(T commit);
 	}
 }

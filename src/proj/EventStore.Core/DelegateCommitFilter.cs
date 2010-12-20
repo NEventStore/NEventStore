@@ -1,18 +1,17 @@
 namespace EventStore.Core
 {
 	using System;
-	using Persistence;
 
-	public class DelegateCommitFilter : IFilterCommits
+	public class DelegateCommitFilter<T> : IFilterCommits<T>
 	{
-		private readonly Func<Commit, Commit> filter;
+		private readonly Func<T, T> filter;
 
-		public DelegateCommitFilter(Func<Commit, Commit> filter)
+		public DelegateCommitFilter(Func<T, T> filter)
 		{
 			this.filter = filter;
 		}
 
-		public Commit Filter(Commit commit)
+		public T Filter(T commit)
 		{
 			return this.filter(commit);
 		}

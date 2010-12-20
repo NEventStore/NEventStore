@@ -1,10 +1,8 @@
 namespace EventStore.Core
 {
-	using Persistence;
-
-	public class NullCommitFilter : IFilterCommits
+	public class NullCommitFilter<T> : IFilterCommits<T>
 	{
-		public Commit Filter(Commit commit)
+		public T Filter(T commit)
 		{
 			return commit;
 		}

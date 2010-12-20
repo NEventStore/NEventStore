@@ -43,6 +43,7 @@
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AsynchronousDispatcherTests.cs" />
+    <Compile Include="CommitFilterPersistenceTests.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="OptimisticEventStoreTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

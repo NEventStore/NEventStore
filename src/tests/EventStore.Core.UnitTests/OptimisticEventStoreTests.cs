@@ -487,35 +487,6 @@ namespace EventStore.Core.UnitTests
 			thrown.ShouldBeOfType<ConcurrencyException>();
 	}
 
-	[Subject("OptimisticEventStore")]
-	public class when_reading_a_stream_of_commits : using_persistence
-	{
-		static readonly Commit[] Commits = new[]
-		{
-			new Commit(streamId, Guid.NewGuid(), 1, 1, null, null, null)
-		};
-		static Commit read;
-
-		Establish context = () =>
-		{
-			persistence.Setup(x => x.GetFrom(streamId, 0)).Returns(Commits);
-
-			var filter = new DelegateCommitFilter(c =>
-			{
-				read = c;
-				return c;
-			});
-
-			store = new OptimisticEventStore(persistence.Object, dispatcher.Object, filter);
-		};
-
-		Because of = () =>
-			store.ReadFrom(streamId, 0);
-
-		It should_provide_the_commits_to_the_configured_onread_action = () =>
-			read.ShouldEqual(Commits.Last());
-	}
-
 	public abstract class using_persistence
 	{
 		protected static Guid streamId = Guid.NewGuid();
