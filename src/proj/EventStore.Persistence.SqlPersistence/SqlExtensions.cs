@@ -10,13 +10,9 @@ namespace EventStore.Persistence.SqlPersistence
 	{
 		public static IDataParameter AddParameter(this IDbCommand command, string parameterName, object value)
 		{
-			if (value is Guid)
-				value = ((Guid)value).ToByteArray();
-
 			var parameter = command.CreateParameter();
 			parameter.ParameterName = parameterName;
-			parameter.Value = value ?? DBNull.Value;
-
+			parameter.Value = (value is Guid) ? ((Guid)value).ToByteArray() : value ?? DBNull.Value;
 			command.Parameters.Add(parameter);
 			return parameter;
 		}
