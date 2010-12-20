@@ -90,10 +90,10 @@ namespace EventStore.Core
 			this.persistence.Persist(attempt);
 
 			var commit = attempt.ToCommit();
-			this.dispatcher.Dispatch(commit);
-
 			this.commitIdentifiers.Add(commit.CommitId);
 			this.streamHeads[commit.StreamId] = commit;
+			
+			this.dispatcher.Dispatch(commit);
 		}
 	}
 }
