@@ -117,6 +117,32 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
+	public class when_reading_from_reversion_zero : using_persistence
+	{
+		Establish context = () =>
+			persistence.Setup(x => x.GetFrom(streamId, 0));
+
+		Because of = () =>
+			store.ReadFrom(streamId, 0);
+
+		It should_pass_a_zero_revision_to_the_persistence_infrastructure = () =>
+			persistence.Verify(x => x.GetFrom(streamId, 0), Times.Exactly(1));
+	}
+
+	[Subject("OptimisticEventStore")]
+	public class when_reading_until_version_zero : using_persistence
+	{
+		Establish context = () =>
+			persistence.Setup(x => x.GetUntil(streamId, long.MaxValue));
+
+		Because of = () =>
+			store.ReadUntil(streamId, 0);
+
+		It should_pass_the_maximum_numeric_value_to_persistence = () =>
+			persistence.Verify(x => x.GetUntil(streamId, long.MaxValue), Times.Exactly(1));
+	}
+
+	[Subject("OptimisticEventStore")]
 	public class when_writing_null_commit_attempt_back_to_the_stream : using_persistence
 	{
 		static Exception thrown;
@@ -180,7 +206,7 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_writing_a_commit_attempt_whose_sequence_is_beyond_the_end_of_a_known_stream : using_persistence
+	public class when_writing_a_commit_attempt_whose_sequence_is_beyond_the_known_end_of_a_stream : using_persistence
 	{
 		static readonly Commit[] commits = new[]
 		{
@@ -209,11 +235,11 @@ namespace EventStore.Core.UnitTests
 		};
 
 		It should_throw_a_PersistenceException = () =>
-			thrown.ShouldBeOfType<PersistenceException>();
+			thrown.ShouldBeOfType<PersistenceEngineException>();
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_writing_a_commit_attempt_whose_revision_is_beyond_the_end_of_a_known_stream : using_persistence
+	public class when_writing_a_commit_attempt_whose_revision_is_beyond_the_known_end_of_a_stream : using_persistence
 	{
 		static readonly Commit[] commits = new[]
 		{
@@ -242,7 +268,7 @@ namespace EventStore.Core.UnitTests
 		};
 
 		It should_throw_a_PersistenceException = () =>
-			thrown.ShouldBeOfType<PersistenceException>();
+			thrown.ShouldBeOfType<PersistenceEngineException>();
 	}
 
 	[Subject("OptimisticEventStore")]

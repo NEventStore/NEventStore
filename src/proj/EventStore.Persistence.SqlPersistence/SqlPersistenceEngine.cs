@@ -151,7 +151,7 @@ namespace EventStore.Persistence.SqlPersistence
 				}
 				catch (Exception e)
 				{
-					throw new PersistenceException(e.Message, e);
+					throw new PersistenceEngineException(e.Message, e);
 				}
 			}
 		}

@@ -21,6 +21,7 @@ namespace EventStore
 
 		public virtual CommittedEventStream ReadUntil(Guid streamId, long maxRevision)
 		{
+			maxRevision = maxRevision > 0 ? maxRevision : long.MaxValue;
 			return this.Read(this.persistence.GetUntil(streamId, maxRevision), true);
 		}
 		public virtual CommittedEventStream ReadFrom(Guid streamId, long minRevision)
@@ -36,7 +37,7 @@ namespace EventStore
 			object snapshot = null;
 			ICollection<object> events = new LinkedList<object>();
 
-			foreach (var commit in commits)
+			foreach (var commit in commits ?? new Commit[0])
 			{
 				streamId = commit.StreamId;
 				last = commit;
@@ -80,10 +81,10 @@ namespace EventStore
 				throw new ConcurrencyException();
 
 			if (previousCommitForStream.CommitSequence < attempt.PreviousCommitSequence)
-				throw new PersistenceException();
+				throw new PersistenceEngineException();
 
 			if (previousCommitForStream.StreamRevision < attempt.PreviousStreamRevision)
-				throw new PersistenceException();
+				throw new PersistenceEngineException();
 		}
 		protected virtual void PersistAndDispatch(CommitAttempt attempt)
 		{

@@ -49,7 +49,7 @@ namespace EventStore.Persistence.RavenPersistence
 				}
 				catch (Exception e)
 				{
-					throw new PersistenceException(e.Message, e);
+					throw new PersistenceEngineException(e.Message, e);
 				}
 			}
 		}
@@ -75,7 +75,7 @@ namespace EventStore.Persistence.RavenPersistence
 				}
 				catch (Exception e)
 				{
-					throw new PersistenceException(e.Message, e);
+					throw new PersistenceEngineException(e.Message, e);
 				}
 			}
 		}
@@ -92,7 +92,7 @@ namespace EventStore.Persistence.RavenPersistence
 				}
 				catch (Exception e)
 				{
-					throw new PersistenceException(e.Message, e);
+					throw new PersistenceEngineException(e.Message, e);
 				}
 			}
 		}

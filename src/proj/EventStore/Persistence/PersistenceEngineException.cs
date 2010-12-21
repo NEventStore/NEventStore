@@ -4,43 +4,43 @@ namespace EventStore.Persistence
 	using System.Runtime.Serialization;
 
 	/// <summary>
-	/// Represents a general failure of the storage engine.
+	/// Represents a general failure of the storage engine or persistence infrastructure.
 	/// </summary>
 	[Serializable]
-	public class PersistenceException : Exception
+	public class PersistenceEngineException : Exception
 	{
 		/// <summary>
-		/// Initializes a new instance of the PersistenceException class.
+		/// Initializes a new instance of the PersistenceEngineException class.
 		/// </summary>
-		public PersistenceException()
+		public PersistenceEngineException()
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the PersistenceException class.
+		/// Initializes a new instance of the PersistenceEngineException class.
 		/// </summary>
 		/// <param name="message">The message that describes the error.</param>
-		public PersistenceException(string message)
+		public PersistenceEngineException(string message)
 			: base(message)
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the PersistenceException class.
+		/// Initializes a new instance of the PersistenceEngineException class.
 		/// </summary>
 		/// <param name="message">The message that describes the error.</param>
 		/// <param name="innerException">The message that is the cause of the current exception.</param>
-		public PersistenceException(string message, Exception innerException)
+		public PersistenceEngineException(string message, Exception innerException)
 			: base(message, innerException)
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the PersistenceException class.
+		/// Initializes a new instance of the PersistenceEngineException class.
 		/// </summary>
 		/// <param name="info">The SerializationInfo that holds the serialized object data of the exception being thrown.</param>
 		/// <param name="context">The StreamingContext that contains contextual information about the source or destination.</param>
-		protected PersistenceException(SerializationInfo info, StreamingContext context)
+		protected PersistenceEngineException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
 		}
