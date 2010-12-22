@@ -54,12 +54,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CommonSqlStatements.resx</DependentUpon>
     </Compile>
-    <Compile Include="SqlDialects\MsSqlCeDialect.cs" />
-    <Compile Include="SqlDialects\MsSqlCeStatements.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MsSqlCeStatements.resx</DependentUpon>
-    </Compile>
     <Compile Include="SqlDialects\PostgreSqlDialect.cs" />
     <Compile Include="SqlDialects\MsSqlDialect.cs" />
     <Compile Include="SqlDialects\MsSqlStatements.Designer.cs">
@@ -109,10 +103,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CommonSqlStatements.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SqlDialects\MsSqlCeStatements.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>MsSqlCeStatements.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="SqlDialects\MsSqlStatements.resx">
       <Generator>ResXFileCodeGenerator</Generator>

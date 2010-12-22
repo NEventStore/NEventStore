@@ -50,9 +50,6 @@
     <Content Include="..\..\proj\CustomDictionary.xml">
       <Link>Properties\CustomDictionary.xml</Link>
     </Content>
-    <Content Include="Storage\EventStore2.sdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\proj\EventStore.Persistence.RavenPersistence\EventStore.Persistence.RavenPersistence.csproj">
