@@ -1,7 +1,7 @@
 #pragma warning disable 169
 // ReSharper disable InconsistentNaming
 
-namespace EventStore.Core.UnitTests
+namespace EventStore.Core.UnitTests.PersistenceTests
 {
 	using System;
 	using System.Linq;

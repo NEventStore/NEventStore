@@ -1,9 +1,10 @@
 #pragma warning disable 169
 // ReSharper disable InconsistentNaming
 
-namespace EventStore.Core.UnitTests
+namespace EventStore.Core.UnitTests.DispatcherTests
 {
 	using System;
+	using System.Linq;
 	using System.Threading;
 	using Dispatcher;
 	using Machine.Specifications;
@@ -11,23 +12,48 @@ namespace EventStore.Core.UnitTests
 	using Persistence;
 	using It = Machine.Specifications.It;
 
+	public class when_instantiaing_the_asynchronous_dispatcher
+	{
+		static readonly Guid streamId = Guid.NewGuid();
+		private static readonly Commit[] commits =
+		{
+			new Commit(streamId, Guid.NewGuid(), 0, 0, null, null, null),
+			new Commit(streamId, Guid.NewGuid(), 0, 0, null, null, null)
+		};
+		static readonly Mock<IPublishMessages> bus = new Mock<IPublishMessages>();
+		static readonly Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
+
+		Establish context = () =>
+		{
+			persistence.Setup(x => x.GetUndispatchedCommits()).Returns(commits);
+			bus.Setup(x => x.Publish(commits.First()));
+			bus.Setup(x => x.Publish(commits.Last()));
+		};
+
+		Because of = () =>
+			new AsynchronousDispatcher(bus.Object, persistence.Object, null);
+
+		It should_get_the_set_of_undispatched_commits = () =>
+			persistence.Verify(x => x.GetUndispatchedCommits(), Times.Exactly(1));
+
+		It should_provide_the_commits_to_the_publisher = () =>
+			bus.VerifyAll();
+	}
+
 	public class when_asynchronously_dispatching_a_commit
 	{
 		static readonly Commit commit = new Commit(
 			Guid.NewGuid(), Guid.NewGuid(), 0, 0, null, null, null);
-		static Mock<IPublishMessages> bus;
-		static Mock<IPersistStreams> store;
+		static readonly Mock<IPublishMessages> bus = new Mock<IPublishMessages>();
+		static readonly Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
 		static AsynchronousDispatcher dispatcher;
 
 		Establish context = () =>
 		{
-			bus = new Mock<IPublishMessages>();
 			bus.Setup(x => x.Publish(commit));
+			persistence.Setup(x => x.MarkCommitAsDispatched(commit));
 
-			store = new Mock<IPersistStreams>();
-			store.Setup(x => x.MarkCommitAsDispatched(commit));
-
-			dispatcher = new AsynchronousDispatcher(bus.Object, store.Object, null);
+			dispatcher = new AsynchronousDispatcher(bus.Object, persistence.Object, null);
 		};
 
 		Because of = () =>
@@ -40,7 +66,7 @@ namespace EventStore.Core.UnitTests
 			bus.Verify(x => x.Publish(commit), Times.Exactly(1));
 
 		It should_mark_the_commit_as_dispatched = () =>
-			store.Verify(x => x.MarkCommitAsDispatched(commit), Times.Exactly(1));
+			persistence.Verify(x => x.MarkCommitAsDispatched(commit), Times.Exactly(1));
 	}
 
 	public class when_an_asynchronously_dispatch_commit_throws_an_exception
@@ -56,8 +82,8 @@ namespace EventStore.Core.UnitTests
 		Establish context = () =>
 		{
 			dispatcher = new AsynchronousDispatcher(
-				null,
-				null,
+				null, // we want a NullReferenceException to be thrown
+				new Mock<IPersistStreams>().Object,
 				(c, e) =>
 				{
 					handedBack = c;

@@ -1,5 +1,6 @@
 namespace EventStore.Dispatcher
 {
+	using System.Linq;
 	using Persistence;
 
 	public class SynchronousDispatcher : IDispatchCommits
@@ -11,6 +12,13 @@ namespace EventStore.Dispatcher
 		{
 			this.bus = bus;
 			this.persistence = persistence;
+
+			this.Start();
+		}
+		private void Start()
+		{
+			foreach (var commit in this.persistence.GetUndispatchedCommits().ToList())
+				this.Dispatch(commit);
 		}
 
 		public virtual void Dispatch(Commit commit)

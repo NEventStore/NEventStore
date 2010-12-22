@@ -1,6 +1,7 @@
 namespace EventStore.Dispatcher
 {
 	using System;
+	using System.Linq;
 	using System.Threading;
 	using Persistence;
 
@@ -15,7 +16,15 @@ namespace EventStore.Dispatcher
 		{
 			this.bus = bus;
 			this.persistence = persistence;
-			this.handleException = handleException;
+			this.handleException = handleException ?? ((c, e) => { });
+
+			this.Start();
+		}
+		private void Start()
+		{
+			var commits = this.persistence.GetUndispatchedCommits() ?? new Commit[] { };
+			foreach (var commit in commits.ToList())
+				this.Dispatch(commit);
 		}
 
 		public virtual void Dispatch(Commit commit)
