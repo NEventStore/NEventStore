@@ -10,7 +10,8 @@ namespace EventStore.Persistence.RavenPersistence
 		{
 			try
 			{
-				TryInitialize(store);
+				using (new TransactionScope(TransactionScopeOption.Suppress))
+					TryInitialize(store);
 			}
 			catch (Exception e)
 			{
@@ -23,8 +24,7 @@ namespace EventStore.Persistence.RavenPersistence
 			AssignDocumentKeyGenerator(store);
 
 			// TODO: create indexes
-			using (new TransactionScope(TransactionScopeOption.Suppress))
-				store.Initialize();
+			store.Initialize();
 		}
 
 		private static void AssignDocumentKeyGenerator(IDocumentStore store)
