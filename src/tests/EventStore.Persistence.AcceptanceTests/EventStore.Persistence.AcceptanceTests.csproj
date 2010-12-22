@@ -88,23 +88,18 @@
     <Reference Include="Moq" Condition="$(TargetFrameworkVersion)=='v4.0'">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
       <HintPath>..\..\..\bin\moq-bin\.NET 4.0\Moq.dll</HintPath>
-    </Reference>  
+    </Reference>
     <Reference Include="MySql.Data">
       <HintPath>..\..\..\bin\mysql-bin\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="Npgsql">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-      <HintPath>..\..\..\bin\npgsql-bin\.NET 3.5\Npgsql.dll</HintPath>
+      <HintPath>..\..\..\bin\npgsql-bin\Npgsql.dll</HintPath>
     </Reference>
-	<Reference Include="Npgsql" Condition="$(TargetFrameworkVersion)=='v4.0'">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-      <HintPath>..\..\..\bin\npgsql-bin\.NET 4.0\Npgsql.dll</HintPath>
-    </Reference>
-	<Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v3.5'">
+    <Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v3.5'">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
       <HintPath>..\..\..\lib\RavenDB\.NET 3.5\Raven.Client.Lightweight-3.5.dll</HintPath>
     </Reference>
-	<Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v4.0'">
+    <Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v4.0'">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
       <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Raven.Client.Lightweight.dll</HintPath>
     </Reference>
