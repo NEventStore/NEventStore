@@ -37,15 +37,10 @@ namespace EventStore.Persistence.RavenPersistence
 			using (new TransactionScope(TransactionScopeOption.Suppress))
 			using (var session = this.store.OpenSession())
 			{
-				session.Advanced.AllowNonAuthoritiveInformation = false;
-
 				try
 				{
-					return (from commit in session.Query<Commit>().Customize(x => x.WaitForNonStaleResultsAsOfNow())
-					        where commit.StreamId == streamId
-					              && commit.StreamRevision >= minRevision
-					              && commit.Snapshot == null
-					        select commit).ToArray();
+					return session.Query<Commit>()
+						.Where(x => x.StreamId == streamId && x.StreamRevision >= minRevision).ToArray();
 				}
 				catch (Exception e)
 				{
