@@ -33,6 +33,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.Acce
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.MongoPersistence", "EventStore.Persistence.MongoPersistence\EventStore.Persistence.MongoPersistence.csproj", "{6467A350-160C-49C1-903E-62B919E288F3}"
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.MongoPersistence", "proj\EventStore.Persistence.MongoPersistence\EventStore.Persistence.MongoPersistence.csproj", "{6467A350-160C-49C1-903E-62B919E288F3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.MongoPersistence", "proj\EventStore.Persistence.MongoPersistence\EventStore.Persistence.MongoPersistence.csproj", "{6467A350-160C-49C1-903E-62B919E288F3}"
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.MongoPersistence", "EventStore.Persistence.MongoPersistence\EventStore.Persistence.MongoPersistence.csproj", "{6467A350-160C-49C1-903E-62B919E288F3}"
 EndProject
 Global
