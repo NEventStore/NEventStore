@@ -123,7 +123,6 @@
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 BEGIN TRANSACTION;
 
-	   
 CREATE TABLE [dbo].[Streams]
 (
        [StreamId] [uniqueidentifier] NOT NULL CHECK ([StreamId] != 0x0),
