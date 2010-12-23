@@ -42,7 +42,10 @@
     <Compile Include="..\..\proj\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ConfigurationExtensions.cs" />
     <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="IPersistenceFactory.cs" />
+    <Compile Include="PersistenceFactoryScanner.cs" />
     <Compile Include="PersistenceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -52,18 +55,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\proj\EventStore.Persistence.RavenPersistence\EventStore.Persistence.RavenPersistence.csproj">
-      <Project>{CE782ED8-15BB-49A9-9EBB-288FB5C82A01}</Project>
-      <Name>EventStore.Persistence.RavenPersistence</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\proj\EventStore.Persistence.SqlPersistence\EventStore.Persistence.SqlPersistence.csproj">
-      <Project>{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}</Project>
-      <Name>EventStore.Persistence.SqlPersistence</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\proj\EventStore.Serialization\EventStore.Serialization.csproj">
-      <Project>{A5BF4B86-26F6-418D-BE35-C6CC3A623D27}</Project>
-      <Name>EventStore.Serialization</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\proj\EventStore\EventStore.csproj">
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
       <Name>EventStore</Name>
@@ -86,27 +77,12 @@
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
       <HintPath>..\..\..\bin\moq-bin\.NET 4.0\Moq.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data">
-      <HintPath>..\..\..\bin\mysql-bin\MySql.Data.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Npgsql">
-      <HintPath>..\..\..\bin\npgsql-bin\Npgsql.dll</HintPath>
-    </Reference>
-    <Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v3.5'">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-      <HintPath>..\..\..\lib\RavenDB\.NET 3.5\Raven.Client.Lightweight-3.5.dll</HintPath>
-    </Reference>
     <Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v4.0'">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
       <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Raven.Client.Lightweight.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.SQLite">
-      <HintPath>..\..\..\bin\sqlite-bin\System.Data.SQLite.DLL</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

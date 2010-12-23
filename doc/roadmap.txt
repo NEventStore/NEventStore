@@ -21,7 +21,7 @@
 	[DONE] SQLite (3 or later)
 	[DONE] PostgreSQL (8 or later)
 	Microsoft Access 2000 (or later)
-	Microsoft SQL Compact Edition (3.5 or later)
+	Microsoft SQL Compact Edition (4.0 or later)
 	Oracle (8 or later)
 	Firebird
 	VistaDB

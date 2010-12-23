@@ -4,17 +4,8 @@
 namespace EventStore.Persistence.AcceptanceTests
 {
 	using System;
-	using System.Configuration;
-	using System.Data;
-	using System.Data.Common;
-	using System.Data.SqlClient;
 	using System.Linq;
 	using Machine.Specifications;
-	using Raven.Client.Document;
-	using RavenPersistence;
-	using Serialization;
-	using SqlPersistence;
-	using SqlPersistence.SqlDialects;
 
 	[Subject("Persistence")]
 	public class when_a_commit_attempt_is_successfully_committed : using_the_persistence_engine
@@ -166,46 +157,23 @@ namespace EventStore.Persistence.AcceptanceTests
 
 	public abstract class using_the_persistence_engine
 	{
+		private static readonly IPersistenceFactory factory = new PersistenceFactoryScanner().GetFactory();
 		protected static Guid streamId = Guid.NewGuid();
 		protected static IPersistStreams persistence;
 
 		Establish context = () =>
 		{
-			persistence = OpenSqlPersistenceEngine();
+			persistence = factory.Build();
 			persistence.Initialize();
 		};
-		private static IPersistStreams OpenSqlPersistenceEngine()
-		{
-			return new SqlPersistenceEngine(
-				new DelegateConnectionFactory(id => OpenConnection()),
-				new MsSqlDialect(),
-				new BinarySerializer());
-		}
-		private static IDbConnection OpenConnection()
-		{
-			var connectionName = ConfigurationManager.AppSettings["UnderTest"];
-			var setting = ConfigurationManager.ConnectionStrings[connectionName];
-			var factory = DbProviderFactories.GetFactory(setting.ProviderName);
-			var connection = factory.CreateConnection() ?? new SqlConnection();
-			connection.ConnectionString = setting.ConnectionString;
-			connection.Open();
-			return connection;
-		}
-
-		private static IPersistStreams OpenRavenPersistenceEngine()
-		{
-			// TODO: we can also run this against a local, embedded RavenDB instance...
-			var store = new DocumentStore
-			{
-				Url = "http://localhost:8080",
-				DefaultDatabase = "EventStore2-AcceptanceTests"
-			};
-
-			return new RavenPersistenceEngine(store, new RavenInitializer());
-		}
 
 		Cleanup everything = () =>
+		{
+			factory.Dispose();
+			persistence = null;
+
 			streamId = Guid.NewGuid();
+		};
 	}
 }
 
