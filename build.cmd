@@ -23,10 +23,11 @@ msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=%TARGET_CON
 msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=%TARGET_CONFIG% /property:TargetFrameworkVersion=%FRAMEWORK_VERSION%
 
 echo Testing
-REM split into .net 4.0/.net 3.5...
+REM TODO: Split into .net 4.0/.net 3.5...
+REM TODO: Split all unit tests out into another file
+REM TODO: Split all acceptance tests out into another file?
 "bin/machine.specifications-bin/.NET 4.0/mspec.exe" src/tests/EventStore.Core.UnitTests/bin/%TARGET_CONFIG%/EventStore.Core.UnitTests.dll
 "bin/machine.specifications-bin/.NET 4.0/mspec.exe" src/tests/EventStore.Persistence.AcceptanceTests/bin/%TARGET_CONFIG%/EventStore.Persistence.AcceptanceTests.dll
-
 
 echo.
 echo Merging
