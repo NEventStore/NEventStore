@@ -13,7 +13,7 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		private const string FactoryWhenNoneSpecified = "MsSqlPersistenceFactory";
 		private const string SearchPattern = "*.dll";
-		private const string ConfiguredFactoryParameter = "factory";
+		private const string EngineUnderTest = "engine";
 		private readonly string defaultFactory;
 
 		public PersistenceFactoryScanner()
@@ -61,8 +61,8 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		public virtual IPersistenceFactory GetFactory()
 		{
-			var factoryName = ConfiguredFactoryParameter.GetSetting() ?? this.defaultFactory; 
-			return Factories[factoryName];
+			var engineName = EngineUnderTest.GetSetting() ?? this.defaultFactory; 
+			return Factories[engineName + "Factory"];
 		}
 	}
 }
