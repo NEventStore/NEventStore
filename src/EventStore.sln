@@ -16,6 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{CD37080A-F48
 		..\doc\EventStore Architectural Overview.docx = ..\doc\EventStore Architectural Overview.docx
 		..\doc\license.txt = ..\doc\license.txt
 		..\doc\roadmap.txt = ..\doc\roadmap.txt
+		..\doc\Transactional Integrity without Transactions.docx = ..\doc\Transactional Integrity without Transactions.docx
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Serialization", "proj\EventStore.Serialization\EventStore.Serialization.csproj", "{A5BF4B86-26F6-418D-BE35-C6CC3A623D27}"
