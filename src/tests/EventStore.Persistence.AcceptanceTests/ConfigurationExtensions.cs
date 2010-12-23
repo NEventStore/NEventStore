@@ -8,14 +8,15 @@ namespace EventStore.Persistence.AcceptanceTests
 	{
 		public static string GetSetting(this string settingName)
 		{
-			return GetEnvironmentVariable("/" + settingName + ":")
+			return GetCommandLineArgument("/" + settingName + ":")
+				?? Environment.GetEnvironmentVariable(settingName)
 				?? ConfigurationManager.AppSettings[settingName];
 		}
-		private static string GetEnvironmentVariable(string name)
+		private static string GetCommandLineArgument(string settingName)
 		{
 			return Environment.GetCommandLineArgs()
-				.Where(arg => arg.StartsWith(name))
-				.Select(arg => arg.Replace(name, string.Empty))
+				.Where(arg => arg.StartsWith(settingName))
+				.Select(arg => arg.Replace(settingName, string.Empty))
 				.FirstOrDefault();
 		}
 	}

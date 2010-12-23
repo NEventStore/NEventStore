@@ -42,6 +42,10 @@ namespace EventStore.Persistence.AcceptanceTests
 			{
 				return Assembly.LoadFrom(filename).GetTypes();
 			}
+			catch (FileLoadException)
+			{
+				return new Type[] { };
+			}
 			catch (Exception)
 			{
 				return new Type[] { };
