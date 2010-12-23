@@ -162,9 +162,28 @@ DROP TABLE Streams;
 */</value>
   </data>
   <data name="PersistCommitAttempt" xml:space="preserve">
-    <value>SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+    <value>INSERT
+  INTO Dispatch
+     ( StreamId, CommitSequence)
+SELECT @StreamId, @CommitSequence
+  FROM Dual
+ WHERE NOT EXISTS
+     ( SELECT *
+         FROM Dispatch
+        WHERE StreamId = @StreamId
+          AND CommitSequence = @CommitSequence);
 
-START TRANSACTION;
+INSERT
+  INTO Commits
+     ( StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload )
+SELECT @StreamId, @CommitId, @StreamRevision, @CommitSequence, @Headers, @Payload
+  FROM Dual
+ WHERE NOT EXISTS
+     ( SELECT *
+         FROM Commits
+        WHERE StreamId = @StreamId
+          AND CommitId != @CommitId
+          AND CommitSequence &gt;= @CommitSequence );
 
 INSERT
   INTO Streams
@@ -182,29 +201,6 @@ UPDATE Streams
        Name = COALESCE(@StreamName, Name)
  WHERE StreamId = @StreamId
    AND @CommitSequence &gt; 1
-   AND HeadRevision &lt; @StreamRevision;
-
-INSERT
-  INTO Commits
-     ( StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload )
-SELECT @StreamId, @CommitId, @StreamRevision, @CommitSequence, @Headers, @Payload
-  FROM Dual
- WHERE NOT EXISTS
-     ( SELECT *
-         FROM Commits
-        WHERE StreamId = @StreamId
-          AND CommitId != @CommitId
-          AND CommitSequence &gt;= @CommitSequence );
-
-INSERT
-  INTO Dispatch
-     ( StreamId, CommitSequence)
-SELECT @StreamId, @CommitSequence
-  FROM Commits
- WHERE StreamId = @StreamId
-   AND CommitSequence = @CommitSequence
-   AND CommitId = @CommitId;
-
-COMMIT;</value>
+   AND HeadRevision &lt; @StreamRevision;</value>
   </data>
 </root>

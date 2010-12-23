@@ -148,28 +148,24 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BEGIN TRANSACTION;
-        ///
-        ///INSERT
-        ///  INTO Streams
-        ///     ( StreamId, Name, HeadRevision )
-        ///SELECT @StreamId, COALESCE(@StreamName, &apos;&apos;), @StreamRevision
-        /// WHERE @CommitSequence = 1
-        ///   AND NOT EXISTS
+        ///   Looks up a localized string similar to INSERT
+        ///  INTO Dispatch
+        ///     ( StreamId, CommitSequence)
+        ///SELECT @StreamId, @CommitSequence
+        /// WHERE NOT EXISTS
         ///     ( SELECT *
-        ///         FROM Streams
-        ///        WHERE StreamId = @StreamId );
-        ///
-        ///UPDATE Streams
-        ///   SET HeadRevision = @StreamRevision,
-        ///       Name = COALESCE(@StreamName, Name)
-        /// WHERE StreamId = @StreamId
-        ///   AND @CommitSequence &gt; 1
-        ///   AND HeadRevision &lt; @StreamRevision;
+        ///         FROM Dispatch
+        ///        WHERE StreamId = @StreamId
+        ///          AND CommitSequence = @CommitSequence);
         ///
         ///INSERT
         ///  INTO Commits
-        ///     ( StreamId [rest of string was truncated]&quot;;.
+        ///     ( StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload )
+        ///SELECT @StreamId, @CommitId, @StreamRevision, @CommitSequence, @Headers, @Payload
+        /// WHERE NOT EXISTS
+        ///     ( SELECT *
+        ///         FROM Commits
+        ///        WHERE StreamId =  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string PersistCommitAttempt {
             get {

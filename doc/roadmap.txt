@@ -1,6 +1,3 @@
-- Investigate potential performance benefit of completely removing all transactions
-  e.g., remove FK constraints and do insert into Dispatch, Commits, and Streams table...
-
 - Add multi-thread safe tracking of heads for streams to facilitate optimistic concurrency detection with document databases
   when the application code is using an identity map.
 
