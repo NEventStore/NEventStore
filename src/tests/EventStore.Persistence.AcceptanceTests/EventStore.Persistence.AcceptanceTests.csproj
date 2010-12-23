@@ -88,6 +88,7 @@
     </Reference>
     <Reference Include="MySql.Data">
       <HintPath>..\..\..\bin\mysql-bin\MySql.Data.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Npgsql">
       <HintPath>..\..\..\bin\npgsql-bin\Npgsql.dll</HintPath>
