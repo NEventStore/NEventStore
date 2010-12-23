@@ -32,8 +32,11 @@ namespace EventStore
 			if (attempt.PreviousCommitSequence < 0)
 				throw new ArgumentException("The commit sequence cannot be a negative number.", "attempt");
 
-			if (attempt.PreviousStreamRevision < 0)
-				throw new ArgumentException("The stream revision cannot be a negative number.", "attempt");
+			if (attempt.StreamRevision <= 0)
+				throw new ArgumentException("The stream revision must be a positive number.", "attempt");
+
+			if (attempt.StreamRevision <= attempt.PreviousCommitSequence)
+				throw new ArgumentException("The stream revision must always be greater than the previous commit sequence.", "attempt");
 
 			return true;
 		}

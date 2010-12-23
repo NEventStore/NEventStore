@@ -33,6 +33,9 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 		Because of = () =>
 			new AsynchronousDispatcher(bus.Object, persistence.Object, null);
 
+		It should_take_a_few_milliseconds_for_the_other_thread_to_execute = () =>
+			Thread.Sleep(10); // just a precaution because we're doing async tests
+
 		It should_get_the_set_of_undispatched_commits = () =>
 			persistence.Verify(x => x.GetUndispatchedCommits(), Times.Exactly(1));
 

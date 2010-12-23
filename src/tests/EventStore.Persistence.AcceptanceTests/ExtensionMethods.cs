@@ -12,7 +12,7 @@ namespace EventStore.Persistence.AcceptanceTests
 				StreamName = "AcceptanceTestAttempt",
 				CommitId = Guid.NewGuid(),
 				PreviousCommitSequence = 0,
-				PreviousStreamRevision = 0,
+				StreamRevision = 2,
 				Events =
 				{
 					new EventMessage(),
@@ -28,7 +28,7 @@ namespace EventStore.Persistence.AcceptanceTests
 				StreamId = commit.StreamId,
 				CommitId = Guid.NewGuid(),
 				PreviousCommitSequence = commit.CommitSequence,
-				PreviousStreamRevision = commit.StreamRevision,
+				StreamRevision = commit.StreamRevision + 2,
 				Events =
 				{
 					new EventMessage(),

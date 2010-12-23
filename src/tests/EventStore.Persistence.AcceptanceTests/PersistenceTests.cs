@@ -115,7 +115,7 @@ namespace EventStore.Persistence.AcceptanceTests
 		{
 			persistence.Persist(oldest);
 			persistence.Persist(oldest2);
-			persistence.AddSnapshot(streamId, oldest3.PreviousStreamRevision, "snapshot");
+			persistence.AddSnapshot(streamId, oldest2.StreamRevision, "snapshot");
 			persistence.Persist(oldest3);
 			persistence.Persist(oldest4);
 			persistence.Persist(newest);

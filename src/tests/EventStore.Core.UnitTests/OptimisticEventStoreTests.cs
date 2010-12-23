@@ -168,13 +168,32 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
+	public class when_the_number_of_commits_is_greater_than_the_number_of_revisions : using_persistence
+	{
+		static readonly CommitAttempt unidentified = new CommitAttempt
+		{
+			StreamId = streamId,
+			CommitId = Guid.NewGuid(),
+			StreamRevision = 1, // this should always be at least PreviousCommitSequence + 1
+			PreviousCommitSequence = 1 // previous = 1 means that current commit sequence = 2
+		};
+		static Exception thrown;
+
+		Because of = () =>
+			thrown = Catch.Exception(() => store.Write(unidentified));
+
+		It should_throw_a_PersistenceEngineException = () =>
+			thrown.ShouldBeOfType<ArgumentException>();
+	}
+
+	[Subject("OptimisticEventStore")]
 	public class when_writing_commit_attempt_with_a_negative_commit_sequence_back_to_the_stream : using_persistence
 	{
 		static readonly CommitAttempt negativeCommitSequence = new CommitAttempt
 		{
 			StreamId = streamId,
 			CommitId = Guid.NewGuid(),
-			PreviousStreamRevision = 1,
+			StreamRevision = 1,
 			PreviousCommitSequence = -1
 		};
 		static Exception thrown;
@@ -187,14 +206,14 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_writing_commit_attempt_with_a_negative_stream_revision_back_to_the_stream : using_persistence
+	public class when_writing_commit_attempt_with_a_non_positive_stream_revision_back_to_the_stream : using_persistence
 	{
 		static readonly CommitAttempt negativeStreamRevision = new CommitAttempt
 		{
 			StreamId = streamId,
 			CommitId = Guid.NewGuid(),
 			PreviousCommitSequence = 1,
-			PreviousStreamRevision = -1
+			StreamRevision = 0
 		};
 		static Exception thrown;
 
@@ -219,8 +238,8 @@ namespace EventStore.Core.UnitTests
 		{
 			StreamId = streamId,
 			CommitId = Guid.NewGuid(),
-			PreviousCommitSequence = 2, // *beyond* the end of the known stream
-			PreviousStreamRevision = 1,
+			PreviousCommitSequence = commits[0].StreamRevision + 1, // *beyond* the end of the known stream
+			StreamRevision = commits[0].StreamRevision + 2,
 			Events = { new EventMessage() }
 		};
 		static Exception thrown;
@@ -239,7 +258,7 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_writing_a_commit_attempt_whose_revision_is_beyond_the_known_end_of_a_stream : using_persistence
+	public class when_writing_a_commit_attempt_whose_revision_is_well_beyond_the_known_end_of_a_stream : using_persistence
 	{
 		static readonly Commit[] commits = new[]
 		{
@@ -253,7 +272,7 @@ namespace EventStore.Core.UnitTests
 			StreamId = streamId,
 			CommitId = Guid.NewGuid(),
 			PreviousCommitSequence = 1,
-			PreviousStreamRevision = 2, // *beyond* the end of the known stream
+			StreamRevision = 3, // *beyond* the end of the known stream, should be *2*
 			Events = { new EventMessage() }
 		};
 		static Exception thrown;
@@ -277,7 +296,8 @@ namespace EventStore.Core.UnitTests
 		static readonly CommitAttempt attemptWithNoEvents = new CommitAttempt
 		{
 			StreamId = streamId,
-			CommitId = Guid.NewGuid()
+			CommitId = Guid.NewGuid(),
+			StreamRevision = 1
 		};
 
 		Establish context = () =>
@@ -297,6 +317,7 @@ namespace EventStore.Core.UnitTests
 		{
 			StreamId = streamId,
 			CommitId = Guid.NewGuid(),
+			StreamRevision = 1,
 			Events = { new EventMessage() }
 		};
 
@@ -341,7 +362,7 @@ namespace EventStore.Core.UnitTests
 			StreamId = streamId,
 			CommitId = DuplicateCommitId,
 			PreviousCommitSequence = Commits.Last().CommitSequence,
-			PreviousStreamRevision = Commits.Last().StreamRevision,
+			StreamRevision = Commits.Last().StreamRevision + 1,
 			Events = { new EventMessage() }
 		};
 		static Exception thrown;
@@ -380,7 +401,7 @@ namespace EventStore.Core.UnitTests
 			StreamId = streamId,
 			CommitId = DuplicateCommitId,
 			PreviousCommitSequence = Commits.Last().CommitSequence,
-			PreviousStreamRevision = Commits.Last().StreamRevision,
+			StreamRevision = Commits.Last().StreamRevision + 1,
 			Events = { new EventMessage() }
 		};
 		static Exception thrown;
@@ -405,6 +426,7 @@ namespace EventStore.Core.UnitTests
 		{
 			StreamId = streamId,
 			CommitId = Guid.NewGuid(), // will be duplicate
+			StreamRevision = 1,
 			Events = { new EventMessage() }
 		};
 		static Exception thrown;
@@ -413,7 +435,7 @@ namespace EventStore.Core.UnitTests
 		{
 			store.Write(Attempt);
 			Attempt.PreviousCommitSequence++;
-			Attempt.PreviousStreamRevision++;
+			Attempt.StreamRevision++;
 		};
 
 		Because of = () =>
@@ -426,7 +448,7 @@ namespace EventStore.Core.UnitTests
 	[Subject("OptimisticEventStore")]
 	public class when_writing_an_attempt_with_a_sequence_less_than_the_most_recent_sequence_for_the_stream : using_persistence
 	{
-		const long StreamRevision = 1;
+		const long StreamRevision = 42;
 		const long MostRecentSequence = 42;
 		static readonly Commit[] Commits = new[]
 		{
@@ -437,7 +459,7 @@ namespace EventStore.Core.UnitTests
 			StreamId = streamId,
 			CommitId = Guid.NewGuid(),
 			PreviousCommitSequence = MostRecentSequence - 1, // here's the problem
-			PreviousStreamRevision = StreamRevision,
+			StreamRevision = StreamRevision,
 			Events = { new EventMessage() }
 		};
 
@@ -457,9 +479,9 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_writing_an_attempt_with_a_revision_less_than_the_most_recent_revision_read_for_the_stream : using_persistence
+	public class when_writing_an_attempt_with_a_revision_less_or_equal_to_than_the_most_recent_revision_read_for_the_stream : using_persistence
 	{
-		const long MostRecentStreamRevision = 1;
+		const long MostRecentStreamRevision = 2;
 		const long CommitSequence = 1;
 		static readonly Commit[] Commits = new[]
 		{
@@ -470,7 +492,7 @@ namespace EventStore.Core.UnitTests
 			StreamId = streamId,
 			CommitId = Guid.NewGuid(),
 			PreviousCommitSequence = CommitSequence,
-			PreviousStreamRevision = MostRecentStreamRevision - 1,  // here's the problem
+			StreamRevision = MostRecentStreamRevision,
 			Events = { new EventMessage() }
 		};
 
@@ -496,6 +518,7 @@ namespace EventStore.Core.UnitTests
 		{
 			StreamId = streamId,
 			CommitId = Guid.NewGuid(),
+			StreamRevision = 1,
 			Events = { new EventMessage() }
 		};
 		static Exception thrown;

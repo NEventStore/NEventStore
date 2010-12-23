@@ -65,26 +65,26 @@ namespace EventStore
 			this.ThrowOnDuplicateOrConcurrentWrites(attempt);
 			this.PersistAndDispatch(attempt);
 		}
-		protected virtual void ThrowOnDuplicateOrConcurrentWrites(CommitAttempt attempt)
+		protected virtual void ThrowOnDuplicateOrConcurrentWrites(CommitAttempt current)
 		{
-			if (this.commitIdentifiers.Contains(attempt.CommitId))
+			if (this.commitIdentifiers.Contains(current.CommitId))
 				throw new DuplicateCommitException();
 
-			Commit previousCommitForStream;
-			if (!this.streamHeads.TryGetValue(attempt.StreamId, out previousCommitForStream))
+			Commit previous;
+			if (!this.streamHeads.TryGetValue(current.StreamId, out previous))
 				return;
 
-			if (previousCommitForStream.CommitSequence > attempt.PreviousCommitSequence)
+			if (previous.CommitSequence > current.PreviousCommitSequence)
 				throw new ConcurrencyException();
 
-			if (previousCommitForStream.StreamRevision > attempt.PreviousStreamRevision)
+			if (previous.StreamRevision >= current.StreamRevision)
 				throw new ConcurrencyException();
 
-			if (previousCommitForStream.CommitSequence < attempt.PreviousCommitSequence)
-				throw new PersistenceEngineException();
+			if (previous.CommitSequence < current.PreviousCommitSequence)
+				throw new PersistenceEngineException(); // beyond the end of the stream
 
-			if (previousCommitForStream.StreamRevision < attempt.PreviousStreamRevision)
-				throw new PersistenceEngineException();
+			if (previous.StreamRevision < current.StreamRevision - current.Events.Count)
+				throw new PersistenceEngineException(); // beyond the end of the stream
 		}
 		protected virtual void PersistAndDispatch(CommitAttempt attempt)
 		{
