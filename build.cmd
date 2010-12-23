@@ -23,8 +23,12 @@ msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=%TARGET_CON
 msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=%TARGET_CONFIG% /property:TargetFrameworkVersion=%FRAMEWORK_VERSION%
 
 echo Testing
-REM TODO: run existing unit tests and integration tests from command line
+REM split into .net 4.0/.net 3.5...
+"bin/machine.specifications-bin/.NET 4.0/mspec.exe" src/tests/EventStore.Core.UnitTests/bin/%TARGET_CONFIG%/EventStore.Core.UnitTests.dll
+"bin/machine.specifications-bin/.NET 4.0/mspec.exe" src/tests/EventStore.Persistence.AcceptanceTests/bin/%TARGET_CONFIG%/EventStore.Persistence.AcceptanceTests.dll
 
+
+echo.
 echo Merging
 mkdir output\bin
 SET FILES_TO_MERGE=
