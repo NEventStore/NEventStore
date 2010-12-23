@@ -66,7 +66,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         /// WHERE StreamId = @StreamId
         ///   AND StreamRevision = @StreamRevision;
         ///
-        ////* Transaction integrity is not required */
         ///UPDATE Streams
         ///   SET SnapshotRevision = @StreamRevision
         /// WHERE StreamId = @StreamId

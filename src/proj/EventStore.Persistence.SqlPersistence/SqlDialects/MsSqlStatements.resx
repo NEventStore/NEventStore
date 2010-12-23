@@ -156,14 +156,6 @@ CREATE TABLE [dbo].[Dispatch]
 );
 CREATE UNIQUE INDEX [IX_Dispatch] ON [dbo].[Dispatch] (StreamId, CommitSequence);
 
-ALTER TABLE [dbo].[Commits] WITH CHECK ADD CONSTRAINT [FK_Commits_Streams] FOREIGN KEY([StreamId])
-REFERENCES [dbo].[Streams] ([StreamId])
-ALTER TABLE [dbo].[Commits] CHECK CONSTRAINT [FK_Commits_Streams];
-
-ALTER TABLE [dbo].[Dispatch] WITH CHECK ADD CONSTRAINT [FK_Dispatch_Commits] FOREIGN KEY([StreamId], [CommitSequence])
-REFERENCES [dbo].[Commits] ([StreamId], [CommitSequence])
-ALTER TABLE [dbo].[Dispatch] CHECK CONSTRAINT [FK_Dispatch_Commits];
-
 COMMIT TRANSACTION;
 
 /*
