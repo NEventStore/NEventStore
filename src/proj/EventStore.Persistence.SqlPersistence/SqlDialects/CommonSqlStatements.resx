@@ -176,7 +176,7 @@ INSERT
   INTO Streams
      ( StreamId, Name, HeadRevision )
 SELECT @StreamId, COALESCE(@StreamName, ''), @StreamRevision
- WHERE @ExpectedRevision = 0
+ WHERE @CommitSequence = 1
    AND NOT EXISTS
      ( SELECT *
          FROM Streams
@@ -185,9 +185,9 @@ SELECT @StreamId, COALESCE(@StreamName, ''), @StreamRevision
 UPDATE Streams
    SET HeadRevision = @StreamRevision,
        Name = COALESCE(@StreamName, Name)
- WHERE @ExpectedRevision &gt; 0
-   AND StreamId = @StreamId
-   AND HeadRevision = @ExpectedRevision;
+ WHERE StreamId = @StreamId
+   AND @CommitSequence &gt; 1
+   AND HeadRevision &lt; @StreamRevision;
 
 INSERT
   INTO Commits

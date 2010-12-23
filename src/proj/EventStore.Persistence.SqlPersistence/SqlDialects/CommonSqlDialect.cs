@@ -50,10 +50,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return "@CommitSequence"; }
 		}
-		public virtual string ExpectedRevision
-		{
-			get { return "@ExpectedRevision"; }
-		}
 		public virtual string StreamRevision
 		{
 			get { return "@StreamRevision"; }
