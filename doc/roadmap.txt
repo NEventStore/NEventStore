@@ -17,6 +17,8 @@
 	Oracle (8 or later)
 	Firebird
 	VistaDB
+
+	(TODO: Create SqlPersistenceFactory such that the persistence adapter can be entirely self contained.)
 	
 	- Document Databases -
 	CouchDB
