@@ -39,7 +39,11 @@
     <AssemblyOriginatorKeyFile>EventStore.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Norm">
+      <HintPath>..\..\..\lib\Norm\Norm.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Transactions" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\GlobalAssemblyInfo.cs">
@@ -51,6 +55,7 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="MongoPersistenceEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
