@@ -61,14 +61,22 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CREATE TABLE Streams (
-        ///       StreamId binary(16) NOT NULL CHECK (StreamId != 0),
-        ///       Name nvarchar(256) NOT NULL,
+        ///   Looks up a localized string similar to SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+        ///BEGIN TRANSACTION;
+        ///
+        ///CREATE TABLE Streams (
+        ///       StreamId char(16) NOT NULL,
+        ///       Name varchar(256) NOT NULL,
         ///       HeadRevision bigint NOT NULL CHECK (HeadRevision &gt; 0),
         ///       SnapshotRevision bigint NOT NULL CHECK (SnapshotRevision &gt;= 0),
         ///       CONSTRAINT PK_Streams PRIMARY KEY (StreamId)
         ///);
-        ///.
+        ///
+        ///CREATE TABLE Commits
+        ///(
+        ///       StreamId char(16) NOT NULL,
+        ///       CommitId char(16) NOT NULL,
+        ///       StreamRevision bigint NOT NULL CHECK (StreamRevis [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {
