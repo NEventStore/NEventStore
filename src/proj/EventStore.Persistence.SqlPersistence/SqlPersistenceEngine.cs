@@ -20,6 +20,16 @@ namespace EventStore.Persistence.SqlPersistence
 			this.dialect = dialect;
 			this.serializer = serializer;
 		}
+
+		public void Dispose()
+		{
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		protected virtual void Dispose(bool disposing)
+		{
+			// no op
+		}
 		
 		public virtual void Initialize()
 		{

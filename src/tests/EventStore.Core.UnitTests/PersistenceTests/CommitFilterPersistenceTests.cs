@@ -175,6 +175,22 @@ namespace EventStore.Core.UnitTests.PersistenceTests
 			fakePersistence.Verify(x => x.AddSnapshot(streamId, 0, 1), Times.Exactly(1));
 	}
 
+	[Subject("CommitFilterPersistence")]
+	public class when_being_disposed : using_persistence_infrastructure
+	{
+		Establish context = () =>
+			fakePersistence.Setup(x => x.Dispose());
+
+		Because of = () =>
+		{
+			filterPersistence.Dispose();
+			filterPersistence.Dispose();
+		};
+
+		It should_call_dispose_on_the_underlying_persistence_infrastructure_exactly_once = () =>
+			fakePersistence.Verify(x => x.Dispose(), Times.Exactly(1));
+	}
+
 	public abstract class using_persistence_infrastructure
 	{
 		protected static Guid streamId = Guid.NewGuid();

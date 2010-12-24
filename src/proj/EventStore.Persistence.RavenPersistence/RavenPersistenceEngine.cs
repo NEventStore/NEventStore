@@ -12,12 +12,27 @@ namespace EventStore.Persistence.RavenPersistence
 	{
 		private readonly IDocumentStore store;
 		private readonly IInitializeRaven initializer;
+		private bool disposed;
 
 		public RavenPersistenceEngine(
 			IDocumentStore store, IInitializeRaven initializer)
 		{
 			this.store = store;
 			this.initializer = initializer;
+		}
+
+		public void Dispose()
+		{
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposing || this.disposed)
+				return;
+
+			this.disposed = true;
+			this.store.Dispose();
 		}
 
 		public virtual void Initialize()

@@ -9,6 +9,7 @@ namespace EventStore.Persistence
 		private readonly IPersistStreams inner;
 		private readonly IFilterCommits<Commit> readFilter;
 		private readonly IFilterCommits<CommitAttempt> writeFilter;
+		private bool disposed;
 
 		public CommitFilterPersistence(
 			IPersistStreams inner, IFilterCommits<Commit> readFilter, IFilterCommits<CommitAttempt> writeFilter)
@@ -16,6 +17,20 @@ namespace EventStore.Persistence
 			this.inner = inner;
 			this.readFilter = readFilter;
 			this.writeFilter = writeFilter;
+		}
+
+		public void Dispose()
+		{
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposing || this.disposed)
+				return;
+
+			this.disposed = true;
+			this.inner.Dispose();
 		}
 
 		public void Initialize()

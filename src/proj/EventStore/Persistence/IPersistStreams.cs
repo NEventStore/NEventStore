@@ -6,7 +6,7 @@ namespace EventStore.Persistence
 	/// <summary>
 	/// Indicates the ability to adapt the underlying persistence infrastructure to behave like a stream of events.
 	/// </summary>
-	public interface IPersistStreams
+	public interface IPersistStreams : IDisposable
 	{
 		/// <summary>
 		/// Initializes and prepares the storage for use, if not already performed.

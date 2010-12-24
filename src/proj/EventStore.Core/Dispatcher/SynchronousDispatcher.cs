@@ -1,5 +1,6 @@
 namespace EventStore.Dispatcher
 {
+	using System;
 	using System.Linq;
 	using Persistence;
 
@@ -7,6 +8,7 @@ namespace EventStore.Dispatcher
 	{
 		private readonly IPublishMessages bus;
 		private readonly IPersistStreams persistence;
+		private bool disposed;
 
 		public SynchronousDispatcher(IPublishMessages bus, IPersistStreams persistence)
 		{
@@ -15,6 +17,22 @@ namespace EventStore.Dispatcher
 
 			this.Start();
 		}
+
+		public void Dispose()
+		{
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposing || this.disposed)
+				return;
+
+			this.disposed = true;
+			this.bus.Dispose();
+			this.persistence.Dispose();
+		}
+
 		private void Start()
 		{
 			foreach (var commit in this.persistence.GetUndispatchedCommits().ToList())

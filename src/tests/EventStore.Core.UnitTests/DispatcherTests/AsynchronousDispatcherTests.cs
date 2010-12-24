@@ -12,6 +12,7 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 	using Persistence;
 	using It = Machine.Specifications.It;
 
+	[Subject("AsynchronousDispatcher")]
 	public class when_instantiaing_the_asynchronous_dispatcher
 	{
 		static readonly Guid streamId = Guid.NewGuid();
@@ -43,6 +44,7 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 			bus.VerifyAll();
 	}
 
+	[Subject("AsynchronousDispatcher")]
 	public class when_asynchronously_dispatching_a_commit
 	{
 		static readonly Commit commit = new Commit(
@@ -72,6 +74,7 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 			persistence.Verify(x => x.MarkCommitAsDispatched(commit), Times.Exactly(1));
 	}
 
+	[Subject("AsynchronousDispatcher")]
 	public class when_an_asynchronously_dispatch_commit_throws_an_exception
 	{
 		static readonly Commit commit = new Commit(
@@ -105,6 +108,33 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 
 		It should_provide_the_exception_that_indicates_the_problem = () =>
 			thrown.ShouldNotBeNull();
+	}
+
+	[Subject("AsynchronousDispatcher")]
+	public class when_disposing_the_async_dispatcher
+	{
+		static readonly Mock<IPublishMessages> bus = new Mock<IPublishMessages>();
+		static readonly Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
+		static AsynchronousDispatcher dispatcher;
+
+		Establish context = () =>
+		{
+			bus.Setup(x => x.Dispose());
+			persistence.Setup(x => x.Dispose());
+			dispatcher = new AsynchronousDispatcher(bus.Object, persistence.Object, null);
+		};
+
+		Because of = () =>
+		{
+			dispatcher.Dispose();
+			dispatcher.Dispose();
+		};
+
+		It should_dispose_the_underlying_message_bus_exactly_once = () =>
+			bus.Verify(x => x.Dispose(), Times.Exactly(1));
+
+		It should_dispose_the_underlying_persistence_infrastructure_exactly_once = () =>
+			bus.Verify(x => x.Dispose(), Times.Exactly(1));
 	}
 }
 
