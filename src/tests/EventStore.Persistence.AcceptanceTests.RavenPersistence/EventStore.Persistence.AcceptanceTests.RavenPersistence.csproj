@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{DFC87C5C-58A9-431E-9282-01232C5C60C5}</ProjectGuid>
+    <ProjectGuid>{5A351706-4858-456A-AE80-7272AD661EB2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EventStore.Persistence.AcceptanceTests.SqlPersistence</RootNamespace>
-    <AssemblyName>EventStore.Persistence.AcceptanceTests.SqlPersistence</AssemblyName>
+    <RootNamespace>EventStore.Persistence.AcceptanceTests.RavenPersistence</RootNamespace>
+    <AssemblyName>EventStore.Persistence.AcceptanceTests.RavenPersistence</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SignAssembly>true</SignAssembly>
@@ -42,23 +42,18 @@
     <Compile Include="..\..\proj\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AzurePersistenceFactory.cs" />
-    <Compile Include="AmazonRdsPersistenceFactory.cs" />
-    <Compile Include="MySqlPersistenceFactory.cs" />
-    <Compile Include="PostgreSqlPersistenceFactory.cs" />
-    <Compile Include="SqlitePersistenceFactory.cs" />
-    <Compile Include="MsSqlPersistenceFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SqlPersistenceFactory.cs" />
+    <Compile Include="RavenPersistenceFactory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\proj\EventStore.Persistence.SqlPersistence\EventStore.Persistence.SqlPersistence.csproj">
-      <Project>{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}</Project>
-      <Name>EventStore.Persistence.SqlPersistence</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\proj\EventStore.Serialization\EventStore.Serialization.csproj">
-      <Project>{A5BF4B86-26F6-418D-BE35-C6CC3A623D27}</Project>
-      <Name>EventStore.Serialization</Name>
+    <Content Include="..\..\proj\CustomDictionary.xml">
+      <Link>Properties\CustomDictionary.xml</Link>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\proj\EventStore.Persistence.RavenPersistence\EventStore.Persistence.RavenPersistence.csproj">
+      <Project>{CE782ED8-15BB-49A9-9EBB-288FB5C82A01}</Project>
+      <Name>EventStore.Persistence.RavenPersistence</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\proj\EventStore\EventStore.csproj">
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
@@ -70,24 +65,16 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="MySql.Data">
-      <HintPath>..\..\..\bin\mysql-bin\MySql.Data.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Raven.Client.Lightweight">
+      <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Raven.Client.Lightweight.dll</HintPath>
     </Reference>
-    <Reference Include="Npgsql">
-      <HintPath>..\..\..\bin\npgsql-bin\Npgsql.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.configuration" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.SQLite">
-      <HintPath>..\..\..\bin\sqlite-bin\System.Data.SQLite.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\..\proj\CustomDictionary.xml">
-      <Link>Properties\CustomDictionary.xml</Link>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
 </Project>
