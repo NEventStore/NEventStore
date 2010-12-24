@@ -1,8 +1,6 @@
 namespace EventStore.Persistence.AcceptanceTests
 {
-	using System;
-
-	public interface IPersistenceFactory : IDisposable
+	public interface IPersistenceFactory
 	{
 		IPersistStreams Build();
 	}

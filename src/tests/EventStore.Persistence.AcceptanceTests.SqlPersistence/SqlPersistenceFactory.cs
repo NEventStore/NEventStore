@@ -1,26 +1,14 @@
 namespace EventStore.Persistence.AcceptanceTests.SqlPersistence
 {
-	using System;
 	using System.Configuration;
 	using System.Data;
 	using System.Data.Common;
 	using System.Data.SqlClient;
-	using System.Linq;
 	using Persistence.SqlPersistence;
 	using Serialization;
 
 	public abstract class SqlPersistenceFactory : IPersistenceFactory
 	{
-		public void Dispose()
-		{
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-		protected virtual void Dispose(bool disposing)
-		{
-			// no op
-		}
-
 		public abstract string Name { get; }
 
 		public virtual IPersistStreams Build()

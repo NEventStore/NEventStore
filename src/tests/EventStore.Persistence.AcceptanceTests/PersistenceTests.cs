@@ -169,7 +169,7 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		Cleanup everything = () =>
 		{
-			factory.Dispose();
+			persistence.Dispose();
 			persistence = null;
 
 			streamId = Guid.NewGuid();
