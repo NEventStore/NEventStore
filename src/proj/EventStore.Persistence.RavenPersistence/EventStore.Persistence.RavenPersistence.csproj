@@ -45,6 +45,7 @@
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="IInitializeRaven.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RavenCommit.cs" />
     <Compile Include="RavenInitializer.cs" />
     <Compile Include="RavenPersistenceEngine.cs" />
   </ItemGroup>
@@ -64,15 +65,15 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
       <HintPath>..\..\..\lib\RavenDB\.NET 3.5\Raven.Abstractions-3.5.dll</HintPath>
     </Reference>
-	<Reference Include="Raven.Abstractions" Condition="$(TargetFrameworkVersion)=='v4.0'">
+    <Reference Include="Raven.Abstractions" Condition="$(TargetFrameworkVersion)=='v4.0'">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
       <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Raven.Abstractions.dll</HintPath>
     </Reference>
-	<Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v3.5'">
+    <Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v3.5'">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
       <HintPath>..\..\..\lib\RavenDB\.NET 3.5\Raven.Client.Lightweight-3.5.dll</HintPath>
     </Reference>
-	<Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v4.0'">
+    <Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v4.0'">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
       <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Raven.Client.Lightweight.dll</HintPath>
     </Reference>

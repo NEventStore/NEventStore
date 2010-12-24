@@ -65,11 +65,13 @@ namespace EventStore.Persistence.RavenPersistence
 		}
 		public virtual void Persist(CommitAttempt uncommitted)
 		{
+			var commit = new RavenCommit(uncommitted);
+
 			using (new TransactionScope(TransactionScopeOption.Suppress))
 			using (var session = this.store.OpenSession())
 			{
 				session.Advanced.UseOptimisticConcurrency = true;
-				session.Store(uncommitted.ToCommit());
+				session.Store(commit);
 
 				try
 				{
@@ -77,9 +79,9 @@ namespace EventStore.Persistence.RavenPersistence
 				}
 				catch (Raven.Http.Exceptions.ConcurrencyException e)
 				{
-					var committed = session.Load<Commit>(uncommitted.ToCommit().Id());
-					if (committed.CommitId == uncommitted.CommitId)
-						throw new DuplicateCommitException(); // free in SQL, but manual in doc DBs
+					var committed = session.Load<RavenCommit>(commit.Id);
+					if (committed.CommitId == commit.CommitId)
+						throw new DuplicateCommitException(); // free in RDBMS, but manual in doc DBs
 
 					throw new ConcurrencyException(e.Message, e);
 				}
@@ -102,7 +104,9 @@ namespace EventStore.Persistence.RavenPersistence
 				try
 				{
 					// TODO
-					return session.Query<Commit>().Where(x => false).ToArray();
+					return session.Query<RavenCommit>().Where(x => false)
+						.Select(x => x.ToCommit())
+						.ToArray();
 				}
 				catch (Exception e)
 				{
