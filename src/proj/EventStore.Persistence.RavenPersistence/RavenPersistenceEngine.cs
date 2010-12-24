@@ -75,8 +75,12 @@ namespace EventStore.Persistence.RavenPersistence
 				{
 					session.SaveChanges();
 				}
-				catch (ConflictException e)
+				catch (Raven.Http.Exceptions.ConcurrencyException e)
 				{
+					var committed = session.Load<Commit>(uncommitted.ToCommit().Id());
+					if (committed.CommitId == uncommitted.CommitId)
+						throw new DuplicateCommitException(); // free in SQL, but manual in doc DBs
+
 					throw new ConcurrencyException(e.Message, e);
 				}
 				catch (NonUniqueObjectException e)
