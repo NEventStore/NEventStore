@@ -3,7 +3,7 @@ namespace EventStore.Persistence.AcceptanceTests.SqlPersistence
 	using Persistence.SqlPersistence;
 	using Persistence.SqlPersistence.SqlDialects;
 
-	public class FirebirdSqlPersistenceFactory : SqlPersistenceFactory
+	public class FirebirdPersistenceFactory : SqlPersistenceFactory
 	{
 		public override string Name
 		{
