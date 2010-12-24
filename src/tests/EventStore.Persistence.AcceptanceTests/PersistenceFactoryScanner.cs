@@ -11,19 +11,8 @@ namespace EventStore.Persistence.AcceptanceTests
 		private static readonly IDictionary<string, IPersistenceFactory> Factories =
 			new Dictionary<string, IPersistenceFactory>();
 
-		private const string FactoryWhenNoneSpecified = "MsSqlPersistenceFactory";
-		private const string SearchPattern = "*.dll";
-		private const string EngineUnderTest = "engine";
-		private readonly string defaultFactory;
-
 		public PersistenceFactoryScanner()
-			: this(null)
 		{
-		}
-		public PersistenceFactoryScanner(string defaultFactory)
-		{
-			this.defaultFactory = defaultFactory ?? FactoryWhenNoneSpecified;
-
 			if (Factories.Count > 0)
 				return;
 
@@ -34,7 +23,7 @@ namespace EventStore.Persistence.AcceptanceTests
 		private static IEnumerable<string> GetAssemblyFiles()
 		{
 			var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
-			return Directory.GetFiles(directory, SearchPattern);
+			return Directory.GetFiles(directory, "*.dll");
 		}
 		private static IEnumerable<Type> GetTypes(string filename)
 		{
@@ -65,8 +54,8 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		public virtual IPersistenceFactory GetFactory()
 		{
-			var engineName = EngineUnderTest.GetSetting() ?? this.defaultFactory; 
-			return Factories[engineName + "Factory"];
+			var persistenceEngine = "persistence".GetSetting() ?? "MsSqlPersistence";
+			return Factories[persistenceEngine + "Factory"];
 		}
 	}
 }
