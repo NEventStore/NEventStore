@@ -35,7 +35,6 @@
   <ItemGroup>
     <Compile Include="AzurePersistenceFactory.cs" />
     <Compile Include="AmazonRdsPersistenceFactory.cs" />
-    <Compile Include="FirebirdPersistenceFactory.cs" />
     <Compile Include="MySqlPersistenceFactory.cs" />
     <Compile Include="PostgreSqlPersistenceFactory.cs" />
     <Compile Include="SqlitePersistenceFactory.cs" />
