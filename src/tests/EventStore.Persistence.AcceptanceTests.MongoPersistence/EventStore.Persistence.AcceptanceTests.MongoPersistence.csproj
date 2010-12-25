@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A11EF94C-E220-4235-AC9C-BE7B37E073A0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>EventStore.Persistence.AcceptanceTests.MongoPersistence</RootNamespace>
+    <AssemblyName>EventStore.Persistence.AcceptanceTests.MongoPersistence</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\EventStore.Persistence.AcceptanceTests\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Norm">
+      <HintPath>..\..\..\lib\Norm\Norm.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MongoPersistenceFactory.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\proj\EventStore.Persistence.MongoPersistence\EventStore.Persistence.MongoPersistence.csproj">
+      <Project>{6467A350-160C-49C1-903E-62B919E288F3}</Project>
+      <Name>EventStore.Persistence.MongoPersistence</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\proj\EventStore\EventStore.csproj">
+      <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
+      <Name>EventStore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EventStore.Persistence.AcceptanceTests\EventStore.Persistence.AcceptanceTests.csproj">
+      <Project>{B56FDCEA-086F-40A2-92E1-867CE506CBE3}</Project>
+      <Name>EventStore.Persistence.AcceptanceTests</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
