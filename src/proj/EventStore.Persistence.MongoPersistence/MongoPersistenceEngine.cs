@@ -88,5 +88,10 @@ namespace EventStore.Persistence.MongoPersistence
         {
             throw new NotImplementedException();
         }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
