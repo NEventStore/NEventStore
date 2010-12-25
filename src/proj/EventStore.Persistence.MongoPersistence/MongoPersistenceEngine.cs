@@ -10,6 +10,7 @@ namespace EventStore.Persistence.MongoPersistence
     public class MongoPersistenceEngine : IPersistStreams
     {
         IMongo store;
+        bool disposed;
 
         public MongoPersistenceEngine(IMongo store)
         {
@@ -20,12 +21,12 @@ namespace EventStore.Persistence.MongoPersistence
         {
             MongoConfiguration.Initialize(c =>
             {
-                c.For<Commit>(commit=>
+                c.For<MongoCommit>(commit =>
                     {
-                        //todo: check with jonathan if this will fly
-                        commit.IdIs(i=>i.CommitId);
+                        //Id is the default convention
+                //        commit.IdIs(i => i.Id);
                     });
-                
+
             });
         }
 
@@ -36,36 +37,34 @@ namespace EventStore.Persistence.MongoPersistence
 
         public IEnumerable<Commit> GetFrom(Guid streamId, long minRevision)
         {
-            using (new TransactionScope(TransactionScopeOption.Suppress))
+            try
             {
-                try
-                {
-                    var collection = this.store.Database.GetCollection<Commit>();
-                    return collection.AsQueryable()
-                        .Where(x => x.StreamId == streamId && x.StreamRevision >= minRevision).ToArray();
-                }
-                catch (Exception e)
-                {
-                    throw new PersistenceEngineException(e.Message, e);
-                }
+                var collection = this.store.Database.GetCollection<MongoCommit>();
+                var results= collection.AsQueryable()
+                    .Where(x => x.StreamId == streamId && x.StreamRevision >= minRevision).ToArray();
+
+                return results.Select(mc => mc.ToCommit());
+            }
+            catch (Exception e)
+            {
+                throw new PersistenceEngineException(e.Message, e);
             }
         }
 
         public void Persist(CommitAttempt uncommitted)
         {
-            using (new TransactionScope(TransactionScopeOption.Suppress))
-            {
-                try
-                {
-                    var collection = this.store.Database.GetCollection<Commit>();
-                    collection.Save(uncommitted.ToCommit());
+            var commit = uncommitted.ToMongoCommit();
 
-                    //todo: detect concurrency confilcts
-                }
-                catch (Exception e)
-                {
-                    throw new PersistenceEngineException(e.Message, e);
-                }
+            try
+            {
+                var collection = this.store.Database.GetCollection<MongoCommit>();
+                collection.Save(commit);
+
+                //todo: detect concurrency confilcts
+            }
+            catch (Exception e)
+            {
+                throw new PersistenceEngineException(e.Message, e);
             }
         }
 
@@ -88,10 +87,37 @@ namespace EventStore.Persistence.MongoPersistence
         {
             throw new NotImplementedException();
         }
-
         public void Dispose()
         {
-            throw new NotImplementedException();
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposing || this.disposed)
+                return;
+
+            this.disposed = true;
+            this.store.Dispose();
+        }
+
+
+    }
+
+    public class MongoCommit
+    {
+        private const string IdFormat = "{0}.{1}";
+
+        public string Id
+        {
+            get { return IdFormat.FormatWith(this.StreamId, this.CommitSequence); }
+        }
+        public Guid StreamId { get; set; }
+        public Guid CommitId { get; set; }
+        public long StreamRevision { get; set; }
+        public long CommitSequence { get; set; }
+        public Dictionary<string, object> Headers { get; set; }
+        public List<EventMessage> Events { get; set; }
+        public object Snapshot { get; set; }
     }
 }
