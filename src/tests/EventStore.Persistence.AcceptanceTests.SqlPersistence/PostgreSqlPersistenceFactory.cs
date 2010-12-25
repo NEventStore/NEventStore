@@ -7,7 +7,7 @@ namespace EventStore.Persistence.AcceptanceTests.SqlPersistence
 	{
 		public override string Name
 		{
-			get { return "Postgres"; }
+			get { return "PostgreSQL"; }
 		}
 		protected override ISqlDialect BuildDialect()
 		{
