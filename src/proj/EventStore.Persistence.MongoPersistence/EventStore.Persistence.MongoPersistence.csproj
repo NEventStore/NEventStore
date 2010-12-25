@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{6467A350-160C-49C1-903E-62B919E288F3}</ProjectGuid>
+    <ProjectGuid>{23A942C3-DE3A-4596-B012-1F56D46A5E2E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>EventStore.Persistence.MongoPersistence</RootNamespace>

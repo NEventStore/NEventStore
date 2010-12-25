@@ -52,7 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\proj\EventStore.Persistence.MongoPersistence\EventStore.Persistence.MongoPersistence.csproj">
-      <Project>{6467A350-160C-49C1-903E-62B919E288F3}</Project>
+      <Project>{23A942C3-DE3A-4596-B012-1F56D46A5E2E}</Project>
       <Name>EventStore.Persistence.MongoPersistence</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\proj\EventStore\EventStore.csproj">
