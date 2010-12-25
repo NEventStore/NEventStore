@@ -65,7 +65,7 @@ namespace EventStore.Persistence.RavenPersistence
 		}
 		public virtual void Persist(CommitAttempt uncommitted)
 		{
-			var commit = new RavenCommit(uncommitted);
+			var commit = uncommitted.ToRavenCommit();
 
 			using (new TransactionScope(TransactionScopeOption.Suppress))
 			using (var session = this.store.OpenSession())
@@ -81,12 +81,8 @@ namespace EventStore.Persistence.RavenPersistence
 				{
 					var committed = session.Load<RavenCommit>(commit.Id);
 					if (committed.CommitId == commit.CommitId)
-						throw new DuplicateCommitException(); // free in RDBMS, but manual in doc DBs
+						throw new DuplicateCommitException();
 
-					throw new ConcurrencyException(e.Message, e);
-				}
-				catch (NonUniqueObjectException e)
-				{
 					throw new ConcurrencyException(e.Message, e);
 				}
 				catch (Exception e)
@@ -119,7 +115,7 @@ namespace EventStore.Persistence.RavenPersistence
 			using (new TransactionScope(TransactionScopeOption.Suppress))
 			using (var session = this.store.OpenSession())
 			{
-				var patch = commit.RemoveUndispatchedProperty();
+				var patch = commit.ToRavenCommit().RemoveUndispatchedProperty();
 				session.Advanced.DatabaseCommands.Batch(new[] { patch });
 				session.SaveChanges();
 			}

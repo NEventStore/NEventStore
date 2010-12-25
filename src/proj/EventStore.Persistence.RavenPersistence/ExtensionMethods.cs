@@ -1,32 +1,23 @@
 namespace EventStore.Persistence.RavenPersistence
 {
+	using System.Collections.Generic;
 	using System.Globalization;
-	using Persistence;
+	using System.Linq;
 	using Raven.Database.Data;
 	using Raven.Database.Json;
 
 	internal static class ExtensionMethods
 	{
-		private const string IdFormat = "{0}.{1}";
-
-		public static string Id(this Commit commit)
-		{
-			if (commit == null)
-				return null;
-
-			return IdFormat.FormatWith(commit.StreamId, commit.CommitSequence);
-		}
-
 		public static string FormatWith(this string format, params object[] values)
 		{
 			return string.Format(CultureInfo.InvariantCulture, format, values);
 		}
 
-		public static PatchCommandData RemoveUndispatchedProperty(this Commit commit)
+		public static PatchCommandData RemoveUndispatchedProperty(this RavenCommit commit)
 		{
 			return new PatchCommandData
 			{
-				Key = commit.Id(),
+				Key = commit.Id,
 				Patches = new[]
 				{
 					new PatchRequest
@@ -36,6 +27,35 @@ namespace EventStore.Persistence.RavenPersistence
 					}
 				}
 			};
+		}
+
+		public static RavenCommit ToRavenCommit(this CommitAttempt attempt)
+		{
+			return attempt.ToCommit().ToRavenCommit();
+		}
+		public static RavenCommit ToRavenCommit(this Commit commit)
+		{
+			return new RavenCommit
+			{
+				StreamId = commit.StreamId,
+				CommitId = commit.CommitId,
+				StreamRevision = commit.StreamRevision,
+				CommitSequence = commit.CommitSequence,
+				Headers = (Dictionary<string, object>)commit.Headers,
+				Events = commit.Events.ToList(),
+				Snapshot = commit.Snapshot
+			};
+		}
+		public static Commit ToCommit(this RavenCommit commit)
+		{
+			return new Commit(
+				commit.StreamId,
+				commit.CommitId,
+				commit.StreamRevision,
+				commit.CommitSequence,
+				commit.Headers,
+				commit.Events,
+				commit.Snapshot);
 		}
 	}
 }
