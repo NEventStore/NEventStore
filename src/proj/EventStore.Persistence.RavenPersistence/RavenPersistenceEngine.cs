@@ -6,7 +6,6 @@ namespace EventStore.Persistence.RavenPersistence
 	using System.Transactions;
 	using Persistence;
 	using Raven.Client;
-	using Raven.Client.Exceptions;
 
 	public class RavenPersistenceEngine : IPersistStreams
 	{
@@ -54,8 +53,11 @@ namespace EventStore.Persistence.RavenPersistence
 			{
 				try
 				{
-					return session.Query<Commit>()
-						.Where(x => x.StreamId == streamId && x.StreamRevision >= minRevision).ToArray();
+					var commits = session.Query<RavenCommit>()
+						.Where(x => x.StreamId == streamId && x.StreamRevision >= minRevision)
+						.ToArray();
+
+					return commits.Select(x => x.ToCommit());
 				}
 				catch (Exception e)
 				{
@@ -100,9 +102,8 @@ namespace EventStore.Persistence.RavenPersistence
 				try
 				{
 					// TODO
-					return session.Query<RavenCommit>().Where(x => false)
-						.Select(x => x.ToCommit())
-						.ToArray();
+					var commits = session.Query<RavenCommit>().ToArray();
+					return commits.Select(x => x.ToCommit());
 				}
 				catch (Exception e)
 				{
@@ -132,7 +133,7 @@ namespace EventStore.Persistence.RavenPersistence
 		{
 			using (new TransactionScope(TransactionScopeOption.Suppress))
 			{
-				// inserts a snapshot document *between* two commits
+				// update commit with a specific snapshot
 			}
 		}
 	}
