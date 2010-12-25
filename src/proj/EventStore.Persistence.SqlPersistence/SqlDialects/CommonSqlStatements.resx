@@ -173,6 +173,7 @@ UPDATE Streams
   INTO Dispatch
      ( StreamId, CommitSequence)
 SELECT @StreamId, @CommitSequence
+/*FROM DUAL*/
  WHERE NOT EXISTS
      ( SELECT *
          FROM Dispatch
@@ -183,6 +184,7 @@ INSERT
   INTO Commits
      ( StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload )
 SELECT @StreamId, @CommitId, @StreamRevision, @CommitSequence, @Headers, @Payload
+/*FROM DUAL*/
  WHERE NOT EXISTS
      ( SELECT *
          FROM Commits
@@ -194,6 +196,7 @@ INSERT
   INTO Streams
      ( StreamId, Name, HeadRevision )
 SELECT @StreamId, COALESCE(@StreamName, ''), @StreamRevision
+/*FROM DUAL*/
  WHERE @CommitSequence = 1
    AND NOT EXISTS
      ( SELECT *

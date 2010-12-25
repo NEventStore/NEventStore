@@ -152,6 +152,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///  INTO Dispatch
         ///     ( StreamId, CommitSequence)
         ///SELECT @StreamId, @CommitSequence
+        ////*FROM DUAL*/
         /// WHERE NOT EXISTS
         ///     ( SELECT *
         ///         FROM Dispatch
@@ -162,10 +163,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///  INTO Commits
         ///     ( StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload )
         ///SELECT @StreamId, @CommitId, @StreamRevision, @CommitSequence, @Headers, @Payload
+        ////*FROM DUAL*/
         /// WHERE NOT EXISTS
         ///     ( SELECT *
-        ///         FROM Commits
-        ///        WHERE StreamId =  [rest of string was truncated]&quot;;.
+        ///         FROM Comm [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string PersistCommitAttempt {
             get {

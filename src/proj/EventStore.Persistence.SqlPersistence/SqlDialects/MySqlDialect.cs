@@ -8,7 +8,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		public override string PersistCommitAttempt
 		{
-			get { return MySqlStatements.PersistCommitAttempt; }
+			get { return CommonSqlStatements.PersistCommitAttempt.Replace("/*FROM DUAL*/", "FROM DUAL"); }
 		}
 	}
 }

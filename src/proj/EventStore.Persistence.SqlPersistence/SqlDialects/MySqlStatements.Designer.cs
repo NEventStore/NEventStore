@@ -83,32 +83,5 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
                 return ResourceManager.GetString("InitializeStorage", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to INSERT
-        ///  INTO Dispatch
-        ///     ( StreamId, CommitSequence)
-        ///SELECT @StreamId, @CommitSequence
-        ///  FROM Dual
-        /// WHERE NOT EXISTS
-        ///     ( SELECT *
-        ///         FROM Dispatch
-        ///        WHERE StreamId = @StreamId
-        ///          AND CommitSequence = @CommitSequence);
-        ///
-        ///INSERT
-        ///  INTO Commits
-        ///     ( StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload )
-        ///SELECT @StreamId, @CommitId, @StreamRevision, @CommitSequence, @Headers, @Payload
-        ///  FROM Dual
-        /// WHERE NOT EXISTS
-        ///     ( SELECT *
-        ///         FROM Commits        /// [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string PersistCommitAttempt {
-            get {
-                return ResourceManager.GetString("PersistCommitAttempt", resourceCulture);
-            }
-        }
     }
 }
