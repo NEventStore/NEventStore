@@ -23,6 +23,9 @@ namespace EventStore.Persistence.AcceptanceTests
 		private static IEnumerable<string> GetAssemblyFiles()
 		{
             return Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll");
+=======
+            return Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll");
+>>>>>>> Using the appdomain basedirectory instead to workaround what I think is shadow copying
 		}
 		private static IEnumerable<Type> GetTypes(string filename)
 		{
