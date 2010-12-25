@@ -8,7 +8,7 @@ namespace EventStore.Persistence.AcceptanceTests
 	using Machine.Specifications;
 
 	[Subject("Persistence")]
-	public class when_a_commit_attempt_is_successfully_committed : using_the_persistence_engine
+	public class when_an_attempt_is_successfully_committed : using_the_persistence_engine
 	{
 		static readonly CommitAttempt attempt = streamId.BuildAttempt();
 
@@ -140,7 +140,7 @@ namespace EventStore.Persistence.AcceptanceTests
 	}
 
 	[Subject("Persistence")]
-	public class when_attempting_to_commit_an_already_committed_attempt : using_the_persistence_engine
+	public class when_reattempting_a_previously_committed_attempt : using_the_persistence_engine
 	{
 		static readonly CommitAttempt attemptTwice = streamId.BuildAttempt();
 		static Exception thrown;
