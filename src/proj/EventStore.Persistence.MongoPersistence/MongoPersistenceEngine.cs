@@ -57,8 +57,8 @@ namespace EventStore.Persistence.MongoPersistence
 
             try
             {
-                var collection = this.store.Database.GetCollection<MongoCommit>();
-                collection.Save(commit);
+                store.Database.GetCollection<MongoCommit>()
+                    .Save(commit);
 
                 //todo: detect concurrency confilcts
             }
@@ -70,7 +70,11 @@ namespace EventStore.Persistence.MongoPersistence
 
         public IEnumerable<Commit> GetUndispatchedCommits()
         {
-            throw new NotImplementedException();
+            var collection = this.store.Database.GetCollection<MongoCommit>();
+            var results = collection.AsQueryable()
+                .Where(x => !x.Dispatched).ToArray();
+
+            return results.Select(mc => mc.ToCommit());
         }
 
         public void MarkCommitAsDispatched(Commit commit)
@@ -119,5 +123,7 @@ namespace EventStore.Persistence.MongoPersistence
         public Dictionary<string, object> Headers { get; set; }
         public List<EventMessage> Events { get; set; }
         public object Snapshot { get; set; }
+
+        public bool Dispatched { get; set; }
     }
 }
