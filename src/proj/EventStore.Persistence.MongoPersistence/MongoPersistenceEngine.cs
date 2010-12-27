@@ -6,6 +6,7 @@ namespace EventStore.Persistence.MongoPersistence
     using Norm;
     using Norm.BSON;
     using Norm.Configuration;
+    using Norm.Protocol.Messages;
 
     public class MongoPersistenceEngine : IPersistStreams
     {
@@ -21,12 +22,12 @@ namespace EventStore.Persistence.MongoPersistence
         {
             MongoConfiguration.Initialize(c =>
             {
-                c.For<Stream>(stream =>
-                    {
-                        stream.IdIs(i => i.StreamId);
-                    });
-
+                c.For<Stream>(stream => stream.IdIs(i => i.StreamId)); 
+                
             });
+        
+            store.Database.GetCollection<MongoCommit>()
+                .CreateIndex(mc => mc.Dispatched,"Dispatched_Index",false, IndexOption.Ascending);
         }
 
         public IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision)
