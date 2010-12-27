@@ -3,6 +3,7 @@ namespace EventStore.Persistence.MongoPersistence
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using Norm.BSON;
 
     public static class ExtensionMethods
     {
@@ -39,6 +40,24 @@ namespace EventStore.Persistence.MongoPersistence
                 commit.Headers,
                 commit.Events,
                 commit.Snapshot);
+        }
+
+        public static Expando ToMongoQuery(this MongoCommit commit)
+        {
+            var expando = new Expando();
+
+            expando["_id"] = commit.Id;
+
+            return expando;
+        }
+
+        public static Expando ToMongoExpando(this Stream stream)
+        {
+            var expando = new Expando();
+
+            expando["_id"] = stream.StreamId;
+
+            return expando;
         }
 
     }

@@ -3,8 +3,8 @@ namespace EventStore.Persistence.MongoPersistence
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Transactions;
     using Norm;
+    using Norm.BSON;
     using Norm.Configuration;
 
     public class MongoPersistenceEngine : IPersistStreams
@@ -21,10 +21,9 @@ namespace EventStore.Persistence.MongoPersistence
         {
             MongoConfiguration.Initialize(c =>
             {
-                c.For<MongoCommit>(commit =>
+                c.For<Stream>(stream =>
                     {
-                        //Id is the default convention
-                //        commit.IdIs(i => i.Id);
+                        stream.IdIs(i => i.StreamId);
                     });
 
             });
@@ -40,7 +39,7 @@ namespace EventStore.Persistence.MongoPersistence
             try
             {
                 var collection = this.store.Database.GetCollection<MongoCommit>();
-                var results= collection.AsQueryable()
+                var results = collection.AsQueryable()
                     .Where(x => x.StreamId == streamId && x.StreamRevision >= minRevision).ToArray();
 
                 return results.Select(mc => mc.ToCommit());
@@ -58,14 +57,31 @@ namespace EventStore.Persistence.MongoPersistence
             try
             {
                 store.Database.GetCollection<MongoCommit>()
-                    .Save(commit);
+                 .Insert(commit);
 
-                //todo: detect concurrency confilcts
             }
-            catch (Exception e)
+            catch (MongoException mongoException)
             {
-                throw new PersistenceEngineException(e.Message, e);
+                if (mongoException.Message.StartsWith("E11000"))
+                {
+                    var committed = store.Database.GetCollection<MongoCommit>().FindOne(commit);
+                        
+                    if (committed  != null)
+                        throw new DuplicateCommitException();
+                    else
+                        throw new ConcurrencyException();
+                
+                }
+                throw;
             }
+
+            store.Database.GetCollection<Stream>()
+                .Save(new Stream
+                          {
+                              StreamId = commit.StreamId,
+                              HeadRevision = commit.StreamRevision
+                          });
+
         }
 
         public IEnumerable<Commit> GetUndispatchedCommits()
@@ -84,13 +100,38 @@ namespace EventStore.Persistence.MongoPersistence
 
         public IEnumerable<StreamToSnapshot> GetStreamsToSnapshot(int maxThreshold)
         {
-            throw new NotImplementedException();
+            var collection = store.Database.GetCollection<Stream>();
+            var retval = collection.AsQueryable()
+                .Where(x => x.HeadRevision >= x.SnapshotRevision + maxThreshold).ToArray()
+                //todo: fix the name
+                .Select(stream => new StreamToSnapshot(stream.StreamId, "", stream.HeadRevision, stream.SnapshotRevision));
+
+            return retval;
         }
 
         public void AddSnapshot(Guid streamId, long streamRevision, object snapshot)
         {
-            throw new NotImplementedException();
+            var commit = new MongoCommit
+                                     {
+                                         StreamId = streamId,
+                                         StreamRevision = streamRevision
+                                     }.ToMongoQuery();
+
+            var commitUpdate = new Expando();
+            commitUpdate["Snapshot"] = M.Set(snapshot);
+
+            store.Database.GetCollection<MongoCommit>()
+                .UpdateOne(commit, commitUpdate);
+
+            var streamUpdate = new Expando();
+
+            streamUpdate["SnapshotRevision"] = M.Set(streamRevision);
+
+            var stream = new Stream { StreamId = streamId };
+            store.Database.GetCollection<Stream>()
+                .UpdateOne(stream.ToMongoExpando(), streamUpdate);
         }
+
         public void Dispose()
         {
             this.Dispose(true);
@@ -106,24 +147,5 @@ namespace EventStore.Persistence.MongoPersistence
         }
 
 
-    }
-
-    public class MongoCommit
-    {
-        private const string IdFormat = "{0}.{1}";
-
-        public string Id
-        {
-            get { return IdFormat.FormatWith(this.StreamId, this.CommitSequence); }
-        }
-        public Guid StreamId { get; set; }
-        public Guid CommitId { get; set; }
-        public long StreamRevision { get; set; }
-        public long CommitSequence { get; set; }
-        public Dictionary<string, object> Headers { get; set; }
-        public List<EventMessage> Events { get; set; }
-        public object Snapshot { get; set; }
-
-        public bool Dispatched { get; set; }
     }
 }

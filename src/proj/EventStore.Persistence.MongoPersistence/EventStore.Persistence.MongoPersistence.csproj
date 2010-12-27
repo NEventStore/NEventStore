@@ -57,8 +57,10 @@
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="MongoCommit.cs" />
     <Compile Include="MongoPersistenceEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Stream.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EventStore\EventStore.csproj">
