@@ -135,22 +135,21 @@ CREATE TABLE IF NOT EXISTS Commits
        CommitId guid NOT NULL CHECK (CommitId != 0),
        StreamRevision bigint NOT NULL CHECK (StreamRevision &gt; 0),
        CommitSequence bigint NOT NULL CHECK (CommitSequence &gt; 0),
-       SystemSequence integer PRIMARY KEY NOT NULL,
+       CommitStamp datetime NOT NULL DEFAULT (current_timestamp),
        Headers blob NULL,
        Payload blob NOT NULL,
-       Snapshot blob NULL
+       Snapshot blob NULL,
+       CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)
 );
-CREATE UNIQUE INDEX IF NOT EXISTS PK_Commits ON Commits (StreamId, CommitSequence);
 CREATE UNIQUE INDEX IF NOT EXISTS IX_Commits_CommitId ON Commits (StreamId, CommitId);
 CREATE UNIQUE INDEX IF NOT EXISTS IX_Commits_Revisions ON Commits (StreamId, StreamRevision);
 
 CREATE TABLE IF NOT EXISTS Dispatch
 (
-       DispatchId integer PRIMARY KEY NOT NULL,
        StreamId guid NOT NULL,
-       CommitSequence bigint NOT NULL
+       CommitSequence bigint NOT NULL,
+       CONSTRAINT PK_Dispatch PRIMARY KEY (StreamId, CommitSequence)
 );
-CREATE UNIQUE INDEX IF NOT EXISTS IX_Dispatch ON Dispatch (StreamId, CommitSequence);
 
 COMMIT TRANSACTION;
 

@@ -127,7 +127,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         /// INNER JOIN Dispatch AS D
         ///    ON C.StreamId = D.StreamId
         ///   AND C.CommitSequence = D.CommitSequence
-        /// ORDER BY D.DispatchId;.
+        /// ORDER BY C.CommitStamp;.
         /// </summary>
         internal static string GetUndispatchedCommits {
             get {

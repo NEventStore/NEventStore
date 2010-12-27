@@ -136,22 +136,21 @@ CREATE TABLE Commits
        CommitId bytea NOT NULL,
        StreamRevision bigint NOT NULL CHECK (StreamRevision &gt; 0),
        CommitSequence bigint NOT NULL CHECK (CommitSequence &gt; 0),
-       SystemSequence bigserial PRIMARY KEY NOT NULL,
+       CommitStamp timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP),
        Headers bytea NULL,
        Payload bytea NOT NULL,
-       Snapshot bytea NULL
+       Snapshot bytea NULL,
+       CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)
 );
-CREATE UNIQUE INDEX PK_Commits ON Commits (StreamId, CommitSequence);
 CREATE UNIQUE INDEX IX_Commits_CommitId ON Commits (StreamId, CommitId);
 CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (StreamId, StreamRevision);
 
 CREATE TABLE Dispatch
 (
-       DispatchId bigserial PRIMARY KEY NOT NULL,
        StreamId bytea NOT NULL,
-       CommitSequence bigint NOT NULL
+       CommitSequence bigint NOT NULL,
+       CONSTRAINT PK_Dispatch PRIMARY KEY (StreamId, CommitSequence)
 );
-CREATE UNIQUE INDEX IX_Dispatch ON Dispatch (StreamId, CommitSequence);
 
 COMMIT TRANSACTION;
 

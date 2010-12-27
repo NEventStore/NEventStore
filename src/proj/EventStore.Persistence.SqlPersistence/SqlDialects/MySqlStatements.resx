@@ -136,22 +136,22 @@ CREATE TABLE IF NOT EXISTS Commits
        CommitId binary(16) NOT NULL CHECK (CommitId != 0),
        StreamRevision bigint NOT NULL CHECK (StreamRevision &gt; 0),
        CommitSequence bigint NOT NULL CHECK (CommitSequence &gt; 0),
-       SystemSequence bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
+       CommitStamp datetime NOT NULL,
        Headers blob NULL,
        Payload blob NOT NULL,
-       Snapshot blob NULL
+       Snapshot blob NULL,
+       CONSTRAINT PK_Dispatch PRIMARY KEY (StreamId, CommitSequence)
 );
-CREATE UNIQUE INDEX PK_Commits ON Commits (StreamId, CommitSequence);
 CREATE UNIQUE INDEX IX_Commits_CommitId ON Commits (StreamId, CommitId);
 CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (StreamId, StreamRevision);
+CREATE TRIGGER EnsureCommitStamp BEFORE INSERT ON Commits FOR EACH ROW SET NEW.CommitStamp = UTC_TIMESTAMP();
 
 CREATE TABLE IF NOT EXISTS Dispatch
 (
-       DispatchId bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
        StreamId binary(16) NOT NULL,
-       CommitSequence bigint NOT NULL
+       CommitSequence bigint NOT NULL,
+       CONSTRAINT PK_Dispatch PRIMARY KEY (StreamId, CommitSequence)
 );
-CREATE UNIQUE INDEX IX_Dispatch ON Dispatch (StreamId, CommitSequence);
 
 COMMIT;
 

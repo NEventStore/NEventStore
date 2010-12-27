@@ -160,7 +160,7 @@ UPDATE Streams
  INNER JOIN Dispatch AS D
     ON C.StreamId = D.StreamId
    AND C.CommitSequence = D.CommitSequence
- ORDER BY D.DispatchId;</value>
+ ORDER BY C.CommitStamp;</value>
   </data>
   <data name="MarkCommitAsDispatched" xml:space="preserve">
     <value>DELETE
