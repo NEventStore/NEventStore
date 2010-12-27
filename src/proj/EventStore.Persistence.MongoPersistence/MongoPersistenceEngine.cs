@@ -64,7 +64,8 @@ namespace EventStore.Persistence.MongoPersistence
             {
                 if (mongoException.Message.StartsWith("E11000"))
                 {
-                    var committed = store.Database.GetCollection<MongoCommit>().FindOne(commit);
+                    var committed = store.Database.GetCollection<MongoCommit>()
+                        .FindOne(commit);
                         
                     if (committed  != null)
                         throw new DuplicateCommitException();
@@ -95,7 +96,12 @@ namespace EventStore.Persistence.MongoPersistence
 
         public void MarkCommitAsDispatched(Commit commit)
         {
-            throw new NotImplementedException();
+           
+            var update = new Expando();
+            update["Dispatched"] = M.Set(true);
+
+            store.Database.GetCollection<MongoCommit>()
+                .UpdateOne(commit.ToMongoCommit().ToMongoQuery(),update);
         }
 
         public IEnumerable<StreamToSnapshot> GetStreamsToSnapshot(int maxThreshold)
@@ -137,6 +143,7 @@ namespace EventStore.Persistence.MongoPersistence
             this.Dispose(true);
             GC.SuppressFinalize(this);
         }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposing || this.disposed)
