@@ -43,6 +43,7 @@
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CommitExtensions.cs" />
+    <Compile Include="ConfigurationConnectionFactory.cs" />
     <Compile Include="DelegateConnectionFactory.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="IConnectionFactory.cs" />
@@ -95,6 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Transactions" />
   </ItemGroup>

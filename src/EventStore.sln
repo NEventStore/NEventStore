@@ -15,6 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{CD37080A-F48
 	ProjectSection(SolutionItems) = preProject
 		..\doc\EventStore Architectural Overview.docx = ..\doc\EventStore Architectural Overview.docx
 		..\doc\license.txt = ..\doc\license.txt
+		..\doc\roadmap.txt = ..\doc\roadmap.txt
 		..\doc\Transactional Integrity without Transactions.docx = ..\doc\Transactional Integrity without Transactions.docx
 	EndProjectSection
 EndProject
