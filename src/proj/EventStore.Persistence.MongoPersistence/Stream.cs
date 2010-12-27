@@ -7,5 +7,6 @@
         public Guid StreamId { get; set; }
         public long HeadRevision { get; set; }
         public long SnapshotRevision { get; set; }
+        public string Name { get; set; }
     }
 }

@@ -4,7 +4,6 @@ namespace EventStore.Persistence.MongoPersistence
     using System.Collections.Generic;
     using System.Linq;
     using Norm;
-    using Norm.BSON;
     using Norm.Configuration;
     using Norm.Protocol.Messages;
 
@@ -100,12 +99,8 @@ namespace EventStore.Persistence.MongoPersistence
 
         public void MarkCommitAsDispatched(Commit commit)
         {
-           
-            var update = new Expando();
-            update["Dispatched"] = M.Set(true);
-
             store.Database.GetCollection<MongoCommit>()
-                .UpdateOne(commit.ToMongoCommit().ToMongoQuery(),update);
+                .Update(commit.ToMongoCommit().ToMongoQuery(), u => u.SetValue(mc => mc.Dispatched, true));
         }
 
         public IEnumerable<StreamToSnapshot> GetStreamsToSnapshot(int maxThreshold)
@@ -114,7 +109,7 @@ namespace EventStore.Persistence.MongoPersistence
             var retval = collection.AsQueryable()
                 .Where(x => x.HeadRevision >= x.SnapshotRevision + maxThreshold).ToArray()
                 //todo: fix the name
-                .Select(stream => new StreamToSnapshot(stream.StreamId, "", stream.HeadRevision, stream.SnapshotRevision));
+                .Select(stream => new StreamToSnapshot(stream.StreamId, stream.Name, stream.HeadRevision, stream.SnapshotRevision));
 
             return retval;
         }
@@ -127,19 +122,12 @@ namespace EventStore.Persistence.MongoPersistence
                                          StreamRevision = streamRevision
                                      }.ToMongoQuery();
 
-            var commitUpdate = new Expando();
-            commitUpdate["Snapshot"] = M.Set(snapshot);
-
             store.Database.GetCollection<MongoCommit>()
-                .UpdateOne(commit, commitUpdate);
-
-            var streamUpdate = new Expando();
-
-            streamUpdate["SnapshotRevision"] = M.Set(streamRevision);
+                .Update(commit, u=>u.SetValue(mc=>mc.Snapshot,snapshot));
 
             var stream = new Stream { StreamId = streamId };
             store.Database.GetCollection<Stream>()
-                .UpdateOne(stream.ToMongoExpando(), streamUpdate);
+                .Update(stream.ToMongoExpando(), u=>u.SetValue(s=>s.SnapshotRevision,streamRevision));
         }
 
         public void Dispose()
