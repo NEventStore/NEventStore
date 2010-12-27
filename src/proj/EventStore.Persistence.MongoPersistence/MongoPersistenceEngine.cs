@@ -28,6 +28,9 @@ namespace EventStore.Persistence.MongoPersistence
         
             store.Database.GetCollection<MongoCommit>()
                 .CreateIndex(mc => mc.Dispatched,"Dispatched_Index",false, IndexOption.Ascending);
+  
+            store.Database.GetCollection<MongoCommit>()
+                .CreateIndex(mc => new{mc.StreamId,mc.StreamRevision}, "GetFrom_Index", false, IndexOption.Ascending);
         }
 
         public IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision)
