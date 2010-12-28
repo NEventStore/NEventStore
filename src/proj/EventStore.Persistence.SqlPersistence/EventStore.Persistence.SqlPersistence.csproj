@@ -127,10 +127,12 @@
     <EmbeddedResource Include="SqlDialects\PostgreSqlStatements.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>PostgreSqlStatements.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="SqlDialects\SqliteStatements.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>SqliteStatements.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

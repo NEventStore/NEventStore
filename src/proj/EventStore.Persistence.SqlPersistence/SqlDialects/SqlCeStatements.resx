@@ -127,7 +127,6 @@
        CONSTRAINT PK_Streams PRIMARY KEY (StreamId)
 );
 
-/**/
 CREATE TABLE Commits
 (
        StreamId uniqueidentifier NOT NULL,
@@ -140,13 +139,10 @@ CREATE TABLE Commits
        Snapshot image NULL,
        CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)
 );
-
-/**/
 CREATE UNIQUE INDEX IX_Commits ON Commits (StreamId, CommitId);
-/**/
 CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (StreamId, StreamRevision);
 
-/**/
+
 CREATE TABLE Dispatch
 (
        StreamId uniqueidentifier NOT NULL,

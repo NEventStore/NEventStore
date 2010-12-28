@@ -1,14 +1,15 @@
 namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Data;
 
 	public abstract class CommonSqlDialect : ISqlDialect
 	{
-		public abstract string InitializeStorage { get; }
-		public virtual string AppendSnapshotToCommit
+		public abstract IEnumerable<string> InitializeStorage { get; }
+		public virtual IEnumerable<string> AppendSnapshotToCommit
 		{
-			get { return CommonSqlStatements.AppendSnapshotToCommit; }
+			get { yield return CommonSqlStatements.AppendSnapshotToCommit; }
 		}
 		public virtual string GetCommitsFromSnapshotUntilRevision
 		{
@@ -30,9 +31,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return CommonSqlStatements.MarkCommitAsDispatched; }
 		}
-		public virtual string PersistCommitAttempt
+		public virtual IEnumerable<string> PersistCommitAttempt
 		{
-			get { return CommonSqlStatements.PersistCommitAttempt; }
+			get { yield return CommonSqlStatements.PersistCommitAttempt; }
 		}
 
 		public virtual string StreamId
@@ -68,14 +69,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			get { return "@Threshold"; }
 		}
 
-		protected virtual string Delimiter
+		public virtual IDataParameter BuildParameter<T>(IDbCommand command, string parameterName, T value)
 		{
-			get { return "/**/"; }
-		}
-
-		public virtual DbType GuidType
-		{
-			get { return DbType.Guid; }
+			return null;
 		}
 
 		public virtual bool IsDuplicateException(Exception exception)

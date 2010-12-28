@@ -1,18 +1,19 @@
 namespace EventStore.Persistence.SqlPersistence
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Data;
 
 	public interface ISqlDialect
 	{
-		string InitializeStorage { get; }
-		string AppendSnapshotToCommit { get; }
+		IEnumerable<string> InitializeStorage { get; }
+		IEnumerable<string> AppendSnapshotToCommit { get; }
 		string GetCommitsFromSnapshotUntilRevision { get; }
 		string GetCommitsFromStartingRevision { get; }
 		string GetStreamsRequiringSnaphots { get; }
 		string GetUndispatchedCommits { get; }
 		string MarkCommitAsDispatched { get; }
-		string PersistCommitAttempt { get; }
+		IEnumerable<string> PersistCommitAttempt { get; }
 
 		string StreamId { get; }
 		string StreamName { get; }
@@ -23,7 +24,7 @@ namespace EventStore.Persistence.SqlPersistence
 		string Payload { get; }
 		string Threshold { get; }
 
-		DbType GuidType { get; }
+		IDataParameter BuildParameter<T>(IDbCommand command, string parameterName, T value);
 
 		bool IsDuplicateException(Exception exception);
 	}

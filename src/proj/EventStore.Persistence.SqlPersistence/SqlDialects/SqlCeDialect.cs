@@ -1,10 +1,27 @@
 namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
+	using System.Collections.Generic;
+	using System.Linq;
+
 	public class SqlCeDialect : CommonSqlDialect
 	{
-		public override string InitializeStorage
+		private const string Delimiter = ";";
+
+		public override IEnumerable<string> InitializeStorage
 		{
-			get { return SqlCeStatements.InitializeStorage; }
+			get { return SplitStatement(SqlCeStatements.InitializeStorage); }
+		}
+		public override IEnumerable<string> AppendSnapshotToCommit
+		{
+			get { return SplitStatement(base.AppendSnapshotToCommit.First()); }
+		}
+		public override IEnumerable<string> PersistCommitAttempt
+		{
+			get { return SplitStatement(base.PersistCommitAttempt.First()); }
+		}
+		private static IEnumerable<string> SplitStatement(string statement)
+		{
+			return statement.Split(Delimiter.ToCharArray()).Select(x => x + Delimiter);
 		}
 	}
 }

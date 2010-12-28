@@ -1,15 +1,12 @@
 namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
+	using System.Collections.Generic;
+
 	public class SqliteDialect : CommonSqlDialect
 	{
-		public override string InitializeStorage
+		public override IEnumerable<string> InitializeStorage
 		{
-			get { return SqliteStatements.InitializeStorage; }
-		}
-
-		public override string PersistCommitAttempt
-		{
-			get { return base.PersistCommitAttempt.Replace(this.Delimiter, string.Empty); }
+			get { yield return SqliteStatements.InitializeStorage; }
 		}
 	}
 }

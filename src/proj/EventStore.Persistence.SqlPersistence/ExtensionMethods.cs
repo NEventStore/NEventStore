@@ -1,6 +1,7 @@
 namespace EventStore.Persistence.SqlPersistence
 {
 	using System;
+	using System.Collections.Generic;
 
 	internal static class ExtensionMethods
 	{
@@ -15,6 +16,12 @@ namespace EventStore.Persistence.SqlPersistence
 
 			var bytes = value as byte[];
 			return bytes != null ? new Guid(bytes) : Guid.Empty;
+		}
+
+		public static void ForEach<T>(this IEnumerable<T> values, Action<T> callback)
+		{
+			foreach (var value in values)
+				callback(value);
 		}
 	}
 }

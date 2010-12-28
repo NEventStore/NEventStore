@@ -123,8 +123,6 @@
  WHERE StreamId = @StreamId
    AND StreamRevision = @StreamRevision;
 
-/**/
-
 UPDATE Streams
    SET SnapshotRevision = @StreamRevision
  WHERE StreamId = @StreamId
@@ -153,7 +151,7 @@ UPDATE Streams
     <value>SELECT StreamId, Name, HeadRevision, SnapshotRevision
   FROM Streams
  WHERE HeadRevision &gt;= SnapshotRevision + @Threshold
- ORDER BY SnapshotRevision - HeadRevision</value>
+ ORDER BY SnapshotRevision - HeadRevision;</value>
   </data>
   <data name="GetUndispatchedCommits" xml:space="preserve">
     <value>SELECT C.StreamId, C.CommitId, C.StreamRevision, C.CommitSequence, C.Headers, C.Payload
@@ -181,8 +179,6 @@ SELECT @StreamId, @CommitSequence
         WHERE StreamId = @StreamId
           AND CommitSequence = @CommitSequence);
 
-/**/
-
 INSERT
   INTO Commits
      ( StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload )
@@ -195,8 +191,6 @@ SELECT @StreamId, @CommitId, @StreamRevision, @CommitSequence, @Headers, @Payloa
           AND CommitId != @CommitId
           AND CommitSequence &gt;= @CommitSequence );
 
-/**/
-
 INSERT
   INTO Streams
      ( StreamId, Name, HeadRevision )
@@ -207,8 +201,6 @@ SELECT @StreamId, COALESCE(@StreamName, ''), @StreamRevision
      ( SELECT *
          FROM Streams
         WHERE StreamId = @StreamId );
-
-/**/
 
 UPDATE Streams
    SET HeadRevision = @StreamRevision,

@@ -70,14 +70,14 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///       CONSTRAINT PK_Streams PRIMARY KEY (StreamId)
         ///);
         ///
-        ////**/
         ///CREATE TABLE Commits
         ///(
         ///       StreamId uniqueidentifier NOT NULL,
         ///       CommitId uniqueidentifier NOT NULL,
         ///       StreamRevision bigint NOT NULL,
         ///       CommitSequence bigint NOT NULL,
-        ///       CommitStamp datetime NOT NULL default(getdate()),        /// [rest of string was truncated]&quot;;.
+        ///       CommitStamp datetime NOT NULL default(getdate()),
+        ///      [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {

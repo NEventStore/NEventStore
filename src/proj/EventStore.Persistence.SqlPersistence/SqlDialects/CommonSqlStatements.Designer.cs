@@ -66,8 +66,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         /// WHERE StreamId = @StreamId
         ///   AND StreamRevision = @StreamRevision;
         ///
-        ////**/
-        ///
         ///UPDATE Streams
         ///   SET SnapshotRevision = @StreamRevision
         /// WHERE StreamId = @StreamId
@@ -114,7 +112,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///   Looks up a localized string similar to SELECT StreamId, Name, HeadRevision, SnapshotRevision
         ///  FROM Streams
         /// WHERE HeadRevision &gt;= SnapshotRevision + @Threshold
-        /// ORDER BY SnapshotRevision - HeadRevision.
+        /// ORDER BY SnapshotRevision - HeadRevision;.
         /// </summary>
         internal static string GetStreamsRequiringSnaphots {
             get {
@@ -160,8 +158,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///        WHERE StreamId = @StreamId
         ///          AND CommitSequence = @CommitSequence);
         ///
-        ////**/
-        ///
         ///INSERT
         ///  INTO Commits
         ///     ( StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload )
@@ -169,7 +165,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ////*FROM DUAL*/
         /// WHERE NOT EXISTS
         ///     ( SELECT *
-        ///         F [rest of string was truncated]&quot;;.
+        ///         FROM Comm [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string PersistCommitAttempt {
             get {

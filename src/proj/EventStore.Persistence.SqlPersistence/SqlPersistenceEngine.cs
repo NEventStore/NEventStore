@@ -3,6 +3,7 @@ namespace EventStore.Persistence.SqlPersistence
 	using System;
 	using System.Collections.Generic;
 	using System.Data;
+	using System.Linq;
 	using System.Transactions;
 	using Persistence;
 	using Serialization;
@@ -33,10 +34,7 @@ namespace EventStore.Persistence.SqlPersistence
 		public virtual void Initialize()
 		{
 			this.Execute(Guid.Empty, cmd =>
-			{
-				cmd.CommandText = this.dialect.InitializeStorage;
-				cmd.ForEach(() => cmd.ExecuteAndSuppressExceptions());
-			});
+				cmd.ExecuteAndSuppressExceptions(this.dialect.InitializeStorage.ToArray()));
 		}
 
 		public virtual IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision)
@@ -52,7 +50,7 @@ namespace EventStore.Persistence.SqlPersistence
 			return this.Execute(streamId, query =>
 			{
 				query.CommandText = queryText;
-				query.AddParameter(this.dialect.StreamId, streamId, this.dialect.GuidType);
+				query.AddParameter(this.dialect.StreamId, streamId);
 				query.AddParameter(this.dialect.StreamRevision, revision);
 				return query.ExecuteQuery(x => x.GetCommit(this.serializer));
 			});
@@ -64,10 +62,9 @@ namespace EventStore.Persistence.SqlPersistence
 			{
 				var commit = uncommitted.ToCommit();
 
-				cmd.CommandText = this.dialect.PersistCommitAttempt;
-				cmd.AddParameter(this.dialect.StreamId, commit.StreamId, this.dialect.GuidType);
+				cmd.AddParameter(this.dialect.StreamId, commit.StreamId);
 				cmd.AddParameter(this.dialect.StreamName, uncommitted.StreamName ?? string.Empty);
-				cmd.AddParameter(this.dialect.CommitId, commit.CommitId, this.dialect.GuidType);
+				cmd.AddParameter(this.dialect.CommitId, commit.CommitId);
 				cmd.AddParameter(this.dialect.CommitSequence, commit.CommitSequence);
 				cmd.AddParameter(this.dialect.StreamRevision, commit.StreamRevision);
 				cmd.AddParameter(this.dialect.Headers, this.serializer.Serialize(commit.Headers));
@@ -80,7 +77,7 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			try
 			{
-				var rowsAffected = command.ForEach(() => command.ExecuteNonQuery());
+				var rowsAffected = command.ExecuteNonQuery(this.dialect.PersistCommitAttempt.ToArray());
 				if (rowsAffected == 0)
 					throw new ConcurrencyException();
 			}
@@ -106,7 +103,7 @@ namespace EventStore.Persistence.SqlPersistence
 			this.Execute(commit.StreamId, cmd =>
 			{
 				cmd.CommandText = this.dialect.MarkCommitAsDispatched;
-				cmd.AddParameter(this.dialect.StreamId, commit.StreamId, this.dialect.GuidType);
+				cmd.AddParameter(this.dialect.StreamId, commit.StreamId);
 				cmd.AddParameter(this.dialect.CommitSequence, commit.CommitSequence);
 				cmd.ExecuteAndSuppressExceptions();
 			});
@@ -125,11 +122,10 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			this.Execute(streamId, cmd =>
 			{
-				cmd.CommandText = this.dialect.AppendSnapshotToCommit;
-				cmd.AddParameter(this.dialect.StreamId, streamId, this.dialect.GuidType);
+				cmd.AddParameter(this.dialect.StreamId, streamId);
 				cmd.AddParameter(this.dialect.StreamRevision, streamRevision);
 				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(snapshot));
-				cmd.ForEach(() => cmd.ExecuteAndSuppressExceptions());
+				cmd.ExecuteAndSuppressExceptions(this.dialect.AppendSnapshotToCommit.ToArray());
 			});
 		}
 

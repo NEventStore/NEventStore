@@ -1,26 +1,21 @@
 namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
-	using System.Data;
+	using System.Collections.Generic;
 
 	public class MySqlDialect : CommonSqlDialect
 	{
-		public override string InitializeStorage
+		public override IEnumerable<string> InitializeStorage
 		{
-			get { return MySqlStatements.InitializeStorage; }
+			get { yield return MySqlStatements.InitializeStorage; }
 		}
-		public override string PersistCommitAttempt
+		public override IEnumerable<string> PersistCommitAttempt
 		{
 			get
 			{
-				return CommonSqlStatements.PersistCommitAttempt
+				yield return CommonSqlStatements.PersistCommitAttempt
 					.Replace("/*", string.Empty)
 					.Replace("*/", string.Empty);
 			}
-		}
-
-		public override DbType GuidType
-		{
-			get { return DbType.Binary; }
 		}
 	}
 }

@@ -9,20 +9,17 @@ namespace EventStore.Persistence.SqlPersistence
 	{
 		public static void AddParameter(this IDbCommand command, string parameterName, object value)
 		{
-			command.AddParameter(parameterName, value, DbType.Object);
-		}
-		public static void AddParameter(this IDbCommand command, string parameterName, object value, DbType type)
-		{
 			var parameter = command.CreateParameter();
 			parameter.ParameterName = parameterName;
 
-			if (value is Guid && type == DbType.Guid)
+			//// MySQL
+			//// else if (value is Guid && type == DbType.Binary)
+			////    value = ((Guid)value).ToByteArray();
+			if (value is Guid)
 			{
 				parameter.DbType = DbType.Guid;
 				value = (Guid)value;
 			}
-			else if (value is Guid && type == DbType.Binary)
-				value = ((Guid)value).ToByteArray();
 			else if (value is string)
 			{
 				parameter.DbType = DbType.String;
@@ -37,15 +34,28 @@ namespace EventStore.Persistence.SqlPersistence
 			command.Parameters.Add(parameter);
 		}
 
-		public static void ExecuteAndSuppressExceptions(this IDbCommand command)
+		public static int ExecuteAndSuppressExceptions(this IDbCommand command, params string[] statements)
 		{
 			try
 			{
-				command.ExecuteNonQuery();
+				return command.ExecuteNonQuery(statements);
 			}
 			catch (Exception)
 			{
+				return 0;
 			}
+		}
+		public static int ExecuteNonQuery(this IDbCommand command, params string[] statements)
+		{
+			statements = statements ?? new string[] { };
+			if (statements.Length == 0)
+				return command.ExecuteNonQuery();
+
+			return statements.Sum(statement =>
+			{
+				command.CommandText = statement;
+				return command.ExecuteNonQuery();
+			});
 		}
 
 		public static IEnumerable<T> ExecuteQuery<T>(this IDbCommand query, Func<IDataRecord, T> selector)
@@ -57,27 +67,6 @@ namespace EventStore.Persistence.SqlPersistence
 			using (reader)
 				while (reader.Read())
 					yield return reader;
-		}
-
-		public static int ForEach(this IDbCommand command, Func<int> callback)
-		{
-			return command.EnumerateStatements().Sum(statement =>
-			{
-				command.CommandText = statement;
-				return callback();
-			});
-		}
-		public static void ForEach(this IDbCommand command, Action callback)
-		{
-			foreach (var statement in command.EnumerateStatements())
-			{
-				command.CommandText = statement;
-				callback();
-			}
-		}
-		private static IEnumerable<string> EnumerateStatements(this IDbCommand command)
-		{
-			return command.CommandText.Split(new[] { "/**/" }, StringSplitOptions.RemoveEmptyEntries);
 		}
 	}
 }
