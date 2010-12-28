@@ -123,7 +123,7 @@ BEGIN TRANSACTION;
 
 CREATE TABLE Streams
 (
-       StreamId bytea NOT NULL,
+       StreamId uuid NOT NULL,
        Name varchar(256) NOT NULL,
        HeadRevision bigint NOT NULL CHECK (HeadRevision &gt; 0),
        SnapshotRevision bigint NOT NULL CHECK (SnapshotRevision &gt;= 0) DEFAULT(0),
@@ -132,8 +132,8 @@ CREATE TABLE Streams
 
 CREATE TABLE Commits
 (
-       StreamId bytea NOT NULL,
-       CommitId bytea NOT NULL,
+       StreamId uuid NOT NULL,
+       CommitId uuid NOT NULL,
        StreamRevision bigint NOT NULL CHECK (StreamRevision &gt; 0),
        CommitSequence bigint NOT NULL CHECK (CommitSequence &gt; 0),
        CommitStamp timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP),
@@ -147,7 +147,7 @@ CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (StreamId, StreamRevision);
 
 CREATE TABLE Dispatch
 (
-       StreamId bytea NOT NULL,
+       StreamId uuid NOT NULL,
        CommitSequence bigint NOT NULL,
        CONSTRAINT PK_Dispatch PRIMARY KEY (StreamId, CommitSequence)
 );
