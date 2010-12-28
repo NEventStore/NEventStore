@@ -2,7 +2,6 @@ namespace EventStore.Persistence.SqlPersistence
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Data;
 
 	public interface ISqlDialect
 	{
@@ -23,8 +22,6 @@ namespace EventStore.Persistence.SqlPersistence
 		string Headers { get; }
 		string Payload { get; }
 		string Threshold { get; }
-
-		IDataParameter BuildParameter<T>(IDbCommand command, string parameterName, T value);
 
 		bool IsDuplicateException(Exception exception);
 	}

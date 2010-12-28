@@ -69,11 +69,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			get { return "@Threshold"; }
 		}
 
-		public virtual IDataParameter BuildParameter<T>(IDbCommand command, string parameterName, T value)
-		{
-			return null;
-		}
-
 		public virtual bool IsDuplicateException(Exception exception)
 		{
 			var msg = exception.Message.ToUpperInvariant();
