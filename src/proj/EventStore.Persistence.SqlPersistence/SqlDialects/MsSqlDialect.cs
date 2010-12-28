@@ -10,5 +10,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return base.PersistCommitAttempt.Replace(this.Delimiter, string.Empty); }
 		}
+
+		public override string AppendSnapshotToCommit
+		{
+			get { return base.AppendSnapshotToCommit.Replace(this.Delimiter, string.Empty); }
+		}
 	}
 }

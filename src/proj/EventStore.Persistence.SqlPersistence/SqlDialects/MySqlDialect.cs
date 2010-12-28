@@ -1,5 +1,7 @@
 namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
+	using System.Data;
+
 	public class MySqlDialect : CommonSqlDialect
 	{
 		public override string InitializeStorage
@@ -14,6 +16,11 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 					.Replace("/*", string.Empty)
 					.Replace("*/", string.Empty);
 			}
+		}
+
+		public override DbType GuidType
+		{
+			get { return DbType.Binary; }
 		}
 	}
 }

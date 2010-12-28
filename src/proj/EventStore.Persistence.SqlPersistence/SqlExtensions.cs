@@ -3,18 +3,38 @@ namespace EventStore.Persistence.SqlPersistence
 	using System;
 	using System.Collections.Generic;
 	using System.Data;
-	using System.Data.Common;
 	using System.Linq;
 
 	internal static class SqlExtensions
 	{
-		public static IDataParameter AddParameter(this IDbCommand command, string parameterName, object value)
+		public static void AddParameter(this IDbCommand command, string parameterName, object value)
+		{
+			command.AddParameter(parameterName, value, DbType.Object);
+		}
+		public static void AddParameter(this IDbCommand command, string parameterName, object value, DbType type)
 		{
 			var parameter = command.CreateParameter();
 			parameter.ParameterName = parameterName;
-			parameter.Value = (value is Guid) ? ((Guid)value).ToByteArray() : value ?? DBNull.Value;
+
+			if (value is Guid && type == DbType.Guid)
+			{
+				parameter.DbType = DbType.Guid;
+				value = (Guid)value;
+			}
+			else if (value is Guid && type == DbType.Binary)
+				value = ((Guid)value).ToByteArray();
+			else if (value is string)
+			{
+				parameter.DbType = DbType.String;
+				value = (object)((string)value).ToNull() ?? DBNull.Value;
+			}
+			else if (value is long)
+				parameter.DbType = DbType.Int64;
+			else if (value is byte[])
+				parameter.DbType = DbType.Binary;
+
+			parameter.Value = value ?? DBNull.Value;
 			command.Parameters.Add(parameter);
-			return parameter;
 		}
 
 		public static void ExecuteAndSuppressExceptions(this IDbCommand command)
@@ -23,7 +43,7 @@ namespace EventStore.Persistence.SqlPersistence
 			{
 				command.ExecuteNonQuery();
 			}
-			catch (DbException)
+			catch (Exception)
 			{
 			}
 		}

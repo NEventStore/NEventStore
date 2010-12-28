@@ -1,6 +1,7 @@
 namespace EventStore.Persistence.SqlPersistence
 {
-	using System.Data.Common;
+	using System;
+	using System.Data;
 
 	public interface ISqlDialect
 	{
@@ -22,6 +23,8 @@ namespace EventStore.Persistence.SqlPersistence
 		string Payload { get; }
 		string Threshold { get; }
 
-		bool IsDuplicateException(DbException exception);
+		DbType GuidType { get; }
+
+		bool IsDuplicateException(Exception exception);
 	}
 }

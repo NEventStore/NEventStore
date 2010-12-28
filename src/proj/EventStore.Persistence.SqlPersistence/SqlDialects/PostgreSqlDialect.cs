@@ -1,5 +1,7 @@
 namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
+	using System.Data;
+
 	public class PostgreSqlDialect : CommonSqlDialect
 	{
 		public override string InitializeStorage
@@ -10,6 +12,11 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		public override string PersistCommitAttempt
 		{
 			get { return base.PersistCommitAttempt.Replace(this.Delimiter, string.Empty); }
+		}
+
+		public override DbType GuidType
+		{
+			get { return DbType.Binary; }
 		}
 	}
 }

@@ -1,6 +1,7 @@
 namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
-	using System.Data.Common;
+	using System;
+	using System.Data;
 
 	public abstract class CommonSqlDialect : ISqlDialect
 	{
@@ -72,7 +73,12 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			get { return "/**/"; }
 		}
 
-		public virtual bool IsDuplicateException(DbException exception)
+		public virtual DbType GuidType
+		{
+			get { return DbType.Guid; }
+		}
+
+		public virtual bool IsDuplicateException(Exception exception)
 		{
 			var msg = exception.Message.ToUpperInvariant();
 			return msg.Contains("DUPLICATE") || msg.Contains("UNIQUE");
