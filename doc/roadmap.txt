@@ -8,12 +8,12 @@
 	- Relational Databases -
 	[DONE] Microsoft SQL Server (2000 or later)
 	[DONE] Microsoft SQL Azure
-	[DONE] MySQL (4 or later) (MyISAM, InnoDB, NDB/Cluster, Drizzle, MariaDB, XtraDB, BerkleyDB, etc.)
+	[DONE] MySQL (5 or later) (MyISAM, InnoDB, NDB/Cluster, Drizzle, MariaDB, XtraDB, BerkleyDB, etc.)
 	[DONE] Amazon RDS (MySQL)
 	[DONE] SQLite (3 or later)
 	[DONE] PostgreSQL (8 or later)
-	[DONE] Microsoft SQL Compact Edition 3.5
-	Firebird (ADO.NET driver) (could be done using stored procedures)
+	[DONE] Microsoft SQL Compact Edition 3.5 (or later)
+	Firebird (ADO.NET driver)
 	Microsoft Access 2000 (or later)
 	Oracle (8 or later)
 	VistaDB
@@ -22,8 +22,8 @@
 	
 	- Document Databases -
 	CouchDB
-	MongoDB
-	RavenDB
+	[IN PROGRESS] MongoDB
+	[IN PROGRESS] RavenDB
 
 	- File System
 	Managed storage using .NET APIs.
