@@ -19,7 +19,7 @@
 
 	[SKIPPED: Unable to support multiple statements in a single command, and not widely used]
 	  Microsoft SQL Compact Edition 3.5
-	  Firebird (ADO.NET driver)
+	  Firebird (ADO.NET driver) (could be done using stored procedures)
 
 	(TODO: Create SqlPersistenceFactory such that the persistence adapter can be entirely self contained.)
 	

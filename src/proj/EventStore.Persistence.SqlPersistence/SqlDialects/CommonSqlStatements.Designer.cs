@@ -66,6 +66,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         /// WHERE StreamId = @StreamId
         ///   AND StreamRevision = @StreamRevision;
         ///
+        ////**/
+        ///
         ///UPDATE Streams
         ///   SET SnapshotRevision = @StreamRevision
         /// WHERE StreamId = @StreamId
@@ -159,6 +161,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///        WHERE StreamId = @StreamId
         ///          AND CommitSequence = @CommitSequence);
         ///
+        ////**/
+        ///
         ///INSERT
         ///  INTO Commits
         ///     ( StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload )
@@ -166,7 +170,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ////*FROM DUAL*/
         /// WHERE NOT EXISTS
         ///     ( SELECT *
-        ///         FROM Comm [rest of string was truncated]&quot;;.
+        ///         F [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string PersistCommitAttempt {
             get {

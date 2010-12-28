@@ -36,7 +36,7 @@ namespace EventStore.Persistence.SqlPersistence
 			this.Execute(Guid.Empty, cmd =>
 			{
 				cmd.CommandText = this.dialect.InitializeStorage;
-				cmd.ExecuteAndSuppressExceptions();
+				cmd.ForEach(() => cmd.ExecuteAndSuppressExceptions());
 			});
 		}
 
@@ -81,8 +81,8 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			try
 			{
-				var affectedRows = command.ExecuteNonQuery();
-				if (affectedRows == 0)
+				var rowsAffected = command.ForEach(() => command.ExecuteNonQuery());
+				if (rowsAffected == 0)
 					throw new ConcurrencyException();
 			}
 			catch (DbException e)
@@ -109,7 +109,7 @@ namespace EventStore.Persistence.SqlPersistence
 				cmd.CommandText = this.dialect.MarkCommitAsDispatched;
 				cmd.AddParameter(this.dialect.StreamId, commit.StreamId);
 				cmd.AddParameter(this.dialect.CommitSequence, commit.CommitSequence);
-				cmd.ExecuteAndSuppressExceptions();
+				cmd.ForEach(() => cmd.ExecuteAndSuppressExceptions());
 			});
 		}
 

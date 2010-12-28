@@ -6,5 +6,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return PostgreSqlStatements.InitializeStorage; }
 		}
+
+		public override string PersistCommitAttempt
+		{
+			get { return base.PersistCommitAttempt.Replace(this.Delimiter, string.Empty); }
+		}
 	}
 }

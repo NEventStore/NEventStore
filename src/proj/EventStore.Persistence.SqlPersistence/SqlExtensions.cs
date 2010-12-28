@@ -38,5 +38,26 @@ namespace EventStore.Persistence.SqlPersistence
 				while (reader.Read())
 					yield return reader;
 		}
+
+		public static int ForEach(this IDbCommand command, Func<int> callback)
+		{
+			return command.EnumerateStatements().Sum(statement =>
+			{
+				command.CommandText = statement;
+				return callback();
+			});
+		}
+		public static void ForEach(this IDbCommand command, Action callback)
+		{
+			foreach (var statement in command.EnumerateStatements())
+			{
+				command.CommandText = statement;
+				callback();
+			}
+		}
+		private static IEnumerable<string> EnumerateStatements(this IDbCommand command)
+		{
+			return command.CommandText.Split(new[] { "/**/" }, StringSplitOptions.RemoveEmptyEntries);
+		}
 	}
 }

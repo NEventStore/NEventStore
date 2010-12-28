@@ -67,6 +67,11 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			get { return "@Threshold"; }
 		}
 
+		protected virtual string Delimiter
+		{
+			get { return "/**/"; }
+		}
+
 		public virtual bool IsDuplicateException(DbException exception)
 		{
 			var msg = exception.Message.ToUpperInvariant();

@@ -123,6 +123,8 @@
  WHERE StreamId = @StreamId
    AND StreamRevision = @StreamRevision;
 
+/**/
+
 UPDATE Streams
    SET SnapshotRevision = @StreamRevision
  WHERE StreamId = @StreamId
@@ -180,6 +182,8 @@ SELECT @StreamId, @CommitSequence
         WHERE StreamId = @StreamId
           AND CommitSequence = @CommitSequence);
 
+/**/
+
 INSERT
   INTO Commits
      ( StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload )
@@ -192,6 +196,8 @@ SELECT @StreamId, @CommitId, @StreamRevision, @CommitSequence, @Headers, @Payloa
           AND CommitId != @CommitId
           AND CommitSequence &gt;= @CommitSequence );
 
+/**/
+
 INSERT
   INTO Streams
      ( StreamId, Name, HeadRevision )
@@ -202,6 +208,8 @@ SELECT @StreamId, COALESCE(@StreamName, ''), @StreamRevision
      ( SELECT *
          FROM Streams
         WHERE StreamId = @StreamId );
+
+/**/
 
 UPDATE Streams
    SET HeadRevision = @StreamRevision,
