@@ -1,5 +1,6 @@
 namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
+	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 
@@ -21,7 +22,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		private static IEnumerable<string> SplitStatement(string statement)
 		{
-			return statement.Split(Delimiter.ToCharArray()).Select(x => x + Delimiter);
+			return statement.Split(Delimiter.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
+				.Select(x => x + Delimiter);
 		}
 	}
 }
