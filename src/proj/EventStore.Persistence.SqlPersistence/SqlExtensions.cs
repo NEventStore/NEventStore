@@ -12,18 +12,12 @@ namespace EventStore.Persistence.SqlPersistence
 			var parameter = command.CreateParameter();
 			parameter.ParameterName = parameterName;
 
-			//// MySQL
-			//// else if (value is Guid && type == DbType.Binary)
-			////    value = ((Guid)value).ToByteArray();
 			if (value is Guid)
-			{
 				parameter.DbType = DbType.Guid;
-				value = (Guid)value;
-			}
 			else if (value is string)
 			{
 				parameter.DbType = DbType.String;
-				value = (object)((string)value).ToNull() ?? DBNull.Value;
+				value = ((string)value).ToNull();
 			}
 			else if (value is long)
 				parameter.DbType = DbType.Int64;

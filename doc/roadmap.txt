@@ -8,7 +8,7 @@
 	- Relational Databases -
 	[DONE] Microsoft SQL Server (2000 or later)
 	[DONE] Microsoft SQL Azure
-	[DONE] MySQL (4 or later) (MyISAM, InnoDB, NDB/Cluter, Drizzle, MariaDB, BerkleyDB, etc.)
+	[DONE] MySQL (4 or later) (MyISAM, InnoDB, NDB/Cluster, Drizzle, MariaDB, XtraDB, BerkleyDB, etc.)
 	[DONE] Amazon RDS (MySQL)
 	[DONE] SQLite (3 or later)
 	[DONE] PostgreSQL (8 or later)
