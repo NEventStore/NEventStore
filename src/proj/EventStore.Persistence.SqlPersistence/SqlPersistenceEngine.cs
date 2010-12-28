@@ -3,7 +3,6 @@ namespace EventStore.Persistence.SqlPersistence
 	using System;
 	using System.Collections.Generic;
 	using System.Data;
-	using System.Linq;
 	using System.Transactions;
 	using Persistence;
 	using Serialization;
@@ -34,7 +33,7 @@ namespace EventStore.Persistence.SqlPersistence
 		public virtual void Initialize()
 		{
 			this.Execute(Guid.Empty, cmd =>
-				cmd.ExecuteAndSuppressExceptions(this.dialect.InitializeStorage.ToArray()));
+				cmd.ExecuteAndSuppressExceptions(this.dialect.InitializeStorage));
 		}
 
 		public virtual IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision)
@@ -77,7 +76,7 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			try
 			{
-				var rowsAffected = command.ExecuteNonQuery(this.dialect.PersistCommitAttempt.ToArray());
+				var rowsAffected = command.ExecuteNonQuery(this.dialect.PersistCommitAttempt);
 				if (rowsAffected == 0)
 					throw new ConcurrencyException();
 			}
@@ -125,7 +124,7 @@ namespace EventStore.Persistence.SqlPersistence
 				cmd.AddParameter(this.dialect.StreamId, streamId);
 				cmd.AddParameter(this.dialect.StreamRevision, streamRevision);
 				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(snapshot));
-				cmd.ExecuteAndSuppressExceptions(this.dialect.AppendSnapshotToCommit.ToArray());
+				cmd.ExecuteAndSuppressExceptions(this.dialect.AppendSnapshotToCommit);
 			});
 		}
 

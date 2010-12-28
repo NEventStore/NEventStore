@@ -34,7 +34,11 @@ namespace EventStore.Persistence.SqlPersistence
 			command.Parameters.Add(parameter);
 		}
 
-		public static int ExecuteAndSuppressExceptions(this IDbCommand command, params string[] statements)
+		public static int ExecuteAndSuppressExceptions(this IDbCommand command)
+		{
+			return command.ExecuteAndSuppressExceptions(new[] { command.CommandText });
+		}
+		public static int ExecuteAndSuppressExceptions(this IDbCommand command, IEnumerable<string> statements)
 		{
 			try
 			{
@@ -45,12 +49,8 @@ namespace EventStore.Persistence.SqlPersistence
 				return 0;
 			}
 		}
-		public static int ExecuteNonQuery(this IDbCommand command, params string[] statements)
+		public static int ExecuteNonQuery(this IDbCommand command, IEnumerable<string> statements)
 		{
-			statements = statements ?? new string[] { };
-			if (statements.Length == 0)
-				return command.ExecuteNonQuery();
-
 			return statements.Sum(statement =>
 			{
 				command.CommandText = statement;
