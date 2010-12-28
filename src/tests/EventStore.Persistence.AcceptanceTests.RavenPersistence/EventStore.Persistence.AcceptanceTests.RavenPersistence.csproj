@@ -65,16 +65,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Raven.Client.Lightweight">
+    <Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v3.5'">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+      <HintPath>..\..\..\lib\RavenDB\.NET 3.5\Raven.Client.Lightweight-3.5.dll</HintPath>
+    </Reference>
+    <Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v4.0'">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
       <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Raven.Client.Lightweight.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
