@@ -55,6 +55,10 @@
       <Project>{23A942C3-DE3A-4596-B012-1F56D46A5E2E}</Project>
       <Name>EventStore.Persistence.MongoPersistence</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\proj\EventStore.Serialization\EventStore.Serialization.csproj">
+      <Project>{A5BF4B86-26F6-418D-BE35-C6CC3A623D27}</Project>
+      <Name>EventStore.Serialization</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\proj\EventStore\EventStore.csproj">
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
       <Name>EventStore</Name>

@@ -17,7 +17,7 @@
         public long CommitSequence { get; set; }
         public Dictionary<string, object> Headers { get; set; }
         public List<EventMessage> Events { get; set; }
-        public object Snapshot { get; set; }
+        public byte[] Snapshot { get; set; }
 
         public bool Dispatched { get; set; }
     }

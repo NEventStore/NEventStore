@@ -3,6 +3,7 @@ namespace EventStore.Persistence.AcceptanceTests.MongoPersistence
     using System.Configuration;
     using Norm;
     using Persistence.MongoPersistence;
+    using Serialization;
 
     public class MongoPersistenceFactory : IPersistenceFactory
     {
@@ -17,7 +18,7 @@ namespace EventStore.Persistence.AcceptanceTests.MongoPersistence
 
             var mongo = Mongo.Create(connectionString);
 
-            return new MongoPersistenceEngine(mongo);
+            return new MongoPersistenceEngine(mongo,new BinarySerializer());
         }
     }
 }

@@ -55,9 +55,12 @@ namespace EventStore.Persistence.AcceptanceTests
 			persistence.Persist(newest);
 		};
 
-		Because of = () =>
-			persistence.AddSnapshot(streamId, head.StreamRevision, snapshotData);
+	    Because of = () =>
+	        {
+	            persistence.AddSnapshot(streamId, oldest.ToCommit().StreamRevision, snapshotData);
+	            persistence.AddSnapshot(streamId, head.StreamRevision, snapshotData);
 
+	        };
 		It should_start_reads_at_the_most_recent_commit = () =>
 			persistence.GetUntil(streamId, head.StreamRevision).First().CommitId.ShouldEqual(newest.CommitId);
 

@@ -4,17 +4,21 @@ namespace EventStore.Persistence.MongoPersistence
     using System.Collections.Generic;
     using System.Linq;
     using Norm;
+    using Norm.BSON;
     using Norm.Configuration;
     using Norm.Protocol.Messages;
+    using Serialization;
 
     public class MongoPersistenceEngine : IPersistStreams
     {
-        IMongo store;
+        readonly IMongo store;
+        readonly ISerialize serializer;
         bool disposed;
 
-        public MongoPersistenceEngine(IMongo store)
+        public MongoPersistenceEngine(IMongo store, ISerialize serializer)
         {
             this.store = store;
+            this.serializer = serializer;
         }
 
         public void Initialize()
@@ -34,7 +38,23 @@ namespace EventStore.Persistence.MongoPersistence
 
         public IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision)
         {
-            throw new NotImplementedException();
+            var collection = this.store.Database.GetCollection<MongoCommit>();
+            var snapshotCommit = collection.AsQueryable()
+                .Where(x => x.StreamId == streamId && x.StreamRevision <= maxRevision && x.Snapshot != null)
+                .OrderByDescending(o=>o.StreamRevision)
+                .Take(1)
+                .FirstOrDefault();
+
+            long snapshotRevision = 0;
+            
+            if(snapshotCommit!= null)
+                snapshotRevision= snapshotCommit.StreamRevision;
+
+            var results = collection.AsQueryable()
+                .Where(x => x.StreamId == streamId && x.StreamRevision >= snapshotRevision && x.StreamRevision <= maxRevision)
+                .ToArray();
+
+            return results.Select(mc => mc.ToCommit(serializer));
         }
 
         public IEnumerable<Commit> GetFrom(Guid streamId, long minRevision)
@@ -45,7 +65,7 @@ namespace EventStore.Persistence.MongoPersistence
                 var results = collection.AsQueryable()
                     .Where(x => x.StreamId == streamId && x.StreamRevision >= minRevision).ToArray();
 
-                return results.Select(mc => mc.ToCommit());
+                return results.Select(mc => mc.ToCommit(serializer));
             }
             catch (Exception e)
             {
@@ -55,7 +75,7 @@ namespace EventStore.Persistence.MongoPersistence
 
         public void Persist(CommitAttempt uncommitted)
         {
-            var commit = uncommitted.ToMongoCommit();
+            var commit = uncommitted.ToMongoCommit(serializer);
 
             try
             {
@@ -94,13 +114,13 @@ namespace EventStore.Persistence.MongoPersistence
             var results = collection.AsQueryable()
                 .Where(x => !x.Dispatched).ToArray();
 
-            return results.Select(mc => mc.ToCommit());
+            return results.Select(mc => mc.ToCommit(serializer));
         }
 
         public void MarkCommitAsDispatched(Commit commit)
         {
             store.Database.GetCollection<MongoCommit>()
-                .Update(commit.ToMongoCommit().ToMongoQuery(), u => u.SetValue(mc => mc.Dispatched, true));
+                .Update(commit.ToMongoCommit(serializer).ToMongoExpando(), u => u.SetValue(mc => mc.Dispatched, true));
         }
 
         public IEnumerable<StreamToSnapshot> GetStreamsToSnapshot(int maxThreshold)
@@ -108,7 +128,6 @@ namespace EventStore.Persistence.MongoPersistence
             var collection = store.Database.GetCollection<Stream>();
             var retval = collection.AsQueryable()
                 .Where(x => x.HeadRevision >= x.SnapshotRevision + maxThreshold).ToArray()
-                //todo: fix the name
                 .Select(stream => new StreamToSnapshot(stream.StreamId, stream.Name, stream.HeadRevision, stream.SnapshotRevision));
 
             return retval;
@@ -116,14 +135,13 @@ namespace EventStore.Persistence.MongoPersistence
 
         public void AddSnapshot(Guid streamId, long streamRevision, object snapshot)
         {
-            var commit = new MongoCommit
-                                     {
-                                         StreamId = streamId,
-                                         StreamRevision = streamRevision
-                                     }.ToMongoQuery();
+           var commit = new Expando();
+
+            commit["StreamId"] = streamId;
+            commit["StreamRevision"] = streamRevision;
 
             store.Database.GetCollection<MongoCommit>()
-                .Update(commit, u=>u.SetValue(mc=>mc.Snapshot,snapshot));
+                .Update(commit, u=>u.SetValue(mc=>mc.Snapshot, serializer.Serialize(snapshot)));
 
             var stream = new Stream { StreamId = streamId };
             store.Database.GetCollection<Stream>()
