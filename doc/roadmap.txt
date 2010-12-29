@@ -13,7 +13,7 @@
 	[DONE] SQLite (3 or later)
 	[DONE] PostgreSQL (8 or later)
 	[DONE] Microsoft SQL Compact Edition 3.5 (or later)
-	Firebird (ADO.NET driver)
+	[DONE] Firebird (ADO.NET driver)
 	Microsoft Access 2000 (or later)
 	Oracle (8 or later)
 	VistaDB
