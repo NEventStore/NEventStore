@@ -124,7 +124,7 @@ BEGIN TRANSACTION;
 CREATE TABLE Streams
 (
        StreamId uuid NOT NULL,
-       Name varchar(256) NOT NULL,
+       Name varchar(256) NOT NULL DEFAULT (''),
        HeadRevision bigint NOT NULL CHECK (HeadRevision &gt; 0),
        SnapshotRevision bigint NOT NULL CHECK (SnapshotRevision &gt;= 0) DEFAULT(0),
        CONSTRAINT PK_Streams PRIMARY KEY (StreamId)

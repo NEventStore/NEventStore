@@ -121,9 +121,9 @@
     <value>CREATE TABLE Streams
 (
        StreamId uniqueidentifier NOT NULL,
-       Name nvarchar(256) NOT NULL,
+       Name nvarchar(256) NOT NULL DEFAULT (''),
        HeadRevision bigint NOT NULL,
-       SnapshotRevision bigint NOT NULL default(0),
+       SnapshotRevision bigint NOT NULL DEFAULT (0),
        CONSTRAINT PK_Streams PRIMARY KEY (StreamId)
 );
 

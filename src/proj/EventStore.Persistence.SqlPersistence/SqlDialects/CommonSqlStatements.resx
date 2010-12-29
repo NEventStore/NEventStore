@@ -194,7 +194,7 @@ SELECT @StreamId, @CommitId, @StreamRevision, @CommitSequence, @Headers, @Payloa
 INSERT
   INTO Streams
      ( StreamId, Name, HeadRevision )
-SELECT @StreamId, COALESCE(@StreamName, ''), @StreamRevision
+SELECT @StreamId, @StreamName, @StreamRevision
 /*FROM DUAL*/
  WHERE @CommitSequence = 1
    AND NOT EXISTS

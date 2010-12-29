@@ -66,7 +66,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///CREATE TABLE IF NOT EXISTS Streams
         ///(
         ///       StreamId guid NOT NULL CHECK (StreamId != 0),
-        ///       Name nvarchar(256) NOT NULL,
+        ///       Name nvarchar(256) NOT NULL DEFAULT (&apos;&apos;),
         ///       HeadRevision bigint NOT NULL CHECK (HeadRevision &gt; 0),
         ///       SnapshotRevision bigint NOT NULL CHECK (SnapshotRevision &gt;= 0) DEFAULT(0),
         ///       CONSTRAINT PK_Streams PRIMARY KEY (StreamId)
@@ -76,7 +76,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///(
         ///       StreamId guid NOT NULL,
         ///       CommitId guid NOT NULL CHECK (CommitId != 0),
-        ///       StreamRevision bigint N [rest of string was truncated]&quot;;.
+        ///       StreamRevi [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {

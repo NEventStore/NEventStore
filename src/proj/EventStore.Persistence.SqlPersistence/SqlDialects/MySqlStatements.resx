@@ -124,9 +124,9 @@ START TRANSACTION;
 CREATE TABLE IF NOT EXISTS Streams
 (
        StreamId binary(16) NOT NULL CHECK (StreamId != 0),
-       Name nvarchar(256) NOT NULL,
+       Name nvarchar(256) NOT NULL DEFAULT '',
        HeadRevision bigint NOT NULL CHECK (HeadRevision &gt; 0),
-       SnapshotRevision bigint NOT NULL CHECK (SnapshotRevision &gt;= 0),
+       SnapshotRevision bigint NOT NULL DEFAULT 0 CHECK (SnapshotRevision &gt;= 0),
        CONSTRAINT PK_Streams PRIMARY KEY (StreamId)
 );
 
