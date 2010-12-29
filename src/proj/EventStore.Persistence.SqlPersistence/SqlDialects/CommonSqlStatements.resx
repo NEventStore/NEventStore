@@ -177,7 +177,7 @@ SELECT @StreamId, @CommitSequence
      ( SELECT *
          FROM Dispatch
         WHERE StreamId = @StreamId
-          AND CommitSequence = @CommitSequence);
+          AND CommitSequence = @CommitSequence );
 
 INSERT
   INTO Commits

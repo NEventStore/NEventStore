@@ -118,25 +118,33 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="InitializeStorage" xml:space="preserve">
-    <value>CREATE TABLE Streams
+    <value>CREATE TABLE Dual
 (
-       StreamId uniqueidentifier NOT NULL,
-       Name nvarchar(256) NOT NULL DEFAULT (''),
-       HeadRevision bigint NOT NULL,
-       SnapshotRevision bigint NOT NULL DEFAULT (0),
+       DualTableValue char(1) NOT NULL
+);
+INSERT
+  INTO Dual
+VALUES (' ');
+
+CREATE TABLE Streams
+(
+       StreamId guid NOT NULL,
+       Name varchar(255) NOT NULL,
+       HeadRevision long NOT NULL,
+       SnapshotRevision long NOT NULL,
        CONSTRAINT PK_Streams PRIMARY KEY (StreamId)
 );
 
 CREATE TABLE Commits
 (
-       StreamId uniqueidentifier NOT NULL,
-       CommitId uniqueidentifier NOT NULL,
-       StreamRevision bigint NOT NULL,
-       CommitSequence bigint NOT NULL,
-       CommitStamp datetime NOT NULL default(getdate()),
-       Headers image NULL,
-       Payload image NOT NULL,
-       Snapshot image NULL,
+       StreamId guid NOT NULL,
+       CommitId guid NOT NULL,
+       StreamRevision long NOT NULL,
+       CommitSequence long NOT NULL,
+       CommitStamp datetime NOT NULL,
+       Headers memo NULL,
+       Payload memo NOT NULL,
+       Snapshot memo NULL,
        CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)
 );
 CREATE UNIQUE INDEX IX_Commits ON Commits (StreamId, CommitId);
@@ -144,8 +152,8 @@ CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (StreamId, StreamRevision);
 
 CREATE TABLE Dispatch
 (
-       StreamId uniqueidentifier NOT NULL,
-       CommitSequence bigint NOT NULL,
+       StreamId guid NOT NULL,
+       CommitSequence long NOT NULL,
        CONSTRAINT PK_Dispatch PRIMARY KEY (StreamId, CommitSequence)
 );</value>
   </data>

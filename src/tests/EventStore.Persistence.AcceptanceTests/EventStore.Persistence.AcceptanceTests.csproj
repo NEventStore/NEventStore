@@ -53,6 +53,9 @@
     <Content Include="..\..\proj\CustomDictionary.xml">
       <Link>Properties\CustomDictionary.xml</Link>
     </Content>
+    <Content Include="EventStore2.mdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="EventStore2.sdf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
