@@ -15,17 +15,19 @@ Guided by a number strategic design decisions based upon the needs of applicatio
 the EventStore is able to liberate applications from the stringent requirements often imposed by
 infrastructure components.  Specifically, most CQRS-style applications read from a message queue
 and perform some processing.  When processing is complete, the application then commits the work
-to a database and publishes the completed work.  In most cases, this requires a two-phase commit
+to a database and publishes the completed work.  In almost all cases, this requires a two-phase commit
 managed by a distributed transaction coordinator (MS DTC in .NET) along with various security settings
 and ports available whereby such components can communicate.
 
 When using a two-phase commit in .NET, there are very few database drivers that support this scenario
 and even fewer message queues that support it as well.  In essence, if you want to implement a typical
 CQRS-style application, you're stuck with MSMQ and SQL Server using MS-DTC.  Granted, there are
-other choices, but the constraints imposed by a two-phase commit are burdensome.
+other choices, but the constraints imposed by a two-phase commit are burdensome.  This also
+creates additional issues when utilizing shared hosting or running on Mono as support in frameworks
+and drivers is either poor, buggy, or unavailable.
 
 The EventStore liberates application developers from this level of infrastructure awareness and
-concern by committing all work within a separate isolated atomic unit, but without using transactions.
+concern by committing all work within a separate isolated atomic unit--all without using transactions.
 Furthermore, it does this outside of any ambient transaction from a message queue or other
 persistence mechanisms.  In other words, application developers are free to use virtually any
 messaging queuing infrastructure, message bus (if at all), and storage engine.  Each will perform
