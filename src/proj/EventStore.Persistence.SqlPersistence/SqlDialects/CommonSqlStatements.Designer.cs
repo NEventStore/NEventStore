@@ -160,8 +160,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///
         ///INSERT
         ///  INTO Commits
-        ///     ( StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload )
-        ///SELECT @StreamId, @CommitId, @StreamRevision, @CommitSequence, @Headers, @Payload
+        ///     ( StreamId, CommitId, CommitSequence, StreamRevision, Headers, Payload )
+        ///SELECT @StreamId, @CommitId, @CommitSequence, @StreamRevision, @Headers, @Payload
         ////*FROM DUAL*/
         /// WHERE NOT EXISTS
         ///     ( SELECT *

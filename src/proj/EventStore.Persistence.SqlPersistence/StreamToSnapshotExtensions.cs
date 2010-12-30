@@ -14,9 +14,9 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			return new StreamToSnapshot(
 				record[StreamIdIndex].ToGuid(),
-				(string)record[StreamNameIndex],
-				(long)record[HeadRevisionIndex],
-				(long)record[SnapshotRevisionIndex]);
+				record[StreamNameIndex].ToString(),
+				record[HeadRevisionIndex].ToLong(),
+				record[SnapshotRevisionIndex].ToLong());
 		}
 	}
 }

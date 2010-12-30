@@ -17,6 +17,13 @@ namespace EventStore.Persistence.SqlPersistence
 			var bytes = value as byte[];
 			return bytes != null ? new Guid(bytes) : Guid.Empty;
 		}
+		public static long ToLong(this object value)
+		{
+			if (value is int)
+				return (int)value;
+
+			return (long)value;
+		}
 
 		public static void ForEach<T>(this IEnumerable<T> values, Action<T> callback)
 		{

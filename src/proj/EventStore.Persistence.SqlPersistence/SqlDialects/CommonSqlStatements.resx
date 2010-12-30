@@ -181,14 +181,14 @@ SELECT @StreamId, @CommitSequence
 
 INSERT
   INTO Commits
-     ( StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload )
-SELECT @StreamId, @CommitId, @StreamRevision, @CommitSequence, @Headers, @Payload
+     ( StreamId, CommitId, CommitSequence, StreamRevision, Headers, Payload )
+SELECT @StreamId, @CommitId, @CommitSequence, @StreamRevision, @Headers, @Payload
 /*FROM DUAL*/
  WHERE NOT EXISTS
      ( SELECT *
          FROM Commits
         WHERE StreamId = @StreamId
-          AND CommitId != @CommitId
+          AND CommitId &lt;&gt; @CommitId
           AND CommitSequence &gt;= @CommitSequence );
 
 INSERT
