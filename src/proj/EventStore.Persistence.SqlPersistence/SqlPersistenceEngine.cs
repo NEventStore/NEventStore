@@ -119,10 +119,10 @@ namespace EventStore.Persistence.SqlPersistence
 			using (new TransactionScope(TransactionScopeOption.Suppress))
 			using (var connection = this.factory.Open(streamId))
 			using (var transaction = this.dialect.OpenTransaction(connection))
+			using (var statement = this.dialect.BuildStatement(connection, transaction))
 			{
 				try
 				{
-					var statement = this.dialect.BuildStatement(connection, transaction);
 					execute(statement);
 
 					if (transaction != null)

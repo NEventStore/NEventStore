@@ -17,6 +17,16 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			this.transaction = transaction;
 		}
 
+		public void Dispose()
+		{
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		protected virtual void Dispose(bool disposing)
+		{
+			// no op
+		}
+
 		public virtual void AddParameter(string name, object value)
 		{
 			this.Parameters[name] = value;
