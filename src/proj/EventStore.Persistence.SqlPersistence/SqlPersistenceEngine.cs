@@ -33,7 +33,7 @@ namespace EventStore.Persistence.SqlPersistence
 		public virtual void Initialize()
 		{
 			this.Execute(Guid.Empty, cmd =>
-				cmd.ExecuteAndSuppressExceptions(this.dialect.InitializeStorage));
+				cmd.ExecuteAndSuppressExceptions(this.dialect.InitializeStorage, this.dialect));
 		}
 
 		public virtual IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision)
@@ -106,6 +106,7 @@ namespace EventStore.Persistence.SqlPersistence
 				cmd.CommandText = this.dialect.MarkCommitAsDispatched;
 				cmd.AddParameter(this.dialect.StreamId, commit.StreamId);
 				cmd.AddParameter(this.dialect.CommitSequence, commit.CommitSequence);
+				this.dialect.AmmendStatement(cmd);
 				cmd.ExecuteAndSuppressExceptions();
 			});
 		}
@@ -127,7 +128,7 @@ namespace EventStore.Persistence.SqlPersistence
 				cmd.AddParameter(this.dialect.StreamId, streamId);
 				cmd.AddParameter(this.dialect.StreamRevision, streamRevision);
 				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(snapshot));
-				cmd.ExecuteAndSuppressExceptions(this.dialect.AppendSnapshotToCommit);
+				cmd.ExecuteAndSuppressExceptions(this.dialect.AppendSnapshotToCommit, this.dialect);
 			});
 		}
 

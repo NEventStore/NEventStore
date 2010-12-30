@@ -30,13 +30,13 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public static int ExecuteAndSuppressExceptions(this IDbCommand command)
 		{
-			return command.ExecuteAndSuppressExceptions(new[] { command.CommandText });
+			return command.ExecuteAndSuppressExceptions(new[] { command.CommandText }, null);
 		}
-		public static int ExecuteAndSuppressExceptions(this IDbCommand command, IEnumerable<string> statements)
+		public static int ExecuteAndSuppressExceptions(this IDbCommand command, IEnumerable<string> statements, ISqlDialect dialect)
 		{
 			try
 			{
-				return command.ExecuteNonQuery(statements, null);
+				return command.ExecuteNonQuery(statements, dialect);
 			}
 			catch (Exception)
 			{

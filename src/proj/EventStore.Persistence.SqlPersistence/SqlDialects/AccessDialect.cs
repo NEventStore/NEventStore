@@ -10,7 +10,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		private const string ParameterPattern = "@[a-z0-9_]+";
 		private const string CoalescePattern = @"COALESCE\((?<param>.*?),(?<col>.*?)\)";
 		//private const string CoalesceReplace = @"iif(isnull(${param}), ${col}, ${param})";
-		private const string CoalesceReplace = @"${param}";
+		private const string CoalesceReplace = @"''";
 
 		public override IEnumerable<string> InitializeStorage
 		{
