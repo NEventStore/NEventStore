@@ -14,8 +14,9 @@
 	[DONE] PostgreSQL (8 or later)
 	[DONE] Microsoft SQL Compact Edition 3.5 (or later)
 	[DONE] Firebird (ADO.NET driver)
-	Microsoft Access 2000 (or later)
+	[DONE] Microsoft Access 2000 (or later)
 	Oracle (8 or later)
+	IBM DB2
 	VistaDB
 
 	(TODO: Create SqlPersistenceFactory such that the persistence adapter can be entirely self contained.)
