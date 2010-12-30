@@ -36,18 +36,22 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			try
 			{
-				return command.ExecuteNonQuery(statements);
+				return command.ExecuteNonQuery(statements, null);
 			}
 			catch (Exception)
 			{
 				return 0;
 			}
 		}
-		public static int ExecuteNonQuery(this IDbCommand command, IEnumerable<string> statements)
+		public static int ExecuteNonQuery(this IDbCommand command, IEnumerable<string> statements, ISqlDialect dialect)
 		{
 			return statements.Sum(statement =>
 			{
 				command.CommandText = statement;
+
+				if (dialect != null)
+					dialect.AmmendStatement(command);
+
 				return command.ExecuteNonQuery();
 			});
 		}

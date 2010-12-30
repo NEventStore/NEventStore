@@ -51,6 +51,7 @@ namespace EventStore.Persistence.SqlPersistence
 				query.CommandText = queryText;
 				query.AddParameter(this.dialect.StreamId, streamId);
 				query.AddParameter(this.dialect.StreamRevision, revision);
+				this.dialect.AmmendStatement(query);
 				return query.ExecuteQuery(x => x.GetCommit(this.serializer));
 			});
 		}
@@ -76,7 +77,7 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			try
 			{
-				var rowsAffected = command.ExecuteNonQuery(this.dialect.PersistCommitAttempt);
+				var rowsAffected = command.ExecuteNonQuery(this.dialect.PersistCommitAttempt, this.dialect);
 				if (rowsAffected == 0)
 					throw new ConcurrencyException();
 			}
@@ -94,6 +95,7 @@ namespace EventStore.Persistence.SqlPersistence
 			return this.Execute(Guid.Empty, query =>
 			{
 				query.CommandText = this.dialect.GetUndispatchedCommits;
+				this.dialect.AmmendStatement(query);
 				return query.ExecuteQuery(x => x.GetCommit(this.serializer));
 			});
 		}
@@ -114,6 +116,7 @@ namespace EventStore.Persistence.SqlPersistence
 			{
 				query.CommandText = this.dialect.GetStreamsRequiringSnaphots;
 				query.AddParameter(this.dialect.Threshold, maxThreshold);
+				this.dialect.AmmendStatement(query);
 				return query.ExecuteQuery(record => record.GetStreamToSnapshot());
 			});
 		}
