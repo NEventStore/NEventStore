@@ -1,12 +1,10 @@
 namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
-	using System.Collections.Generic;
-
 	public class PostgreSqlDialect : CommonSqlDialect
 	{
-		public override IEnumerable<string> InitializeStorage
+		public override string InitializeStorage
 		{
-			get { yield return PostgreSqlStatements.InitializeStorage; }
+			get { return PostgreSqlStatements.InitializeStorage; }
 		}
 	}
 }

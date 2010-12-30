@@ -1,21 +1,40 @@
 namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
-	using System.Collections.Generic;
-	using System.Linq;
+	using System;
+	using System.Data;
 
 	public class SqlCeDialect : CommonSqlDialect
 	{
-		public override IEnumerable<string> InitializeStorage
+		public override string InitializeStorage
 		{
-			get { return SqlCeStatements.InitializeStorage.SplitStatement(); }
+			get { return SqlCeStatements.InitializeStorage; }
 		}
-		public override IEnumerable<string> AppendSnapshotToCommit
+
+		public override IDbStatement BuildStatement(IDbConnection connection)
 		{
-			get { return base.AppendSnapshotToCommit.First().SplitStatement(); }
+			return new SqlCeDbStatement(connection);
 		}
-		public override IEnumerable<string> PersistCommitAttempt
+
+		private class SqlCeDbStatement : DelimitedDbStatement
 		{
-			get { return base.PersistCommitAttempt.First().SplitStatement(); }
+			public SqlCeDbStatement(IDbConnection connection)
+				: base(connection)
+			{
+			}
+
+			protected override void SetParameterValue(IDataParameter param, object value, DbType? type)
+			{
+				if (value is Guid)
+					base.SetParameterValue(param, value, DbType.Guid);
+				else if (value is long)
+					base.SetParameterValue(param, value, DbType.Int64);
+				else if (value is string)
+					base.SetParameterValue(param, value, DbType.String);
+				else if (value is byte[])
+					base.SetParameterValue(param, value, DbType.Binary);
+				else
+					base.SetParameterValue(param, value, null);
+			}
 		}
 	}
 }

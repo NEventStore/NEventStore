@@ -1,20 +1,37 @@
 namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
-	using System.Collections.Generic;
+	using System;
+	using System.Data;
 
 	public class MySqlDialect : CommonSqlDialect
 	{
-		public override IEnumerable<string> InitializeStorage
+		public override string InitializeStorage
 		{
-			get { yield return MySqlStatements.InitializeStorage; }
+			get { return MySqlStatements.InitializeStorage; }
 		}
-		public override IEnumerable<string> PersistCommitAttempt
+		public override string PersistCommitAttempt
 		{
-			get
+			get { return CommonSqlStatements.PersistCommitAttempt.Replace("/*FROM DUAL*/", "FROM DUAL"); }
+		}
+
+		public override IDbStatement BuildStatement(IDbConnection connection)
+		{
+			return new MySqlDbStatement(connection);
+		}
+
+		private class MySqlDbStatement : CommonDbStatement
+		{
+			public MySqlDbStatement(IDbConnection connection)
+				: base(connection)
 			{
-				yield return CommonSqlStatements.PersistCommitAttempt
-					.Replace("/*", string.Empty)
-					.Replace("*/", string.Empty);
+			}
+
+			public override void AddParameter(string name, object value)
+			{
+				if (value is Guid)
+					value = ((Guid)value).ToByteArray();
+
+				base.AddParameter(name, value);
 			}
 		}
 	}

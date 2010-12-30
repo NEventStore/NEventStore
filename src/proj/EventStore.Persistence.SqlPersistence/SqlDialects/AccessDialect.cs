@@ -9,66 +9,47 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	{
 		private const string ParameterPattern = "@[a-z0-9_]+";
 		private const string CoalescePattern = @"COALESCE\((?<param>.*?),(?<col>.*?)\)";
-		//private const string CoalesceReplace = @"iif(isnull(${param}), ${col}, ${param})";
 		private const string CoalesceReplace = @"''";
 
-		public override IEnumerable<string> InitializeStorage
+		public override string InitializeStorage
 		{
-			get { return AccessStatements.InitializeStorage.SplitStatement(); }
+			get { return AccessStatements.InitializeStorage; }
 		}
-		public override IEnumerable<string> AppendSnapshotToCommit
+		public override string PersistCommitAttempt
 		{
-			get { return base.AppendSnapshotToCommit.First().SplitStatement(); }
-		}
-		public override IEnumerable<string> PersistCommitAttempt
-		{
-			get { return base.PersistCommitAttempt.First().SplitStatement().Select(ToAccessStatement); }
-		}
-		private static string ToAccessStatement(string statement)
-		{
-			statement = statement.Replace("/*FROM DUAL*/", "FROM DUAL");
-			return Regex.Replace(statement, CoalescePattern, CoalesceReplace);
+			get
+			{
+				var statement = base.PersistCommitAttempt.Replace("/*FROM DUAL*/", "FROM DUAL");
+				return Regex.Replace(statement, CoalescePattern, CoalesceReplace);
+			}
 		}
 
-		public override void AmmendStatement(IDbCommand command)
+		public override IDbStatement BuildStatement(IDbConnection connection)
 		{
-			var parameters = GetParameters(command);
-
-			AddParametersInStatementOrder(command, parameters);
-			AddAllParameters(command, parameters);
+			return new AccessDbStatement(connection);
 		}
-		private static IDictionary<string, object> GetParameters(IDbCommand command)
+
+		private class AccessDbStatement : DelimitedDbStatement
 		{
-			var parameters = new Dictionary<string, object>(command.Parameters.Count);
+			public AccessDbStatement(IDbConnection connection)
+				: base(connection)
+			{
+			}
 
-			foreach (IDataParameter parameter in command.Parameters)
-				parameters[parameter.ParameterName] = parameter.Value;
+			protected override void BuildParameters(IDbCommand command)
+			{
+				// parameter names are resolved based upon their order, not name
+				foreach (var name in DiscoverParameters(command.CommandText))
+					this.BuildParameter(command, name, this.Parameters[name]);
+			}
+			private static IEnumerable<string> DiscoverParameters(string statement)
+			{
+				if (string.IsNullOrEmpty(statement))
+					return new string[] { };
 
-			return parameters;
-		}
-		private static void AddParametersInStatementOrder(
-			IDbCommand command, IDictionary<string, object> parameters)
-		{
-			command.Parameters.Clear();
-
-			var parameterInStatement = GetParameterNames(command.CommandText);
-
-			foreach (var parameterName in parameterInStatement)
-				command.AddParameter(parameterName, parameters[parameterName]);
-		}
-		private static IEnumerable<string> GetParameterNames(string statement)
-		{
-			if (string.IsNullOrEmpty(statement))
-				return new string[] { };
-
-			var matches = Regex.Matches(statement, ParameterPattern, RegexOptions.IgnoreCase);
-			return from Match match in matches select match.Value; // non-unique
-		}
-		private static void AddAllParameters(
-			IDbCommand command, IEnumerable<KeyValuePair<string, object>> parameters)
-		{
-			foreach (var parameter in parameters)
-				command.AddParameter(parameter.Key, parameter.Value);
+				var matches = Regex.Matches(statement, ParameterPattern, RegexOptions.IgnoreCase);
+				return from Match match in matches select match.Value; // non-unique
+			}
 		}
 	}
 }
