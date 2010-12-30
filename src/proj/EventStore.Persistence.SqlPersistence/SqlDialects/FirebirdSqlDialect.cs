@@ -1,5 +1,7 @@
 namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
+	using System.Data;
+
 	public class FirebirdSqlDialect : CommonSqlDialect
 	{
 		public override string InitializeStorage
@@ -13,6 +15,19 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		public override string PersistCommitAttempt
 		{
 			get { return base.PersistCommitAttempt.Replace("/*FROM DUAL*/", "FROM rdb$database"); }
+		}
+
+		public override IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction)
+		{
+			return new FirebirdDbStatement(connection, transaction);
+		}
+
+		private class FirebirdDbStatement : DelimitedDbStatement
+		{
+			public FirebirdDbStatement(IDbConnection connection, IDbTransaction transaction)
+				: base(connection, transaction)
+			{
+			}
 		}
 	}
 }

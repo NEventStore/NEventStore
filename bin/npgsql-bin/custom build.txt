@@ -1,6 +1,0 @@
-The binaries found in this directory are not official builds of Npgsql.
-
-They are versions that have been modified slightly (according to the guidance of the Npgsql author) to work around an issue we discovered:
-http://pgfoundry.org/tracker/index.php?func=detail&aid=1010965&group_id=1000140&atid=590
-
-When the bug is fixed, most likely in January 2011, we will update our binaries.
