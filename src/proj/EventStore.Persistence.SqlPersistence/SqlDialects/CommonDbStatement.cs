@@ -8,11 +8,13 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	{
 		protected IDictionary<string, object> Parameters { get; private set; }
 		private readonly IDbConnection connection;
+		private readonly IDbTransaction transaction;
 
-		public CommonDbStatement(IDbConnection connection)
+		public CommonDbStatement(IDbConnection connection, IDbTransaction transaction)
 		{
-			this.connection = connection;
 			this.Parameters = new Dictionary<string, object>();
+			this.connection = connection;
+			this.transaction = transaction;
 		}
 
 		public virtual void AddParameter(string name, object value)
@@ -74,6 +76,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		private IDbCommand BuildCommand(string statement)
 		{
 			var command = this.connection.CreateCommand();
+			command.Transaction = this.transaction;
 			command.CommandText = statement;
 
 			this.BuildParameters(command);

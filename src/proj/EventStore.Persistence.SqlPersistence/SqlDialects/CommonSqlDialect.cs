@@ -68,9 +68,13 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			get { return "@Threshold"; }
 		}
 
-		public virtual IDbStatement BuildStatement(IDbConnection connection)
+		public virtual IDbTransaction OpenTransaction(IDbConnection connection)
 		{
-			return new CommonDbStatement(connection);
+			return null;
+		}
+		public virtual IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction)
+		{
+			return new CommonDbStatement(connection, transaction);
 		}
 	}
 }

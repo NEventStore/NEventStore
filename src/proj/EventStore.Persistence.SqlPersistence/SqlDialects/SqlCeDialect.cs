@@ -10,15 +10,19 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			get { return SqlCeStatements.InitializeStorage; }
 		}
 
-		public override IDbStatement BuildStatement(IDbConnection connection)
+		public override IDbTransaction OpenTransaction(IDbConnection connection)
 		{
-			return new SqlCeDbStatement(connection);
+			return connection.BeginTransaction(IsolationLevel.ReadCommitted);
+		}
+		public override IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction)
+		{
+			return new SqlCeDbStatement(connection, transaction);
 		}
 
 		private class SqlCeDbStatement : DelimitedDbStatement
 		{
-			public SqlCeDbStatement(IDbConnection connection)
-				: base(connection)
+			public SqlCeDbStatement(IDbConnection connection, IDbTransaction transaction)
+				: base(connection, transaction)
 			{
 			}
 

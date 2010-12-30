@@ -9,8 +9,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	{
 		private const string Delimiter = ";";
 
-		public DelimitedDbStatement(IDbConnection connection)
-			: base(connection)
+		public DelimitedDbStatement(IDbConnection connection, IDbTransaction transaction)
+			: base(connection, transaction)
 		{
 		}
 

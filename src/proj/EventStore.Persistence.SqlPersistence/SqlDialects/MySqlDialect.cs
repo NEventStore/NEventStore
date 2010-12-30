@@ -14,15 +14,15 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			get { return CommonSqlStatements.PersistCommitAttempt.Replace("/*FROM DUAL*/", "FROM DUAL"); }
 		}
 
-		public override IDbStatement BuildStatement(IDbConnection connection)
+		public override IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction)
 		{
-			return new MySqlDbStatement(connection);
+			return new MySqlDbStatement(connection, transaction);
 		}
 
 		private class MySqlDbStatement : CommonDbStatement
 		{
-			public MySqlDbStatement(IDbConnection connection)
-				: base(connection)
+			public MySqlDbStatement(IDbConnection connection, IDbTransaction transaction)
+				: base(connection, transaction)
 			{
 			}
 

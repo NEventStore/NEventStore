@@ -118,21 +118,21 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			using (new TransactionScope(TransactionScopeOption.Suppress))
 			using (var connection = this.factory.Open(streamId))
+			using (var transaction = this.dialect.OpenTransaction(connection))
 			{
 				try
 				{
-					execute(this.dialect.BuildStatement(connection));
-				}
-				catch (ConcurrencyException)
-				{
-					throw;
-				}
-				catch (DuplicateCommitException)
-				{
-					throw;
+					var statement = this.dialect.BuildStatement(connection, transaction);
+					execute(statement);
+
+					if (transaction != null)
+						transaction.Commit();
 				}
 				catch (Exception e)
 				{
+					if (e is ConcurrencyException || e is DuplicateCommitException)
+						throw;
+
 					throw new PersistenceEngineException(e.Message, e);
 				}
 			}

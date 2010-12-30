@@ -9,7 +9,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	{
 		private const string ParameterPattern = "@[a-z0-9_]+";
 		private const string CoalescePattern = @"COALESCE\((?<param>.*?),(?<col>.*?)\)";
-		private const string CoalesceReplace = @"''";
+		private const string CoalesceReplace = @"''"; // TODO: do coalesce here when building the statement
 
 		public override string InitializeStorage
 		{
@@ -24,15 +24,19 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			}
 		}
 
-		public override IDbStatement BuildStatement(IDbConnection connection)
+		public override IDbTransaction OpenTransaction(IDbConnection connection)
 		{
-			return new AccessDbStatement(connection);
+			return connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+		}
+		public override IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction)
+		{
+			return new AccessDbStatement(connection, transaction);
 		}
 
 		private class AccessDbStatement : DelimitedDbStatement
 		{
-			public AccessDbStatement(IDbConnection connection)
-				: base(connection)
+			public AccessDbStatement(IDbConnection connection, IDbTransaction transaction)
+				: base(connection, transaction)
 			{
 			}
 
