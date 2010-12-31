@@ -10,6 +10,7 @@ namespace EventStore.Persistence.RavenPersistence
 	public class RavenPersistenceEngine : IPersistStreams
 	{
 		private const string ToDispatch = "ToDispatch";
+		private const string StreamName = "StreamName";
 		private readonly IDocumentStore store;
 		private readonly IInitializeRaven initializer;
 		private bool disposed;
@@ -73,7 +74,11 @@ namespace EventStore.Persistence.RavenPersistence
 			using (var session = this.store.OpenSession())
 			{
 				session.Advanced.UseOptimisticConcurrency = true;
-				session.Advanced.OnEntityConverted += (instance, doc, metadata) => doc.Add(ToDispatch, true);
+				session.Advanced.OnEntityConverted += (instance, doc, metadata) =>
+				{
+					doc.Add(ToDispatch, true);
+					doc.Add(StreamName, uncommitted.StreamName);
+				};
 
 				session.Store(commit);
 
