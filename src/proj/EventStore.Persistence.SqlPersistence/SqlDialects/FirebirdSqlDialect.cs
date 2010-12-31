@@ -19,7 +19,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		public override string AppendSnapshotToCommit
 		{
 			get { return base.AppendSnapshotToCommit.Replace("Snapshot ", "\"Snapshot\" "); }
-
 		}
 
 		public override IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction)
