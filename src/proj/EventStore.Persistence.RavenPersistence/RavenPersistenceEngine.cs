@@ -9,6 +9,7 @@ namespace EventStore.Persistence.RavenPersistence
 
 	public class RavenPersistenceEngine : IPersistStreams
 	{
+		private const string Snapshot = "Snapshot";
 		private const string ToDispatch = "ToDispatch";
 		private const string StreamName = "StreamName";
 		private readonly IDocumentStore store;
@@ -133,6 +134,7 @@ namespace EventStore.Persistence.RavenPersistence
 		public virtual IEnumerable<StreamToSnapshot> GetStreamsToSnapshot(int maxThreshold)
 		{
 			using (new TransactionScope(TransactionScopeOption.Suppress))
+			using (var session = this.store.OpenSession())
 			{
 				return null;
 			}
@@ -140,8 +142,16 @@ namespace EventStore.Persistence.RavenPersistence
 		public virtual void AddSnapshot(Guid streamId, long streamRevision, object snapshot)
 		{
 			using (new TransactionScope(TransactionScopeOption.Suppress))
+			using (var session = this.store.OpenSession())
 			{
-				// update commit with a specific snapshot
+				var commit = session.Query<RavenCommit>()
+					.FirstOrDefault(x => x.StreamId == streamId && x.StreamRevision == streamRevision);
+
+				if (commit == null)
+					return;
+
+				commit.Snapshot = snapshot; // refactor to use patch
+				session.SaveChanges();
 			}
 		}
 	}

@@ -7,7 +7,7 @@ namespace EventStore.Persistence.RavenPersistence
 
 	internal static class RavenExtensions
 	{
-		public static PatchCommandData RemoveProperty(this RavenCommit commit, string propertyName)
+		public static PatchCommandData RemoveProperty(this RavenCommit commit, string name)
 		{
 			return new PatchCommandData
 			{
@@ -17,7 +17,7 @@ namespace EventStore.Persistence.RavenPersistence
 					new PatchRequest
 					{
 						Type = PatchCommandType.Unset,
-						Name = propertyName,
+						Name = name,
 					}
 				}
 			};
