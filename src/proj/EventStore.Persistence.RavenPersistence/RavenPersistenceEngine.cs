@@ -9,12 +9,12 @@ namespace EventStore.Persistence.RavenPersistence
 
 	public class RavenPersistenceEngine : IPersistStreams
 	{
+		private const string ToDispatch = "ToDispatch";
 		private readonly IDocumentStore store;
 		private readonly IInitializeRaven initializer;
 		private bool disposed;
 
-		public RavenPersistenceEngine(
-			IDocumentStore store, IInitializeRaven initializer)
+		public RavenPersistenceEngine(IDocumentStore store, IInitializeRaven initializer)
 		{
 			this.store = store;
 			this.initializer = initializer;
@@ -73,6 +73,8 @@ namespace EventStore.Persistence.RavenPersistence
 			using (var session = this.store.OpenSession())
 			{
 				session.Advanced.UseOptimisticConcurrency = true;
+				session.Advanced.OnEntityConverted += (instance, doc, metadata) => doc.Add(ToDispatch, true);
+
 				session.Store(commit);
 
 				try
@@ -101,8 +103,9 @@ namespace EventStore.Persistence.RavenPersistence
 			{
 				try
 				{
-					// TODO
-					var commits = session.Query<RavenCommit>().ToArray();
+					var commits = session.Advanced.LuceneQuery<RavenCommit>()
+						.WhereContains(ToDispatch, true).ToList();
+
 					return commits.Select(x => x.ToCommit());
 				}
 				catch (Exception e)
@@ -116,7 +119,7 @@ namespace EventStore.Persistence.RavenPersistence
 			using (new TransactionScope(TransactionScopeOption.Suppress))
 			using (var session = this.store.OpenSession())
 			{
-				var patch = commit.ToRavenCommit().RemoveUndispatchedProperty();
+				var patch = commit.ToRavenCommit().RemoveProperty(ToDispatch);
 				session.Advanced.DatabaseCommands.Batch(new[] { patch });
 				session.SaveChanges();
 			}

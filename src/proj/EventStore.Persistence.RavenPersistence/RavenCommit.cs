@@ -3,7 +3,7 @@ namespace EventStore.Persistence.RavenPersistence
 	using System;
 	using System.Collections.Generic;
 
-	public class RavenCommit
+	internal class RavenCommit
 	{
 		private const string IdFormat = "{0}.{1}";
 
