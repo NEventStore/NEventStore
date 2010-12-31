@@ -16,6 +16,11 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return base.PersistCommitAttempt.Replace("/*FROM DUAL*/", "FROM rdb$database"); }
 		}
+		public override string AppendSnapshotToCommit
+		{
+			get { return base.AppendSnapshotToCommit.Replace("Snapshot ", "\"Snapshot\" "); }
+
+		}
 
 		public override IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction)
 		{
