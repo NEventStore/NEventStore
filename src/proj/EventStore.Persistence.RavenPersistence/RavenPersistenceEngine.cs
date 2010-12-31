@@ -80,7 +80,8 @@ namespace EventStore.Persistence.RavenPersistence
 						uncommitted.StreamId, uncommitted.StreamName, uncommitted.StreamRevision, 0));
 				else
 				{
-					
+					var patch = commit.StreamId.UpdateStream(uncommitted.StreamName, uncommitted.StreamRevision);
+					session.Advanced.DatabaseCommands.Batch(new[] { patch });
 				}
 
 				session.Store(commit);
@@ -146,11 +147,16 @@ namespace EventStore.Persistence.RavenPersistence
 			using (new TransactionScope(TransactionScopeOption.Suppress))
 			using (var session = this.store.OpenSession())
 			{
+				session.Advanced.UseOptimisticConcurrency = false;
+
 				var commit = session.Query<RavenCommit>()
 					.FirstOrDefault(x => x.StreamId == streamId && x.StreamRevision == streamRevision);
 
 				if (commit == null)
 					return;
+
+				var patch = commit.StreamId.UpdateStream(streamRevision);
+				session.Advanced.DatabaseCommands.Batch(new[] { patch });
 
 				commit.Snapshot = snapshot; // refactor to use patch
 				session.SaveChanges();
