@@ -22,7 +22,7 @@ namespace EventStore.Persistence.AcceptanceTests
 			persistence.GetUndispatchedCommits().FirstOrDefault(x => x.CommitId == attempt.CommitId).ShouldNotBeNull();
 
 		It should_increment_the_head_revision_of_the_stream = () =>
-			persistence.GetStreamsToSnapshot(1).FirstOrDefault(x => x.StreamId == streamId).ShouldNotBeNull();
+			persistence.GetStreamsToSnapshot(1).First(x => x.StreamId == streamId).HeadRevision.ShouldEqual(attempt.StreamRevision);
 	}
 
 	[Subject("Persistence")]
@@ -43,6 +43,7 @@ namespace EventStore.Persistence.AcceptanceTests
 	[Subject("Persistence")]
 	public class when_a_snapshot_has_been_added_to_the_most_recent_commit : using_the_persistence_engine
 	{
+		const string SnapshotData = "snapshot";
 		static readonly CommitAttempt oldest = streamId.BuildAttempt();
 		static readonly CommitAttempt oldest2 = oldest.BuildNextAttempt();
 		static readonly CommitAttempt newest = oldest2.BuildNextAttempt();
@@ -56,13 +57,16 @@ namespace EventStore.Persistence.AcceptanceTests
 		};
 
 		Because of = () =>
-			persistence.AddSnapshot(streamId, head.StreamRevision, "snapshot");
+			persistence.AddSnapshot(streamId, head.StreamRevision, SnapshotData);
 
 		It should_start_reads_at_the_most_recent_commit = () =>
 			persistence.GetUntil(streamId, head.StreamRevision).First().CommitId.ShouldEqual(newest.CommitId);
 
+		It should_set_the_snapshot_on_the_commit = () =>
+			persistence.GetUntil(streamId, head.StreamRevision).First().Snapshot.ShouldEqual(SnapshotData);
+
 		It should_no_longer_find_it_in_the_set_of_streams_to_be_snapshot = () =>
-			persistence.GetStreamsToSnapshot(1).Where(x => x.StreamId == streamId).ShouldNotContain(streamId);
+			persistence.GetStreamsToSnapshot(1).Any(x => x.StreamId == streamId).ShouldBeFalse();
 	}
 
 	[Subject("Persistence")]

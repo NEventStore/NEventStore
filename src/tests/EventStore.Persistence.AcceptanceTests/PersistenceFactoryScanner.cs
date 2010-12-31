@@ -22,9 +22,9 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		private static IEnumerable<string> GetAssemblyFiles()
 		{
-			var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
-			return Directory.GetFiles(directory, "*.dll");
+			return Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll");
 		}
+
 		private static IEnumerable<Type> GetTypes(string filename)
 		{
 			try
