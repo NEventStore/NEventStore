@@ -68,7 +68,7 @@ namespace EventStore.Persistence
 			this.inner.MarkCommitAsDispatched(commit);
 		}
 
-		public IEnumerable<StreamToSnapshot> GetStreamsToSnapshot(int maxThreshold)
+		public IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
 		{
 			return this.inner.GetStreamsToSnapshot(maxThreshold);
 		}

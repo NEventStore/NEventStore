@@ -3,18 +3,18 @@ namespace EventStore.Persistence
 	using System;
 
 	/// <summary>
-	/// Indicates a stream where the last snapshot has exceeded the allowable threshold.
+	/// Indicates the most recent information representing the head of a given stream.
 	/// </summary>
-	public class StreamToSnapshot
+	public class StreamHead
 	{
 		/// <summary>
-		/// Initializes a new instance of the StreamToSnapshot class.
+		/// Initializes a new instance of the StreamHead class.
 		/// </summary>
 		/// <param name="streamId">The value which uniquely identifies the stream where the last snapshot exceeds the allowed threshold.</param>
 		/// <param name="streamName">The name of the stream.</param>
 		/// <param name="headRevision">The value which indicates the revision, length, or number of events committed to the stream.</param>
 		/// <param name="snapshotRevision">The value which indicates the revision at which the last snapshot was taken.</param>
-		public StreamToSnapshot(Guid streamId, string streamName, long headRevision, long snapshotRevision)
+		public StreamHead(Guid streamId, string streamName, long headRevision, long snapshotRevision)
 		{
 			this.StreamId = streamId;
 			this.StreamName = streamName;

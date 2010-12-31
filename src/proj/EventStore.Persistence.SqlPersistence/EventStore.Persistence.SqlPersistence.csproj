@@ -113,7 +113,7 @@
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="SqlPersistenceEngine.cs" />
-    <Compile Include="StreamToSnapshotExtensions.cs" />
+    <Compile Include="StreamHeadExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\CustomDictionary.xml">

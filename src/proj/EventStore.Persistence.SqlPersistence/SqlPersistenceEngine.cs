@@ -88,7 +88,7 @@ namespace EventStore.Persistence.SqlPersistence
 			});
 		}
 
-		public virtual IEnumerable<StreamToSnapshot> GetStreamsToSnapshot(int maxThreshold)
+		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
 		{
 			return this.Execute(Guid.Empty, query =>
 			{
