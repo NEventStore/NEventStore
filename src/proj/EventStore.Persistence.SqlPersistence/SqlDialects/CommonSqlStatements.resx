@@ -139,6 +139,7 @@ UPDATE Streams
    AND M.StreamRevision &lt;= @StreamRevision
    AND M.Snapshot IS NOT NULL
  ORDER BY C.CommitSequence;</value>
+    <comment>This statement works for all implemented SQL dialects.  Even though it looks ugly and could be re-written more elegantly, it's a more compatible statement (unfortunately).</comment>
   </data>
   <data name="GetCommitsFromStartingRevision" xml:space="preserve">
     <value>SELECT StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload
