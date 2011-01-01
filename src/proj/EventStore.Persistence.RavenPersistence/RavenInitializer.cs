@@ -20,16 +20,11 @@ namespace EventStore.Persistence.RavenPersistence
 		}
 		private static void TryInitialize(IDocumentStore store)
 		{
-			// TODO: define conventions
-			// TODO: create indexes
-			AssignDocumentKeyGenerator(store);
-			store.Initialize();
-		}
-		private static void AssignDocumentKeyGenerator(IDocumentStore store)
-		{
 			var generator = store.Conventions.DocumentKeyGenerator;
 			store.Conventions.DocumentKeyGenerator = entity =>
 				AssignIdentity(entity as StreamHead) ?? generator(entity);
+
+			store.Initialize();
 		}
 		private static string AssignIdentity(StreamHead stream)
 		{

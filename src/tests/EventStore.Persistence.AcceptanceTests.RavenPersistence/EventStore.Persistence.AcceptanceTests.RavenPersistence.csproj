@@ -73,6 +73,7 @@
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
       <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Raven.Client.Lightweight.dll</HintPath>
     </Reference>
+    <Reference Include="System.configuration" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
