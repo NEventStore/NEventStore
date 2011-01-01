@@ -139,7 +139,12 @@ namespace EventStore.Persistence.RavenPersistence
 			using (new TransactionScope(TransactionScopeOption.Suppress))
 			using (var session = this.store.OpenSession())
 			{
-				return null;
+				// TODO: paging
+				var streams = session.Query<StreamHead>()
+					.Where(x => x.HeadRevision > x.SnapshotRevision)
+					.ToArray();
+
+				return streams.Where(x => x.HeadRevision >= x.SnapshotRevision + 1);
 			}
 		}
 		public virtual void AddSnapshot(Guid streamId, long streamRevision, object snapshot)
@@ -158,7 +163,7 @@ namespace EventStore.Persistence.RavenPersistence
 				var patch = commit.StreamId.UpdateStream(streamRevision);
 				session.Advanced.DatabaseCommands.Batch(new[] { patch });
 
-				commit.Snapshot = snapshot; // refactor to use patch
+				commit.Snapshot = snapshot; // TODO: refactor to use patch
 				session.SaveChanges();
 			}
 		}
