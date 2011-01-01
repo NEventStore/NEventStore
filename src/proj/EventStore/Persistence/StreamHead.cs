@@ -15,11 +15,15 @@ namespace EventStore.Persistence
 		/// <param name="headRevision">The value which indicates the revision, length, or number of events committed to the stream.</param>
 		/// <param name="snapshotRevision">The value which indicates the revision at which the last snapshot was taken.</param>
 		public StreamHead(Guid streamId, string streamName, long headRevision, long snapshotRevision)
+			: this()
 		{
 			this.StreamId = streamId;
 			this.StreamName = streamName;
 			this.HeadRevision = headRevision;
 			this.SnapshotRevision = snapshotRevision;
+		}
+		protected StreamHead()
+		{
 		}
 
 		/// <summary>

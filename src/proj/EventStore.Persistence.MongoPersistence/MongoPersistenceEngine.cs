@@ -39,19 +39,18 @@ namespace EventStore.Persistence.MongoPersistence
 		{
 			MongoConfiguration.Initialize(c => c.For<StreamHead>(stream => stream.IdIs(i => i.StreamId)));
 
-			this.store.Database.GetCollection<MongoCommit>().CreateIndex(
-				mc => mc.Dispatched, "Dispatched_Index", false, IndexOption.Ascending);
+			this.store.Database.GetCollection<MongoCommit>()
+				.CreateIndex(mc => mc.Dispatched, "Dispatched_Index", false, IndexOption.Ascending);
 
-			this.store.Database.GetCollection<MongoCommit>().CreateIndex(
-				mc => new { mc.StreamId, mc.StreamRevision }, "GetFrom_Index", false, IndexOption.Ascending);
+			this.store.Database.GetCollection<MongoCommit>()
+				.CreateIndex(mc => new { mc.StreamId, mc.StreamRevision }, "GetFrom_Index", false, IndexOption.Ascending);
 		}
 
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, long minRevision)
 		{
 			try
 			{
-				var collection = this.store.Database.GetCollection<MongoCommit>();
-				return collection.AsQueryable()
+				return this.store.Database.GetCollection<MongoCommit>().AsQueryable()
 					.Where(x => x.StreamId == streamId && x.StreamRevision >= minRevision).ToArray()
 					.Select(mc => mc.ToCommit(this.serializer));
 			}
@@ -97,6 +96,7 @@ namespace EventStore.Persistence.MongoPersistence
 				throw new DuplicateCommitException();
 			}
 
+			// TODO: this could be done on a completely separate thread
 			this.store.Database.GetCollection<StreamHead>()
 				.Save(new StreamHead(commit.StreamId, null, commit.StreamRevision, 0));
 		}
@@ -109,8 +109,9 @@ namespace EventStore.Persistence.MongoPersistence
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
+			var expando = commit.ToMongoCommit(this.serializer).ToMongoExpando();
 			this.store.Database.GetCollection<MongoCommit>()
-				.Update(commit.ToMongoCommit(this.serializer).ToMongoExpando(), u => u.SetValue(mc => mc.Dispatched, true));
+				.Update(expando, u => u.SetValue(mc => mc.Dispatched, true));
 		}
 
 		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
@@ -122,10 +123,8 @@ namespace EventStore.Persistence.MongoPersistence
 		public virtual void AddSnapshot(Guid streamId, long streamRevision, object snapshot)
 		{
 			var commit = new Expando();
-
 			commit["StreamId"] = streamId;
 			commit["StreamRevision"] = streamRevision;
-
 			this.store.Database.GetCollection<MongoCommit>()
 				.Update(commit, u => u.SetValue(mc => mc.Snapshot, this.serializer.Serialize(snapshot)));
 
