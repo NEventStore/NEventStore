@@ -1,6 +1,7 @@
 @ECHO OFF
 SETLOCAL
 
+ECHO === RDBMS ===
 CALL :run_test MsSqlPersistence localhost 0 EventStore2 "" ""
 CALL :run_test SqlitePersistence localhost 0 EventStore2 "" ""
 CALL :run_test SqlCePersistence localhost 0 EventStore2 "" ""
@@ -8,6 +9,9 @@ CALL :run_test AccessPersistence localhost 0 EventStore2 "" ""
 CALL :run_test MySqlPersistence localhost 0 EventStore2 root ""
 CALL :run_test PostgreSqlPersistence localhost 0 EventStore2 postgres ""
 CALL :run_test FirebirdPersistence localhost 0 /var/lib/firebird/data/EventStore2.fdb SYSDBA masterkey
+
+ECHO === Document DBs ===
+CALL :run_test MongoPersistence localhost 0 EventStore2 "" ""
 
 ENDLOCAL
 GOTO :eof 
