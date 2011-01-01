@@ -22,6 +22,10 @@ namespace EventStore.Persistence
 			this.HeadRevision = headRevision;
 			this.SnapshotRevision = snapshotRevision;
 		}
+
+		/// <summary>
+		/// Initializes a new instance of the StreamHead class.
+		/// </summary>
 		protected StreamHead()
 		{
 		}
