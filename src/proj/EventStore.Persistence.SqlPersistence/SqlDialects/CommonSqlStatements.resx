@@ -127,7 +127,7 @@ UPDATE Streams
    SET SnapshotRevision = @StreamRevision
  WHERE StreamId = @StreamId
    AND @StreamRevision &gt; SnapshotRevision
-   AND @StreamRevision &lt; HeadRevision;</value>
+   AND @StreamRevision &lt;= HeadRevision;</value>
   </data>
   <data name="GetCommitsFromSnapshotUntilRevision" xml:space="preserve">
     <value>SELECT C.StreamId, C.CommitId, C.StreamRevision, C.CommitSequence, C.Headers, C.Payload, C.Snapshot

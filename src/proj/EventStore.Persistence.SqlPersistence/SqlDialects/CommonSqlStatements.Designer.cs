@@ -70,7 +70,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///   SET SnapshotRevision = @StreamRevision
         /// WHERE StreamId = @StreamId
         ///   AND @StreamRevision &gt; SnapshotRevision
-        ///   AND @StreamRevision &lt; HeadRevision;.
+        ///   AND @StreamRevision &lt;= HeadRevision;.
         /// </summary>
         internal static string AppendSnapshotToCommit {
             get {
