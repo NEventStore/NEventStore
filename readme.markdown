@@ -37,59 +37,59 @@ enlisting any resources (other than a message queue) in some form of a transacti
 ## Supported Storage Engines
 
 ### Relational Databases
-[Complete] Microsoft SQL Server 2000 (or later).
-MySQL 5.0 (or later).
-* [Complete] InnoDB.
-* [Complete] NDB/MySQL Cluster.
-* [Complete] Drizzle.
-* [Complete] MariaDB.
-* [Complete] XtraDB.
-* [Untested] MyISAM.
-* [Untested] BerkleyDB.
-[Complete] PostgreSQL 8.0 (or later).
-[Complete] Firebird 2.0 (or later).
-[Planned] Oracle 8.0 (or later).
-[Planned] IBM DB2.
-[Planned] Informix.
-[Planned] Sybase.
+[Complete] Microsoft SQL Server 2000 (or later)  
+MySQL 5  0 (or later)  
+* [Complete] InnoDB  
+* [Complete] NDB/MySQL Cluster  
+* [Complete] Drizzle  
+* [Complete] MariaDB  
+* [Complete] XtraDB  
+* [Untested] MyISAM  
+* [Untested] BerkleyDB  
+[Complete] PostgreSQL 8  0 (or later)  
+[Complete] Firebird 2  0 (or later)  
+[Planned] Oracle 8  0 (or later)  
+[Planned] IBM DB2  
+[Planned] Informix  
+[Planned] Sybase  
 
 ### Embedded Relational Databases
-[Complete] SQLite 3.0 (or later).
-[Complete] Microsoft SQL Server Compact Edition 3.5 (or later).
-[Complete] Microsoft Access 2000 (or later).
+[Complete] SQLite 3  0 (or later)  
+[Complete] Microsoft SQL Server Compact Edition 3  5 (or later)  
+[Complete] Microsoft Access 2000 (or later)  
 
 ### Cloud-based Relational Databases
-[Complete] Microsoft SQL Azure.
-[Planned] Azure Tables.
-[Complete] Amazon RDS.
-[Planned] Amazon SimpleDB.
-[Planned] Amazon S3.
+[Complete] Microsoft SQL Azure  
+[Planned] Azure Tables  
+[Complete] Amazon RDS  
+[Planned] Amazon SimpleDB  
+[Planned] Amazon S3  
 
 ### Document Databases
-[In progress] RavenDB r224 (or later).
-[Planned] CouchDB 1.0 (or later).
-[Beta] MongoDB 1.6 (or later).
+[In progress] RavenDB r224 (or later)  
+[Planned] CouchDB 1  0 (or later)  
+[Beta] MongoDB 1  6 (or later)  
 
 ### File System
-[Planned] .NET Managed System.IO APIs [Planned].
+[Planned]   NET Managed System  IO APIs [Planned]  
 
 ### Dynamo Clones
-[Planned] Cassandra.
-[Planned] Riak.
-[Planned] Voldemort.
-[Planned] Dynomite.
+[Planned] Cassandra  
+[Planned] Riak  
+[Planned] Voldemort  
+[Planned] Dynomite  
 
 ### KV Stores / NoSQL
-[Planned] HBase.
-[Planned] Redis.
-[Planned] Tokyo Cabinet.
-[Planned] Memcached (and variants).
-[Planned] Hibari.
-[Planned] Keyspace.
-[Planned] OrientDB / OrientKV.
-[Planned] VoltDB.
-[Planned] BerkleyDB.
-[Planned] HampsterDB.
+[Planned] HBase  
+[Planned] Redis  
+[Planned] Tokyo Cabinet  
+[Planned] Memcached (and variants)  
+[Planned] Hibari  
+[Planned] Keyspace  
+[Planned] OrientDB / OrientKV  
+[Planned] VoltDB  
+[Planned] BerkleyDB  
+[Planned] HampsterDB  
 
 ## Building
 TODO
