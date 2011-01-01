@@ -61,9 +61,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BEGIN TRANSACTION;
-        ///
-        ///CREATE TABLE IF NOT EXISTS Streams
+        ///   Looks up a localized string similar to CREATE TABLE IF NOT EXISTS Streams
         ///(
         ///       StreamId guid NOT NULL CHECK (StreamId != 0),
         ///       Name nvarchar(256) NOT NULL DEFAULT (&apos;&apos;),
@@ -76,7 +74,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///(
         ///       StreamId guid NOT NULL,
         ///       CommitId guid NOT NULL CHECK (CommitId != 0),
-        ///       StreamRevi [rest of string was truncated]&quot;;.
+        ///       StreamRevision bigint NOT NULL C [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {

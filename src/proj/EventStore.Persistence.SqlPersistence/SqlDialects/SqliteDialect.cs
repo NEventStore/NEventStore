@@ -11,7 +11,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 		public override IDbTransaction OpenTransaction(IDbConnection connection)
 		{
-			return connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+			return connection.BeginTransaction(IsolationLevel.ReadCommitted);
 		}
 	}
 }

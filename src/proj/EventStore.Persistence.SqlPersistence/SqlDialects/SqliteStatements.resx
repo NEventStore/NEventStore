@@ -118,9 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="InitializeStorage" xml:space="preserve">
-    <value>BEGIN TRANSACTION;
-
-CREATE TABLE IF NOT EXISTS Streams
+    <value>CREATE TABLE IF NOT EXISTS Streams
 (
        StreamId guid NOT NULL CHECK (StreamId != 0),
        Name nvarchar(256) NOT NULL DEFAULT (''),
@@ -150,8 +148,6 @@ CREATE TABLE IF NOT EXISTS Dispatch
        CommitSequence bigint NOT NULL,
        CONSTRAINT PK_Dispatch PRIMARY KEY (StreamId, CommitSequence)
 );
-
-COMMIT TRANSACTION;
 
 /*
 DROP TABLE Dispatch;
