@@ -2,7 +2,7 @@
 SETLOCAL
 
 CALL :run_test MsSqlPersistence localhost 0 EventStore2 "" ""
-REM CALL :run_test SqlitePersistence localhost 0 EventStore2 "" ""
+CALL :run_test SqlitePersistence localhost 0 EventStore2 "" ""
 CALL :run_test SqlCePersistence localhost 0 EventStore2 "" ""
 CALL :run_test AccessPersistence localhost 0 EventStore2 "" ""
 CALL :run_test MySqlPersistence localhost 0 EventStore2 root ""
