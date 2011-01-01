@@ -45,5 +45,26 @@ namespace EventStore.Persistence
 		/// Gets the value which indicates the revision at which the last snapshot was taken.
 		/// </summary>
 		public long SnapshotRevision { get; private set; }
+
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current object.</param>
+        /// <returns>If the two objects are equal, returns true; otherwise false.</returns>
+        public override bool Equals(object obj)
+        {
+            var commit = obj as StreamHead;
+            return commit != null
+                   && commit.StreamId == this.StreamId;
+        }
+
+        /// <summary>
+        /// Returns the hash code for this instance.
+        /// </summary>
+        /// <returns>The hash code for this instance.</returns>
+        public override int GetHashCode()
+        {
+            return this.StreamId.GetHashCode();
+        }
 	}
 }

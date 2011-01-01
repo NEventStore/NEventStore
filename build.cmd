@@ -39,6 +39,7 @@ SET FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization\bin\%TARG
 SET FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization\bin\%TARGET_CONFIG%\protobuf-net.dll"
 SET FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.SqlPersistence\bin\%TARGET_CONFIG%\EventStore.Persistence.SqlPersistence.dll"
 SET FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.MongoPersistence\bin\%TARGET_CONFIG%\EventStore.Persistence.MongoPersistence.dll"
+SET FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.InMemoryPersistence\bin\%TARGET_CONFIG%\EventStore.Persistence.InMemoryPersistence.dll"
 
 REM Echo exclude regex to exclude file *WITHOUT* any line breaks
 (echo.|set /p =EventStore.*)>exclude.txt
