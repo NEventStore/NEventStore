@@ -34,6 +34,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.SqlP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.MongoPersistence", "proj\EventStore.Persistence.MongoPersistence\EventStore.Persistence.MongoPersistence.csproj", "{23A942C3-DE3A-4596-B012-1F56D46A5E2E}"
 EndProject
+<<<<<<< HEAD
+=======
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.AcceptanceTests.MongoPersistence", "tests\EventStore.Persistence.AcceptanceTests.MongoPersistence\EventStore.Persistence.AcceptanceTests.MongoPersistence.csproj", "{A11EF94C-E220-4235-AC9C-BE7B37E073A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.InMemoryPersistence", "proj\EventStore.Persistence.InMemoryPersistence\EventStore.Persistence.InMemoryPersistence.csproj", "{833E37FC-1B9C-4B77-A95B-5A3329C35013}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.AcceptanceTests.InMemoryPersistence", "tests\EventStore.Persistence.AcceptanceTests.InMemoryPersistence\EventStore.Persistence.AcceptanceTests.InMemoryPersistence.csproj", "{AD019C9A-44A4-4FB8-9CD1-6AE716FE25CC}"
+EndProject
+>>>>>>> Added an inmemory engine that will help when unit testing
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +80,21 @@ Global
 		{23A942C3-DE3A-4596-B012-1F56D46A5E2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{23A942C3-DE3A-4596-B012-1F56D46A5E2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23A942C3-DE3A-4596-B012-1F56D46A5E2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+<<<<<<< HEAD
+=======
+		{A11EF94C-E220-4235-AC9C-BE7B37E073A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A11EF94C-E220-4235-AC9C-BE7B37E073A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A11EF94C-E220-4235-AC9C-BE7B37E073A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A11EF94C-E220-4235-AC9C-BE7B37E073A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{833E37FC-1B9C-4B77-A95B-5A3329C35013}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{833E37FC-1B9C-4B77-A95B-5A3329C35013}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{833E37FC-1B9C-4B77-A95B-5A3329C35013}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{833E37FC-1B9C-4B77-A95B-5A3329C35013}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD019C9A-44A4-4FB8-9CD1-6AE716FE25CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD019C9A-44A4-4FB8-9CD1-6AE716FE25CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD019C9A-44A4-4FB8-9CD1-6AE716FE25CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD019C9A-44A4-4FB8-9CD1-6AE716FE25CC}.Release|Any CPU.Build.0 = Release|Any CPU
+>>>>>>> Added an inmemory engine that will help when unit testing
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -82,7 +106,15 @@ Global
 		{CE782ED8-15BB-49A9-9EBB-288FB5C82A01} = {9DE51CC0-6902-49F5-9B69-B29454DE7164}
 		{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1} = {9DE51CC0-6902-49F5-9B69-B29454DE7164}
 		{23A942C3-DE3A-4596-B012-1F56D46A5E2E} = {9DE51CC0-6902-49F5-9B69-B29454DE7164}
+		{833E37FC-1B9C-4B77-A95B-5A3329C35013} = {9DE51CC0-6902-49F5-9B69-B29454DE7164}
 		{3B5F8277-F29E-4114-AE81-4A4FBF2D7FA5} = {D3C17830-A461-4BA5-A672-461B19B33936}
 		{B56FDCEA-086F-40A2-92E1-867CE506CBE3} = {D3C17830-A461-4BA5-A672-461B19B33936}
+<<<<<<< HEAD
+=======
+		{DFC87C5C-58A9-431E-9282-01232C5C60C5} = {D3C17830-A461-4BA5-A672-461B19B33936}
+		{5A351706-4858-456A-AE80-7272AD661EB2} = {D3C17830-A461-4BA5-A672-461B19B33936}
+		{A11EF94C-E220-4235-AC9C-BE7B37E073A0} = {D3C17830-A461-4BA5-A672-461B19B33936}
+		{AD019C9A-44A4-4FB8-9CD1-6AE716FE25CC} = {D3C17830-A461-4BA5-A672-461B19B33936}
+>>>>>>> Added an inmemory engine that will help when unit testing
 	EndGlobalSection
 EndGlobal
