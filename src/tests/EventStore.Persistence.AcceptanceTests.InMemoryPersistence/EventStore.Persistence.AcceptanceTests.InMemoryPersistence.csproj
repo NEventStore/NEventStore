@@ -35,13 +35,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\proj\GlobalAssemblyInfo.cs">
-      <Link>GlobalAssemblyInfo.cs</Link>
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="..\..\proj\GlobalSuppressions.cs">
-      <Link>GlobalSuppressions.cs</Link>
+      <Link>Properties\GlobalSuppressions.cs</Link>
     </Compile>
     <Compile Include="..\..\proj\VersionAssemblyInfo.cs">
-      <Link>VersionAssemblyInfo.cs</Link>
+      <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="InMemoryPersistenceFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -62,7 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\proj\CustomDictionary.xml">
-      <Link>CustomDictionary.xml</Link>
+      <Link>Properties\CustomDictionary.xml</Link>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
