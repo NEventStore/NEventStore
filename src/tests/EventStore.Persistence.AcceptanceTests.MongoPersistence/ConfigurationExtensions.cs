@@ -1,4 +1,4 @@
-namespace EventStore.Persistence.AcceptanceTests
+namespace EventStore.Persistence.AcceptanceTests.MongoPersistence
 {
 	using System;
 	using System.Configuration;

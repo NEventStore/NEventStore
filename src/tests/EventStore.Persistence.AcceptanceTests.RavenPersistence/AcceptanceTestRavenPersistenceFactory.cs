@@ -2,23 +2,14 @@ namespace EventStore.Persistence.AcceptanceTests.RavenPersistence
 {
 	using System.Configuration;
 	using Persistence.RavenPersistence;
-	using Raven.Client.Document;
 
-	public class RavenPersistenceFactory : IPersistenceFactory
+	public class AcceptanceTestRavenPersistenceFactory : RavenPersistenceFactory
 	{
-		public IPersistStreams Build()
+		public AcceptanceTestRavenPersistenceFactory()
+			: base("RavenDB")
 		{
-			var store = new DocumentStore
-			{
-				Url = GetRavenUrl(),
-				DefaultDatabase = GetRavenDatabase()
-			};
-
-			return new RavenPersistenceEngine(
-				store,
-				new RavenInitializer());
 		}
-		private static string GetRavenUrl()
+		protected override string GetRavenUrl()
 		{
 			return ConfigurationManager.ConnectionStrings["RavenDB"].ConnectionString
 				.Replace("[HOST]", "host".GetSetting() ?? "localhost")
@@ -26,7 +17,7 @@ namespace EventStore.Persistence.AcceptanceTests.RavenPersistence
 				.Replace("[USER]", "user".GetSetting() ?? string.Empty)
 				.Replace("[PASSWORD]", "password".GetSetting() ?? string.Empty);
 		}
-		private static string GetRavenDatabase()
+		protected override string GetRavenDatabase()
 		{
 			return "database".GetSetting() ?? "EventStore2";
 		}

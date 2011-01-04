@@ -112,6 +112,7 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Include="SqlPersistenceFactory.cs" />
     <Compile Include="SqlPersistenceEngine.cs" />
     <Compile Include="StreamHeadExtensions.cs" />
   </ItemGroup>

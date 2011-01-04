@@ -1,21 +1,17 @@
 namespace EventStore.Persistence.AcceptanceTests.MongoPersistence
 {
-	using System.Configuration;
-	using Norm;
 	using Persistence.MongoPersistence;
 	using Serialization;
 
-	public class MongoPersistenceFactory : IPersistenceFactory
+	public class AcceptanceTestMongoPersistenceFactory : MongoPersistenceFactory
 	{
-		public virtual IPersistStreams Build()
+		public AcceptanceTestMongoPersistenceFactory()
+			: base("MongoDB", new BinarySerializer())
 		{
-			var connectionString = GetMongoConnectionString();
-			var mongo = Mongo.Create(connectionString);
-			return new MongoPersistenceEngine(mongo, new BinarySerializer());
 		}
-		private static string GetMongoConnectionString()
+		protected override string TransformConnectionString(string connectionString)
 		{
-			return ConfigurationManager.ConnectionStrings["MongoDB"].ConnectionString
+			return connectionString
 				.Replace("[HOST]", "host".GetSetting() ?? "localhost")
 				.Replace("[PORT]", "port".GetSetting() ?? string.Empty)
 				.Replace("[DATABASE]", "database".GetSetting() ?? "EventStore2")

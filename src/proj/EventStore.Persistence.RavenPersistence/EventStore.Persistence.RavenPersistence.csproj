@@ -49,6 +49,7 @@
     <Compile Include="RavenExtensions.cs" />
     <Compile Include="RavenInitializer.cs" />
     <Compile Include="RavenPersistenceEngine.cs" />
+    <Compile Include="RavenPersistenceFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\CustomDictionary.xml">
@@ -68,7 +69,7 @@
     <Reference Include="Newtonsoft.Json" Condition="$(TargetFrameworkVersion)=='v3.5'">
       <HintPath>..\..\..\lib\RavenDB\.NET 3.5\Newtonsoft.Json.dll</HintPath>
     </Reference>
-	<Reference Include="Newtonsoft.Json" Condition="$(TargetFrameworkVersion)=='v4.0'">
+    <Reference Include="Newtonsoft.Json" Condition="$(TargetFrameworkVersion)=='v4.0'">
       <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Raven.Abstractions" Condition="$(TargetFrameworkVersion)=='v3.5'">
@@ -84,6 +85,7 @@
       <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Raven.Client.Lightweight.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Transactions" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

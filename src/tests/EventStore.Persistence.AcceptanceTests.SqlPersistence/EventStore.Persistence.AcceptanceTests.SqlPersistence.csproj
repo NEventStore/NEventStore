@@ -42,17 +42,9 @@
     <Compile Include="..\..\proj\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AzurePersistenceFactory.cs" />
-    <Compile Include="AmazonRdsPersistenceFactory.cs" />
-    <Compile Include="AccessPersistenceFactory.cs" />
-    <Compile Include="FirebirdPersistenceFactory.cs" />
-    <Compile Include="SqlCePersistenceFactory.cs" />
-    <Compile Include="MySqlPersistenceFactory.cs" />
-    <Compile Include="PostgreSqlPersistenceFactory.cs" />
-    <Compile Include="SqlitePersistenceFactory.cs" />
-    <Compile Include="MsSqlPersistenceFactory.cs" />
+    <Compile Include="ConfigurationExtensions.cs" />
+    <Compile Include="AcceptanceTestSqlPersistenceFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SqlPersistenceFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\proj\EventStore.Persistence.SqlPersistence\EventStore.Persistence.SqlPersistence.csproj">
@@ -66,10 +58,6 @@
     <ProjectReference Include="..\..\proj\EventStore\EventStore.csproj">
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
       <Name>EventStore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EventStore.Persistence.AcceptanceTests\EventStore.Persistence.AcceptanceTests.csproj">
-      <Project>{B56FDCEA-086F-40A2-92E1-867CE506CBE3}</Project>
-      <Name>EventStore.Persistence.AcceptanceTests</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

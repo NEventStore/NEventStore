@@ -44,6 +44,7 @@
       <HintPath>..\..\..\lib\Norm\Norm.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Transactions" />
   </ItemGroup>
   <ItemGroup>
@@ -59,6 +60,7 @@
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="MongoCommit.cs" />
     <Compile Include="MongoPersistenceEngine.cs" />
+    <Compile Include="MongoPersistenceFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

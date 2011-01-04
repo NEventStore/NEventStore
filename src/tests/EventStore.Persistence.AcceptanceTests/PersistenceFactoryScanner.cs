@@ -42,6 +42,9 @@ namespace EventStore.Persistence.AcceptanceTests
 		}
 		private static void AddFactory(Type type)
 		{
+			if (!type.Name.Contains("AcceptanceTest") || !type.Name.Contains("PersistenceFactory"))
+				return;
+
 			if (!typeof(IPersistenceFactory).IsAssignableFrom(type))
 				return;
 
@@ -55,7 +58,7 @@ namespace EventStore.Persistence.AcceptanceTests
 		public virtual IPersistenceFactory GetFactory()
 		{
 			var persistenceEngine = "persistence".GetSetting() ?? "MsSqlPersistence";
-			return Factories[persistenceEngine + "Factory"];
+			return Factories["AcceptanceTest" + persistenceEngine + "Factory"];
 		}
 	}
 }
