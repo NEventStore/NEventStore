@@ -2,12 +2,11 @@ namespace EventStore.Persistence.AcceptanceTests.Engines
 {
 	using Serialization;
 	using SqlPersistence;
-	using SqlPersistence.SqlDialects;
 
 	public abstract class AcceptanceTestSqlPersistenceFactory : SqlPersistenceFactory
 	{
-		protected AcceptanceTestSqlPersistenceFactory(string connectionName, ISqlDialect dialect)
-			: base(connectionName, new BinarySerializer(), dialect)
+		protected AcceptanceTestSqlPersistenceFactory(string connectionName)
+			: base(connectionName, new BinarySerializer())
 		{
 		}
 
@@ -24,65 +23,38 @@ namespace EventStore.Persistence.AcceptanceTests.Engines
 
 	public class AcceptanceTestAccessPersistenceFactory : AcceptanceTestSqlPersistenceFactory
 	{
-		public AcceptanceTestAccessPersistenceFactory()
-			: base("Access", new AccessDialect())
-		{
-		}
+		public AcceptanceTestAccessPersistenceFactory() : base("Access") { }
 	}
 	public class AcceptanceTestAmazonRdsPersistenceFactory : AcceptanceTestSqlPersistenceFactory
 	{
-		public AcceptanceTestAmazonRdsPersistenceFactory()
-			: base("AmazonRDS", new MySqlDialect())
-		{
-		}
+		public AcceptanceTestAmazonRdsPersistenceFactory() : base("AmazonRDS") { }
 	}
 	public class AcceptanceTestAzurePersistenceFactory : AcceptanceTestSqlPersistenceFactory
 	{
-		public AcceptanceTestAzurePersistenceFactory()
-			: base("Azure", new MsSqlDialect())
-		{
-		}
+		public AcceptanceTestAzurePersistenceFactory() : base("Azure") { }
 	}
 	public class AcceptanceTestFirebirdPersistenceFactory : AcceptanceTestSqlPersistenceFactory
 	{
-		public AcceptanceTestFirebirdPersistenceFactory()
-			: base("Firebird", new FirebirdSqlDialect())
-		{
-		}
+		public AcceptanceTestFirebirdPersistenceFactory() : base("Firebird") { }
 	}
 	public class AcceptanceTestMsSqlPersistenceFactory : AcceptanceTestSqlPersistenceFactory
 	{
-		public AcceptanceTestMsSqlPersistenceFactory()
-			: base("MSSQL", new MsSqlDialect())
-		{
-		}
+		public AcceptanceTestMsSqlPersistenceFactory() : base("MSSQL") { }
 	}
 	public class AcceptanceTestMySqlPersistenceFactory : AcceptanceTestSqlPersistenceFactory
 	{
-		public AcceptanceTestMySqlPersistenceFactory()
-			: base("MySQL", new MySqlDialect())
-		{
-		}
+		public AcceptanceTestMySqlPersistenceFactory() : base("MySQL") { }
 	}
 	public class AcceptanceTestPostgreSqlPersistenceFactory : AcceptanceTestSqlPersistenceFactory
 	{
-		public AcceptanceTestPostgreSqlPersistenceFactory()
-			: base("PostgreSQL", new PostgreSqlDialect())
-		{
-		}
+		public AcceptanceTestPostgreSqlPersistenceFactory() : base("PostgreSQL") { }
 	}
 	public class AcceptanceTestSqlCePersistenceFactory : AcceptanceTestSqlPersistenceFactory
 	{
-		public AcceptanceTestSqlCePersistenceFactory()
-			: base("SQLCE", new SqlCeDialect())
-		{
-		}
+		public AcceptanceTestSqlCePersistenceFactory() : base("SQLCE") { }
 	}
 	public class AcceptanceTestSqlitePersistenceFactory : AcceptanceTestSqlPersistenceFactory
 	{
-		public AcceptanceTestSqlitePersistenceFactory()
-			: base("SQLite", new SqliteDialect())
-		{
-		}
+		public AcceptanceTestSqlitePersistenceFactory() : base("SQLite") { }
 	}
 }

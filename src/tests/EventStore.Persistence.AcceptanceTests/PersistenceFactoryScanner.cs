@@ -2,6 +2,7 @@ namespace EventStore.Persistence.AcceptanceTests
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Globalization;
 	using System.IO;
 	using System.Linq;
 	using System.Reflection;
@@ -42,23 +43,43 @@ namespace EventStore.Persistence.AcceptanceTests
 		}
 		private static void AddFactory(Type type)
 		{
-			if (!type.Name.Contains("AcceptanceTest") || !type.Name.Contains("PersistenceFactory"))
-				return;
-
 			if (!typeof(IPersistenceFactory).IsAssignableFrom(type))
 				return;
 
 			if (typeof(IPersistenceFactory) == type || type.IsAbstract)
 				return;
 
-			var factory = (IPersistenceFactory)Activator.CreateInstance(type);
-			Factories[factory.GetType().Name] = factory;
+			try
+			{
+				var factory = (IPersistenceFactory)Activator.CreateInstance(type);
+				var key = factory.GetType().Name
+					.Replace("AcceptanceTest", string.Empty)
+					.Replace("Factory", string.Empty);
+
+				Factories[key] = factory;
+			}
+			catch (Exception)
+			{
+			}
 		}
 
 		public virtual IPersistenceFactory GetFactory()
 		{
 			var persistenceEngine = "persistence".GetSetting() ?? "MsSqlPersistence";
-			return Factories["AcceptanceTest" + persistenceEngine + "Factory"];
+
+			try
+			{
+				return Factories[persistenceEngine];
+			}
+			catch (KeyNotFoundException)
+			{
+				var message = string.Format(
+					CultureInfo.InvariantCulture,
+					"The key '{0}' was not a configured persistence engine.",
+					persistenceEngine);
+
+				throw new PersistenceEngineException(message);
+			}
 		}
 	}
 }

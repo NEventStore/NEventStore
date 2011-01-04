@@ -16,12 +16,10 @@
 	IBM DB2
 	VistaDB
 
-	(TODO: Create SqlPersistenceFactory such that the persistence adapter can be entirely self contained.)
-	
 	- Document Databases -
-	CouchDB
-	[IN PROGRESS] MongoDB
+	[DONE] MongoDB
 	[IN PROGRESS] RavenDB
+	CouchDB
 
 	- File System
 	Managed storage using .NET APIs.
