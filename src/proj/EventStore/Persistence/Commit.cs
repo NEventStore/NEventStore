@@ -82,9 +82,7 @@ namespace EventStore.Persistence
 		public override bool Equals(object obj)
 		{
 			var commit = obj as Commit;
-			return commit != null
-				&& commit.StreamId == this.StreamId
-				&& commit.CommitId == this.CommitId;
+			return commit != null && commit.StreamId == this.StreamId && commit.CommitId == this.CommitId;
 		}
 
 		/// <summary>
