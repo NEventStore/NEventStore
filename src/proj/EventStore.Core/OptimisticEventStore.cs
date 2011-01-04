@@ -9,7 +9,7 @@ namespace EventStore
 	public class OptimisticEventStore : IStoreEvents
 	{
 		private readonly IDictionary<Guid, Commit> streamHeads = new Dictionary<Guid, Commit>();
-		private readonly ICollection<Guid> commitIdentifiers = new HashSet<Guid>();
+		private readonly CommitTracker tracker = new CommitTracker();
 		private readonly IPersistStreams persistence;
 		private readonly IDispatchCommits dispatcher;
 
@@ -47,7 +47,7 @@ namespace EventStore
 				snapshot = commit.Snapshot ?? snapshot;
 				events.AddEventsOrClearOnSnapshot(commit, applySnapshot);
 
-				this.commitIdentifiers.Add(commit.CommitId);
+				this.tracker.Track(commit);
 			}
 
 			if (last != null)
@@ -67,7 +67,7 @@ namespace EventStore
 		}
 		protected virtual void ThrowOnDuplicateOrConcurrentWrites(CommitAttempt current)
 		{
-			if (this.commitIdentifiers.Contains(current.CommitId))
+			if (this.tracker.Contains(current))
 				throw new DuplicateCommitException();
 
 			Commit previous;
@@ -91,7 +91,7 @@ namespace EventStore
 			this.persistence.Persist(attempt);
 
 			var commit = attempt.ToCommit();
-			this.commitIdentifiers.Add(commit.CommitId);
+			this.tracker.Track(commit);
 			this.streamHeads[commit.StreamId] = commit;
 			
 			this.dispatcher.Dispatch(commit);

@@ -1,6 +1,3 @@
-- Add multi-thread safe tracking of heads for streams to facilitate optimistic concurrency detection with document databases
-  when the application code is using an identity map.
-
 - Create fluent configuration code that doesn't require an IoC container.
 - Add additional samples and quickstart examples
 - Create adapters for the following storage engines (in no particular order)
