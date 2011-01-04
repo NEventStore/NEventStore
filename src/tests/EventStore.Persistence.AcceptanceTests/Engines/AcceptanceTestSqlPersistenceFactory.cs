@@ -7,7 +7,7 @@ namespace EventStore.Persistence.AcceptanceTests.Engines
 	public abstract class AcceptanceTestSqlPersistenceFactory : SqlPersistenceFactory
 	{
 		protected AcceptanceTestSqlPersistenceFactory(string connectionName, ISqlDialect dialect)
-			: base(connectionName, dialect, new BinarySerializer())
+			: base(connectionName, new BinarySerializer(), dialect)
 		{
 		}
 
