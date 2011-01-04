@@ -36,6 +36,7 @@ namespace EventStore
 			long revision = 0;
 			object snapshot = null;
 			ICollection<object> events = new LinkedList<object>();
+			ICollection<Guid> commitIdentifiers = new HashSet<Guid>();
 
 			foreach (var commit in commits ?? new Commit[0])
 			{
@@ -46,6 +47,7 @@ namespace EventStore
 
 				snapshot = commit.Snapshot ?? snapshot;
 				events.AddEventsOrClearOnSnapshot(commit, applySnapshot);
+				commitIdentifiers.Add(commit.CommitId);
 
 				this.tracker.Track(commit);
 			}
@@ -54,7 +56,8 @@ namespace EventStore
 				this.streamHeads[streamId] = last;
 
 			snapshot = applySnapshot ? snapshot : null;
-			return new CommittedEventStream(streamId, revision, sequence, events.ToArray(), snapshot);
+			return new CommittedEventStream(
+				streamId, revision, sequence, events.ToArray(), commitIdentifiers, snapshot);
 		}
 
 		public virtual void Write(CommitAttempt attempt)

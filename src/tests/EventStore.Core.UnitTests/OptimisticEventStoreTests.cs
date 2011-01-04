@@ -64,6 +64,9 @@ namespace EventStore.Core.UnitTests
 
 		It should_order_the_events_from_oldest_to_newest = () =>
 			actual.Events.Cast<object>().Last().ShouldEqual(Commits.NewestEvent());
+
+		It should_populate_the_stream_with_all_commit_identifiers_retreived = () =>
+			actual.CommitIdentifiers.ShouldContain(Commits.Select(x => x.CommitId).ToArray());
 	}
 
 	[Subject("OptimisticEventStore")]
@@ -114,6 +117,9 @@ namespace EventStore.Core.UnitTests
 
 		It should_put_the_newest_event_as_the_last_event = () =>
 			actual.Events.Cast<object>().Last().ShouldEqual(Commits.NewestEvent());
+
+		It should_populate_the_stream_with_all_commit_identifiers_retreived = () =>
+			actual.CommitIdentifiers.ShouldContain(Commits.Select(x => x.CommitId).ToArray());
 	}
 
 	[Subject("OptimisticEventStore")]
