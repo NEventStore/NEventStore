@@ -46,6 +46,7 @@
     <Compile Include="PersistenceTests\CommitFilterPersistenceTests.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="OptimisticEventStoreTests.cs" />
+    <Compile Include="PersistenceTests\CommitTrackerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DispatcherTests\SynchronousDispatcherTests.cs" />
   </ItemGroup>
