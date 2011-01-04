@@ -1,4 +1,4 @@
-namespace EventStore.Persistence.InMemoryPersistence
+namespace EventStore.Persistence
 {
 	using System;
 	using System.Collections.Generic;
