@@ -61,6 +61,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\proj\EventStore.Persistence.InMemoryPersistence\EventStore.Persistence.InMemoryPersistence.csproj">
+      <Project>{833E37FC-1B9C-4B77-A95B-5A3329C35013}</Project>
+      <Name>EventStore.Persistence.InMemoryPersistence</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\proj\EventStore.Persistence.MongoPersistence\EventStore.Persistence.MongoPersistence.csproj">
       <Project>{23A942C3-DE3A-4596-B012-1F56D46A5E2E}</Project>
       <Name>EventStore.Persistence.MongoPersistence</Name>

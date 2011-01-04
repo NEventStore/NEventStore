@@ -1,7 +1,5 @@
-﻿namespace EventStore.Persistence.AcceptanceTests.InMemoryPersistence
+﻿namespace EventStore.Persistence.InMemoryPersistence
 {
-	using Persistence.InMemoryPersistence;
-
 	public class InMemoryPersistenceFactory : IPersistenceFactory
 	{
 		public virtual IPersistStreams Build()

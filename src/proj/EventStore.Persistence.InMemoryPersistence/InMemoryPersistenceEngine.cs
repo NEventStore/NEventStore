@@ -6,10 +6,9 @@ namespace EventStore.Persistence.InMemoryPersistence
 
 	public class InMemoryPersistenceEngine : IPersistStreams
 	{
-		private bool disposed;
-		private ICollection<Commit> commits;
-		private ICollection<StreamHead> heads;
-		private ICollection<Commit> undispatchedCommits;
+		private readonly ICollection<Commit> commits = new LinkedList<Commit>();
+		private readonly ICollection<StreamHead> heads = new LinkedList<StreamHead>();
+		private readonly ICollection<Commit> undispatchedCommits = new LinkedList<Commit>();
 
 		public void Dispose()
 		{
@@ -18,47 +17,37 @@ namespace EventStore.Persistence.InMemoryPersistence
 		}
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!disposing || this.disposed)
-				return;
-
-			this.disposed = true;
 		}
 
 		public void Initialize()
 		{
-			this.commits = new LinkedList<Commit>();
-			this.undispatchedCommits = new LinkedList<Commit>();
-			this.heads = new LinkedList<StreamHead>();
 		}
 
-		public IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision)
+		public virtual IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision)
 		{
 			lock (this.commits)
 			{
-				var snapshotCommit =
-					this.commits.Where(x => x.StreamId == streamId && x.StreamRevision <= maxRevision && x.Snapshot != null)
-						.OrderByDescending(o => o.StreamRevision)
-						.Take(1)
-						.FirstOrDefault();
+				var snapshotCommit = this.commits
+					.Where(x => x.StreamId == streamId && x.StreamRevision <= maxRevision && x.Snapshot != null)
+					.OrderByDescending(o => o.StreamRevision)
+					.Take(1)
+					.FirstOrDefault();
 
 				long snapshotRevision = 0;
 				if (snapshotCommit != null)
 					snapshotRevision = snapshotCommit.StreamRevision;
 
-				return
-					this.commits.Where(
-						x => x.StreamId == streamId && x.StreamRevision >= snapshotRevision && x.StreamRevision <= maxRevision)
-						.ToList();
+				return this.commits
+					.Where(x => x.StreamId == streamId && x.StreamRevision >= snapshotRevision && x.StreamRevision <= maxRevision)
+					.ToList();
 			}
 		}
-
-		public IEnumerable<Commit> GetFrom(Guid streamId, long minRevision)
+		public virtual IEnumerable<Commit> GetFrom(Guid streamId, long minRevision)
 		{
 			lock (this.commits)
 				return this.commits.Where(x => x.StreamId == streamId && x.StreamRevision >= minRevision).ToArray();
 		}
-
-		public void Persist(CommitAttempt uncommitted)
+		public virtual void Persist(CommitAttempt uncommitted)
 		{
 			lock (this.commits)
 			{
@@ -84,19 +73,18 @@ namespace EventStore.Persistence.InMemoryPersistence
 			}
 		}
 
-		public IEnumerable<Commit> GetUndispatchedCommits()
+		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
 			lock (this.commits)
 				return this.commits.Where(c => this.undispatchedCommits.Contains(c));
 		}
-
-		public void MarkCommitAsDispatched(Commit commit)
+		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
 			lock (this.undispatchedCommits)
 				this.undispatchedCommits.Remove(commit);
 		}
 
-		public IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
+		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
 		{
 			lock (this.heads)
 				return this.heads.Where(x => x.HeadRevision >= x.SnapshotRevision + maxThreshold)
@@ -105,8 +93,7 @@ namespace EventStore.Persistence.InMemoryPersistence
 					                  	stream.HeadRevision,
 					                  	stream.SnapshotRevision));
 		}
-
-		public void AddSnapshot(Guid streamId, long streamRevision, object snapshot)
+		public virtual void AddSnapshot(Guid streamId, long streamRevision, object snapshot)
 		{
 			lock (this.commits)
 			{
