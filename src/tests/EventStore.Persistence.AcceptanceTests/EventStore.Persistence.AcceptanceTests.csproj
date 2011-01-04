@@ -12,8 +12,6 @@
     <AssemblyName>EventStore.Persistence.AcceptanceTests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\EventStore.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -43,6 +41,9 @@
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ConfigurationExtensions.cs" />
+    <Compile Include="Engines\AcceptanceTestMongoPersistenceFactory.cs" />
+    <Compile Include="Engines\AcceptanceTestRavenPersistenceFactory.cs" />
+    <Compile Include="Engines\AcceptanceTestSqlPersistenceFactory.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="PersistenceFactoryScanner.cs" />
     <Compile Include="PersistenceTests.cs" />
@@ -60,24 +61,31 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\proj\EventStore.Persistence.MongoPersistence\EventStore.Persistence.MongoPersistence.csproj">
+      <Project>{23A942C3-DE3A-4596-B012-1F56D46A5E2E}</Project>
+      <Name>EventStore.Persistence.MongoPersistence</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\proj\EventStore.Persistence.RavenPersistence\EventStore.Persistence.RavenPersistence.csproj">
+      <Project>{CE782ED8-15BB-49A9-9EBB-288FB5C82A01}</Project>
+      <Name>EventStore.Persistence.RavenPersistence</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\proj\EventStore.Persistence.SqlPersistence\EventStore.Persistence.SqlPersistence.csproj">
+      <Project>{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}</Project>
+      <Name>EventStore.Persistence.SqlPersistence</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\proj\EventStore.Serialization\EventStore.Serialization.csproj">
+      <Project>{A5BF4B86-26F6-418D-BE35-C6CC3A623D27}</Project>
+      <Name>EventStore.Serialization</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\proj\EventStore\EventStore.csproj">
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
       <Name>EventStore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\EventStore.Persistence.AcceptanceTests.MongoPersistence\EventStore.Persistence.AcceptanceTests.MongoPersistence.csproj">
-      <Project>{A11EF94C-E220-4235-AC9C-BE7B37E073A0}</Project>
-      <Name>EventStore.Persistence.AcceptanceTests.MongoPersistence</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EventStore.Persistence.AcceptanceTests.RavenPersistence\EventStore.Persistence.AcceptanceTests.RavenPersistence.csproj">
-      <Project>{5A351706-4858-456A-AE80-7272AD661EB2}</Project>
-      <Name>EventStore.Persistence.AcceptanceTests.RavenPersistence</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EventStore.Persistence.AcceptanceTests.SqlPersistence\EventStore.Persistence.AcceptanceTests.SqlPersistence.csproj">
-      <Project>{DFC87C5C-58A9-431E-9282-01232C5C60C5}</Project>
-      <Name>EventStore.Persistence.AcceptanceTests.SqlPersistence</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="FirebirdSql.Data.FirebirdClient">
+      <HintPath>..\..\..\bin\firebird-bin\FirebirdSql.Data.FirebirdClient.dll</HintPath>
+    </Reference>
     <Reference Include="Machine.Specifications">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
       <HintPath>..\..\..\bin\machine.specifications-bin\.NET 3.5\Machine.Specifications.dll</HintPath>
@@ -85,6 +93,9 @@
     <Reference Include="Machine.Specifications" Condition="$(TargetFrameworkVersion)=='v4.0'">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
       <HintPath>..\..\..\bin\machine.specifications-bin\.NET 4.0\Machine.Specifications.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Security">
+      <HintPath>..\..\..\bin\npgsql-bin\Mono.Security.dll</HintPath>
     </Reference>
     <Reference Include="Moq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -94,8 +105,20 @@
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
       <HintPath>..\..\..\bin\moq-bin\.NET 4.0\Moq.dll</HintPath>
     </Reference>
+    <Reference Include="MySql.Data, Version=6.3.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\bin\mysql-bin\MySql.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Npgsql">
+      <HintPath>..\..\..\bin\npgsql-bin\Npgsql.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.SQLite">
+      <HintPath>..\..\..\bin\sqlite-bin\System.Data.SQLite.DLL</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

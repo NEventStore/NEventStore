@@ -1,8 +1,8 @@
-namespace EventStore.Persistence.AcceptanceTests.SqlPersistence
+namespace EventStore.Persistence.AcceptanceTests.Engines
 {
-	using Persistence.SqlPersistence;
-	using Persistence.SqlPersistence.SqlDialects;
 	using Serialization;
+	using SqlPersistence;
+	using SqlPersistence.SqlDialects;
 
 	public abstract class AcceptanceTestSqlPersistenceFactory : SqlPersistenceFactory
 	{

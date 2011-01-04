@@ -1,6 +1,6 @@
-namespace EventStore.Persistence.AcceptanceTests.MongoPersistence
+namespace EventStore.Persistence.AcceptanceTests.Engines
 {
-	using Persistence.MongoPersistence;
+	using MongoPersistence;
 	using Serialization;
 
 	public class AcceptanceTestMongoPersistenceFactory : MongoPersistenceFactory

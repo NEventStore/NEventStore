@@ -1,7 +1,7 @@
-namespace EventStore.Persistence.AcceptanceTests.RavenPersistence
+namespace EventStore.Persistence.AcceptanceTests.Engines
 {
 	using System.Configuration;
-	using Persistence.RavenPersistence;
+	using RavenPersistence;
 
 	public class AcceptanceTestRavenPersistenceFactory : RavenPersistenceFactory
 	{
