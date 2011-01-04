@@ -96,6 +96,10 @@ namespace EventStore.Persistence.RavenPersistence
 					if (committed.CommitId == commit.CommitId)
 						throw new DuplicateCommitException();
 
+					if (session.Query<RavenCommit>()
+						.Where(x => x.StreamId == commit.StreamId && x.CommitId == commit.CommitId).Any())
+						throw new DuplicateCommitException();
+
 					throw new ConcurrencyException(e.Message, e);
 				}
 				catch (Exception e)
