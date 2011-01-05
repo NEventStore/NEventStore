@@ -70,8 +70,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///CREATE TABLE Streams
         ///(
         ///       StreamId guid NOT NULL,
-        ///       HeadRevision long NOT NULL,
-        ///       SnapshotRevision long NOT NULL DEFAULT 0,
+        ///       HeadRevision int NOT NULL,
+        ///       SnapshotRevision int NOT NULL DEFAULT 0,
         ///       CONSTRAINT PK_Streams PRIMARY KEY (StreamId)
         ///);
         ///
@@ -79,10 +79,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///(
         ///       StreamId guid NOT NULL,
         ///       CommitId guid NOT NULL,
-        ///       StreamRevision long NOT NULL,
-        ///       CommitSequence long NOT NULL,
+        ///       StreamRevision int NOT NULL,
+        ///       CommitSequence int NOT NULL,
         ///       CommitStamp datetime NOT NULL,
-        ///       [rest of string was truncated]&quot;;.
+        ///       Hea [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {

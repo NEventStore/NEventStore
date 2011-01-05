@@ -13,7 +13,7 @@ namespace EventStore.Persistence
 		/// <param name="streamId">The value which uniquely identifies the stream where the last snapshot exceeds the allowed threshold.</param>
 		/// <param name="headRevision">The value which indicates the revision, length, or number of events committed to the stream.</param>
 		/// <param name="snapshotRevision">The value which indicates the revision at which the last snapshot was taken.</param>
-		public StreamHead(Guid streamId, long headRevision, long snapshotRevision)
+		public StreamHead(Guid streamId, int headRevision, int snapshotRevision)
 			: this()
 		{
 			this.StreamId = streamId;
@@ -36,12 +36,12 @@ namespace EventStore.Persistence
 		/// <summary>
 		/// Gets the value which indicates the revision, length, or number of events committed to the stream.
 		/// </summary>
-		public long HeadRevision { get; private set; }
+		public int HeadRevision { get; private set; }
 
 		/// <summary>
 		/// Gets the value which indicates the revision at which the last snapshot was taken.
 		/// </summary>
-		public long SnapshotRevision { get; private set; }
+		public int SnapshotRevision { get; private set; }
 
 		/// <summary>
 		/// Determines whether the specified object is equal to the current object.

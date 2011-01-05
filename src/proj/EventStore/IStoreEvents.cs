@@ -13,7 +13,7 @@ namespace EventStore
 		/// <param name="streamId">The stream from which the events will be read.</param>
 		/// <param name="maxRevision">The maximum revision of the stream to be read.</param>
 		/// <returns>A series of committed events from the stream specified.</returns>
-		CommittedEventStream ReadUntil(Guid streamId, long maxRevision);
+		CommittedEventStream ReadUntil(Guid streamId, int maxRevision);
 
 		/// <summary>
 		/// Reads from the stream indicated from the revision specified until the end of the stream.
@@ -21,7 +21,7 @@ namespace EventStore
 		/// <param name="streamId">The stream from which the events will be read.</param>
 		/// <param name="minRevision">The minimum revision of the stream to be read.</param>
 		/// <returns>A series of committed events from the stream specified.</returns>
-		CommittedEventStream ReadFrom(Guid streamId, long minRevision);
+		CommittedEventStream ReadFrom(Guid streamId, int minRevision);
 		
 		/// <summary>
 		/// Writes the to-be-commited events provided to the underlying storage infrastructure.

@@ -13,8 +13,8 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			return new StreamHead(
 				record[StreamIdIndex].ToGuid(),
-				record[HeadRevisionIndex].ToLong(),
-				record[SnapshotRevisionIndex].ToLong());
+				record[HeadRevisionIndex].ToInt(),
+				record[SnapshotRevisionIndex].ToInt());
 		}
 	}
 }

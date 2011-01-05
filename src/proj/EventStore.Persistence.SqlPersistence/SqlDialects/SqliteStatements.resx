@@ -121,8 +121,8 @@
     <value>CREATE TABLE IF NOT EXISTS Streams
 (
        StreamId guid NOT NULL CHECK (StreamId != 0),
-       HeadRevision bigint NOT NULL CHECK (HeadRevision &gt; 0),
-       SnapshotRevision bigint NOT NULL CHECK (SnapshotRevision &gt;= 0) DEFAULT(0),
+       HeadRevision int NOT NULL CHECK (HeadRevision &gt; 0),
+       SnapshotRevision int NOT NULL CHECK (SnapshotRevision &gt;= 0) DEFAULT(0),
        CONSTRAINT PK_Streams PRIMARY KEY (StreamId)
 );
 
@@ -130,8 +130,8 @@ CREATE TABLE IF NOT EXISTS Commits
 (
        StreamId guid NOT NULL,
        CommitId guid NOT NULL CHECK (CommitId != 0),
-       StreamRevision bigint NOT NULL CHECK (StreamRevision &gt; 0),
-       CommitSequence bigint NOT NULL CHECK (CommitSequence &gt; 0),
+       StreamRevision int NOT NULL CHECK (StreamRevision &gt; 0),
+       CommitSequence int NOT NULL CHECK (CommitSequence &gt; 0),
        CommitStamp datetime NOT NULL,
        Headers blob NULL,
        Payload blob NOT NULL,
@@ -144,7 +144,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS IX_Commits_Revisions ON Commits (StreamId, Str
 CREATE TABLE IF NOT EXISTS Dispatch
 (
        StreamId guid NOT NULL,
-       CommitSequence bigint NOT NULL,
+       CommitSequence int NOT NULL,
        CONSTRAINT PK_Dispatch PRIMARY KEY (StreamId, CommitSequence)
 );
 

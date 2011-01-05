@@ -38,41 +38,41 @@ namespace EventStore.Persistence
 			this.inner.Initialize();
 		}
 
-		public IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision)
+		public virtual IEnumerable<Commit> GetUntil(Guid streamId, int maxRevision)
 		{
 			return this.inner.GetUntil(streamId, maxRevision)
 				.Select(this.readFilter.Filter)
 				.Where(x => x != null)
 				.ToArray();
 		}
-		public IEnumerable<Commit> GetFrom(Guid streamId, long minRevision)
+		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision)
 		{
 			return this.inner.GetFrom(streamId, minRevision)
 				.Select(this.readFilter.Filter)
 				.Where(x => x != null)
 				.ToArray();
 		}
-		public void Persist(CommitAttempt uncommitted)
+		public virtual void Persist(CommitAttempt uncommitted)
 		{
 			uncommitted = this.writeFilter.Filter(uncommitted);
 			if (uncommitted != null)
 				this.inner.Persist(uncommitted);
 		}
 
-		public IEnumerable<Commit> GetUndispatchedCommits()
+		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
 			return this.inner.GetUndispatchedCommits();
 		}
-		public void MarkCommitAsDispatched(Commit commit)
+		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
 			this.inner.MarkCommitAsDispatched(commit);
 		}
 
-		public IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
+		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
 		{
 			return this.inner.GetStreamsToSnapshot(maxThreshold);
 		}
-		public void AddSnapshot(Guid streamId, long streamRevision, object snapshot)
+		public virtual void AddSnapshot(Guid streamId, int streamRevision, object snapshot)
 		{
 			this.inner.AddSnapshot(streamId, streamRevision, snapshot);
 		}

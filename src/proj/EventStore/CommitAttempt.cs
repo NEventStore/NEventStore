@@ -31,12 +31,12 @@ namespace EventStore
 		/// <summary>
 		/// Gets or sets the value which indicates the new head revision of the stream to which this commit attempt applies.
 		/// </summary>
-		public long StreamRevision { get; set; }
+		public int StreamRevision { get; set; }
 
 		/// <summary>
 		/// Gets or sets the value which indicates the most recent, known committed sequence for the stream to which this commit attempt applies.
 		/// </summary>
-		public long PreviousCommitSequence { get; set; }
+		public int PreviousCommitSequence { get; set; }
 
 		/// <summary>
 		/// Gets the metadata which provides additional, unstructured information about this commit attempt.

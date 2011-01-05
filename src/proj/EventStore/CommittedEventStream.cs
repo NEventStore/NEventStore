@@ -19,8 +19,8 @@
 		/// <param name="snapshot">The snapshot, if any, containing a serialized revision of the stream upon which the events provided can be applied.</param>
 		public CommittedEventStream(
 			Guid streamId,
-			long streamRevision,
-			long commitSequence,
+			int streamRevision,
+			int commitSequence,
 			ICollection<object> events,
 			ICollection<Guid> commitIdentifiers,
 			object snapshot)
@@ -41,12 +41,12 @@
 		/// <summary>
 		/// Gets a value indicating the most recent revision of the stream for the events retreived.
 		/// </summary>
-		public long StreamRevision { get; private set; }
+		public int StreamRevision { get; private set; }
 
 		/// <summary>
 		/// Gets a value indicating the most recent commit applied to the stream for the events retreived.
 		/// </summary>
-		public long CommitSequence { get; private set; }
+		public int CommitSequence { get; private set; }
 
 		/// <summary>
 		/// Gets the series of committed events.

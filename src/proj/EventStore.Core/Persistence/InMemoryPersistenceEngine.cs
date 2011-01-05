@@ -23,7 +23,7 @@ namespace EventStore.Persistence
 		{
 		}
 
-		public virtual IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision)
+		public virtual IEnumerable<Commit> GetUntil(Guid streamId, int maxRevision)
 		{
 			lock (this.commits)
 			{
@@ -33,7 +33,7 @@ namespace EventStore.Persistence
 					.Take(1)
 					.FirstOrDefault();
 
-				long snapshotRevision = 0;
+				int snapshotRevision = 0;
 				if (snapshotCommit != null)
 					snapshotRevision = snapshotCommit.StreamRevision;
 
@@ -42,7 +42,7 @@ namespace EventStore.Persistence
 					.ToList();
 			}
 		}
-		public virtual IEnumerable<Commit> GetFrom(Guid streamId, long minRevision)
+		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision)
 		{
 			lock (this.commits)
 				return this.commits.Where(x => x.StreamId == streamId && x.StreamRevision >= minRevision).ToArray();
@@ -90,7 +90,7 @@ namespace EventStore.Persistence
 				return this.heads.Where(x => x.HeadRevision >= x.SnapshotRevision + maxThreshold)
 					.Select(stream => new StreamHead(stream.StreamId, stream.HeadRevision, stream.SnapshotRevision));
 		}
-		public virtual void AddSnapshot(Guid streamId, long streamRevision, object snapshot)
+		public virtual void AddSnapshot(Guid streamId, int streamRevision, object snapshot)
 		{
 			lock (this.commits)
 			{

@@ -51,6 +51,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return "@StreamRevision"; }
 		}
+		public virtual string CommitStamp
+		{
+			get { return "@CommitStamp"; }
+		}
 		public virtual string Headers
 		{
 			get { return "@Headers"; }
@@ -58,10 +62,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		public virtual string Payload
 		{
 			get { return "@Payload"; }
-		}
-		public virtual string Now
-		{
-			get { return "@Now"; }
 		}
 		public virtual string Threshold
 		{

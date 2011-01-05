@@ -14,12 +14,12 @@ namespace EventStore.Persistence.SqlPersistence
 		string PersistCommitAttempt { get; }
 
 		string StreamId { get; }
+		string StreamRevision { get; }
 		string CommitId { get; }
 		string CommitSequence { get; }
-		string StreamRevision { get; }
+		string CommitStamp { get; }
 		string Headers { get; }
 		string Payload { get; }
-		string Now { get; }
 		string Threshold { get; }
 
 		IDbTransaction OpenTransaction(IDbConnection connection);

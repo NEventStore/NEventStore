@@ -46,7 +46,7 @@ namespace EventStore.Persistence.MongoPersistence
 				.CreateIndex(mc => new { mc.StreamId, mc.StreamRevision }, "GetFrom_Index", false, IndexOption.Ascending);
 		}
 
-		public virtual IEnumerable<Commit> GetFrom(Guid streamId, long minRevision)
+		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision)
 		{
 			try
 			{
@@ -59,7 +59,7 @@ namespace EventStore.Persistence.MongoPersistence
 				throw new PersistenceEngineException(e.Message, e);
 			}
 		}
-		public virtual IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision)
+		public virtual IEnumerable<Commit> GetUntil(Guid streamId, int maxRevision)
 		{
 			var snapshotCommit = this.store.Database.GetCollection<MongoCommit>().AsQueryable()
 				.Where(x => x.StreamId == streamId && x.StreamRevision <= maxRevision && x.Snapshot != null)
@@ -67,7 +67,7 @@ namespace EventStore.Persistence.MongoPersistence
 				.Take(1)
 				.FirstOrDefault();
 
-			long snapshotRevision = 0;
+			var snapshotRevision = 0;
 			if (snapshotCommit != null)
 				snapshotRevision = snapshotCommit.StreamRevision;
 
@@ -120,7 +120,7 @@ namespace EventStore.Persistence.MongoPersistence
 				.Where(x => x.HeadRevision >= x.SnapshotRevision + maxThreshold).ToArray()
 				.Select(stream => new StreamHead(stream.StreamId, stream.HeadRevision, stream.SnapshotRevision));
 		}
-		public virtual void AddSnapshot(Guid streamId, long streamRevision, object snapshot)
+		public virtual void AddSnapshot(Guid streamId, int streamRevision, object snapshot)
 		{
 			var commit = new Expando();
 			commit["StreamId"] = streamId;

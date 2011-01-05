@@ -9,7 +9,7 @@ namespace EventStore.Persistence.RavenPersistence
 
 	internal static class RavenExtensions
 	{
-		public static PatchCommandData UpdateStream(this Guid streamId, string name, long headRevision)
+		public static PatchCommandData UpdateStream(this Guid streamId, string name, int headRevision)
 		{
 			var patches = new List<PatchRequest>
 			{
@@ -35,7 +35,7 @@ namespace EventStore.Persistence.RavenPersistence
 				Patches = patches.ToArray()
 			};
 		}
-		public static PatchCommandData UpdateStream(this Guid streamId, long snapshotRevision)
+		public static PatchCommandData UpdateStream(this Guid streamId, int snapshotRevision)
 		{
 			return new PatchCommandData
 			{

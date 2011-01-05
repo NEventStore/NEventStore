@@ -15,7 +15,12 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		public override string PersistCommitAttempt
 		{
-			get { return base.PersistCommitAttempt.Replace("/*FROM DUAL*/", "FROM DUAL"); }
+			get
+			{
+				return base.PersistCommitAttempt
+					.Replace("/*FROM DUAL*/", "FROM DUAL")
+					.Replace(this.CommitStamp, "now()");
+			}
 		}
 
 		public override IDbTransaction OpenTransaction(IDbConnection connection)

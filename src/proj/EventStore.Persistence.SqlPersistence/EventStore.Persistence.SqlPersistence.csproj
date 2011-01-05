@@ -151,6 +151,7 @@
     <EmbeddedResource Include="SqlDialects\MsSqlStatements.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>MsSqlStatements.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="SqlDialects\MySqlStatements.resx">
       <Generator>ResXFileCodeGenerator</Generator>

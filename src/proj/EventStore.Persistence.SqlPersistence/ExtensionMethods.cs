@@ -12,12 +12,9 @@ namespace EventStore.Persistence.SqlPersistence
 			var bytes = value as byte[];
 			return bytes != null ? new Guid(bytes) : Guid.Empty;
 		}
-		public static long ToLong(this object value)
+		public static int ToInt(this object value)
 		{
-			if (value is int)
-				return (int)value;
-
-			return (long)value;
+			return (int)value;
 		}
 	}
 }

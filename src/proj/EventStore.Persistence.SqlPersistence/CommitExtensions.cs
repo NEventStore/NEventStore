@@ -25,8 +25,8 @@ namespace EventStore.Persistence.SqlPersistence
 			return new Commit(
 				record[StreamIdIndex].ToGuid(),
 				record[CommitIdIndex].ToGuid(),
-				record[StreamRevisionIndex].ToLong(),
-				record[CommitSequenceIndex].ToLong(),
+				record[StreamRevisionIndex].ToInt(),
+				record[CommitSequenceIndex].ToInt(),
 				headers,
 				events,
 				snapshot);

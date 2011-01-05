@@ -14,7 +14,7 @@ namespace EventStore.Core.UnitTests
 	[Subject("OptimisticEventStore")]
 	public class when_reading_a_stream_up_to_a_maximum_revision : using_persistence
 	{
-		const long MaxRevision = 1234;
+		const int MaxRevision = 1234;
 		static readonly Commit[] Commits = new[]
 		{
 			new Commit(streamId, Guid.NewGuid(), 1, 1, null, null, "ignore this snapshot")
@@ -72,7 +72,7 @@ namespace EventStore.Core.UnitTests
 	[Subject("OptimisticEventStore")]
 	public class when_reading_a_stream_from_a_minimum_revision : using_persistence
 	{
-		const long MinRevision = 42;
+		const int MinRevision = 42;
 		static readonly Commit[] Commits = new[]
 		{
 			new Commit(streamId, Guid.NewGuid(), 1, 1, null, null, "ignore this snapshot")
@@ -139,13 +139,13 @@ namespace EventStore.Core.UnitTests
 	public class when_reading_until_version_zero : using_persistence
 	{
 		Establish context = () =>
-			persistence.Setup(x => x.GetUntil(streamId, long.MaxValue));
+			persistence.Setup(x => x.GetUntil(streamId, int.MaxValue));
 
 		Because of = () =>
 			store.ReadUntil(streamId, 0);
 
 		It should_pass_the_maximum_numeric_value_to_persistence = () =>
-			persistence.Verify(x => x.GetUntil(streamId, long.MaxValue), Times.Exactly(1));
+			persistence.Verify(x => x.GetUntil(streamId, int.MaxValue), Times.Exactly(1));
 	}
 
 	[Subject("OptimisticEventStore")]
@@ -350,7 +350,7 @@ namespace EventStore.Core.UnitTests
 	[Subject("OptimisticEventStore")]
 	public class when_writing_a_commit_attempt_with_an_identifier_that_was_previously_read_up_to_a_max_revision : using_persistence
 	{
-		const long MaxRevision = 2;
+		const int MaxRevision = 2;
 		static readonly Guid DuplicateCommitId = Guid.NewGuid();
 		static readonly Commit[] Commits = new[]
 		{
@@ -393,7 +393,7 @@ namespace EventStore.Core.UnitTests
 	[Subject("OptimisticEventStore")]
 	public class when_writing_a_commit_attempt_with_an_identifier_that_was_previously_read_from_a_min_revision : using_persistence
 	{
-		const long MinRevision = 1;
+		const int MinRevision = 1;
 		static readonly Guid DuplicateCommitId = Guid.NewGuid();
 		static readonly Commit[] Commits = new[]
 		{
@@ -454,8 +454,8 @@ namespace EventStore.Core.UnitTests
 	[Subject("OptimisticEventStore")]
 	public class when_writing_an_attempt_with_a_sequence_less_than_the_most_recent_sequence_for_the_stream : using_persistence
 	{
-		const long StreamRevision = 42;
-		const long MostRecentSequence = 42;
+		const int StreamRevision = 42;
+		const int MostRecentSequence = 42;
 		static readonly Commit[] Commits = new[]
 		{
 			new Commit(streamId, Guid.NewGuid(), StreamRevision, MostRecentSequence, null, null, null), 
@@ -487,8 +487,8 @@ namespace EventStore.Core.UnitTests
 	[Subject("OptimisticEventStore")]
 	public class when_writing_an_attempt_with_a_revision_less_or_equal_to_than_the_most_recent_revision_read_for_the_stream : using_persistence
 	{
-		const long MostRecentStreamRevision = 2;
-		const long CommitSequence = 1;
+		const int MostRecentStreamRevision = 2;
+		const int CommitSequence = 1;
 		static readonly Commit[] Commits = new[]
 		{
 			new Commit(streamId, Guid.NewGuid(), MostRecentStreamRevision, CommitSequence, null, null, null), 

@@ -30,8 +30,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			{
 				if (value is Guid)
 					base.SetParameterValue(param, value, DbType.Guid);
-				else if (value is long)
-					base.SetParameterValue(param, value, DbType.Int64);
+				else if (value is int)
+					base.SetParameterValue(param, value, DbType.Int32);
 				else if (value is string)
 					base.SetParameterValue(param, value, DbType.String);
 				else if (value is byte[])

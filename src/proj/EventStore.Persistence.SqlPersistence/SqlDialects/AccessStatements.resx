@@ -127,8 +127,8 @@ INSERT INTO Dual VALUES (' ');
 CREATE TABLE Streams
 (
        StreamId guid NOT NULL,
-       HeadRevision long NOT NULL,
-       SnapshotRevision long NOT NULL DEFAULT 0,
+       HeadRevision int NOT NULL,
+       SnapshotRevision int NOT NULL DEFAULT 0,
        CONSTRAINT PK_Streams PRIMARY KEY (StreamId)
 );
 
@@ -136,8 +136,8 @@ CREATE TABLE Commits
 (
        StreamId guid NOT NULL,
        CommitId guid NOT NULL,
-       StreamRevision long NOT NULL,
-       CommitSequence long NOT NULL,
+       StreamRevision int NOT NULL,
+       CommitSequence int NOT NULL,
        CommitStamp datetime NOT NULL,
        Headers image NULL,
        Payload image NOT NULL,
@@ -150,7 +150,7 @@ CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (StreamId, StreamRevision);
 CREATE TABLE Dispatch
 (
        StreamId guid NOT NULL,
-       CommitSequence long NOT NULL,
+       CommitSequence int NOT NULL,
        CONSTRAINT PK_Dispatch PRIMARY KEY (StreamId, CommitSequence)
 );</value>
   </data>

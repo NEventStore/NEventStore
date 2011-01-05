@@ -20,7 +20,7 @@ namespace EventStore.Persistence
 		/// <param name="streamId">The stream from which the events will be read.</param>
 		/// <param name="maxRevision">The maximum revision of the stream to be read.</param>
 		/// <returns>A series of committed events from the stream specified sorted in ascending order.</returns>
-		IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision);
+		IEnumerable<Commit> GetUntil(Guid streamId, int maxRevision);
 
 		/// <summary>
 		/// Gets the corresponding commits from the stream indicated starting at the revision specified until the
@@ -29,7 +29,7 @@ namespace EventStore.Persistence
 		/// <param name="streamId">The stream from which the events will be read.</param>
 		/// <param name="minRevision">The minimum revision of the stream to be read.</param>
 		/// <returns>A series of committed events from the stream specified sorted in ascending order..</returns>
-		IEnumerable<Commit> GetFrom(Guid streamId, long minRevision);
+		IEnumerable<Commit> GetFrom(Guid streamId, int minRevision);
 
 		/// <summary>
 		/// Writes the to-be-commited events provided to the underlying persistence mechanism.
@@ -62,6 +62,6 @@ namespace EventStore.Persistence
 		/// <param name="streamId">The value which uniquely identifies the stream to which the snapshot applies.</param>
 		/// <param name="streamRevision">The position at which the snapshot applies.</param>
 		/// <param name="snapshot">The snapshot or materialized view of the stream at the revision indicated.</param>
-		void AddSnapshot(Guid streamId, long streamRevision, object snapshot);
+		void AddSnapshot(Guid streamId, int streamRevision, object snapshot);
 	}
 }

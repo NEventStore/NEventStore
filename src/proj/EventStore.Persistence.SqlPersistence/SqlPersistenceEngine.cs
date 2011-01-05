@@ -35,15 +35,15 @@ namespace EventStore.Persistence.SqlPersistence
 				statement.ExecuteWithSuppression(this.dialect.InitializeStorage));
 		}
 
-		public virtual IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision)
+		public virtual IEnumerable<Commit> GetUntil(Guid streamId, int maxRevision)
 		{
 			return this.Fetch(streamId, maxRevision, this.dialect.GetCommitsFromSnapshotUntilRevision);
 		}
-		public virtual IEnumerable<Commit> GetFrom(Guid streamId, long minRevision)
+		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision)
 		{
 			return this.Fetch(streamId, minRevision, this.dialect.GetCommitsFromStartingRevision);
 		}
-		protected virtual IEnumerable<Commit> Fetch(Guid streamId, long revision, string queryText)
+		protected virtual IEnumerable<Commit> Fetch(Guid streamId, int revision, string queryText)
 		{
 			return this.Execute(streamId, query =>
 			{
@@ -63,7 +63,7 @@ namespace EventStore.Persistence.SqlPersistence
 				cmd.AddParameter(this.dialect.CommitId, commit.CommitId);
 				cmd.AddParameter(this.dialect.CommitSequence, commit.CommitSequence);
 				cmd.AddParameter(this.dialect.StreamRevision, commit.StreamRevision);
-				cmd.AddParameter(this.dialect.Now, DateTime.UtcNow);
+				cmd.AddParameter(this.dialect.CommitStamp, DateTime.UtcNow);
 				cmd.AddParameter(this.dialect.Headers, this.serializer.Serialize(commit.Headers));
 				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(commit.Events));
 
@@ -97,7 +97,7 @@ namespace EventStore.Persistence.SqlPersistence
 				return query.ExecuteWithQuery(statement, record => record.GetStreamToSnapshot());
 			});
 		}
-		public virtual void AddSnapshot(Guid streamId, long streamRevision, object snapshot)
+		public virtual void AddSnapshot(Guid streamId, int streamRevision, object snapshot)
 		{
 			this.Execute(streamId, cmd =>
 			{

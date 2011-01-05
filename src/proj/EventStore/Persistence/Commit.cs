@@ -24,8 +24,8 @@ namespace EventStore.Persistence
 		public Commit(
 			Guid streamId,
 			Guid commitId,
-			long streamRevision,
-			long commitSequence,
+			int streamRevision,
+			int commitSequence,
 			IDictionary<string, object> headers,
 			ICollection<EventMessage> events,
 			object snapshot)
@@ -52,12 +52,12 @@ namespace EventStore.Persistence
 		/// <summary>
 		/// Gets the value which indicates the revision of the most recent event in the stream to which this commit applies.
 		/// </summary>
-		[DataMember] public virtual long StreamRevision { get; private set; }
+		[DataMember] public virtual int StreamRevision { get; private set; }
 
 		/// <summary>
 		/// Gets the value which indicates the sequence (or position) in the stream to which this commit applies.
 		/// </summary>
-		[DataMember] public virtual long CommitSequence { get; private set; }
+		[DataMember] public virtual int CommitSequence { get; private set; }
 
 		/// <summary>
 		/// Gets the metadata which provides additional, unstructured information about this commit.

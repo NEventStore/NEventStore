@@ -39,14 +39,14 @@ namespace EventStore.Persistence.RavenPersistence
 			this.initializer.Initialize(this.store);
 		}
 
-		public virtual IEnumerable<Commit> GetUntil(Guid streamId, long maxRevision)
+		public virtual IEnumerable<Commit> GetUntil(Guid streamId, int maxRevision)
 		{
 			using (new TransactionScope(TransactionScopeOption.Suppress))
 			{
 				return null;
 			}
 		}
-		public virtual IEnumerable<Commit> GetFrom(Guid streamId, long minRevision)
+		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision)
 		{
 			using (new TransactionScope(TransactionScopeOption.Suppress))
 			using (var session = this.store.OpenSession())
@@ -150,7 +150,7 @@ namespace EventStore.Persistence.RavenPersistence
 				return streams.Where(x => x.HeadRevision >= x.SnapshotRevision + 1);
 			}
 		}
-		public virtual void AddSnapshot(Guid streamId, long streamRevision, object snapshot)
+		public virtual void AddSnapshot(Guid streamId, int streamRevision, object snapshot)
 		{
 			using (new TransactionScope(TransactionScopeOption.Suppress))
 			using (var session = this.store.OpenSession())

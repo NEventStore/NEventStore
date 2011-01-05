@@ -13,8 +13,8 @@
 		}
 		public Guid StreamId { get; set; }
 		public Guid CommitId { get; set; }
-		public long StreamRevision { get; set; }
-		public long CommitSequence { get; set; }
+		public int StreamRevision { get; set; }
+		public int CommitSequence { get; set; }
 		public Dictionary<string, object> Headers { get; set; }
 		public List<EventMessage> Events { get; set; }
 		public byte[] Snapshot { get; set; }

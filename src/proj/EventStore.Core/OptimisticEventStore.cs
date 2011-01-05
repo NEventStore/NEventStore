@@ -19,12 +19,12 @@ namespace EventStore
 			this.dispatcher = dispatcher;
 		}
 
-		public virtual CommittedEventStream ReadUntil(Guid streamId, long maxRevision)
+		public virtual CommittedEventStream ReadUntil(Guid streamId, int maxRevision)
 		{
-			maxRevision = maxRevision > 0 ? maxRevision : long.MaxValue;
+			maxRevision = maxRevision > 0 ? maxRevision : int.MaxValue;
 			return this.Read(this.persistence.GetUntil(streamId, maxRevision), true);
 		}
-		public virtual CommittedEventStream ReadFrom(Guid streamId, long minRevision)
+		public virtual CommittedEventStream ReadFrom(Guid streamId, int minRevision)
 		{
 			return this.Read(this.persistence.GetFrom(streamId, minRevision), false);
 		}
@@ -32,8 +32,8 @@ namespace EventStore
 		{
 			var streamId = Guid.Empty;
 			Commit last = null;
-			long sequence = 0;
-			long revision = 0;
+			var sequence = 0;
+			var revision = 0;
 			object snapshot = null;
 			ICollection<object> events = new LinkedList<object>();
 			ICollection<Guid> commitIdentifiers = new HashSet<Guid>();

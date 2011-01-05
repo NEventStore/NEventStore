@@ -6,7 +6,7 @@ namespace EventStore.Core.UnitTests
 
 	internal static class ExtensionMethods
 	{
-		public static long MostRecentRevision(this IEnumerable<Commit> commits)
+		public static int MostRecentRevision(this IEnumerable<Commit> commits)
 		{
 			return commits.Last().StreamRevision;
 		}
