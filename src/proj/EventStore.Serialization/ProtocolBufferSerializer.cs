@@ -75,7 +75,8 @@ namespace EventStore.Serialization
 			this.RegisterContract(typeof(Exception));
 			this.RegisterContract(typeof(SerializationException));
 		}
-		private void RegisterContract(Type contract)
+
+		public void RegisterContract(Type contract)
 		{
 			if (!this.CanRegisterContract(contract))
 				return;
