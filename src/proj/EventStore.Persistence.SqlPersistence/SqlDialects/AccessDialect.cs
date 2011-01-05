@@ -26,6 +26,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return AccessStatements.GetStreamsRequiringSnapshots; }
 		}
+		public override string AppendSnapshotToCommit
+		{
+			get { return AccessStatements.AppendSnapshot; }
+		}
 
 		public override IDbTransaction OpenTransaction(IDbConnection connection)
 		{

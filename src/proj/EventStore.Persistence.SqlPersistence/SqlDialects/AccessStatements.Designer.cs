@@ -61,14 +61,26 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(nz(S.StreamRevision, 0)) AS SnapshotRevision
+        ///   Looks up a localized string similar to UPDATE Commits
+        ///   SET Snapshot = @Payload,
+        ///       HasSnapshot = true
+        /// WHERE StreamId = @StreamId
+        ///   AND StreamRevision = @StreamRevision;.
+        /// </summary>
+        internal static string AppendSnapshot {
+            get {
+                return ResourceManager.GetString("AppendSnapshot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(IIf(S.StreamRevision IS NULL, 0, S.StreamRevision)) AS SnapshotRevision
         ///  FROM Commits AS C
         ///  LEFT JOIN Commits AS S
-        ///    ON C.StreamId = S.StreamId
-        ///   AND S.Snapshot IS NOT NULL
-        /// WHERE C.CommitSequence &gt;= nz(S.CommitSequence, 0)
+        ///    ON ( C.StreamId = S.StreamId AND S.HasSnapshot = true )
+        /// WHERE C.CommitSequence &gt;= IIF(S.CommitSequence IS NULL, 0, S.StreamRevision)
         /// GROUP BY C.StreamId
-        ///HAVING MAX(C.StreamRevision) &gt;= MAX(nz(S.StreamRevision, 0)) + @Threshold;.
+        ///HAVING MAX(C.StreamRevision) &gt;= MAX(IIF(S.StreamRevision IS NULL, 0, S.StreamRevision)) + @Threshold;.
         /// </summary>
         internal static string GetStreamsRequiringSnapshots {
             get {
@@ -93,9 +105,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///       Headers image NULL,
         ///       Payload image NOT NULL,
         ///       Snapshot image NULL,
+        ///       HasSnapshot bit NOT NULL DEFAULT 0,
         ///       CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)
         ///);
-        ///CREATE UNIQUE INDEX IX_Commits ON Commits (Strea [rest of string was truncated]&quot;;.
+        ///CREA [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {
