@@ -75,13 +75,13 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         /// <summary>
         ///   Looks up a localized string similar to SELECT C.StreamId, C.CommitId, C.StreamRevision, C.CommitSequence, C.Headers, C.Payload, C.Snapshot
         ///  FROM Commits AS C
-        /// INNER JOIN Commits AS M
+        ///  LEFT OUTER JOIN Commits AS M
         ///    ON C.StreamId = M.StreamId
-        /// WHERE C.StreamId = @StreamId
-        ///   AND C.StreamRevision BETWEEN M.StreamRevision AND @StreamRevision
-        ///   AND M.StreamRevision &lt;= @StreamRevision
         ///   AND M.Snapshot IS NOT NULL
-        /// ORDER BY C.CommitSequence;.
+        /// WHERE C.StreamId = @StreamId
+        ///   AND C.StreamRevision BETWEEN COALESCE(M.StreamRevision, 0) AND @StreamRevision
+        ///   AND COALESCE(M.StreamRevision, 0) &lt;= @StreamRevision
+        /// ORDER BY C.StreamId, C.CommitSequence;.
         /// </summary>
         internal static string GetCommitsFromSnapshotUntilRevision {
             get {

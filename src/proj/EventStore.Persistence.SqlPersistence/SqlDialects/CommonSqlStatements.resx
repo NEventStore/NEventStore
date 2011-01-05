@@ -126,14 +126,13 @@
   <data name="GetCommitsFromSnapshotUntilRevision" xml:space="preserve">
     <value>SELECT C.StreamId, C.CommitId, C.StreamRevision, C.CommitSequence, C.Headers, C.Payload, C.Snapshot
   FROM Commits AS C
- INNER JOIN Commits AS M
+  LEFT OUTER JOIN Commits AS M
     ON C.StreamId = M.StreamId
- WHERE C.StreamId = @StreamId
-   AND C.StreamRevision BETWEEN M.StreamRevision AND @StreamRevision
-   AND M.StreamRevision &lt;= @StreamRevision
    AND M.Snapshot IS NOT NULL
- ORDER BY C.CommitSequence;</value>
-    <comment>This statement works for all implemented SQL dialects.  Even though it looks ugly and could be re-written more elegantly, it's a more compatible statement (unfortunately).</comment>
+ WHERE C.StreamId = @StreamId
+   AND C.StreamRevision BETWEEN COALESCE(M.StreamRevision, 0) AND @StreamRevision
+   AND COALESCE(M.StreamRevision, 0) &lt;= @StreamRevision
+ ORDER BY C.StreamId, C.CommitSequence;</value>
   </data>
   <data name="GetCommitsFromStartingRevision" xml:space="preserve">
     <value>SELECT StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload
