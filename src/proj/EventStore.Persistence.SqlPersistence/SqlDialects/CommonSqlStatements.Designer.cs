@@ -160,12 +160,13 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///
         ///INSERT
         ///  INTO Commits
-        ///     ( StreamId, CommitId, CommitSequence, StreamRevision, Headers, Payload )
-        ///SELECT @StreamId, @CommitId, @CommitSequence, @StreamRevision, @Headers, @Payload
+        ///SELECT @StreamId, @CommitId, @StreamRevision, @CommitSequence, @Now, @Headers, @Payload, null
         ////*FROM DUAL*/
         /// WHERE NOT EXISTS
         ///     ( SELECT *
-        ///         FROM Com [rest of string was truncated]&quot;;.
+        ///         FROM Commits
+        ///        WHERE StreamId = @StreamId
+        ///          AND CommitId &lt;&gt; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string PersistCommitAttempt {
             get {

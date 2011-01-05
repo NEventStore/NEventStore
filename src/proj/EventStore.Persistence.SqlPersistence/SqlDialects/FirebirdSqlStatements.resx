@@ -132,7 +132,7 @@ CREATE TABLE Commits
        CommitId char(16) character set octets NOT NULL,
        StreamRevision bigint NOT NULL CHECK (StreamRevision &gt; 0),
        CommitSequence bigint NOT NULL CHECK (CommitSequence &gt; 0),
-       CommitStamp timestamp DEFAULT current_timestamp NOT NULL,
+       CommitStamp timestamp NOT NULL,
        Headers blob,
        Payload blob NOT NULL,
        "Snapshot" blob,

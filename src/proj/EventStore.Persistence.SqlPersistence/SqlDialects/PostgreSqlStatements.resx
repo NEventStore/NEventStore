@@ -132,7 +132,7 @@ CREATE TABLE Commits
        CommitId uuid NOT NULL,
        StreamRevision bigint NOT NULL CHECK (StreamRevision &gt; 0),
        CommitSequence bigint NOT NULL CHECK (CommitSequence &gt; 0),
-       CommitStamp timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP),
+       CommitStamp timestamp NOT NULL,
        Headers bytea NULL,
        Payload bytea NOT NULL,
        Snapshot bytea NULL,

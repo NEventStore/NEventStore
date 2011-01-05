@@ -65,9 +65,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///(
         ///       DualTableValue char(1) NOT NULL
         ///);
-        ///INSERT
-        ///  INTO Dual
-        ///VALUES (&apos; &apos;);
+        ///INSERT INTO Dual VALUES (&apos; &apos;);
         ///
         ///CREATE TABLE Streams
         ///(
@@ -83,7 +81,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///       CommitId guid NOT NULL,
         ///       StreamRevision long NOT NULL,
         ///       CommitSequence long NOT NULL,
-        ///       CommitStamp datetime NOT NULL DEFA [rest of string was truncated]&quot;;.
+        ///       CommitStamp datetime NOT NULL,
+        ///       [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {

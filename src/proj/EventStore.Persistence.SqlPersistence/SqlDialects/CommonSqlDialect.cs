@@ -59,6 +59,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return "@Payload"; }
 		}
+		public virtual string Now
+		{
+			get { return "@Now"; }
+		}
 		public virtual string Threshold
 		{
 			get { return "@Threshold"; }

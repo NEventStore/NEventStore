@@ -122,9 +122,7 @@
 (
        DualTableValue char(1) NOT NULL
 );
-INSERT
-  INTO Dual
-VALUES (' ');
+INSERT INTO Dual VALUES (' ');
 
 CREATE TABLE Streams
 (
@@ -140,7 +138,7 @@ CREATE TABLE Commits
        CommitId guid NOT NULL,
        StreamRevision long NOT NULL,
        CommitSequence long NOT NULL,
-       CommitStamp datetime NOT NULL DEFAULT now(),
+       CommitStamp datetime NOT NULL,
        Headers image NULL,
        Payload image NOT NULL,
        Snapshot image NULL,

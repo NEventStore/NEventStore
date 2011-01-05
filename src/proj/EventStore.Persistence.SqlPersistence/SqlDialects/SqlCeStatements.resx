@@ -132,7 +132,7 @@ CREATE TABLE Commits
        CommitId uniqueidentifier NOT NULL,
        StreamRevision bigint NOT NULL,
        CommitSequence bigint NOT NULL,
-       CommitStamp datetime NOT NULL default(getdate()),
+       CommitStamp datetime NOT NULL,
        Headers image NULL,
        Payload image NOT NULL,
        Snapshot image NULL,

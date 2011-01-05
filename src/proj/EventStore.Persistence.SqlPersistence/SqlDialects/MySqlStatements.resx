@@ -143,7 +143,6 @@ CREATE TABLE IF NOT EXISTS Commits
 );
 CREATE UNIQUE INDEX IX_Commits_CommitId ON Commits (StreamId, CommitId);
 CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (StreamId, StreamRevision);
-CREATE TRIGGER EnsureCommitStamp BEFORE INSERT ON Commits FOR EACH ROW SET NEW.CommitStamp = UTC_TIMESTAMP();
 
 CREATE TABLE IF NOT EXISTS Dispatch
 (

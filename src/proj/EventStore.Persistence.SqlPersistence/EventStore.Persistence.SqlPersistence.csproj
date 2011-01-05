@@ -146,6 +146,7 @@
     <EmbeddedResource Include="SqlDialects\FirebirdSqlStatements.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>FirebirdSqlStatements.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="SqlDialects\MsSqlStatements.resx">
       <Generator>ResXFileCodeGenerator</Generator>

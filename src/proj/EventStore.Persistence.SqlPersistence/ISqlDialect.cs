@@ -19,6 +19,7 @@ namespace EventStore.Persistence.SqlPersistence
 		string StreamRevision { get; }
 		string Headers { get; }
 		string Payload { get; }
+		string Now { get; }
 		string Threshold { get; }
 
 		IDbTransaction OpenTransaction(IDbConnection connection);

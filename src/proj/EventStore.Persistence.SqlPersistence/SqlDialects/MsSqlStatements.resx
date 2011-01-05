@@ -137,7 +137,7 @@ CREATE TABLE [dbo].[Commits]
        [CommitId] [uniqueidentifier] NOT NULL CHECK ([CommitId] != 0x0),
        [StreamRevision] [bigint] NOT NULL CHECK ([StreamRevision] &gt; 0),
        [CommitSequence] [bigint] NOT NULL CHECK ([CommitSequence] &gt; 0),
-       [CommitStamp] [datetime] NOT NULL DEFAULT (getutcdate()),
+       [CommitStamp] [datetime] NOT NULL,
        [Headers] [varbinary](MAX) NULL CHECK ([Headers] IS NULL OR DATALENGTH([Headers]) &gt; 0),
        [Payload] [varbinary](MAX) NOT NULL CHECK (DATALENGTH([Payload]) &gt; 0),
        [Snapshot] [varbinary](MAX) NULL CHECK ([Snapshot] IS NULL OR DATALENGTH([Snapshot]) &gt; 0),
