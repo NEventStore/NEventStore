@@ -8,17 +8,17 @@ namespace EventStore.Persistence.SqlPersistence
 	using Serialization;
 	using SqlDialects;
 
-	public abstract class SqlPersistenceFactory : IPersistenceFactory
+	public class SqlPersistenceFactory : IPersistenceFactory
 	{
 		private readonly string connectionName;
 		private readonly ISqlDialect dialect;
 		private readonly ISerialize serializer;
 
-		protected SqlPersistenceFactory(string connectionName, ISerialize serializer)
+		public SqlPersistenceFactory(string connectionName, ISerialize serializer)
 			: this(connectionName, serializer, null)
 		{
 		}
-		protected SqlPersistenceFactory(string connectionName, ISerialize serializer, ISqlDialect dialect)
+		public SqlPersistenceFactory(string connectionName, ISerialize serializer, ISqlDialect dialect)
 		{
 			this.connectionName = connectionName;
 			this.dialect = dialect;
