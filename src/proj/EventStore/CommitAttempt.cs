@@ -24,11 +24,6 @@ namespace EventStore
 		public Guid StreamId { get; set; }
 
 		/// <summary>
-		/// Gets or sets the friendly name of the stream.
-		/// </summary>
-		public string StreamName { get; set; }
-
-		/// <summary>
 		/// Gets or sets the value which uniquely identifies the commit within the stream.
 		/// </summary>
 		public Guid CommitId { get; set; }

@@ -149,7 +149,7 @@ UPDATE Streams
  ORDER BY CommitSequence;</value>
   </data>
   <data name="GetStreamsRequiringSnaphots" xml:space="preserve">
-    <value>SELECT StreamId, Name, HeadRevision, SnapshotRevision
+    <value>SELECT StreamId, HeadRevision, SnapshotRevision
   FROM Streams
  WHERE HeadRevision &gt;= SnapshotRevision + @Threshold
  ORDER BY SnapshotRevision - HeadRevision;</value>
@@ -194,8 +194,8 @@ SELECT @StreamId, @CommitId, @CommitSequence, @StreamRevision, @Headers, @Payloa
 
 INSERT
   INTO Streams
-     ( StreamId, Name, HeadRevision )
-SELECT @StreamId, @StreamName, @StreamRevision
+     ( StreamId, HeadRevision )
+SELECT @StreamId, @StreamRevision
 /*FROM DUAL*/
  WHERE @CommitSequence = 1
    AND NOT EXISTS
@@ -204,8 +204,7 @@ SELECT @StreamId, @StreamName, @StreamRevision
         WHERE StreamId = @StreamId );
 
 UPDATE Streams
-   SET HeadRevision = @StreamRevision,
-       Name = COALESCE(@StreamName, Name)
+   SET HeadRevision = @StreamRevision
  WHERE StreamId = @StreamId
    AND @CommitSequence &gt; 1
    AND HeadRevision &lt; @StreamRevision;</value>

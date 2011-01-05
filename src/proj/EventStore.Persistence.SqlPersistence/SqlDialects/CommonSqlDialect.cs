@@ -39,10 +39,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return "@StreamId"; }
 		}
-		public virtual string StreamName
-		{
-			get { return "@StreamName"; }
-		}
 		public virtual string CommitId
 		{
 			get { return "@CommitId"; }

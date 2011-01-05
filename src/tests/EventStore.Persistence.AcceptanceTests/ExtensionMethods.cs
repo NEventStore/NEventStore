@@ -9,7 +9,6 @@ namespace EventStore.Persistence.AcceptanceTests
 			return new CommitAttempt
 			{
 				StreamId = streamId,
-				StreamName = "AcceptanceTestAttempt",
 				CommitId = Guid.NewGuid(),
 				PreviousCommitSequence = 0,
 				StreamRevision = 2,

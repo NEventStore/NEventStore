@@ -76,11 +76,10 @@ namespace EventStore.Persistence.RavenPersistence
 				session.Advanced.OnEntityConverted += (entity, doc, meta) => doc.Add(ToDispatch, true);
 
 				if (uncommitted.PreviousCommitSequence == 0)
-					session.Store(new StreamHead(
-						uncommitted.StreamId, uncommitted.StreamName, uncommitted.StreamRevision, 0));
+					session.Store(new StreamHead(uncommitted.StreamId, uncommitted.StreamRevision, 0));
 				else
 				{
-					var patch = commit.StreamId.UpdateStream(uncommitted.StreamName, uncommitted.StreamRevision);
+					var patch = commit.StreamId.UpdateStream(uncommitted.StreamRevision);
 					session.Advanced.DatabaseCommands.Batch(new[] { patch });
 				}
 

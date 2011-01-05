@@ -64,7 +64,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///   Looks up a localized string similar to CREATE TABLE Streams
         ///(
         ///       StreamId uuid NOT NULL,
-        ///       Name varchar(256) NOT NULL DEFAULT (&apos;&apos;),
         ///       HeadRevision bigint NOT NULL CHECK (HeadRevision &gt; 0),
         ///       SnapshotRevision bigint NOT NULL CHECK (SnapshotRevision &gt;= 0) DEFAULT(0),
         ///       CONSTRAINT PK_Streams PRIMARY KEY (StreamId)
@@ -75,7 +74,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///       StreamId uuid NOT NULL,
         ///       CommitId uuid NOT NULL,
         ///       StreamRevision bigint NOT NULL CHECK (StreamRevision &gt; 0),
-        ///       CommitSequence bigint NOT NULL CHECK ( [rest of string was truncated]&quot;;.
+        ///       CommitSequence bigint NOT NULL CHECK (CommitSequence &gt; 0),
+        ///       CommitStamp timestam [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {

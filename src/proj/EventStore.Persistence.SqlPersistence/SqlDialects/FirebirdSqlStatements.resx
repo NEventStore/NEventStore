@@ -121,7 +121,6 @@
     <value>CREATE TABLE Streams
 (
        StreamId char(16) character set octets NOT NULL,
-       Name varchar(256) character set unicode_fss DEFAULT '' NOT NULL,
        HeadRevision bigint NOT NULL CHECK (HeadRevision &gt; 0),
        SnapshotRevision bigint DEFAULT 0 NOT NULL CHECK (SnapshotRevision &gt;= 0),
        CONSTRAINT PK_Streams PRIMARY KEY (StreamId)

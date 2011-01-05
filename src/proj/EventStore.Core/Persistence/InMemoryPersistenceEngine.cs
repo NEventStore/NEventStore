@@ -65,7 +65,7 @@ namespace EventStore.Persistence
 
 				lock (this.heads)
 				{
-					var head = new StreamHead(commit.StreamId, null, commit.StreamRevision, 0);
+					var head = new StreamHead(commit.StreamId, commit.StreamRevision, 0);
 					if (this.heads.Contains(head))
 						this.heads.Remove(head);
 					this.heads.Add(head);
@@ -88,10 +88,7 @@ namespace EventStore.Persistence
 		{
 			lock (this.heads)
 				return this.heads.Where(x => x.HeadRevision >= x.SnapshotRevision + maxThreshold)
-					.Select(stream => new StreamHead(stream.StreamId,
-					                  	stream.StreamName,
-					                  	stream.HeadRevision,
-					                  	stream.SnapshotRevision));
+					.Select(stream => new StreamHead(stream.StreamId, stream.HeadRevision, stream.SnapshotRevision));
 		}
 		public virtual void AddSnapshot(Guid streamId, long streamRevision, object snapshot)
 		{
@@ -114,7 +111,7 @@ namespace EventStore.Persistence
 				var currentHead = this.heads.First(h => h.StreamId == streamId);
 
 				this.heads.Remove(currentHead);
-				this.heads.Add(new StreamHead(currentHead.StreamId, currentHead.StreamName, currentHead.HeadRevision, streamRevision));
+				this.heads.Add(new StreamHead(currentHead.StreamId, currentHead.HeadRevision, streamRevision));
 			}
 		}
 	}

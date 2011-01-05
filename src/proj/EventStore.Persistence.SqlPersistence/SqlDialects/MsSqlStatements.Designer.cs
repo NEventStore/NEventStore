@@ -69,10 +69,12 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///CREATE TABLE [dbo].[Streams]
         ///(
         ///       [StreamId] [uniqueidentifier] NOT NULL CHECK ([StreamId] != 0x0),
-        ///       [Name] [nvarchar](256) NOT NULL DEFAULT (&apos;&apos;),
         ///       [HeadRevision] [bigint] NOT NULL CHECK ([HeadRevision] &gt; 0),
         ///       [SnapshotRevision] [bigint] NOT NULL CHECK ([SnapshotRevision] &gt;= 0) DEFAULT(0),
-        ///       CONSTRAINT [PK_Streams] PRIMARY K [rest of string was truncated]&quot;;.
+        ///       CONSTRAINT [PK_Streams] PRIMARY KEY CLUSTERED ([StreamId])
+        ///);
+        ///
+        ///CREATE TABLE [dbo].[C [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {

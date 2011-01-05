@@ -8,8 +8,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	public class AccessDialect : CommonSqlDialect
 	{
 		private const string ParameterPattern = "@[a-z0-9_]+";
-		private const string CoalescePattern = @"COALESCE\((?<param>.*?),(?<col>.*?)\)";
-		private const string CoalesceReplace = @"''"; // TODO: do coalesce here when building the statement
 
 		public override string InitializeStorage
 		{
@@ -17,11 +15,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		public override string PersistCommitAttempt
 		{
-			get
-			{
-				var statement = base.PersistCommitAttempt.Replace("/*FROM DUAL*/", "FROM DUAL");
-				return Regex.Replace(statement, CoalescePattern, CoalesceReplace);
-			}
+			get { return base.PersistCommitAttempt.Replace("/*FROM DUAL*/", "FROM DUAL"); }
 		}
 
 		public override IDbTransaction OpenTransaction(IDbConnection connection)

@@ -109,7 +109,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT StreamId, Name, HeadRevision, SnapshotRevision
+        ///   Looks up a localized string similar to SELECT StreamId, HeadRevision, SnapshotRevision
         ///  FROM Streams
         /// WHERE HeadRevision &gt;= SnapshotRevision + @Threshold
         /// ORDER BY SnapshotRevision - HeadRevision;.

@@ -98,7 +98,7 @@ namespace EventStore.Persistence.MongoPersistence
 
 			// TODO: this could be done on a completely separate thread
 			this.store.Database.GetCollection<StreamHead>()
-				.Save(new StreamHead(commit.StreamId, null, commit.StreamRevision, 0));
+				.Save(new StreamHead(commit.StreamId, commit.StreamRevision, 0));
 		}
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
@@ -118,7 +118,7 @@ namespace EventStore.Persistence.MongoPersistence
 		{
 			return this.store.Database.GetCollection<StreamHead>().AsQueryable()
 				.Where(x => x.HeadRevision >= x.SnapshotRevision + maxThreshold).ToArray()
-				.Select(stream => new StreamHead(stream.StreamId, stream.StreamName, stream.HeadRevision, stream.SnapshotRevision));
+				.Select(stream => new StreamHead(stream.StreamId, stream.HeadRevision, stream.SnapshotRevision));
 		}
 		public virtual void AddSnapshot(Guid streamId, long streamRevision, object snapshot)
 		{
@@ -128,7 +128,7 @@ namespace EventStore.Persistence.MongoPersistence
 			this.store.Database.GetCollection<MongoCommit>()
 				.Update(commit, u => u.SetValue(mc => mc.Snapshot, this.serializer.Serialize(snapshot)));
 
-			var stream = new StreamHead(streamId, null, streamRevision, 0);
+			var stream = new StreamHead(streamId, streamRevision, 0);
 			this.store.Database.GetCollection<StreamHead>()
 				.Update(stream.ToMongoExpando(), u => u.SetValue(s => s.SnapshotRevision, streamRevision));
 		}
