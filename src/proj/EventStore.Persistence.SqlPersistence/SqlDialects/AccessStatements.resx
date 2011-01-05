@@ -117,20 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="GetStreamsRequiringSnapshots" xml:space="preserve">
+    <value>SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(nz(S.StreamRevision, 0)) AS SnapshotRevision
+  FROM Commits AS C
+  LEFT JOIN Commits AS S
+    ON C.StreamId = S.StreamId
+   AND S.Snapshot IS NOT NULL
+ WHERE C.CommitSequence &gt;= nz(S.CommitSequence, 0)
+ GROUP BY C.StreamId
+HAVING MAX(C.StreamRevision) &gt;= MAX(nz(S.StreamRevision, 0)) + @Threshold;</value>
+  </data>
   <data name="InitializeStorage" xml:space="preserve">
     <value>CREATE TABLE Dual
 (
        DualTableValue char(1) NOT NULL
 );
 INSERT INTO Dual VALUES (' ');
-
-CREATE TABLE Streams
-(
-       StreamId guid NOT NULL,
-       HeadRevision int NOT NULL,
-       SnapshotRevision int NOT NULL DEFAULT 0,
-       CONSTRAINT PK_Streams PRIMARY KEY (StreamId)
-);
 
 CREATE TABLE Commits
 (

@@ -14,7 +14,7 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		public static int ToInt(this object value)
 		{
-			return (int)value;
+			return value is long ? (int)(long)value : (int)value;
 		}
 	}
 }

@@ -61,19 +61,27 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(nz(S.StreamRevision, 0)) AS SnapshotRevision
+        ///  FROM Commits AS C
+        ///  LEFT JOIN Commits AS S
+        ///    ON C.StreamId = S.StreamId
+        ///   AND S.Snapshot IS NOT NULL
+        /// WHERE C.CommitSequence &gt;= nz(S.CommitSequence, 0)
+        /// GROUP BY C.StreamId
+        ///HAVING MAX(C.StreamRevision) &gt;= MAX(nz(S.StreamRevision, 0)) + @Threshold;.
+        /// </summary>
+        internal static string GetStreamsRequiringSnapshots {
+            get {
+                return ResourceManager.GetString("GetStreamsRequiringSnapshots", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CREATE TABLE Dual
         ///(
         ///       DualTableValue char(1) NOT NULL
         ///);
         ///INSERT INTO Dual VALUES (&apos; &apos;);
-        ///
-        ///CREATE TABLE Streams
-        ///(
-        ///       StreamId guid NOT NULL,
-        ///       HeadRevision int NOT NULL,
-        ///       SnapshotRevision int NOT NULL DEFAULT 0,
-        ///       CONSTRAINT PK_Streams PRIMARY KEY (StreamId)
-        ///);
         ///
         ///CREATE TABLE Commits
         ///(
@@ -82,7 +90,12 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///       StreamRevision int NOT NULL,
         ///       CommitSequence int NOT NULL,
         ///       CommitStamp datetime NOT NULL,
-        ///       Hea [rest of string was truncated]&quot;;.
+        ///       Headers image NULL,
+        ///       Payload image NOT NULL,
+        ///       Snapshot image NULL,
+        ///       CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)
+        ///);
+        ///CREATE UNIQUE INDEX IX_Commits ON Commits (Strea [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {

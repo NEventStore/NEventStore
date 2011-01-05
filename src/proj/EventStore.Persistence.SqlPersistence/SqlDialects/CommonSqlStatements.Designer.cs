@@ -64,13 +64,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///   Looks up a localized string similar to UPDATE Commits
         ///   SET Snapshot = @Payload
         /// WHERE StreamId = @StreamId
-        ///   AND StreamRevision = @StreamRevision;
-        ///
-        ///UPDATE Streams
-        ///   SET SnapshotRevision = @StreamRevision
-        /// WHERE StreamId = @StreamId
-        ///   AND @StreamRevision &gt; SnapshotRevision
-        ///   AND @StreamRevision &lt;= HeadRevision;.
+        ///   AND StreamRevision = @StreamRevision;.
         /// </summary>
         internal static string AppendSnapshotToCommit {
             get {
@@ -109,10 +103,14 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT StreamId, HeadRevision, SnapshotRevision
-        ///  FROM Streams
-        /// WHERE HeadRevision &gt;= SnapshotRevision + @Threshold
-        /// ORDER BY SnapshotRevision - HeadRevision;.
+        ///   Looks up a localized string similar to SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(COALESCE(S.StreamRevision, 0)) AS SnapshotRevision
+        ///  FROM Commits AS C
+        ///  LEFT OUTER JOIN Commits AS S
+        ///    ON C.StreamId = S.StreamId
+        ///   AND S.Snapshot IS NOT NULL
+        /// WHERE C.CommitSequence &gt;= COALESCE(S.CommitSequence, 0)
+        /// GROUP BY C.StreamId
+        ///HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Threshold;.
         /// </summary>
         internal static string GetStreamsRequiringSnaphots {
             get {

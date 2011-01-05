@@ -121,13 +121,7 @@
     <value>UPDATE Commits
    SET Snapshot = @Payload
  WHERE StreamId = @StreamId
-   AND StreamRevision = @StreamRevision;
-
-UPDATE Streams
-   SET SnapshotRevision = @StreamRevision
- WHERE StreamId = @StreamId
-   AND @StreamRevision &gt; SnapshotRevision
-   AND @StreamRevision &lt;= HeadRevision;</value>
+   AND StreamRevision = @StreamRevision;</value>
   </data>
   <data name="GetCommitsFromSnapshotUntilRevision" xml:space="preserve">
     <value>SELECT C.StreamId, C.CommitId, C.StreamRevision, C.CommitSequence, C.Headers, C.Payload, C.Snapshot
@@ -149,10 +143,14 @@ UPDATE Streams
  ORDER BY CommitSequence;</value>
   </data>
   <data name="GetStreamsRequiringSnaphots" xml:space="preserve">
-    <value>SELECT StreamId, HeadRevision, SnapshotRevision
-  FROM Streams
- WHERE HeadRevision &gt;= SnapshotRevision + @Threshold
- ORDER BY SnapshotRevision - HeadRevision;</value>
+    <value>SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(COALESCE(S.StreamRevision, 0)) AS SnapshotRevision
+  FROM Commits AS C
+  LEFT OUTER JOIN Commits AS S
+    ON C.StreamId = S.StreamId
+   AND S.Snapshot IS NOT NULL
+ WHERE C.CommitSequence &gt;= COALESCE(S.CommitSequence, 0)
+ GROUP BY C.StreamId
+HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Threshold;</value>
   </data>
   <data name="GetUndispatchedCommits" xml:space="preserve">
     <value>SELECT C.StreamId, C.CommitId, C.StreamRevision, C.CommitSequence, C.Headers, C.Payload
@@ -190,23 +188,6 @@ SELECT @StreamId, @CommitId, @CommitSequence, @StreamRevision, @CommitStamp, @He
          FROM Commits
         WHERE StreamId = @StreamId
           AND CommitId &lt;&gt; @CommitId
-          AND CommitSequence &gt;= @CommitSequence );
-
-INSERT
-  INTO Streams
-     ( StreamId, HeadRevision )
-SELECT @StreamId, @StreamRevision
-/*FROM DUAL*/
- WHERE @CommitSequence = 1
-   AND NOT EXISTS
-     ( SELECT *
-         FROM Streams
-        WHERE StreamId = @StreamId );
-
-UPDATE Streams
-   SET HeadRevision = @StreamRevision
- WHERE StreamId = @StreamId
-   AND @CommitSequence &gt; 1
-   AND HeadRevision &lt; @StreamRevision;</value>
+          AND CommitSequence &gt;= @CommitSequence );</value>
   </data>
 </root>

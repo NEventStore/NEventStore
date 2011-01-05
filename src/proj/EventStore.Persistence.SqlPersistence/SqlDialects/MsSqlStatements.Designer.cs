@@ -66,15 +66,14 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
         ///BEGIN TRANSACTION;
         ///
-        ///CREATE TABLE [dbo].[Streams]
+        ///CREATE TABLE [dbo].[Commits]
         ///(
-        ///       [StreamId] [uniqueidentifier] NOT NULL CHECK ([StreamId] != 0x0),
-        ///       [HeadRevision] [int] NOT NULL CHECK ([HeadRevision] &gt; 0),
-        ///       [SnapshotRevision] [int] NOT NULL CHECK ([SnapshotRevision] &gt;= 0) DEFAULT(0),
-        ///       CONSTRAINT [PK_Streams] PRIMARY KEY CLUSTERED ([StreamId])
-        ///);
-        ///
-        ///CREATE TABLE [dbo].[Commits [rest of string was truncated]&quot;;.
+        ///       [StreamId] [uniqueidentifier] NOT NULL,
+        ///       [CommitId] [uniqueidentifier] NOT NULL CHECK ([CommitId] != 0x0),
+        ///       [StreamRevision] [int] NOT NULL CHECK ([StreamRevision] &gt; 0),
+        ///       [CommitSequence] [int] NOT NULL CHECK ([CommitSequence] &gt; 0),
+        ///       [CommitStamp] [datetime] NOT NULL,
+        ///       [Headers] [var [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {

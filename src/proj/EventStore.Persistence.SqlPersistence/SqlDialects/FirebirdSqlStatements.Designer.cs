@@ -61,20 +61,19 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CREATE TABLE Streams
-        ///(
-        ///       StreamId char(16) character set octets NOT NULL,
-        ///       HeadRevision int NOT NULL CHECK (HeadRevision &gt; 0),
-        ///       SnapshotRevision int DEFAULT 0 NOT NULL CHECK (SnapshotRevision &gt;= 0),
-        ///       CONSTRAINT PK_Streams PRIMARY KEY (StreamId)
-        ///);
-        ///
-        ///CREATE TABLE Commits
+        ///   Looks up a localized string similar to CREATE TABLE Commits
         ///(
         ///       StreamId char(16) character set octets NOT NULL,
         ///       CommitId char(16) character set octets NOT NULL,
         ///       StreamRevision int NOT NULL CHECK (StreamRevision &gt; 0),
-        ///       CommitSequence int NOT [rest of string was truncated]&quot;;.
+        ///       CommitSequence int NOT NULL CHECK (CommitSequence &gt; 0),
+        ///       CommitStamp timestamp NOT NULL,
+        ///       Headers blob,
+        ///       Payload blob NOT NULL,
+        ///       &quot;Snapshot&quot; blob,
+        ///       CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)
+        ///);
+        ///CREATE UNIQUE INDEX IX_Commits_CommitId ON Commits (St [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {

@@ -123,14 +123,6 @@
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 BEGIN TRANSACTION;
 
-CREATE TABLE [dbo].[Streams]
-(
-       [StreamId] [uniqueidentifier] NOT NULL CHECK ([StreamId] != 0x0),
-       [HeadRevision] [int] NOT NULL CHECK ([HeadRevision] &gt; 0),
-       [SnapshotRevision] [int] NOT NULL CHECK ([SnapshotRevision] &gt;= 0) DEFAULT(0),
-       CONSTRAINT [PK_Streams] PRIMARY KEY CLUSTERED ([StreamId])
-);
-
 CREATE TABLE [dbo].[Commits]
 (
        [StreamId] [uniqueidentifier] NOT NULL,
@@ -158,7 +150,6 @@ COMMIT TRANSACTION;
 /*
 DROP TABLE [dbo].[Dispatch];
 DROP TABLE [dbo].[Commits];
-DROP TABLE [dbo].[Streams];
 */</value>
   </data>
 </root>

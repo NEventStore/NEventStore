@@ -121,14 +121,6 @@
     <value>SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 START TRANSACTION;
 
-CREATE TABLE IF NOT EXISTS Streams
-(
-       StreamId binary(16) NOT NULL CHECK (StreamId != 0),
-       HeadRevision int NOT NULL CHECK (HeadRevision &gt; 0),
-       SnapshotRevision int NOT NULL DEFAULT 0 CHECK (SnapshotRevision &gt;= 0),
-       CONSTRAINT PK_Streams PRIMARY KEY (StreamId)
-);
-
 CREATE TABLE IF NOT EXISTS Commits
 (
        StreamId binary(16) NOT NULL,
@@ -156,7 +148,6 @@ COMMIT;
 /*
 DROP TABLE Dispatch;
 DROP TABLE Commits;
-DROP TABLE Streams;
 */</value>
   </data>
 </root>

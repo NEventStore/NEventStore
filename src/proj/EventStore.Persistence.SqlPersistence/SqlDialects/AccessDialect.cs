@@ -22,6 +22,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 					.Replace(this.CommitStamp, "now()");
 			}
 		}
+		public override string GetStreamsRequiringSnaphots
+		{
+			get { return AccessStatements.GetStreamsRequiringSnapshots; }
+		}
 
 		public override IDbTransaction OpenTransaction(IDbConnection connection)
 		{

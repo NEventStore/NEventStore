@@ -118,15 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="InitializeStorage" xml:space="preserve">
-    <value>CREATE TABLE IF NOT EXISTS Streams
-(
-       StreamId guid NOT NULL CHECK (StreamId != 0),
-       HeadRevision int NOT NULL CHECK (HeadRevision &gt; 0),
-       SnapshotRevision int NOT NULL CHECK (SnapshotRevision &gt;= 0) DEFAULT(0),
-       CONSTRAINT PK_Streams PRIMARY KEY (StreamId)
-);
-
-CREATE TABLE IF NOT EXISTS Commits
+    <value>CREATE TABLE IF NOT EXISTS Commits
 (
        StreamId guid NOT NULL,
        CommitId guid NOT NULL CHECK (CommitId != 0),
@@ -151,7 +143,6 @@ CREATE TABLE IF NOT EXISTS Dispatch
 /*
 DROP TABLE Dispatch;
 DROP TABLE Commits;
-DROP TABLE Streams;
 */</value>
   </data>
 </root>
