@@ -68,7 +68,7 @@ namespace EventStore.Persistence.SqlPersistence
 			if (providerName.Contains("SQLITE"))
 				return new SqliteDialect();
 
-			if (providerName.Contains("SQLCE"))
+			if (providerName.Contains("SQLSERVERCE"))
 				return new SqlCeDialect();
 
 			if (providerName.Contains("FIREBIRD"))
@@ -80,7 +80,7 @@ namespace EventStore.Persistence.SqlPersistence
 			if (providerName.Contains("FIREBIRD"))
 				return new FirebirdSqlDialect();
 
-			if (providerName.Contains("OleDb") && connectionString.Contains("Microsoft.Jet"))
+			if (providerName.Contains("OLEDB") && connectionString.Contains("MICROSOFT.JET"))
 				return new AccessDialect();
 
 			return new MsSqlDialect();
