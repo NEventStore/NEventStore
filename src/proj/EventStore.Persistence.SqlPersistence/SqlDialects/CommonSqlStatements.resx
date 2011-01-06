@@ -131,15 +131,13 @@
    AND M.Snapshot IS NOT NULL
  WHERE C.StreamId = @StreamId
    AND C.StreamRevision BETWEEN COALESCE(M.StreamRevision, 0) AND @StreamRevision
-   AND COALESCE(M.StreamRevision, 0) &lt;= @StreamRevision
- ORDER BY C.StreamId, C.CommitSequence;</value>
+   AND COALESCE(M.StreamRevision, 0) &lt;= @StreamRevision;</value>
   </data>
   <data name="GetCommitsFromStartingRevision" xml:space="preserve">
     <value>SELECT StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload
   FROM Commits
  WHERE StreamId = @StreamId
-   AND StreamRevision &gt;= @StreamRevision
- ORDER BY CommitSequence;</value>
+   AND StreamRevision &gt;= @StreamRevision;</value>
   </data>
   <data name="GetStreamsRequiringSnaphots" xml:space="preserve">
     <value>SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(COALESCE(S.StreamRevision, 0)) AS SnapshotRevision
@@ -156,8 +154,7 @@ HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Thresho
   FROM Commits AS C
  INNER JOIN Dispatch AS D
     ON C.StreamId = D.StreamId
-   AND C.CommitSequence = D.CommitSequence
- ORDER BY C.CommitStamp;</value>
+   AND C.CommitSequence = D.CommitSequence;</value>
   </data>
   <data name="MarkCommitAsDispatched" xml:space="preserve">
     <value>DELETE
