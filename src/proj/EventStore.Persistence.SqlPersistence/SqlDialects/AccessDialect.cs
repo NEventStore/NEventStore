@@ -35,10 +35,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			get { return AccessStatements.GetCommitsFromStartingSnapshotUntilRevision; }
 		}
 
-		public override IDbTransaction OpenTransaction(IDbConnection connection)
-		{
-			return connection.BeginTransaction(IsolationLevel.ReadUncommitted);
-		}
 		public override IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction)
 		{
 			return new AccessDbStatement(connection, transaction);
