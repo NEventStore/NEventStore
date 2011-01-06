@@ -30,6 +30,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return AccessStatements.AppendSnapshot; }
 		}
+		public override string GetCommitsFromSnapshotUntilRevision
+		{
+			get { return AccessStatements.GetCommitsFromStartingSnapshotUntilRevision; }
+		}
 
 		public override IDbTransaction OpenTransaction(IDbConnection connection)
 		{
