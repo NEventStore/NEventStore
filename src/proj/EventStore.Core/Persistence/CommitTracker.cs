@@ -6,15 +6,14 @@ namespace EventStore.Persistence
 	/// <summary>
 	/// Tracks the commits for a set of streams to determine if a particular commit has already
 	/// been committed thus relaxing the requirements upon the persistence engine as well as
-	/// lowering latency by avoiding needless database roundtrips by keeping the values which
+	/// reducing latency by avoiding needless database roundtrips through keeping the values which
 	/// uniquely identify each commit in memory.
 	/// </summary>
 	/// <remarks>
-	/// For storage engines with relaxed consistency guarantees, such as document databases,
+	/// For storage engines with relaxed consistency guarantees, such as a document database,
 	/// the CommitTracker prevents the need to query the persistence engine prior to a commit.
 	/// For storage engines with stronger consistency guarantees, such as a relational database,
-	/// the CommitTracker helps to avoid the additional overhead in terms of latency incurred
-	/// from additional roundtrip to the database.
+	/// the CommitTracker helps to avoid the increased latency incurred from extra roundtrips.
 	/// </remarks>
 	public class CommitTracker
 	{
