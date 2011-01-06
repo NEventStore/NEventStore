@@ -124,6 +124,33 @@ namespace EventStore.Persistence.AcceptanceTests
 	}
 
 	[Subject("Persistence")]
+	public class when_reading_until_a_given_revision_which_has_no_snapshot : using_the_persistence_engine
+	{
+		static readonly CommitAttempt oldest = streamId.BuildAttempt();
+		static readonly CommitAttempt oldest2 = oldest.BuildNextAttempt();
+		static readonly CommitAttempt oldest3 = oldest2.BuildNextAttempt();
+		static readonly CommitAttempt newest = oldest3.BuildNextAttempt();
+		static Commit[] committed;
+
+		Establish context = () =>
+		{
+			persistence.Persist(oldest);
+			persistence.Persist(oldest2);
+			persistence.Persist(oldest3);
+			persistence.Persist(newest);
+		};
+
+		Because of = () =>
+			committed = persistence.GetUntil(streamId, oldest3.ToCommit().StreamRevision).ToArray();
+
+		It should_start_from_the_first_commit = () =>
+			committed.First().StreamRevision.ShouldEqual(oldest.ToCommit().StreamRevision);
+
+		It should_read_up_to_the_commit_containing_the_given_revision = () =>
+			committed.Last().StreamRevision.ShouldEqual(oldest3.ToCommit().StreamRevision);
+	}
+
+	[Subject("Persistence")]
 	public class when_attempting_to_overwrite_a_committed_sequence : using_the_persistence_engine
 	{
 		static readonly CommitAttempt successfulAttempt = streamId.BuildAttempt();
