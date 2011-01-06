@@ -34,8 +34,8 @@ namespace EventStore.Persistence.MongoPersistence
 		{
 			return new Commit(
 				mongoCommit.StreamId,
-				mongoCommit.CommitId,
 				mongoCommit.StreamRevision,
+				mongoCommit.CommitId,
 				mongoCommit.CommitSequence,
 				mongoCommit.Headers,
 				mongoCommit.Events,

@@ -88,8 +88,8 @@ namespace EventStore.Persistence.RavenPersistence
 		{
 			return new Commit(
 				commit.StreamId,
-				commit.CommitId,
 				commit.StreamRevision,
+				commit.CommitId,
 				commit.CommitSequence,
 				commit.Headers,
 				commit.Events,

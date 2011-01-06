@@ -118,21 +118,14 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="InitializeStorage" xml:space="preserve">
-    <value>CREATE TABLE Streams
+    <value>CREATE TABLE Commits
 (
        StreamId uniqueidentifier NOT NULL,
-       HeadRevision int NOT NULL,
-       SnapshotRevision int NOT NULL DEFAULT (0),
-       CONSTRAINT PK_Streams PRIMARY KEY (StreamId)
-);
-
-CREATE TABLE Commits
-(
-       StreamId uniqueidentifier NOT NULL,
-       CommitId uniqueidentifier NOT NULL,
        StreamRevision int NOT NULL,
+       CommitId uniqueidentifier NOT NULL,
        CommitSequence int NOT NULL,
        CommitStamp datetime NOT NULL,
+       Dispatched bit NOT NULL DEFAULT 0,
        Headers image NULL,
        Payload image NOT NULL,
        Snapshot image NULL,
@@ -140,12 +133,6 @@ CREATE TABLE Commits
 );
 CREATE UNIQUE INDEX IX_Commits ON Commits (StreamId, CommitId);
 CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (StreamId, StreamRevision);
-
-CREATE TABLE Dispatch
-(
-       StreamId uniqueidentifier NOT NULL,
-       CommitSequence int NOT NULL,
-       CONSTRAINT PK_Dispatch PRIMARY KEY (StreamId, CommitSequence)
-);</value>
+CREATE INDEX IX_Commits_Dispatched ON Commits (Dispatched);</value>
   </data>
 </root>

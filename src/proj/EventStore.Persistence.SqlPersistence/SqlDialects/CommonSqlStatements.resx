@@ -124,7 +124,7 @@
    AND StreamRevision = @StreamRevision;</value>
   </data>
   <data name="GetCommitsFromSnapshotUntilRevision" xml:space="preserve">
-    <value>SELECT C.StreamId, C.CommitId, C.StreamRevision, C.CommitSequence, C.Headers, C.Payload, C.Snapshot
+    <value>SELECT C.StreamId, C.StreamRevision, C.CommitId, C.CommitSequence, C.Headers, C.Payload, C.Snapshot
   FROM Commits AS C
   LEFT OUTER JOIN Commits AS M
     ON C.StreamId = M.StreamId
@@ -134,7 +134,7 @@
    AND COALESCE(M.StreamRevision, 0) &lt;= @StreamRevision;</value>
   </data>
   <data name="GetCommitsFromStartingRevision" xml:space="preserve">
-    <value>SELECT StreamId, CommitId, StreamRevision, CommitSequence, Headers, Payload
+    <value>SELECT StreamId, StreamRevision, CommitId, CommitSequence, Headers, Payload
   FROM Commits
  WHERE StreamId = @StreamId
    AND StreamRevision &gt;= @StreamRevision;</value>
@@ -150,33 +150,20 @@
 HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Threshold;</value>
   </data>
   <data name="GetUndispatchedCommits" xml:space="preserve">
-    <value>SELECT C.StreamId, C.CommitId, C.StreamRevision, C.CommitSequence, C.Headers, C.Payload
-  FROM Commits AS C
- INNER JOIN Dispatch AS D
-    ON C.StreamId = D.StreamId
-   AND C.CommitSequence = D.CommitSequence;</value>
+    <value>SELECT StreamId, StreamRevision, CommitId, CommitSequence, Headers, Payload
+  FROM Commits
+ WHERE Dispatched = 0;</value>
   </data>
   <data name="MarkCommitAsDispatched" xml:space="preserve">
-    <value>DELETE
-  FROM Dispatch
+    <value>UPDATE Commits
+   SET Dispatched = 1
  WHERE StreamId = @StreamId
    AND CommitSequence = @CommitSequence;</value>
   </data>
   <data name="PersistCommitAttempt" xml:space="preserve">
     <value>INSERT
-  INTO Dispatch
-     ( StreamId, CommitSequence)
-SELECT @StreamId, @CommitSequence
-/*FROM DUAL*/
- WHERE NOT EXISTS
-     ( SELECT *
-         FROM Dispatch
-        WHERE StreamId = @StreamId
-          AND CommitSequence = @CommitSequence );
-
-INSERT
   INTO Commits
-    ( StreamId, CommitId, CommitSequence, StreamRevision, CommitStamp, Headers, Payload )
+     ( StreamId, CommitId, CommitSequence, StreamRevision, CommitStamp, Headers, Payload )
 SELECT @StreamId, @CommitId, @CommitSequence, @StreamRevision, @CommitStamp, @Headers, @Payload
 /*FROM DUAL*/
  WHERE NOT EXISTS

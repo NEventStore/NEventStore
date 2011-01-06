@@ -99,8 +99,8 @@ namespace EventStore.Persistence
 
 				this.commits.Remove(commitToBeUpdated);
 				this.commits.Add(new Commit(commitToBeUpdated.StreamId,
-					commitToBeUpdated.CommitId,
 					commitToBeUpdated.StreamRevision,
+					commitToBeUpdated.CommitId,
 					commitToBeUpdated.CommitSequence,
 					commitToBeUpdated.Headers,
 					commitToBeUpdated.Events,

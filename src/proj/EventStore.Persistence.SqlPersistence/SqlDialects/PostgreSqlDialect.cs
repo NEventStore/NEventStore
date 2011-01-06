@@ -6,5 +6,13 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return PostgreSqlStatements.InitializeStorage; }
 		}
+		public override string GetUndispatchedCommits
+		{
+			get { return base.GetUndispatchedCommits.Replace("0", "false"); }
+		}
+		public override string MarkCommitAsDispatched
+		{
+			get { return base.MarkCommitAsDispatched.Replace("1", "true"); }
+		}
 	}
 }

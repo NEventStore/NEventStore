@@ -9,8 +9,8 @@ namespace EventStore.Persistence.SqlPersistence
 	internal static class CommitExtensions
 	{
 		private const int StreamIdIndex = 0;
-		private const int CommitIdIndex = 1;
-		private const int StreamRevisionIndex = 2;
+		private const int StreamRevisionIndex = 1;
+		private const int CommitIdIndex = 2;
 		private const int CommitSequenceIndex = 3;
 		private const int HeadersIndex = 4;
 		private const int PayloadIndex = 5;
@@ -24,8 +24,8 @@ namespace EventStore.Persistence.SqlPersistence
 
 			return new Commit(
 				record[StreamIdIndex].ToGuid(),
-				record[CommitIdIndex].ToGuid(),
 				record[StreamRevisionIndex].ToInt(),
+				record[CommitIdIndex].ToGuid(),
 				record[CommitSequenceIndex].ToInt(),
 				headers,
 				events,

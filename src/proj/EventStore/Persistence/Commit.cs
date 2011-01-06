@@ -15,20 +15,13 @@ namespace EventStore.Persistence
 		/// Initializes a new instance of the Commit class.
 		/// </summary>
 		/// <param name="streamId">The value which uniquely identifies the stream to which the commit belongs.</param>
-		/// <param name="commitId">The value which uniquely identifies the commit within the stream.</param>
 		/// <param name="streamRevision">The value which indicates the revision of the most recent event in the stream to which this commit applies.</param>
+		/// <param name="commitId">The value which uniquely identifies the commit within the stream.</param>
 		/// <param name="commitSequence">The value which indicates the sequence (or position) in the stream to which this commit applies.</param>
 		/// <param name="headers">The metadata which provides additional, unstructured information about this commit.</param>
 		/// <param name="events">The collection of event messages to be committed as a single unit.</param>
 		/// <param name="snapshot">The snapshot, if any, which represents a materialization of the stream at the last event of the commit.</param>
-		public Commit(
-			Guid streamId,
-			Guid commitId,
-			int streamRevision,
-			int commitSequence,
-			IDictionary<string, object> headers,
-			ICollection<EventMessage> events,
-			object snapshot)
+		public Commit(Guid streamId, int streamRevision, Guid commitId, int commitSequence, IDictionary<string, object> headers, ICollection<EventMessage> events, object snapshot)
 		{
 			this.StreamId = streamId;
 			this.CommitId = commitId;
@@ -45,14 +38,15 @@ namespace EventStore.Persistence
 		[DataMember] public virtual Guid StreamId { get; private set; }
 
 		/// <summary>
+		/// Gets the value which indicates the revision of the most recent event in the stream to which this commit applies.
+		/// </summary>
+		[DataMember]
+		public virtual int StreamRevision { get; private set; }
+
+		/// <summary>
 		/// Gets the value which uniquely identifies the commit within the stream.
 		/// </summary>
 		[DataMember] public virtual Guid CommitId { get; private set; }
-
-		/// <summary>
-		/// Gets the value which indicates the revision of the most recent event in the stream to which this commit applies.
-		/// </summary>
-		[DataMember] public virtual int StreamRevision { get; private set; }
 
 		/// <summary>
 		/// Gets the value which indicates the sequence (or position) in the stream to which this commit applies.

@@ -120,15 +120,15 @@
   <data name="AppendSnapshot" xml:space="preserve">
     <value>UPDATE Commits
    SET Snapshot = @Payload,
-       HasSnapshot = true
+       Snapshotted = true
  WHERE StreamId = @StreamId
    AND StreamRevision = @StreamRevision;</value>
   </data>
   <data name="GetCommitsFromStartingSnapshotUntilRevision" xml:space="preserve">
-    <value>SELECT C.StreamId, C.CommitId, C.StreamRevision, C.CommitSequence, C.Headers, C.Payload, C.Snapshot
+    <value>SELECT C.StreamId, C.StreamRevision, C.CommitId, C.CommitSequence, C.Headers, C.Payload, C.Snapshot
   FROM Commits AS C
   LEFT JOIN Commits AS S
-    ON ( C.StreamId = S.StreamId AND S.HasSnapshot = true )
+    ON ( C.StreamId = S.StreamId AND S.Snapshotted = true )
  WHERE C.StreamId = @StreamId
    AND C.StreamRevision BETWEEN IIF(S.StreamRevision IS NULL, 0, S.StreamRevision) AND @StreamRevision
    AND IIF(S.StreamRevision IS NULL, 0, S.StreamRevision) &lt;= @StreamRevision;</value>
@@ -137,7 +137,7 @@
     <value>SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(IIf(S.StreamRevision IS NULL, 0, S.StreamRevision)) AS SnapshotRevision
   FROM Commits AS C
   LEFT JOIN Commits AS S
-    ON ( C.StreamId = S.StreamId AND S.HasSnapshot = true )
+    ON ( C.StreamId = S.StreamId AND S.Snapshotted = true )
  WHERE C.CommitSequence &gt;= IIF(S.CommitSequence IS NULL, 0, S.StreamRevision)
  GROUP BY C.StreamId
 HAVING MAX(C.StreamRevision) &gt;= MAX(IIF(S.StreamRevision IS NULL, 0, S.StreamRevision)) + @Threshold;</value>
@@ -152,24 +152,19 @@ INSERT INTO Dual VALUES (' ');
 CREATE TABLE Commits
 (
        StreamId guid NOT NULL,
-       CommitId guid NOT NULL,
        StreamRevision int NOT NULL,
+       CommitId guid NOT NULL,
        CommitSequence int NOT NULL,
        CommitStamp datetime NOT NULL,
+       Dispatched bit NOT NULL DEFAULT 0,
+       Snapshotted bit NOT NULL DEFAULT 0,
        Headers image NULL,
        Payload image NOT NULL,
        Snapshot image NULL,
-       HasSnapshot bit NOT NULL DEFAULT 0,
        CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)
 );
 CREATE UNIQUE INDEX IX_Commits ON Commits (StreamId, CommitId);
 CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (StreamId, StreamRevision);
-
-CREATE TABLE Dispatch
-(
-       StreamId guid NOT NULL,
-       CommitSequence int NOT NULL,
-       CONSTRAINT PK_Dispatch PRIMARY KEY (StreamId, CommitSequence)
-);</value>
+CREATE INDEX IX_Commits_Dispatched ON Commits (Dispatched);</value>
   </data>
 </root>

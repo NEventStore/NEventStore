@@ -63,17 +63,15 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         /// <summary>
         ///   Looks up a localized string similar to IF EXISTS(SELECT * FROM sysobjects WHERE name=&apos;Commits&apos; AND xtype = &apos;U&apos;) RETURN;
         ///
-        ///SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
-        ///BEGIN TRANSACTION;
-        ///
         ///CREATE TABLE [dbo].[Commits]
         ///(
         ///       [StreamId] [uniqueidentifier] NOT NULL,
-        ///       [CommitId] [uniqueidentifier] NOT NULL CHECK ([CommitId] != 0x0),
         ///       [StreamRevision] [int] NOT NULL CHECK ([StreamRevision] &gt; 0),
+        ///       [CommitId] [uniqueidentifier] NOT NULL CHECK ([CommitId] != 0x0),
         ///       [CommitSequence] [int] NOT NULL CHECK ([CommitSequence] &gt; 0),
         ///       [CommitStamp] [datetime] NOT NULL,
-        ///       [Headers] [var [rest of string was truncated]&quot;;.
+        ///       [Dispatched] [bit] NOT NULL DEFAULT (0),
+        ///       [Headers] [varbinary](MAX) NULL CH [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {

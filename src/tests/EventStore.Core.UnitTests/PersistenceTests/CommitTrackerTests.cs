@@ -16,9 +16,9 @@ namespace EventStore.Core.UnitTests.PersistenceTests
 		static readonly Guid StreamId = Guid.NewGuid();
 		static readonly Commit[] Commits = new[]
 		{
-			new Commit(StreamId, Guid.NewGuid(), 1, 1, null, null, null),
-			new Commit(StreamId, Guid.NewGuid(), 2, 2, null, null, null),
-			new Commit(StreamId, Guid.NewGuid(), 3, 3, null, null, null) // causes first commit to no longer tracked.
+			new Commit(StreamId, 1, Guid.NewGuid(), 1, null, null, null),
+			new Commit(StreamId, 2, Guid.NewGuid(), 2, null, null, null),
+			new Commit(StreamId, 3, Guid.NewGuid(), 3, null, null, null) // causes first commit to no longer tracked.
 		};
 
 		static CommitTracker tracker;

@@ -121,10 +121,11 @@
     <value>CREATE TABLE IF NOT EXISTS Commits
 (
        StreamId guid NOT NULL,
-       CommitId guid NOT NULL CHECK (CommitId != 0),
        StreamRevision int NOT NULL CHECK (StreamRevision &gt; 0),
+       CommitId guid NOT NULL CHECK (CommitId != 0),
        CommitSequence int NOT NULL CHECK (CommitSequence &gt; 0),
        CommitStamp datetime NOT NULL,
+       Dispatched bit NOT NULL DEFAULT 0,
        Headers blob NULL,
        Payload blob NOT NULL,
        Snapshot blob NULL,
@@ -132,17 +133,6 @@
 );
 CREATE UNIQUE INDEX IF NOT EXISTS IX_Commits_CommitId ON Commits (StreamId, CommitId);
 CREATE UNIQUE INDEX IF NOT EXISTS IX_Commits_Revisions ON Commits (StreamId, StreamRevision);
-
-CREATE TABLE IF NOT EXISTS Dispatch
-(
-       StreamId guid NOT NULL,
-       CommitSequence int NOT NULL,
-       CONSTRAINT PK_Dispatch PRIMARY KEY (StreamId, CommitSequence)
-);
-
-/*
-DROP TABLE Dispatch;
-DROP TABLE Commits;
-*/</value>
+CREATE INDEX IF NOT EXISTS IX_Commits_Dispatched ON Commits (Dispatched);</value>
   </data>
 </root>

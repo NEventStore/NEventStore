@@ -29,8 +29,8 @@ namespace EventStore.Core.UnitTests.PersistenceTests
 		const int MinRevision = 42;
 		private static readonly Commit[] commits = new[]
 		{
-			new Commit(streamId, Guid.NewGuid(), 0, 0, null, null, null),
-			new Commit(streamId, Guid.NewGuid(), 0, 0, null, null, null)
+			new Commit(streamId, 0, Guid.NewGuid(), 0, null, null, null),
+			new Commit(streamId, 0, Guid.NewGuid(), 0, null, null, null)
 		};
 		static Mock<IFilterCommits<Commit>> readFilter;
 		static Commit[] read;
@@ -65,8 +65,8 @@ namespace EventStore.Core.UnitTests.PersistenceTests
 		const int MaxRevision = 12;
 		private static readonly Commit[] commits = new[]
 		{
-			new Commit(streamId, Guid.NewGuid(), 0, 0, null, null, null),
-			new Commit(streamId, Guid.NewGuid(), 0, 0, null, null, null)
+			new Commit(streamId, 0, Guid.NewGuid(), 0, null, null, null),
+			new Commit(streamId, 0, Guid.NewGuid(), 0, null, null, null)
 		};
 		static Mock<IFilterCommits<Commit>> readFilter;
 		static Commit[] read;
@@ -135,7 +135,7 @@ namespace EventStore.Core.UnitTests.PersistenceTests
 	[Subject("CommitFilterPersistence")]
 	public class when_marking_a_commit_as_dispatched : using_persistence_infrastructure
 	{
-		static readonly Commit commit = new Commit(streamId, Guid.NewGuid(), 0, 0, null, null, null);
+		static readonly Commit commit = new Commit(streamId, 0, Guid.NewGuid(), 0, null, null, null);
 
 		Establish context = () =>
 			fakePersistence.Setup(x => x.MarkCommitAsDispatched(commit));

@@ -17,11 +17,11 @@ namespace EventStore.Core.UnitTests
 		const int MaxRevision = 1234;
 		static readonly Commit[] Commits = new[]
 		{
-			new Commit(streamId, Guid.NewGuid(), 1, 1, null, null, "ignore this snapshot")
+			new Commit(streamId, 1, Guid.NewGuid(), 1, null, null, "ignore this snapshot")
 			{
 				Events = { new EventMessage { Body = 1 } }
 			}, 
-			new Commit(streamId, Guid.NewGuid(), 3, 2, null, null, "use this snapshot")
+			new Commit(streamId, 3, Guid.NewGuid(), 2, null, null, "use this snapshot")
 			{
 				Events =
 				{
@@ -29,7 +29,7 @@ namespace EventStore.Core.UnitTests
 					new EventMessage { Body = 3 }
 				}
 			}, 
-			new Commit(streamId, Guid.NewGuid(), 5, 3, null, null, null)
+			new Commit(streamId, 5, Guid.NewGuid(), 3, null, null, null)
 			{
 				Events =
 				{
@@ -75,11 +75,11 @@ namespace EventStore.Core.UnitTests
 		const int MinRevision = 42;
 		static readonly Commit[] Commits = new[]
 		{
-			new Commit(streamId, Guid.NewGuid(), 1, 1, null, null, "ignore this snapshot")
+			new Commit(streamId, 1, Guid.NewGuid(), 1, null, null, "ignore this snapshot")
 			{
 				Events = { new EventMessage { Body = 1 } }
 			}, 
-			new Commit(streamId, Guid.NewGuid(), 3, 2, null, null, "ignore this snapshot too")
+			new Commit(streamId, 3, Guid.NewGuid(), 2, null, null, "ignore this snapshot too")
 			{
 				Events =
 				{
@@ -87,7 +87,7 @@ namespace EventStore.Core.UnitTests
 					new EventMessage { Body = 3 }
 				}
 			}, 
-			new Commit(streamId, Guid.NewGuid(), 6, 3, null, null, null)
+			new Commit(streamId, 6, Guid.NewGuid(), 3, null, null, null)
 			{
 				Events =
 				{
@@ -235,7 +235,7 @@ namespace EventStore.Core.UnitTests
 	{
 		static readonly Commit[] commits = new[]
 		{
-			new Commit(streamId, Guid.NewGuid(), 1, 1, null, null, null)
+			new Commit(streamId, 1, Guid.NewGuid(), 1, null, null, null)
 			{
 				Events = { new EventMessage() }
 			}
@@ -268,7 +268,7 @@ namespace EventStore.Core.UnitTests
 	{
 		static readonly Commit[] commits = new[]
 		{
-			new Commit(streamId, Guid.NewGuid(), 1, 1, null, null, null)
+			new Commit(streamId, 1, Guid.NewGuid(), 1, null, null, null)
 			{
 				Events = { new EventMessage() }
 			}
@@ -354,11 +354,11 @@ namespace EventStore.Core.UnitTests
 		static readonly Guid DuplicateCommitId = Guid.NewGuid();
 		static readonly Commit[] Commits = new[]
 		{
-			new Commit(streamId, DuplicateCommitId, 1, 1, null, null, null)
+			new Commit(streamId, 1, DuplicateCommitId, 1, null, null, null)
 			{
 				Events = { new EventMessage { Body = 1 } }
 			},
-			new Commit(streamId, Guid.NewGuid(), 2, 2, null, null, "commit from before this snapshot should be remembered.")
+			new Commit(streamId, 2, Guid.NewGuid(), 2, null, null, "commit from before this snapshot should be remembered.")
 			{
 				Events = { new EventMessage { Body = 1 } }
 			}
@@ -397,7 +397,7 @@ namespace EventStore.Core.UnitTests
 		static readonly Guid DuplicateCommitId = Guid.NewGuid();
 		static readonly Commit[] Commits = new[]
 		{
-			new Commit(streamId, DuplicateCommitId, 1, 1, null, null, null)
+			new Commit(streamId, 1, DuplicateCommitId, 1, null, null, null)
 			{
 				Events = { new EventMessage { Body = 1 } }
 			}
@@ -458,7 +458,7 @@ namespace EventStore.Core.UnitTests
 		const int MostRecentSequence = 42;
 		static readonly Commit[] Commits = new[]
 		{
-			new Commit(streamId, Guid.NewGuid(), StreamRevision, MostRecentSequence, null, null, null), 
+			new Commit(streamId, StreamRevision, Guid.NewGuid(), MostRecentSequence, null, null, null), 
 		};
 		static readonly CommitAttempt Attempt = new CommitAttempt
 		{
@@ -491,7 +491,7 @@ namespace EventStore.Core.UnitTests
 		const int CommitSequence = 1;
 		static readonly Commit[] Commits = new[]
 		{
-			new Commit(streamId, Guid.NewGuid(), MostRecentStreamRevision, CommitSequence, null, null, null), 
+			new Commit(streamId, MostRecentStreamRevision, Guid.NewGuid(), CommitSequence, null, null, null), 
 		};
 		static readonly CommitAttempt Attempt = new CommitAttempt
 		{

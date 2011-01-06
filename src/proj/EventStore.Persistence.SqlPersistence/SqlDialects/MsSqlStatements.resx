@@ -120,16 +120,14 @@
   <data name="InitializeStorage" xml:space="preserve">
     <value>IF EXISTS(SELECT * FROM sysobjects WHERE name='Commits' AND xtype = 'U') RETURN;
 
-SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
-BEGIN TRANSACTION;
-
 CREATE TABLE [dbo].[Commits]
 (
        [StreamId] [uniqueidentifier] NOT NULL,
-       [CommitId] [uniqueidentifier] NOT NULL CHECK ([CommitId] != 0x0),
        [StreamRevision] [int] NOT NULL CHECK ([StreamRevision] &gt; 0),
+       [CommitId] [uniqueidentifier] NOT NULL CHECK ([CommitId] != 0x0),
        [CommitSequence] [int] NOT NULL CHECK ([CommitSequence] &gt; 0),
        [CommitStamp] [datetime] NOT NULL,
+       [Dispatched] [bit] NOT NULL DEFAULT (0),
        [Headers] [varbinary](MAX) NULL CHECK ([Headers] IS NULL OR DATALENGTH([Headers]) &gt; 0),
        [Payload] [varbinary](MAX) NOT NULL CHECK (DATALENGTH([Payload]) &gt; 0),
        [Snapshot] [varbinary](MAX) NULL CHECK ([Snapshot] IS NULL OR DATALENGTH([Snapshot]) &gt; 0),
@@ -137,19 +135,6 @@ CREATE TABLE [dbo].[Commits]
 );
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Commits] ON [dbo].[Commits] ([StreamId], [CommitId]);
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Commits_Revisions] ON [dbo].[Commits] ([StreamId], [StreamRevision]);
-
-CREATE TABLE [dbo].[Dispatch]
-(
-       [StreamId] [uniqueidentifier] NOT NULL,
-       [CommitSequence] [int] NOT NULL,
-       CONSTRAINT [PK_Dispatch] PRIMARY KEY CLUSTERED ([StreamId], [CommitSequence])
-);
-
-COMMIT TRANSACTION;
-
-/*
-DROP TABLE [dbo].[Dispatch];
-DROP TABLE [dbo].[Commits];
-*/</value>
+CREATE INDEX [IX_Commits_Dispatched] ON [dbo].[Commits] ([Dispatched]);</value>
   </data>
 </root>

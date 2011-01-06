@@ -24,14 +24,14 @@ namespace EventStore
 		public Guid StreamId { get; set; }
 
 		/// <summary>
-		/// Gets or sets the value which uniquely identifies the commit within the stream.
-		/// </summary>
-		public Guid CommitId { get; set; }
-
-		/// <summary>
 		/// Gets or sets the value which indicates the new head revision of the stream to which this commit attempt applies.
 		/// </summary>
 		public int StreamRevision { get; set; }
+
+		/// <summary>
+		/// Gets or sets the value which uniquely identifies the commit within the stream.
+		/// </summary>
+		public Guid CommitId { get; set; }
 
 		/// <summary>
 		/// Gets or sets the value which indicates the most recent, known committed sequence for the stream to which this commit attempt applies.
@@ -56,8 +56,8 @@ namespace EventStore
 		{
 			return new Commit(
 				this.StreamId,
-				this.CommitId,
 				this.StreamRevision,
+				this.CommitId,
 				this.PreviousCommitSequence + 1,
 				this.Headers,
 				this.Events,

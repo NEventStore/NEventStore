@@ -8,17 +8,21 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return FirebirdSqlStatements.InitializeStorage; }
 		}
-		public override string GetCommitsFromSnapshotUntilRevision
-		{
-			get { return base.GetCommitsFromSnapshotUntilRevision.Replace(".Snapshot", ".\"Snapshot\""); }
-		}
 		public override string PersistCommitAttempt
 		{
 			get { return base.PersistCommitAttempt.Replace("/*FROM DUAL*/", "FROM rdb$database"); }
 		}
+		public override string GetCommitsFromSnapshotUntilRevision
+		{
+			get { return base.GetCommitsFromSnapshotUntilRevision.Replace(".Snapshot", ".\"Snapshot\""); }
+		}
 		public override string AppendSnapshotToCommit
 		{
 			get { return base.AppendSnapshotToCommit.Replace("Snapshot ", "\"Snapshot\" "); }
+		}
+		public override string GetStreamsRequiringSnaphots
+		{
+			get { return base.GetStreamsRequiringSnaphots.Replace("Snapshot ", "\"Snapshot\" "); }
 		}
 
 		public override IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction)

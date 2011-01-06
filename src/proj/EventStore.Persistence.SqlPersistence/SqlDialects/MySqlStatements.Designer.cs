@@ -61,20 +61,20 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
-        ///START TRANSACTION;
-        ///
-        ///CREATE TABLE IF NOT EXISTS Commits
+        ///   Looks up a localized string similar to CREATE TABLE IF NOT EXISTS Commits
         ///(
         ///       StreamId binary(16) NOT NULL,
-        ///       CommitId binary(16) NOT NULL CHECK (CommitId != 0),
         ///       StreamRevision int NOT NULL CHECK (StreamRevision &gt; 0),
+        ///       CommitId binary(16) NOT NULL CHECK (CommitId != 0),
         ///       CommitSequence int NOT NULL CHECK (CommitSequence &gt; 0),
         ///       CommitStamp datetime NOT NULL,
+        ///       Dispatched bit NOT NULL DEFAULT 0,
         ///       Headers blob NULL,
         ///       Payload blob NOT NULL,
         ///       Snapshot blob NULL,
-        ///       CONSTRAINT PK_Dispatch PRIMARY KEY (StreamId,  [rest of string was truncated]&quot;;.
+        ///       CONSTRAINT PK_Dispatch PRIMARY KEY (StreamId, CommitSequence)
+        ///);
+        ///CREAT [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {

@@ -63,7 +63,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         /// <summary>
         ///   Looks up a localized string similar to UPDATE Commits
         ///   SET Snapshot = @Payload,
-        ///       HasSnapshot = true
+        ///       Snapshotted = true
         /// WHERE StreamId = @StreamId
         ///   AND StreamRevision = @StreamRevision;.
         /// </summary>
@@ -74,10 +74,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT C.StreamId, C.CommitId, C.StreamRevision, C.CommitSequence, C.Headers, C.Payload, C.Snapshot
+        ///   Looks up a localized string similar to SELECT C.StreamId, C.StreamRevision, C.CommitId, C.CommitSequence, C.Headers, C.Payload, C.Snapshot
         ///  FROM Commits AS C
         ///  LEFT JOIN Commits AS S
-        ///    ON ( C.StreamId = S.StreamId AND S.HasSnapshot = true )
+        ///    ON ( C.StreamId = S.StreamId AND S.Snapshotted = true )
         /// WHERE C.StreamId = @StreamId
         ///   AND C.StreamRevision BETWEEN IIF(S.StreamRevision IS NULL, 0, S.StreamRevision) AND @StreamRevision
         ///   AND IIF(S.StreamRevision IS NULL, 0, S.StreamRevision) &lt;= @StreamRevision;.
@@ -92,7 +92,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///   Looks up a localized string similar to SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(IIf(S.StreamRevision IS NULL, 0, S.StreamRevision)) AS SnapshotRevision
         ///  FROM Commits AS C
         ///  LEFT JOIN Commits AS S
-        ///    ON ( C.StreamId = S.StreamId AND S.HasSnapshot = true )
+        ///    ON ( C.StreamId = S.StreamId AND S.Snapshotted = true )
         /// WHERE C.CommitSequence &gt;= IIF(S.CommitSequence IS NULL, 0, S.StreamRevision)
         /// GROUP BY C.StreamId
         ///HAVING MAX(C.StreamRevision) &gt;= MAX(IIF(S.StreamRevision IS NULL, 0, S.StreamRevision)) + @Threshold;.
@@ -113,17 +113,16 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///CREATE TABLE Commits
         ///(
         ///       StreamId guid NOT NULL,
-        ///       CommitId guid NOT NULL,
         ///       StreamRevision int NOT NULL,
+        ///       CommitId guid NOT NULL,
         ///       CommitSequence int NOT NULL,
         ///       CommitStamp datetime NOT NULL,
+        ///       Dispatched bit NOT NULL DEFAULT 0,
+        ///       Snapshotted bit NOT NULL DEFAULT 0,
         ///       Headers image NULL,
         ///       Payload image NOT NULL,
         ///       Snapshot image NULL,
-        ///       HasSnapshot bit NOT NULL DEFAULT 0,
-        ///       CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)
-        ///);
-        ///CREA [rest of string was truncated]&quot;;.
+        ///       CONSTRAINT PK_Commits PRIMA [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {

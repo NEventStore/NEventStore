@@ -64,16 +64,17 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///   Looks up a localized string similar to CREATE TABLE Commits
         ///(
         ///       StreamId char(16) character set octets NOT NULL,
-        ///       CommitId char(16) character set octets NOT NULL,
         ///       StreamRevision int NOT NULL CHECK (StreamRevision &gt; 0),
+        ///       CommitId char(16) character set octets NOT NULL,
         ///       CommitSequence int NOT NULL CHECK (CommitSequence &gt; 0),
         ///       CommitStamp timestamp NOT NULL,
+        ///       Dispatched char(1) DEFAULT 0 NOT NULL,
         ///       Headers blob,
         ///       Payload blob NOT NULL,
         ///       &quot;Snapshot&quot; blob,
         ///       CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)
         ///);
-        ///CREATE UNIQUE INDEX IX_Commits_CommitId ON Commits (St [rest of string was truncated]&quot;;.
+        ///CREATE  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {

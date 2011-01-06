@@ -60,9 +60,9 @@ namespace EventStore.Persistence.SqlPersistence
 				var commit = uncommitted.ToCommit();
 
 				cmd.AddParameter(this.dialect.StreamId, commit.StreamId);
+				cmd.AddParameter(this.dialect.StreamRevision, commit.StreamRevision);
 				cmd.AddParameter(this.dialect.CommitId, commit.CommitId);
 				cmd.AddParameter(this.dialect.CommitSequence, commit.CommitSequence);
-				cmd.AddParameter(this.dialect.StreamRevision, commit.StreamRevision);
 				cmd.AddParameter(this.dialect.CommitStamp, DateTime.UtcNow);
 				cmd.AddParameter(this.dialect.Headers, this.serializer.Serialize(commit.Headers));
 				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(commit.Events));

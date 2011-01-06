@@ -18,8 +18,8 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 		static readonly Guid streamId = Guid.NewGuid();
 		private static readonly Commit[] commits =
 		{
-			new Commit(streamId, Guid.NewGuid(), 0, 0, null, null, null),
-			new Commit(streamId, Guid.NewGuid(), 0, 0, null, null, null)
+			new Commit(streamId, 0, Guid.NewGuid(), 0, null, null, null),
+			new Commit(streamId, 0, Guid.NewGuid(), 0, null, null, null)
 		};
 		static readonly Mock<IPublishMessages> bus = new Mock<IPublishMessages>();
 		static readonly Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
@@ -48,7 +48,7 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 	public class when_asynchronously_dispatching_a_commit
 	{
 		static readonly Commit commit = new Commit(
-			Guid.NewGuid(), Guid.NewGuid(), 0, 0, null, null, null);
+			Guid.NewGuid(), 0, Guid.NewGuid(), 0, null, null, null);
 		static readonly Mock<IPublishMessages> bus = new Mock<IPublishMessages>();
 		static readonly Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
 		static AsynchronousDispatcher dispatcher;
@@ -78,7 +78,7 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 	public class when_an_asynchronously_dispatch_commit_throws_an_exception
 	{
 		static readonly Commit commit = new Commit(
-			Guid.NewGuid(), Guid.NewGuid(), 0, 0, null, null, null);
+			Guid.NewGuid(), 0, Guid.NewGuid(), 0, null, null, null);
 
 		static AsynchronousDispatcher dispatcher;
 
