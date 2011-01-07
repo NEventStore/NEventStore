@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{CE782ED8-15BB-49A9-9EBB-288FB5C82A01}</ProjectGuid>
+    <ProjectGuid>{48D8F8C9-A334-4518-A7EB-95D605B03401}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EventStore.Persistence.RavenPersistence</RootNamespace>
-    <AssemblyName>EventStore.Persistence.RavenPersistence</AssemblyName>
+    <RootNamespace>EventStore.Serialization</RootNamespace>
+    <AssemblyName>EventStore.Serialization.ProtocolBuffers</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SignAssembly>true</SignAssembly>
@@ -42,14 +42,14 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ExceptionMessages.Designer.cs">
+      <DependentUpon>ExceptionMessages.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="IInitializeRaven.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RavenCommit.cs" />
-    <Compile Include="RavenExtensions.cs" />
-    <Compile Include="RavenInitializer.cs" />
-    <Compile Include="RavenPersistenceEngine.cs" />
-    <Compile Include="RavenPersistenceFactory.cs" />
+    <Compile Include="ProtocolBufferSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\CustomDictionary.xml">
@@ -66,30 +66,17 @@
     <Reference Include="EventStore" Condition="Exists('..\..\..\output\bin\EventStore.dll')">
       <HintPath>..\..\..\output\bin\EventStore.dll</HintPath>
     </Reference>
-    <Reference Include="MissingBitsFromClientProfile" Condition="$(TargetFrameworkVersion)=='v4.0'">
-      <HintPath>..\..\..\lib\RavenDB\.NET 4.0\MissingBitsFromClientProfile.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json" Condition="$(TargetFrameworkVersion)=='v3.5'">
-      <HintPath>..\..\..\lib\RavenDB\.NET 3.5\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json" Condition="$(TargetFrameworkVersion)=='v4.0'">
-      <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Raven.Abstractions" Condition="$(TargetFrameworkVersion)=='v3.5'">
-      <HintPath>..\..\..\lib\RavenDB\.NET 3.5\Raven.Abstractions-3.5.dll</HintPath>
-    </Reference>
-    <Reference Include="Raven.Abstractions" Condition="$(TargetFrameworkVersion)=='v4.0'">
-      <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Raven.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v3.5'">
-      <HintPath>..\..\..\lib\RavenDB\.NET 3.5\Raven.Client.Lightweight-3.5.dll</HintPath>
-    </Reference>
-    <Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v4.0'">
-      <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Raven.Client.Lightweight.dll</HintPath>
+    <Reference Include="protobuf-net">
+      <HintPath>..\..\..\lib\protobuf-net\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.configuration" />
-    <Reference Include="System.Transactions" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ExceptionMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

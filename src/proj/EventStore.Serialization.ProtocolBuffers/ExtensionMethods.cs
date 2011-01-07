@@ -13,10 +13,7 @@ namespace EventStore.Serialization
 		{
 			return string.Format(CultureInfo.InvariantCulture, format, values);
 		}
-		public static bool HasAttribute<T>(this Type type) where T : Attribute
-		{
-			return type.GetCustomAttributes(typeof(T), false).Length > 0;
-		}
+
 		public static Assembly[] LoadAssemblies(this IEnumerable<string> searchPatterns)
 		{
 			return searchPatterns

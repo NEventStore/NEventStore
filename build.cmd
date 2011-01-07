@@ -1,57 +1,93 @@
-@ECHO OFF
-SET FRAMEWORK_PATH=C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319
-SET PATH=%PATH%;%FRAMEWORK_PATH%;
+@echo off
+set FRAMEWORK_PATH=C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319
+set PATH=%PATH%;%FRAMEWORK_PATH%;
 
 :target_config
-SET TARGET_CONFIG=Release
-IF x==%1x GOTO framework_version
-SET TARGET_CONFIG=%1
+set TARGET_CONFIG=Release
+IF x==%1x goto framework_version
+set TARGET_CONFIG=%1
 
 :framework_version
-SET FRAMEWORK_VERSION=v4.0
-SET ILMERGE_VERSION=v4,%FRAMEWORK_PATH%
-IF x==%2x GOTO build
-SET FRAMEWORK_VERSION=%2
-SET ILMERGE_VERSION=%3
+set FRAMEWORK_VERSION=v4.0
+set ILMERGE_VERSION=v4,%FRAMEWORK_PATH%
+if x==%2x goto build
+set FRAMEWORK_VERSION=%2
+set ILMERGE_VERSION=%3
 
 :build
 if exist output ( rmdir /s /q output )
-mkdir output
+if exist output ( rmdir /s /q output )
 
+mkdir output
+mkdir output\bin
+
+echo === COMPILING ===
 echo Compiling / Target: %FRAMEWORK_VERSION% / Config: %TARGET_CONFIG%
 msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=%TARGET_CONFIG% /t:Clean
 msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=%TARGET_CONFIG% /property:TargetFrameworkVersion=%FRAMEWORK_VERSION%
 
-echo Testing
-REM TODO: Split into .net 4.0/.net 3.5...
-REM TODO: Split all unit tests out into another file
-REM TODO: Split all acceptance tests out into another file?
+echo.
+echo === TESTS ===
+echo Unit Tests
 "bin/machine.specifications-bin/.NET 4.0/mspec.exe" src/tests/EventStore.Core.UnitTests/bin/%TARGET_CONFIG%/EventStore.Core.UnitTests.dll
+echo Acceptance Tests
 "bin/machine.specifications-bin/.NET 4.0/mspec.exe" src/tests/EventStore.Persistence.AcceptanceTests/bin/%TARGET_CONFIG%/EventStore.Persistence.AcceptanceTests.dll
 
 echo.
-echo Merging
-mkdir output\bin
-SET FILES_TO_MERGE=
-SET FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore\bin\%TARGET_CONFIG%\EventStore.dll"
-SET FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Core\bin\%TARGET_CONFIG%\EventStore.Core.dll"
-SET FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization\bin\%TARGET_CONFIG%\EventStore.Serialization.dll"
-SET FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization\bin\%TARGET_CONFIG%\protobuf-net.dll"
-SET FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.SqlPersistence\bin\%TARGET_CONFIG%\EventStore.Persistence.SqlPersistence.dll"
-SET FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.MongoPersistence\bin\%TARGET_CONFIG%\EventStore.Persistence.MongoPersistence.dll"
-SET FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.MongoPersistence\bin\%TARGET_CONFIG%\norm.dll"
-
-REM Echo exclude regex to exclude file *WITHOUT* any line breaks
+echo === MERGING ===
+echo Merging Primary Assembly
+set FILES_TO_MERGE=
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore\bin\%TARGET_CONFIG%\EventStore.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Core\bin\%TARGET_CONFIG%\EventStore.Core.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization\bin\%TARGET_CONFIG%\EventStore.Serialization.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.SqlPersistence\bin\%TARGET_CONFIG%\EventStore.Persistence.SqlPersistence.dll"
 (echo.|set /p =EventStore.*)>exclude.txt
-bin\ilmerge-bin\ILMerge.exe /keyfile:src/EventStore.snk /internalize:"exclude.txt" /xmldocs /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.dll %FILES_TO_MERGE%
+bin\ilmerge-bin\ILMerge.exe /keyfile:src/EventStore.snk /internalize:"exclude.txt" /xmldocs /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.dll %FILES_TO_MERGE%
 del exclude.txt
 
+echo Rereferencing Merged Assembly
+msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=%TARGET_CONFIG% /t:Clean
+msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=%TARGET_CONFIG% /property:TargetFrameworkVersion=%FRAMEWORK_VERSION%
+
+echo Merging RavenDB
+set FILES_TO_MERGE=
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.RavenPersistence\bin\%TARGET_CONFIG%\EventStore.Persistence.RavenPersistence.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.RavenPersistence\bin\%TARGET_CONFIG%\MissingBitsFromClientProfile.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.RavenPersistence\bin\%TARGET_CONFIG%\Newtonsoft.Json.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.RavenPersistence\bin\%TARGET_CONFIG%\Raven*.dll"
+echo EventStore.*>exclude.txt
+(echo.|set /p =RavenDB.Client.*)>>exclude.txt
+bin\ilmerge-bin\ILMerge.exe /keyfile:src/EventStore.snk /internalize:"exclude.txt" /xmldocs /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Persistence.RavenPersistence.dll %FILES_TO_MERGE%
+del exclude.txt
+
+echo Merging MongoDB
+set FILES_TO_MERGE=
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.MongoPersistence\bin\%TARGET_CONFIG%\EventStore.Persistence.MongoPersistence.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.MongoPersistence\bin\%TARGET_CONFIG%\norm.dll"
+echo EventStore.*>exclude.txt
+(echo.|set /p =Norm.*)>>exclude.txt
+bin\ilmerge-bin\ILMerge.exe /keyfile:src/EventStore.snk /internalize:"exclude.txt" /xmldocs /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Persistence.MongoPersistence.dll %FILES_TO_MERGE%
+del exclude.txt
+
+echo Merging ProtocolBuffers
+set FILES_TO_MERGE=
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization.ProtocolBuffers\bin\%TARGET_CONFIG%\EventStore.Serialization.ProtocolBuffers.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization.ProtocolBuffers\bin\%TARGET_CONFIG%\protobuf-net.dll"
+(echo.|set /p =EventStore.*)>>exclude.txt
+bin\ilmerge-bin\ILMerge.exe /keyfile:src/EventStore.snk /internalize:"exclude.txt" /xmldocs /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Serialization.ProtocolBuffers.dll %FILES_TO_MERGE%
+del exclude.txt
+
+echo.
+echo === FINALIZING ===
 echo Copying
 mkdir output\doc
 copy doc\*.* output\doc
 copy "lib\protobuf-net\license.txt" "output\doc\protobuf-net license.txt"
 
-echo Cleaning
+echo.
+echo === CLEANUP ===
+echo Cleaning Build
 msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=%TARGET_CONFIG% /t:Clean
 
-echo Done
+echo.
+echo === DONE ===
