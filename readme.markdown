@@ -38,7 +38,7 @@ enlisting any resources (other than a message queue) in some form of a transacti
 
 ### Relational Databases
 [Complete] Microsoft SQL Server 2000 (or later)  
-MySQL 5  0 (or later)  
+MySQL 5.0 (or later)  
 * [Complete] InnoDB  
 * [Complete] NDB/MySQL Cluster  
 * [Complete] Drizzle  
@@ -46,16 +46,16 @@ MySQL 5  0 (or later)
 * [Complete] XtraDB  
 * [Untested] MyISAM  
 * [Untested] BerkleyDB  
-[Complete] PostgreSQL 8  0 (or later)  
-[Complete] Firebird 2  0 (or later)  
-[Planned] Oracle 8  0 (or later)  
+[Complete] PostgreSQL 8.0 (or later)  
+[Complete] Firebird 2.0 (or later)  
+[Planned] Oracle 8.0 (or later)  
 [Planned] IBM DB2  
 [Planned] Informix  
 [Planned] Sybase  
 
 ### Embedded Relational Databases
-[Complete] SQLite 3  0 (or later)  
-[Complete] Microsoft SQL Server Compact Edition 3  5 (or later)  
+[Complete] SQLite 3.0 (or later)  
+[Complete] Microsoft SQL Server Compact Edition 3.5 (or later)  
 [Complete] Microsoft Access 2000 (or later)  
 
 ### Cloud-based Relational Databases
@@ -67,11 +67,11 @@ MySQL 5  0 (or later)
 
 ### Document Databases
 [In progress] RavenDB r224 (or later)  
-[Planned] CouchDB 1  0 (or later)  
-[Beta] MongoDB 1  6 (or later)  
+[Planned] CouchDB 1.0 (or later)  
+[Beta] MongoDB 1.6 (or later)  
 
 ### File System
-[Planned]   NET Managed System  IO APIs [Planned]  
+[Planned] .NET Managed System.IO APIs [Planned]  
 
 ### Dynamo Clones
 [Planned] Cassandra  
@@ -90,6 +90,19 @@ MySQL 5  0 (or later)
 [Planned] VoltDB  
 [Planned] BerkleyDB  
 [Planned] HampsterDB  
+
+## Project Goals
+* Mono 2.6 support  
+* Medium-trust support  
+* Support more storage engines than any other event storage implementation  
+* Easily support virtually any storage engine (NoSQL, etc.)  
+* Completely avoid TransactionScope or Transactions, but maintain data integrity  
+* Full test coverage of storage implementations  
+* Easily hook into any bus implementation (NServiceBus, MassTransit, etc.)  
+* Synchronous and asynchronous dispatching of events  
+* High performance  
+* Multi-thread safe  
+* Fluent builder
 
 ## Building
 TODO
