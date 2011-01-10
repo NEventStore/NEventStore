@@ -44,6 +44,8 @@ enlisting any resources (other than a message queue) in some form of a transacti
 * [Complete] Drizzle  
 * [Complete] MariaDB  
 * [Complete] XtraDB  
+* [Complete] PBXT  
+* [Complete] Galera  
 * [Untested] MyISAM  
 * [Untested] BerkleyDB  
 [Complete] PostgreSQL 8.0 (or later)  
