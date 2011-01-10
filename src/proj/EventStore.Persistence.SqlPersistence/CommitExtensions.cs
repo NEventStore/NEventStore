@@ -18,8 +18,8 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public static Commit GetCommit(this IDataRecord record, ISerialize serializer)
 		{
-			var headers = serializer.Deserialize(record, HeadersIndex) as IDictionary<string, object>;
-			var events = serializer.Deserialize(record, PayloadIndex) as ICollection<EventMessage>;
+			var headers = serializer.Deserialize(record, HeadersIndex) as Dictionary<string, object>;
+			var events = serializer.Deserialize(record, PayloadIndex) as List<EventMessage>;
 			var snapshot = serializer.Deserialize(record, SnapshotIndex);
 
 			return new Commit(
