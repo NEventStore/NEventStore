@@ -2,13 +2,19 @@ namespace EventStore.Persistence.RavenPersistence
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
 	using Newtonsoft.Json.Linq;
 	using Raven.Database.Data;
 	using Raven.Database.Json;
 
 	internal static class RavenExtensions
 	{
+		private const string IdFormat = "{0}.{1}";
+
+		public static string Id(this Commit commit)
+		{
+			return IdFormat.FormatWith(commit.StreamId, commit.CommitSequence);
+		}
+
 		public static PatchCommandData UpdateStream(this Guid streamId, string name, int headRevision)
 		{
 			var patches = new List<PatchRequest>
@@ -51,11 +57,11 @@ namespace EventStore.Persistence.RavenPersistence
 				}
 			};
 		}
-		public static PatchCommandData RemoveProperty(this RavenCommit commit, string name)
+		public static PatchCommandData RemoveProperty(this Commit commit, string name)
 		{
 			return new PatchCommandData
 			{
-				Key = commit.Id,
+				Key = commit.Id(),
 				Patches = new[]
 				{
 					new PatchRequest
@@ -65,35 +71,6 @@ namespace EventStore.Persistence.RavenPersistence
 					}
 				}
 			};
-		}
-
-		public static RavenCommit ToRavenCommit(this CommitAttempt attempt)
-		{
-			return attempt.ToCommit().ToRavenCommit();
-		}
-		public static RavenCommit ToRavenCommit(this Commit commit)
-		{
-			return new RavenCommit
-			{
-				StreamId = commit.StreamId,
-				CommitId = commit.CommitId,
-				StreamRevision = commit.StreamRevision,
-				CommitSequence = commit.CommitSequence,
-				Headers = (Dictionary<string, object>)commit.Headers,
-				Events = commit.Events.ToList(),
-				Snapshot = commit.Snapshot
-			};
-		}
-		public static Commit ToCommit(this RavenCommit commit)
-		{
-			return new Commit(
-				commit.StreamId,
-				commit.StreamRevision,
-				commit.CommitId,
-				commit.CommitSequence,
-				commit.Headers,
-				commit.Events,
-				commit.Snapshot);
 		}
 	}
 }

@@ -22,11 +22,17 @@ namespace EventStore.Persistence.RavenPersistence
 		{
 			var generator = store.Conventions.DocumentKeyGenerator;
 			store.Conventions.DocumentKeyGenerator = entity =>
-				AssignIdentity(entity as StreamHead) ?? generator(entity);
+				GetCommitIdentity(entity as Commit)
+				?? GetStreamIdentity(entity as StreamHead)
+				?? generator(entity);
 
 			store.Initialize();
 		}
-		private static string AssignIdentity(StreamHead stream)
+		private static string GetCommitIdentity(Commit commit)
+		{
+			return commit == null ? null : commit.Id();
+		}
+		private static string GetStreamIdentity(StreamHead stream)
 		{
 			return stream == null ? null : stream.StreamId.ToString();
 		}

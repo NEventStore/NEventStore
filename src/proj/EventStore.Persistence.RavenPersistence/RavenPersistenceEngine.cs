@@ -53,11 +53,9 @@ namespace EventStore.Persistence.RavenPersistence
 			{
 				try
 				{
-					var commits = session.Query<RavenCommit>()
+					return session.Query<Commit>()
 						.Where(x => x.StreamId == streamId && x.StreamRevision >= minRevision)
 						.ToArray();
-
-					return commits.Select(x => x.ToCommit());
 				}
 				catch (Exception e)
 				{
@@ -67,7 +65,7 @@ namespace EventStore.Persistence.RavenPersistence
 		}
 		public virtual void Persist(CommitAttempt uncommitted)
 		{
-			var commit = uncommitted.ToRavenCommit();
+			var commit = uncommitted.ToCommit();
 
 			using (new TransactionScope(TransactionScopeOption.Suppress))
 			using (var session = this.store.OpenSession())
@@ -91,11 +89,11 @@ namespace EventStore.Persistence.RavenPersistence
 				}
 				catch (Raven.Http.Exceptions.ConcurrencyException e)
 				{
-					var committed = session.Load<RavenCommit>(commit.Id);
+					var committed = session.Load<Commit>(commit.Id());
 					if (committed.CommitId == commit.CommitId)
 						throw new DuplicateCommitException();
 
-					if (session.Query<RavenCommit>()
+					if (session.Query<Commit>()
 						.Where(x => x.StreamId == commit.StreamId && x.CommitId == commit.CommitId).Any())
 						throw new DuplicateCommitException();
 
@@ -115,10 +113,8 @@ namespace EventStore.Persistence.RavenPersistence
 			{
 				try
 				{
-					var commits = session.Advanced.LuceneQuery<RavenCommit>()
+					return session.Advanced.LuceneQuery<Commit>()
 						.WhereContains(ToDispatch, true).ToList();
-
-					return commits.Select(x => x.ToCommit());
 				}
 				catch (Exception e)
 				{
@@ -131,7 +127,7 @@ namespace EventStore.Persistence.RavenPersistence
 			using (new TransactionScope(TransactionScopeOption.Suppress))
 			using (var session = this.store.OpenSession())
 			{
-				var patch = commit.ToRavenCommit().RemoveProperty(ToDispatch);
+				var patch = commit.RemoveProperty(ToDispatch);
 				session.Advanced.DatabaseCommands.Batch(new[] { patch });
 				session.SaveChanges();
 			}
@@ -155,19 +151,7 @@ namespace EventStore.Persistence.RavenPersistence
 			using (new TransactionScope(TransactionScopeOption.Suppress))
 			using (var session = this.store.OpenSession())
 			{
-				session.Advanced.UseOptimisticConcurrency = false;
-
-				var commit = session.Query<RavenCommit>()
-					.FirstOrDefault(x => x.StreamId == streamId && x.StreamRevision == streamRevision);
-
-				if (commit == null)
-					return;
-
-				var patch = commit.StreamId.UpdateStream(streamRevision);
-				session.Advanced.DatabaseCommands.Batch(new[] { patch });
-
-				commit.Snapshot = snapshot; // TODO: refactor to use patch
-				session.SaveChanges();
+				// TODO
 			}
 		}
 	}

@@ -1,12 +1,10 @@
 namespace EventStore.Persistence.MongoPersistence
 {
-	using System.Collections.Generic;
 	using System.Globalization;
-	using System.Linq;
 	using Norm.BSON;
 	using Serialization;
 
-	public static class ExtensionMethods
+	internal static class ExtensionMethods
 	{
 		public static string FormatWith(this string format, params object[] values)
 		{
@@ -25,8 +23,8 @@ namespace EventStore.Persistence.MongoPersistence
 				CommitId = commit.CommitId,
 				StreamRevision = commit.StreamRevision,
 				CommitSequence = commit.CommitSequence,
-				Headers = (Dictionary<string, object>)commit.Headers,
-				Events = commit.Events.ToList(),
+				Headers = commit.Headers,
+				Events = commit.Events,
 				Snapshot = commit.Snapshot != null ? serializer.Serialize(commit.Snapshot) : null
 			};
 		}
