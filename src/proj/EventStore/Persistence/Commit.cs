@@ -7,8 +7,7 @@ namespace EventStore.Persistence
 	/// <summary>
 	/// Represents a series of events which have been fully committed as a single unit and which apply to the stream indicated.
 	/// </summary>
-	[DataContract]
-	[Serializable]
+	[DataContract, Serializable]
 	public class Commit
 	{
 		/// <summary>

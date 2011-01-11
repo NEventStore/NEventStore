@@ -7,8 +7,7 @@
 	/// <summary>
 	/// Represents a single element in a stream of events.
 	/// </summary>
-	[Serializable]
-	[DataContract]
+	[DataContract, Serializable]
 	public class EventMessage
 	{
 		/// <summary>
@@ -22,13 +21,11 @@
 		/// <summary>
 		/// Gets the metadata which provides additional, unstructured information about this message.
 		/// </summary>
-		[DataMember]
-		public IDictionary<string, object> Headers { get; private set; }
+		[DataMember] public Dictionary<string, object> Headers { get; private set; }
 
 		/// <summary>
 		/// Gets or sets the actual event message body.
 		/// </summary>
-		[DataMember]
-		public object Body { get; set; }
+		[DataMember] public object Body { get; set; }
 	}
 }
