@@ -8,7 +8,6 @@ namespace EventStore
 
 	public class OptimisticEventStore : IStoreEvents
 	{
-		private readonly IDictionary<Guid, Commit> streamHeads = new Dictionary<Guid, Commit>();
 		private readonly CommitTracker tracker = new CommitTracker();
 		private readonly IPersistStreams persistence;
 		private readonly IDispatchCommits dispatcher;
@@ -31,7 +30,6 @@ namespace EventStore
 		protected virtual CommittedEventStream Read(IEnumerable<Commit> commits, bool applySnapshot)
 		{
 			var streamId = Guid.Empty;
-			Commit last = null;
 			var sequence = 0;
 			var revision = 0;
 			object snapshot = null;
@@ -41,7 +39,6 @@ namespace EventStore
 			foreach (var commit in commits ?? new Commit[0])
 			{
 				streamId = commit.StreamId;
-				last = commit;
 				sequence = commit.CommitSequence;
 				revision = commit.StreamRevision;
 
@@ -51,9 +48,6 @@ namespace EventStore
 
 				this.tracker.Track(commit);
 			}
-
-			if (last != null)
-				this.streamHeads[streamId] = last;
 
 			snapshot = applySnapshot ? snapshot : null;
 			return new CommittedEventStream(
@@ -73,8 +67,8 @@ namespace EventStore
 			if (this.tracker.Contains(current))
 				throw new DuplicateCommitException();
 
-			Commit previous;
-			if (!this.streamHeads.TryGetValue(current.StreamId, out previous))
+			var previous = this.tracker.GetStreamHead(current.StreamId);
+			if (previous == null)
 				return;
 
 			if (previous.CommitSequence > current.PreviousCommitSequence)
@@ -95,7 +89,6 @@ namespace EventStore
 
 			var commit = attempt.ToCommit();
 			this.tracker.Track(commit);
-			this.streamHeads[commit.StreamId] = commit;
 			
 			this.dispatcher.Dispatch(commit);
 		}
