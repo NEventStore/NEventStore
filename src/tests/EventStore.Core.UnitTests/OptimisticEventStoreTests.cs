@@ -555,7 +555,7 @@ namespace EventStore.Core.UnitTests
                 new Commit(streamId, MostRecentStreamRevision, Guid.NewGuid(), CommitSequence, null, null, null),
             };
 
-        static readonly CountdownEvent countdown = new CountdownEvent(2);
+        static readonly Countdown countdown = new Countdown(2);
         static readonly AutoResetEvent gate = new AutoResetEvent(false);
         static int ReadCount, WriteCount;
         static readonly object readLock = new object();
@@ -585,7 +585,7 @@ namespace EventStore.Core.UnitTests
                     WriteCount++;
                     //release the other thread once we have persisted the first commit
                     if (WriteCount == 1) gate.Set();
-                    countdown.Signal(1);
+                    countdown.Signal();
                 });
         };
 
@@ -610,7 +610,7 @@ namespace EventStore.Core.UnitTests
             catch (Exception e)
             {
                 thrown = e;
-                countdown.Signal(1);
+                countdown.Signal();
             }
         }
 
@@ -629,8 +629,35 @@ namespace EventStore.Core.UnitTests
         Cleanup thisFunction = () =>
         {
             gate.Dispose();
-            countdown.Dispose();
         };
+
+        public class Countdown
+        {
+            object _locker = new object();
+            int _value;
+
+            public Countdown() { }
+            public Countdown(int initialCount) { _value = initialCount; }
+
+            public void Signal() { AddCount(-1); }
+
+            public void AddCount(int amount)
+            {
+                lock (_locker)
+                {
+                    _value += amount;
+                    if (_value <= 0) Monitor.PulseAll(_locker);
+                }
+            }
+
+            public void Wait()
+            {
+                lock (_locker)
+                    while (_value > 0)
+                        Monitor.Wait(_locker);
+            }
+        }
+
     }
 
 	public abstract class using_persistence
