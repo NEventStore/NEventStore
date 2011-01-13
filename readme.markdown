@@ -45,7 +45,10 @@ enlisting any resources (other than a message queue) in some form of a transacti
 * [Complete] MariaDB  
 * [Complete] XtraDB  
 * [Complete] PBXT  
+* [Complete] Xeround  
 * [Complete] Galera  
+* [Complete] Percona  
+* [Complete] OurDelta  
 * [Untested] MyISAM  
 * [Untested] BerkleyDB  
 [Complete] PostgreSQL 8.0 (or later)  
