@@ -49,7 +49,7 @@ echo Rereferencing Merged Assembly
 msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=%TARGET_CONFIG% /t:Clean
 msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=%TARGET_CONFIG% /property:TargetFrameworkVersion=%FRAMEWORK_VERSION%
 
-echo Merging RavenDB
+echo Merging RavenDB Persistence
 set FILES_TO_MERGE=
 set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.RavenPersistence\bin\%TARGET_CONFIG%\EventStore.Persistence.RavenPersistence.dll"
 set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.RavenPersistence\bin\%TARGET_CONFIG%\MissingBitsFromClientProfile.dll"
@@ -60,7 +60,7 @@ echo EventStore.*>exclude.txt
 bin\ilmerge-bin\ILMerge.exe /keyfile:src/EventStore.snk /internalize:"exclude.txt" /xmldocs /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Persistence.RavenPersistence.dll %FILES_TO_MERGE%
 del exclude.txt
 
-echo Merging MongoDB
+echo Merging MongoDB Persistence
 set FILES_TO_MERGE=
 set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.MongoPersistence\bin\%TARGET_CONFIG%\EventStore.Persistence.MongoPersistence.dll"
 set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.MongoPersistence\bin\%TARGET_CONFIG%\norm.dll"
@@ -69,12 +69,20 @@ echo EventStore.*>exclude.txt
 bin\ilmerge-bin\ILMerge.exe /keyfile:src/EventStore.snk /internalize:"exclude.txt" /xmldocs /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Persistence.MongoPersistence.dll %FILES_TO_MERGE%
 del exclude.txt
 
-echo Merging ProtocolBuffers
+echo Merging ProtocolBuffers Serialization
 set FILES_TO_MERGE=
 set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization.ProtocolBuffers\bin\%TARGET_CONFIG%\EventStore.Serialization.ProtocolBuffers.dll"
 set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization.ProtocolBuffers\bin\%TARGET_CONFIG%\protobuf-net.dll"
 (echo.|set /p =EventStore.*)>>exclude.txt
 bin\ilmerge-bin\ILMerge.exe /keyfile:src/EventStore.snk /internalize:"exclude.txt" /xmldocs /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Serialization.ProtocolBuffers.dll %FILES_TO_MERGE%
+del exclude.txt
+
+echo Merging Json Serialization
+set FILES_TO_MERGE=
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization.Json\bin\%TARGET_CONFIG%\EventStore.Serialization.Json.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization.Json\bin\%TARGET_CONFIG%\Newtonsoft.Json.dll"
+(echo.|set /p =EventStore.*)>>exclude.txt
+bin\ilmerge-bin\ILMerge.exe /keyfile:src/EventStore.snk /internalize:"exclude.txt" /xmldocs /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Serialization.Json.dll %FILES_TO_MERGE%
 del exclude.txt
 
 echo.
@@ -83,6 +91,7 @@ echo Copying
 mkdir output\doc
 copy doc\*.* output\doc
 copy "lib\protobuf-net\license.txt" "output\doc\protobuf-net license.txt"
+copy "lib\Json.NET\license.txt" "output\doc\Newtonsoft Json.NET license.txt"
 
 echo.
 echo === CLEANUP ===
