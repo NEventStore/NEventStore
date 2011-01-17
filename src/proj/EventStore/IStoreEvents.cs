@@ -8,6 +8,11 @@ namespace EventStore
 	public interface IStoreEvents
 	{
 		/// <summary>
+		/// Initializes the event store, the underlying persistence schema, and ensures all undispatched commits are dispatched.
+		/// </summary>
+		void Initialize();
+
+		/// <summary>
 		/// Reads from the stream indicated from most recent snapshot, if any, up to and including the revision specified.
 		/// </summary>
 		/// <param name="streamId">The stream from which the events will be read.</param>

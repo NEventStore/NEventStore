@@ -18,6 +18,14 @@ namespace EventStore
 			this.dispatcher = dispatcher;
 		}
 
+		public virtual void Initialize()
+		{
+			this.persistence.Initialize();
+
+			foreach (var undispatched in this.persistence.GetUndispatchedCommits())
+				this.dispatcher.Dispatch(undispatched);
+		}
+
 		public virtual CommittedEventStream ReadUntil(Guid streamId, int maxRevision)
 		{
 			maxRevision = maxRevision > 0 ? maxRevision : int.MaxValue;

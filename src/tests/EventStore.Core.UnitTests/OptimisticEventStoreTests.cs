@@ -12,6 +12,30 @@ namespace EventStore.Core.UnitTests
 	using It = Machine.Specifications.It;
 
 	[Subject("OptimisticEventStore")]
+	public class when_initializing_the_event_store : using_persistence
+	{
+		static readonly Commit Undispatched =
+			new Commit(streamId, 1, Guid.NewGuid(), 1, null, null, null);
+
+		Establish context = () =>
+		{
+			persistence.Setup(x => x.Initialize());
+
+			persistence.Setup(x => x.GetUndispatchedCommits()).Returns(new[] { Undispatched });
+			dispatcher.Setup(x => x.Dispatch(Undispatched));
+		};
+
+		Because of = () =>
+			store.Initialize();
+
+		It should_initialize_the_underlying_storage = () =>
+			persistence.Verify(x => x.Initialize(), Times.Exactly(1));
+
+		It should_dispatch_all_undispatched_commits = () =>
+			dispatcher.Verify(x => x.Dispatch(Undispatched), Times.Exactly(1));
+	}
+
+	[Subject("OptimisticEventStore")]
 	public class when_reading_a_stream_up_to_a_maximum_revision : using_persistence
 	{
 		const int MaxRevision = 1234;
