@@ -7,7 +7,7 @@ namespace EventStore.Serialization.Json
 	{
 		private readonly Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer
 		{
-			TypeNameHandling = TypeNameHandling.Objects
+			TypeNameHandling = TypeNameHandling.Auto
 		};
 
 		public void Serialize(Stream output, object graph)
