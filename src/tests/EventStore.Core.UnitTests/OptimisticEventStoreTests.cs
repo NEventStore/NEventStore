@@ -12,30 +12,6 @@ namespace EventStore.Core.UnitTests
 	using It = Machine.Specifications.It;
 
 	[Subject("OptimisticEventStore")]
-	public class when_initializing_the_event_store : using_persistence
-	{
-		static readonly Commit Undispatched =
-			new Commit(streamId, 1, Guid.NewGuid(), 1, null, null, null);
-
-		Establish context = () =>
-		{
-			persistence.Setup(x => x.Initialize());
-
-			persistence.Setup(x => x.GetUndispatchedCommits()).Returns(new[] { Undispatched });
-			dispatcher.Setup(x => x.Dispatch(Undispatched));
-		};
-
-		Because of = () =>
-			store.Initialize();
-
-		It should_initialize_the_underlying_storage = () =>
-			persistence.Verify(x => x.Initialize(), Times.Exactly(1));
-
-		It should_dispatch_all_undispatched_commits = () =>
-			dispatcher.Verify(x => x.Dispatch(Undispatched), Times.Exactly(1));
-	}
-
-	[Subject("OptimisticEventStore")]
 	public class when_reading_a_stream_up_to_a_maximum_revision : using_persistence
 	{
 		const int MaxRevision = 1234;
@@ -87,7 +63,7 @@ namespace EventStore.Core.UnitTests
 			actual.Events.Count.ShouldEqual(Commits.Last().Events.Count);
 
 		It should_order_the_events_from_oldest_to_newest = () =>
-			actual.Events.Cast<object>().Last().ShouldEqual(Commits.NewestEvent());
+			actual.Events.Last().ShouldEqual(Commits.NewestEvent());
 
 		It should_populate_the_stream_with_all_commit_identifiers_retreived = () =>
 			actual.CommitIdentifiers.ShouldContain(Commits.Select(x => x.CommitId).ToArray());
@@ -137,10 +113,10 @@ namespace EventStore.Core.UnitTests
 			actual.Events.Count.ShouldEqual(Commits.CountEvents());
 
 		It should_put_the_oldest_event_as_the_first_event = () =>
-			actual.Events.Cast<object>().First().ShouldEqual(Commits.OldestEvent());
+			actual.Events.First().ShouldEqual(Commits.OldestEvent());
 
 		It should_put_the_newest_event_as_the_last_event = () =>
-			actual.Events.Cast<object>().Last().ShouldEqual(Commits.NewestEvent());
+			actual.Events.Last().ShouldEqual(Commits.NewestEvent());
 
 		It should_populate_the_stream_with_all_commit_identifiers_retreived = () =>
 			actual.CommitIdentifiers.ShouldContain(Commits.Select(x => x.CommitId).ToArray());

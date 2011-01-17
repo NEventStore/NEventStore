@@ -1,7 +1,6 @@
 namespace EventStore.Dispatcher
 {
 	using System;
-	using System.Linq;
 	using System.Threading;
 	using Persistence;
 
@@ -39,8 +38,9 @@ namespace EventStore.Dispatcher
 
 		private void Start()
 		{
-			var commits = this.persistence.GetUndispatchedCommits() ?? new Commit[] { };
-			foreach (var commit in commits.ToList())
+			this.persistence.Initialize();
+			var commits = this.persistence.GetUndispatchedCommits();
+			foreach (var commit in commits)
 				this.Dispatch(commit);
 		}
 

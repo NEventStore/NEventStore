@@ -35,7 +35,9 @@ namespace EventStore.Dispatcher
 
 		private void Start()
 		{
-			foreach (var commit in this.persistence.GetUndispatchedCommits().ToList())
+			this.persistence.Initialize();
+
+			foreach (var commit in this.persistence.GetUndispatchedCommits())
 				this.Dispatch(commit);
 		}
 

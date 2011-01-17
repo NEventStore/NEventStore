@@ -25,6 +25,7 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 
 		Establish context = () =>
 		{
+			persistence.Setup(x => x.Initialize());
 			persistence.Setup(x => x.GetUndispatchedCommits()).Returns(commits);
 			bus.Setup(x => x.Publish(commits.First()));
 			bus.Setup(x => x.Publish(commits.Last()));
@@ -32,6 +33,9 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 
 		Because of = () =>
 			new SynchronousDispatcher(bus.Object, persistence.Object);
+
+		It should_initialize_the_persistence_engine = () =>
+			persistence.Verify(x => x.Initialize(), Times.Exactly(1));
 
 		It should_get_the_set_of_undispatched_commits = () =>
 			persistence.Verify(x => x.GetUndispatchedCommits(), Times.Exactly(1));
