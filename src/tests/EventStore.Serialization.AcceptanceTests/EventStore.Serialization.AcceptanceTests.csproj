@@ -43,6 +43,7 @@
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ConfigurationExtensions.cs" />
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="SerializationFactory.cs" />
     <Compile Include="SerializerTests.cs" />
     <Compile Include="SimpleMessage.cs" />
