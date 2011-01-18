@@ -7,16 +7,16 @@ namespace EventStore.Serialization.Json
 	{
 		private readonly Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer
 		{
-			TypeNameHandling = TypeNameHandling.Auto
+			TypeNameHandling = TypeNameHandling.All,
+			DefaultValueHandling = DefaultValueHandling.Ignore,
+			NullValueHandling = NullValueHandling.Ignore
 		};
 
 		public void Serialize(Stream output, object graph)
 		{
-			var streamWriter = new StreamWriter(output);
-			var jsonWriter = new JsonTextWriter(streamWriter);
-			this.serializer.Serialize(jsonWriter, graph);
-			jsonWriter.Flush();
-			streamWriter.Flush();
+			using (var streamWriter = new StreamWriter(output))
+			using (var jsonWriter = new JsonTextWriter(streamWriter))
+				this.serializer.Serialize(jsonWriter, graph);
 		}
 		public object Deserialize(Stream input)
 		{
