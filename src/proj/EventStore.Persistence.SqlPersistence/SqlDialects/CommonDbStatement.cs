@@ -71,15 +71,23 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 		public virtual IEnumerable<T> ExecuteWithQuery<T>(string queryText, Func<IDataRecord, T> select)
 		{
-			using (var query = this.BuildCommand(queryText))
-			using (var reader = query.ExecuteReader())
+			var command = this.BuildCommand(queryText);
+			IDataReader reader = null;
+
+			try
 			{
-				ICollection<T> items = new LinkedList<T>();
+				reader = command.ExecuteReader();
+				var rows = reader.AsEnumerable(select);
+				return new DisposableEnumeration<T>(rows, reader, command);
+			}
+			catch (Exception)
+			{
+				if (reader != null)
+					reader.Dispose();
 
-				while (reader.Read())
-					items.Add(select(reader));
+				command.Dispose();
 
-				return items;
+				throw;
 			}
 		}
 

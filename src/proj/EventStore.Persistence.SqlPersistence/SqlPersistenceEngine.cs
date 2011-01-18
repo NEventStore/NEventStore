@@ -2,6 +2,8 @@ namespace EventStore.Persistence.SqlPersistence
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Data;
+	using System.Linq;
 	using System.Transactions;
 	using Persistence;
 	using Serialization;
@@ -49,7 +51,7 @@ namespace EventStore.Persistence.SqlPersistence
 			{
 				query.AddParameter(this.dialect.StreamId, streamId);
 				query.AddParameter(this.dialect.StreamRevision, revision);
-				return query.ExecuteWithQuery(queryText, x => x.GetCommit(this.serializer));
+				return query.ExecuteWithQuery(queryText, x => x.GetCommit(this.serializer)).ToList();
 			});
 		}
 
@@ -75,18 +77,36 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
 		{
-			return this.Execute(Guid.Empty, query =>
+			var scope = new TransactionScope(TransactionScopeOption.Suppress);
+			IDbConnection connection = null;
+			IDbStatement query = null;
+
+			try
 			{
-				var statement = this.dialect.GetCommitsFromInstant;
+				connection = this.factory.Open(Guid.Empty);
+				query = this.dialect.BuildStatement(connection, null);
 				query.AddParameter(this.dialect.CommitStamp, start);
-				return query.ExecuteWithQuery(statement, x => x.GetCommit(this.serializer));
-			});
+
+				var statement = this.dialect.GetCommitsFromInstant;
+				var items = query.ExecuteWithQuery(statement, x => x.GetCommit(this.serializer));
+				return new DisposableEnumeration<Commit>(items, query, connection, scope);
+			}
+			catch (Exception e)
+			{
+				if (query != null)
+					query.Dispose();
+				if (connection != null)
+					connection.Dispose();
+				scope.Dispose();
+
+				throw new PersistenceEngineException(e.Message, e);
+			}
 		}
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
 			return this.Execute(Guid.Empty, query =>
-				query.ExecuteWithQuery(this.dialect.GetUndispatchedCommits, x => x.GetCommit(this.serializer)));
+				query.ExecuteWithQuery(this.dialect.GetUndispatchedCommits, x => x.GetCommit(this.serializer)).ToList());
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
@@ -104,7 +124,7 @@ namespace EventStore.Persistence.SqlPersistence
 			{
 				var statement = this.dialect.GetStreamsRequiringSnaphots;
 				query.AddParameter(this.dialect.Threshold, maxThreshold);
-				return query.ExecuteWithQuery(statement, record => record.GetStreamToSnapshot());
+				return query.ExecuteWithQuery(statement, record => record.GetStreamToSnapshot()).ToList();
 			});
 		}
 		public virtual void AddSnapshot(Guid streamId, int streamRevision, object snapshot)

@@ -45,6 +45,7 @@
     <Compile Include="CommitExtensions.cs" />
     <Compile Include="ConfigurationConnectionFactory.cs" />
     <Compile Include="DelegateConnectionFactory.cs" />
+    <Compile Include="DisposableEnumeration.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="IConnectionFactory.cs" />
     <Compile Include="IDbStatement.cs" />
@@ -66,6 +67,7 @@
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="SqlDialects\DelimitedDbStatement.cs" />
+    <Compile Include="SqlDialects\ExtensionMethods.cs" />
     <Compile Include="SqlDialects\FirebirdSqlDialect.cs">
       <SubType>Code</SubType>
     </Compile>
