@@ -123,6 +123,12 @@
  WHERE StreamId = @StreamId
    AND StreamRevision = @StreamRevision;</value>
   </data>
+  <data name="GetCommitsFromInstant" xml:space="preserve">
+    <value>SELECT StreamId, StreamRevision, CommitId, CommitSequence, Headers, Payload
+  FROM Commits
+ WHERE CommitStamp &gt;= @CommitStamp
+ ORDER BY CommitStamp;</value>
+  </data>
   <data name="GetCommitsFromSnapshotUntilRevision" xml:space="preserve">
     <value>SELECT C.StreamId, C.StreamRevision, C.CommitId, C.CommitSequence, C.Headers, C.Payload, C.Snapshot
   FROM Commits AS C

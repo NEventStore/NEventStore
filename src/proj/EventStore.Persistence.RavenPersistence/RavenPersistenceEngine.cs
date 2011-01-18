@@ -106,6 +106,11 @@ namespace EventStore.Persistence.RavenPersistence
 			}
 		}
 
+		public virtual IEnumerable<Commit> GetFrom(DateTime start)
+		{
+			throw new NotImplementedException();
+		}
+
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
 			using (new TransactionScope(TransactionScopeOption.Suppress))

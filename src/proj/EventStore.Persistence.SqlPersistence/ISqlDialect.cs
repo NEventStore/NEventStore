@@ -8,6 +8,7 @@ namespace EventStore.Persistence.SqlPersistence
 		string AppendSnapshotToCommit { get; }
 		string GetCommitsFromSnapshotUntilRevision { get; }
 		string GetCommitsFromStartingRevision { get; }
+		string GetCommitsFromInstant { get; }
 		string GetStreamsRequiringSnaphots { get; }
 		string GetUndispatchedCommits { get; }
 		string MarkCommitAsDispatched { get; }

@@ -73,6 +73,16 @@ namespace EventStore.Persistence.SqlPersistence
 			});
 		}
 
+		public virtual IEnumerable<Commit> GetFrom(DateTime start)
+		{
+			return this.Execute(Guid.Empty, query =>
+			{
+				var statement = this.dialect.GetCommitsFromInstant;
+				query.AddParameter(this.dialect.CommitStamp, start);
+				return query.ExecuteWithQuery(statement, x => x.GetCommit(this.serializer));
+			});
+		}
+
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
 			return this.Execute(Guid.Empty, query =>

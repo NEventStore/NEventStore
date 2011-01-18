@@ -32,6 +32,13 @@ namespace EventStore.Persistence
 		IEnumerable<Commit> GetFrom(Guid streamId, int minRevision);
 
 		/// <summary>
+		/// Gets all commits on or after from the specified starting time.
+		/// </summary>
+		/// <param name="start">The point in time at which to start.</param>
+		/// <returns>All commits that have occurred on or after the specified starting time.</returns>
+		IEnumerable<Commit> GetFrom(DateTime start);
+
+		/// <summary>
 		/// Writes the to-be-commited events provided to the underlying persistence mechanism.
 		/// </summary>
 		/// <param name="uncommitted">The series of events and associated metadata to be commited.</param>

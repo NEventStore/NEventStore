@@ -18,6 +18,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return CommonSqlStatements.GetCommitsFromStartingRevision; }
 		}
+		public virtual string GetCommitsFromInstant
+		{
+			get { return CommonSqlStatements.GetCommitsFromInstant; }
+		}
 		public virtual string GetStreamsRequiringSnaphots
 		{
 			get { return CommonSqlStatements.GetStreamsRequiringSnaphots; }

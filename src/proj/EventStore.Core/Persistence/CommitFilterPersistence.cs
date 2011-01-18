@@ -59,6 +59,11 @@ namespace EventStore.Persistence
 				this.inner.Persist(uncommitted);
 		}
 
+		public virtual IEnumerable<Commit> GetFrom(DateTime start)
+		{
+			return this.inner.GetFrom(start);
+		}
+
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
 			return this.inner.GetUndispatchedCommits();

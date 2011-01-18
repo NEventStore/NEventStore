@@ -73,6 +73,18 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SELECT StreamId, StreamRevision, CommitId, CommitSequence, Headers, Payload
+        ///  FROM Commits
+        /// WHERE CommitStamp &gt;= @CommitStamp
+        /// ORDER BY CommitStamp;.
+        /// </summary>
+        internal static string GetCommitsFromInstant {
+            get {
+                return ResourceManager.GetString("GetCommitsFromInstant", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SELECT C.StreamId, C.StreamRevision, C.CommitId, C.CommitSequence, C.Headers, C.Payload, C.Snapshot
         ///  FROM Commits AS C
         ///  LEFT OUTER JOIN Commits AS M

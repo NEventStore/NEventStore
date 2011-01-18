@@ -183,6 +183,31 @@ namespace EventStore.Persistence.AcceptanceTests
 			thrown.ShouldBeOfType<DuplicateCommitException>();
 	}
 
+	[Subject("Persistence")]
+	public class when_reading_all_commits_from_a_particular_date : using_the_persistence_engine
+	{
+		static readonly DateTime start = DateTime.UtcNow;
+		static readonly CommitAttempt first = streamId.BuildAttempt();
+		static readonly CommitAttempt second = first.BuildNextAttempt();
+		static readonly CommitAttempt third = second.BuildNextAttempt();
+		static readonly CommitAttempt fourth = third.BuildNextAttempt();
+		static Commit[] committed;
+
+		Establish context = () =>
+		{
+			persistence.Persist(first);
+			persistence.Persist(second);
+			persistence.Persist(third);
+			persistence.Persist(fourth);
+		};
+
+		Because of = () =>
+			committed = persistence.GetFrom(start).ToArray();
+
+		It should_return_all_commits_on_or_after_the_date_specified = () =>
+			committed.Length.ShouldEqual(4);
+	}
+
 	public abstract class using_the_persistence_engine
 	{
 		private static readonly IPersistenceFactory factory = new PersistenceFactoryScanner().GetFactory();

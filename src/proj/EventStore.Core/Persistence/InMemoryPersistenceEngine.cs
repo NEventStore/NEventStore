@@ -9,6 +9,7 @@ namespace EventStore.Persistence
 		private readonly ICollection<Commit> commits = new LinkedList<Commit>();
 		private readonly ICollection<StreamHead> heads = new LinkedList<StreamHead>();
 		private readonly ICollection<Commit> undispatchedCommits = new LinkedList<Commit>();
+		private readonly IDictionary<Guid, DateTime> stamps = new Dictionary<Guid, DateTime>();
 
 		public void Dispose()
 		{
@@ -58,6 +59,7 @@ namespace EventStore.Persistence
 				if (this.commits.Any(c => c.StreamId == commit.StreamId && c.StreamRevision == commit.StreamRevision))
 					throw new ConcurrencyException();
 
+				this.stamps[commit.CommitId] = DateTime.UtcNow;
 				this.commits.Add(commit);
 
 				lock (this.undispatchedCommits)
@@ -71,6 +73,20 @@ namespace EventStore.Persistence
 					this.heads.Add(head);
 				}
 			}
+		}
+
+		public virtual IEnumerable<Commit> GetFrom(DateTime start)
+		{
+			var commitId = this.stamps.Where(x => x.Value >= start).Select(x => x.Key).FirstOrDefault();
+
+			var found = false;
+			return this.commits.TakeWhile(x =>
+			{
+				if (!found && commitId == x.CommitId)
+					found = true;
+
+				return found;
+			});
 		}
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()

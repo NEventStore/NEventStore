@@ -101,6 +101,11 @@ namespace EventStore.Persistence.MongoPersistence
 				.Save(new StreamHead(commit.StreamId, commit.StreamRevision, 0));
 		}
 
+		public virtual IEnumerable<Commit> GetFrom(DateTime start)
+		{
+			throw new NotImplementedException();
+		}
+
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
 			return this.store.Database.GetCollection<MongoCommit>().AsQueryable()
