@@ -8,19 +8,6 @@ namespace EventStore.Serialization.AcceptanceTests
 	using Persistence;
 
 	[Subject("Serialization")]
-	public class when_serializing_a_primitive_type : using_serialization
-	{
-		const long PrimitiveType = 1234;
-		static byte[] serialized;
-
-		Because of = () =>
-			serialized = Serializer.Serialize(PrimitiveType);
-
-		It should_deserialize_to_the_same_value = () =>
-			Serializer.Deserialize(serialized).ShouldEqual(PrimitiveType);
-	}
-
-	[Subject("Serialization")]
 	public class when_serializing_a_simple_message : using_serialization
 	{
 		static readonly SimpleMessage Message = new SimpleMessage().Populate();

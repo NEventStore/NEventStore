@@ -6,9 +6,9 @@ C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\msbuild /nologo /verbosity:quiet s
 
 CALL :run_test Binary
 CALL :run_test Compressed
-CALL :run_test Xml
+REM CALL :run_test Xml
 CALL :run_test Json
-REM CALL :run_test Bson
+CALL :run_test Bson
 REM CALL :run_test ProtocolBuffers
 
 PAUSE
