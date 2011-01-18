@@ -1,3 +1,10 @@
+- ReadSince(datetime)
+- Refine API slightly, e.g. ReadUntil -> ReadFromSnapshot
+- Add documentation and quickstart examples
+- Version on build (git specific?)
 - Create fluent configuration code that doesn't require an IoC container.
-- Add additional samples and quickstart examples
 - Create adapters for the storage engines listed in readme.
+- Website?
+- Master/slave replication "helper"
+  * When failing over from master to slave, ensure that the most recent commits are in the slave.
+  * If not, push the commits to the slave to help avoid a split brain condition.
