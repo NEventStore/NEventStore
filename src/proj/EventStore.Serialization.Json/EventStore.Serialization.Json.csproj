@@ -8,7 +8,7 @@
     <ProjectGuid>{CFD895BD-7CB2-4811-A6FA-1851DF769B67}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EventStore.Serialization.Json</RootNamespace>
+    <RootNamespace>EventStore.Serialization</RootNamespace>
     <AssemblyName>EventStore.Serialization.Json</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -64,7 +64,7 @@
     <Reference Include="Newtonsoft.Json" Condition="$(TargetFrameworkVersion)=='v4.0'">
       <HintPath>..\..\..\lib\Json.NET\.NET 4.0\Newtonsoft.Json.dll</HintPath>
     </Reference>
-	<Reference Include="Newtonsoft.Json" Condition="$(TargetFrameworkVersion)=='v3.5'">
+    <Reference Include="Newtonsoft.Json" Condition="$(TargetFrameworkVersion)=='v3.5'">
       <HintPath>..\..\..\lib\Json.NET\.NET 3.5\Newtonsoft.Json.Net35.dll</HintPath>
     </Reference>
   </ItemGroup>

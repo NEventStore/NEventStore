@@ -38,7 +38,7 @@
 
 			return other.Id.Equals(this.Id)
 			       && other.Created.Equals(this.Created)
-			       && Equals(other.Value, this.Value)
+			       && object.Equals(other.Value, this.Value)
 			       && other.Count == this.Count
 			       && other.Contents.SequenceEqual(this.Contents);
 		}

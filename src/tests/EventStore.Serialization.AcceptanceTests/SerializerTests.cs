@@ -29,7 +29,7 @@ namespace EventStore.Serialization.AcceptanceTests
 		{
 			Id = Guid.NewGuid(),
 			Count = 1234,
-			Created = DateTime.UtcNow,
+			Created = new DateTime(2000, 1, 2, 3, 4, 5, 6, DateTimeKind.Local),
 			Value = "Hello, World",
 			Contents = { "a", "b", "c" }
 		};

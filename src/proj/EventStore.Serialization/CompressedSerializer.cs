@@ -5,9 +5,9 @@ namespace EventStore.Serialization
 
 	public class CompressedSerializer : ISerialize
 	{
-		private readonly BinarySerializer inner;
+		private readonly ISerialize inner;
 
-		public CompressedSerializer(BinarySerializer inner)
+		public CompressedSerializer(ISerialize inner)
 		{
 			this.inner = inner;
 		}

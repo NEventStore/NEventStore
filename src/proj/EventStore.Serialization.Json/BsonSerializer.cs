@@ -1,4 +1,4 @@
-namespace EventStore.Serialization.Json
+namespace EventStore.Serialization
 {
 	using System.IO;
 	using Newtonsoft.Json;
@@ -8,13 +8,15 @@ namespace EventStore.Serialization.Json
 	{
 		private readonly Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer
 		{
-			TypeNameHandling = TypeNameHandling.Auto
+			TypeNameHandling = TypeNameHandling.All,
+			DefaultValueHandling = DefaultValueHandling.Ignore,
+			NullValueHandling = NullValueHandling.Ignore
 		};
 
 		public void Serialize(Stream output, object graph)
 		{
-			using (var bsonWriter = new BsonWriter(output))
-				this.serializer.Serialize(bsonWriter, graph);
+			using (var writer = new BsonWriter(output))
+				this.serializer.Serialize(writer, graph);
 		}
 		public object Deserialize(Stream input)
 		{
