@@ -44,7 +44,6 @@
     </Compile>
     <Compile Include="CompressedSerializer.cs" />
     <Compile Include="BinarySerializer.cs" />
-    <Compile Include="XmlSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

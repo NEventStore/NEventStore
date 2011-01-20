@@ -59,10 +59,6 @@
       <Project>{CFD895BD-7CB2-4811-A6FA-1851DF769B67}</Project>
       <Name>EventStore.Serialization.Json</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\proj\EventStore.Serialization.ProtocolBuffers\EventStore.Serialization.ProtocolBuffers.csproj">
-      <Project>{48D8F8C9-A334-4518-A7EB-95D605B03401}</Project>
-      <Name>EventStore.Serialization.ProtocolBuffers</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\proj\EventStore.Serialization\EventStore.Serialization.csproj">
       <Project>{A5BF4B86-26F6-418D-BE35-C6CC3A623D27}</Project>
       <Name>EventStore.Serialization</Name>
