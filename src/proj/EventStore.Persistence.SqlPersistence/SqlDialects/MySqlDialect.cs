@@ -31,6 +31,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 				if (value is Guid)
 					value = ((Guid)value).ToByteArray();
 
+				if (value is DateTime)
+					value = ((DateTime)value).Ticks;
+
 				base.AddParameter(name, value);
 			}
 		}
