@@ -36,7 +36,7 @@ namespace EventStore.Persistence.SqlPersistence
 				statement.ExecuteWithSuppression(this.dialect.InitializeStorage));
 		}
 
-		public virtual IEnumerable<Commit> GetUntil(Guid streamId, int maxRevision)
+		public virtual IEnumerable<Commit> GetFromSnapshotUntil(Guid streamId, int maxRevision)
 		{
 			return this.Fetch(streamId, maxRevision, this.dialect.GetCommitsFromSnapshotUntilRevision);
 		}

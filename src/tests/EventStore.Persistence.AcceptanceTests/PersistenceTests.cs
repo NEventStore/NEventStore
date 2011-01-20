@@ -57,10 +57,10 @@ namespace EventStore.Persistence.AcceptanceTests
 			persistence.AddSnapshot(streamId, head.StreamRevision, SnapshotData);
 
 		It should_start_reads_at_the_most_recent_commit = () =>
-			persistence.GetUntil(streamId, head.StreamRevision).First().CommitId.ShouldEqual(newest.CommitId);
+			persistence.GetFromSnapshotUntil(streamId, head.StreamRevision).First().CommitId.ShouldEqual(newest.CommitId);
 
 		It should_set_the_snapshot_on_the_commit = () =>
-			persistence.GetUntil(streamId, head.StreamRevision).First().Snapshot.ShouldEqual(SnapshotData);
+			persistence.GetFromSnapshotUntil(streamId, head.StreamRevision).First().Snapshot.ShouldEqual(SnapshotData);
 
 		It should_no_longer_find_it_in_the_set_of_streams_to_be_snapshot = () =>
 			persistence.GetStreamsToSnapshot(1).Any(x => x.StreamId == streamId).ShouldBeFalse();
@@ -114,7 +114,7 @@ namespace EventStore.Persistence.AcceptanceTests
 		};
 
 		Because of = () =>
-			committed = persistence.GetUntil(streamId, oldest4.ToCommit().StreamRevision).ToArray();
+			committed = persistence.GetFromSnapshotUntil(streamId, oldest4.ToCommit().StreamRevision).ToArray();
 
 		It should_start_from_the_commit_of_the_most_recent_snapshot_on_or_before_the_given_revision = () =>
 			committed.First().StreamRevision.ShouldEqual(oldest2.ToCommit().StreamRevision);
@@ -141,7 +141,7 @@ namespace EventStore.Persistence.AcceptanceTests
 		};
 
 		Because of = () =>
-			committed = persistence.GetUntil(streamId, oldest3.ToCommit().StreamRevision).ToArray();
+			committed = persistence.GetFromSnapshotUntil(streamId, oldest3.ToCommit().StreamRevision).ToArray();
 
 		It should_start_from_the_first_commit = () =>
 			committed.First().StreamRevision.ShouldEqual(oldest.ToCommit().StreamRevision);

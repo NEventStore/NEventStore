@@ -1,5 +1,3 @@
-- ReadSince(datetime)
-- Refine API slightly, e.g. ReadUntil -> ReadFromSnapshot
 - Add documentation and quickstart examples
 - Version on build (git specific?)
 - Create fluent configuration code that doesn't require an IoC container.

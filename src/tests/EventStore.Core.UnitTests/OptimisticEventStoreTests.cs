@@ -42,10 +42,10 @@ namespace EventStore.Core.UnitTests
 		static CommittedEventStream actual;
 
 		Establish context = () =>
-			persistence.Setup(x => x.GetUntil(streamId, MaxRevision)).Returns(Commits);
+			persistence.Setup(x => x.GetFromSnapshotUntil(streamId, MaxRevision)).Returns(Commits);
 
 		Because of = () =>
-			actual = store.ReadUntil(streamId, MaxRevision);
+			actual = store.ReadFromSnapshotUntil(streamId, MaxRevision);
 
 		It should_query_the_configured_persistence_mechanism = () =>
 			persistence.VerifyAll();
@@ -139,13 +139,13 @@ namespace EventStore.Core.UnitTests
 	public class when_reading_until_version_zero : using_persistence
 	{
 		Establish context = () =>
-			persistence.Setup(x => x.GetUntil(streamId, int.MaxValue));
+			persistence.Setup(x => x.GetFromSnapshotUntil(streamId, int.MaxValue));
 
 		Because of = () =>
-			store.ReadUntil(streamId, 0);
+			store.ReadFromSnapshotUntil(streamId, 0);
 
 		It should_pass_the_maximum_numeric_value_to_persistence = () =>
-			persistence.Verify(x => x.GetUntil(streamId, int.MaxValue), Times.Exactly(1));
+			persistence.Verify(x => x.GetFromSnapshotUntil(streamId, int.MaxValue), Times.Exactly(1));
 	}
 
 	[Subject("OptimisticEventStore")]
@@ -374,11 +374,11 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Establish context = () =>
-			persistence.Setup(x => x.GetUntil(streamId, MaxRevision)).Returns(Commits);
+			persistence.Setup(x => x.GetFromSnapshotUntil(streamId, MaxRevision)).Returns(Commits);
 
 		Because of = () =>
 		{
-			store.ReadUntil(streamId, MaxRevision);
+			store.ReadFromSnapshotUntil(streamId, MaxRevision);
 			thrown = Catch.Exception(() => store.Write(Attempt));
 		};
 
@@ -505,11 +505,11 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Establish context = () =>
-			persistence.Setup(x => x.GetUntil(streamId, MostRecentStreamRevision)).Returns(Commits);
+			persistence.Setup(x => x.GetFromSnapshotUntil(streamId, MostRecentStreamRevision)).Returns(Commits);
 
 		Because of = () =>
 		{
-			store.ReadUntil(streamId, MostRecentStreamRevision);
+			store.ReadFromSnapshotUntil(streamId, MostRecentStreamRevision);
 			thrown = Catch.Exception(() => store.Write(Attempt));
 		};
 

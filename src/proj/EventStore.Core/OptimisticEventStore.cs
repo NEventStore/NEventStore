@@ -18,10 +18,10 @@ namespace EventStore
 			this.dispatcher = dispatcher;
 		}
 
-		public virtual CommittedEventStream ReadUntil(Guid streamId, int maxRevision)
+		public virtual CommittedEventStream ReadFromSnapshotUntil(Guid streamId, int maxRevision)
 		{
 			maxRevision = maxRevision > 0 ? maxRevision : int.MaxValue;
-			return this.Read(this.persistence.GetUntil(streamId, maxRevision), true);
+			return this.Read(this.persistence.GetFromSnapshotUntil(streamId, maxRevision), true);
 		}
 		public virtual CommittedEventStream ReadFrom(Guid streamId, int minRevision)
 		{

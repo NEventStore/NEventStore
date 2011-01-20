@@ -73,7 +73,7 @@ namespace EventStore.Core.UnitTests.PersistenceTests
 
 		Establish context = () =>
 		{
-			fakePersistence.Setup(x => x.GetUntil(streamId, MaxRevision)).Returns(commits);
+			fakePersistence.Setup(x => x.GetFromSnapshotUntil(streamId, MaxRevision)).Returns(commits);
 
 			readFilter = new Mock<IFilterCommits<Commit>>();
 			readFilter.Setup(x => x.Filter(commits.First())).Returns(commits.First());
@@ -83,10 +83,10 @@ namespace EventStore.Core.UnitTests.PersistenceTests
 		};
 
 		Because of = () =>
-			read = filterPersistence.GetUntil(streamId, MaxRevision).ToArray();
+			read = filterPersistence.GetFromSnapshotUntil(streamId, MaxRevision).ToArray();
 
 		It should_call_to_the_underlying_persistence_infrastructure = () =>
-			fakePersistence.Verify(x => x.GetUntil(streamId, MaxRevision), Times.Exactly(1));
+			fakePersistence.Verify(x => x.GetFromSnapshotUntil(streamId, MaxRevision), Times.Exactly(1));
 
 		It should_pass_the_commits_through_the_filter = () =>
 			readFilter.VerifyAll();

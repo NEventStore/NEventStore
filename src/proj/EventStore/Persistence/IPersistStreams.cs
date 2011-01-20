@@ -20,7 +20,7 @@ namespace EventStore.Persistence
 		/// <param name="streamId">The stream from which the events will be read.</param>
 		/// <param name="maxRevision">The maximum revision of the stream to be read.</param>
 		/// <returns>A series of committed events from the stream specified sorted in ascending order.</returns>
-		IEnumerable<Commit> GetUntil(Guid streamId, int maxRevision);
+		IEnumerable<Commit> GetFromSnapshotUntil(Guid streamId, int maxRevision);
 
 		/// <summary>
 		/// Gets the corresponding commits from the stream indicated starting at the revision specified until the

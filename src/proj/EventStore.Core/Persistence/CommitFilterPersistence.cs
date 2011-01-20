@@ -38,9 +38,9 @@ namespace EventStore.Persistence
 			this.inner.Initialize();
 		}
 
-		public virtual IEnumerable<Commit> GetUntil(Guid streamId, int maxRevision)
+		public virtual IEnumerable<Commit> GetFromSnapshotUntil(Guid streamId, int maxRevision)
 		{
-			return this.inner.GetUntil(streamId, maxRevision)
+			return this.inner.GetFromSnapshotUntil(streamId, maxRevision)
 				.Select(this.readFilter.Filter)
 				.Where(x => x != null)
 				.ToArray();

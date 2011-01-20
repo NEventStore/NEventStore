@@ -59,7 +59,7 @@ namespace EventStore.Persistence.MongoPersistence
 				throw new PersistenceEngineException(e.Message, e);
 			}
 		}
-		public virtual IEnumerable<Commit> GetUntil(Guid streamId, int maxRevision)
+		public virtual IEnumerable<Commit> GetFromSnapshotUntil(Guid streamId, int maxRevision)
 		{
 			var snapshotCommit = this.store.Database.GetCollection<MongoCommit>().AsQueryable()
 				.Where(x => x.StreamId == streamId && x.StreamRevision <= maxRevision && x.Snapshot != null)

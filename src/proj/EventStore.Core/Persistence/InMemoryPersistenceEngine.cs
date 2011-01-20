@@ -24,7 +24,7 @@ namespace EventStore.Persistence
 		{
 		}
 
-		public virtual IEnumerable<Commit> GetUntil(Guid streamId, int maxRevision)
+		public virtual IEnumerable<Commit> GetFromSnapshotUntil(Guid streamId, int maxRevision)
 		{
 			lock (this.commits)
 			{
