@@ -74,6 +74,8 @@ namespace EventStore.Serialization.AcceptanceTests
 		{
 			foreach (var header in deserialized.Headers)
 				header.Value.ShouldEqual(Message.Headers[header.Key]);
+
+			deserialized.Headers.Values.SequenceEqual(Message.Headers.Values);
 		};
 
 		It should_deserialize_a_commit_which_contains_the_same_number_of_events_as_the_serialized_commit = () =>

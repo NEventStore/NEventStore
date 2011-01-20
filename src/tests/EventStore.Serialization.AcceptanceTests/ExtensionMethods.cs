@@ -38,6 +38,15 @@ namespace EventStore.Serialization.AcceptanceTests
 							{ "MsgKey4", (ushort)1 }
 						},
 						Body = "some value"
+					},
+					new EventMessage
+					{
+						Headers =
+						{
+							{ "MsgKey1", new Uri("http://www.google.com/") },
+							{ "MsgKey4", "some header" }
+						},
+						Body = new[] { "message body" }
 					}
 				}
 			};
