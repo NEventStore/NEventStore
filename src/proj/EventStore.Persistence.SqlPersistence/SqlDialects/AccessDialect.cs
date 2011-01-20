@@ -16,12 +16,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		public override string PersistCommitAttempt
 		{
-			get
-			{
-				return base.PersistCommitAttempt
-					.Replace("/*FROM DUAL*/", "FROM DUAL")
-					.Replace(this.CommitStamp, "now()");
-			}
+			get { return base.PersistCommitAttempt.Replace("/*FROM DUAL*/", "FROM DUAL"); }
 		}
 		public override string GetStreamsRequiringSnaphots
 		{
@@ -36,16 +31,32 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			get { return AccessStatements.GetCommitsFromStartingSnapshotUntilRevision; }
 		}
 
-		public override IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
+		public override IDbStatement BuildStatement(
+			IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
 		{
 			return new AccessDbStatement(connection, transaction, resources);
 		}
 
 		private class AccessDbStatement : DelimitedDbStatement
 		{
-			public AccessDbStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
+			public AccessDbStatement(
+				IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
 				: base(connection, transaction, resources)
 			{
+			}
+
+			public override void AddParameter(string name, object value)
+			{
+				if (value is DateTime)
+					value = FixDateTime((DateTime)value);
+
+				base.AddParameter(name, value);
+			}
+			private static object FixDateTime(DateTime value)
+			{
+				// http://connect.microsoft.com/VisualStudio/feedback/details/94377/oledbparameter-with-dbtype-datetime-throws-data-type-mismatch-in-criteria-expression
+				return new DateTime(
+					value.Year, value.Month, value.Day, value.Hour, value.Minute, value.Second);
 			}
 
 			protected override void BuildParameters(IDbCommand command)
