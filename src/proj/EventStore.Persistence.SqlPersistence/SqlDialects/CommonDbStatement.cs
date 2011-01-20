@@ -3,18 +3,21 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	using System;
 	using System.Collections.Generic;
 	using System.Data;
+	using System.Linq;
 
 	public class CommonDbStatement : IDbStatement
 	{
 		protected IDictionary<string, object> Parameters { get; private set; }
 		private readonly IDbConnection connection;
 		private readonly IDbTransaction transaction;
+		private readonly IDisposable[] resources;
 
-		public CommonDbStatement(IDbConnection connection, IDbTransaction transaction)
+		public CommonDbStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
 		{
 			this.Parameters = new Dictionary<string, object>();
 			this.connection = connection;
 			this.transaction = transaction;
+			this.resources = resources ?? new IDisposable[0];
 		}
 
 		public void Dispose()
@@ -24,7 +27,14 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		protected virtual void Dispose(bool disposing)
 		{
-			// no op
+			if (this.transaction != null)
+				this.transaction.Dispose();
+
+			if (this.connection != null)
+				this.connection.Dispose();
+
+			foreach (var resource in this.resources.Reverse().Where(resource => resource != null))
+				resource.Dispose();
 		}
 
 		public virtual void AddParameter(string name, object value)
@@ -78,7 +88,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			{
 				reader = command.ExecuteReader();
 				var rows = reader.AsEnumerable(select);
-				return new DisposableEnumeration<T>(rows, reader, command);
+				return new DisposableEnumeration<T>(rows, reader, command, this);
 			}
 			catch (Exception)
 			{

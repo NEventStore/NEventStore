@@ -1,5 +1,6 @@
 namespace EventStore.Persistence.SqlPersistence
 {
+	using System;
 	using System.Data;
 
 	public interface ISqlDialect
@@ -24,6 +25,6 @@ namespace EventStore.Persistence.SqlPersistence
 		string Threshold { get; }
 
 		IDbTransaction OpenTransaction(IDbConnection connection);
-		IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction);
+		IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources);
 	}
 }

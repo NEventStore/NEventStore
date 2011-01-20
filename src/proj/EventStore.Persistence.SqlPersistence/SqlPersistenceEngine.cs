@@ -3,7 +3,6 @@ namespace EventStore.Persistence.SqlPersistence
 	using System;
 	using System.Collections.Generic;
 	using System.Data;
-	using System.Linq;
 	using System.Transactions;
 	using Persistence;
 	using Serialization;
@@ -28,7 +27,7 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		protected virtual void Dispose(bool disposing)
 		{
-			// no op
+			// no-op
 		}
 		
 		public virtual void Initialize()
@@ -51,7 +50,7 @@ namespace EventStore.Persistence.SqlPersistence
 			{
 				query.AddParameter(this.dialect.StreamId, streamId);
 				query.AddParameter(this.dialect.StreamRevision, revision);
-				return query.ExecuteWithQuery(queryText, x => x.GetCommit(this.serializer)).ToList();
+				return query.ExecuteWithQuery(queryText, x => x.GetCommit(this.serializer));
 			});
 		}
 
@@ -77,36 +76,18 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
 		{
-			var scope = new TransactionScope(TransactionScopeOption.Suppress);
-			IDbConnection connection = null;
-			IDbStatement query = null;
-
-			try
+			return this.Execute(Guid.Empty, query =>
 			{
-				connection = this.factory.Open(Guid.Empty);
-				query = this.dialect.BuildStatement(connection, null);
-				query.AddParameter(this.dialect.CommitStamp, start);
-
 				var statement = this.dialect.GetCommitsFromInstant;
-				var items = query.ExecuteWithQuery(statement, x => x.GetCommit(this.serializer));
-				return new DisposableEnumeration<Commit>(items, query, connection, scope);
-			}
-			catch (Exception e)
-			{
-				if (query != null)
-					query.Dispose();
-				if (connection != null)
-					connection.Dispose();
-				scope.Dispose();
-
-				throw new PersistenceEngineException(e.Message, e);
-			}
+				query.AddParameter(this.dialect.CommitStamp, start);
+				return query.ExecuteWithQuery(statement, x => x.GetCommit(this.serializer));
+			});
 		}
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
 			return this.Execute(Guid.Empty, query =>
-				query.ExecuteWithQuery(this.dialect.GetUndispatchedCommits, x => x.GetCommit(this.serializer)).ToList());
+				query.ExecuteWithQuery(this.dialect.GetUndispatchedCommits, x => x.GetCommit(this.serializer)));
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
@@ -124,7 +105,7 @@ namespace EventStore.Persistence.SqlPersistence
 			{
 				var statement = this.dialect.GetStreamsRequiringSnaphots;
 				query.AddParameter(this.dialect.Threshold, maxThreshold);
-				return query.ExecuteWithQuery(statement, record => record.GetStreamToSnapshot()).ToList();
+				return query.ExecuteWithQuery(statement, record => record.GetStreamToSnapshot());
 			});
 		}
 		public virtual void AddSnapshot(Guid streamId, int streamRevision, object snapshot)
@@ -138,18 +119,39 @@ namespace EventStore.Persistence.SqlPersistence
 			});
 		}
 
-		protected virtual T Execute<T>(Guid streamId, Func<IDbStatement, T> callback)
+		protected virtual IEnumerable<T> Execute<T>(Guid streamId, Func<IDbStatement, IEnumerable<T>> executeQuery)
 		{
-			var results = default(T);
-			this.Execute(streamId, command => { results = callback(command); });
-			return results;
+			var scope = new TransactionScope(TransactionScopeOption.Suppress);
+			IDbConnection connection = null;
+			IDbTransaction transaction = null;
+			IDbStatement query = null;
+
+			try
+			{
+				connection = this.factory.Open(streamId);
+				transaction = this.dialect.OpenTransaction(connection);
+				query = this.dialect.BuildStatement(connection, transaction, scope);
+				return executeQuery(query);
+			}
+			catch (Exception e)
+			{
+				if (query != null)
+					query.Dispose();
+				if (transaction != null)
+					transaction.Dispose();
+				if (connection != null)
+					connection.Dispose();
+				scope.Dispose();
+
+				throw new PersistenceEngineException(e.Message, e);
+			}
 		}
 		protected virtual void Execute(Guid streamId, Action<IDbStatement> execute)
 		{
-			using (new TransactionScope(TransactionScopeOption.Suppress))
+			using (var scope = new TransactionScope(TransactionScopeOption.Suppress))
 			using (var connection = this.factory.Open(streamId))
 			using (var transaction = this.dialect.OpenTransaction(connection))
-			using (var statement = this.dialect.BuildStatement(connection, transaction))
+			using (var statement = this.dialect.BuildStatement(connection, transaction, scope))
 			{
 				try
 				{

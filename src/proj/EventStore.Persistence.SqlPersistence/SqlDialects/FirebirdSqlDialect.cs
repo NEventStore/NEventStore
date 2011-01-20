@@ -1,5 +1,6 @@
 namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
+	using System;
 	using System.Data;
 
 	public class FirebirdSqlDialect : CommonSqlDialect
@@ -25,15 +26,15 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			get { return base.GetStreamsRequiringSnaphots.Replace("Snapshot ", "\"Snapshot\" "); }
 		}
 
-		public override IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction)
+		public override IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
 		{
-			return new FirebirdDbStatement(connection, transaction);
+			return new FirebirdDbStatement(connection, transaction, resources);
 		}
 
 		private class FirebirdDbStatement : DelimitedDbStatement
 		{
-			public FirebirdDbStatement(IDbConnection connection, IDbTransaction transaction)
-				: base(connection, transaction)
+			public FirebirdDbStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
+				: base(connection, transaction, resources)
 			{
 			}
 		}

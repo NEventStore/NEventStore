@@ -1,5 +1,6 @@
 namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
+	using System;
 	using System.Collections.Generic;
 	using System.Data;
 	using System.Linq;
@@ -35,15 +36,15 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			get { return AccessStatements.GetCommitsFromStartingSnapshotUntilRevision; }
 		}
 
-		public override IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction)
+		public override IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
 		{
-			return new AccessDbStatement(connection, transaction);
+			return new AccessDbStatement(connection, transaction, resources);
 		}
 
 		private class AccessDbStatement : DelimitedDbStatement
 		{
-			public AccessDbStatement(IDbConnection connection, IDbTransaction transaction)
-				: base(connection, transaction)
+			public AccessDbStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
+				: base(connection, transaction, resources)
 			{
 			}
 
