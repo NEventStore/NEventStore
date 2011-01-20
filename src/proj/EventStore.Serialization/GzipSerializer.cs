@@ -3,11 +3,11 @@ namespace EventStore.Serialization
 	using System.IO;
 	using System.IO.Compression;
 
-	public class CompressedSerializer : ISerialize
+	public class GzipSerializer : ISerialize
 	{
 		private readonly ISerialize inner;
 
-		public CompressedSerializer(ISerialize inner)
+		public GzipSerializer(ISerialize inner)
 		{
 			this.inner = inner;
 		}

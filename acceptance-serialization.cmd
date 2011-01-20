@@ -5,7 +5,8 @@ ECHO === Building ===
 C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=Debug
 
 CALL :run_test Binary
-CALL :run_test Compressed
+CALL :run_test Gzip
+CALL :run_test Rijndael
 CALL :run_test Json
 CALL :run_test Bson
 
