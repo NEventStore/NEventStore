@@ -5,6 +5,7 @@ ECHO === Building ===
 C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=Debug
 
 ECHO === RDBMS ===
+CALL :run_test InMemoryPersistence
 CALL :run_test MsSqlPersistence localhost 0 EventStore2 "" ""
 CALL :run_test SqlitePersistence localhost 0 EventStore2 "" ""
 CALL :run_test SqlCePersistence localhost 0 EventStore2 "" ""
