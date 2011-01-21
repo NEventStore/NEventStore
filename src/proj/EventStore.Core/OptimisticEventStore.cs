@@ -2,7 +2,6 @@ namespace EventStore
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
 	using Dispatcher;
 	using Persistence;
 
@@ -30,28 +29,27 @@ namespace EventStore
 		protected virtual CommittedEventStream Read(IEnumerable<Commit> commits, bool applySnapshot)
 		{
 			var streamId = Guid.Empty;
-			var sequence = 0;
 			var revision = 0;
+			var sequence = 0;
 			object snapshot = null;
 			ICollection<object> events = new LinkedList<object>();
 			ICollection<Guid> commitIdentifiers = new HashSet<Guid>();
 
 			foreach (var commit in commits ?? new Commit[0])
 			{
-				streamId = commit.StreamId;
-				sequence = commit.CommitSequence;
-				revision = commit.StreamRevision;
-
-				snapshot = commit.Snapshot ?? snapshot;
-				events.AddEventsOrClearOnSnapshot(commit, applySnapshot);
+				this.tracker.Track(commit);
 				commitIdentifiers.Add(commit.CommitId);
 
-				this.tracker.Track(commit);
+				streamId = commit.StreamId;
+				revision = commit.StreamRevision;
+				sequence = commit.CommitSequence;
+				snapshot = commit.Snapshot ?? snapshot;
+
+				events.AddEventsOrClearOnSnapshot(commit, applySnapshot);
 			}
 
 			snapshot = applySnapshot ? snapshot : null;
-			return new CommittedEventStream(
-				streamId, revision, sequence, events.ToArray(), commitIdentifiers, snapshot);
+			return new CommittedEventStream(streamId, revision, sequence, events, commitIdentifiers, snapshot);
 		}
 
 		public virtual void Write(CommitAttempt attempt)
