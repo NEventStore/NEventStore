@@ -97,7 +97,7 @@ namespace EventStore.Persistence.AcceptanceTests
 	[Subject("Persistence")]
 	public class when_reading_until_a_given_revision : using_the_persistence_engine
 	{
-		private const int LoadUpToCommitWhichContainsRevision = 8;
+		private const int LoadUpToCommitWhichContainsRevision = 7;
 		static readonly CommitAttempt oldest = streamId.BuildAttempt(); // 2 events, revision 1-2
 		static readonly CommitAttempt oldest2 = oldest.BuildNextAttempt(); // 2 events, revision 3-4
 		static readonly CommitAttempt oldest3 = oldest2.BuildNextAttempt(); // 2 events, revision 5-6
@@ -129,7 +129,7 @@ namespace EventStore.Persistence.AcceptanceTests
 	[Subject("Persistence")]
 	public class when_reading_until_a_given_revision_which_has_no_snapshot : using_the_persistence_engine
 	{
-		private const int LoadUpToCommitWhichContainsRevision = 6;
+		private const int LoadUpToCommitWhichContainsRevision = 5;
 		static readonly CommitAttempt oldest = streamId.BuildAttempt(); // 2 events, revision 1-2
 		static readonly CommitAttempt oldest2 = oldest.BuildNextAttempt(); // 2 events, revision 3-4
 		static readonly CommitAttempt oldest3 = oldest2.BuildNextAttempt(); // 2 events, revision 5-6
