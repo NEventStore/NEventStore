@@ -32,6 +32,8 @@ echo Unit Tests
 "bin/machine.specifications-bin/.NET 4.0/mspec.exe" src/tests/EventStore.Core.UnitTests/bin/%TARGET_CONFIG%/EventStore.Core.UnitTests.dll
 echo Acceptance Tests
 "bin/machine.specifications-bin/.NET 4.0/mspec.exe" src/tests/EventStore.Persistence.AcceptanceTests/bin/%TARGET_CONFIG%/EventStore.Persistence.AcceptanceTests.dll
+call acceptance-serialization.cmd
+
 
 echo.
 echo === MERGING ===

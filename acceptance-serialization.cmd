@@ -10,8 +10,6 @@ CALL :run_test Rijndael
 CALL :run_test Json
 CALL :run_test Bson
 
-PAUSE
-
 ENDLOCAL
 GOTO :eof 
 
