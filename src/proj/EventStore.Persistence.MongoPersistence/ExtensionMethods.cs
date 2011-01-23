@@ -1,7 +1,7 @@
 namespace EventStore.Persistence.MongoPersistence
 {
+	using System;
 	using System.Globalization;
-	using System.Linq;
 	using Norm.BSON;
 	using Serialization;
 
@@ -27,7 +27,8 @@ namespace EventStore.Persistence.MongoPersistence
 				CommitSequence = commit.CommitSequence,
 				Headers = commit.Headers,
 				Events = commit.Events,
-				Snapshot = commit.Snapshot != null ? serializer.Serialize(commit.Snapshot) : null
+				Snapshot = commit.Snapshot != null ? serializer.Serialize(commit.Snapshot) : null,
+				PersistedAt = DateTime.Now
 			};
 		}
 		public static Commit ToCommit(this MongoCommit mongoCommit, ISerialize serializer)

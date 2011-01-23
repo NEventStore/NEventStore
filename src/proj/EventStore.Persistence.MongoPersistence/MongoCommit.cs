@@ -22,5 +22,7 @@
 		public bool Dispatched { get; set; }
 
 		public int MinStreamRevision { get; set; }
+
+		public DateTime PersistedAt { get; set; }
 	}
 }
