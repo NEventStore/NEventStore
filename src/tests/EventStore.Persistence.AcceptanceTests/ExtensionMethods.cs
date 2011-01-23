@@ -12,6 +12,7 @@ namespace EventStore.Persistence.AcceptanceTests
 				CommitId = Guid.NewGuid(),
 				PreviousCommitSequence = 0,
 				StreamRevision = 2,
+				Headers = {{"A header","A string value"},{"Another header",2}},
 				Events =
 				{
 					new EventMessage(),
