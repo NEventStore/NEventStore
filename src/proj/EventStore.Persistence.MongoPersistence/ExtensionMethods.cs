@@ -1,6 +1,7 @@
 namespace EventStore.Persistence.MongoPersistence
 {
 	using System.Globalization;
+	using System.Linq;
 	using Norm.BSON;
 	using Serialization;
 
@@ -22,6 +23,7 @@ namespace EventStore.Persistence.MongoPersistence
 				StreamId = commit.StreamId,
 				CommitId = commit.CommitId,
 				StreamRevision = commit.StreamRevision,
+				MinStreamRevision = commit.StreamRevision - commit.Events.Count,
 				CommitSequence = commit.CommitSequence,
 				Headers = commit.Headers,
 				Events = commit.Events,

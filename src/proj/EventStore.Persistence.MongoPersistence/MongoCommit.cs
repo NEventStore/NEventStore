@@ -20,5 +20,7 @@
 		public byte[] Snapshot { get; set; }
 
 		public bool Dispatched { get; set; }
+
+		public int MinStreamRevision { get; set; }
 	}
 }
