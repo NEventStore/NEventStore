@@ -15,8 +15,14 @@ namespace EventStore.Persistence.AcceptanceTests
 				Headers = {{"A header","A string value"},{"Another header",2}},
 				Events =
 				{
-					new EventMessage(),
-					new EventMessage()
+					new EventMessage
+						{
+							Body = new SomeDomainEvent{SomeProperty = "Test"}	
+						},
+					new EventMessage
+						{
+							Body = new SomeDomainEvent{SomeProperty = "Test2"}	
+						},
 				}
 			};
 		}
@@ -31,10 +37,22 @@ namespace EventStore.Persistence.AcceptanceTests
 				StreamRevision = commit.StreamRevision + 2,
 				Events =
 				{
-					new EventMessage(),
-					new EventMessage()
+					new EventMessage
+						{
+							Body = new SomeDomainEvent{SomeProperty = "Another test"}	
+						},
+					new EventMessage
+						{
+							Body = new SomeDomainEvent{SomeProperty = "Another test2"}	
+						},
 				}
 			};
+		}
+
+		[Serializable]
+		public class SomeDomainEvent
+		{
+			public string SomeProperty { get; set; }
 		}
 	}
 }
