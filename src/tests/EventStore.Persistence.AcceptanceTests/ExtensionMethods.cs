@@ -12,17 +12,11 @@ namespace EventStore.Persistence.AcceptanceTests
 				CommitId = Guid.NewGuid(),
 				PreviousCommitSequence = 0,
 				StreamRevision = 2,
-				Headers = {{"A header","A string value"},{"Another header",2}},
+				Headers = { { "A header", "A string value" }, { "Another header", 2 } },
 				Events =
 				{
-					new EventMessage
-						{
-							Body = new SomeDomainEvent{SomeProperty = "Test"}	
-						},
-					new EventMessage
-						{
-							Body = new SomeDomainEvent{SomeProperty = "Test2"}	
-						},
+					new EventMessage { Body = new SomeDomainEvent { SomeProperty = "Test" } },
+					new EventMessage { Body = new SomeDomainEvent { SomeProperty = "Test2" } },
 				}
 			};
 		}
@@ -37,14 +31,8 @@ namespace EventStore.Persistence.AcceptanceTests
 				StreamRevision = commit.StreamRevision + 2,
 				Events =
 				{
-					new EventMessage
-						{
-							Body = new SomeDomainEvent{SomeProperty = "Another test"}	
-						},
-					new EventMessage
-						{
-							Body = new SomeDomainEvent{SomeProperty = "Another test2"}	
-						},
+					new EventMessage { Body = new SomeDomainEvent { SomeProperty = "Another test" } },
+					new EventMessage { Body = new SomeDomainEvent { SomeProperty = "Another test2" } },
 				}
 			};
 		}

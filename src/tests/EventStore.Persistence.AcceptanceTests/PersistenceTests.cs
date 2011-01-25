@@ -22,9 +22,7 @@ namespace EventStore.Persistence.AcceptanceTests
 			persistence.GetUndispatchedCommits().FirstOrDefault(x => x.CommitId == attempt.CommitId).ShouldNotBeNull();
 
 		It should_serialize_and_deserialize_the_events_correctly = () => persistence.GetFromSnapshotUntil(streamId, int.MaxValue)
-		                                                                 	.Select(c => c.Events.First().Body as ExtensionMethods.SomeDomainEvent)
-		                                                                 	.First().SomeProperty.ShouldEqual("Test");
-
+			.Select(c => c.Events.First().Body as ExtensionMethods.SomeDomainEvent).First().SomeProperty.ShouldEqual("Test");
 	}
 
 	[Subject("Persistence")]

@@ -36,28 +36,27 @@ namespace EventStore.Persistence.MongoPersistence
 			this.store.Dispose();
 		}
 
+		private IMongoCollection<MongoCommit> PersistedCommits
+		{
+			get { return this.store.Database.GetCollection<MongoCommit>(); }
+		}
+
 		public virtual void Initialize()
 		{
 			MongoConfiguration.Initialize(c => c.For<StreamHead>(stream => stream.IdIs(i => i.StreamId)));
 
-			PersistedCommits()
+			this.PersistedCommits
 				.CreateIndex(mc => mc.Dispatched, "Dispatched_Index", false, IndexOption.Ascending);
 
-
-			PersistedCommits()
+			this.PersistedCommits
 				.CreateIndex(mc => new { mc.StreamId, mc.StreamRevision }, "GetFrom_Index", false, IndexOption.Ascending);
-		}
-
-		IMongoCollection<MongoCommit> PersistedCommits()
-		{
-			return this.store.Database.GetCollection<MongoCommit>();
 		}
 
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision)
 		{
 			try
 			{
-				return PersistedCommits().AsQueryable()
+				return this.PersistedCommits.AsQueryable()
 					.Where(x => x.StreamId == streamId && x.StreamRevision >= minRevision).ToArray()
 					.Select(mc => mc.ToCommit(this.serializer));
 			}
@@ -68,7 +67,7 @@ namespace EventStore.Persistence.MongoPersistence
 		}
 		public virtual IEnumerable<Commit> GetFromSnapshotUntil(Guid streamId, int maxRevision)
 		{
-			var snapshotCommit = PersistedCommits().AsQueryable()
+			var snapshotCommit = this.PersistedCommits.AsQueryable()
 				.Where(x => x.StreamId == streamId && x.MinStreamRevision <= maxRevision && x.Snapshot != null)
 				.OrderByDescending(o => o.StreamRevision)
 				.Take(1)
@@ -78,7 +77,7 @@ namespace EventStore.Persistence.MongoPersistence
 			if (snapshotCommit != null)
 				snapshotRevision = snapshotCommit.StreamRevision;
 
-			return PersistedCommits().AsQueryable()
+			return this.PersistedCommits.AsQueryable()
 				.Where(x => x.StreamId == streamId && 
 							x.StreamRevision >= snapshotRevision && 
 							x.MinStreamRevision <= maxRevision)
@@ -91,14 +90,14 @@ namespace EventStore.Persistence.MongoPersistence
 
 			try
 			{
-				PersistedCommits().Insert(commit);
+				this.PersistedCommits.Insert(commit);
 			}
 			catch (MongoException mongoException)
 			{
 				if (!mongoException.Message.StartsWith("E11000"))
 					throw;
 
-				var committed = PersistedCommits().FindOne(commit.ToMongoExpando());
+				var committed = this.PersistedCommits.FindOne(commit.ToMongoExpando());
 				if (committed != null && committed.CommitId != commit.CommitId)
 					throw new ConcurrencyException();
 
@@ -114,7 +113,7 @@ namespace EventStore.Persistence.MongoPersistence
 		{
 			try
 			{
-				return PersistedCommits().AsQueryable()
+				return this.PersistedCommits.AsQueryable()
 					.Where(x => x.PersistedAt >= start).ToArray()
 					.Select(mc => mc.ToCommit(this.serializer));
 			}
@@ -126,14 +125,14 @@ namespace EventStore.Persistence.MongoPersistence
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
-			return PersistedCommits().AsQueryable()
+			return this.PersistedCommits.AsQueryable()
 				.Where(x => !x.Dispatched).ToArray()
 				.Select(x => x.ToCommit(this.serializer));
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
 			var expando = commit.ToMongoCommit(this.serializer).ToMongoExpando();
-			PersistedCommits().Update(expando, u => u.SetValue(mc => mc.Dispatched, true));
+			this.PersistedCommits.Update(expando, u => u.SetValue(mc => mc.Dispatched, true));
 		}
 
 		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
@@ -148,7 +147,8 @@ namespace EventStore.Persistence.MongoPersistence
 			commit["StreamId"] = streamId;
 			commit["StreamRevision"] = streamRevision;
 
-			PersistedCommits().Update(commit, u => u.SetValue(mc => mc.Snapshot, this.serializer.Serialize(snapshot)));
+			this.PersistedCommits
+				.Update(commit, u => u.SetValue(mc => mc.Snapshot, this.serializer.Serialize(snapshot)));
 
 			var stream = new StreamHead(streamId, streamRevision, 0);
 			this.store.Database.GetCollection<StreamHead>()
