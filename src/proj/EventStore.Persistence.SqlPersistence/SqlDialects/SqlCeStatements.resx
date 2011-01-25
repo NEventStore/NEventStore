@@ -122,6 +122,7 @@
 (
        StreamId uniqueidentifier NOT NULL,
        StreamRevision int NOT NULL,
+       Items tinyint NOT NULL,
        CommitId uniqueidentifier NOT NULL,
        CommitSequence int NOT NULL,
        CommitStamp datetime NOT NULL,

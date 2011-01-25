@@ -65,6 +65,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///(
         ///       StreamId uniqueidentifier NOT NULL,
         ///       StreamRevision int NOT NULL,
+        ///       Items tinyint NOT NULL,
         ///       CommitId uniqueidentifier NOT NULL,
         ///       CommitSequence int NOT NULL,
         ///       CommitStamp datetime NOT NULL,
@@ -74,8 +75,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///       Snapshot image NULL,
         ///       CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)
         ///);
-        ///CREATE UNIQUE INDEX IX_Commits ON Commits (StreamId, CommitId);
-        ///CREATE UNIQUE IN [rest of string was truncated]&quot;;.
+        ///CREATE UNIQUE INDEX IX_Commits ON Commits (Stream [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {

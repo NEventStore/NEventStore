@@ -44,6 +44,14 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return "@StreamId"; }
 		}
+		public virtual string StreamRevision
+		{
+			get { return "@StreamRevision"; }
+		}
+		public virtual string Items
+		{
+			get { return "@Items"; }
+		}
 		public virtual string CommitId
 		{
 			get { return "@CommitId"; }
@@ -51,10 +59,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		public virtual string CommitSequence
 		{
 			get { return "@CommitSequence"; }
-		}
-		public virtual string StreamRevision
-		{
-			get { return "@StreamRevision"; }
 		}
 		public virtual string CommitStamp
 		{

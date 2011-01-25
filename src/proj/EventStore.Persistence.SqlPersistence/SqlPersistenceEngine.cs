@@ -54,6 +54,16 @@ namespace EventStore.Persistence.SqlPersistence
 			});
 		}
 
+		public virtual IEnumerable<Commit> GetFrom(DateTime start)
+		{
+			return this.Execute(Guid.Empty, query =>
+			{
+				var statement = this.dialect.GetCommitsFromInstant;
+				query.AddParameter(this.dialect.CommitStamp, start);
+				return query.ExecuteWithQuery(statement, x => x.GetCommit(this.serializer));
+			});
+		}
+
 		public virtual void Persist(CommitAttempt uncommitted)
 		{
 			this.Execute(uncommitted.StreamId, cmd =>
@@ -62,6 +72,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 				cmd.AddParameter(this.dialect.StreamId, commit.StreamId);
 				cmd.AddParameter(this.dialect.StreamRevision, commit.StreamRevision);
+				cmd.AddParameter(this.dialect.Items, commit.Events.Count);
 				cmd.AddParameter(this.dialect.CommitId, commit.CommitId);
 				cmd.AddParameter(this.dialect.CommitSequence, commit.CommitSequence);
 				cmd.AddParameter(this.dialect.CommitStamp, DateTime.UtcNow);
@@ -71,16 +82,6 @@ namespace EventStore.Persistence.SqlPersistence
 				var rowsAffected = cmd.Execute(this.dialect.PersistCommitAttempt);
 				if (rowsAffected == 0)
 					throw new ConcurrencyException();
-			});
-		}
-
-		public virtual IEnumerable<Commit> GetFrom(DateTime start)
-		{
-			return this.Execute(Guid.Empty, query =>
-			{
-				var statement = this.dialect.GetCommitsFromInstant;
-				query.AddParameter(this.dialect.CommitStamp, start);
-				return query.ExecuteWithQuery(statement, x => x.GetCommit(this.serializer));
 			});
 		}
 

@@ -122,6 +122,7 @@
 (
        StreamId guid NOT NULL,
        StreamRevision int NOT NULL CHECK (StreamRevision &gt; 0),
+       Items int NOT NULL CHECK (Items &gt; 0),
        CommitId guid NOT NULL CHECK (CommitId != 0),
        CommitSequence int NOT NULL CHECK (CommitSequence &gt; 0),
        CommitStamp datetime NOT NULL,

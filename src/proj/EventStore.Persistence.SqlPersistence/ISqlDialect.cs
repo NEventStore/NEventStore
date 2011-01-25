@@ -17,6 +17,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 		string StreamId { get; }
 		string StreamRevision { get; }
+		string Items { get; }
 		string CommitId { get; }
 		string CommitSequence { get; }
 		string CommitStamp { get; }

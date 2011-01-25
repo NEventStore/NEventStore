@@ -8,7 +8,7 @@ namespace EventStore.Persistence
 	{
 		private readonly ICollection<Commit> commits = new LinkedList<Commit>();
 		private readonly ICollection<StreamHead> heads = new LinkedList<StreamHead>();
-		private readonly ICollection<Commit> undispatchedCommits = new LinkedList<Commit>();
+		private readonly ICollection<Commit> undispatched = new LinkedList<Commit>();
 		private readonly IDictionary<Guid, DateTime> stamps = new Dictionary<Guid, DateTime>();
 
 		public void Dispose()
@@ -34,12 +34,13 @@ namespace EventStore.Persistence
 					.Take(1)
 					.FirstOrDefault();
 
-				int snapshotRevision = 0;
+				var snapshotRevision = 0;
 				if (snapshotCommit != null)
 					snapshotRevision = snapshotCommit.StreamRevision;
 
 				return this.commits
-					.Where(x => x.StreamId == streamId && x.StreamRevision >= snapshotRevision && x.StreamRevision <= maxRevision)
+					.Where(x => x.StreamId == streamId && x.StreamRevision >= snapshotRevision && x.StreamRevision <= maxRevision + x.Events.Count - 1)
+					.OrderBy(x => x.CommitSequence)
 					.ToList();
 			}
 		}
@@ -62,8 +63,8 @@ namespace EventStore.Persistence
 				this.stamps[commit.CommitId] = DateTime.UtcNow;
 				this.commits.Add(commit);
 
-				lock (this.undispatchedCommits)
-					this.undispatchedCommits.Add(commit);
+				lock (this.undispatched)
+					this.undispatched.Add(commit);
 
 				lock (this.heads)
 				{
@@ -92,12 +93,12 @@ namespace EventStore.Persistence
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
 			lock (this.commits)
-				return this.commits.Where(c => this.undispatchedCommits.Contains(c));
+				return this.commits.Where(c => this.undispatched.Contains(c));
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
-			lock (this.undispatchedCommits)
-				this.undispatchedCommits.Remove(commit);
+			lock (this.undispatched)
+				this.undispatched.Remove(commit);
 		}
 
 		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)

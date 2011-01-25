@@ -87,12 +87,13 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         /// <summary>
         ///   Looks up a localized string similar to SELECT C.StreamId, C.StreamRevision, C.CommitId, C.CommitSequence, C.Headers, C.Payload, C.Snapshot
         ///  FROM Commits AS C
-        ///  LEFT OUTER JOIN Commits AS M
-        ///    ON C.StreamId = M.StreamId
-        ///   AND M.Snapshot IS NOT NULL
+        ///  LEFT OUTER JOIN Commits AS S
+        ///    ON C.StreamId = S.StreamId
+        ///   AND S.Snapshot IS NOT NULL
         /// WHERE C.StreamId = @StreamId
-        ///   AND C.StreamRevision BETWEEN COALESCE(M.StreamRevision, 0) AND @StreamRevision
-        ///   AND COALESCE(M.StreamRevision, 0) &lt;= @StreamRevision;.
+        ///   AND C.StreamRevision BETWEEN COALESCE(S.StreamRevision, 0) AND (@StreamRevision + C.Items - 1)
+        ///   AND COALESCE(S.StreamRevision, 0) &lt;= @StreamRevision
+        /// ORDER BY C.CommitSequence;.
         /// </summary>
         internal static string GetCommitsFromSnapshotUntilRevision {
             get {
@@ -104,7 +105,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///   Looks up a localized string similar to SELECT StreamId, StreamRevision, CommitId, CommitSequence, Headers, Payload
         ///  FROM Commits
         /// WHERE StreamId = @StreamId
-        ///   AND StreamRevision &gt;= @StreamRevision;.
+        ///   AND StreamRevision &gt;= @StreamRevision
+        /// ORDER BY CommitSequence;.
         /// </summary>
         internal static string GetCommitsFromStartingRevision {
             get {
@@ -154,8 +156,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         /// <summary>
         ///   Looks up a localized string similar to INSERT
         ///  INTO Commits
-        ///     ( StreamId, CommitId, CommitSequence, StreamRevision, CommitStamp, Headers, Payload )
-        ///SELECT @StreamId, @CommitId, @CommitSequence, @StreamRevision, @CommitStamp, @Headers, @Payload
+        ///     ( StreamId, CommitId, CommitSequence, StreamRevision, Items, CommitStamp, Headers, Payload )
+        ///SELECT @StreamId, @CommitId, @CommitSequence, @StreamRevision, @Items, @CommitStamp, @Headers, @Payload
         ////*FROM DUAL*/
         /// WHERE NOT EXISTS
         ///     ( SELECT *

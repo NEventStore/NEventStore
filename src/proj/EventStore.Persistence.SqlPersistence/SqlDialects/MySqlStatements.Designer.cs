@@ -65,6 +65,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///(
         ///       StreamId binary(16) NOT NULL,
         ///       StreamRevision int NOT NULL CHECK (StreamRevision &gt; 0),
+        ///       Items tinyint NOT NULL CHECK (Items &gt; 0),
         ///       CommitId binary(16) NOT NULL CHECK (CommitId != 0),
         ///       CommitSequence int NOT NULL CHECK (CommitSequence &gt; 0),
         ///       CommitStamp bigint NOT NULL,
@@ -72,9 +73,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///       Headers blob NULL,
         ///       Payload blob NOT NULL,
         ///       Snapshot blob NULL,
-        ///       CONSTRAINT PK_Dispatch PRIMARY KEY (StreamId, CommitSequence)
-        ///);
-        ///CREATE  [rest of string was truncated]&quot;;.
+        ///       CONSTRAINT PK_Dispatch P [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {

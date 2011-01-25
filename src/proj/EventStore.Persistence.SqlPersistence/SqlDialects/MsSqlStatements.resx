@@ -124,6 +124,7 @@ CREATE TABLE [dbo].[Commits]
 (
        [StreamId] [uniqueidentifier] NOT NULL,
        [StreamRevision] [int] NOT NULL CHECK ([StreamRevision] &gt; 0),
+       [Items] [tinyint] NOT NULL CHECK ([Items] &gt; 0),
        [CommitId] [uniqueidentifier] NOT NULL CHECK ([CommitId] != 0x0),
        [CommitSequence] [int] NOT NULL CHECK ([CommitSequence] &gt; 0),
        [CommitStamp] [datetime] NOT NULL,
@@ -134,7 +135,7 @@ CREATE TABLE [dbo].[Commits]
        CONSTRAINT [PK_Commits] PRIMARY KEY CLUSTERED ([StreamId], [CommitSequence])
 );
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Commits] ON [dbo].[Commits] ([StreamId], [CommitId]);
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Commits_Revisions] ON [dbo].[Commits] ([StreamId], [StreamRevision]);
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Commits_Revisions] ON [dbo].[Commits] ([StreamId], [StreamRevision, Items]);
 CREATE INDEX [IX_Commits_Dispatched] ON [dbo].[Commits] ([Dispatched]);</value>
   </data>
 </root>
