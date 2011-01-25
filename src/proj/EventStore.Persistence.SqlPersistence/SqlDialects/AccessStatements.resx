@@ -128,10 +128,9 @@
     <value>SELECT C.StreamId, C.StreamRevision, C.CommitId, C.CommitSequence, C.Headers, C.Payload, C.Snapshot
   FROM Commits AS C
   LEFT JOIN Commits AS S
-    ON ( C.StreamId = S.StreamId AND S.Snapshotted = true )
+    ON ( C.StreamId = S.StreamId AND S.Snapshotted = true AND S.StreamRevision &lt;= @StreamRevision )
  WHERE C.StreamId = @StreamId
-   AND C.StreamRevision BETWEEN IIF(S.StreamRevision IS NULL, 0, S.StreamRevision) AND (@StreamRevision + C.Items - 1)
-   AND IIF(S.StreamRevision IS NULL, 0, S.StreamRevision) &lt;= @StreamRevision;</value>
+   AND C.StreamRevision BETWEEN IIF(S.StreamRevision IS NULL, 0, S.StreamRevision) AND (@StreamRevision + C.Items - 1);</value>
   </data>
   <data name="GetStreamsRequiringSnapshots" xml:space="preserve">
     <value>SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(IIf(S.StreamRevision IS NULL, 0, S.StreamRevision)) AS SnapshotRevision

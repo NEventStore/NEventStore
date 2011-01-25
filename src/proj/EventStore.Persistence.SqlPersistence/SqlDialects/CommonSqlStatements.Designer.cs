@@ -90,9 +90,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///  LEFT OUTER JOIN Commits AS S
         ///    ON C.StreamId = S.StreamId
         ///   AND S.Snapshot IS NOT NULL
+        ///   AND S.StreamRevision &lt;= @StreamRevision
         /// WHERE C.StreamId = @StreamId
         ///   AND C.StreamRevision BETWEEN COALESCE(S.StreamRevision, 0) AND (@StreamRevision + C.Items - 1)
-        ///   AND COALESCE(S.StreamRevision, 0) &lt;= @StreamRevision
         /// ORDER BY C.CommitSequence;.
         /// </summary>
         internal static string GetCommitsFromSnapshotUntilRevision {
