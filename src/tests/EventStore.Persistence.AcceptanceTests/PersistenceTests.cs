@@ -20,6 +20,11 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		It should_add_the_commit_to_the_set_of_undispatched_commits = () =>
 			persistence.GetUndispatchedCommits().FirstOrDefault(x => x.CommitId == attempt.CommitId).ShouldNotBeNull();
+
+		It should_serialize_and_deserialize_the_events_correctly = () => persistence.GetFromSnapshotUntil(streamId, int.MaxValue)
+		                                                                 	.Select(c => c.Events.First().Body as ExtensionMethods.SomeDomainEvent)
+		                                                                 	.First().SomeProperty.ShouldEqual("Test");
+
 	}
 
 	[Subject("Persistence")]

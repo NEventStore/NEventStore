@@ -1,5 +1,7 @@
 namespace EventStore.Persistence.MongoPersistence
 {
+	using System;
+	using System.Collections.Generic;
 	using System.Globalization;
 	using Norm.BSON;
 	using Serialization;
@@ -22,10 +24,12 @@ namespace EventStore.Persistence.MongoPersistence
 				StreamId = commit.StreamId,
 				CommitId = commit.CommitId,
 				StreamRevision = commit.StreamRevision,
+				MinStreamRevision = commit.StreamRevision - commit.Events.Count,
 				CommitSequence = commit.CommitSequence,
 				Headers = commit.Headers,
-				Events = commit.Events,
-				Snapshot = commit.Snapshot != null ? serializer.Serialize(commit.Snapshot) : null
+				Payload = serializer.Serialize(commit.Events),
+				Snapshot = commit.Snapshot != null ? serializer.Serialize(commit.Snapshot) : null,
+				PersistedAt = DateTime.Now
 			};
 		}
 		public static Commit ToCommit(this MongoCommit mongoCommit, ISerialize serializer)
@@ -36,7 +40,7 @@ namespace EventStore.Persistence.MongoPersistence
 				mongoCommit.CommitId,
 				mongoCommit.CommitSequence,
 				mongoCommit.Headers,
-				mongoCommit.Events,
+				serializer.Deserialize(mongoCommit.Payload) as List<EventMessage>,
 				mongoCommit.Snapshot != null ? serializer.Deserialize(mongoCommit.Snapshot) : null);
 		}
 
