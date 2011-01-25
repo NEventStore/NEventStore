@@ -56,13 +56,16 @@ namespace EventStore.Persistence.AcceptanceTests
 		Because of = () =>
 			persistence.AddSnapshot(streamId, head.StreamRevision, SnapshotData);
 
-		It should_start_reads_at_the_most_recent_commit = () =>
+		It should_start_reads_at_the_most_recent_commit_prior_to_the_revision_specified = () =>
 			persistence.GetFromSnapshotUntil(streamId, head.StreamRevision).First().CommitId.ShouldEqual(newest.CommitId);
+
+		It should_be_able_to_read_prior_to_the_snapshot_revision = () =>
+			persistence.GetFromSnapshotUntil(streamId, oldest2.ToCommit().StreamRevision).Last().CommitId.ShouldEqual(oldest2.CommitId);
 
 		It should_set_the_snapshot_on_the_commit = () =>
 			persistence.GetFromSnapshotUntil(streamId, head.StreamRevision).First().Snapshot.ShouldEqual(SnapshotData);
 
-		It should_no_longer_find_it_in_the_set_of_streams_to_be_snapshot = () =>
+		It should_no_longer_find_the_commit_in_the_set_of_streams_to_be_snapshot = () =>
 			persistence.GetStreamsToSnapshot(1).Any(x => x.StreamId == streamId).ShouldBeFalse();
 	}
 
