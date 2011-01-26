@@ -61,6 +61,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 			protected override void BuildParameters(IDbCommand command)
 			{
+				foreach (var item in this.Parameters.Where(item => item.Value is int))
+					command.CommandText = command.CommandText.Replace(item.Key, item.Value.ToString());
+
 				// parameter names are resolved based upon their order, not name
 				foreach (var name in DiscoverParameters(command.CommandText))
 					this.BuildParameter(command, name, this.Parameters[name]);
