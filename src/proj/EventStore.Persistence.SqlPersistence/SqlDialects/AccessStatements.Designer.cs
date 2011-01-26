@@ -79,7 +79,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///  LEFT JOIN Commits AS S
         ///    ON ( C.StreamId = S.StreamId AND S.StreamRevision &lt;= @StreamRevision AND S.Snapshotted = true )
         /// WHERE C.StreamId = @StreamId
-        ///   AND C.StreamRevision BETWEEN IIF(S.StreamRevision IS NULL, 0, S.StreamRevision) AND (@StreamRevision + C.Items - 1)
+        ///   AND (C.StreamRevision - C.Items + 1) BETWEEN IIF(S.StreamRevision IS NULL, 0, S.StreamRevision - C.Items + 1) AND @StreamRevision
         /// ORDER BY C.CommitSequence;.
         /// </summary>
         internal static string GetCommitsFromStartingSnapshotUntilRevision {
