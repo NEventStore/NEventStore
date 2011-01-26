@@ -79,7 +79,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///  LEFT JOIN Commits AS S
         ///    ON ( C.StreamId = S.StreamId AND S.Snapshotted = true AND S.StreamRevision &lt;= @StreamRevision )
         /// WHERE C.StreamId = @StreamId
-        ///   AND C.StreamRevision BETWEEN IIF(S.StreamRevision IS NULL, 0, S.StreamRevision) AND (@StreamRevision + C.Items - 1);.
+        ///   AND C.StreamRevision BETWEEN IIF(S.StreamRevision IS NULL, 0, S.StreamRevision) AND (@StreamRevision + C.Items - 1)
+        /// ORDER BY C.CommitSequence;.
         /// </summary>
         internal static string GetCommitsFromStartingSnapshotUntilRevision {
             get {
@@ -113,7 +114,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///(
         ///       StreamId guid NOT NULL,
         ///       StreamRevision int NOT NULL,
-        ///       Items byte NOT NULL,
+        ///       Items tinyint NOT NULL,
         ///       CommitId guid NOT NULL,
         ///       CommitSequence int NOT NULL,
         ///       CommitStamp datetime NOT NULL,
@@ -122,7 +123,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///       Headers image NULL,
         ///       Payload image NOT NULL,
         ///       Snapshot image NULL,
-        ///      [rest of string was truncated]&quot;;.
+        ///   [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {

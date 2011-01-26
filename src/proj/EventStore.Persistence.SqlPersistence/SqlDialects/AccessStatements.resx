@@ -130,7 +130,8 @@
   LEFT JOIN Commits AS S
     ON ( C.StreamId = S.StreamId AND S.Snapshotted = true AND S.StreamRevision &lt;= @StreamRevision )
  WHERE C.StreamId = @StreamId
-   AND C.StreamRevision BETWEEN IIF(S.StreamRevision IS NULL, 0, S.StreamRevision) AND (@StreamRevision + C.Items - 1);</value>
+   AND C.StreamRevision BETWEEN IIF(S.StreamRevision IS NULL, 0, S.StreamRevision) AND (@StreamRevision + C.Items - 1)
+ ORDER BY C.CommitSequence;</value>
   </data>
   <data name="GetStreamsRequiringSnapshots" xml:space="preserve">
     <value>SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(IIf(S.StreamRevision IS NULL, 0, S.StreamRevision)) AS SnapshotRevision
@@ -152,7 +153,7 @@ CREATE TABLE Commits
 (
        StreamId guid NOT NULL,
        StreamRevision int NOT NULL,
-       Items byte NOT NULL,
+       Items tinyint NOT NULL,
        CommitId guid NOT NULL,
        CommitSequence int NOT NULL,
        CommitStamp datetime NOT NULL,
