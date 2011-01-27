@@ -62,7 +62,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         
         /// <summary>
         ///   Looks up a localized string similar to UPDATE Commits
-        ///   SET Snapshot = @Payload
+        ///   SET Snapshot = @Snapshot
         /// WHERE StreamId = @StreamId
         ///   AND StreamRevision = @StreamRevision;.
         /// </summary>
@@ -90,7 +90,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         /// WHERE StreamId = @StreamId
         ///   AND (StreamRevision - Items + 1) &lt;= @StreamRevision
         ///   AND StreamRevision &gt;=
-        ///     ( SELECT COALESCE(MAX(StreamRevision), 0)
+        ///     ( SELECT MAX(StreamRevision)
         ///         FROM Commits
         ///        WHERE StreamId = @StreamId
         ///          AND StreamRevision &lt;= @StreamRevision
@@ -116,14 +116,14 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(COALESCE(S.StreamRevision, 0)) AS SnapshotRevision
+        ///   Looks up a localized string similar to SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(S.StreamRevision) AS SnapshotRevision
         ///  FROM Commits AS C
-        ///  LEFT OUTER JOIN Commits AS S
+        /// INNER JOIN Commits AS S
         ///    ON C.StreamId = S.StreamId
+        /// WHERE C.CommitSequence &gt;= S.CommitSequence
         ///   AND S.Snapshot IS NOT NULL
-        /// WHERE C.CommitSequence &gt;= COALESCE(S.CommitSequence, 0)
         /// GROUP BY C.StreamId
-        ///HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Threshold;.
+        ///HAVING MAX(C.StreamRevision) &gt;= MAX(S.StreamRevision) + @Threshold;.
         /// </summary>
         internal static string GetStreamsRequiringSnaphots {
             get {
@@ -157,8 +157,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         /// <summary>
         ///   Looks up a localized string similar to INSERT
         ///  INTO Commits
-        ///     ( StreamId, CommitId, CommitSequence, StreamRevision, Items, CommitStamp, Headers, Payload )
-        ///SELECT @StreamId, @CommitId, @CommitSequence, @StreamRevision, @Items, @CommitStamp, @Headers, @Payload
+        ///     ( StreamId, CommitId, CommitSequence, StreamRevision, Items, CommitStamp, Headers, Payload, Snapshot )
+        ///SELECT @StreamId, @CommitId, @CommitSequence, @StreamRevision, @Items, @CommitStamp, @Headers, @Payload, @Snapshot
         ////*FROM DUAL*/
         /// WHERE NOT EXISTS
         ///     ( SELECT *

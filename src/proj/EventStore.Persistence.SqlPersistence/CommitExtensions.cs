@@ -36,11 +36,12 @@ namespace EventStore.Persistence.SqlPersistence
 			if (index >= record.FieldCount)
 				return null;
 
-			var bytes = record[index];
-			if (bytes == null || bytes == DBNull.Value)
+			var value = record[index];
+			if (value == null || value == DBNull.Value)
 				return null;
 
-			return serializer.Deserialize((byte[])bytes);
+			var bytes = (byte[])value;
+			return bytes.Length == 0 ? null : serializer.Deserialize(bytes);
 		}
 	}
 }

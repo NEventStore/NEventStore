@@ -61,49 +61,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to UPDATE Commits
-        ///   SET Snapshot = @Payload,
-        ///       Snapshotted = true
-        /// WHERE StreamId = @StreamId
-        ///   AND StreamRevision = @StreamRevision;.
-        /// </summary>
-        internal static string AppendSnapshot {
-            get {
-                return ResourceManager.GetString("AppendSnapshot", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SELECT C.StreamId, C.StreamRevision, C.CommitId, C.CommitSequence, C.Headers, C.Payload, C.Snapshot
-        ///  FROM Commits AS C
-        ///  LEFT JOIN Commits AS S
-        ///    ON ( C.StreamId = S.StreamId AND S.StreamRevision &lt;= @StreamRevision AND S.Snapshotted = true )
-        /// WHERE C.StreamId = @StreamId
-        ///   AND (C.StreamRevision - C.Items + 1) BETWEEN IIF(S.StreamRevision IS NULL, 0, S.StreamRevision - C.Items + 1) AND @StreamRevision
-        /// ORDER BY C.CommitSequence;.
-        /// </summary>
-        internal static string GetCommitsFromStartingSnapshotUntilRevision {
-            get {
-                return ResourceManager.GetString("GetCommitsFromStartingSnapshotUntilRevision", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(IIf(S.StreamRevision IS NULL, 0, S.StreamRevision)) AS SnapshotRevision
-        ///  FROM Commits AS C
-        ///  LEFT JOIN Commits AS S
-        ///    ON ( C.StreamId = S.StreamId AND S.Snapshotted = true )
-        /// WHERE C.CommitSequence &gt;= IIF(S.CommitSequence IS NULL, 0, S.StreamRevision)
-        /// GROUP BY C.StreamId
-        ///HAVING MAX(C.StreamRevision) &gt;= MAX(IIF(S.StreamRevision IS NULL, 0, S.StreamRevision)) + @Threshold;.
-        /// </summary>
-        internal static string GetStreamsRequiringSnapshots {
-            get {
-                return ResourceManager.GetString("GetStreamsRequiringSnapshots", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to CREATE TABLE Dual
         ///(
         ///       DualTableValue char(1) NOT NULL
@@ -119,11 +76,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///       CommitSequence int NOT NULL,
         ///       CommitStamp datetime NOT NULL,
         ///       Dispatched bit NOT NULL DEFAULT 0,
-        ///       Snapshotted bit NOT NULL DEFAULT 0,
         ///       Headers image NULL,
         ///       Payload image NOT NULL,
         ///       Snapshot image NULL,
-        ///   [rest of string was truncated]&quot;;.
+        ///       CONSTRAINT PK_Commits PRIMARY KEY (Stre [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {

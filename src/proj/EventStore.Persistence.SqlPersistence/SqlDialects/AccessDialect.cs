@@ -18,18 +18,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return base.PersistCommitAttempt.Replace("/*FROM DUAL*/", "FROM DUAL"); }
 		}
-		public override string GetStreamsRequiringSnaphots
-		{
-			get { return AccessStatements.GetStreamsRequiringSnapshots; }
-		}
-		public override string AppendSnapshotToCommit
-		{
-			get { return AccessStatements.AppendSnapshot; }
-		}
-		public override string GetCommitsFromSnapshotUntilRevision
-		{
-			get { return AccessStatements.GetCommitsFromStartingSnapshotUntilRevision; }
-		}
 
 		public override IDbStatement BuildStatement(
 			IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)

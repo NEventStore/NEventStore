@@ -11,7 +11,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		public override string PersistCommitAttempt
 		{
-			get { return base.PersistCommitAttempt.Replace("/*FROM DUAL*/", "FROM rdb$database"); }
+			get { return base.PersistCommitAttempt.Replace("/*FROM DUAL*/", "FROM rdb$database").Replace(", Snapshot", ", \"Snapshot\""); }
 		}
 		public override string GetCommitsFromSnapshotUntilRevision
 		{

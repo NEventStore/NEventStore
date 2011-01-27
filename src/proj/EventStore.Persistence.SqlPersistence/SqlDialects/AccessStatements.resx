@@ -117,31 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AppendSnapshot" xml:space="preserve">
-    <value>UPDATE Commits
-   SET Snapshot = @Payload,
-       Snapshotted = true
- WHERE StreamId = @StreamId
-   AND StreamRevision = @StreamRevision;</value>
-  </data>
-  <data name="GetCommitsFromStartingSnapshotUntilRevision" xml:space="preserve">
-    <value>SELECT C.StreamId, C.StreamRevision, C.CommitId, C.CommitSequence, C.Headers, C.Payload, C.Snapshot
-  FROM Commits AS C
-  LEFT JOIN Commits AS S
-    ON ( C.StreamId = S.StreamId AND S.StreamRevision &lt;= @StreamRevision AND S.Snapshotted = true )
- WHERE C.StreamId = @StreamId
-   AND (C.StreamRevision - C.Items + 1) BETWEEN IIF(S.StreamRevision IS NULL, 0, S.StreamRevision - C.Items + 1) AND @StreamRevision
- ORDER BY C.CommitSequence;</value>
-  </data>
-  <data name="GetStreamsRequiringSnapshots" xml:space="preserve">
-    <value>SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(IIf(S.StreamRevision IS NULL, 0, S.StreamRevision)) AS SnapshotRevision
-  FROM Commits AS C
-  LEFT JOIN Commits AS S
-    ON ( C.StreamId = S.StreamId AND S.Snapshotted = true )
- WHERE C.CommitSequence &gt;= IIF(S.CommitSequence IS NULL, 0, S.StreamRevision)
- GROUP BY C.StreamId
-HAVING MAX(C.StreamRevision) &gt;= MAX(IIF(S.StreamRevision IS NULL, 0, S.StreamRevision)) + @Threshold;</value>
-  </data>
   <data name="InitializeStorage" xml:space="preserve">
     <value>CREATE TABLE Dual
 (
@@ -158,7 +133,6 @@ CREATE TABLE Commits
        CommitSequence int NOT NULL,
        CommitStamp datetime NOT NULL,
        Dispatched bit NOT NULL DEFAULT 0,
-       Snapshotted bit NOT NULL DEFAULT 0,
        Headers image NULL,
        Payload image NOT NULL,
        Snapshot image NULL,

@@ -23,6 +23,7 @@ namespace EventStore.Persistence.SqlPersistence
 		string CommitStamp { get; }
 		string Headers { get; }
 		string Payload { get; }
+		string Snapshot { get; }
 		string Threshold { get; }
 
 		IDbTransaction OpenTransaction(IDbConnection connection);

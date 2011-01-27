@@ -119,7 +119,7 @@
   </resheader>
   <data name="AppendSnapshotToCommit" xml:space="preserve">
     <value>UPDATE Commits
-   SET Snapshot = @Payload
+   SET Snapshot = @Snapshot
  WHERE StreamId = @StreamId
    AND StreamRevision = @StreamRevision;</value>
   </data>
@@ -135,7 +135,7 @@
  WHERE StreamId = @StreamId
    AND (StreamRevision - Items + 1) &lt;= @StreamRevision
    AND StreamRevision &gt;=
-     ( SELECT COALESCE(MAX(StreamRevision), 0)
+     ( SELECT MAX(StreamRevision)
          FROM Commits
         WHERE StreamId = @StreamId
           AND StreamRevision &lt;= @StreamRevision
@@ -149,14 +149,14 @@
  ORDER BY CommitSequence;</value>
   </data>
   <data name="GetStreamsRequiringSnaphots" xml:space="preserve">
-    <value>SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(COALESCE(S.StreamRevision, 0)) AS SnapshotRevision
+    <value>SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(S.StreamRevision) AS SnapshotRevision
   FROM Commits AS C
-  LEFT OUTER JOIN Commits AS S
+ INNER JOIN Commits AS S
     ON C.StreamId = S.StreamId
+ WHERE C.CommitSequence &gt;= S.CommitSequence
    AND S.Snapshot IS NOT NULL
- WHERE C.CommitSequence &gt;= COALESCE(S.CommitSequence, 0)
  GROUP BY C.StreamId
-HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Threshold;</value>
+HAVING MAX(C.StreamRevision) &gt;= MAX(S.StreamRevision) + @Threshold;</value>
   </data>
   <data name="GetUndispatchedCommits" xml:space="preserve">
     <value>SELECT StreamId, StreamRevision, CommitId, CommitSequence, Headers, Payload
@@ -172,8 +172,8 @@ HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Thresho
   <data name="PersistCommitAttempt" xml:space="preserve">
     <value>INSERT
   INTO Commits
-     ( StreamId, CommitId, CommitSequence, StreamRevision, Items, CommitStamp, Headers, Payload )
-SELECT @StreamId, @CommitId, @CommitSequence, @StreamRevision, @Items, @CommitStamp, @Headers, @Payload
+     ( StreamId, CommitId, CommitSequence, StreamRevision, Items, CommitStamp, Headers, Payload, Snapshot )
+SELECT @StreamId, @CommitId, @CommitSequence, @StreamRevision, @Items, @CommitStamp, @Headers, @Payload, @Snapshot
 /*FROM DUAL*/
  WHERE NOT EXISTS
      ( SELECT *

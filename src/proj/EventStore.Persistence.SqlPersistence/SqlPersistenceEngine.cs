@@ -9,6 +9,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 	public class SqlPersistenceEngine : IPersistStreams
 	{
+		private const int InitialCommit = 1;
 		private readonly IConnectionFactory factory;
 		private readonly ISqlDialect dialect;
 		private readonly ISerialize serializer;
@@ -78,11 +79,16 @@ namespace EventStore.Persistence.SqlPersistence
 				cmd.AddParameter(this.dialect.CommitStamp, DateTime.UtcNow);
 				cmd.AddParameter(this.dialect.Headers, this.serializer.Serialize(commit.Headers));
 				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(commit.Events));
+				cmd.AddParameter(this.dialect.Snapshot, GetSnapshot(commit));
 
 				var rowsAffected = cmd.Execute(this.dialect.PersistCommitAttempt);
 				if (rowsAffected == 0)
 					throw new ConcurrencyException();
 			});
+		}
+		private static object GetSnapshot(Commit commit)
+		{
+			return commit.CommitSequence == InitialCommit ? new byte[] { } : null;
 		}
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
@@ -115,7 +121,7 @@ namespace EventStore.Persistence.SqlPersistence
 			{
 				cmd.AddParameter(this.dialect.StreamId, streamId);
 				cmd.AddParameter(this.dialect.StreamRevision, streamRevision);
-				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(snapshot));
+				cmd.AddParameter(this.dialect.Snapshot, this.serializer.Serialize(snapshot));
 				cmd.ExecuteWithSuppression(this.dialect.AppendSnapshotToCommit);
 			});
 		}

@@ -126,7 +126,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		protected virtual void SetParameterValue(IDataParameter param, object value, DbType? type)
 		{
 			param.Value = value ?? DBNull.Value;
-			param.DbType = type ?? param.DbType;
+			param.DbType = type ?? (value == null ? DbType.Binary : param.DbType);
 		}
 	}
 }
