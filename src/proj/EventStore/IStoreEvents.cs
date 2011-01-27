@@ -22,7 +22,7 @@ namespace EventStore
 		/// <param name="minRevision">The minimum revision of the stream to be read.</param>
 		/// <returns>A series of committed events from the stream specified.</returns>
 		CommittedEventStream ReadFrom(Guid streamId, int minRevision);
-		
+
 		/// <summary>
 		/// Writes the to-be-commited events provided to the underlying storage infrastructure.
 		/// </summary>

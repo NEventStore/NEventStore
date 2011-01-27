@@ -78,8 +78,8 @@ namespace EventStore.Persistence.MongoPersistence
 				snapshotRevision = snapshotCommit.StreamRevision;
 
 			return this.PersistedCommits.AsQueryable()
-				.Where(x => x.StreamId == streamId && 
-							x.StreamRevision >= snapshotRevision && 
+				.Where(x => x.StreamId == streamId &&
+							x.StreamRevision >= snapshotRevision &&
 							x.MinStreamRevision <= maxRevision)
 				.Select(c => c.ToCommit(this.serializer))
 				.ToArray();

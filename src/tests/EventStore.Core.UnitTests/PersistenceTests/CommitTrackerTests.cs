@@ -22,7 +22,7 @@ namespace EventStore.Core.UnitTests.PersistenceTests
 		};
 
 		static CommitTracker tracker;
-		
+
 		Establish context = () =>
 			tracker = new CommitTracker(MaxCommitsToTrackPerStream);
 

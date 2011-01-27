@@ -87,7 +87,7 @@ namespace EventStore
 
 			var commit = attempt.ToCommit();
 			this.tracker.Track(commit);
-			
+
 			this.dispatcher.Dispatch(commit);
 		}
 	}

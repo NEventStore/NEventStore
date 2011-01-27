@@ -111,7 +111,7 @@ namespace EventStore.Core.UnitTests.PersistenceTests
 			filterPersistence = new CommitFilterPersistence(
 				fakePersistence.Object, null, writeFilter.Object);
 		};
-			
+
 		Because of = () =>
 			filterPersistence.Persist(attempt);
 

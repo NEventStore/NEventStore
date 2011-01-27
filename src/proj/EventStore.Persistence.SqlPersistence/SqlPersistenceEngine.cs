@@ -29,7 +29,7 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			// no-op
 		}
-		
+
 		public virtual void Initialize()
 		{
 			this.Execute(Guid.Empty, statement =>

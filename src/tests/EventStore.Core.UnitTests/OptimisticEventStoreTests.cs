@@ -5,12 +5,12 @@ namespace EventStore.Core.UnitTests
 {
 	using System;
 	using System.Linq;
+	using System.Threading;
 	using Dispatcher;
 	using Machine.Specifications;
 	using Moq;
 	using Persistence;
 	using It = Machine.Specifications.It;
-    using System.Threading;
 
 	[Subject("OptimisticEventStore")]
 	public class when_reading_a_stream_up_to_a_maximum_revision : using_persistence
@@ -21,7 +21,7 @@ namespace EventStore.Core.UnitTests
 			new Commit(streamId, 1, Guid.NewGuid(), 1, null, null, "ignore this snapshot")
 			{
 				Events = { new EventMessage { Body = 1 } }
-			}, 
+			},
 			new Commit(streamId, 3, Guid.NewGuid(), 2, null, null, "use this snapshot")
 			{
 				Events =
@@ -29,7 +29,7 @@ namespace EventStore.Core.UnitTests
 					new EventMessage { Body = 2 },
 					new EventMessage { Body = 3 }
 				}
-			}, 
+			},
 			new Commit(streamId, 5, Guid.NewGuid(), 3, null, null, null)
 			{
 				Events =
@@ -79,7 +79,7 @@ namespace EventStore.Core.UnitTests
 			new Commit(streamId, 1, Guid.NewGuid(), 1, null, null, "ignore this snapshot")
 			{
 				Events = { new EventMessage { Body = 1 } }
-			}, 
+			},
 			new Commit(streamId, 3, Guid.NewGuid(), 2, null, null, "ignore this snapshot too")
 			{
 				Events =
@@ -87,7 +87,7 @@ namespace EventStore.Core.UnitTests
 					new EventMessage { Body = 2 },
 					new EventMessage { Body = 3 }
 				}
-			}, 
+			},
 			new Commit(streamId, 6, Guid.NewGuid(), 3, null, null, null)
 			{
 				Events =
@@ -459,7 +459,7 @@ namespace EventStore.Core.UnitTests
 		const int MostRecentSequence = 42;
 		static readonly Commit[] Commits = new[]
 		{
-			new Commit(streamId, StreamRevision, Guid.NewGuid(), MostRecentSequence, null, null, null), 
+			new Commit(streamId, StreamRevision, Guid.NewGuid(), MostRecentSequence, null, null, null),
 		};
 		static readonly CommitAttempt Attempt = new CommitAttempt
 		{
@@ -492,7 +492,7 @@ namespace EventStore.Core.UnitTests
 		const int CommitSequence = 1;
 		static readonly Commit[] Commits = new[]
 		{
-			new Commit(streamId, MostRecentStreamRevision, Guid.NewGuid(), CommitSequence, null, null, null), 
+			new Commit(streamId, MostRecentStreamRevision, Guid.NewGuid(), CommitSequence, null, null, null),
 		};
 		static readonly CommitAttempt Attempt = new CommitAttempt
 		{
@@ -543,122 +543,117 @@ namespace EventStore.Core.UnitTests
 			thrown.ShouldBeOfType<ConcurrencyException>();
 	}
 
-    [Subject("OptimisticEventstore")]
-    public class when_one_thread_persists_a_commit_whose_commitsequence_or_revision_was_made_stale_by_another_thread :
-        using_persistence
-    {
-        const int MostRecentStreamRevision = 1;
-        const int CommitSequence = 1;
+	[Subject("OptimisticEventstore")]
+	public class when_one_thread_persists_a_commit_whose_commitsequence_or_revision_was_made_stale_by_another_thread :
+		using_persistence
+	{
+		const int MostRecentStreamRevision = 1;
+		const int CommitSequence = 1;
 
-        static readonly Commit[] Commits = new[]
-            {
-                new Commit(streamId, MostRecentStreamRevision, Guid.NewGuid(), CommitSequence, null, null, null),
-            };
+		static readonly Commit[] Commits = new[]
+		{
+			new Commit(streamId, MostRecentStreamRevision, Guid.NewGuid(), CommitSequence, null, null, null),
+		};
 
-        static readonly Countdown countdown = new Countdown(2);
-        static readonly AutoResetEvent gate = new AutoResetEvent(false);
-        static int ReadCount, WriteCount;
-        static readonly object readLock = new object();
+		static readonly object readLock = new object();
+		static readonly AutoResetEvent gate = new AutoResetEvent(false);
+		static readonly Countdown countdown = new Countdown(2);
+		static int readCount, writeCount;
 
-        static Exception thrown;
+		static Exception thrown;
 
-        Establish context = () =>
-        {
-            persistence.Setup(x => x.GetFromSnapshotUntil(streamId, int.MaxValue)).Returns(Commits)
-                .Callback(() =>
-                {
-                    bool wait = false;
-                    lock (readLock)
-                    {
-                        ReadCount++;
-                        if (ReadCount == 1) wait = true; //whoever gets here first wait
-                    }
-                    if (wait)
-                    {
-                        gate.WaitOne();
-                    }
-                });
+		Establish context = () =>
+		{
+			persistence.Setup(x => x.GetFromSnapshotUntil(streamId, int.MaxValue)).Returns(Commits)
+				.Callback(() =>
+				{
+					var wait = false;
+					lock (readLock)
+					{
+						readCount++;
+						if (readCount == 1) wait = true; // whoever gets here first wait
+					}
+					if (wait)
+					{
+						gate.WaitOne();
+					}
+				});
 
-            dispatcher.Setup(x => x.Dispatch(Moq.It.IsAny<Commit>()))
-                .Callback(() =>
-                {
-                    WriteCount++;
-                    //release the other thread once we have persisted the first commit
-                    if (WriteCount == 1) gate.Set();
-                    countdown.Signal();
-                });
-        };
+			dispatcher.Setup(x => x.Dispatch(Moq.It.IsAny<Commit>()))
+				.Callback(() =>
+				{
+					writeCount++;
+					if (writeCount == 1) gate.Set(); // release the other thread once we have persisted the first commit
+					countdown.Signal();
+				});
+		};
 
-        static void ConcurrencyTest()
-        {
-            //both threads share a consistent view of the data after reading
-            //as such they submit conflicting commits
-            try
-            {
-                store.ReadFromSnapshotUntil(streamId, 0);
+		static void ConcurrencyTest()
+		{
+			// both threads share a consistent view of the data after reading
+			// as such they submit conflicting commits
+			try
+			{
+				store.ReadFromSnapshotUntil(streamId, 0);
 
-                var attempt = new CommitAttempt() //create inline to avoid DuplicateCommitException
-                {
-                    StreamId = streamId,
-                    CommitId = Guid.NewGuid(),
-                    PreviousCommitSequence = CommitSequence,
-                    StreamRevision = MostRecentStreamRevision + 1,
-                    Events = { new EventMessage() }
-                };
-                store.Write(attempt);
-            }
-            catch (Exception e)
-            {
-                thrown = e;
-                countdown.Signal();
-            }
-        }
+				var attempt = new CommitAttempt // create inline to avoid DuplicateCommitException
+				{
+					StreamId = streamId,
+					CommitId = Guid.NewGuid(),
+					PreviousCommitSequence = CommitSequence,
+					StreamRevision = MostRecentStreamRevision + 1,
+					Events = { new EventMessage() }
+				};
+				store.Write(attempt);
+			}
+			catch (Exception e)
+			{
+				thrown = e;
+				countdown.Signal();
+			}
+		}
 
-        Because of = () =>
-        {
-            var threadOne = new Thread(ConcurrencyTest);
-            var threadTwo = new Thread(ConcurrencyTest);
+		Because of = () =>
+		{
+			var threadOne = new Thread(ConcurrencyTest);
+			var threadTwo = new Thread(ConcurrencyTest);
 
-            threadOne.Start();
-            threadTwo.Start();
-            countdown.Wait();
-        };
+			threadOne.Start();
+			threadTwo.Start();
+			countdown.Wait();
+		};
 
-        It should_throw_a_ConcurrencyException = () => thrown.ShouldBeOfType<ConcurrencyException>();
+		It should_throw_a_ConcurrencyException = () => thrown.ShouldBeOfType<ConcurrencyException>();
 
-        Cleanup thisFunction = () =>
-        {
-            gate.Dispose();
-        };
+		Cleanup thisFunction = () => gate.Dispose();
 
-        public class Countdown
-        {
-            object _locker = new object();
-            int _value;
+		public class Countdown
+		{
+			private readonly object @lock = new object();
+			private int value;
 
-            public Countdown() { }
-            public Countdown(int initialCount) { _value = initialCount; }
+			public Countdown() { }
+			public Countdown(int initialCount) { this.value = initialCount; }
 
-            public void Signal() { AddCount(-1); }
+			public void Signal() { this.AddCount(-1); }
 
-            public void AddCount(int amount)
-            {
-                lock (_locker)
-                {
-                    _value += amount;
-                    if (_value <= 0) Monitor.PulseAll(_locker);
-                }
-            }
+			public void AddCount(int amount)
+			{
+				lock (this.@lock)
+				{
+					this.value += amount;
+					if (this.value <= 0) Monitor.PulseAll(this.@lock);
+				}
+			}
 
-            public void Wait()
-            {
-                lock (_locker)
-                    while (_value > 0)
-                        Monitor.Wait(_locker);
-            }
-        }
-
-    }
+			public void Wait()
+			{
+				lock (this.@lock)
+					while (this.value > 0)
+						Monitor.Wait(this.@lock);
+			}
+		}
+	}
 
 	public abstract class using_persistence
 	{
