@@ -6,7 +6,7 @@ namespace EventStore.Persistence
 
 	public class InMemoryPersistenceEngine : IPersistStreams
 	{
-		private readonly ICollection<Commit> commits = new LinkedList<Commit>();
+		private readonly IList<Commit> commits = new List<Commit>();
 		private readonly ICollection<StreamHead> heads = new LinkedList<StreamHead>();
 		private readonly ICollection<Commit> undispatched = new LinkedList<Commit>();
 		private readonly IDictionary<Guid, DateTime> stamps = new Dictionary<Guid, DateTime>();
@@ -79,15 +79,11 @@ namespace EventStore.Persistence
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
 		{
 			var commitId = this.stamps.Where(x => x.Value >= start).Select(x => x.Key).FirstOrDefault();
+			if (commitId == Guid.Empty)
+				return new Commit[] { };
 
-			var found = false;
-			return this.commits.TakeWhile(x =>
-			{
-				if (!found && commitId == x.CommitId)
-					found = true;
-
-				return found;
-			});
+			var startingCommit = this.commits.Where(x => x.CommitId == commitId).First();
+			return this.commits.Skip(this.commits.IndexOf(startingCommit));
 		}
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
