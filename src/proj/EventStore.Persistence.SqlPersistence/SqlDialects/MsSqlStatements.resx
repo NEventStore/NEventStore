@@ -118,18 +118,16 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="GetCommitsFromSnapshotUntilRevision" xml:space="preserve">
-    <value>DECLARE @MinRevision int;
-SELECT @MinRevision = COALESCE(MAX(StreamRevision - Items + 1), 0)
+    <value>SELECT StreamId, StreamRevision, CommitId, CommitSequence, Headers, Payload, Snapshot
   FROM Commits
  WHERE StreamId = @StreamId
-   AND StreamRevision &lt;= @StreamRevision
-   AND Snapshot IS NOT NULL;
-
-SELECT StreamId, StreamRevision, CommitId, CommitSequence, Headers, Payload, Snapshot
-  FROM Commits
- WHERE StreamId = @StreamId
-   AND (StreamRevision - Items + 1) BETWEEN @MinRevision AND @StreamRevision
- ORDER BY CommitSequence;</value>
+   AND (StreamRevision - Items + 1) &lt;= @StreamRevision
+   AND StreamRevision &gt;= 
+     ( SELECT COALESCE(MAX(StreamRevision), 0)
+         FROM Commits
+        WHERE StreamId = @StreamId
+          AND StreamRevision &lt;= @StreamRevision
+          AND Snapshot IS NOT NULL );</value>
   </data>
   <data name="InitializeStorage" xml:space="preserve">
     <value>IF EXISTS(SELECT * FROM sysobjects WHERE name='Commits' AND xtype = 'U') RETURN;
