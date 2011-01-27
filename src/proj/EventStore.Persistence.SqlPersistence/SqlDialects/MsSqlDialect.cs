@@ -6,5 +6,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return MsSqlStatements.InitializeStorage; }
 		}
+
+		public override string GetCommitsFromSnapshotUntilRevision
+		{
+			get { return MsSqlStatements.GetCommitsFromSnapshotUntilRevision; }
+		}
 	}
 }
