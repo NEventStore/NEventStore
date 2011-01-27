@@ -117,18 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="GetCommitsFromSnapshotUntilRevision" xml:space="preserve">
-    <value>SELECT StreamId, StreamRevision, CommitId, CommitSequence, Headers, Payload, Snapshot
-  FROM Commits
- WHERE StreamId = @StreamId
-   AND (StreamRevision - Items + 1) &lt;= @StreamRevision
-   AND StreamRevision &gt;= 
-     ( SELECT COALESCE(MAX(StreamRevision), 0)
-         FROM Commits
-        WHERE StreamId = @StreamId
-          AND StreamRevision &lt;= @StreamRevision
-          AND Snapshot IS NOT NULL );</value>
-  </data>
   <data name="InitializeStorage" xml:space="preserve">
     <value>IF EXISTS(SELECT * FROM sysobjects WHERE name='Commits' AND xtype = 'U') RETURN;
 

@@ -9,6 +9,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return SqlCeStatements.InitializeStorage; }
 		}
+		public override string GetCommitsFromSnapshotUntilRevision
+		{
+			get { return base.GetCommitsFromSnapshotUntilRevision.Replace(">=", ">= ALL"); }
+		}
 
 		public override IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
 		{

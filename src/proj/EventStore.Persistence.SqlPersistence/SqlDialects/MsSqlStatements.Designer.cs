@@ -61,24 +61,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT StreamId, StreamRevision, CommitId, CommitSequence, Headers, Payload, Snapshot
-        ///  FROM Commits
-        /// WHERE StreamId = @StreamId
-        ///   AND (StreamRevision - Items + 1) &lt;= @StreamRevision
-        ///   AND StreamRevision &gt;= 
-        ///     ( SELECT COALESCE(MAX(StreamRevision), 0)
-        ///         FROM Commits
-        ///        WHERE StreamId = @StreamId
-        ///          AND StreamRevision &lt;= @StreamRevision
-        ///          AND Snapshot IS NOT NULL );.
-        /// </summary>
-        internal static string GetCommitsFromSnapshotUntilRevision {
-            get {
-                return ResourceManager.GetString("GetCommitsFromSnapshotUntilRevision", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to IF EXISTS(SELECT * FROM sysobjects WHERE name=&apos;Commits&apos; AND xtype = &apos;U&apos;) RETURN;
         ///
         ///CREATE TABLE [dbo].[Commits]
