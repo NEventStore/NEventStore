@@ -10,6 +10,7 @@ namespace EventStore.Core.UnitTests
 	using Moq;
 	using Persistence;
 	using It = Machine.Specifications.It;
+    using System.Threading;
 
 	[Subject("OptimisticEventStore")]
 	public class when_reading_a_stream_up_to_a_maximum_revision : using_persistence
@@ -541,6 +542,123 @@ namespace EventStore.Core.UnitTests
 		It should_throw_a_ConcurrencyException = () =>
 			thrown.ShouldBeOfType<ConcurrencyException>();
 	}
+
+    [Subject("OptimisticEventstore")]
+    public class when_one_thread_persists_a_commit_whose_commitsequence_or_revision_was_made_stale_by_another_thread :
+        using_persistence
+    {
+        const int MostRecentStreamRevision = 1;
+        const int CommitSequence = 1;
+
+        static readonly Commit[] Commits = new[]
+            {
+                new Commit(streamId, MostRecentStreamRevision, Guid.NewGuid(), CommitSequence, null, null, null),
+            };
+
+        static readonly Countdown countdown = new Countdown(2);
+        static readonly AutoResetEvent gate = new AutoResetEvent(false);
+        static int ReadCount, WriteCount;
+        static readonly object readLock = new object();
+
+        static Exception thrown;
+
+        Establish context = () =>
+        {
+            persistence.Setup(x => x.GetFromSnapshotUntil(streamId, int.MaxValue)).Returns(Commits)
+                .Callback(() =>
+                {
+                    bool wait = false;
+                    lock (readLock)
+                    {
+                        ReadCount++;
+                        if (ReadCount == 1) wait = true; //whoever gets here first wait
+                    }
+                    if (wait)
+                    {
+                        gate.WaitOne();
+                    }
+                });
+
+            dispatcher.Setup(x => x.Dispatch(Moq.It.IsAny<Commit>()))
+                .Callback(() =>
+                {
+                    WriteCount++;
+                    //release the other thread once we have persisted the first commit
+                    if (WriteCount == 1) gate.Set();
+                    countdown.Signal();
+                });
+        };
+
+        static void ConcurrencyTest()
+        {
+            //both threads share a consistent view of the data after reading
+            //as such they submit conflicting commits
+            try
+            {
+                store.ReadFromSnapshotUntil(streamId, 0);
+
+                var attempt = new CommitAttempt() //create inline to avoid DuplicateCommitException
+                {
+                    StreamId = streamId,
+                    CommitId = Guid.NewGuid(),
+                    PreviousCommitSequence = CommitSequence,
+                    StreamRevision = MostRecentStreamRevision + 1,
+                    Events = { new EventMessage() }
+                };
+                store.Write(attempt);
+            }
+            catch (Exception e)
+            {
+                thrown = e;
+                countdown.Signal();
+            }
+        }
+
+        Because of = () =>
+        {
+            var threadOne = new Thread(ConcurrencyTest);
+            var threadTwo = new Thread(ConcurrencyTest);
+
+            threadOne.Start();
+            threadTwo.Start();
+            countdown.Wait();
+        };
+
+        It should_throw_a_ConcurrencyException = () => thrown.ShouldBeOfType<ConcurrencyException>();
+
+        Cleanup thisFunction = () =>
+        {
+            gate.Dispose();
+        };
+
+        public class Countdown
+        {
+            object _locker = new object();
+            int _value;
+
+            public Countdown() { }
+            public Countdown(int initialCount) { _value = initialCount; }
+
+            public void Signal() { AddCount(-1); }
+
+            public void AddCount(int amount)
+            {
+                lock (_locker)
+                {
+                    _value += amount;
+                    if (_value <= 0) Monitor.PulseAll(_locker);
+                }
+            }
+
+            public void Wait()
+            {
+                lock (_locker)
+                    while (_value > 0)
+                        Monitor.Wait(_locker);
+            }
+        }
+
+    }
 
 	public abstract class using_persistence
 	{

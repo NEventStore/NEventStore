@@ -6,6 +6,8 @@ namespace EventStore.Persistence.AcceptanceTests
 	using System;
 	using System.Linq;
 	using Machine.Specifications;
+using EventStore.Dispatcher;
+using System.Collections.Generic;
 
 	[Subject("Persistence")]
 	public class when_an_attempt_is_successfully_committed : using_the_persistence_engine
@@ -220,9 +222,57 @@ namespace EventStore.Persistence.AcceptanceTests
 			committed.Length.ShouldEqual(4);
 	}
 
+    [Subject("Persistence")]
+    public class when_committing_a_stream_with_the_same_streamrevision_concurrently_it_should_throw_a_concurrency_exceptuon : using_the_persistence_engine
+    {
+        static IPersistStreams persistence1 = factory.Build();
+        static IPersistStreams persistence2 = factory.Build();
+        static readonly CommitAttempt attempt1 = streamId.BuildAttempt();
+        static readonly CommitAttempt attempt2 = streamId.BuildAttempt();
+        static Exception thrown;
+
+        Establish context = () =>
+        {
+            attempt1.StreamRevision = 1;
+            attempt2.StreamRevision = 1;
+            persistence1.Persist(attempt1);
+        };
+
+        Because of = () =>
+        {                        
+            thrown = Catch.Exception(() => persistence2.Persist(attempt2));
+        };
+
+        It should_throw_a_concurrency_exception = () => thrown.ShouldBeOfType<ConcurrencyException>();
+    }
+
+    [Subject("Persistence")]
+    public class when_committing_a_stream_with_the_same_commitsequence_concurrently_it_should_throw_a_concurrency_exception : using_the_persistence_engine
+    {
+        static IPersistStreams persistence1 = factory.Build();
+        static IPersistStreams persistence2 = factory.Build();
+        static readonly CommitAttempt attempt1 = streamId.BuildAttempt();
+        static readonly CommitAttempt attempt2 = streamId.BuildAttempt();
+        static Exception thrown;
+
+        Establish context = () =>
+        {
+            attempt1.PreviousCommitSequence = 0;
+            attempt2.PreviousCommitSequence = 0;
+            persistence1.Persist(attempt1);
+        };
+
+        Because of = () =>
+        {
+            thrown = Catch.Exception(() => persistence2.Persist(attempt2));
+        };
+
+        It should_throw_a_concurrency_exception = () => thrown.ShouldBeOfType<ConcurrencyException>();
+    }
+
 	public abstract class using_the_persistence_engine
 	{
-		private static readonly IPersistenceFactory factory = new PersistenceFactoryScanner().GetFactory();
+		protected static readonly IPersistenceFactory factory = new PersistenceFactoryScanner().GetFactory();
 		protected static Guid streamId = Guid.NewGuid();
 		protected static IPersistStreams persistence;
 
