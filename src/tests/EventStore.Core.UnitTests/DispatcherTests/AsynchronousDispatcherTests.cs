@@ -36,13 +36,13 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 			new AsynchronousDispatcher(bus.Object, persistence.Object, null);
 
 		It should_take_a_few_milliseconds_for_the_other_thread_to_execute = () =>
-			Thread.Sleep(10); // just a precaution because we're doing async tests
+			Thread.Sleep(25); // just a precaution because we're doing async tests
 
 		It should_initialize_the_persistence_engine = () =>
-			persistence.Verify(x => x.Initialize(), Times.Exactly(1));
+			persistence.Verify(x => x.Initialize(), Times.Once());
 
 		It should_get_the_set_of_undispatched_commits = () =>
-			persistence.Verify(x => x.GetUndispatchedCommits(), Times.Exactly(1));
+			persistence.Verify(x => x.GetUndispatchedCommits(), Times.Once());
 
 		It should_provide_the_commits_to_the_publisher = () =>
 			bus.VerifyAll();
@@ -69,13 +69,13 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 			dispatcher.Dispatch(commit);
 
 		It should_take_a_few_milliseconds_for_the_other_thread_to_execute = () =>
-			Thread.Sleep(10); // just a precaution because we're doing async tests
+			Thread.Sleep(25); // just a precaution because we're doing async tests
 
 		It should_provide_the_commit_to_the_message_bus = () =>
-			bus.Verify(x => x.Publish(commit), Times.Exactly(1));
+			bus.Verify(x => x.Publish(commit), Times.Once());
 
 		It should_mark_the_commit_as_dispatched = () =>
-			persistence.Verify(x => x.MarkCommitAsDispatched(commit), Times.Exactly(1));
+			persistence.Verify(x => x.MarkCommitAsDispatched(commit), Times.Once());
 	}
 
 	[Subject("AsynchronousDispatcher")]
@@ -105,7 +105,7 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 			dispatcher.Dispatch(commit);
 
 		It should_take_a_few_milliseconds_for_the_other_thread_to_execute = () =>
-			Thread.Sleep(10); // just a precaution because we're doing async tests
+			Thread.Sleep(25); // just a precaution because we're doing async tests
 
 		It should_handed_back_the_commit_that_caused_the_exception = () =>
 			handedBack.ShouldEqual(commit);
@@ -135,10 +135,10 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 		};
 
 		It should_dispose_the_underlying_message_bus_exactly_once = () =>
-			bus.Verify(x => x.Dispose(), Times.Exactly(1));
+			bus.Verify(x => x.Dispose(), Times.Once());
 
 		It should_dispose_the_underlying_persistence_infrastructure_exactly_once = () =>
-			bus.Verify(x => x.Dispose(), Times.Exactly(1));
+			bus.Verify(x => x.Dispose(), Times.Once());
 	}
 }
 

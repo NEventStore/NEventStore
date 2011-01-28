@@ -5,7 +5,6 @@ namespace EventStore.Serialization.AcceptanceTests
 {
 	using System.Linq;
 	using Machine.Specifications;
-	using Persistence;
 
 	[Subject("Serialization")]
 	public class when_serializing_a_simple_message : using_serialization
@@ -42,7 +41,7 @@ namespace EventStore.Serialization.AcceptanceTests
 	[Subject("Serialization")]
 	public class when_serializing_a_commit_message : using_serialization
 	{
-		static readonly Commit Message = new CommitAttempt().Populate();
+		static readonly Commit Message = ExtensionMethods.BuildCommit();
 		static byte[] serialized;
 		static Commit deserialized;
 

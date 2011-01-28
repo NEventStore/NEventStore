@@ -78,7 +78,7 @@ namespace EventStore.Persistence.AcceptanceTests
 					"The key '{0}' was not a configured persistence engine.",
 					persistenceEngine);
 
-				throw new PersistenceEngineException(message);
+				throw new StorageException(message);
 			}
 		}
 	}

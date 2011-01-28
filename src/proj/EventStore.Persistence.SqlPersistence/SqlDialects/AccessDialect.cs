@@ -14,21 +14,19 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return AccessStatements.InitializeStorage; }
 		}
-		public override string PersistCommitAttempt
+		public override string PersistCommit
 		{
-			get { return base.PersistCommitAttempt.Replace("/*FROM DUAL*/", "FROM DUAL"); }
+			get { return base.PersistCommit.Replace("/*FROM DUAL*/", "FROM DUAL"); }
 		}
 
-		public override IDbStatement BuildStatement(
-			IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
+		public override IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
 		{
 			return new AccessDbStatement(connection, transaction, resources);
 		}
 
 		private class AccessDbStatement : DelimitedDbStatement
 		{
-			public AccessDbStatement(
-				IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
+			public AccessDbStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
 				: base(connection, transaction, resources)
 			{
 			}

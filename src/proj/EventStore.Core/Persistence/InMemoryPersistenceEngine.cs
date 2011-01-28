@@ -24,51 +24,29 @@ namespace EventStore.Persistence
 		{
 		}
 
-		public virtual IEnumerable<Commit> GetFromSnapshotUntil(Guid streamId, int maxRevision)
+		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
+		{
+			lock (this.commits)
+				return this.commits.Where(x => x.StreamId == streamId && x.StreamRevision >= minRevision && (x.StreamRevision - x.Events.Count + 1) <= maxRevision).ToArray();
+		}
+		public virtual void Commit(Commit attempt)
 		{
 			lock (this.commits)
 			{
-				var snapshotCommit = this.commits
-					.Where(x => x.StreamId == streamId && x.StreamRevision <= maxRevision && x.Snapshot != null)
-					.OrderByDescending(o => o.StreamRevision)
-					.Take(1)
-					.FirstOrDefault();
-
-				var snapshotRevision = 0;
-				if (snapshotCommit != null)
-					snapshotRevision = snapshotCommit.StreamRevision;
-
-				return this.commits
-					.Where(x => x.StreamId == streamId && x.StreamRevision >= snapshotRevision && x.StreamRevision <= maxRevision + x.Events.Count - 1)
-					.OrderBy(x => x.CommitSequence)
-					.ToList();
-			}
-		}
-		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision)
-		{
-			lock (this.commits)
-				return this.commits.Where(x => x.StreamId == streamId && x.StreamRevision >= minRevision).ToArray();
-		}
-		public virtual void Persist(CommitAttempt uncommitted)
-		{
-			lock (this.commits)
-			{
-				var commit = uncommitted.ToCommit();
-
-				if (this.commits.Contains(commit))
+				if (this.commits.Contains(attempt))
 					throw new DuplicateCommitException();
-				if (this.commits.Any(c => c.StreamId == commit.StreamId && c.StreamRevision == commit.StreamRevision))
+				if (this.commits.Any(c => c.StreamId == attempt.StreamId && c.StreamRevision == attempt.StreamRevision))
 					throw new ConcurrencyException();
 
-				this.stamps[commit.CommitId] = DateTime.UtcNow;
-				this.commits.Add(commit);
+				this.stamps[attempt.CommitId] = DateTime.UtcNow;
+				this.commits.Add(attempt);
 
 				lock (this.undispatched)
-					this.undispatched.Add(commit);
+					this.undispatched.Add(attempt);
 
 				lock (this.heads)
 				{
-					var head = new StreamHead(commit.StreamId, commit.StreamRevision, 0);
+					var head = new StreamHead(attempt.StreamId, attempt.StreamRevision, 0);
 					if (this.heads.Contains(head))
 						this.heads.Remove(head);
 					this.heads.Add(head);
@@ -103,12 +81,16 @@ namespace EventStore.Persistence
 				return this.heads.Where(x => x.HeadRevision >= x.SnapshotRevision + maxThreshold)
 					.Select(stream => new StreamHead(stream.StreamId, stream.HeadRevision, stream.SnapshotRevision));
 		}
-		public virtual void AddSnapshot(Guid streamId, int streamRevision, object snapshot)
+		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
+		{
+			return null;
+		}
+		public virtual void AddSnapshot(Snapshot snapshot)
 		{
 			lock (this.commits)
 			{
 				var commitToBeUpdated =
-					this.commits.First(commit => commit.StreamId == streamId && commit.StreamRevision == streamRevision);
+					this.commits.First(commit => commit.StreamId == snapshot.StreamId && commit.StreamRevision == snapshot.StreamRevision);
 
 				this.commits.Remove(commitToBeUpdated);
 				this.commits.Add(new Commit(commitToBeUpdated.StreamId,
@@ -121,10 +103,10 @@ namespace EventStore.Persistence
 			}
 			lock (this.heads)
 			{
-				var currentHead = this.heads.First(h => h.StreamId == streamId);
+				var currentHead = this.heads.First(h => h.StreamId == snapshot.StreamId);
 
 				this.heads.Remove(currentHead);
-				this.heads.Add(new StreamHead(currentHead.StreamId, currentHead.HeadRevision, streamRevision));
+				this.heads.Add(new StreamHead(currentHead.StreamId, currentHead.HeadRevision, snapshot.StreamRevision));
 			}
 		}
 	}

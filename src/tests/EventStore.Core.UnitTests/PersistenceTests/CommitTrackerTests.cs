@@ -14,11 +14,11 @@ namespace EventStore.Core.UnitTests.PersistenceTests
 	{
 		const int MaxCommitsToTrackPerStream = 2;
 		static readonly Guid StreamId = Guid.NewGuid();
-		static readonly Commit[] Commits = new[]
+		static readonly Commit[] TrackedCommits = new[]
 		{
-			new Commit(StreamId, 1, Guid.NewGuid(), 1, null, null, null),
-			new Commit(StreamId, 2, Guid.NewGuid(), 2, null, null, null),
-			new Commit(StreamId, 3, Guid.NewGuid(), 3, null, null, null) // causes first commit to no longer tracked.
+			BuildCommit(StreamId, Guid.NewGuid()),
+			BuildCommit(StreamId, Guid.NewGuid()),
+			BuildCommit(StreamId, Guid.NewGuid())
 		};
 
 		static CommitTracker tracker;
@@ -28,37 +28,33 @@ namespace EventStore.Core.UnitTests.PersistenceTests
 
 		Because of = () =>
 		{
-			foreach (var commit in Commits)
+			foreach (var commit in TrackedCommits)
 				tracker.Track(commit);
 		};
 
-		It should_only_contain_streams_explicitly_tracked = () => tracker.Contains(new CommitAttempt
+		It should_only_contain_streams_explicitly_tracked = () =>
 		{
-			StreamId = Guid.Empty, // non-existant partition in tracker
-			CommitId = Commits[0].CommitId
-		}).ShouldBeFalse();
+			var untracked = BuildCommit(Guid.Empty, TrackedCommits[0].CommitId);
+			tracker.Contains(untracked).ShouldBeFalse();
+		};
 
 		It should_find_tracked_commits = () =>
 		{
-			var stillTracked = new CommitAttempt
-			{
-				StreamId = Commits.Last().StreamId,
-				CommitId = Commits.Last().CommitId
-			};
-
+			var stillTracked = BuildCommit(TrackedCommits.Last().StreamId, TrackedCommits.Last().CommitId);
 			tracker.Contains(stillTracked).ShouldBeTrue();
 		};
 
 		It should_only_track_the_specified_number_of_commits = () =>
 		{
-			var droppedFromTracking = new CommitAttempt
-			{
-				StreamId = Commits.First().StreamId,
-				CommitId = Commits.First().CommitId
-			};
-
+			var droppedFromTracking = BuildCommit(
+				TrackedCommits.First().StreamId, TrackedCommits.First().CommitId);
 			tracker.Contains(droppedFromTracking).ShouldBeFalse();
 		};
+
+		private static Commit BuildCommit(Guid streamId, Guid commitId)
+		{
+			return new Commit(streamId, 0, commitId, 0, null, null, null);
+		}
 	}
 }
 

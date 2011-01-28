@@ -8,11 +8,11 @@ namespace EventStore.Persistence
 	{
 		private readonly IPersistStreams inner;
 		private readonly IFilterCommits<Commit> readFilter;
-		private readonly IFilterCommits<CommitAttempt> writeFilter;
+		private readonly IFilterCommits<Commit> writeFilter;
 		private bool disposed;
 
 		public CommitFilterPersistence(
-			IPersistStreams inner, IFilterCommits<Commit> readFilter, IFilterCommits<CommitAttempt> writeFilter)
+			IPersistStreams inner, IFilterCommits<Commit> readFilter, IFilterCommits<Commit> writeFilter)
 		{
 			this.inner = inner;
 			this.readFilter = readFilter;
@@ -38,25 +38,18 @@ namespace EventStore.Persistence
 			this.inner.Initialize();
 		}
 
-		public virtual IEnumerable<Commit> GetFromSnapshotUntil(Guid streamId, int maxRevision)
+		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
 		{
-			return this.inner.GetFromSnapshotUntil(streamId, maxRevision)
+			return this.inner.GetFrom(streamId, minRevision, maxRevision)
 				.Select(this.readFilter.Filter)
 				.Where(x => x != null)
 				.ToArray();
 		}
-		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision)
+		public virtual void Commit(Commit attempt)
 		{
-			return this.inner.GetFrom(streamId, minRevision)
-				.Select(this.readFilter.Filter)
-				.Where(x => x != null)
-				.ToArray();
-		}
-		public virtual void Persist(CommitAttempt uncommitted)
-		{
-			uncommitted = this.writeFilter.Filter(uncommitted);
-			if (uncommitted != null)
-				this.inner.Persist(uncommitted);
+			attempt = this.writeFilter.Filter(attempt);
+			if (attempt != null)
+				this.inner.Commit(attempt);
 		}
 
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
@@ -77,9 +70,13 @@ namespace EventStore.Persistence
 		{
 			return this.inner.GetStreamsToSnapshot(maxThreshold);
 		}
-		public virtual void AddSnapshot(Guid streamId, int streamRevision, object snapshot)
+		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
-			this.inner.AddSnapshot(streamId, streamRevision, snapshot);
+			return this.inner.GetSnapshot(streamId, maxRevision);
+		}
+		public virtual void AddSnapshot(Snapshot snapshot)
+		{
+			this.inner.AddSnapshot(snapshot);
 		}
 	}
 }

@@ -7,40 +7,40 @@ namespace EventStore.Persistence
 	/// Represents a general failure of the storage engine or persistence infrastructure.
 	/// </summary>
 	[Serializable]
-	public class PersistenceEngineException : Exception
+	public class StorageException : Exception
 	{
 		/// <summary>
-		/// Initializes a new instance of the PersistenceEngineException class.
+		/// Initializes a new instance of the StorageException class.
 		/// </summary>
-		public PersistenceEngineException()
+		public StorageException()
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the PersistenceEngineException class.
+		/// Initializes a new instance of the StorageException class.
 		/// </summary>
 		/// <param name="message">The message that describes the error.</param>
-		public PersistenceEngineException(string message)
+		public StorageException(string message)
 			: base(message)
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the PersistenceEngineException class.
+		/// Initializes a new instance of the StorageException class.
 		/// </summary>
 		/// <param name="message">The message that describes the error.</param>
 		/// <param name="innerException">The message that is the cause of the current exception.</param>
-		public PersistenceEngineException(string message, Exception innerException)
+		public StorageException(string message, Exception innerException)
 			: base(message, innerException)
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the PersistenceEngineException class.
+		/// Initializes a new instance of the StorageException class.
 		/// </summary>
 		/// <param name="info">The SerializationInfo that holds the serialized object data of the exception being thrown.</param>
 		/// <param name="context">The StreamingContext that contains contextual information about the source or destination.</param>
-		protected PersistenceEngineException(SerializationInfo info, StreamingContext context)
+		protected StorageException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
 		}

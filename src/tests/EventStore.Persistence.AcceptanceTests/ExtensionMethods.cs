@@ -1,40 +1,43 @@
 namespace EventStore.Persistence.AcceptanceTests
 {
 	using System;
+	using System.Collections.Generic;
 
 	internal static class ExtensionMethods
 	{
-		public static CommitAttempt BuildAttempt(this Guid streamId)
+		public static Commit BuildAttempt(this Guid streamId)
 		{
-			return new CommitAttempt
+			var messages = new List<EventMessage>
 			{
-				StreamId = streamId,
-				CommitId = Guid.NewGuid(),
-				PreviousCommitSequence = 0,
-				StreamRevision = 2,
-				Headers = { { "A header", "A string value" }, { "Another header", 2 } },
-				Events =
-				{
-					new EventMessage { Body = new SomeDomainEvent { SomeProperty = "Test" } },
-					new EventMessage { Body = new SomeDomainEvent { SomeProperty = "Test2" } },
-				}
+				new EventMessage { Body = new SomeDomainEvent { SomeProperty = "Test" } },
+				new EventMessage { Body = new SomeDomainEvent { SomeProperty = "Test2" } },
 			};
+
+			return new Commit(
+				streamId,
+				2,
+				Guid.NewGuid(),
+				1,
+				new Dictionary<string, object> { { "A header", "A string value" }, { "Another header", 2 } },
+				messages,
+				null);
 		}
-		public static CommitAttempt BuildNextAttempt(this CommitAttempt successful)
+		public static Commit BuildNextAttempt(this Commit commit)
 		{
-			var commit = successful.ToCommit();
-			return new CommitAttempt
+			var messages = new List<EventMessage>
 			{
-				StreamId = commit.StreamId,
-				CommitId = Guid.NewGuid(),
-				PreviousCommitSequence = commit.CommitSequence,
-				StreamRevision = commit.StreamRevision + 2,
-				Events =
-				{
-					new EventMessage { Body = new SomeDomainEvent { SomeProperty = "Another test" } },
-					new EventMessage { Body = new SomeDomainEvent { SomeProperty = "Another test2" } },
-				}
+				new EventMessage { Body = new SomeDomainEvent { SomeProperty = "Another test" } },
+				new EventMessage { Body = new SomeDomainEvent { SomeProperty = "Another test2" } },
 			};
+
+			return new Commit(
+				commit.StreamId,
+				commit.StreamRevision + 2,
+				Guid.NewGuid(),
+				commit.CommitSequence + 1,
+				new Dictionary<string, object>(),
+				messages,
+				null);
 		}
 
 		[Serializable]

@@ -6,14 +6,18 @@ namespace EventStore.Persistence.SqlPersistence
 	public interface ISqlDialect
 	{
 		string InitializeStorage { get; }
-		string AppendSnapshotToCommit { get; }
-		string GetCommitsFromSnapshotUntilRevision { get; }
+
 		string GetCommitsFromStartingRevision { get; }
 		string GetCommitsFromInstant { get; }
+
+		string PersistCommit { get; }
+
 		string GetStreamsRequiringSnaphots { get; }
+		string GetSnapshot { get; }
+		string AppendSnapshotToCommit { get; }
+
 		string GetUndispatchedCommits { get; }
 		string MarkCommitAsDispatched { get; }
-		string PersistCommitAttempt { get; }
 
 		string StreamId { get; }
 		string StreamRevision { get; }

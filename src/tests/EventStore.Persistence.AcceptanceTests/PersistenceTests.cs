@@ -6,23 +6,24 @@ namespace EventStore.Persistence.AcceptanceTests
 	using System;
 	using System.Linq;
 	using Machine.Specifications;
+	using Persistence;
 
 	[Subject("Persistence")]
 	public class when_an_attempt_is_successfully_committed : using_the_persistence_engine
 	{
-		static readonly CommitAttempt attempt = streamId.BuildAttempt();
+		static readonly Commit attempt = streamId.BuildAttempt();
 
 		Because of = () =>
-			persistence.Persist(attempt);
+			persistence.Commit(attempt);
 
 		It should_make_the_commit_available_to_be_read_from_the_stream = () =>
-			persistence.GetFrom(streamId, 0).First().CommitId.ShouldEqual(attempt.CommitId);
+			persistence.GetFrom(streamId, 0, int.MaxValue).First().CommitId.ShouldEqual(attempt.CommitId);
 
 		It should_add_the_commit_to_the_set_of_undispatched_commits = () =>
 			persistence.GetUndispatchedCommits().FirstOrDefault(x => x.CommitId == attempt.CommitId).ShouldNotBeNull();
 
 		It should_serialize_and_deserialize_the_events_correctly = () =>
-			persistence.GetFrom(streamId, 0)
+			persistence.GetFrom(streamId, 0, int.MaxValue)
 				.Select(c => c.Events.First().Body as ExtensionMethods.SomeDomainEvent)
 				.First().SomeProperty.ShouldEqual("Test");
 	}
@@ -30,13 +31,13 @@ namespace EventStore.Persistence.AcceptanceTests
 	[Subject("Persistence")]
 	public class when_a_commit_has_been_marked_as_dispatched : using_the_persistence_engine
 	{
-		static readonly CommitAttempt attempt = streamId.BuildAttempt();
+		static readonly Commit attempt = streamId.BuildAttempt();
 
 		Establish context = () =>
-			persistence.Persist(attempt);
+			persistence.Commit(attempt);
 
 		Because of = () =>
-			persistence.MarkCommitAsDispatched(attempt.ToCommit());
+			persistence.MarkCommitAsDispatched(attempt);
 
 		It should_no_longer_be_found_in_the_set_of_undispatched_commits = () =>
 			persistence.GetUndispatchedCommits().FirstOrDefault(x => x.CommitId == attempt.CommitId).ShouldBeNull();
@@ -46,29 +47,19 @@ namespace EventStore.Persistence.AcceptanceTests
 	public class when_a_snapshot_has_been_added_to_the_most_recent_commit : using_the_persistence_engine
 	{
 		const string SnapshotData = "snapshot";
-		static readonly CommitAttempt oldest = streamId.BuildAttempt();
-		static readonly CommitAttempt oldest2 = oldest.BuildNextAttempt();
-		static readonly CommitAttempt newest = oldest2.BuildNextAttempt();
-		static readonly Commit head = newest.ToCommit();
+		static readonly Commit oldest = streamId.BuildAttempt();
+		static readonly Commit oldest2 = oldest.BuildNextAttempt();
+		static readonly Commit newest = oldest2.BuildNextAttempt();
 
 		Establish context = () =>
 		{
-			persistence.Persist(oldest);
-			persistence.Persist(oldest2);
-			persistence.Persist(newest);
+			persistence.Commit(oldest);
+			persistence.Commit(oldest2);
+			persistence.Commit(newest);
 		};
 
 		Because of = () =>
-			persistence.AddSnapshot(streamId, head.StreamRevision, SnapshotData);
-
-		It should_start_reads_at_the_most_recent_commit_prior_to_the_revision_specified = () =>
-			persistence.GetFromSnapshotUntil(streamId, head.StreamRevision).First().CommitId.ShouldEqual(newest.CommitId);
-
-		It should_be_able_to_read_prior_to_the_snapshot_revision = () =>
-			persistence.GetFromSnapshotUntil(streamId, oldest2.ToCommit().StreamRevision).Last().CommitId.ShouldEqual(oldest2.CommitId);
-
-		It should_set_the_snapshot_on_the_commit = () =>
-			persistence.GetFromSnapshotUntil(streamId, head.StreamRevision).First().Snapshot.ShouldEqual(SnapshotData);
+			persistence.AddSnapshot(new Snapshot(streamId, newest.StreamRevision, SnapshotData));
 
 		It should_no_longer_find_the_commit_in_the_set_of_streams_to_be_snapshot = () =>
 			persistence.GetStreamsToSnapshot(1).Any(x => x.StreamId == streamId).ShouldBeFalse();
@@ -78,22 +69,22 @@ namespace EventStore.Persistence.AcceptanceTests
 	public class when_reading_from_a_given_revision : using_the_persistence_engine
 	{
 		private const int LoadFromCommitContainingRevision = 3;
-		static readonly CommitAttempt oldest = streamId.BuildAttempt(); // 2 events, revision 1-2
-		static readonly CommitAttempt oldest2 = oldest.BuildNextAttempt(); // 2 events, revision 3-4
-		static readonly CommitAttempt oldest3 = oldest2.BuildNextAttempt(); // 2 events, revision 5-6
-		static readonly CommitAttempt newest = oldest3.BuildNextAttempt(); // 2 events, revision 7-8
+		static readonly Commit oldest = streamId.BuildAttempt(); // 2 events, revision 1-2
+		static readonly Commit oldest2 = oldest.BuildNextAttempt(); // 2 events, revision 3-4
+		static readonly Commit oldest3 = oldest2.BuildNextAttempt(); // 2 events, revision 5-6
+		static readonly Commit newest = oldest3.BuildNextAttempt(); // 2 events, revision 7-8
 		static Commit[] committed;
 
 		Establish context = () =>
 		{
-			persistence.Persist(oldest);
-			persistence.Persist(oldest2);
-			persistence.Persist(oldest3);
-			persistence.Persist(newest);
+			persistence.Commit(oldest);
+			persistence.Commit(oldest2);
+			persistence.Commit(oldest3);
+			persistence.Commit(newest);
 		};
 
 		Because of = () =>
-			committed = persistence.GetFrom(streamId, LoadFromCommitContainingRevision).ToArray();
+			committed = persistence.GetFrom(streamId, LoadFromCommitContainingRevision, int.MaxValue).ToArray();
 
 		It should_start_from_the_commit_which_contains_the_given_stream_revision = () =>
 			committed.First().CommitId.ShouldEqual(oldest2.CommitId);
@@ -103,77 +94,17 @@ namespace EventStore.Persistence.AcceptanceTests
 	}
 
 	[Subject("Persistence")]
-	public class when_reading_until_a_given_revision : using_the_persistence_engine
-	{
-		private const int LoadUpToCommitWhichContainsRevision = 7;
-		static readonly CommitAttempt oldest = streamId.BuildAttempt(); // 2 events, revision 1-2
-		static readonly CommitAttempt oldest2 = oldest.BuildNextAttempt(); // 2 events, revision 3-4
-		static readonly CommitAttempt oldest3 = oldest2.BuildNextAttempt(); // 2 events, revision 5-6
-		static readonly CommitAttempt oldest4 = oldest3.BuildNextAttempt(); // 2 events, revision 7-8
-		static readonly CommitAttempt newest = oldest4.BuildNextAttempt(); // 2 events, revision 9-10
-		static Commit[] committed;
-
-		Establish context = () =>
-		{
-			persistence.Persist(oldest);
-			persistence.Persist(oldest2);
-			persistence.Persist(oldest3);
-			persistence.Persist(oldest4);
-			persistence.Persist(newest);
-
-			persistence.AddSnapshot(streamId, oldest2.StreamRevision, "snapshot");
-		};
-
-		Because of = () =>
-			committed = persistence.GetFromSnapshotUntil(streamId, LoadUpToCommitWhichContainsRevision).ToArray();
-
-		It should_start_from_the_commit_of_the_most_recent_snapshot_on_or_before_the_given_revision = () =>
-			committed.First().StreamRevision.ShouldEqual(oldest2.ToCommit().StreamRevision);
-
-		It should_read_up_to_the_commit_containing_the_given_revision = () =>
-			committed.Last().StreamRevision.ShouldEqual(oldest4.ToCommit().StreamRevision);
-	}
-
-	[Subject("Persistence")]
-	public class when_reading_until_a_given_revision_which_has_no_snapshot : using_the_persistence_engine
-	{
-		private const int LoadUpToCommitWhichContainsRevision = 5;
-		static readonly CommitAttempt oldest = streamId.BuildAttempt(); // 2 events, revision 1-2
-		static readonly CommitAttempt oldest2 = oldest.BuildNextAttempt(); // 2 events, revision 3-4
-		static readonly CommitAttempt oldest3 = oldest2.BuildNextAttempt(); // 2 events, revision 5-6
-		static readonly CommitAttempt newest = oldest3.BuildNextAttempt(); // 2 events, revision 7-8
-		static Commit[] committed;
-
-		Establish context = () =>
-		{
-			persistence.Persist(oldest);
-			persistence.Persist(oldest2);
-			persistence.Persist(oldest3);
-			persistence.Persist(newest);
-		};
-
-		Because of = () =>
-			committed = persistence.GetFromSnapshotUntil(streamId, LoadUpToCommitWhichContainsRevision).ToArray();
-
-		It should_start_from_the_first_commit = () =>
-			committed.First().StreamRevision.ShouldEqual(oldest.ToCommit().StreamRevision);
-
-		It should_read_up_to_the_commit_containing_the_given_revision = () =>
-			committed.Last().StreamRevision.ShouldEqual(oldest3.ToCommit().StreamRevision);
-	}
-
-	[Subject("Persistence")]
 	public class when_attempting_to_overwrite_a_committed_sequence : using_the_persistence_engine
 	{
-		static readonly CommitAttempt successfulAttempt = streamId.BuildAttempt();
-		static readonly CommitAttempt failedAttempt = streamId.BuildAttempt();
+		static readonly Commit successfulAttempt = streamId.BuildAttempt();
+		static readonly Commit failedAttempt = streamId.BuildAttempt();
 		static Exception thrown;
 
 		Establish context = () =>
-			persistence.Persist(successfulAttempt);
+			persistence.Commit(successfulAttempt);
 
 		Because of = () =>
-			thrown = Catch.Exception(() => persistence.Persist(failedAttempt));
+			thrown = Catch.Exception(() => persistence.Commit(failedAttempt));
 
 		It should_throw_a_ConcurrencyException = () =>
 			thrown.ShouldBeOfType<ConcurrencyException>();
@@ -182,14 +113,14 @@ namespace EventStore.Persistence.AcceptanceTests
 	[Subject("Persistence")]
 	public class when_reattempting_a_previously_committed_attempt : using_the_persistence_engine
 	{
-		static readonly CommitAttempt attemptTwice = streamId.BuildAttempt();
+		static readonly Commit attemptTwice = streamId.BuildAttempt();
 		static Exception thrown;
 
 		Establish context = () =>
-			persistence.Persist(attemptTwice);
+			persistence.Commit(attemptTwice);
 
 		Because of = () =>
-			thrown = Catch.Exception(() => persistence.Persist(attemptTwice));
+			thrown = Catch.Exception(() => persistence.Commit(attemptTwice));
 
 		It should_throw_a_DuplicateCommitException = () =>
 			thrown.ShouldBeOfType<DuplicateCommitException>();
@@ -199,18 +130,18 @@ namespace EventStore.Persistence.AcceptanceTests
 	public class when_reading_all_commits_from_a_particular_point_in_time : using_the_persistence_engine
 	{
 		static readonly DateTime start = DateTime.UtcNow;
-		static readonly CommitAttempt first = streamId.BuildAttempt();
-		static readonly CommitAttempt second = first.BuildNextAttempt();
-		static readonly CommitAttempt third = second.BuildNextAttempt();
-		static readonly CommitAttempt fourth = third.BuildNextAttempt();
+		static readonly Commit first = streamId.BuildAttempt();
+		static readonly Commit second = first.BuildNextAttempt();
+		static readonly Commit third = second.BuildNextAttempt();
+		static readonly Commit fourth = third.BuildNextAttempt();
 		static Commit[] committed;
 
 		Establish context = () =>
 		{
-			persistence.Persist(first);
-			persistence.Persist(second);
-			persistence.Persist(third);
-			persistence.Persist(fourth);
+			persistence.Commit(first);
+			persistence.Commit(second);
+			persistence.Commit(third);
+			persistence.Commit(fourth);
 		};
 
 		Because of = () =>
@@ -225,21 +156,15 @@ namespace EventStore.Persistence.AcceptanceTests
 	{
 		static readonly IPersistStreams persistence1 = Factory.Build();
 		static readonly IPersistStreams persistence2 = Factory.Build();
-		static readonly CommitAttempt attempt1 = streamId.BuildAttempt();
-		static readonly CommitAttempt attempt2 = streamId.BuildAttempt();
+		static readonly Commit attempt1 = streamId.BuildAttempt();
+		static readonly Commit attempt2 = streamId.BuildAttempt();
 		static Exception thrown;
 
 		Establish context = () =>
-		{
-			attempt1.StreamRevision = 1;
-			attempt2.StreamRevision = 1;
-			persistence1.Persist(attempt1);
-		};
+			persistence1.Commit(attempt1);
 
 		Because of = () =>
-		{
-			thrown = Catch.Exception(() => persistence2.Persist(attempt2));
-		};
+			thrown = Catch.Exception(() => persistence2.Commit(attempt2));
 
 		It should_throw_a_concurrency_exception = () => thrown.ShouldBeOfType<ConcurrencyException>();
 	}
@@ -249,21 +174,15 @@ namespace EventStore.Persistence.AcceptanceTests
 	{
 		static readonly IPersistStreams persistence1 = Factory.Build();
 		static readonly IPersistStreams persistence2 = Factory.Build();
-		static readonly CommitAttempt attempt1 = streamId.BuildAttempt();
-		static readonly CommitAttempt attempt2 = streamId.BuildAttempt();
+		static readonly Commit attempt1 = streamId.BuildAttempt();
+		static readonly Commit attempt2 = streamId.BuildAttempt();
 		static Exception thrown;
 
 		Establish context = () =>
-		{
-			attempt1.PreviousCommitSequence = 0;
-			attempt2.PreviousCommitSequence = 0;
-			persistence1.Persist(attempt1);
-		};
+			persistence1.Commit(attempt1);
 
 		Because of = () =>
-		{
-			thrown = Catch.Exception(() => persistence2.Persist(attempt2));
-		};
+			thrown = Catch.Exception(() => persistence2.Commit(attempt2));
 
 		It should_throw_a_concurrency_exception = () => thrown.ShouldBeOfType<ConcurrencyException>();
 	}

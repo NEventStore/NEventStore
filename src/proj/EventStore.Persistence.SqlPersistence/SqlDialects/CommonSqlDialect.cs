@@ -7,14 +7,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	{
 		public abstract string InitializeStorage { get; }
 
-		public virtual string AppendSnapshotToCommit
-		{
-			get { return CommonSqlStatements.AppendSnapshotToCommit; }
-		}
-		public virtual string GetCommitsFromSnapshotUntilRevision
-		{
-			get { return CommonSqlStatements.GetCommitsFromSnapshotUntilRevision; }
-		}
 		public virtual string GetCommitsFromStartingRevision
 		{
 			get { return CommonSqlStatements.GetCommitsFromStartingRevision; }
@@ -23,10 +15,24 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return CommonSqlStatements.GetCommitsFromInstant; }
 		}
+		public virtual string PersistCommit
+		{
+			get { return CommonSqlStatements.PersistCommit; }
+		}
+
 		public virtual string GetStreamsRequiringSnaphots
 		{
 			get { return CommonSqlStatements.GetStreamsRequiringSnaphots; }
 		}
+		public virtual string GetSnapshot
+		{
+			get { return string.Empty; }
+		}
+		public virtual string AppendSnapshotToCommit
+		{
+			get { return CommonSqlStatements.AppendSnapshotToCommit; }
+		}
+
 		public virtual string GetUndispatchedCommits
 		{
 			get { return CommonSqlStatements.GetUndispatchedCommits; }
@@ -34,10 +40,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		public virtual string MarkCommitAsDispatched
 		{
 			get { return CommonSqlStatements.MarkCommitAsDispatched; }
-		}
-		public virtual string PersistCommitAttempt
-		{
-			get { return CommonSqlStatements.PersistCommitAttempt; }
 		}
 
 		public virtual string StreamId

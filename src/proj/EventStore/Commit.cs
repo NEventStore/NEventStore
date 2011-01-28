@@ -1,4 +1,4 @@
-namespace EventStore.Persistence
+namespace EventStore
 {
 	using System;
 	using System.Collections.Generic;
@@ -28,6 +28,7 @@ namespace EventStore.Persistence
 			Dictionary<string, object> headers,
 			List<EventMessage> events,
 			object snapshot)
+			:this()
 		{
 			this.StreamId = streamId;
 			this.CommitId = commitId;
@@ -36,6 +37,9 @@ namespace EventStore.Persistence
 			this.Headers = headers ?? new Dictionary<string, object>();
 			this.Events = events ?? new List<EventMessage>();
 			this.Snapshot = snapshot;
+		}
+		protected Commit()
+		{
 		}
 
 		/// <summary>

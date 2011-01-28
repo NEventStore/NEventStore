@@ -5,7 +5,7 @@ namespace EventStore
 	using Dispatcher;
 	using Persistence;
 
-	public class OptimisticEventStore : IStoreEvents
+	public class OptimisticEventStore : IStoreEvents, ICommitEvents
 	{
 		private readonly CommitTracker tracker = new CommitTracker();
 		private readonly IPersistStreams persistence;
@@ -17,42 +17,27 @@ namespace EventStore
 			this.dispatcher = dispatcher;
 		}
 
-		public virtual CommittedEventStream ReadFromSnapshotUntil(Guid streamId, int maxRevision)
+		public IEventStream OpenStream(Guid streamId, int minRevision, int maxRevision)
 		{
-			maxRevision = maxRevision > 0 ? maxRevision : int.MaxValue;
-			return this.Read(this.persistence.GetFromSnapshotUntil(streamId, maxRevision), true);
+			var commits = this.persistence.GetFrom(streamId, minRevision, maxRevision);
+			return new OptimisticEventStream(streamId, maxRevision, commits, this);
 		}
-		public virtual CommittedEventStream ReadFrom(Guid streamId, int minRevision)
+		public IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
 		{
-			return this.Read(this.persistence.GetFrom(streamId, minRevision), false);
-		}
-		protected virtual CommittedEventStream Read(IEnumerable<Commit> commits, bool applySnapshot)
-		{
-			var streamId = Guid.Empty;
-			var revision = 0;
-			var sequence = 0;
-			object snapshot = null;
-			ICollection<object> events = new LinkedList<object>();
-			ICollection<Guid> commitIdentifiers = new HashSet<Guid>();
-
-			foreach (var commit in commits ?? new Commit[0])
+			var commits = this.persistence.GetFrom(streamId, minRevision, maxRevision);
+			foreach (var commit in commits)
 			{
 				this.tracker.Track(commit);
-				commitIdentifiers.Add(commit.CommitId);
-
-				streamId = commit.StreamId;
-				revision = commit.StreamRevision;
-				sequence = commit.CommitSequence;
-				snapshot = commit.Snapshot ?? snapshot;
-
-				events.AddEventsOrClearOnSnapshot(commit, applySnapshot);
+				yield return commit;
 			}
-
-			snapshot = applySnapshot ? snapshot : null;
-			return new CommittedEventStream(streamId, revision, sequence, events, commitIdentifiers, snapshot);
 		}
 
-		public virtual void Write(CommitAttempt attempt)
+		public Snapshot GetSnapshot(Guid streamId, int maxRevision)
+		{
+			return this.persistence.GetSnapshot(streamId, maxRevision); // TODO: performance improvement to track snapshot
+		}
+
+		public virtual void Commit(Commit attempt)
 		{
 			if (!attempt.IsValid() || attempt.IsEmpty())
 				return;
@@ -60,35 +45,32 @@ namespace EventStore
 			this.ThrowOnDuplicateOrConcurrentWrites(attempt);
 			this.PersistAndDispatch(attempt);
 		}
-		protected virtual void ThrowOnDuplicateOrConcurrentWrites(CommitAttempt current)
+		protected virtual void ThrowOnDuplicateOrConcurrentWrites(Commit attempt)
 		{
-			if (this.tracker.Contains(current))
+			if (this.tracker.Contains(attempt))
 				throw new DuplicateCommitException();
 
-			var previous = this.tracker.GetStreamHead(current.StreamId);
-			if (previous == null)
+			var head = this.tracker.GetStreamHead(attempt.StreamId);
+			if (head == null)
 				return;
 
-			if (previous.CommitSequence > current.PreviousCommitSequence)
+			if (head.CommitSequence >= attempt.CommitSequence)
 				throw new ConcurrencyException();
 
-			if (previous.StreamRevision >= current.StreamRevision)
+			if (head.StreamRevision >= attempt.StreamRevision)
 				throw new ConcurrencyException();
 
-			if (previous.CommitSequence < current.PreviousCommitSequence)
-				throw new PersistenceEngineException(); // beyond the end of the stream
+			if (head.CommitSequence < attempt.CommitSequence)
+				throw new StorageException(); // beyond the end of the stream
 
-			if (previous.StreamRevision < current.StreamRevision - current.Events.Count)
-				throw new PersistenceEngineException(); // beyond the end of the stream
+			if (head.StreamRevision < attempt.StreamRevision - attempt.Events.Count)
+				throw new StorageException(); // beyond the end of the stream
 		}
-		protected virtual void PersistAndDispatch(CommitAttempt attempt)
+		protected virtual void PersistAndDispatch(Commit attempt)
 		{
-			this.persistence.Persist(attempt);
-
-			var commit = attempt.ToCommit();
-			this.tracker.Track(commit);
-
-			this.dispatcher.Dispatch(commit);
+			this.persistence.Commit(attempt);
+			this.tracker.Track(attempt);
+			this.dispatcher.Dispatch(attempt);
 		}
 	}
 }

@@ -1,7 +1,6 @@
 namespace EventStore.Dispatcher
 {
 	using System;
-	using Persistence;
 
 	public class DelegateMessagePublisher : IPublishMessages
 	{

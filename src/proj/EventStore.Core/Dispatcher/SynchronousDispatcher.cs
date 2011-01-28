@@ -1,7 +1,6 @@
 namespace EventStore.Dispatcher
 {
 	using System;
-	using System.Linq;
 	using Persistence;
 
 	public class SynchronousDispatcher : IDispatchCommits

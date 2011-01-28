@@ -129,24 +129,24 @@
  WHERE CommitStamp &gt;= @CommitStamp
  ORDER BY CommitStamp;</value>
   </data>
-  <data name="GetCommitsFromSnapshotUntilRevision" xml:space="preserve">
-    <value>SELECT StreamId, StreamRevision, CommitId, CommitSequence, Headers, Payload, Snapshot
-  FROM Commits
- WHERE StreamId = @StreamId
-   AND (StreamRevision - Items + 1) &lt;= @StreamRevision
-   AND StreamRevision &gt;=
-     ( SELECT MAX(StreamRevision)
-         FROM Commits
-        WHERE StreamId = @StreamId
-          AND StreamRevision &lt;= @StreamRevision
-          AND Snapshot IS NOT NULL );</value>
-  </data>
   <data name="GetCommitsFromStartingRevision" xml:space="preserve">
     <value>SELECT StreamId, StreamRevision, CommitId, CommitSequence, Headers, Payload
   FROM Commits
  WHERE StreamId = @StreamId
    AND StreamRevision &gt;= @StreamRevision
  ORDER BY CommitSequence;</value>
+  </data>
+  <data name="GetSnapshot" xml:space="preserve">
+    <value>SELECT StreamId, StreamRevision, Snapshot
+  FROM Commits
+ WHERE StreamId = @StreamId
+   AND StreamRevision = (
+       SELECT MAX(StreamRevision)
+         FROM Commits
+        WHERE StreamId = @StreamId
+          AND CommitSequence &gt; 1
+          AND StreamRevision &lt;= @StreamRevision
+          AND Snapshot IS NOT NULL );</value>
   </data>
   <data name="GetStreamsRequiringSnaphots" xml:space="preserve">
     <value>SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(S.StreamRevision) AS SnapshotRevision
@@ -169,7 +169,7 @@ HAVING MAX(C.StreamRevision) &gt;= MAX(S.StreamRevision) + @Threshold;</value>
  WHERE StreamId = @StreamId
    AND CommitSequence = @CommitSequence;</value>
   </data>
-  <data name="PersistCommitAttempt" xml:space="preserve">
+  <data name="PersistCommit" xml:space="preserve">
     <value>INSERT
   INTO Commits
      ( StreamId, CommitId, CommitSequence, StreamRevision, Items, CommitStamp, Headers, Payload, Snapshot )

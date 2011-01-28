@@ -85,24 +85,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT StreamId, StreamRevision, CommitId, CommitSequence, Headers, Payload, Snapshot
-        ///  FROM Commits
-        /// WHERE StreamId = @StreamId
-        ///   AND (StreamRevision - Items + 1) &lt;= @StreamRevision
-        ///   AND StreamRevision &gt;=
-        ///     ( SELECT MAX(StreamRevision)
-        ///         FROM Commits
-        ///        WHERE StreamId = @StreamId
-        ///          AND StreamRevision &lt;= @StreamRevision
-        ///          AND Snapshot IS NOT NULL );.
-        /// </summary>
-        internal static string GetCommitsFromSnapshotUntilRevision {
-            get {
-                return ResourceManager.GetString("GetCommitsFromSnapshotUntilRevision", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to SELECT StreamId, StreamRevision, CommitId, CommitSequence, Headers, Payload
         ///  FROM Commits
         /// WHERE StreamId = @StreamId
@@ -112,6 +94,24 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         internal static string GetCommitsFromStartingRevision {
             get {
                 return ResourceManager.GetString("GetCommitsFromStartingRevision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT StreamId, StreamRevision, Snapshot
+        ///  FROM Commits
+        /// WHERE StreamId = @StreamId
+        ///   AND StreamRevision = (
+        ///       SELECT MAX(StreamRevision)
+        ///         FROM Commits
+        ///        WHERE StreamId = @StreamId
+        ///          AND CommitSequence &gt; 1
+        ///          AND StreamRevision &lt;= @StreamRevision
+        ///          AND Snapshot IS NOT NULL );.
+        /// </summary>
+        internal static string GetSnapshot {
+            get {
+                return ResourceManager.GetString("GetSnapshot", resourceCulture);
             }
         }
         
@@ -167,9 +167,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///          AND CommitId &lt;&gt; @CommitId
         ///          AND CommitSequence &gt;= @CommitSequence );.
         /// </summary>
-        internal static string PersistCommitAttempt {
+        internal static string PersistCommit {
             get {
-                return ResourceManager.GetString("PersistCommitAttempt", resourceCulture);
+                return ResourceManager.GetString("PersistCommit", resourceCulture);
             }
         }
     }

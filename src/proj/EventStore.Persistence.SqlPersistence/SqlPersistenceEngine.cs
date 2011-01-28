@@ -3,6 +3,7 @@ namespace EventStore.Persistence.SqlPersistence
 	using System;
 	using System.Collections.Generic;
 	using System.Data;
+	using System.Linq;
 	using System.Transactions;
 	using Persistence;
 	using Serialization;
@@ -37,24 +38,15 @@ namespace EventStore.Persistence.SqlPersistence
 				statement.ExecuteWithSuppression(this.dialect.InitializeStorage));
 		}
 
-		public virtual IEnumerable<Commit> GetFromSnapshotUntil(Guid streamId, int maxRevision)
-		{
-			return this.Fetch(streamId, maxRevision, this.dialect.GetCommitsFromSnapshotUntilRevision);
-		}
-		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision)
-		{
-			return this.Fetch(streamId, minRevision, this.dialect.GetCommitsFromStartingRevision);
-		}
-		protected virtual IEnumerable<Commit> Fetch(Guid streamId, int revision, string queryText)
+		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
 		{
 			return this.Execute(streamId, query =>
 			{
 				query.AddParameter(this.dialect.StreamId, streamId);
-				query.AddParameter(this.dialect.StreamRevision, revision);
-				return query.ExecuteWithQuery(queryText, x => x.GetCommit(this.serializer));
+				query.AddParameter(this.dialect.StreamRevision, minRevision);
+				return query.ExecuteWithQuery(this.dialect.GetCommitsFromStartingRevision, x => x.GetCommit(this.serializer));
 			});
 		}
-
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
 		{
 			return this.Execute(Guid.Empty, query =>
@@ -65,30 +57,26 @@ namespace EventStore.Persistence.SqlPersistence
 			});
 		}
 
-		public virtual void Persist(CommitAttempt uncommitted)
+		public virtual void Commit(Commit attempt)
 		{
-			this.Execute(uncommitted.StreamId, cmd =>
+			this.Execute(attempt.StreamId, cmd =>
 			{
-				var commit = uncommitted.ToCommit();
+				var snapshot = attempt.CommitSequence == InitialCommit ? new byte[] { } : null;
 
-				cmd.AddParameter(this.dialect.StreamId, commit.StreamId);
-				cmd.AddParameter(this.dialect.StreamRevision, commit.StreamRevision);
-				cmd.AddParameter(this.dialect.Items, commit.Events.Count);
-				cmd.AddParameter(this.dialect.CommitId, commit.CommitId);
-				cmd.AddParameter(this.dialect.CommitSequence, commit.CommitSequence);
+				cmd.AddParameter(this.dialect.StreamId, attempt.StreamId);
+				cmd.AddParameter(this.dialect.StreamRevision, attempt.StreamRevision);
+				cmd.AddParameter(this.dialect.Items, attempt.Events.Count);
+				cmd.AddParameter(this.dialect.CommitId, attempt.CommitId);
+				cmd.AddParameter(this.dialect.CommitSequence, attempt.CommitSequence);
 				cmd.AddParameter(this.dialect.CommitStamp, DateTime.UtcNow);
-				cmd.AddParameter(this.dialect.Headers, this.serializer.Serialize(commit.Headers));
-				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(commit.Events));
-				cmd.AddParameter(this.dialect.Snapshot, GetSnapshot(commit));
+				cmd.AddParameter(this.dialect.Headers, this.serializer.Serialize(attempt.Headers));
+				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(attempt.Events));
+				cmd.AddParameter(this.dialect.Snapshot, snapshot);
 
-				var rowsAffected = cmd.Execute(this.dialect.PersistCommitAttempt);
+				var rowsAffected = cmd.Execute(this.dialect.PersistCommit);
 				if (rowsAffected == 0)
 					throw new ConcurrencyException();
 			});
-		}
-		private static object GetSnapshot(Commit commit)
-		{
-			return commit.CommitSequence == InitialCommit ? new byte[] { } : null;
 		}
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
@@ -115,13 +103,25 @@ namespace EventStore.Persistence.SqlPersistence
 				return query.ExecuteWithQuery(statement, record => record.GetStreamToSnapshot());
 			});
 		}
-		public virtual void AddSnapshot(Guid streamId, int streamRevision, object snapshot)
+		public Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
-			this.Execute(streamId, cmd =>
+			Snapshot snapshot = null;
+			this.Execute(streamId, query =>
 			{
-				cmd.AddParameter(this.dialect.StreamId, streamId);
-				cmd.AddParameter(this.dialect.StreamRevision, streamRevision);
-				cmd.AddParameter(this.dialect.Snapshot, this.serializer.Serialize(snapshot));
+				query.AddParameter(this.dialect.StreamId, streamId);
+				query.AddParameter(this.dialect.StreamRevision, maxRevision);
+				snapshot = query.ExecuteWithQuery(
+					this.dialect.GetSnapshot, x => x.GetSnapshot(this.serializer)).FirstOrDefault();
+			});
+			return snapshot;
+		}
+		public void AddSnapshot(Snapshot snapshot)
+		{
+			this.Execute(snapshot.StreamId, cmd =>
+			{
+				cmd.AddParameter(this.dialect.StreamId, snapshot.StreamId);
+				cmd.AddParameter(this.dialect.StreamRevision, snapshot.StreamRevision);
+				cmd.AddParameter(this.dialect.Snapshot, this.serializer.Serialize(snapshot.Payload));
 				cmd.ExecuteWithSuppression(this.dialect.AppendSnapshotToCommit);
 			});
 		}
@@ -150,7 +150,7 @@ namespace EventStore.Persistence.SqlPersistence
 					connection.Dispose();
 				scope.Dispose();
 
-				throw new PersistenceEngineException(e.Message, e);
+				throw new StorageException(e.Message, e);
 			}
 		}
 		protected virtual void Execute(Guid streamId, Action<IDbStatement> execute)
@@ -172,7 +172,7 @@ namespace EventStore.Persistence.SqlPersistence
 					if (e is ConcurrencyException || e is DuplicateCommitException)
 						throw;
 
-					throw new PersistenceEngineException(e.Message, e);
+					throw new StorageException(e.Message, e);
 				}
 			}
 		}

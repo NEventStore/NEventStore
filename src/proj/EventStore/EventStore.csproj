@@ -48,19 +48,22 @@
     <Compile Include="ConcurrencyException.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CommitAttempt.cs" />
     <Compile Include="Dispatcher\IDispatchCommits.cs" />
+    <Compile Include="ICommitEvents.cs" />
+    <Compile Include="IEventStream.cs" />
     <Compile Include="IStoreEvents.cs" />
     <Compile Include="EventMessage.cs" />
-    <Compile Include="Persistence\Commit.cs" />
+    <Compile Include="Commit.cs" />
+    <Compile Include="IAccessSnapshots.cs" />
     <Compile Include="Persistence\IPersistenceFactory.cs" />
     <Compile Include="Serialization\ISerialize.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DuplicateCommitException.cs" />
     <Compile Include="Persistence\IPersistStreams.cs" />
-    <Compile Include="Persistence\PersistenceEngineException.cs" />
+    <Compile Include="Persistence\StorageException.cs" />
     <Compile Include="Serialization\SerializationExtensions.cs" />
     <Compile Include="Persistence\StreamHead.cs" />
+    <Compile Include="Snapshot.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\CustomDictionary.xml">

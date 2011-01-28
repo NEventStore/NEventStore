@@ -1,7 +1,8 @@
 namespace EventStore.Serialization.AcceptanceTests
 {
 	using System;
-	using Persistence;
+	using System.Collections.Generic;
+	using System.Linq;
 
 	internal static class ExtensionMethods
 	{
@@ -17,41 +18,38 @@ namespace EventStore.Serialization.AcceptanceTests
 			};
 		}
 
-		public static Commit Populate(this CommitAttempt attempt)
+		public static Commit BuildCommit()
 		{
-			attempt = new CommitAttempt
+			const int StreamRevision = 2;
+			const int CommitSequence = 2;
+			var streamId = Guid.NewGuid();
+			var commitId = Guid.NewGuid();
+			var headers = new Dictionary<string, object> { { "Key", "Value" }, { "Key2", (long)1234 }, { "Key3", null } };
+			var events = new[]
 			{
-				StreamId = Guid.NewGuid(),
-				CommitId = Guid.NewGuid(),
-				PreviousCommitSequence = 1,
-				StreamRevision = 2,
-				Headers = { { "Key", "Value" }, { "Key2", (long)1234 }, { "Key3", null } },
-				Events =
+				new EventMessage
 				{
-					new EventMessage
+					Headers =
 					{
-						Headers =
-						{
-							{ "MsgKey1", TimeSpan.MinValue },
-							{ "MsgKey2", Guid.NewGuid() },
-							{ "MsgKey3", 1.1M },
-							{ "MsgKey4", (ushort)1 }
-						},
-						Body = "some value"
+						{ "MsgKey1", TimeSpan.MinValue },
+						{ "MsgKey2", Guid.NewGuid() },
+						{ "MsgKey3", 1.1M },
+						{ "MsgKey4", (ushort)1 }
 					},
-					new EventMessage
+					Body = "some value"
+				},
+				new EventMessage
+				{
+					Headers =
 					{
-						Headers =
-						{
-							{ "MsgKey1", new Uri("http://www.google.com/") },
-							{ "MsgKey4", "some header" }
-						},
-						Body = new[] { "message body" }
-					}
+						{ "MsgKey1", new Uri("http://www.google.com/") },
+						{ "MsgKey4", "some header" }
+					},
+					Body = new[] { "message body" }
 				}
 			};
 
-			return attempt.ToCommit();
+			return new Commit(streamId, StreamRevision, commitId, CommitSequence, headers, events.ToList(), null);
 		}
 	}
 }

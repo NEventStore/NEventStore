@@ -9,9 +9,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return MySqlStatements.InitializeStorage; }
 		}
-		public override string PersistCommitAttempt
+		public override string PersistCommit
 		{
-			get { return CommonSqlStatements.PersistCommitAttempt.Replace("/*FROM DUAL*/", "FROM DUAL"); }
+			get { return CommonSqlStatements.PersistCommit.Replace("/*FROM DUAL*/", "FROM DUAL"); }
 		}
 
 		public override IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)

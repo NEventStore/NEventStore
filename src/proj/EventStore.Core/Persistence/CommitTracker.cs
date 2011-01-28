@@ -40,7 +40,7 @@ namespace EventStore.Persistence
 
 			stream.Track(committed);
 		}
-		public virtual bool Contains(CommitAttempt attempt)
+		public virtual bool Contains(Commit attempt)
 		{
 			var stream = this.GetStream(attempt.StreamId);
 			return stream != null && stream.Contains(attempt.CommitId);

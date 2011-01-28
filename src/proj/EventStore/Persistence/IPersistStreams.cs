@@ -6,54 +6,34 @@ namespace EventStore.Persistence
 	/// <summary>
 	/// Indicates the ability to adapt the underlying persistence infrastructure to behave like a stream of events.
 	/// </summary>
-	public interface IPersistStreams : IDisposable
+	public interface IPersistStreams : IDisposable, ICommitEvents, IAccessSnapshots
 	{
 		/// <summary>
 		/// Initializes and prepares the storage for use, if not already performed.
 		/// </summary>
+		/// <exception cref="StorageException" />
 		void Initialize();
-
-		/// <summary>
-		/// Gets the corresponding commits from the stream indicated starting at the most recent snapshot, if any,
-		/// up to and including the revision specified sorted in ascending order--from oldest to newest.
-		/// </summary>
-		/// <param name="streamId">The stream from which the events will be read.</param>
-		/// <param name="maxRevision">The maximum revision of the stream to be read.</param>
-		/// <returns>A series of committed events from the stream specified sorted in ascending order.</returns>
-		IEnumerable<Commit> GetFromSnapshotUntil(Guid streamId, int maxRevision);
-
-		/// <summary>
-		/// Gets the corresponding commits from the stream indicated starting at the revision specified until the
-		/// end of the stream sorted in ascending order--from oldest to newest.
-		/// </summary>
-		/// <param name="streamId">The stream from which the events will be read.</param>
-		/// <param name="minRevision">The minimum revision of the stream to be read.</param>
-		/// <returns>A series of committed events from the stream specified sorted in ascending order..</returns>
-		IEnumerable<Commit> GetFrom(Guid streamId, int minRevision);
 
 		/// <summary>
 		/// Gets all commits on or after from the specified starting time.
 		/// </summary>
 		/// <param name="start">The point in time at which to start.</param>
 		/// <returns>All commits that have occurred on or after the specified starting time.</returns>
+		/// <exception cref="StorageException" />
 		IEnumerable<Commit> GetFrom(DateTime start);
-
-		/// <summary>
-		/// Writes the to-be-commited events provided to the underlying persistence mechanism.
-		/// </summary>
-		/// <param name="uncommitted">The series of events and associated metadata to be commited.</param>
-		void Persist(CommitAttempt uncommitted);
 
 		/// <summary>
 		/// Gets a set of commits that has not yet been dispatched.
 		/// </summary>
 		/// <returns>The set of commits to be dispatched.</returns>
+		/// <exception cref="StorageException" />
 		IEnumerable<Commit> GetUndispatchedCommits();
 
 		/// <summary>
 		/// Marks the commit specified as dispatched.
 		/// </summary>
 		/// <param name="commit">The commit to be marked as dispatched.</param>
+		/// <exception cref="StorageException" />
 		void MarkCommitAsDispatched(Commit commit);
 
 		/// <summary>
@@ -61,14 +41,14 @@ namespace EventStore.Persistence
 		/// </summary>
 		/// <param name="maxThreshold">The maximum difference between the head and most recent snapshot revisions.</param>
 		/// <returns>The streams for which the head and snapshot revisions differ by at least the threshold specified.</returns>
+		/// <exception cref="StorageException" />
 		IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold);
 
 		/// <summary>
-		/// Adds the snapshot provided to the stream indicated the commit sequence specified.
+		/// Adds the snapshot provided to the stream indicated.
 		/// </summary>
-		/// <param name="streamId">The value which uniquely identifies the stream to which the snapshot applies.</param>
-		/// <param name="streamRevision">The position at which the snapshot applies.</param>
-		/// <param name="snapshot">The snapshot or materialized view of the stream at the revision indicated.</param>
-		void AddSnapshot(Guid streamId, int streamRevision, object snapshot);
+		/// <param name="snapshot">The snapshot to save.</param>
+		/// <exception cref="StorageException" />
+		void AddSnapshot(Snapshot snapshot);
 	}
 }

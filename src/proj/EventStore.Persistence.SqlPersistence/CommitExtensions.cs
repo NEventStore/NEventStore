@@ -3,7 +3,6 @@ namespace EventStore.Persistence.SqlPersistence
 	using System;
 	using System.Collections.Generic;
 	using System.Data;
-	using Persistence;
 	using Serialization;
 
 	internal static class CommitExtensions
@@ -31,7 +30,8 @@ namespace EventStore.Persistence.SqlPersistence
 				events,
 				snapshot);
 		}
-		private static object Deserialize(this ISerialize serializer, IDataRecord record, int index)
+
+		public static object Deserialize(this ISerialize serializer, IDataRecord record, int index)
 		{
 			if (index >= record.FieldCount)
 				return null;

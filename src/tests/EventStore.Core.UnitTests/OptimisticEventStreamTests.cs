@@ -1,0 +1,290 @@
+#pragma warning disable 169
+// ReSharper disable InconsistentNaming
+
+namespace EventStore.Core.UnitTests
+{
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using Machine.Specifications;
+	using Moq;
+	using It = Machine.Specifications.It;
+
+	[Subject("OptimisticEventStream")]
+	public class when_constructing_a_new_stream : on_the_event_stream
+	{
+		const int MaxStreamRevision = 7;
+		static readonly int EachCommitHas = 2.Events();
+		static readonly Commit[] Committed = new[]
+		{
+			BuildCommitStub(2, 1, EachCommitHas), // 1-2
+			BuildCommitStub(4, 2, EachCommitHas), // 3-4
+			BuildCommitStub(6, 3, EachCommitHas), // 5-6
+			BuildCommitStub(8, 3, EachCommitHas), // 7-8
+		};
+
+		Because of = () =>
+			stream = new OptimisticEventStream(streamId, MaxStreamRevision, Committed, null);
+
+		It should_have_the_correct_stream_identifier = () =>
+			stream.StreamId.ShouldEqual(streamId);
+
+		It should_have_the_correct_head_stream_revision = () =>
+			stream.StreamRevision.ShouldEqual(MaxStreamRevision);
+
+		It should_have_the_correct_head_commit_sequence = () =>
+			stream.CommitSequence.ShouldEqual(Committed.Last().CommitSequence);
+
+		It should_have_all_of_the_committed_events_up_to_the_stream_revision_specified = () =>
+			stream.CommittedEvents.Count.ShouldEqual(MaxStreamRevision);
+	}
+
+	[Subject("OptimisticEventStream")]
+	public class when_constructing_the_stream_from_less_events_than_the_max_desired_revision : on_the_event_stream
+	{
+		static readonly int EachCommitHas = 2.Events();
+		static readonly Commit[] Committed = new[]
+		{
+			BuildCommitStub(2, 1, EachCommitHas), // 1-2
+			BuildCommitStub(4, 2, EachCommitHas), // 3-4
+			BuildCommitStub(6, 3, EachCommitHas), // 5-6
+			BuildCommitStub(8, 3, EachCommitHas), // 7-8
+		};
+
+		Because of = () =>
+			stream = new OptimisticEventStream(streamId, int.MaxValue, Committed, null);
+
+		It should_set_the_stream_revision_to_the_revision_of_the_most_recent_event = () =>
+			stream.StreamRevision.ShouldEqual(Committed.Last().StreamRevision);
+	}
+
+	[Subject("OptimisticEventStream")]
+	public class when_adding_a_null_event_message : on_the_event_stream
+	{
+		static Exception thrown;
+
+		Because of = () =>
+			thrown = Catch.Exception(() => stream.Add(null));
+
+		It should_throw_an_ArgumentNullException = () =>
+			thrown.ShouldBeOfType<ArgumentNullException>();
+	}
+
+	[Subject("OptimisticEventStream")]
+	public class when_adding_an_unpopulated_event_message : on_the_event_stream
+	{
+		static Exception thrown;
+
+		Because of = () =>
+			thrown = Catch.Exception(() => stream.Add(new EventMessage { Body = null }));
+
+		It should_throw_an_ArgumentException = () =>
+			thrown.ShouldBeOfType<ArgumentException>();
+	}
+
+	[Subject("OptimisticEventStream")]
+	public class when_adding_a_fully_populated_event_message : on_the_event_stream
+	{
+		Because of = () =>
+			stream.Add(new EventMessage { Body = "populated" });
+
+		It should_add_the_event_to_the_set_of_uncommitted_events = () =>
+			stream.UncommittedEvents.Count.ShouldEqual(1);
+	}
+
+	[Subject("OptimisticEventStream")]
+	public class when_adding_multiple_populated_event_messages : on_the_event_stream
+	{
+		Because of = () => stream.Add(
+			new EventMessage { Body = "populated" },
+			new EventMessage { Body = "also populated" });
+
+		It should_add_all_of_the_events_provided_to_the_set_of_uncommitted_events = () =>
+			stream.UncommittedEvents.Count.ShouldEqual(2);
+	}
+
+	[Subject("OptimisticEventStream")]
+	public class when_clearing_any_uncommitted_changes : on_the_event_stream
+	{
+		Establish context = () =>
+			stream.Add(new EventMessage { Body = string.Empty });
+
+		Because of = () =>
+			stream.ClearChanges();
+
+		It should_clear_all_uncommitted_events = () =>
+			stream.UncommittedEvents.Count.ShouldEqual(0);
+	}
+
+	[Subject("OptimisticEventStream")]
+	public class when_committing_an_empty_changeset : on_the_event_stream
+	{
+		Because of = () =>
+			stream.CommitChanges(Guid.NewGuid(), null);
+
+		It should_not_call_the_underlying_infrastructure = () =>
+			persistence.Verify(x => x.Commit(Moq.It.IsAny<Commit>()), Times.Never());
+
+		It should_not_increment_the_current_stream_revision = () =>
+			stream.StreamRevision.ShouldEqual(DefaultStreamRevision);
+
+		It should_not_increment_the_current_commit_sequence = () =>
+			stream.CommitSequence.ShouldEqual(DefaultCommitSequence);
+	}
+
+	[Subject("OptimisticEventStream")]
+	public class when_committing_the_uncommitted_events : on_the_event_stream
+	{
+		static readonly Guid commitId = Guid.NewGuid();
+		static readonly EventMessage uncommitted = new EventMessage { Body = string.Empty };
+		static readonly Dictionary<string, object> headers = new Dictionary<string, object>();
+		static Commit constructed;
+
+		Establish context = () =>
+		{
+			persistence.Setup(x => x.Commit(Moq.It.IsAny<Commit>())).Callback<Commit>(x => constructed = x);
+			stream.Add(uncommitted);
+		};
+
+		Because of = () =>
+			stream.CommitChanges(commitId, headers);
+
+		It should_provide_a_commit_to_the_underlying_infrastructure = () =>
+			persistence.Verify(x => x.Commit(Moq.It.IsAny<Commit>()), Times.Once());
+
+		It should_build_the_commit_with_the_correct_stream_identifier = () =>
+			constructed.StreamId.ShouldEqual(streamId);
+
+		It should_build_the_commit_with_the_correct_stream_revision = () =>
+			constructed.StreamRevision.ShouldEqual(DefaultStreamRevision + 1);
+
+		It should_build_the_commit_with_the_correct_commit_identifier = () =>
+			constructed.CommitId.ShouldEqual(commitId);
+
+		It should_build_the_commit_with_an_incremented_commit_sequence = () =>
+			constructed.CommitSequence.ShouldEqual(DefaultCommitSequence + 1);
+
+		It should_build_the_commit_with_the_headers_provided = () =>
+			constructed.Headers.ShouldEqual(headers);
+
+		It should_build_the_commit_containing_all_uncommitted_events = () =>
+			constructed.Events.Count.ShouldEqual(1);
+
+		It should_build_the_commit_using_the_event_messages_provided = () =>
+			constructed.Events.First().ShouldEqual(uncommitted);
+
+		It should_update_the_stream_revision = () =>
+			stream.StreamRevision.ShouldEqual(constructed.StreamRevision);
+
+		It should_update_the_commit_sequence = () =>
+			stream.CommitSequence.ShouldEqual(constructed.CommitSequence);
+
+		It should_clear_the_uncommitted_events = () =>
+			stream.UncommittedEvents.Count.ShouldEqual(0);
+	}
+
+	[Subject("OptimisticEventStream")]
+	public class when_committing_after_another_thread_or_process_has_moved_the_stream_head : on_the_event_stream
+	{
+		static readonly EventMessage uncommitted = new EventMessage { Body = string.Empty };
+		private static readonly Commit[] DiscoveredOnCommit = new[] { BuildCommitStub(3, 2, 2) };
+		static Commit constructed;
+		static Exception thrown;
+
+		Establish context = () =>
+		{
+			persistence
+				.Setup(x => x.Commit(Moq.It.IsAny<Commit>()))
+				.Throws(new ConcurrencyException());
+
+			persistence
+				.Setup(x => x.GetFrom(streamId, DefaultStreamRevision + 1, int.MaxValue))
+				.Returns(DiscoveredOnCommit);
+
+			stream.Add(uncommitted);
+		};
+
+		Because of = () =>
+			thrown = Catch.Exception(() => stream.CommitChanges(Guid.NewGuid(), null));
+
+		It should_throw_a_ConcurrencyException = () =>
+			thrown.ShouldBeOfType<ConcurrencyException>();
+
+		It should_query_persistence_to_discover_the_new_events = () =>
+			persistence.Verify(x => x.GetFrom(streamId, DefaultStreamRevision + 1, int.MaxValue), Times.Once());
+
+		It should_update_the_stream_revision_accordingly = () =>
+			stream.StreamRevision.ShouldEqual(DiscoveredOnCommit[0].StreamRevision);
+
+		It should_update_the_commit_sequence_accordingly = () =>
+			stream.CommitSequence.ShouldEqual(DiscoveredOnCommit[0].CommitSequence);
+
+		It should_add_the_newly_discovered_committed_events_to_the_set_of_committed_events_accordingly = () =>
+			stream.CommittedEvents.Count.ShouldEqual(DiscoveredOnCommit[0].Events.Count + 1);
+	}
+
+	[Subject("OptimisticEventStream")]
+	public class when_attempting_to_invoke_behavior_on_a_disposed_stream : on_the_event_stream
+	{
+		static Exception thrown;
+
+		Establish context = () =>
+			stream.Dispose();
+
+		Because of = () =>
+			thrown = Catch.Exception(() => stream.CommitChanges(Guid.NewGuid(), null));
+
+		It should_throw_a_ObjectDisposedException = () =>
+			thrown.ShouldBeOfType<ObjectDisposedException>();
+	}
+
+	[Subject("OptimisticEventStream")]
+	public class when_attempting_to_modify_the_collection_event_collections : on_the_event_stream
+	{
+		It should_throw_an_exception_when_adding_to_the_committed_collection = () =>
+			Catch.Exception(() => stream.CommittedEvents.Add(null)).ShouldBeOfType<NotSupportedException>();
+		It should_throw_an_exception_when_adding_to_the_uncommitted_collection = () =>
+			Catch.Exception(() => stream.UncommittedEvents.Add(null)).ShouldBeOfType<NotSupportedException>();
+
+		It should_throw_an_exception_when_clearing_the_committed_collection = () =>
+			Catch.Exception(() => stream.CommittedEvents.Clear()).ShouldBeOfType<NotSupportedException>();
+		It should_throw_an_exception_when_clearing_the_uncommitted_collection = () =>
+			Catch.Exception(() => stream.UncommittedEvents.Clear()).ShouldBeOfType<NotSupportedException>();
+
+		It should_throw_an_exception_when_removing_from_the_committed_collection = () =>
+			Catch.Exception(() => stream.CommittedEvents.Remove(null)).ShouldBeOfType<NotSupportedException>();
+		It should_throw_an_exception_when_removing_from_the_uncommitted_collection = () =>
+			Catch.Exception(() => stream.UncommittedEvents.Remove(null)).ShouldBeOfType<NotSupportedException>();
+	}
+
+	public abstract class on_the_event_stream
+	{
+		protected const int DefaultStreamRevision = 1;
+		protected const int DefaultCommitSequence = 1;
+		protected static Guid streamId = Guid.NewGuid();
+		protected static OptimisticEventStream stream;
+		protected static Mock<ICommitEvents> persistence;
+
+		Establish context = () =>
+		{
+			var commits = new[] { BuildCommitStub(DefaultStreamRevision, 1, 1) };
+			persistence = new Mock<ICommitEvents>();
+			stream = new OptimisticEventStream(streamId, DefaultStreamRevision, commits, persistence.Object);
+		};
+
+		Cleanup cleanup = () =>
+			streamId = Guid.NewGuid();
+
+		protected static Commit BuildCommitStub(int revision, int sequence, int eventCount)
+		{
+			var events = new List<EventMessage>(eventCount);
+			for (var i = 0; i < eventCount; i++)
+				events.Add(new EventMessage());
+
+			return new Commit(streamId, revision, Guid.NewGuid(), sequence, null, events, null);
+		}
+	}
+}
+
+// ReSharper enable InconsistentNaming
+#pragma warning restore 169

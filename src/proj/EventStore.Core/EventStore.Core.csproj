@@ -43,19 +43,24 @@
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Dispatcher\AsynchronousDispatcher.cs" />
+    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="OptimisticEventStore.cs" />
+    <Compile Include="OptimisticEventStream.cs" />
     <Compile Include="Persistence\CommitTracker.cs" />
     <Compile Include="Persistence\DelegateCommitFilter.cs" />
     <Compile Include="Dispatcher\DelegateMessagePublisher.cs" />
-    <Compile Include="Dispatcher\IPublishMessages.cs" />
-    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="Dispatcher\IDispatchMessages.cs" />
     <Compile Include="Persistence\IFilterCommits.cs" />
-    <Compile Include="OptimisticEventStore.cs" />
-    <Compile Include="Persistence\InMemoryPersistenceEngine.cs" />
-    <Compile Include="Persistence\InMemoryPersistenceFactory.cs" />
     <Compile Include="Persistence\NullCommitFilter.cs" />
     <Compile Include="Persistence\CommitFilterPersistence.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Dispatcher\SynchronousDispatcher.cs" />
+    <Compile Include="ReadonlyCollection.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\CustomDictionary.xml">
@@ -71,7 +76,13 @@
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

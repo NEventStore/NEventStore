@@ -35,10 +35,10 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 			new SynchronousDispatcher(bus.Object, persistence.Object);
 
 		It should_initialize_the_persistence_engine = () =>
-			persistence.Verify(x => x.Initialize(), Times.Exactly(1));
+			persistence.Verify(x => x.Initialize(), Times.Once());
 
 		It should_get_the_set_of_undispatched_commits = () =>
-			persistence.Verify(x => x.GetUndispatchedCommits(), Times.Exactly(1));
+			persistence.Verify(x => x.GetUndispatchedCommits(), Times.Once());
 
 		It should_provide_the_commits_to_the_publisher = () =>
 			bus.VerifyAll();
@@ -65,10 +65,10 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 			dispatcher.Dispatch(commit);
 
 		It should_provide_the_commit_to_the_message_bus = () =>
-			bus.Verify(x => x.Publish(commit), Times.Exactly(1));
+			bus.Verify(x => x.Publish(commit), Times.Once());
 
 		It should_mark_the_commit_as_dispatched = () =>
-			persistence.Verify(x => x.MarkCommitAsDispatched(commit), Times.Exactly(1));
+			persistence.Verify(x => x.MarkCommitAsDispatched(commit), Times.Once());
 	}
 
 	[Subject("SynchronousDispatcher")]
@@ -92,10 +92,10 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 		};
 
 		It should_dispose_the_underlying_message_bus_exactly_once = () =>
-			bus.Verify(x => x.Dispose(), Times.Exactly(1));
+			bus.Verify(x => x.Dispose(), Times.Once());
 
 		It should_dispose_the_underlying_persistence_infrastructure_exactly_once = () =>
-			bus.Verify(x => x.Dispose(), Times.Exactly(1));
+			bus.Verify(x => x.Dispose(), Times.Once());
 	}
 }
 

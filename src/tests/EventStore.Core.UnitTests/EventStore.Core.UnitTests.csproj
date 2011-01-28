@@ -43,10 +43,15 @@
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DispatcherTests\AsynchronousDispatcherTests.cs" />
-    <Compile Include="PersistenceTests\CommitFilterPersistenceTests.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="OptimisticEventStoreTests.cs" />
-    <Compile Include="PersistenceTests\CommitTrackerTests.cs" />
+    <Compile Include="OptimisticEventStreamTests.cs" />
+    <Compile Include="PersistenceTests\CommitFilterPersistenceTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PersistenceTests\CommitTrackerTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DispatcherTests\SynchronousDispatcherTests.cs" />
   </ItemGroup>
@@ -83,5 +88,6 @@
       <Name>EventStore</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
