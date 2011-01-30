@@ -16,6 +16,12 @@ namespace EventStore
 			this.StreamId = streamId;
 			this.persistence = persistence;
 		}
+		public OptimisticEventStream(Guid streamId, ICommitEvents persistence, int revision, int sequence)
+			: this(streamId, persistence)
+		{
+			this.StreamRevision = revision;
+			this.CommitSequence = sequence;
+		}
 		public OptimisticEventStream(
 			Guid streamId,
 			ICommitEvents persistence,

@@ -57,9 +57,6 @@ namespace EventStore.Core.UnitTests
 
 		It should_return_an_event_stream_containing_the_correct_stream_identifer = () =>
 			stream.StreamId.ShouldEqual(streamId);
-
-		Cleanup cleanup = () =>
-			stream.Dispose();
 	}
 
 	[Subject("OptimisticEventStore")]
@@ -75,6 +72,54 @@ namespace EventStore.Core.UnitTests
 
 		It should_return_a_null_stream = () =>
 			stream.ShouldBeNull();
+	}
+
+	[Subject("OptimisticEventStore")]
+	public class when_opening_a_stream_from_a_snapshot : using_persistence
+	{
+		const int MaxRevision = int.MaxValue;
+		static readonly Snapshot snapshot = new Snapshot(streamId, 42, "snapshot");
+		static readonly Commit[] Committed = new[] { BuildCommitStub(42, 0) };
+
+		Establish context = () =>
+			persistence.Setup(x => x.GetFrom(streamId, 42, MaxRevision)).Returns(Committed);
+
+		Because of = () =>
+			store.OpenStream(snapshot, MaxRevision);
+
+		It should_query_the_underlying_storage_using_the_revision_of_the_snapshot = () =>
+			persistence.Verify(x => x.GetFrom(streamId, 42, MaxRevision), Times.Once());
+	}
+
+	[Subject("OptimisticEventStore")]
+	public class when_opening_a_stream_from_a_snapshot_that_is_at_the_revision_of_the_stream_head : using_persistence
+	{
+		const int HeadStreamRevision = 42;
+		const int HeadCommitSequence = 15;
+		static readonly Snapshot snapshot = new Snapshot(streamId, HeadStreamRevision, "snapshot");
+		static readonly Commit[] Committed = new[] { BuildCommitStub(HeadStreamRevision, HeadCommitSequence) };
+		static IEventStream stream;
+
+		Establish context = () =>
+			persistence.Setup(x => x.GetFrom(streamId, HeadStreamRevision, int.MaxValue)).Returns(Committed);
+
+		Because of = () =>
+			stream = store.OpenStream(snapshot, int.MaxValue);
+
+		It should_return_a_stream_with_the_correct_stream_identifier = () =>
+			stream.StreamId.ShouldEqual(streamId);
+
+		It should_return_a_stream_with_revision_of_the_stream_head = () =>
+			stream.StreamRevision.ShouldEqual(HeadStreamRevision);
+
+		It should_return_a_stream_with_a_commit_sequence_of_the_stream_head = () =>
+			stream.CommitSequence.ShouldEqual(HeadCommitSequence);
+
+		It should_return_a_stream_with_no_committed_events = () =>
+			stream.CommittedEvents.Count.ShouldEqual(0);
+
+		It should_return_a_stream_with_no_uncommitted_events = () =>
+			stream.UncommittedEvents.Count.ShouldEqual(0);
 	}
 
 	[Subject("OptimisticEventStore")]
