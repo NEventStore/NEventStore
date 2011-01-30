@@ -72,8 +72,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///       Dispatched boolean NOT NULL DEFAULT false,
         ///       Headers bytea NULL,
         ///       Payload bytea NOT NULL,
-        ///       Snapshot bytea NULL,
-        ///       CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequen [rest of string was truncated]&quot;;.
+        ///       CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)
+        ///);
+        ///CREATE UNIQUE INDEX  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {

@@ -11,19 +11,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		public override string PersistCommit
 		{
-			get { return base.PersistCommit.Replace("/*FROM DUAL*/", "FROM rdb$database").Replace(", Snapshot", ", \"Snapshot\""); }
-		}
-		public override string GetStreamsRequiringSnaphots
-		{
-			get { return base.GetStreamsRequiringSnaphots.Replace("Snapshot ", "\"Snapshot\" "); }
-		}
-		public override string GetSnapshot
-		{
-			get { return base.GetSnapshot.Replace("Snapshot ", "\"Snapshot\" "); }
-		}
-		public override string AppendSnapshotToCommit
-		{
-			get { return base.AppendSnapshotToCommit.Replace("Snapshot ", "\"Snapshot\" "); }
+			get { return base.PersistCommit.Replace("/*FROM DUAL*/", "FROM rdb$database"); }
 		}
 
 		public override IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)

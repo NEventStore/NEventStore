@@ -72,10 +72,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///       Dispatched bit NOT NULL DEFAULT 0,
         ///       Headers image NULL,
         ///       Payload image NOT NULL,
-        ///       Snapshot image NULL,
         ///       CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)
         ///);
-        ///CREATE UNIQUE INDEX IX_Commits ON Commits (Stream [rest of string was truncated]&quot;;.
+        ///CREATE UNIQUE INDEX IX_Commits ON Commits (StreamId, CommitId);
+        ///CREATE UNIQUE [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {

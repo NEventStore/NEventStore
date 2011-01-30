@@ -18,6 +18,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return base.PersistCommit.Replace("/*FROM DUAL*/", "FROM DUAL"); }
 		}
+		public override string GetSnapshot
+		{
+			get { return base.GetSnapshot.Replace("SELECT *", "SELECT TOP 1 *").Replace("LIMIT 1", string.Empty); }
+		}
 
 		public override IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
 		{

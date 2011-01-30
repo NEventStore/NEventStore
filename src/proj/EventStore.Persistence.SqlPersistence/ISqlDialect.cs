@@ -21,13 +21,13 @@ namespace EventStore.Persistence.SqlPersistence
 
 		string StreamId { get; }
 		string StreamRevision { get; }
+		string MaxStreamRevision { get; }
 		string Items { get; }
 		string CommitId { get; }
 		string CommitSequence { get; }
 		string CommitStamp { get; }
 		string Headers { get; }
 		string Payload { get; }
-		string Snapshot { get; }
 		string Threshold { get; }
 
 		IDbTransaction OpenTransaction(IDbConnection connection);

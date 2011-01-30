@@ -10,7 +10,6 @@ namespace EventStore.Persistence.SqlPersistence
 
 	public class SqlPersistenceEngine : IPersistStreams
 	{
-		private const int InitialCommit = 1;
 		private readonly IConnectionFactory factory;
 		private readonly ISqlDialect dialect;
 		private readonly ISerialize serializer;
@@ -44,6 +43,7 @@ namespace EventStore.Persistence.SqlPersistence
 			{
 				query.AddParameter(this.dialect.StreamId, streamId);
 				query.AddParameter(this.dialect.StreamRevision, minRevision);
+				query.AddParameter(this.dialect.MaxStreamRevision, maxRevision);
 				return query.ExecuteWithQuery(this.dialect.GetCommitsFromStartingRevision, x => x.GetCommit(this.serializer));
 			});
 		}
@@ -61,8 +61,6 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			this.Execute(attempt.StreamId, cmd =>
 			{
-				var snapshot = attempt.CommitSequence == InitialCommit ? new byte[] { } : null;
-
 				cmd.AddParameter(this.dialect.StreamId, attempt.StreamId);
 				cmd.AddParameter(this.dialect.StreamRevision, attempt.StreamRevision);
 				cmd.AddParameter(this.dialect.Items, attempt.Events.Count);
@@ -71,7 +69,6 @@ namespace EventStore.Persistence.SqlPersistence
 				cmd.AddParameter(this.dialect.CommitStamp, DateTime.UtcNow);
 				cmd.AddParameter(this.dialect.Headers, this.serializer.Serialize(attempt.Headers));
 				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(attempt.Events));
-				cmd.AddParameter(this.dialect.Snapshot, snapshot);
 
 				var rowsAffected = cmd.Execute(this.dialect.PersistCommit);
 				if (rowsAffected == 0)
@@ -121,7 +118,7 @@ namespace EventStore.Persistence.SqlPersistence
 			{
 				cmd.AddParameter(this.dialect.StreamId, snapshot.StreamId);
 				cmd.AddParameter(this.dialect.StreamRevision, snapshot.StreamRevision);
-				cmd.AddParameter(this.dialect.Snapshot, this.serializer.Serialize(snapshot.Payload));
+				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(snapshot.Payload));
 				cmd.ExecuteWithSuppression(this.dialect.AppendSnapshotToCommit);
 			});
 		}

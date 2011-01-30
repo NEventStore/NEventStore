@@ -129,11 +129,18 @@
        Dispatched boolean NOT NULL DEFAULT false,
        Headers bytea NULL,
        Payload bytea NOT NULL,
-       Snapshot bytea NULL,
        CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)
 );
 CREATE UNIQUE INDEX IX_Commits_CommitId ON Commits (StreamId, CommitId);
-CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (StreamId, StreamRevision);
-CREATE INDEX IX_Commits_Dispatched ON Commits (Dispatched);</value>
+CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (StreamId, StreamRevision, Items);
+CREATE INDEX IX_Commits_Dispatched ON Commits (Dispatched);
+
+CREATE TABLE Snapshots
+(
+       StreamId uuid NOT NULL,
+       StreamRevision int NOT NULL CHECK (StreamRevision &gt; 0),
+       Payload bytea NOT NULL,
+       CONSTRAINT PK_Snapshots PRIMARY KEY (StreamId, StreamRevision)
+);</value>
   </data>
 </root>

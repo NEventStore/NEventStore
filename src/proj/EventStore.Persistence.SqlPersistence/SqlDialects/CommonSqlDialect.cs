@@ -50,6 +50,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return "@StreamRevision"; }
 		}
+		public virtual string MaxStreamRevision
+		{
+			get { return "@MaxStreamRevision"; }
+		}
 		public virtual string Items
 		{
 			get { return "@Items"; }
@@ -73,10 +77,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		public virtual string Payload
 		{
 			get { return "@Payload"; }
-		}
-		public virtual string Snapshot
-		{
-			get { return "@Snapshot"; }
 		}
 		public virtual string Threshold
 		{

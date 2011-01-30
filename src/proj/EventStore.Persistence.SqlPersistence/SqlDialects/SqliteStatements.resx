@@ -129,11 +129,18 @@
        Dispatched bit NOT NULL DEFAULT 0,
        Headers blob NULL,
        Payload blob NOT NULL,
-       Snapshot blob NULL,
        CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)
 );
 CREATE UNIQUE INDEX IF NOT EXISTS IX_Commits_CommitId ON Commits (StreamId, CommitId);
-CREATE UNIQUE INDEX IF NOT EXISTS IX_Commits_Revisions ON Commits (StreamId, StreamRevision);
-CREATE INDEX IF NOT EXISTS IX_Commits_Dispatched ON Commits (Dispatched);</value>
+CREATE UNIQUE INDEX IF NOT EXISTS IX_Commits_Revisions ON Commits (StreamId, StreamRevision, Items);
+CREATE INDEX IF NOT EXISTS IX_Commits_Dispatched ON Commits (Dispatched);
+
+CREATE TABLE IF NOT EXISTS Snapshots
+(
+       StreamId guid NOT NULL,
+       StreamRevision int NOT NULL CHECK (StreamRevision &gt; 0),
+       Payload blob NOT NULL,
+       CONSTRAINT PK_Snapshots PRIMARY KEY (StreamId, StreamRevision)
+);</value>
   </data>
 </root>

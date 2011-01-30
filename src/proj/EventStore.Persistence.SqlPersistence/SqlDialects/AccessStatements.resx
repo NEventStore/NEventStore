@@ -135,11 +135,18 @@ CREATE TABLE Commits
        Dispatched bit NOT NULL DEFAULT 0,
        Headers image NULL,
        Payload image NOT NULL,
-       Snapshot image NULL,
        CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)
 );
 CREATE UNIQUE INDEX IX_Commits ON Commits (StreamId, CommitId);
-CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (StreamId, StreamRevision);
-CREATE INDEX IX_Commits_Dispatched ON Commits (Dispatched);</value>
+CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (StreamId, StreamRevision, Items);
+CREATE INDEX IX_Commits_Dispatched ON Commits (Dispatched);
+
+CREATE TABLE Snapshots
+(
+       StreamId guid NOT NULL,
+       StreamRevision int NOT NULL,
+       Payload image NOT NULL,
+       CONSTRAINT PK_Snapshots PRIMARY KEY (StreamId, StreamRevision)
+);</value>
   </data>
 </root>
