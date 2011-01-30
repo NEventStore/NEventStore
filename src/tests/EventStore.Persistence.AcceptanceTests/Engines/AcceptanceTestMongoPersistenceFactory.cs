@@ -14,7 +14,7 @@ namespace EventStore.Persistence.AcceptanceTests.Engines
 			return connectionString
 				.Replace("[HOST]", "host".GetSetting() ?? "localhost")
 				.Replace("[PORT]", "port".GetSetting() ?? string.Empty)
-				.Replace("[DATABASE]", "database".GetSetting() ?? "EventStore2")
+				.Replace("[DATABASE]", "database".GetSetting() ?? "EventStore2a")
 				.Replace("[USER]", "user".GetSetting() ?? string.Empty)
 				.Replace("[PASSWORD]", "password".GetSetting() ?? string.Empty);
 		}
