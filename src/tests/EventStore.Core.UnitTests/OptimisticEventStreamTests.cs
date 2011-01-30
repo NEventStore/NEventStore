@@ -46,18 +46,6 @@ namespace EventStore.Core.UnitTests
 			stream.CommittedEvents.Count.ShouldEqual(MaxStreamRevision - MinStreamRevision + 1);
 	}
 
-	public class when_constructing_a_stream_from_an_empty_set_of_commits : on_the_event_stream
-	{
-		static Exception thrown;
-
-		Because of = () =>
-			thrown = Catch.Exception(() =>
-				new OptimisticEventStream(streamId, null, 0, int.MaxValue, null));
-
-		It should_throw_an_InvalidOperationException = () =>
-			thrown.ShouldBeOfType<InvalidOperationException>();
-	}
-
 	[Subject("OptimisticEventStream")]
 	public class when_constructing_the_head_event_revision_is_less_than_the_max_desired_revision : on_the_event_stream
 	{

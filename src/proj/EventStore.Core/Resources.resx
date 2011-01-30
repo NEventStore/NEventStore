@@ -126,7 +126,4 @@
   <data name="AlreadyDisposed" xml:space="preserve">
     <value>The object has already been disposed.</value>
   </data>
-  <data name="EmptyEventStream" xml:space="preserve">
-    <value>The event stream could not be populated from the commits retrieved because they were outside of the specified revision boundaries.  This typically occurs when attempting to load all events beyond the end of a snapshot.  To avoid this exception, simply include the revision of the snapshot.</value>
-  </data>
 </root>

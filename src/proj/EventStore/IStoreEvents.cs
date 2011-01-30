@@ -21,9 +21,8 @@ namespace EventStore
 		/// <param name="streamId">The value which uniquely identifies the stream from which the events will be read.</param>
 		/// <param name="minRevision">The minimum revision of the stream to be read.</param>
 		/// <param name="maxRevision">The maximum revision of the stream to be read.</param>
-		/// <returns>A series of committed events from the stream specified.</returns>
+		/// <returns>A series of committed events represented as a stream.</returns>
 		/// <exception cref="StorageException" />
-		/// <exception cref="InvalidOperationException" />
 		IEventStream OpenStream(Guid streamId, int minRevision, int maxRevision);
 	}
 }

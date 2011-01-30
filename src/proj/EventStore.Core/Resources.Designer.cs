@@ -70,15 +70,6 @@ namespace EventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The event stream could not be populated from the commits retrieved because they were outside of the specified revision boundaries.  This typically occurs when attempting to load all events beyond the end of a snapshot.  To avoid this exception, simply include the revision of the snapshot..
-        /// </summary>
-        internal static string EmptyEventStream {
-            get {
-                return ResourceManager.GetString("EmptyEventStream", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The event must be fully populated..
         /// </summary>
         internal static string EventNotPopulated {

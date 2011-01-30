@@ -63,6 +63,21 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
+	public class when_opening_an_empty_stream : using_persistence
+	{
+		static IEventStream stream;
+
+		Establish context = () =>
+			persistence.Setup(x => x.GetFrom(streamId, 0, 0)).Returns(new Commit[0]);
+
+		Because of = () =>
+			stream = store.OpenStream(streamId, 0, 0);
+
+		It should_return_a_null_stream = () =>
+			stream.ShouldBeNull();
+	}
+
+	[Subject("OptimisticEventStore")]
 	public class when_reading_from_reversion_zero : using_persistence
 	{
 		Establish context = () =>

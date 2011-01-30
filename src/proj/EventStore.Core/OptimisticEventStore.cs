@@ -21,12 +21,13 @@ namespace EventStore
 		{
 			return new OptimisticEventStream(streamId, this.persistence);
 		}
-
 		public virtual IEventStream OpenStream(Guid streamId, int minRevision, int maxRevision)
 		{
 			var commits = this.persistence.GetFrom(streamId, minRevision, maxRevision);
-			return new OptimisticEventStream(streamId, this, minRevision, maxRevision, commits);
+			var stream = new OptimisticEventStream(streamId, this, minRevision, maxRevision, commits);
+			return stream.CommitSequence == 0 ? null : stream;
 		}
+
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
 		{
 			var commits = this.persistence.GetFrom(streamId, minRevision, maxRevision);
@@ -35,17 +36,6 @@ namespace EventStore
 				this.tracker.Track(commit);
 				yield return commit;
 			}
-		}
-
-		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
-		{
-			// TODO: cache
-			return this.persistence.GetSnapshot(streamId, maxRevision);
-		}
-		public virtual bool AddSnapshot(Snapshot snapshot)
-		{
-			// TODO: update cache
-			return this.persistence.AddSnapshot(snapshot);
 		}
 
 		public virtual void Commit(Commit attempt)
@@ -82,6 +72,17 @@ namespace EventStore
 			this.persistence.Commit(attempt);
 			this.tracker.Track(attempt);
 			this.dispatcher.Dispatch(attempt);
+		}
+
+		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
+		{
+			// TODO: cache
+			return this.persistence.GetSnapshot(streamId, maxRevision);
+		}
+		public virtual bool AddSnapshot(Snapshot snapshot)
+		{
+			// TODO: update cache
+			return this.persistence.AddSnapshot(snapshot);
 		}
 	}
 }
