@@ -148,6 +148,7 @@ SELECT @StreamId, @StreamRevision, @Payload
   FROM Snapshots
  WHERE StreamId = @StreamId
    AND StreamRevision &lt;= @StreamRevision
+ ORDER BY StreamRevision DESC
  LIMIT 1;</value>
   </data>
   <data name="GetStreamsRequiringSnaphots" xml:space="preserve">

@@ -142,6 +142,35 @@ namespace EventStore.Persistence.AcceptanceTests
 	}
 
 	[Subject("Persistence")]
+	public class when_retrieving_a_snapshot : using_the_persistence_engine
+	{
+		static readonly Snapshot tooFarBack = new Snapshot(streamId, 1, string.Empty);
+		static readonly Snapshot correct = new Snapshot(streamId, 3, "Snapshot");
+		static readonly Snapshot tooFarForward = new Snapshot(streamId, 100, string.Empty);
+		static Snapshot snapshot;
+
+		Establish context = () =>
+		{
+			persistence.AddSnapshot(tooFarBack);
+			persistence.AddSnapshot(correct);
+		};
+
+		Because of = () =>
+			snapshot = persistence.GetSnapshot(streamId, tooFarForward.StreamRevision - 1);
+
+		It should_load_the_most_recent_prior_snapshot = () =>
+			snapshot.StreamRevision.ShouldEqual(correct.StreamRevision);
+
+		It should_have_the_correct_snapshot_payload = () =>
+			snapshot.Payload.ShouldEqual(correct.Payload);
+	}
+
+	[Subject("Persistence")]
+	public class when_retrieving_a_snapshot1 : using_the_persistence_engine
+	{
+	}
+
+	[Subject("Persistence")]
 	public class when_a_snapshot_has_been_added_to_the_most_recent_commit_of_a_stream : using_the_persistence_engine
 	{
 		const string SnapshotData = "snapshot";
@@ -158,9 +187,6 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		Because of = () =>
 			persistence.AddSnapshot(new Snapshot(streamId, newest.StreamRevision, SnapshotData));
-
-		It should_be_able_to_retreive_the_snapshot = () =>
-			persistence.GetSnapshot(streamId, newest.StreamRevision).Payload.ShouldEqual(SnapshotData);
 
 		It should_no_longer_find_the_stream_in_the_set_of_streams_to_be_snapshot = () =>
 			persistence.GetStreamsToSnapshot(1).Any(x => x.StreamId == streamId).ShouldBeFalse();

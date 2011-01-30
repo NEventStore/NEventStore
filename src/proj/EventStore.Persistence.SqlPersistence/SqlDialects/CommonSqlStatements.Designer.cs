@@ -109,6 +109,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///  FROM Snapshots
         /// WHERE StreamId = @StreamId
         ///   AND StreamRevision &lt;= @StreamRevision
+        /// ORDER BY StreamRevision DESC
         /// LIMIT 1;.
         /// </summary>
         internal static string GetSnapshot {
