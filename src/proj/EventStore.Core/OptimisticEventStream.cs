@@ -112,8 +112,7 @@ namespace EventStore
 				commitId,
 				this.CommitSequence + 1,
 				headers,
-				this.uncommitted.ToList(),
-				null);
+				this.uncommitted.ToList());
 
 			this.persistence.Commit(commit);
 

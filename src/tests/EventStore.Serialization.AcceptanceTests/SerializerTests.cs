@@ -63,9 +63,6 @@ namespace EventStore.Serialization.AcceptanceTests
 		It should_deserialize_a_commit_which_contains_the_same_CommitSequence_as_the_serialized_commit = () =>
 			deserialized.CommitSequence.ShouldEqual(Message.CommitSequence);
 
-		It should_deserialize_a_commit_which_contains_the_same_Snapshot_as_the_serialized_commit = () =>
-			deserialized.Snapshot.ShouldEqual(Message.Snapshot);
-
 		It should_deserialize_a_commit_which_contains_the_same_number_of_headers_as_the_serialized_commit = () =>
 			deserialized.Headers.Count.ShouldEqual(Message.Headers.Count);
 

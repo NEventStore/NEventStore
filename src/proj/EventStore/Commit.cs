@@ -19,15 +19,13 @@ namespace EventStore
 		/// <param name="commitSequence">The value which indicates the sequence (or position) in the stream to which this commit applies.</param>
 		/// <param name="headers">The metadata which provides additional, unstructured information about this commit.</param>
 		/// <param name="events">The collection of event messages to be committed as a single unit.</param>
-		/// <param name="snapshot">The snapshot, if any, which represents a materialization of the stream at the last event of the commit.</param>
 		public Commit(
 			Guid streamId,
 			int streamRevision,
 			Guid commitId,
 			int commitSequence,
 			Dictionary<string, object> headers,
-			List<EventMessage> events,
-			object snapshot)
+			List<EventMessage> events)
 			:this()
 		{
 			this.StreamId = streamId;
@@ -36,7 +34,6 @@ namespace EventStore
 			this.CommitSequence = commitSequence;
 			this.Headers = headers ?? new Dictionary<string, object>();
 			this.Events = events ?? new List<EventMessage>();
-			this.Snapshot = snapshot;
 		}
 		protected Commit()
 		{
@@ -71,11 +68,6 @@ namespace EventStore
 		/// Gets the collection of event messages to be committed as a single unit.
 		/// </summary>
 		[DataMember] public virtual List<EventMessage> Events { get; private set; }
-
-		/// <summary>
-		/// Gets the snapshot, if any, which represents a materialization of the stream at the last event of the commit.
-		/// </summary>
-		[DataMember] public virtual object Snapshot { get; private set; }
 
 		/// <summary>
 		/// Determines whether the specified object is equal to the current object.

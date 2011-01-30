@@ -13,13 +13,11 @@ namespace EventStore.Persistence.SqlPersistence
 		private const int CommitSequenceIndex = 3;
 		private const int HeadersIndex = 4;
 		private const int PayloadIndex = 5;
-		private const int SnapshotIndex = 6;
 
 		public static Commit GetCommit(this IDataRecord record, ISerialize serializer)
 		{
 			var headers = serializer.Deserialize(record, HeadersIndex) as Dictionary<string, object>;
 			var events = serializer.Deserialize(record, PayloadIndex) as List<EventMessage>;
-			var snapshot = serializer.Deserialize(record, SnapshotIndex);
 
 			return new Commit(
 				record[StreamIdIndex].ToGuid(),
@@ -27,8 +25,7 @@ namespace EventStore.Persistence.SqlPersistence
 				record[CommitIdIndex].ToGuid(),
 				record[CommitSequenceIndex].ToInt(),
 				headers,
-				events,
-				snapshot);
+				events);
 		}
 
 		public static object Deserialize(this ISerialize serializer, IDataRecord record, int index)

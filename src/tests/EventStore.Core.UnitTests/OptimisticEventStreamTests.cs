@@ -281,7 +281,7 @@ namespace EventStore.Core.UnitTests
 			for (var i = 0; i < eventCount; i++)
 				events.Add(new EventMessage());
 
-			return new Commit(streamId, revision, Guid.NewGuid(), sequence, null, events, null);
+			return new Commit(streamId, revision, Guid.NewGuid(), sequence, null, events);
 		}
 	}
 }

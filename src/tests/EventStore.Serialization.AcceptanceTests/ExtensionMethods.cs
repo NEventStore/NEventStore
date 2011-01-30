@@ -49,7 +49,7 @@ namespace EventStore.Serialization.AcceptanceTests
 				}
 			};
 
-			return new Commit(streamId, StreamRevision, commitId, CommitSequence, headers, events.ToList(), null);
+			return new Commit(streamId, StreamRevision, commitId, CommitSequence, headers, events.ToList());
 		}
 	}
 }

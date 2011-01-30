@@ -19,8 +19,7 @@ namespace EventStore.Persistence.AcceptanceTests
 				Guid.NewGuid(),
 				1,
 				new Dictionary<string, object> { { "A header", "A string value" }, { "Another header", 2 } },
-				messages,
-				null);
+				messages);
 		}
 		public static Commit BuildNextAttempt(this Commit commit)
 		{
@@ -36,8 +35,7 @@ namespace EventStore.Persistence.AcceptanceTests
 				Guid.NewGuid(),
 				commit.CommitSequence + 1,
 				new Dictionary<string, object>(),
-				messages,
-				null);
+				messages);
 		}
 
 		[Serializable]

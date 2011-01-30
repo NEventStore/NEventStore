@@ -366,17 +366,17 @@ namespace EventStore.Core.UnitTests
 
 		protected static Commit BuildCommitStub(Guid commitId)
 		{
-			return new Commit(streamId, 1, commitId, 1, null, null, null);
+			return new Commit(streamId, 1, commitId, 1, null, null);
 		}
 		protected static Commit BuildCommitStub(int streamRevision, int commitSequence)
 		{
 			var events = new[] { new EventMessage() } .ToList();
-			return new Commit(streamId, streamRevision, Guid.NewGuid(), commitSequence, null, events, null);
+			return new Commit(streamId, streamRevision, Guid.NewGuid(), commitSequence, null, events);
 		}
 		protected static Commit BuildCommitStub(Guid commitId, int streamRevision, int commitSequence)
 		{
 			var events = new[] { new EventMessage() } .ToList();
-			return new Commit(streamId, streamRevision, commitId, commitSequence, null, events, null);
+			return new Commit(streamId, streamRevision, commitId, commitSequence, null, events);
 		}
 	}
 }
