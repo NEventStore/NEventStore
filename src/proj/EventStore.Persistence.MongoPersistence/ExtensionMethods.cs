@@ -18,7 +18,7 @@ namespace EventStore.Persistence.MongoPersistence
 			return new MongoCommit
 			{
 				StreamId = commit.StreamId,
-				MinStreamRevision = commit.StreamRevision - commit.Events.Count,
+				MinStreamRevision = commit.StreamRevision - commit.Events.Count + 1,
 				MaxStreamRevision = commit.StreamRevision,
 				CommitId = commit.CommitId,
 				CommitSequence = commit.CommitSequence,
