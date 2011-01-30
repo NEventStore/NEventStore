@@ -35,6 +35,10 @@ namespace EventStore
 			this.Headers = headers ?? new Dictionary<string, object>();
 			this.Events = events ?? new List<EventMessage>();
 		}
+
+		/// <summary>
+		/// Initializes a new instance of the Commit class.
+		/// </summary>
 		protected Commit()
 		{
 		}
