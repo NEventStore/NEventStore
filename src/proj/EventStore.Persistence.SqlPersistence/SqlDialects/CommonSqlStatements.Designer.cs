@@ -119,13 +119,13 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(S.StreamRevision) AS SnapshotRevision
+        ///   Looks up a localized string similar to SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(COALESCE(S.StreamRevision, 0)) AS SnapshotRevision
         ///  FROM Commits AS C
         /// LEFT OUTER JOIN Snapshots AS S
         ///    ON C.StreamId = S.StreamId
-        /// WHERE C.StreamRevision &gt;= S.StreamRevision
+        ///   AND C.StreamRevision &gt;= S.StreamRevision
         /// GROUP BY C.StreamId
-        ///HAVING MAX(C.StreamRevision) &gt;= MAX(S.StreamRevision) + @Threshold;.
+        ///HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Threshold;.
         /// </summary>
         internal static string GetStreamsRequiringSnaphots {
             get {

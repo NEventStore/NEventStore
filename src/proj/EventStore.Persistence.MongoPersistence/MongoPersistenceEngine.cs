@@ -101,8 +101,7 @@ namespace EventStore.Persistence.MongoPersistence
 
 			try
 			{
-				// TODO: update associated StreamHead--should be done asynchronously.
-				this.PersistedCommits.Insert(commit);
+				this.PersistedCommits.Insert(commit); // TODO: update associated StreamHead--should be done asynchronously.
 			}
 			catch (MongoException e)
 			{
@@ -131,7 +130,7 @@ namespace EventStore.Persistence.MongoPersistence
 
 		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
 		{
-			return new StreamHead[0]; // TODO
+			return new StreamHead[0]; // TODO: query StreamHead documents to determine which streams should be snapshot.
 		}
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
@@ -147,8 +146,8 @@ namespace EventStore.Persistence.MongoPersistence
 
 			try
 			{
-				// TODO: update associated StreamHead--should be done asynchronously.
-				this.PersistedSnapshots.Insert(snapshot.ToMongoSnapshot(this.serializer));
+				var mongoSnapshot = snapshot.ToMongoSnapshot(this.serializer);
+				this.PersistedSnapshots.Insert(mongoSnapshot); // TODO: update associated StreamHead--should be done asynchronously.
 				return true;
 			}
 			catch (MongoException e)

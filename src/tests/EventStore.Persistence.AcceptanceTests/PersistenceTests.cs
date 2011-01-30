@@ -9,7 +9,7 @@ namespace EventStore.Persistence.AcceptanceTests
 	using Persistence;
 
 	[Subject("Persistence")]
-	public class when_an_commit_is_successfully_persisted : using_the_persistence_engine
+	public class when_a_commit_is_successfully_persisted : using_the_persistence_engine
 	{
 		static readonly Commit attempt = streamId.BuildAttempt();
 
@@ -21,6 +21,9 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		It should_add_the_commit_to_the_set_of_undispatched_commits = () =>
 			persistence.GetUndispatchedCommits().FirstOrDefault(x => x.CommitId == attempt.CommitId).ShouldNotBeNull();
+
+		It should_cause_the_stream_to_be_found_in_the_list_of_streams_to_snapshot = () =>
+			persistence.GetStreamsToSnapshot(1).First(x => x.StreamId == streamId).ShouldNotBeNull();
 
 		It should_serialize_and_deserialize_the_events_correctly = () =>
 			persistence.GetFrom(streamId, 0, int.MaxValue)
