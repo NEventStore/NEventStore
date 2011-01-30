@@ -12,6 +12,33 @@ namespace EventStore.Core.UnitTests
 	using It = Machine.Specifications.It;
 
 	[Subject("OptimisticEventStore")]
+	public class when_creating_a_stream : using_persistence
+	{
+		static IEventStream stream;
+
+		Because of = () =>
+			stream = store.CreateStream(streamId);
+
+		It should_return_a_new_stream = () =>
+			stream.ShouldNotBeNull();
+
+		It should_return_a_stream_with_the_correct_stream_identifier = () =>
+			stream.StreamId.ShouldEqual(streamId);
+
+		It should_return_a_stream_with_a_zero_stream_revision = () =>
+			stream.StreamRevision.ShouldEqual(0);
+
+		It should_return_a_stream_with_a_zero_commit_sequence = () =>
+			stream.CommitSequence.ShouldEqual(0);
+
+		It should_return_a_stream_with_no_committed_events = () =>
+			stream.CommittedEvents.Count.ShouldEqual(0);
+
+		It should_return_a_stream_with_no_uncommitted_events = () =>
+			stream.UncommittedEvents.Count.ShouldEqual(0);
+	}
+
+	[Subject("OptimisticEventStore")]
 	public class when_opening_a_stream : using_persistence
 	{
 		const int MinRevision = 17;

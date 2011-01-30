@@ -25,7 +25,7 @@ namespace EventStore.Core.UnitTests
 		};
 
 		Because of = () =>
-			stream = new OptimisticEventStream(streamId, MinStreamRevision, MaxStreamRevision, Committed, null);
+			stream = new OptimisticEventStream(streamId, null, MinStreamRevision, MaxStreamRevision, Committed);
 
 		It should_have_the_correct_stream_identifier = () =>
 			stream.StreamId.ShouldEqual(streamId);
@@ -59,7 +59,7 @@ namespace EventStore.Core.UnitTests
 		};
 
 		Because of = () =>
-			stream = new OptimisticEventStream(streamId, 0, int.MaxValue, Committed, null);
+			stream = new OptimisticEventStream(streamId, null, 0, int.MaxValue, Committed);
 
 		It should_set_the_stream_revision_to_the_revision_of_the_most_recent_event = () =>
 			stream.StreamRevision.ShouldEqual(Committed.Last().StreamRevision);
@@ -276,7 +276,7 @@ namespace EventStore.Core.UnitTests
 		{
 			var commits = new[] { BuildCommitStub(DefaultStreamRevision, 1, 1) };
 			persistence = new Mock<ICommitEvents>();
-			stream = new OptimisticEventStream(streamId, 0, DefaultStreamRevision, commits, persistence.Object);
+			stream = new OptimisticEventStream(streamId, persistence.Object, 0, DefaultStreamRevision, commits);
 		};
 
 		Cleanup cleanup = () =>

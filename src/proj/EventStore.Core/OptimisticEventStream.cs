@@ -11,11 +11,19 @@ namespace EventStore
 		private readonly ICommitEvents persistence;
 		private bool disposed;
 
-		public OptimisticEventStream(
-			Guid streamId, int minRevision, int maxRevision, IEnumerable<Commit> commits, ICommitEvents persistence)
+		public OptimisticEventStream(Guid streamId, ICommitEvents persistence)
 		{
 			this.StreamId = streamId;
 			this.persistence = persistence;
+		}
+		public OptimisticEventStream(
+			Guid streamId,
+			ICommitEvents persistence,
+			int minRevision,
+			int maxRevision,
+			IEnumerable<Commit> commits)
+			: this(streamId, persistence)
+		{
 			this.PopulateStream(minRevision, maxRevision, commits);
 		}
 		private void PopulateStream(int minRevision, int maxRevision, IEnumerable<Commit> commits)
@@ -102,19 +110,23 @@ namespace EventStore
 		}
 		private void ApplyChanges(Guid commitId, Dictionary<string, object> headers)
 		{
-			var commit = new Commit(
-				this.StreamId,
-				this.StreamRevision + this.uncommitted.Count,
-				commitId,
-				this.CommitSequence + 1,
-				headers,
-				this.uncommitted.ToList());
+			var commit = this.BuildCommit(commitId, headers);
 
 			this.persistence.Commit(commit);
 
 			this.StreamRevision = commit.StreamRevision;
 			this.CommitSequence = commit.CommitSequence;
 			this.uncommitted.Clear();
+		}
+		private Commit BuildCommit(Guid commitId, Dictionary<string, object> headers)
+		{
+			return new Commit(
+				this.StreamId,
+				this.StreamRevision + this.uncommitted.Count,
+				commitId,
+				this.CommitSequence + 1,
+				headers,
+				this.uncommitted.ToList());
 		}
 		private void UpdateStreamOnException()
 		{

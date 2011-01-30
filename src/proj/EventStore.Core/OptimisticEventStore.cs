@@ -17,12 +17,17 @@ namespace EventStore
 			this.dispatcher = dispatcher;
 		}
 
-		public IEventStream OpenStream(Guid streamId, int minRevision, int maxRevision)
+		public virtual IEventStream CreateStream(Guid streamId)
+		{
+			return new OptimisticEventStream(streamId, this.persistence);
+		}
+
+		public virtual IEventStream OpenStream(Guid streamId, int minRevision, int maxRevision)
 		{
 			var commits = this.persistence.GetFrom(streamId, minRevision, maxRevision);
-			return new OptimisticEventStream(streamId, minRevision, maxRevision, commits, this);
+			return new OptimisticEventStream(streamId, this, minRevision, maxRevision, commits);
 		}
-		public IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
+		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
 		{
 			var commits = this.persistence.GetFrom(streamId, minRevision, maxRevision);
 			foreach (var commit in commits)
@@ -32,7 +37,7 @@ namespace EventStore
 			}
 		}
 
-		public Snapshot GetSnapshot(Guid streamId, int maxRevision)
+		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
 			return this.persistence.GetSnapshot(streamId, maxRevision); // TODO: performance improvement to track snapshot
 		}
