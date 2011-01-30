@@ -74,9 +74,9 @@ namespace EventStore.Persistence
 		{
 			return this.inner.GetSnapshot(streamId, maxRevision);
 		}
-		public virtual void AddSnapshot(Snapshot snapshot)
+		public virtual bool AddSnapshot(Snapshot snapshot)
 		{
-			this.inner.AddSnapshot(snapshot);
+			return this.inner.AddSnapshot(snapshot);
 		}
 	}
 }

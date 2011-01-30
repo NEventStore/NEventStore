@@ -16,5 +16,13 @@ namespace EventStore
 		/// <returns>If found, it returns the snapshot; otherwise null is returned.</returns>
 		/// <exception cref="StorageException" />
 		Snapshot GetSnapshot(Guid streamId, int maxRevision);
+
+		/// <summary>
+		/// Adds the snapshot provided to the stream indicated.
+		/// </summary>
+		/// <param name="snapshot">The snapshot to save.</param>
+		/// <returns>If the snapshot was added, returns true; otherwise false.</returns>
+		/// <exception cref="StorageException" />
+		bool AddSnapshot(Snapshot snapshot);
 	}
 }

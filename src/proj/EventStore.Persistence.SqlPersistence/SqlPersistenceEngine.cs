@@ -112,15 +112,17 @@ namespace EventStore.Persistence.SqlPersistence
 			});
 			return snapshot;
 		}
-		public void AddSnapshot(Snapshot snapshot)
+		public bool AddSnapshot(Snapshot snapshot)
 		{
+			var rowsAffected = 0;
 			this.Execute(snapshot.StreamId, cmd =>
 			{
 				cmd.AddParameter(this.dialect.StreamId, snapshot.StreamId);
 				cmd.AddParameter(this.dialect.StreamRevision, snapshot.StreamRevision);
 				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(snapshot.Payload));
-				cmd.ExecuteWithSuppression(this.dialect.AppendSnapshotToCommit);
+				rowsAffected = cmd.ExecuteWithSuppression(this.dialect.AppendSnapshotToCommit);
 			});
+			return rowsAffected > 0;
 		}
 
 		protected virtual IEnumerable<T> Execute<T>(Guid streamId, Func<IDbStatement, IEnumerable<T>> executeQuery)

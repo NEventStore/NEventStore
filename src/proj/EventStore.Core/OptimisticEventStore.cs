@@ -39,7 +39,13 @@ namespace EventStore
 
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
-			return this.persistence.GetSnapshot(streamId, maxRevision); // TODO: performance improvement to track snapshot
+			// TODO: cache
+			return this.persistence.GetSnapshot(streamId, maxRevision);
+		}
+		public virtual bool AddSnapshot(Snapshot snapshot)
+		{
+			// TODO: update cache
+			return this.persistence.AddSnapshot(snapshot);
 		}
 
 		public virtual void Commit(Commit attempt)

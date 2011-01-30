@@ -43,12 +43,5 @@ namespace EventStore.Persistence
 		/// <returns>The streams for which the head and snapshot revisions differ by at least the threshold specified.</returns>
 		/// <exception cref="StorageException" />
 		IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold);
-
-		/// <summary>
-		/// Adds the snapshot provided to the stream indicated.
-		/// </summary>
-		/// <param name="snapshot">The snapshot to save.</param>
-		/// <exception cref="StorageException" />
-		void AddSnapshot(Snapshot snapshot);
 	}
 }

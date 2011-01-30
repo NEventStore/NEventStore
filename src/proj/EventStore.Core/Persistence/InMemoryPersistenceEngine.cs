@@ -90,7 +90,7 @@ namespace EventStore.Persistence
 					.OrderByDescending(x => x.StreamRevision)
 					.FirstOrDefault();
 		}
-		public virtual void AddSnapshot(Snapshot snapshot)
+		public virtual bool AddSnapshot(Snapshot snapshot)
 		{
 			lock (this.snapshots)
 				this.snapshots.Add(snapshot);
@@ -98,12 +98,14 @@ namespace EventStore.Persistence
 			lock (this.heads)
 			{
 				var currentHead = this.heads.FirstOrDefault(h => h.StreamId == snapshot.StreamId);
-				if (currentHead == null)
-					return;
-
-				this.heads.Remove(currentHead);
-				this.heads.Add(new StreamHead(currentHead.StreamId, currentHead.HeadRevision, snapshot.StreamRevision));
+				if (currentHead != null)
+				{
+					this.heads.Remove(currentHead);
+					this.heads.Add(new StreamHead(currentHead.StreamId, currentHead.HeadRevision, snapshot.StreamRevision));
+				}
 			}
+
+			return true;
 		}
 	}
 }
