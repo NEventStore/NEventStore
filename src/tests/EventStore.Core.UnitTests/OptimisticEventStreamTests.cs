@@ -46,16 +46,28 @@ namespace EventStore.Core.UnitTests
 			stream.CommittedEvents.Count.ShouldEqual(MaxStreamRevision - MinStreamRevision + 1);
 	}
 
-	[Subject("OptimisticEventStream")]
-	public class when_constructing_the_stream_from_less_events_than_the_max_desired_revision : on_the_event_stream
+	public class when_constructing_a_stream_from_an_empty_set_of_commits : on_the_event_stream
 	{
-		static readonly int EachCommitHas = 2.Events();
+		static Exception thrown;
+
+		Because of = () =>
+			thrown = Catch.Exception(() =>
+				new OptimisticEventStream(streamId, null, 0, int.MaxValue, null));
+
+		It should_throw_an_InvalidOperationException = () =>
+			thrown.ShouldBeOfType<InvalidOperationException>();
+	}
+
+	[Subject("OptimisticEventStream")]
+	public class when_constructing_the_head_event_revision_is_less_than_the_max_desired_revision : on_the_event_stream
+	{
+		static readonly int EventsPerCommit = 2.Events();
 		static readonly Commit[] Committed = new[]
 		{
-			BuildCommitStub(2, 1, EachCommitHas), // 1-2
-			BuildCommitStub(4, 2, EachCommitHas), // 3-4
-			BuildCommitStub(6, 3, EachCommitHas), // 5-6
-			BuildCommitStub(8, 3, EachCommitHas), // 7-8
+			BuildCommitStub(2, 1, EventsPerCommit), // 1-2
+			BuildCommitStub(4, 2, EventsPerCommit), // 3-4
+			BuildCommitStub(6, 3, EventsPerCommit), // 5-6
+			BuildCommitStub(8, 3, EventsPerCommit), // 7-8
 		};
 
 		Because of = () =>
@@ -133,14 +145,14 @@ namespace EventStore.Core.UnitTests
 			persistence.Verify(x => x.Commit(Moq.It.IsAny<Commit>()), Times.Never());
 
 		It should_not_increment_the_current_stream_revision = () =>
-			stream.StreamRevision.ShouldEqual(DefaultStreamRevision);
+			stream.StreamRevision.ShouldEqual(0);
 
 		It should_not_increment_the_current_commit_sequence = () =>
-			stream.CommitSequence.ShouldEqual(DefaultCommitSequence);
+			stream.CommitSequence.ShouldEqual(0);
 	}
 
 	[Subject("OptimisticEventStream")]
-	public class when_committing_the_uncommitted_events : on_the_event_stream
+	public class when_committing_any_uncommitted_events : on_the_event_stream
 	{
 		static readonly Guid commitId = Guid.NewGuid();
 		static readonly EventMessage uncommitted = new EventMessage { Body = string.Empty };
@@ -163,13 +175,13 @@ namespace EventStore.Core.UnitTests
 			constructed.StreamId.ShouldEqual(streamId);
 
 		It should_build_the_commit_with_the_correct_stream_revision = () =>
-			constructed.StreamRevision.ShouldEqual(DefaultStreamRevision + 1);
+			constructed.StreamRevision.ShouldEqual(DefaultStreamRevision);
 
 		It should_build_the_commit_with_the_correct_commit_identifier = () =>
 			constructed.CommitId.ShouldEqual(commitId);
 
 		It should_build_the_commit_with_an_incremented_commit_sequence = () =>
-			constructed.CommitSequence.ShouldEqual(DefaultCommitSequence + 1);
+			constructed.CommitSequence.ShouldEqual(DefaultCommitSequence);
 
 		It should_build_the_commit_with_the_headers_provided = () =>
 			constructed.Headers.ShouldEqual(headers);
@@ -193,13 +205,16 @@ namespace EventStore.Core.UnitTests
 	[Subject("OptimisticEventStream")]
 	public class when_committing_after_another_thread_or_process_has_moved_the_stream_head : on_the_event_stream
 	{
+		private static readonly Commit[] Committed = new[] { BuildCommitStub(1, 1, 1) };
 		static readonly EventMessage uncommitted = new EventMessage { Body = string.Empty };
-		private static readonly Commit[] DiscoveredOnCommit = new[] { BuildCommitStub(3, 2, 2) };
+		static readonly Commit[] DiscoveredOnCommit = new[] { BuildCommitStub(3, 2, 2) };
 		static Commit constructed;
 		static Exception thrown;
 
 		Establish context = () =>
 		{
+			stream = new OptimisticEventStream(streamId, persistence.Object, 1, 2, Committed );
+
 			persistence
 				.Setup(x => x.Commit(Moq.It.IsAny<Commit>()))
 				.Throws(new ConcurrencyException());
@@ -274,9 +289,8 @@ namespace EventStore.Core.UnitTests
 
 		Establish context = () =>
 		{
-			var commits = new[] { BuildCommitStub(DefaultStreamRevision, 1, 1) };
 			persistence = new Mock<ICommitEvents>();
-			stream = new OptimisticEventStream(streamId, persistence.Object, 0, DefaultStreamRevision, commits);
+			stream = new OptimisticEventStream(streamId, persistence.Object);
 		};
 
 		Cleanup cleanup = () =>

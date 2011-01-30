@@ -25,6 +25,17 @@ namespace EventStore
 			: this(streamId, persistence)
 		{
 			this.PopulateStream(minRevision, maxRevision, commits);
+
+			// This is an interesting exception which should only occur if we attempt to load beyond the head of a given stream.
+			// In that scenario, we have no idea where we are in relation to the other commits and are therefore unable to commit
+			// any changes made to the stream--the CommitSequence was never populated and we know it isn't correct.
+			// This may happen when attempting to load all events after a given snapshot:
+			// store.OpenStream(snapshot.StreamId, snapshot.StreamRevision + 1, int.MaxValue);
+			// The solution is to include the stream revision in the load, e.g. snapshot.StreamRevision instead of
+			// snapshot.StreamRevision + 1.  Then, we just ignore the first event.  This allows the stream to know where it is
+			// in relation to other commits.
+			if (this.committed.Count == 0)
+				throw new InvalidOperationException(Resources.EmptyEventStream);
 		}
 		private void PopulateStream(int minRevision, int maxRevision, IEnumerable<Commit> commits)
 		{

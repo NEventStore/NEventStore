@@ -43,7 +43,7 @@ namespace EventStore.Core.UnitTests
 	{
 		const int MinRevision = 17;
 		const int MaxRevision = 42;
-		static readonly Commit[] Committed = new Commit[] { };
+		static readonly Commit[] Committed = new[] { BuildCommitStub(MinRevision, 1) };
 		static IEventStream stream;
 
 		Establish context = () =>
