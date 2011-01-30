@@ -13,6 +13,7 @@ namespace EventStore.Core.UnitTests
 	[Subject("OptimisticEventStream")]
 	public class when_constructing_a_new_stream : on_the_event_stream
 	{
+		const int MinStreamRevision = 2;
 		const int MaxStreamRevision = 7;
 		static readonly int EachCommitHas = 2.Events();
 		static readonly Commit[] Committed = new[]
@@ -24,7 +25,7 @@ namespace EventStore.Core.UnitTests
 		};
 
 		Because of = () =>
-			stream = new OptimisticEventStream(streamId, MaxStreamRevision, Committed, null);
+			stream = new OptimisticEventStream(streamId, MinStreamRevision, MaxStreamRevision, Committed, null);
 
 		It should_have_the_correct_stream_identifier = () =>
 			stream.StreamId.ShouldEqual(streamId);
@@ -35,8 +36,14 @@ namespace EventStore.Core.UnitTests
 		It should_have_the_correct_head_commit_sequence = () =>
 			stream.CommitSequence.ShouldEqual(Committed.Last().CommitSequence);
 
+		It should_not_include_events_below_the_minimum_revision_indicated = () =>
+			stream.CommittedEvents.First().ShouldEqual(Committed.First().Events.Last());
+
+		It should_not_include_events_above_the_maximum_revision_indicated = () =>
+			stream.CommittedEvents.Last().ShouldEqual(Committed.Last().Events.First());
+
 		It should_have_all_of_the_committed_events_up_to_the_stream_revision_specified = () =>
-			stream.CommittedEvents.Count.ShouldEqual(MaxStreamRevision);
+			stream.CommittedEvents.Count.ShouldEqual(MaxStreamRevision - MinStreamRevision + 1);
 	}
 
 	[Subject("OptimisticEventStream")]
@@ -52,7 +59,7 @@ namespace EventStore.Core.UnitTests
 		};
 
 		Because of = () =>
-			stream = new OptimisticEventStream(streamId, int.MaxValue, Committed, null);
+			stream = new OptimisticEventStream(streamId, 0, int.MaxValue, Committed, null);
 
 		It should_set_the_stream_revision_to_the_revision_of_the_most_recent_event = () =>
 			stream.StreamRevision.ShouldEqual(Committed.Last().StreamRevision);
@@ -269,7 +276,7 @@ namespace EventStore.Core.UnitTests
 		{
 			var commits = new[] { BuildCommitStub(DefaultStreamRevision, 1, 1) };
 			persistence = new Mock<ICommitEvents>();
-			stream = new OptimisticEventStream(streamId, DefaultStreamRevision, commits, persistence.Object);
+			stream = new OptimisticEventStream(streamId, 0, DefaultStreamRevision, commits, persistence.Object);
 		};
 
 		Cleanup cleanup = () =>

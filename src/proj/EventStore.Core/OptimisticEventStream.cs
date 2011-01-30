@@ -12,37 +12,33 @@ namespace EventStore
 		private bool disposed;
 
 		public OptimisticEventStream(
-			Guid streamId, int maxAllowedRevision, IEnumerable<Commit> commits, ICommitEvents persistence)
+			Guid streamId, int minRevision, int maxRevision, IEnumerable<Commit> commits, ICommitEvents persistence)
 		{
 			this.StreamId = streamId;
 			this.persistence = persistence;
-			this.PopulateStream(maxAllowedRevision, commits);
+			this.PopulateStream(minRevision, maxRevision, commits);
 		}
-		private void PopulateStream(int maxAllowedRevision, IEnumerable<Commit> commits)
+		private void PopulateStream(int minRevision, int maxRevision, IEnumerable<Commit> commits)
 		{
-			var currentRevision = this.StreamRevision;
-			var currentSequence = this.CommitSequence;
-
 			foreach (var commit in commits ?? new Commit[0])
 			{
-				if (currentRevision >= maxAllowedRevision)
+				var currentRevision = commit.StreamRevision - commit.Events.Count + 1;
+				if (currentRevision > maxRevision)
 					break;
-
-				currentRevision = commit.StreamRevision - commit.Events.Count;
-				currentSequence = commit.CommitSequence;
 
 				foreach (var @event in commit.Events)
 				{
-					if (currentRevision >= maxAllowedRevision)
+					if (currentRevision > maxRevision)
 						break;
 
+					if (currentRevision++ < minRevision)
+						continue;
+
 					this.committed.Add(@event);
-					currentRevision++;
+					this.StreamRevision = currentRevision - 1;
+					this.CommitSequence = commit.CommitSequence;
 				}
 			}
-
-			this.StreamRevision = currentRevision;
-			this.CommitSequence = currentSequence;
 		}
 
 		public void Dispose()
@@ -122,8 +118,9 @@ namespace EventStore
 		}
 		private void UpdateStreamOnException()
 		{
-			var commits = this.persistence.GetFrom(this.StreamId, this.StreamRevision + 1, int.MaxValue);
-			this.PopulateStream(int.MaxValue, commits);
+			var minRevision = this.StreamRevision + 1;
+			var commits = this.persistence.GetFrom(this.StreamId, minRevision, int.MaxValue);
+			this.PopulateStream(minRevision, int.MaxValue, commits);
 		}
 
 		public void ClearChanges()

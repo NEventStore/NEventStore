@@ -20,7 +20,7 @@ namespace EventStore
 		public IEventStream OpenStream(Guid streamId, int minRevision, int maxRevision)
 		{
 			var commits = this.persistence.GetFrom(streamId, minRevision, maxRevision);
-			return new OptimisticEventStream(streamId, maxRevision, commits, this);
+			return new OptimisticEventStream(streamId, minRevision, maxRevision, commits, this);
 		}
 		public IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
 		{
