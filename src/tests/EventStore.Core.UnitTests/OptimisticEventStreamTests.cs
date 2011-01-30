@@ -213,7 +213,7 @@ namespace EventStore.Core.UnitTests
 
 		Establish context = () =>
 		{
-			stream = new OptimisticEventStream(streamId, persistence.Object, 1, 2, Committed );
+			stream = new OptimisticEventStream(streamId, persistence.Object, 1, 2, Committed);
 
 			persistence
 				.Setup(x => x.Commit(Moq.It.IsAny<Commit>()))
