@@ -13,6 +13,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return CommonSqlStatements.PersistCommit.Replace("/*FROM DUAL*/", "FROM DUAL"); }
 		}
+		public override string AppendSnapshotToCommit
+		{
+			get { return base.AppendSnapshotToCommit.Replace("/*FROM DUAL*/", "FROM DUAL"); }
+		}
 
 		public override IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
 		{

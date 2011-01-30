@@ -26,7 +26,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		public virtual string GetSnapshot
 		{
-			get { return string.Empty; }
+			get { return CommonSqlStatements.GetSnapshot; }
 		}
 		public virtual string AppendSnapshotToCommit
 		{

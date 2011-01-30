@@ -142,7 +142,7 @@ namespace EventStore.Persistence.AcceptanceTests
 	}
 
 	[Subject("Persistence")]
-	public class when_a_snapshot_has_been_added_to_the_most_recent_commit : using_the_persistence_engine
+	public class when_a_snapshot_has_been_added_to_the_most_recent_commit_of_a_stream : using_the_persistence_engine
 	{
 		const string SnapshotData = "snapshot";
 		static readonly Commit oldest = streamId.BuildAttempt();
@@ -159,7 +159,10 @@ namespace EventStore.Persistence.AcceptanceTests
 		Because of = () =>
 			persistence.AddSnapshot(new Snapshot(streamId, newest.StreamRevision, SnapshotData));
 
-		It should_no_longer_find_the_commit_in_the_set_of_streams_to_be_snapshot = () =>
+		It should_be_able_to_retreive_the_snapshot = () =>
+			persistence.GetSnapshot(streamId, newest.StreamRevision).Payload.ShouldEqual(SnapshotData);
+
+		It should_no_longer_find_the_stream_in_the_set_of_streams_to_be_snapshot = () =>
 			persistence.GetStreamsToSnapshot(1).Any(x => x.StreamId == streamId).ShouldBeFalse();
 	}
 
