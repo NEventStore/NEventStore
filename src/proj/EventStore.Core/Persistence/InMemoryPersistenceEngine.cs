@@ -9,6 +9,7 @@ namespace EventStore.Persistence
 		private readonly IList<Commit> commits = new List<Commit>();
 		private readonly ICollection<StreamHead> heads = new LinkedList<StreamHead>();
 		private readonly ICollection<Commit> undispatched = new LinkedList<Commit>();
+		private readonly ICollection<Snapshot> snapshots = new LinkedList<Snapshot>();
 		private readonly IDictionary<Guid, DateTime> stamps = new Dictionary<Guid, DateTime>();
 
 		public void Dispose()
@@ -83,27 +84,22 @@ namespace EventStore.Persistence
 		}
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
-			return null;
+			lock (this.snapshots)
+				return this.snapshots
+					.Where(x => x.StreamId == streamId && x.StreamRevision <= maxRevision)
+					.OrderByDescending(x => x.StreamRevision)
+					.FirstOrDefault();
 		}
 		public virtual void AddSnapshot(Snapshot snapshot)
 		{
-			lock (this.commits)
-			{
-				var commitToBeUpdated =
-					this.commits.First(commit => commit.StreamId == snapshot.StreamId && commit.StreamRevision == snapshot.StreamRevision);
+			lock (this.snapshots)
+				this.snapshots.Add(snapshot);
 
-				this.commits.Remove(commitToBeUpdated);
-				this.commits.Add(new Commit(commitToBeUpdated.StreamId,
-					commitToBeUpdated.StreamRevision,
-					commitToBeUpdated.CommitId,
-					commitToBeUpdated.CommitSequence,
-					commitToBeUpdated.Headers,
-					commitToBeUpdated.Events,
-					snapshot));
-			}
 			lock (this.heads)
 			{
-				var currentHead = this.heads.First(h => h.StreamId == snapshot.StreamId);
+				var currentHead = this.heads.FirstOrDefault(h => h.StreamId == snapshot.StreamId);
+				if (currentHead == null)
+					return;
 
 				this.heads.Remove(currentHead);
 				this.heads.Add(new StreamHead(currentHead.StreamId, currentHead.HeadRevision, snapshot.StreamRevision));

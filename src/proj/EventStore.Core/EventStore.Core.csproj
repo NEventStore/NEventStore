@@ -51,6 +51,8 @@
     <Compile Include="Dispatcher\DelegateMessagePublisher.cs" />
     <Compile Include="Dispatcher\IDispatchMessages.cs" />
     <Compile Include="Persistence\IFilterCommits.cs" />
+    <Compile Include="Persistence\InMemoryPersistenceEngine.cs" />
+    <Compile Include="Persistence\InMemoryPersistenceFactory.cs" />
     <Compile Include="Persistence\NullCommitFilter.cs" />
     <Compile Include="Persistence\CommitFilterPersistence.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
