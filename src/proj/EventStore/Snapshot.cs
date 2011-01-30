@@ -14,10 +14,18 @@ namespace EventStore
 		/// <param name="streamRevision">The position at which the snapshot applies.</param>
 		/// <param name="payload">The snapshot or materialized view of the stream at the revision indicated.</param>
 		public Snapshot(Guid streamId, int streamRevision, object payload)
+			: this()
 		{
 			this.StreamId = streamId;
 			this.StreamRevision = streamRevision;
 			this.Payload = payload;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the Snapshot class.
+		/// </summary>
+		protected Snapshot()
+		{
 		}
 
 		/// <summary>

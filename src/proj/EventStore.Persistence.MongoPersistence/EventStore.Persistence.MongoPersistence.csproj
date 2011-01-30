@@ -57,6 +57,7 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="MongoSnapshot.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="MongoCommit.cs" />
     <Compile Include="MongoPersistenceEngine.cs" />

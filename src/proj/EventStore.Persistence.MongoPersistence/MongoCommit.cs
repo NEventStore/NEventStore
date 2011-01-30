@@ -11,18 +11,19 @@
 		{
 			get { return IdFormat.FormatWith(this.StreamId, this.CommitSequence); }
 		}
-		public Guid StreamId { get; set; }
-		public Guid CommitId { get; set; }
-		public int StreamRevision { get; set; }
-		public int CommitSequence { get; set; }
-		public Dictionary<string, object> Headers { get; set; }
-		public byte[] Payload { get; set; }
-		public byte[] Snapshot { get; set; }
 
-		public bool Dispatched { get; set; }
+		public Guid StreamId { get; set; }
 
 		public int MinStreamRevision { get; set; }
+		public int MaxStreamRevision { get; set; }
 
-		public DateTime PersistedAt { get; set; }
+		public Guid CommitId { get; set; }
+		public int CommitSequence { get; set; }
+		public DateTime CommitStamp { get; set; }
+
+		public Dictionary<string, object> Headers { get; set; }
+		public byte[] Payload { get; set; }
+
+		public bool Dispatched { get; set; }
 	}
 }

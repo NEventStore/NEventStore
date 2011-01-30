@@ -13,47 +13,55 @@ namespace EventStore.Persistence.MongoPersistence
 			return string.Format(CultureInfo.InvariantCulture, format, values);
 		}
 
-		public static MongoCommit ToMongoCommit(this CommitAttempt attempt, ISerialize serializer)
-		{
-			return attempt.ToCommit().ToMongoCommit(serializer);
-		}
 		public static MongoCommit ToMongoCommit(this Commit commit, ISerialize serializer)
 		{
 			return new MongoCommit
 			{
 				StreamId = commit.StreamId,
-				CommitId = commit.CommitId,
-				StreamRevision = commit.StreamRevision,
 				MinStreamRevision = commit.StreamRevision - commit.Events.Count,
+				MaxStreamRevision = commit.StreamRevision,
+				CommitId = commit.CommitId,
 				CommitSequence = commit.CommitSequence,
+				CommitStamp = DateTime.Now,
 				Headers = commit.Headers,
-				Payload = serializer.Serialize(commit.Events),
-				Snapshot = commit.Snapshot != null ? serializer.Serialize(commit.Snapshot) : null,
-				PersistedAt = DateTime.Now
+				Payload = serializer.Serialize(commit.Events)
 			};
 		}
-		public static Commit ToCommit(this MongoCommit mongoCommit, ISerialize serializer)
+		public static Commit ToCommit(this MongoCommit commit, ISerialize serializer)
 		{
 			return new Commit(
-				mongoCommit.StreamId,
-				mongoCommit.StreamRevision,
-				mongoCommit.CommitId,
-				mongoCommit.CommitSequence,
-				mongoCommit.Headers,
-				serializer.Deserialize(mongoCommit.Payload) as List<EventMessage>,
-				mongoCommit.Snapshot != null ? serializer.Deserialize(mongoCommit.Snapshot) : null);
+				commit.StreamId,
+				commit.MaxStreamRevision,
+				commit.CommitId,
+				commit.CommitSequence,
+				commit.Headers,
+				serializer.Deserialize(commit.Payload) as List<EventMessage>);
+		}
+
+		public static MongoSnapshot ToMongoSnapshot(this Snapshot snapshot, ISerialize serializer)
+		{
+			return new MongoSnapshot
+			{
+				StreamId = snapshot.StreamId,
+				StreamRevision = snapshot.StreamRevision,
+				Payload = serializer.Serialize(snapshot.Payload)
+			};
+		}
+		public static Snapshot ToSnapshot(this MongoSnapshot snapshot, ISerialize serializer)
+		{
+			if (snapshot == null)
+				return null;
+
+			return new Snapshot(
+				snapshot.StreamId,
+				snapshot.StreamRevision,
+				serializer.Deserialize(snapshot.Payload));
 		}
 
 		public static Expando ToMongoExpando(this MongoCommit commit)
 		{
 			var expando = new Expando();
 			expando["_id"] = commit.Id;
-			return expando;
-		}
-		public static Expando ToMongoExpando(this StreamHead stream)
-		{
-			var expando = new Expando();
-			expando["_id"] = stream.StreamId;
 			return expando;
 		}
 	}
