@@ -62,16 +62,16 @@ namespace EventStore.Core.UnitTests
 	[Subject("OptimisticEventStore")]
 	public class when_opening_an_empty_stream : using_persistence
 	{
-		static IEventStream stream;
+		static Exception thrown;
 
 		Establish context = () =>
 			persistence.Setup(x => x.GetFrom(streamId, 0, 0)).Returns(new Commit[0]);
 
 		Because of = () =>
-			stream = store.OpenStream(streamId, 0, 0);
+			thrown = Catch.Exception(() => store.OpenStream(streamId, 0, 0));
 
-		It should_return_a_null_stream = () =>
-			stream.ShouldBeNull();
+		It should_throw_a_StreamNotFoundException = () =>
+			thrown.ShouldBeOfType<StreamNotFoundException>();
 	}
 
 	[Subject("OptimisticEventStore")]

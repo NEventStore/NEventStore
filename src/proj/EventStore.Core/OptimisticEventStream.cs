@@ -21,9 +21,9 @@ namespace EventStore
 		{
 			var commits = persistence.GetFrom(streamId, minRevision, maxRevision);
 			this.PopulateStream(minRevision, maxRevision, commits);
-			
+
 			if (this.committed.Count == 0)
-				this.Dispose();
+				throw new StreamNotFoundException();
 		}
 		public OptimisticEventStream(Snapshot snapshot, ICommitEvents persistence, int maxRevision)
 			: this(snapshot.StreamId, persistence)
@@ -64,11 +64,6 @@ namespace EventStore
 		protected virtual void Dispose(bool disposing)
 		{
 			this.disposed = true;
-			this.StreamId = Guid.Empty;
-			this.StreamRevision = 0;
-			this.CommitSequence = 0;
-			this.uncommitted.Clear();
-			this.committed.Clear();
 		}
 
 		public virtual Guid StreamId { get; private set; }

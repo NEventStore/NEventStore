@@ -48,6 +48,7 @@
     <Compile Include="ConcurrencyException.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="StreamNotFoundException.cs" />
     <Compile Include="Dispatcher\IDispatchCommits.cs" />
     <Compile Include="ICommitEvents.cs" />
     <Compile Include="IEventStream.cs" />
