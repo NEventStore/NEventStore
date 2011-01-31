@@ -150,6 +150,9 @@ namespace EventStore.Persistence.AcceptanceTests
 		static readonly Snapshot snapshot = new Snapshot(streamId, 1, "Snapshot");
 		static bool added;
 
+		Establish context = () =>
+			persistence.Commit(streamId.BuildAttempt());
+
 		Because of = () =>
 			added = persistence.AddSnapshot(snapshot);
 
@@ -165,13 +168,21 @@ namespace EventStore.Persistence.AcceptanceTests
 	{
 		static readonly Snapshot tooFarBack = new Snapshot(streamId, 1, string.Empty);
 		static readonly Snapshot correct = new Snapshot(streamId, 3, "Snapshot");
-		static readonly Snapshot tooFarForward = new Snapshot(streamId, 100, string.Empty);
+		static readonly Snapshot tooFarForward = new Snapshot(streamId, 5, string.Empty);
 		static Snapshot snapshot;
 
 		Establish context = () =>
 		{
+			var commit1 = streamId.BuildAttempt();
+			var commit2 = commit1.BuildNextAttempt();
+			var commit3 = commit2.BuildNextAttempt();
+			persistence.Commit(commit1); // rev 1-2
+			persistence.Commit(commit2); // rev 3-4
+			persistence.Commit(commit3); // rev 5-6
+
 			persistence.AddSnapshot(tooFarBack);
 			persistence.AddSnapshot(correct);
+			persistence.AddSnapshot(tooFarForward);
 		};
 
 		Because of = () =>

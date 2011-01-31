@@ -38,7 +38,7 @@ namespace EventStore
 			{
 				var currentRevision = commit.StreamRevision - commit.Events.Count + 1;
 				if (currentRevision > maxRevision)
-					break;
+					return;
 
 				foreach (var @event in commit.Events)
 				{
