@@ -44,7 +44,6 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="CommittedEventStream.cs" />
     <Compile Include="ConcurrencyException.cs">
       <SubType>Code</SubType>
     </Compile>
