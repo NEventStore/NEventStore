@@ -37,64 +37,64 @@ enlisting any resources (other than a message queue) in some form of a transacti
 ## Supported Storage Engines
 
 ### Relational Databases
-_[Complete]_ Microsoft SQL Server 2000 (or later)  
-_[Complete]_ MySQL 5.0 (or later)  
-* _[Complete]_ InnoDB  
-* _[Complete]_ NDB/MySQL Cluster  
-* _[Complete]_ Drizzle  
-* _[Complete]_ MariaDB  
-* _[Complete]_ XtraDB  
-* _[Complete]_ PBXT  
-* _[Complete]_ Xeround  
-* _[Complete]_ Galera  
-* _[Complete]_ Percona  
-* _[Complete]_ OurDelta  
-* _[Untested]_ MyISAM  
-* _[Untested]_ BerkleyDB  
-_[Complete]_ PostgreSQL 8.0 (or later)  
-_[Complete]_ Firebird 2.0 (or later)  
-_[Planned]_ Oracle 8.0 (or later)  
-_[Planned]_ IBM DB2  
-_[Planned]_ Informix  
-_[Planned]_ Sybase  
+[Complete] Microsoft SQL Server 2000 (or later)  
+[Complete] MySQL 5.0 (or later)  
+* [Complete] InnoDB  
+* [Complete] NDB/MySQL Cluster  
+* [Complete] Drizzle  
+* [Complete] MariaDB  
+* [Complete] XtraDB  
+* [Complete] PBXT  
+* [Complete] Xeround  
+* [Complete] Galera  
+* [Complete] Percona  
+* [Complete] OurDelta  
+* [Untested] MyISAM  
+* [Untested] BerkleyDB  
+[Complete] PostgreSQL 8.0 (or later)  
+[Complete] Firebird 2.0 (or later)  
+[Planned] Oracle 8.0 (or later)  
+[Planned] IBM DB2  
+[Planned] Informix  
+[Planned] Sybase  
 
 ### Embedded Relational Databases
-_[Complete]_ SQLite 3.0 (or later)  
-_[Complete]_ Microsoft SQL Server Compact Edition 3.5 (or later)  
-_[Complete]_ Microsoft Access 2000 (or later)  
+[Complete] SQLite 3.0 (or later)  
+[Complete] Microsoft SQL Server Compact Edition 3.5 (or later)  
+[Complete] Microsoft Access 2000 (or later)  
 
 ### Cloud-based Relational Databases
-_[Complete]_ Microsoft SQL Azure  
-_[Complete]_ Amazon RDS  
-_[In progress]_ Azure Tables  
-_[In progress]_ Amazon SimpleDB  
-_[Planned]_ Amazon S3  
+[Complete] Microsoft SQL Azure  
+[Complete] Amazon RDS  
+[In progress] Azure Tables  
+[In progress] Amazon SimpleDB  
+[Planned] Amazon S3  
 
 ### Document Databases
-_[In progress]_ RavenDB r224 (or later)  
-_[Planned]_ CouchDB 1.0 (or later)  
-_[Beta]_ MongoDB 1.6 (or later)  
+[In progress] RavenDB r264 (or later)  
+[Planned] CouchDB 1.0 (or later)  
+[Complete] MongoDB 1.6 (or later)  
 
 ### File System
-_[Planned]_ .NET Managed System.IO APIs _[Planned]_  
+[Planned] .NET Managed System.IO APIs    
 
 ### Dynamo Clones
-_[Planned]_ Cassandra  
-_[Planned]_ Riak  
-_[Planned]_ Voldemort  
-_[Planned]_ Dynomite  
+[Planned] Cassandra  
+[Planned] Riak  
+[Planned] Voldemort  
+[Planned] Dynomite  
 
 ### KV Stores / NoSQL
-_[Planned]_ HBase  
-_[Planned]_ Redis  
-_[Planned]_ Tokyo Cabinet  
-_[Planned]_ Memcached (and variants)  
-_[Planned]_ Hibari  
-_[Planned]_ Keyspace  
-_[Planned]_ OrientDB / OrientKV  
-_[Planned]_ VoltDB  
-_[Planned]_ BerkleyDB  
-_[Planned]_ HampsterDB  
+[Planned] HBase  
+[Planned] Redis  
+[Planned] Tokyo Cabinet  
+[Planned] Memcached (and variants)  
+[Planned] Hibari  
+[Planned] Keyspace  
+[Planned] OrientDB / OrientKV  
+[Planned] VoltDB  
+[Planned] BerkleyDB  
+[Planned] HampsterDB  
 
 ## Project Goals
 * Mono 2.6 support  
@@ -110,7 +110,7 @@ _[Planned]_ HampsterDB
 * Fluent builder
 
 ## Building
-For .NET v4.0, simply run build.cmd from the command line.  Users requiring a .NET v3.5 build may run build-net35.cmd.  
+For .NET v4.0, simply run **build.cmd** from the command line.  Users requiring a .NET v3.5 build may run **build-net35.cmd**.  
 Once built, the files will be placed in the "output" subdirectory.
 
 ## Using the EventStore
