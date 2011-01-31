@@ -37,80 +37,81 @@ enlisting any resources (other than a message queue) in some form of a transacti
 ## Supported Storage Engines
 
 ### Relational Databases
-[Complete] Microsoft SQL Server 2000 (or later)  
-[Complete] MySQL 5.0 (or later)  
-* [Complete] InnoDB  
-* [Complete] NDB/MySQL Cluster  
-* [Complete] Drizzle  
-* [Complete] MariaDB  
-* [Complete] XtraDB  
-* [Complete] PBXT  
-* [Complete] Xeround  
-* [Complete] Galera  
-* [Complete] Percona  
-* [Complete] OurDelta  
-* [Untested] MyISAM  
-* [Untested] BerkleyDB  
-[Complete] PostgreSQL 8.0 (or later)  
-[Complete] Firebird 2.0 (or later)  
-[Planned] Oracle 8.0 (or later)  
-[Planned] IBM DB2  
-[Planned] Informix  
-[Planned] Sybase  
+_[Complete]_ Microsoft SQL Server 2000 (or later)  
+_[Complete]_ MySQL 5.0 (or later)  
+* _[Complete]_ InnoDB  
+* _[Complete]_ NDB/MySQL Cluster  
+* _[Complete]_ Drizzle  
+* _[Complete]_ MariaDB  
+* _[Complete]_ XtraDB  
+* _[Complete]_ PBXT  
+* _[Complete]_ Xeround  
+* _[Complete]_ Galera  
+* _[Complete]_ Percona  
+* _[Complete]_ OurDelta  
+* _[Untested]_ MyISAM  
+* _[Untested]_ BerkleyDB  
+_[Complete]_ PostgreSQL 8.0 (or later)  
+_[Complete]_ Firebird 2.0 (or later)  
+_[Planned]_ Oracle 8.0 (or later)  
+_[Planned]_ IBM DB2  
+_[Planned]_ Informix  
+_[Planned]_ Sybase  
 
 ### Embedded Relational Databases
-[Complete] SQLite 3.0 (or later)  
-[Complete] Microsoft SQL Server Compact Edition 3.5 (or later)  
-[Complete] Microsoft Access 2000 (or later)  
+_[Complete]_ SQLite 3.0 (or later)  
+_[Complete]_ Microsoft SQL Server Compact Edition 3.5 (or later)  
+_[Complete]_ Microsoft Access 2000 (or later)  
 
 ### Cloud-based Relational Databases
-[Complete] Microsoft SQL Azure  
-[Planned] Azure Tables  
-[Complete] Amazon RDS  
-[Planned] Amazon SimpleDB  
-[Planned] Amazon S3  
+_[Complete]_ Microsoft SQL Azure  
+_[Complete]_ Amazon RDS  
+_[In progress]_ Azure Tables  
+_[In progress]_ Amazon SimpleDB  
+_[Planned]_ Amazon S3  
 
 ### Document Databases
-[In progress] RavenDB r224 (or later)  
-[Planned] CouchDB 1.0 (or later)  
-[Beta] MongoDB 1.6 (or later)  
+_[In progress]_ RavenDB r224 (or later)  
+_[Planned]_ CouchDB 1.0 (or later)  
+_[Beta]_ MongoDB 1.6 (or later)  
 
 ### File System
-[Planned] .NET Managed System.IO APIs [Planned]  
+_[Planned]_ .NET Managed System.IO APIs _[Planned]_  
 
 ### Dynamo Clones
-[Planned] Cassandra  
-[Planned] Riak  
-[Planned] Voldemort  
-[Planned] Dynomite  
+_[Planned]_ Cassandra  
+_[Planned]_ Riak  
+_[Planned]_ Voldemort  
+_[Planned]_ Dynomite  
 
 ### KV Stores / NoSQL
-[Planned] HBase  
-[Planned] Redis  
-[Planned] Tokyo Cabinet  
-[Planned] Memcached (and variants)  
-[Planned] Hibari  
-[Planned] Keyspace  
-[Planned] OrientDB / OrientKV  
-[Planned] VoltDB  
-[Planned] BerkleyDB  
-[Planned] HampsterDB  
+_[Planned]_ HBase  
+_[Planned]_ Redis  
+_[Planned]_ Tokyo Cabinet  
+_[Planned]_ Memcached (and variants)  
+_[Planned]_ Hibari  
+_[Planned]_ Keyspace  
+_[Planned]_ OrientDB / OrientKV  
+_[Planned]_ VoltDB  
+_[Planned]_ BerkleyDB  
+_[Planned]_ HampsterDB  
 
 ## Project Goals
 * Mono 2.6 support  
 * Medium-trust support  
 * Support more storage engines than any other event storage implementation  
 * Easily support virtually any storage engine (NoSQL, etc.)  
-* Completely avoid TransactionScope or Transactions, but maintain data integrity  
+* Avoid dependence upon TransactionScope or Transactions while maintaining full data integrity  
 * Full test coverage of storage implementations  
 * Easily hook into any bus implementation (NServiceBus, MassTransit, etc.)  
 * Synchronous and asynchronous dispatching of events  
-* High performance  
+* Extreme performance  
 * Multi-thread safe  
 * Fluent builder
 
 ## Building
-TODO
+For .NET v4.0, simply run build.cmd from the command line.  Users requiring a .NET v3.5 build may run build-net35.cmd.  
+Once built, the files will be placed in the "output" subdirectory.
 
 ## Using the EventStore
-TODO
+Please see [EventStore.Example](https://github.com/joliver/EventStore/blob/master/doc/EventStore.Example/ExampleUsage.cs) project in the doc subdirectory.
