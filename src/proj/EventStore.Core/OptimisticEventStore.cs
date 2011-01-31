@@ -11,11 +11,27 @@ namespace EventStore
 		private readonly CommitTracker tracker = new CommitTracker();
 		private readonly IPersistStreams persistence;
 		private readonly IDispatchCommits dispatcher;
+		private bool disposed;
 
 		public OptimisticEventStore(IPersistStreams persistence, IDispatchCommits dispatcher)
 		{
 			this.persistence = persistence;
 			this.dispatcher = dispatcher;
+		}
+
+		public void Dispose()
+		{
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposing || this.disposed)
+				return;
+
+			this.disposed = true;
+			this.dispatcher.Dispose();
+			this.persistence.Dispose();
 		}
 
 		public virtual IEventStream CreateStream(Guid streamId)

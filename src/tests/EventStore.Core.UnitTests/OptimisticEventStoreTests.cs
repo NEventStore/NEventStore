@@ -434,6 +434,22 @@ namespace EventStore.Core.UnitTests
 			thrown.ShouldBeOfType<ConcurrencyException>();
 	}
 
+	[Subject("OptimisticEventStore")]
+	public class when_disposing_the_event_store : using_persistence
+	{
+		private Because of = () =>
+		{
+			store.Dispose();
+			store.Dispose();
+		};
+
+		It should_dispose_the_underlying_persistence_exactly_once = () =>
+			persistence.Verify(x => x.Dispose(), Times.Once());
+
+		It should_dispose_the_underlying_dispatcher_exactly_once = () =>
+			dispatcher.Verify(x => x.Dispose(), Times.Once());
+	}
+
 	public abstract class using_persistence
 	{
 		protected static Guid streamId = Guid.NewGuid();

@@ -6,7 +6,7 @@ namespace EventStore
 	/// <summary>
 	/// Indicates the ability to store and retreive a stream of events.
 	/// </summary>
-	public interface IStoreEvents : IAccessSnapshots
+	public interface IStoreEvents : IDisposable, IAccessSnapshots
 	{
 		/// <summary>
 		/// Creates a new stream.
