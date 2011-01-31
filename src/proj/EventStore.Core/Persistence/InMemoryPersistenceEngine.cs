@@ -92,17 +92,17 @@ namespace EventStore.Persistence
 		}
 		public virtual bool AddSnapshot(Snapshot snapshot)
 		{
-			lock (this.snapshots)
-				this.snapshots.Add(snapshot);
-
 			lock (this.heads)
 			{
 				var currentHead = this.heads.FirstOrDefault(h => h.StreamId == snapshot.StreamId);
-				if (currentHead != null)
-				{
-					this.heads.Remove(currentHead);
-					this.heads.Add(new StreamHead(currentHead.StreamId, currentHead.HeadRevision, snapshot.StreamRevision));
-				}
+				if (currentHead == null)
+					return false;
+
+				lock (this.snapshots)
+					this.snapshots.Add(snapshot);
+
+				this.heads.Remove(currentHead);
+				this.heads.Add(new StreamHead(currentHead.StreamId, currentHead.HeadRevision, snapshot.StreamRevision));
 			}
 
 			return true;

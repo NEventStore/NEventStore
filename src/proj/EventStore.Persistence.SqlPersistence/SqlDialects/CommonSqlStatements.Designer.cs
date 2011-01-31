@@ -66,7 +66,12 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///     ( StreamId, StreamRevision, Payload )
         ///SELECT @StreamId, @StreamRevision, @Payload
         ////*FROM DUAL*/
-        /// WHERE NOT EXISTS
+        /// WHERE EXISTS
+        ///     ( SELECT *
+        ///         FROM Commits
+        ///        WHERE StreamId = @StreamId
+        ///          AND (StreamRevision - Items) &lt;= @StreamRevision )
+        ///   AND NOT EXISTS
         ///     ( SELECT *
         ///         FROM Snapshots
         ///        WHERE StreamId = @StreamId

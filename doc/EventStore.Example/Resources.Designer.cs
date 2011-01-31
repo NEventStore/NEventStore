@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace EventStore.Persistence.SqlPersistence.SqlDialects {
+namespace EventStore.Example {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class AccessStatements {
+    internal class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal AccessStatements() {
+        internal Resources() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.Persistence.SqlPersistence.SqlDialects.AccessStatements", typeof(AccessStatements).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EventStore.Example.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,44 +61,29 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(IIf(S.StreamRevision IS NULL, 0, S.StreamRevision)) AS SnapshotRevision
-        ///  FROM Commits AS C
-        /// LEFT JOIN Snapshots AS S
-        ///    ON ( C.StreamId = S.StreamId AND C.StreamRevision &gt;= S.StreamRevision )
-        /// GROUP BY C.StreamId
-        ///HAVING MAX(C.StreamRevision) &gt;= MAX(IIf(S.StreamRevision IS NULL, 0, S.StreamRevision)) + @Threshold;.
+        ///   Looks up a localized string similar to Exception while publishing message.
         /// </summary>
-        internal static string GetStreamsToSnapshot {
+        internal static string ErrorWhilePublishing {
             get {
-                return ResourceManager.GetString("GetStreamsToSnapshot", resourceCulture);
+                return ResourceManager.GetString("ErrorWhilePublishing", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CREATE TABLE Dual
-        ///(
-        ///       DualTableValue char(1) NOT NULL
-        ///);
-        ///INSERT INTO Dual VALUES (&apos; &apos;);
-        ///
-        ///CREATE TABLE Commits
-        ///(
-        ///       StreamId guid NOT NULL,
-        ///       StreamRevision int NOT NULL,
-        ///       Items tinyint NOT NULL,
-        ///       CommitId guid NOT NULL,
-        ///       CommitSequence int NOT NULL,
-        ///       CommitStamp datetime NOT NULL,
-        ///       Dispatched bit NOT NULL DEFAULT 0,
-        ///       Headers image NULL,
-        ///       Payload image NOT NULL,
-        ///       CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)
-        ///);
-        ///CR [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to Messages from commit have been published..
         /// </summary>
-        internal static string InitializeStorage {
+        internal static string MessagesPublished {
             get {
-                return ResourceManager.GetString("InitializeStorage", resourceCulture);
+                return ResourceManager.GetString("MessagesPublished", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Press any key to continue....
+        /// </summary>
+        internal static string PressAnyKey {
+            get {
+                return ResourceManager.GetString("PressAnyKey", resourceCulture);
             }
         }
     }
