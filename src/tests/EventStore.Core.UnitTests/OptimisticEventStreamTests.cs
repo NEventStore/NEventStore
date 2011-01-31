@@ -111,6 +111,21 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStream")]
+	public class when_adding_a_simple_object_as_an_event_message : on_the_event_stream
+	{
+		const string MyEvent = "some event data";
+
+		Because of = () =>
+			stream.Add(MyEvent);
+
+		It should_add_the_uncommited_event_to_the_set_of_uncommitted_events = () =>
+			stream.UncommittedEvents.Count.ShouldEqual(1);
+
+		It should_wrap_the_uncommited_event_in_an_EventMessage_object = () =>
+			stream.UncommittedEvents.First().Body.ShouldEqual(MyEvent);
+	}
+
+	[Subject("OptimisticEventStream")]
 	public class when_clearing_any_uncommitted_changes : on_the_event_stream
 	{
 		Establish context = () =>

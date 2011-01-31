@@ -91,6 +91,14 @@ namespace EventStore
 				this.uncommitted.Add(@event);
 			}
 		}
+		public virtual void Add(params object[] uncommittedEvents)
+		{
+			if (uncommittedEvents == null || uncommittedEvents.Length == 0)
+				throw new ArgumentNullException("uncommittedEvents");
+
+			foreach (var @event in uncommittedEvents)
+				this.Add(new EventMessage { Body = @event });
+		}
 
 		public virtual void CommitChanges(Guid commitId, Dictionary<string, object> headers)
 		{

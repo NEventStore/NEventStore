@@ -21,8 +21,7 @@ namespace EventStore.Example
 		{
 			using (var stream = eventStore.CreateStream(StreamId))
 			{
-				var domainEvent = new SomeDomainEvent { Value = "Initial event." };
-				stream.Add(new EventMessage { Body = domainEvent });
+				stream.Add(new SomeDomainEvent { Value = "Initial event." });
 				stream.CommitChanges(Guid.NewGuid(), null);
 			}
 		}
@@ -31,8 +30,7 @@ namespace EventStore.Example
 		{
 			using (var stream = eventStore.OpenStream(StreamId, int.MinValue, int.MaxValue))
 			{
-				var domainEvent = new SomeDomainEvent { Value = "Second event." };
-				stream.Add(new EventMessage { Body = domainEvent });
+				stream.Add(new SomeDomainEvent { Value = "Second event." });
 				stream.CommitChanges(Guid.NewGuid(), null);
 			}
 		}
@@ -49,8 +47,7 @@ namespace EventStore.Example
 
 			using (var stream = eventStore.OpenStream(latestSnapshot, int.MaxValue))
 			{
-				var domainEvent = new SomeDomainEvent { Value = "Third event (first one after a snapshot)." };
-				stream.Add(new EventMessage { Body = domainEvent });
+				stream.Add(new SomeDomainEvent { Value = "Third event (first one after a snapshot)." });
 				stream.CommitChanges(Guid.NewGuid(), null);
 			}
 		}
