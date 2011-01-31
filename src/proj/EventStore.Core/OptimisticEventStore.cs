@@ -36,7 +36,7 @@ namespace EventStore
 
 		public virtual IEventStream CreateStream(Guid streamId)
 		{
-			return new OptimisticEventStream(streamId, this.persistence);
+			return new OptimisticEventStream(streamId, this);
 		}
 		public virtual IEventStream OpenStream(Guid streamId, int minRevision, int maxRevision)
 		{
@@ -55,7 +55,7 @@ namespace EventStore
 			var commits = this.persistence.GetFrom(streamId, minRevision, maxRevision);
 			return this.OpenStream(streamId, minRevision + 1, maxRevision, commits)
 				?? new OptimisticEventStream(
-					streamId, this.persistence, minRevision, commits.First().CommitSequence);
+					streamId, this, minRevision, commits.First().CommitSequence);
 		}
 		private IEventStream OpenStream(Guid streamId, int minRevision, int maxRevision, IEnumerable<Commit> commits)
 		{
