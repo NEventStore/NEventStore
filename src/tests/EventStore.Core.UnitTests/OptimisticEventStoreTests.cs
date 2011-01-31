@@ -97,7 +97,8 @@ namespace EventStore.Core.UnitTests
 		const int HeadStreamRevision = 42;
 		const int HeadCommitSequence = 15;
 		static readonly Snapshot snapshot = new Snapshot(streamId, HeadStreamRevision, "snapshot");
-		static readonly Commit[] Committed = new[] { BuildCommitStub(HeadStreamRevision, HeadCommitSequence) };
+		static readonly EnumerableCounter Committed = new EnumerableCounter(
+			new[] { BuildCommitStub(HeadStreamRevision, HeadCommitSequence) });
 		static IEventStream stream;
 
 		Establish context = () =>
@@ -120,6 +121,9 @@ namespace EventStore.Core.UnitTests
 
 		It should_return_a_stream_with_no_uncommitted_events = () =>
 			stream.UncommittedEvents.Count.ShouldEqual(0);
+
+		It should_only_enumerate_the_set_of_commits_once = () =>
+			Committed.GetEnumeratorCallCount.ShouldEqual(1);
 	}
 
 	[Subject("OptimisticEventStore")]
