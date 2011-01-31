@@ -24,5 +24,13 @@ namespace EventStore
 		/// <returns>A series of committed events represented as a stream.</returns>
 		/// <exception cref="StorageException" />
 		IEventStream OpenStream(Guid streamId, int minRevision, int maxRevision);
+
+		/// <summary>
+		/// Reads the stream indicated from the point of the snapshot forward until the maximum revision specified.
+		/// </summary>
+		/// <param name="snapshot">The snapshot of the stream to be read.</param>
+		/// <param name="maxRevision">The maximum revision of the stream to be read.</param>
+		/// <returns>A series of committed events represented as a stream.</returns>
+		IEventStream OpenStream(Snapshot snapshot, int maxRevision);
 	}
 }

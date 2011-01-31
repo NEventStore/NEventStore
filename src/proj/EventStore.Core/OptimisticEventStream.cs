@@ -131,7 +131,7 @@ namespace EventStore
 				this.StreamRevision + this.uncommitted.Count,
 				commitId,
 				this.CommitSequence + 1,
-				headers,
+				headers ?? new Dictionary<string, object>(),
 				this.uncommitted.ToList());
 		}
 		private void UpdateStreamOnException()
