@@ -71,8 +71,11 @@ namespace EventStore.Persistence.SqlPersistence
 				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(attempt.Events));
 
 				var rowsAffected = cmd.Execute(this.dialect.PersistCommit);
-				if (rowsAffected == 0)
-					throw new ConcurrencyException();
+				if (rowsAffected > 0)
+					return;
+
+				var conflictRevision = attempt.StreamRevision - attempt.Events.Count + 1;
+				throw new ConcurrencyException(this.GetFrom(attempt.StreamId, conflictRevision, int.MaxValue));
 			});
 		}
 

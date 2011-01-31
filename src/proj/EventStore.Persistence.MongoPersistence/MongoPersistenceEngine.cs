@@ -109,10 +109,11 @@ namespace EventStore.Persistence.MongoPersistence
 					throw new StorageException(e.Message, e);
 
 				var committed = this.PersistedCommits.FindOne(commit.ToMongoExpando());
-				if (committed != null && committed.CommitId != commit.CommitId)
-					throw new ConcurrencyException();
+				if (committed == null || committed.CommitId == commit.CommitId)
+					throw new DuplicateCommitException();
 
-				throw new DuplicateCommitException();
+				var conflictRevision = attempt.StreamRevision - attempt.Events.Count + 1;
+				throw new ConcurrencyException(this.GetFrom(attempt.StreamId, conflictRevision, int.MaxValue));
 			}
 		}
 

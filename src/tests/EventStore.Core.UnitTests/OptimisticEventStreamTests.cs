@@ -224,13 +224,10 @@ namespace EventStore.Core.UnitTests
 		{
 			persistence
 				.Setup(x => x.Commit(Moq.It.IsAny<Commit>()))
-				.Throws(new ConcurrencyException());
+				.Throws(new ConcurrencyException(DiscoveredOnCommit));
 			persistence
 				.Setup(x => x.GetFrom(streamId, 1, 2))
 				.Returns(Committed);
-			persistence
-				.Setup(x => x.GetFrom(streamId, DefaultStreamRevision + 1, int.MaxValue))
-				.Returns(DiscoveredOnCommit);
 
 			stream = new OptimisticEventStream(streamId, persistence.Object, 1, 2);
 			stream.Add(uncommitted);
@@ -241,9 +238,6 @@ namespace EventStore.Core.UnitTests
 
 		It should_throw_a_ConcurrencyException = () =>
 			thrown.ShouldBeOfType<ConcurrencyException>();
-
-		It should_query_persistence_to_discover_the_new_events = () =>
-			persistence.Verify(x => x.GetFrom(streamId, DefaultStreamRevision + 1, int.MaxValue), Times.Once());
 
 		It should_update_the_stream_revision_accordingly = () =>
 			stream.StreamRevision.ShouldEqual(DiscoveredOnCommit[0].StreamRevision);
