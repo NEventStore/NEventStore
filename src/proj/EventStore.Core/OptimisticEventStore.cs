@@ -80,7 +80,7 @@ namespace EventStore
 			if (head.StreamRevision >= attempt.StreamRevision)
 				throw new ConcurrencyException();
 
-			if (head.CommitSequence < attempt.CommitSequence)
+			if (head.CommitSequence < attempt.CommitSequence - 1)
 				throw new StorageException(); // beyond the end of the stream
 
 			if (head.StreamRevision < attempt.StreamRevision - attempt.Events.Count)
