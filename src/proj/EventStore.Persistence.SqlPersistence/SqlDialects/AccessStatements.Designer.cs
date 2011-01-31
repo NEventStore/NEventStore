@@ -61,6 +61,20 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(IIf(S.StreamRevision IS NULL, 0, S.StreamRevision)) AS SnapshotRevision
+        ///  FROM Commits AS C
+        /// LEFT JOIN Snapshots AS S
+        ///    ON ( C.StreamId = S.StreamId AND C.StreamRevision &gt;= S.StreamRevision )
+        /// GROUP BY C.StreamId
+        ///HAVING MAX(C.StreamRevision) &gt;= MAX(IIf(S.StreamRevision IS NULL, 0, S.StreamRevision)) + @Threshold;.
+        /// </summary>
+        internal static string GetStreamsToSnapshot {
+            get {
+                return ResourceManager.GetString("GetStreamsToSnapshot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CREATE TABLE Dual
         ///(
         ///       DualTableValue char(1) NOT NULL
