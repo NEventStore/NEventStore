@@ -16,26 +16,28 @@ namespace EventStore
 			this.StreamId = streamId;
 			this.persistence = persistence;
 		}
-		public OptimisticEventStream(Guid streamId, ICommitEvents persistence, int revision, int sequence)
+		public OptimisticEventStream(Guid streamId, ICommitEvents persistence, int minRevision, int maxRevision)
 			: this(streamId, persistence)
 		{
-			this.StreamRevision = revision;
-			this.CommitSequence = sequence;
-		}
-		public OptimisticEventStream(
-			Guid streamId,
-			ICommitEvents persistence,
-			int minRevision,
-			int maxRevision,
-			IEnumerable<Commit> commits)
-			: this(streamId, persistence)
-		{
+			var commits = persistence.GetFrom(streamId, minRevision, maxRevision);
 			this.PopulateStream(minRevision, maxRevision, commits);
+			
+			if (this.committed.Count == 0)
+				this.Dispose();
 		}
+		public OptimisticEventStream(Snapshot snapshot, ICommitEvents persistence, int maxRevision)
+			: this(snapshot.StreamId, persistence)
+		{
+			var commits = persistence.GetFrom(snapshot.StreamId, snapshot.StreamRevision, maxRevision);
+			this.PopulateStream(snapshot.StreamRevision + 1, maxRevision, commits);
+			this.StreamRevision = snapshot.StreamRevision + this.committed.Count;
+		}
+
 		private void PopulateStream(int minRevision, int maxRevision, IEnumerable<Commit> commits)
 		{
 			foreach (var commit in commits ?? new Commit[0])
 			{
+				this.CommitSequence = commit.CommitSequence;
 				var currentRevision = commit.StreamRevision - commit.Events.Count + 1;
 				if (currentRevision > maxRevision)
 					return;
@@ -50,7 +52,6 @@ namespace EventStore
 
 					this.committed.Add(@event);
 					this.StreamRevision = currentRevision - 1;
-					this.CommitSequence = commit.CommitSequence;
 				}
 			}
 		}
@@ -63,6 +64,11 @@ namespace EventStore
 		protected virtual void Dispose(bool disposing)
 		{
 			this.disposed = true;
+			this.StreamId = Guid.Empty;
+			this.StreamRevision = 0;
+			this.CommitSequence = 0;
+			this.uncommitted.Clear();
+			this.committed.Clear();
 		}
 
 		public virtual Guid StreamId { get; private set; }

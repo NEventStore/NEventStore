@@ -28,7 +28,7 @@ namespace EventStore.Core.UnitTests
 		}
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return GetEnumerator();
+			return this.GetEnumerator();
 		}
 	}
 }

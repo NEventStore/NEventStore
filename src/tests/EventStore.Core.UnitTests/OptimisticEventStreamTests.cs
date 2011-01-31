@@ -13,8 +13,8 @@ namespace EventStore.Core.UnitTests
 	[Subject("OptimisticEventStream")]
 	public class when_constructing_a_new_stream : on_the_event_stream
 	{
-		const int MinStreamRevision = 2;
-		const int MaxStreamRevision = 7;
+		const int MinRevision = 2;
+		const int MaxRevision = 7;
 		static readonly int EachCommitHas = 2.Events();
 		static readonly Commit[] Committed = new[]
 		{
@@ -24,14 +24,17 @@ namespace EventStore.Core.UnitTests
 			BuildCommitStub(8, 3, EachCommitHas), // 7-8
 		};
 
+		Establish context = () =>
+			persistence.Setup(x => x.GetFrom(streamId, MinRevision, MaxRevision)).Returns(Committed);
+
 		Because of = () =>
-			stream = new OptimisticEventStream(streamId, null, MinStreamRevision, MaxStreamRevision, Committed);
+			stream = new OptimisticEventStream(streamId, persistence.Object, MinRevision, MaxRevision);
 
 		It should_have_the_correct_stream_identifier = () =>
 			stream.StreamId.ShouldEqual(streamId);
 
 		It should_have_the_correct_head_stream_revision = () =>
-			stream.StreamRevision.ShouldEqual(MaxStreamRevision);
+			stream.StreamRevision.ShouldEqual(MaxRevision);
 
 		It should_have_the_correct_head_commit_sequence = () =>
 			stream.CommitSequence.ShouldEqual(Committed.Last().CommitSequence);
@@ -43,7 +46,7 @@ namespace EventStore.Core.UnitTests
 			stream.CommittedEvents.Last().ShouldEqual(Committed.Last().Events.First());
 
 		It should_have_all_of_the_committed_events_up_to_the_stream_revision_specified = () =>
-			stream.CommittedEvents.Count.ShouldEqual(MaxStreamRevision - MinStreamRevision + 1);
+			stream.CommittedEvents.Count.ShouldEqual(MaxRevision - MinRevision + 1);
 	}
 
 	[Subject("OptimisticEventStream")]
@@ -58,8 +61,11 @@ namespace EventStore.Core.UnitTests
 			BuildCommitStub(8, 3, EventsPerCommit), // 7-8
 		};
 
+		Establish context = () =>
+			persistence.Setup(x => x.GetFrom(streamId, 0, int.MaxValue)).Returns(Committed);
+
 		Because of = () =>
-			stream = new OptimisticEventStream(streamId, null, 0, int.MaxValue, Committed);
+			stream = new OptimisticEventStream(streamId, persistence.Object, 0, int.MaxValue);
 
 		It should_set_the_stream_revision_to_the_revision_of_the_most_recent_event = () =>
 			stream.StreamRevision.ShouldEqual(Committed.Last().StreamRevision);
@@ -216,16 +222,17 @@ namespace EventStore.Core.UnitTests
 
 		Establish context = () =>
 		{
-			stream = new OptimisticEventStream(streamId, persistence.Object, 1, 2, Committed);
-
 			persistence
 				.Setup(x => x.Commit(Moq.It.IsAny<Commit>()))
 				.Throws(new ConcurrencyException());
-
+			persistence
+				.Setup(x => x.GetFrom(streamId, 1, 2))
+				.Returns(Committed);
 			persistence
 				.Setup(x => x.GetFrom(streamId, DefaultStreamRevision + 1, int.MaxValue))
 				.Returns(DiscoveredOnCommit);
 
+			stream = new OptimisticEventStream(streamId, persistence.Object, 1, 2);
 			stream.Add(uncommitted);
 		};
 

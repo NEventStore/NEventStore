@@ -2,7 +2,6 @@ namespace EventStore
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
 	using Dispatcher;
 	using Persistence;
 
@@ -40,27 +39,12 @@ namespace EventStore
 		}
 		public virtual IEventStream OpenStream(Guid streamId, int minRevision, int maxRevision)
 		{
-			var commits = this.persistence.GetFrom(streamId, minRevision, maxRevision);
-			return this.OpenStream(streamId, minRevision, maxRevision, commits);
+			var stream = new OptimisticEventStream(streamId, this, minRevision, maxRevision);
+			return stream.CommitSequence == 0 ? null : stream;
 		}
 		public virtual IEventStream OpenStream(Snapshot snapshot, int maxRevision)
 		{
-			// we query from the revision of the snapshot forward because we are guaranteed to get
-			// a commit.  If we queried beyond the snapshot (snapshot.StreamRevision + 1), we cannot be
-			// sure that there's anything out there.  This would result in an empty string that had
-			// a CommitSequence and StreamRevision of 0 which could never be properly persisted.
-			var streamId = snapshot.StreamId;
-			var minRevision = snapshot.StreamRevision;
-
-			var commits = this.persistence.GetFrom(streamId, minRevision, maxRevision);
-			return this.OpenStream(streamId, minRevision + 1, maxRevision, commits)
-				?? new OptimisticEventStream(
-					streamId, this, minRevision, commits.First().CommitSequence);
-		}
-		private IEventStream OpenStream(Guid streamId, int minRevision, int maxRevision, IEnumerable<Commit> commits)
-		{
-			var stream = new OptimisticEventStream(streamId, this, minRevision, maxRevision, commits);
-			return stream.CommitSequence == 0 ? null : stream;
+			return new OptimisticEventStream(snapshot, this, maxRevision);
 		}
 
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
