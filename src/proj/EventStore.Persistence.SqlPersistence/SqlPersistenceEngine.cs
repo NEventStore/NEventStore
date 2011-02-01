@@ -105,15 +105,12 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		public Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
-			Snapshot snapshot = null;
-			this.Execute(streamId, query =>
+			return this.Execute(streamId, query =>
 			{
 				query.AddParameter(this.dialect.StreamId, streamId);
 				query.AddParameter(this.dialect.StreamRevision, maxRevision);
-				snapshot = query.ExecuteWithQuery(
-					this.dialect.GetSnapshot, x => x.GetSnapshot(this.serializer)).FirstOrDefault();
-			});
-			return snapshot;
+				return query.ExecuteWithQuery(this.dialect.GetSnapshot, x => x.GetSnapshot(this.serializer));
+			}).FirstOrDefault();
 		}
 		public bool AddSnapshot(Snapshot snapshot)
 		{
@@ -128,24 +125,24 @@ namespace EventStore.Persistence.SqlPersistence
 			return rowsAffected > 0;
 		}
 
-		protected virtual IEnumerable<T> Execute<T>(Guid streamId, Func<IDbStatement, IEnumerable<T>> executeQuery)
+		protected virtual IEnumerable<T> Execute<T>(Guid streamId, Func<IDbStatement, IEnumerable<T>> query)
 		{
 			var scope = new TransactionScope(TransactionScopeOption.Suppress);
 			IDbConnection connection = null;
 			IDbTransaction transaction = null;
-			IDbStatement query = null;
+			IDbStatement statement = null;
 
 			try
 			{
-				connection = this.factory.Open(streamId);
+				connection = this.factory.OpenForReading(streamId);
 				transaction = this.dialect.OpenTransaction(connection);
-				query = this.dialect.BuildStatement(connection, transaction, scope);
-				return executeQuery(query);
+				statement = this.dialect.BuildStatement(connection, transaction, scope);
+				return query(statement);
 			}
 			catch (Exception e)
 			{
-				if (query != null)
-					query.Dispose();
+				if (statement != null)
+					statement.Dispose();
 				if (transaction != null)
 					transaction.Dispose();
 				if (connection != null)
@@ -155,16 +152,16 @@ namespace EventStore.Persistence.SqlPersistence
 				throw new StorageException(e.Message, e);
 			}
 		}
-		protected virtual void Execute(Guid streamId, Action<IDbStatement> execute)
+		protected virtual void Execute(Guid streamId, Action<IDbStatement> command)
 		{
 			using (var scope = new TransactionScope(TransactionScopeOption.Suppress))
-			using (var connection = this.factory.Open(streamId))
+			using (var connection = this.factory.OpenForWriting(streamId))
 			using (var transaction = this.dialect.OpenTransaction(connection))
 			using (var statement = this.dialect.BuildStatement(connection, transaction, scope))
 			{
 				try
 				{
-					execute(statement);
+					command(statement);
 
 					if (transaction != null)
 						transaction.Commit();
