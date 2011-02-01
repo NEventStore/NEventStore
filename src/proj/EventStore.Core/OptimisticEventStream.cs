@@ -21,9 +21,9 @@ namespace EventStore
 		{
 			var commits = persistence.GetFrom(streamId, minRevision, maxRevision);
 			this.PopulateStream(minRevision, maxRevision, commits);
-			
+
 			if (this.committed.Count == 0)
-				this.Dispose();
+				throw new StreamNotFoundException();
 		}
 		public OptimisticEventStream(Snapshot snapshot, ICommitEvents persistence, int maxRevision)
 			: this(snapshot.StreamId, persistence)
@@ -64,11 +64,6 @@ namespace EventStore
 		protected virtual void Dispose(bool disposing)
 		{
 			this.disposed = true;
-			this.StreamId = Guid.Empty;
-			this.StreamRevision = 0;
-			this.CommitSequence = 0;
-			this.uncommitted.Clear();
-			this.committed.Clear();
 		}
 
 		public virtual Guid StreamId { get; private set; }
@@ -113,11 +108,11 @@ namespace EventStore
 
 			try
 			{
-				this.ApplyChanges(commitId, headers);
+				this.PersistChanges(commitId, headers);
 			}
-			catch (ConcurrencyException)
+			catch (ConcurrencyException e)
 			{
-				this.UpdateStreamOnException();
+				this.PopulateStream(this.StreamRevision + 1, int.MaxValue, e.Commits);
 				throw;
 			}
 		}
@@ -128,7 +123,7 @@ namespace EventStore
 
 			return this.uncommitted.Count > 0;
 		}
-		private void ApplyChanges(Guid commitId, Dictionary<string, object> headers)
+		private void PersistChanges(Guid commitId, Dictionary<string, object> headers)
 		{
 			var commit = this.BuildCommit(commitId, headers);
 
@@ -147,12 +142,6 @@ namespace EventStore
 				this.CommitSequence + 1,
 				headers ?? new Dictionary<string, object>(),
 				this.uncommitted.ToList());
-		}
-		private void UpdateStreamOnException()
-		{
-			var minRevision = this.StreamRevision + 1;
-			var commits = this.persistence.GetFrom(this.StreamId, minRevision, int.MaxValue);
-			this.PopulateStream(minRevision, int.MaxValue, commits);
 		}
 
 		public void ClearChanges()

@@ -63,7 +63,7 @@ namespace EventStore.Persistence.AcceptanceTests
 	}
 
 	[Subject("Persistence")]
-	public class when_committing_a_stream_with_the_same_revision_it_should_throw_a_concurrency_exceptuon : using_the_persistence_engine
+	public class when_committing_a_stream_with_the_same_revision : using_the_persistence_engine
 	{
 		static readonly IPersistStreams persistence1 = Factory.Build();
 		static readonly IPersistStreams persistence2 = Factory.Build();
@@ -77,11 +77,15 @@ namespace EventStore.Persistence.AcceptanceTests
 		Because of = () =>
 			thrown = Catch.Exception(() => persistence2.Commit(attempt2));
 
-		It should_throw_a_concurrency_exception = () => thrown.ShouldBeOfType<ConcurrencyException>();
+		It should_throw_a_concurrency_exception = () =>
+			thrown.ShouldBeOfType<ConcurrencyException>();
+
+		It should_query_the_underlying_storage_and_populate_the_exception_with_the_commits_that_caused_the_ConcurrencyException = () =>
+			((ConcurrencyException)thrown).Commits.ToList()[0].ShouldEqual(attempt1);
 	}
 
 	[Subject("Persistence")]
-	public class when_committing_a_stream_with_the_same_sequence_it_should_throw_a_concurrency_exception : using_the_persistence_engine
+	public class when_committing_a_stream_with_the_same_sequence : using_the_persistence_engine
 	{
 		static readonly IPersistStreams persistence1 = Factory.Build();
 		static readonly IPersistStreams persistence2 = Factory.Build();
@@ -95,7 +99,11 @@ namespace EventStore.Persistence.AcceptanceTests
 		Because of = () =>
 			thrown = Catch.Exception(() => persistence2.Commit(attempt2));
 
-		It should_throw_a_concurrency_exception = () => thrown.ShouldBeOfType<ConcurrencyException>();
+		It should_throw_a_ConcurrencyException = () =>
+			thrown.ShouldBeOfType<ConcurrencyException>();
+
+		It should_populate_the_exception_with_the_commits_that_caused_the_ConcurrencyException = () =>
+			((ConcurrencyException)thrown).Commits.ToList()[0].ShouldEqual(attempt1);
 	}
 
 	[Subject("Persistence")]

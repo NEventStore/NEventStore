@@ -33,13 +33,13 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public virtual void Initialize()
 		{
-			this.Execute(Guid.Empty, statement =>
+			this.ExecuteCommand(Guid.Empty, statement =>
 				statement.ExecuteWithSuppression(this.dialect.InitializeStorage));
 		}
 
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
 		{
-			return this.Execute(streamId, query =>
+			return this.ExecuteQuery(streamId, query =>
 			{
 				query.AddParameter(this.dialect.StreamId, streamId);
 				query.AddParameter(this.dialect.StreamRevision, minRevision);
@@ -49,7 +49,7 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
 		{
-			return this.Execute(Guid.Empty, query =>
+			return this.ExecuteQuery(Guid.Empty, query =>
 			{
 				var statement = this.dialect.GetCommitsFromInstant;
 				query.AddParameter(this.dialect.CommitStamp, start);
@@ -59,7 +59,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public virtual void Commit(Commit attempt)
 		{
-			this.Execute(attempt.StreamId, cmd =>
+			this.ExecuteCommand(attempt.StreamId, cmd =>
 			{
 				cmd.AddParameter(this.dialect.StreamId, attempt.StreamId);
 				cmd.AddParameter(this.dialect.StreamRevision, attempt.StreamRevision);
@@ -71,19 +71,22 @@ namespace EventStore.Persistence.SqlPersistence
 				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(attempt.Events));
 
 				var rowsAffected = cmd.Execute(this.dialect.PersistCommit);
-				if (rowsAffected == 0)
-					throw new ConcurrencyException();
+				if (rowsAffected > 0)
+					return;
+
+				var conflictRevision = attempt.StreamRevision - attempt.Events.Count + 1;
+				throw new ConcurrencyException(this.GetFrom(attempt.StreamId, conflictRevision, int.MaxValue));
 			});
 		}
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
-			return this.Execute(Guid.Empty, query =>
+			return this.ExecuteQuery(Guid.Empty, query =>
 				query.ExecuteWithQuery(this.dialect.GetUndispatchedCommits, x => x.GetCommit(this.serializer)));
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
-			this.Execute(commit.StreamId, cmd =>
+			this.ExecuteCommand(commit.StreamId, cmd =>
 			{
 				cmd.AddParameter(this.dialect.StreamId, commit.StreamId);
 				cmd.AddParameter(this.dialect.CommitSequence, commit.CommitSequence);
@@ -93,7 +96,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
 		{
-			return this.Execute(Guid.Empty, query =>
+			return this.ExecuteQuery(Guid.Empty, query =>
 			{
 				var statement = this.dialect.GetStreamsRequiringSnaphots;
 				query.AddParameter(this.dialect.Threshold, maxThreshold);
@@ -102,20 +105,18 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		public Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
-			Snapshot snapshot = null;
-			this.Execute(streamId, query =>
+			return this.ExecuteQuery(streamId, query =>
 			{
+				var queryText = this.dialect.GetSnapshot;
 				query.AddParameter(this.dialect.StreamId, streamId);
 				query.AddParameter(this.dialect.StreamRevision, maxRevision);
-				snapshot = query.ExecuteWithQuery(
-					this.dialect.GetSnapshot, x => x.GetSnapshot(this.serializer)).FirstOrDefault();
+				return query.ExecuteWithQuery(queryText, x => x.GetSnapshot(this.serializer)).FirstOrDefault();
 			});
-			return snapshot;
 		}
 		public bool AddSnapshot(Snapshot snapshot)
 		{
 			var rowsAffected = 0;
-			this.Execute(snapshot.StreamId, cmd =>
+			this.ExecuteCommand(snapshot.StreamId, cmd =>
 			{
 				cmd.AddParameter(this.dialect.StreamId, snapshot.StreamId);
 				cmd.AddParameter(this.dialect.StreamRevision, snapshot.StreamRevision);
@@ -125,24 +126,24 @@ namespace EventStore.Persistence.SqlPersistence
 			return rowsAffected > 0;
 		}
 
-		protected virtual IEnumerable<T> Execute<T>(Guid streamId, Func<IDbStatement, IEnumerable<T>> executeQuery)
+		protected virtual T ExecuteQuery<T>(Guid streamId, Func<IDbStatement, T> query)
 		{
 			var scope = new TransactionScope(TransactionScopeOption.Suppress);
 			IDbConnection connection = null;
 			IDbTransaction transaction = null;
-			IDbStatement query = null;
+			IDbStatement statement = null;
 
 			try
 			{
-				connection = this.factory.Open(streamId);
+				connection = this.factory.OpenForReading(streamId);
 				transaction = this.dialect.OpenTransaction(connection);
-				query = this.dialect.BuildStatement(connection, transaction, scope);
-				return executeQuery(query);
+				statement = this.dialect.BuildStatement(connection, transaction, scope);
+				return query(statement);
 			}
 			catch (Exception e)
 			{
-				if (query != null)
-					query.Dispose();
+				if (statement != null)
+					statement.Dispose();
 				if (transaction != null)
 					transaction.Dispose();
 				if (connection != null)
@@ -152,16 +153,16 @@ namespace EventStore.Persistence.SqlPersistence
 				throw new StorageException(e.Message, e);
 			}
 		}
-		protected virtual void Execute(Guid streamId, Action<IDbStatement> execute)
+		protected virtual void ExecuteCommand(Guid streamId, Action<IDbStatement> command)
 		{
 			using (var scope = new TransactionScope(TransactionScopeOption.Suppress))
-			using (var connection = this.factory.Open(streamId))
+			using (var connection = this.factory.OpenForWriting(streamId))
 			using (var transaction = this.dialect.OpenTransaction(connection))
 			using (var statement = this.dialect.BuildStatement(connection, transaction, scope))
 			{
 				try
 				{
-					execute(statement);
+					command(statement);
 
 					if (transaction != null)
 						transaction.Commit();

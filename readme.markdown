@@ -65,18 +65,18 @@ enlisting any resources (other than a message queue) in some form of a transacti
 
 ### Cloud-based Relational Databases
 [Complete] Microsoft SQL Azure  
-[Planned] Azure Tables  
 [Complete] Amazon RDS  
-[Planned] Amazon SimpleDB  
+[In progress] Azure Tables  
+[In progress] Amazon SimpleDB  
 [Planned] Amazon S3  
 
 ### Document Databases
-[In progress] RavenDB r224 (or later)  
+[In progress] RavenDB r264 (or later)  
 [Planned] CouchDB 1.0 (or later)  
-[Beta] MongoDB 1.6 (or later)  
+[Complete] MongoDB 1.6 (or later)  
 
 ### File System
-[Planned] .NET Managed System.IO APIs [Planned]  
+[Planned] .NET Managed System.IO APIs    
 
 ### Dynamo Clones
 [Planned] Cassandra  
@@ -101,16 +101,17 @@ enlisting any resources (other than a message queue) in some form of a transacti
 * Medium-trust support  
 * Support more storage engines than any other event storage implementation  
 * Easily support virtually any storage engine (NoSQL, etc.)  
-* Completely avoid TransactionScope or Transactions, but maintain data integrity  
+* Avoid dependence upon TransactionScope or Transactions while maintaining full data integrity  
 * Full test coverage of storage implementations  
 * Easily hook into any bus implementation (NServiceBus, MassTransit, etc.)  
 * Synchronous and asynchronous dispatching of events  
-* High performance  
+* Extreme performance  
 * Multi-thread safe  
 * Fluent builder
 
 ## Building
-TODO
+For .NET v4.0, simply run **build.cmd** from the command line.  Users requiring a .NET v3.5 build may run **build-net35.cmd**.  
+Once built, the files will be placed in the "output" subdirectory.
 
 ## Using the EventStore
-TODO
+Please see [EventStore.Example](https://github.com/joliver/EventStore/blob/master/doc/EventStore.Example/ExampleUsage.cs) project in the doc subdirectory.

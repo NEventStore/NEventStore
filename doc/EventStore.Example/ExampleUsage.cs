@@ -10,7 +10,7 @@ namespace EventStore.Example
 		public static void Show(IStoreEvents store)
 		{
 			eventStore = store;
-			
+
 			CreateStream();
 			AppendToStream();
 			TakeSnapshot();
