@@ -33,13 +33,13 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public virtual void Initialize()
 		{
-			this.Execute(Guid.Empty, statement =>
+			this.ExecuteCommand(Guid.Empty, statement =>
 				statement.ExecuteWithSuppression(this.dialect.InitializeStorage));
 		}
 
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
 		{
-			return this.Execute(streamId, query =>
+			return this.ExecuteQuery(streamId, query =>
 			{
 				query.AddParameter(this.dialect.StreamId, streamId);
 				query.AddParameter(this.dialect.StreamRevision, minRevision);
@@ -49,7 +49,7 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
 		{
-			return this.Execute(Guid.Empty, query =>
+			return this.ExecuteQuery(Guid.Empty, query =>
 			{
 				var statement = this.dialect.GetCommitsFromInstant;
 				query.AddParameter(this.dialect.CommitStamp, start);
@@ -59,7 +59,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public virtual void Commit(Commit attempt)
 		{
-			this.Execute(attempt.StreamId, cmd =>
+			this.ExecuteCommand(attempt.StreamId, cmd =>
 			{
 				cmd.AddParameter(this.dialect.StreamId, attempt.StreamId);
 				cmd.AddParameter(this.dialect.StreamRevision, attempt.StreamRevision);
@@ -81,12 +81,12 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
-			return this.Execute(Guid.Empty, query =>
+			return this.ExecuteQuery(Guid.Empty, query =>
 				query.ExecuteWithQuery(this.dialect.GetUndispatchedCommits, x => x.GetCommit(this.serializer)));
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
-			this.Execute(commit.StreamId, cmd =>
+			this.ExecuteCommand(commit.StreamId, cmd =>
 			{
 				cmd.AddParameter(this.dialect.StreamId, commit.StreamId);
 				cmd.AddParameter(this.dialect.CommitSequence, commit.CommitSequence);
@@ -96,7 +96,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
 		{
-			return this.Execute(Guid.Empty, query =>
+			return this.ExecuteQuery(Guid.Empty, query =>
 			{
 				var statement = this.dialect.GetStreamsRequiringSnaphots;
 				query.AddParameter(this.dialect.Threshold, maxThreshold);
@@ -105,17 +105,18 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		public Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
-			return this.Execute(streamId, query =>
+			return this.ExecuteQuery(streamId, query =>
 			{
+				var queryText = this.dialect.GetSnapshot;
 				query.AddParameter(this.dialect.StreamId, streamId);
 				query.AddParameter(this.dialect.StreamRevision, maxRevision);
-				return query.ExecuteWithQuery(this.dialect.GetSnapshot, x => x.GetSnapshot(this.serializer));
-			}).FirstOrDefault();
+				return query.ExecuteWithQuery(queryText, x => x.GetSnapshot(this.serializer)).FirstOrDefault();
+			});
 		}
 		public bool AddSnapshot(Snapshot snapshot)
 		{
 			var rowsAffected = 0;
-			this.Execute(snapshot.StreamId, cmd =>
+			this.ExecuteCommand(snapshot.StreamId, cmd =>
 			{
 				cmd.AddParameter(this.dialect.StreamId, snapshot.StreamId);
 				cmd.AddParameter(this.dialect.StreamRevision, snapshot.StreamRevision);
@@ -125,7 +126,7 @@ namespace EventStore.Persistence.SqlPersistence
 			return rowsAffected > 0;
 		}
 
-		protected virtual IEnumerable<T> Execute<T>(Guid streamId, Func<IDbStatement, IEnumerable<T>> query)
+		protected virtual T ExecuteQuery<T>(Guid streamId, Func<IDbStatement, T> query)
 		{
 			var scope = new TransactionScope(TransactionScopeOption.Suppress);
 			IDbConnection connection = null;
@@ -152,7 +153,7 @@ namespace EventStore.Persistence.SqlPersistence
 				throw new StorageException(e.Message, e);
 			}
 		}
-		protected virtual void Execute(Guid streamId, Action<IDbStatement> command)
+		protected virtual void ExecuteCommand(Guid streamId, Action<IDbStatement> command)
 		{
 			using (var scope = new TransactionScope(TransactionScopeOption.Suppress))
 			using (var connection = this.factory.OpenForWriting(streamId))
