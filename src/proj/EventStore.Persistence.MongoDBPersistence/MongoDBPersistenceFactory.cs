@@ -2,7 +2,8 @@
 {
 	using System.Configuration;
 	using Serialization;
-	using MongoDB.Driver;
+    using MongoDB.Bson.DefaultSerializer;
+    using MongoDB.Driver;
 
 	public class MongoDBPersistenceFactory : IPersistenceFactory
 	{

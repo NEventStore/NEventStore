@@ -7,8 +7,8 @@
 	{
 		public MongoDBCommitId Id { get; set; }
 
-		public int MinStreamRevision { get; set; }
-		public int MaxStreamRevision { get; set; }
+		public int StartingStreamRevision { get; set; }
+		public int StreamRevision { get; set; }
 
 		public Guid CommitId { get; set; }
 		public DateTime CommitStamp { get; set; }

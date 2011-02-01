@@ -18,19 +18,20 @@
 			return new MongoDBCommit
 			{
 				Id = new MongoDBCommitId(commit.StreamId, commit.CommitSequence),
-				MinStreamRevision = commit.StreamRevision - commit.Events.Count + 1,
-				MaxStreamRevision = commit.StreamRevision,
+				StartingStreamRevision = commit.StreamRevision - (commit.Events.Count - 1),
+				StreamRevision = commit.StreamRevision,
 				CommitId = commit.CommitId,
 				CommitStamp = DateTime.Now,
 				Headers = commit.Headers,
 				Payload = serializer.Serialize(commit.Events)
 			};
 		}
+
 		public static Commit ToCommit(this MongoDBCommit commit, ISerialize serializer)
 		{
 			return new Commit(
 				commit.Id.StreamId,
-				commit.MaxStreamRevision,
+				commit.StreamRevision,
 				commit.CommitId,
 				commit.Id.CommitSequence,
 				commit.Headers,
@@ -56,6 +57,14 @@
 				snapshot.Id.StreamRevision,
 				serializer.Deserialize(snapshot.Payload));
 		}
+
+        public static StreamHead ToStreamHead(this MongoDBStreamHead streamhead)
+        {
+            return new StreamHead(
+                streamhead.StreamId,
+                streamhead.HeadRevision,
+                streamhead.SnapshotRevision);
+        }
 
 		public static QueryComplete ToMongoDBCommitIdQuery(this Commit commit)
 		{

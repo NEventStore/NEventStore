@@ -58,6 +58,7 @@
     <Compile Include="MongoDBPersistenceFactory.cs" />
     <Compile Include="MongoDBSnapshot.cs" />
     <Compile Include="MongoDBSnapshotId.cs" />
+    <Compile Include="MongoDBStreamHead.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
