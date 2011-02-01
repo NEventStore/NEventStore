@@ -18,8 +18,8 @@ namespace EventStore.Persistence.MongoPersistence
 			return new MongoCommit
 			{
 				StreamId = commit.StreamId,
-				MinStreamRevision = commit.StreamRevision - commit.Events.Count,
-				MaxStreamRevision = commit.StreamRevision,
+				StartingStreamRevision = commit.StreamRevision - (commit.Events.Count - 1),
+				StreamRevision = commit.StreamRevision,
 				CommitId = commit.CommitId,
 				CommitSequence = commit.CommitSequence,
 				CommitStamp = DateTime.Now,
@@ -31,7 +31,7 @@ namespace EventStore.Persistence.MongoPersistence
 		{
 			return new Commit(
 				commit.StreamId,
-				commit.MaxStreamRevision,
+				commit.StreamRevision,
 				commit.CommitId,
 				commit.CommitSequence,
 				commit.Headers,

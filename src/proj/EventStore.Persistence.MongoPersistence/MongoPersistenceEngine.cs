@@ -3,8 +3,10 @@ namespace EventStore.Persistence.MongoPersistence
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Threading;
 	using Norm;
 	using Norm.Collections;
+	using Norm.Configuration;
 	using Norm.Protocol.Messages;
 	using Serialization;
 
@@ -35,17 +37,10 @@ namespace EventStore.Persistence.MongoPersistence
 			this.store.Dispose();
 		}
 
-		private IMongoCollection<MongoCommit> PersistedCommits
-		{
-			get { return this.store.Database.GetCollection<MongoCommit>(); }
-		}
-		private IMongoCollection<MongoSnapshot> PersistedSnapshots
-		{
-			get { return this.store.Database.GetCollection<MongoSnapshot>(); }
-		}
-
 		public virtual void Initialize()
 		{
+			MongoConfiguration.Initialize(c => c.For<StreamHead>(stream => stream.IdIs(i => i.StreamId)));
+
 			this.PersistedCommits.CreateIndex(
 				x => x.Dispatched,
 				"Dispatched_Index",
@@ -53,7 +48,7 @@ namespace EventStore.Persistence.MongoPersistence
 				IndexOption.Ascending);
 
 			this.PersistedCommits.CreateIndex(
-				x => new { x.StreamId, x.MinStreamRevision, x.MaxStreamRevision },
+				x => new { x.StreamId, MinStreamRevision = x.StartingStreamRevision, MaxStreamRevision = x.StreamRevision },
 				"GetFrom_Index",
 				true,
 				IndexOption.Ascending);
@@ -71,8 +66,8 @@ namespace EventStore.Persistence.MongoPersistence
 			{
 				return this.PersistedCommits.AsQueryable()
 					.Where(x => x.StreamId == streamId
-						&& x.MaxStreamRevision >= minRevision
-						&& x.MinStreamRevision <= maxRevision).ToArray()
+						&& x.StreamRevision >= minRevision
+						&& x.StartingStreamRevision <= maxRevision).ToArray()
 					.Select(x => x.ToCommit(this.serializer));
 			}
 			catch (Exception e)
@@ -101,7 +96,9 @@ namespace EventStore.Persistence.MongoPersistence
 
 			try
 			{
-				this.PersistedCommits.Insert(commit); // TODO: update associated StreamHead--should be done asynchronously.
+				this.PersistedCommits.Insert(commit);
+			
+				SaveStreamHeadAsync(new StreamHead(commit.StreamId, commit.StreamRevision, 0));
 			}
 			catch (MongoException e)
 			{
@@ -131,7 +128,9 @@ namespace EventStore.Persistence.MongoPersistence
 
 		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
 		{
-			return new StreamHead[0]; // TODO: query StreamHead documents to determine which streams should be snapshot.
+			return this.PersistedStreamHeads.AsQueryable()
+				.Where(x => x.HeadRevision >= x.SnapshotRevision + maxThreshold)
+				.ToArray();
 		}
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
@@ -148,7 +147,10 @@ namespace EventStore.Persistence.MongoPersistence
 			try
 			{
 				var mongoSnapshot = snapshot.ToMongoSnapshot(this.serializer);
-				this.PersistedSnapshots.Insert(mongoSnapshot); // TODO: update associated StreamHead--should be done asynchronously.
+				this.PersistedSnapshots.Insert(mongoSnapshot); 
+				
+				SaveStreamHeadAsync(new StreamHead(snapshot.StreamId, snapshot.StreamRevision, snapshot.StreamRevision));
+	
 				return true;
 			}
 			catch (MongoException e)
@@ -159,5 +161,26 @@ namespace EventStore.Persistence.MongoPersistence
 				return false;
 			}
 		}
+
+		void SaveStreamHeadAsync(StreamHead streamHead)
+		{
+			// TODO :ThreadPool.QueueUserWorkItem((p) => this.PersistedStreamHeads.Save(p as StreamHead), streamHead);
+			this.PersistedStreamHeads.Save(streamHead);
+		}
+
+		private IMongoCollection<MongoCommit> PersistedCommits
+		{
+			get { return this.store.Database.GetCollection<MongoCommit>(); }
+		}
+		private IMongoCollection<MongoSnapshot> PersistedSnapshots
+		{
+			get { return this.store.Database.GetCollection<MongoSnapshot>(); }
+		}
+		private IMongoCollection<StreamHead> PersistedStreamHeads
+		{
+			get { return this.store.Database.GetCollection<StreamHead>(); }
+		}
+
 	}
+
 }
