@@ -97,8 +97,8 @@ namespace EventStore.Persistence.MongoPersistence
 			try
 			{
 				this.PersistedCommits.Insert(commit);
-			
-				SaveStreamHeadAsync(new StreamHead(commit.StreamId, commit.StreamRevision, 0));
+
+				this.SaveStreamHeadAsync(new StreamHead(commit.StreamId, commit.StreamRevision, 0));
 			}
 			catch (MongoException e)
 			{
@@ -147,10 +147,10 @@ namespace EventStore.Persistence.MongoPersistence
 			try
 			{
 				var mongoSnapshot = snapshot.ToMongoSnapshot(this.serializer);
-				this.PersistedSnapshots.Insert(mongoSnapshot); 
-				
-				SaveStreamHeadAsync(new StreamHead(snapshot.StreamId, snapshot.StreamRevision, snapshot.StreamRevision));
-	
+				this.PersistedSnapshots.Insert(mongoSnapshot);
+
+				this.SaveStreamHeadAsync(new StreamHead(snapshot.StreamId, snapshot.StreamRevision, snapshot.StreamRevision));
+
 				return true;
 			}
 			catch (MongoException e)
@@ -164,7 +164,7 @@ namespace EventStore.Persistence.MongoPersistence
 
 		void SaveStreamHeadAsync(StreamHead streamHead)
 		{
-			// TODO :ThreadPool.QueueUserWorkItem((p) => this.PersistedStreamHeads.Save(p as StreamHead), streamHead);
+			// ThreadPool.QueueUserWorkItem(item => this.PersistedStreamHeads.Save(item as StreamHead), streamHead);
 			this.PersistedStreamHeads.Save(streamHead);
 		}
 
@@ -180,7 +180,5 @@ namespace EventStore.Persistence.MongoPersistence
 		{
 			get { return this.store.Database.GetCollection<StreamHead>(); }
 		}
-
 	}
-
 }

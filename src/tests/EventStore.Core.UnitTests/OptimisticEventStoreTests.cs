@@ -313,10 +313,10 @@ namespace EventStore.Core.UnitTests
 		const int MaxRevision = 2;
 		static readonly Guid AlreadyCommittedId = Guid.NewGuid();
 		static readonly Commit[] Committed = new[]
-	    {
+		{
 			BuildCommitStub(AlreadyCommittedId, 1, 1),
 			BuildCommitStub(Guid.NewGuid(), 1, 1)
-	    };
+		};
 		static readonly Commit DuplicateCommitAttempt = BuildCommitStub(
 			AlreadyCommittedId, Committed.Last().StreamRevision + 1, Committed.Last().CommitSequence + 1);
 		static Exception thrown;
