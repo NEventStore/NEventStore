@@ -17,6 +17,8 @@ set ILMERGE_VERSION=%3
 :build
 if exist output ( rmdir /s /q output )
 if exist output ( rmdir /s /q output )
+if exist publish ( rmdir /s /q publish )
+if exist publish ( rmdir /s /q publish )
 
 mkdir output
 mkdir output\bin
@@ -74,6 +76,8 @@ echo Copying
 mkdir output\doc
 copy doc\*.* output\doc
 copy "lib\Json.NET\license.txt" "output\doc\Newtonsoft Json.NET license.txt"
+
+move output publish
 
 echo.
 echo === CLEANUP ===
