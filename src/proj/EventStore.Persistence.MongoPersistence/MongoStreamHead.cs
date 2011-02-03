@@ -1,16 +1,16 @@
-﻿namespace EventStore.Persistence.MongoDBPersistence
+﻿namespace EventStore.Persistence.MongoPersistence
 {
 	using System;
 	using MongoDB.Bson.DefaultSerializer;
 
-	public class MongoDBStreamHead
+	internal class MongoStreamHead
 	{
 		[BsonId]
 		public Guid StreamId { get; private set; }
 		public int HeadRevision { get; private set; }
 		public int SnapshotRevision { get; private set; }
 
-		public MongoDBStreamHead(Guid streamId, int headRevision, int snapshotRevision)
+		public MongoStreamHead(Guid streamId, int headRevision, int snapshotRevision)
 		{
 			this.StreamId = streamId;
 			this.HeadRevision = headRevision;

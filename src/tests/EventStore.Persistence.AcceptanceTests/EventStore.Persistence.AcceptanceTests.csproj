@@ -64,9 +64,9 @@
       <Project>{D6413244-42F5-4233-B347-D0A804B09CC9}</Project>
       <Name>EventStore.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\proj\EventStore.Persistence.MongoDBPersistence\EventStore.Persistence.MongoDBPersistence.csproj">
+    <ProjectReference Include="..\..\proj\EventStore.Persistence.MongoPersistence\EventStore.Persistence.MongoPersistence.csproj">
       <Project>{32ADD8CE-0F3F-41D8-BFA1-6E5D685E64DD}</Project>
-      <Name>EventStore.Persistence.MongoDBPersistence</Name>
+      <Name>EventStore.Persistence.MongoPersistence</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\proj\EventStore.Persistence.SqlPersistence\EventStore.Persistence.SqlPersistence.csproj">
       <Project>{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}</Project>

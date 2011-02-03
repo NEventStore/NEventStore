@@ -29,7 +29,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.SqlP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.AcceptanceTests", "tests\EventStore.Persistence.AcceptanceTests\EventStore.Persistence.AcceptanceTests.csproj", "{B56FDCEA-086F-40A2-92E1-867CE506CBE3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.MongoDBPersistence", "proj\EventStore.Persistence.MongoDBPersistence\EventStore.Persistence.MongoDBPersistence.csproj", "{32ADD8CE-0F3F-41D8-BFA1-6E5D685E64DD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.MongoPersistence", "proj\EventStore.Persistence.MongoPersistence\EventStore.Persistence.MongoPersistence.csproj", "{32ADD8CE-0F3F-41D8-BFA1-6E5D685E64DD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Example", "..\doc\EventStore.Example\EventStore.Example.csproj", "{0143B48E-25AF-4CE0-BD49-A52267D359D3}"
 EndProject
