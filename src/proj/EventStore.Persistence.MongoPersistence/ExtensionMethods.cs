@@ -2,7 +2,6 @@
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Globalization;
 	using MongoDB.Bson;
 	using MongoDB.Driver.Builders;
 	using Serialization;
