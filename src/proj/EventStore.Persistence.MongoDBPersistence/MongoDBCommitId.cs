@@ -9,8 +9,8 @@
 
 		public MongoDBCommitId(Guid streamId, int commitSequence)
 		{
-			StreamId = streamId;
-			CommitSequence = commitSequence;
+			this.StreamId = streamId;
+			this.CommitSequence = commitSequence;
 		}
 	}
 }

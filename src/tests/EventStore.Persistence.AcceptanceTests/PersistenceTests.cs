@@ -1,5 +1,3 @@
-using System.Threading;
-
 #pragma warning disable 169
 // ReSharper disable InconsistentNaming
 
@@ -7,6 +5,7 @@ namespace EventStore.Persistence.AcceptanceTests
 {
 	using System;
 	using System.Linq;
+	using System.Threading;
 	using Machine.Specifications;
 	using Persistence;
 
@@ -244,7 +243,7 @@ namespace EventStore.Persistence.AcceptanceTests
 			persistence.Commit(second);
 			persistence.Commit(third);
 			persistence.Commit(fourth);
-        };
+		};
 
 		Because of = () =>
 			committed = persistence.GetFrom(start).ToArray();

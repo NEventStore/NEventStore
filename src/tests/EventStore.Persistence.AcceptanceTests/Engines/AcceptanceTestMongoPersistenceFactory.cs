@@ -1,12 +1,12 @@
-namespace EventStore.Persistence.AcceptanceTests.Engines
+﻿namespace EventStore.Persistence.AcceptanceTests.Engines
 {
-	using MongoPersistence;
+	using MongoDBPersistence;
 	using Serialization;
 
-	public class AcceptanceTestMongoPersistenceFactory : MongoPersistenceFactory
+	public class AcceptanceTestMongoPersistenceFactory : MongoDBPersistenceFactory
 	{
 		public AcceptanceTestMongoPersistenceFactory()
-			: base("MongoDB", new BinarySerializer())
+			: base("Mongo", new BinarySerializer())
 		{
 		}
 		protected override string TransformConnectionString(string connectionString)
@@ -14,7 +14,7 @@ namespace EventStore.Persistence.AcceptanceTests.Engines
 			return connectionString
 				.Replace("[HOST]", "host".GetSetting() ?? "localhost")
 				.Replace("[PORT]", "port".GetSetting() ?? string.Empty)
-				.Replace("[DATABASE]", "database".GetSetting() ?? "EventStore2a")
+				.Replace("[DATABASE]", "database".GetSetting() ?? "EventStore2b")
 				.Replace("[USER]", "user".GetSetting() ?? string.Empty)
 				.Replace("[PASSWORD]", "password".GetSetting() ?? string.Empty);
 		}

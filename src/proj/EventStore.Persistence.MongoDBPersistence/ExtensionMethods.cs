@@ -58,22 +58,20 @@
 				serializer.Deserialize(snapshot.Payload));
 		}
 
-        public static StreamHead ToStreamHead(this MongoDBStreamHead streamhead)
-        {
-            return new StreamHead(
-                streamhead.StreamId,
-                streamhead.HeadRevision,
-                streamhead.SnapshotRevision);
-        }
+		public static StreamHead ToStreamHead(this MongoDBStreamHead streamhead)
+		{
+			return new StreamHead(
+				streamhead.StreamId,
+				streamhead.HeadRevision,
+				streamhead.SnapshotRevision);
+		}
 
 		public static QueryComplete ToMongoDBCommitIdQuery(this Commit commit)
 		{
 			var query = Query.EQ("_id",
 				Query.And(
 					Query.EQ("StreamId", commit.StreamId),
-					Query.EQ("CommitSequence", commit.CommitSequence)
-					).ToBsonDocument()
-			);
+					Query.EQ("CommitSequence", commit.CommitSequence)).ToBsonDocument());
 
 			return query;
 		}
@@ -82,9 +80,9 @@
 		{
 			var query = Query.EQ("_id",
 				Query.And(
-			        Query.EQ("StreamId", commit.Id.StreamId),
-			        Query.EQ("CommitSequence", commit.Id.CommitSequence)
-			        ).ToBsonDocument()
+					Query.EQ("StreamId", commit.Id.StreamId),
+					Query.EQ("CommitSequence", commit.Id.CommitSequence)
+					).ToBsonDocument()
 			);
 
 			return query;

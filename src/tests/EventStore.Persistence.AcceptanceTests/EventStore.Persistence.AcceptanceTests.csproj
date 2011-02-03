@@ -41,7 +41,6 @@
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ConfigurationExtensions.cs" />
-    <Compile Include="Engines\AcceptanceTestMongoDBPersistenceFactory.cs" />
     <Compile Include="Engines\AcceptanceTestMongoPersistenceFactory.cs" />
     <Compile Include="Engines\AcceptanceTestSqlPersistenceFactory.cs" />
     <Compile Include="ExtensionMethods.cs" />
@@ -68,10 +67,6 @@
     <ProjectReference Include="..\..\proj\EventStore.Persistence.MongoDBPersistence\EventStore.Persistence.MongoDBPersistence.csproj">
       <Project>{32ADD8CE-0F3F-41D8-BFA1-6E5D685E64DD}</Project>
       <Name>EventStore.Persistence.MongoDBPersistence</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\proj\EventStore.Persistence.MongoPersistence\EventStore.Persistence.MongoPersistence.csproj">
-      <Project>{23A942C3-DE3A-4596-B012-1F56D46A5E2E}</Project>
-      <Name>EventStore.Persistence.MongoPersistence</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\proj\EventStore.Persistence.SqlPersistence\EventStore.Persistence.SqlPersistence.csproj">
       <Project>{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}</Project>

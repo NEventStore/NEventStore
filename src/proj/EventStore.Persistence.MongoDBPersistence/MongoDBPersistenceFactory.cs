@@ -1,9 +1,8 @@
 ﻿namespace EventStore.Persistence.MongoDBPersistence
 {
 	using System.Configuration;
+	using MongoDB.Driver;
 	using Serialization;
-    using MongoDB.Bson.DefaultSerializer;
-    using MongoDB.Driver;
 
 	public class MongoDBPersistenceFactory : IPersistenceFactory
 	{
@@ -20,7 +19,7 @@
 		{
 			var connectionString = this.TransformConnectionString(this.GetConnectionString());
 			var database = MongoDatabase.Create(connectionString);
-			return new MongoDBPersistenceEngine(database, serializer);
+			return new MongoDBPersistenceEngine(database, this.serializer);
 		}
 
 		protected virtual string GetConnectionString()

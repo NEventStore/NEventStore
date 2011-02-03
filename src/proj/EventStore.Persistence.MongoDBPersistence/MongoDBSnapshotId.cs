@@ -9,8 +9,8 @@
 
 		public MongoDBSnapshotId(Guid streamId, int streamRevision)
 		{
-			StreamId = streamId;
-			StreamRevision = streamRevision;
+			this.StreamId = streamId;
+			this.StreamRevision = streamRevision;
 		}
 	}
 }
