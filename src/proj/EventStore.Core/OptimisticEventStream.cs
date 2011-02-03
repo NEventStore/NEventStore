@@ -129,9 +129,8 @@ namespace EventStore
 
 			this.persistence.Commit(commit);
 
-			this.StreamRevision = commit.StreamRevision;
-			this.CommitSequence = commit.CommitSequence;
-			this.uncommitted.Clear();
+			this.PopulateStream(this.StreamRevision + 1, commit.StreamRevision, new[] { commit });
+			this.ClearChanges();
 		}
 		private Commit BuildCommit(Guid commitId, Dictionary<string, object> headers)
 		{
