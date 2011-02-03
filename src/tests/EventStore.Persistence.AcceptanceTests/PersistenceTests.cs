@@ -1,3 +1,5 @@
+using System.Threading;
+
 #pragma warning disable 169
 // ReSharper disable InconsistentNaming
 
@@ -228,7 +230,7 @@ namespace EventStore.Persistence.AcceptanceTests
 	[Subject("Persistence")]
 	public class when_reading_all_commits_from_a_particular_point_in_time : using_the_persistence_engine
 	{
-		static readonly DateTime start = DateTime.UtcNow;
+		static readonly DateTime start = DateTime.UtcNow.AddMilliseconds(10);
 		static readonly Commit first = streamId.BuildAttempt();
 		static readonly Commit second = first.BuildNextAttempt();
 		static readonly Commit third = second.BuildNextAttempt();
@@ -237,11 +239,12 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		Establish context = () =>
 		{
+			Thread.Sleep(10);
 			persistence.Commit(first);
 			persistence.Commit(second);
 			persistence.Commit(third);
 			persistence.Commit(fourth);
-		};
+        };
 
 		Because of = () =>
 			committed = persistence.GetFrom(start).ToArray();
