@@ -11,8 +11,8 @@ namespace EventStore.Persistence.SqlPersistence
 		private const int DefaultShards = 16;
 		private const string DefaultConnectionName = "EventStore";
 		private const string DefaultProvider = "System.Data.SqlClient";
-		private readonly string readConnectionName;
-		private readonly string writeConnectionName;
+		private readonly string masterConnectionName;
+		private readonly string slaveConnectionName;
 		private readonly int shards;
 
 		public ConfigurationConnectionFactory()
@@ -23,20 +23,20 @@ namespace EventStore.Persistence.SqlPersistence
 			: this(connectionName, connectionName, DefaultShards)
 		{
 		}
-		public ConfigurationConnectionFactory(string readConnectionName, string writeConnectionName, int shards)
+		public ConfigurationConnectionFactory(string masterConnectionName, string slaveConnectionName, int shards)
 		{
-			this.readConnectionName = readConnectionName ?? DefaultConnectionName;
-			this.writeConnectionName = writeConnectionName ?? this.readConnectionName;
+			this.masterConnectionName = masterConnectionName ?? DefaultConnectionName;
+			this.slaveConnectionName = slaveConnectionName ?? this.masterConnectionName;
 			this.shards = shards >= 0 ? shards : DefaultShards;
 		}
 
-		public virtual IDbConnection OpenForReading(Guid streamId)
+		public virtual IDbConnection OpenMaster(Guid streamId)
 		{
-			return this.Open(streamId, this.readConnectionName);
+			return this.Open(streamId, this.masterConnectionName);
 		}
-		public virtual IDbConnection OpenForWriting(Guid streamId)
+		public virtual IDbConnection OpenSlave(Guid streamId)
 		{
-			return this.Open(streamId, this.writeConnectionName);
+			return this.Open(streamId, this.slaveConnectionName);
 		}
 		protected virtual IDbConnection Open(Guid streamId, string connectionName)
 		{
@@ -52,11 +52,13 @@ namespace EventStore.Persistence.SqlPersistence
 			if (this.shards == 0)
 				return setting.ConnectionString;
 
-			return setting.ConnectionString.FormatWith(this.ComputeShardKey(streamId));
+			return setting.ConnectionString.FormatWith(this.ComputeHashKey(streamId));
 		}
-		protected virtual int ComputeShardKey(Guid streamId)
+		protected virtual string ComputeHashKey(Guid streamId)
 		{
-			return this.shards == 0 ? 0 : streamId.ToByteArray()[0] % this.shards;
+			// simple sharding scheme which could easily be improved through such techniques
+			// as consistent hashing (Amazon Dynamo) or other kinds of sharding.
+			return (this.shards == 0 ? 0 : streamId.ToByteArray()[0] % this.shards).ToString();
 		}
 	}
 }

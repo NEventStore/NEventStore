@@ -5,7 +5,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 	public interface IConnectionFactory
 	{
-		IDbConnection OpenForReading(Guid streamId);
-		IDbConnection OpenForWriting(Guid streamId);
+		IDbConnection OpenMaster(Guid streamId);
+		IDbConnection OpenSlave(Guid streamId);
 	}
 }

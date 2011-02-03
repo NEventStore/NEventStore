@@ -12,11 +12,11 @@ namespace EventStore.Persistence.SqlPersistence
 			this.openConnection = openConnection;
 		}
 
-		public virtual IDbConnection OpenForReading(Guid streamId)
+		public virtual IDbConnection OpenMaster(Guid streamId)
 		{
 			return this.openConnection(streamId);
 		}
-		public virtual IDbConnection OpenForWriting(Guid streamId)
+		public virtual IDbConnection OpenSlave(Guid streamId)
 		{
 			return this.openConnection(streamId);
 		}
