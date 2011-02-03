@@ -10,13 +10,13 @@ namespace EventStore.Persistence.SqlPersistence
 
 	public class SqlPersistenceEngine : IPersistStreams
 	{
-		private readonly IConnectionFactory factory;
+		private readonly IConnectionFactory connectionFactory;
 		private readonly ISqlDialect dialect;
 		private readonly ISerialize serializer;
 
-		public SqlPersistenceEngine(IConnectionFactory factory, ISqlDialect dialect, ISerialize serializer)
+		public SqlPersistenceEngine(IConnectionFactory connectionFactory, ISqlDialect dialect, ISerialize serializer)
 		{
-			this.factory = factory;
+			this.connectionFactory = connectionFactory;
 			this.dialect = dialect;
 			this.serializer = serializer;
 		}
@@ -75,7 +75,8 @@ namespace EventStore.Persistence.SqlPersistence
 					return;
 
 				var conflictRevision = attempt.StreamRevision - attempt.Events.Count + 1;
-				throw new ConcurrencyException(this.GetFrom(attempt.StreamId, conflictRevision, int.MaxValue));
+				var commits = this.GetFrom(attempt.StreamId, conflictRevision, int.MaxValue); // TODO: read from master
+				throw new ConcurrencyException(commits);
 			});
 		}
 
@@ -135,7 +136,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 			try
 			{
-				connection = this.factory.OpenForReading(streamId);
+				connection = this.connectionFactory.OpenSlave(streamId);
 				transaction = this.dialect.OpenTransaction(connection);
 				statement = this.dialect.BuildStatement(connection, transaction, scope);
 				return query(statement);
@@ -156,14 +157,13 @@ namespace EventStore.Persistence.SqlPersistence
 		protected virtual void ExecuteCommand(Guid streamId, Action<IDbStatement> command)
 		{
 			using (var scope = new TransactionScope(TransactionScopeOption.Suppress))
-			using (var connection = this.factory.OpenForWriting(streamId))
+			using (var connection = this.connectionFactory.OpenMaster(streamId))
 			using (var transaction = this.dialect.OpenTransaction(connection))
 			using (var statement = this.dialect.BuildStatement(connection, transaction, scope))
 			{
 				try
 				{
 					command(statement);
-
 					if (transaction != null)
 						transaction.Commit();
 				}

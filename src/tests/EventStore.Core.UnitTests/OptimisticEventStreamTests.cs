@@ -161,7 +161,7 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStream")]
-	public class when_committing_any_uncommitted_events : on_the_event_stream
+	public class when_committing_any_uncommitted_changes : on_the_event_stream
 	{
 		static readonly Guid commitId = Guid.NewGuid();
 		static readonly EventMessage uncommitted = new EventMessage { Body = string.Empty };
@@ -206,6 +206,9 @@ namespace EventStore.Core.UnitTests
 
 		It should_update_the_commit_sequence = () =>
 			stream.CommitSequence.ShouldEqual(constructed.CommitSequence);
+
+		It should_add_the_uncommitted_events_the_committed_events = () =>
+			stream.CommittedEvents.Last().ShouldEqual(uncommitted);
 
 		It should_clear_the_uncommitted_events = () =>
 			stream.UncommittedEvents.Count.ShouldEqual(0);

@@ -2,7 +2,6 @@
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Globalization;
 	using MongoDB.Bson;
 	using MongoDB.Driver.Builders;
 	using Serialization;
@@ -19,7 +18,7 @@
 				StartingStreamRevision = commit.StreamRevision - (commit.Events.Count - 1),
 				StreamRevision = commit.StreamRevision,
 				CommitId = commit.CommitId,
-				CommitStamp = DateTime.Now,
+				CommitStamp = DateTime.UtcNow,
 				Headers = commit.Headers,
 				Payload = payload
 			};
