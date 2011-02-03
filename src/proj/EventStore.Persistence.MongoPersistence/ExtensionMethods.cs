@@ -2,7 +2,9 @@
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Linq;
 	using MongoDB.Bson;
+	using MongoDB.Bson.Serialization;
 	using MongoDB.Driver.Builders;
 	using Serialization;
 
@@ -10,9 +12,7 @@
 	{
 		public static MongoCommit ToMongoCommit(this Commit commit, ISerialize serializer)
 		{
-			var payload = null == serializer ? null : serializer.Serialize(commit.Events);
-
-			return new MongoCommit
+		return new MongoCommit
 			{
 				Id = new MongoCommitId(commit.StreamId, commit.CommitSequence),
 				StartingStreamRevision = commit.StreamRevision - (commit.Events.Count - 1),
@@ -20,7 +20,7 @@
 				CommitId = commit.CommitId,
 				CommitStamp = DateTime.UtcNow,
 				Headers = commit.Headers,
-				Payload = payload
+				Payload = commit.Events.ToBsonValue(serializer)
 			};
 		}
 		public static Commit ToCommit(this MongoCommit commit, ISerialize serializer)
@@ -31,7 +31,7 @@
 				commit.CommitId,
 				commit.Id.CommitSequence,
 				commit.Headers,
-				serializer.Deserialize(commit.Payload) as List<EventMessage>);
+				commit.Payload.ToEventList(serializer));
 		}
 
 		public static MongoSnapshot ToMongoSnapshot(this Snapshot snapshot, ISerialize serializer)
@@ -39,7 +39,7 @@
 			return new MongoSnapshot
 			{
 				Id = new MongoSnapshotId(snapshot.StreamId, snapshot.StreamRevision),
-				Payload = serializer.Serialize(snapshot.Payload)
+				Payload = snapshot.Payload.ToBsonValue(serializer)
 			};
 		}
 		public static Snapshot ToSnapshot(this MongoSnapshot snapshot, ISerialize serializer)
@@ -50,7 +50,7 @@
 			return new Snapshot(
 				snapshot.Id.StreamId,
 				snapshot.Id.StreamRevision,
-				serializer.Deserialize(snapshot.Payload));
+				snapshot.Payload.RawValue);
 		}
 
 		public static StreamHead ToStreamHead(this MongoStreamHead streamhead)
@@ -73,6 +73,54 @@
 		public static QueryConditionList ToSnapshotQuery(this Guid streamId, int maxRevision)
 		{
 			return Query.GT("_id", Query.And(Query.EQ("StreamId", streamId), Query.EQ("StreamRevision", BsonNull.Value)).ToBsonDocument()).LTE(Query.And(Query.EQ("StreamId", streamId), Query.EQ("StreamRevision", maxRevision)).ToBsonDocument());
+		}
+
+        public static BsonValue ToBsonValue(this object payload, ISerialize serializer)
+        {
+            if (serializer == null)
+                return BsonNull.Value;
+
+            if (!(serializer is MongoSerializer))
+                return BsonBinaryData.Create(serializer.Serialize(payload));
+
+            BsonValue result;
+            try 
+            {
+                // we'll normally expect the snapshot to be an object that has a ClassMap
+                // but this will fail if it's a simple value type instead (or a string)
+                result = payload.ToBsonDocument();
+            }
+            catch (InvalidOperationException)
+            {
+                // ... so we have to use this instead (this is only likely in the unit tests)
+                result = BsonValue.Create(payload);
+            }
+            return result;
+        }
+		public static BsonValue ToBsonValue(this List<EventMessage> events, ISerialize serializer)
+		{
+			if (serializer == null)
+				return BsonNull.Value;
+
+			if (!(serializer is MongoSerializer))
+				return BsonBinaryData.Create(serializer.Serialize(events));
+
+			var result = new BsonArray();
+			foreach (var e in events)
+			{
+				result.Add(e.ToBsonDocument());
+			}
+			return result;
+		}
+		public static List<EventMessage> ToEventList(this BsonValue value, ISerialize serializer)
+		{
+			if (serializer == null)
+				return new List<EventMessage>();
+
+			if (!(serializer is MongoSerializer))
+				return serializer.Deserialize(value.AsByteArray) as List<EventMessage>;
+
+			return value.AsBsonArray.Select(item => BsonSerializer.Deserialize<EventMessage>(item.AsBsonDocument)).ToList();
 		}
 	}
 }
