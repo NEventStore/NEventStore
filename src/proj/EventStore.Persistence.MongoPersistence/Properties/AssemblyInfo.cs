@@ -1,8 +1,6 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
 [assembly: AssemblyTitle("EventStore.Persistence.MongoPersistence")]
+[assembly: AssemblyDescription("")]
+[assembly: Guid("a531c143-8f3a-4123-b8ed-44323eac543c")]
