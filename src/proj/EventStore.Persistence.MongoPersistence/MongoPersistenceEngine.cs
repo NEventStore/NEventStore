@@ -106,8 +106,7 @@
 				if (committed == null || committed.CommitId == commit.CommitId)
 					throw new DuplicateCommitException();
 
-				var conflictRevision = attempt.StreamRevision - attempt.Events.Count + 1;
-				throw new ConcurrencyException(this.GetFrom(attempt.StreamId, conflictRevision, int.MaxValue));
+				throw new ConcurrencyException();
 			}
 		}
 

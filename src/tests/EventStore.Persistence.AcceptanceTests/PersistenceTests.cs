@@ -97,11 +97,8 @@ namespace EventStore.Persistence.AcceptanceTests
 		Because of = () =>
 			thrown = Catch.Exception(() => persistence2.Commit(attempt2));
 
-		It should_throw_a_concurrency_exception = () =>
+		It should_throw_a_ConcurrencyException = () =>
 			thrown.ShouldBeOfType<ConcurrencyException>();
-
-		It should_query_the_underlying_storage_and_populate_the_exception_with_the_commits_that_caused_the_ConcurrencyException = () =>
-			((ConcurrencyException)thrown).Commits.ToList()[0].ShouldEqual(attempt1);
 	}
 
 	[Subject("Persistence")]
@@ -121,9 +118,6 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		It should_throw_a_ConcurrencyException = () =>
 			thrown.ShouldBeOfType<ConcurrencyException>();
-
-		It should_populate_the_exception_with_the_commits_that_caused_the_ConcurrencyException = () =>
-			((ConcurrencyException)thrown).Commits.ToList()[0].ShouldEqual(attempt1);
 	}
 
 	[Subject("Persistence")]

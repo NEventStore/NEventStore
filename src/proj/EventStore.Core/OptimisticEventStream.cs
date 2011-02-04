@@ -33,7 +33,7 @@ namespace EventStore
 			this.StreamRevision = snapshot.StreamRevision + this.committed.Count;
 		}
 
-		protected virtual void PopulateStream(int minRevision, int maxRevision, IEnumerable<Commit> commits)
+		protected void PopulateStream(int minRevision, int maxRevision, IEnumerable<Commit> commits)
 		{
 			foreach (var commit in commits ?? new Commit[0])
 			{
@@ -110,9 +110,11 @@ namespace EventStore
 			{
 				this.PersistChanges(commitId, headers);
 			}
-			catch (ConcurrencyException e)
+			catch (ConcurrencyException)
 			{
-				this.PopulateStream(this.StreamRevision + 1, int.MaxValue, e.Commits);
+				var commits = this.persistence.GetFrom(this.StreamId, this.StreamRevision + 1, int.MaxValue);
+				this.PopulateStream(this.StreamRevision + 1, int.MaxValue, commits);
+
 				throw;
 			}
 		}

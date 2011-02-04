@@ -88,18 +88,7 @@ namespace EventStore
 		}
 		protected virtual void PersistAndDispatch(Commit attempt)
 		{
-			try
-			{
-				this.persistence.Commit(attempt);
-			}
-			catch (ConcurrencyException e)
-			{
-				foreach (var commit in e.Commits)
-					this.tracker.Track(commit);
-
-				throw;
-			}
-
+			this.persistence.Commit(attempt);
 			this.tracker.Track(attempt);
 			this.dispatcher.Dispatch(attempt);
 		}

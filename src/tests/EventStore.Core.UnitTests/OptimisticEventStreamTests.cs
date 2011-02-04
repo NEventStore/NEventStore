@@ -162,7 +162,8 @@ namespace EventStore.Core.UnitTests
 
 	[Subject("OptimisticEventStream")]
 	public class when_committing_any_uncommitted_changes : on_the_event_stream
-	{		static readonly Guid commitId = Guid.NewGuid();
+	{
+		static readonly Guid commitId = Guid.NewGuid();
 		static readonly EventMessage uncommitted = new EventMessage { Body = string.Empty };
 		static readonly Dictionary<string, object> headers = new Dictionary<string, object>();
 		static Commit constructed;
@@ -219,6 +220,7 @@ namespace EventStore.Core.UnitTests
 	[Subject("OptimisticEventStream")]
 	public class when_committing_after_another_thread_or_process_has_moved_the_stream_head : on_the_event_stream
 	{
+		const int StreamRevision = 1;
 		private static readonly Commit[] Committed = new[] { BuildCommitStub(1, 1, 1) };
 		static readonly EventMessage uncommitted = new EventMessage { Body = string.Empty };
 		static readonly Commit[] DiscoveredOnCommit = new[] { BuildCommitStub(3, 2, 2) };
@@ -229,12 +231,15 @@ namespace EventStore.Core.UnitTests
 		{
 			persistence
 				.Setup(x => x.Commit(Moq.It.IsAny<Commit>()))
-				.Throws(new ConcurrencyException(DiscoveredOnCommit));
+				.Throws(new ConcurrencyException());
 			persistence
-				.Setup(x => x.GetFrom(streamId, 1, 2))
+				.Setup(x => x.GetFrom(streamId, StreamRevision, int.MaxValue))
 				.Returns(Committed);
+			persistence
+				.Setup(x => x.GetFrom(streamId, StreamRevision + 1, int.MaxValue))
+				.Returns(DiscoveredOnCommit);
 
-			stream = new OptimisticEventStream(streamId, persistence.Object, 1, 2);
+			stream = new OptimisticEventStream(streamId, persistence.Object, StreamRevision, int.MaxValue);
 			stream.Add(uncommitted);
 		};
 
@@ -243,6 +248,9 @@ namespace EventStore.Core.UnitTests
 
 		It should_throw_a_ConcurrencyException = () =>
 			thrown.ShouldBeOfType<ConcurrencyException>();
+
+		It should_query_the_underlying_storage_to_discover_the_new_commits = () =>
+			persistence.Verify(x => x.GetFrom(streamId, StreamRevision + 1, int.MaxValue), Times.Once());
 
 		It should_update_the_stream_revision_accordingly = () =>
 			stream.StreamRevision.ShouldEqual(DiscoveredOnCommit[0].StreamRevision);

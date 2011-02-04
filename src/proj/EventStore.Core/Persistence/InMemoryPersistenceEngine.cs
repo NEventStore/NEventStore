@@ -37,7 +37,7 @@ namespace EventStore.Persistence
 				if (this.commits.Contains(attempt))
 					throw new DuplicateCommitException();
 				if (this.commits.Any(c => c.StreamId == attempt.StreamId && c.StreamRevision == attempt.StreamRevision))
-					throw new ConcurrencyException(this.GetFrom(attempt.StreamId, attempt.StreamRevision - attempt.Events.Count + 1, int.MaxValue));
+					throw new ConcurrencyException();
 
 				this.stamps[attempt.CommitId] = attempt.CommitStamp;
 				this.commits.Add(attempt);

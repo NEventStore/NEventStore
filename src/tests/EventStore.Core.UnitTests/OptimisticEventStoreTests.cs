@@ -439,63 +439,6 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_a_concurrency_exception_is_raised : using_persistence
-	{
-		static readonly Commit[] Committed =
-		{
-			BuildCommitStub(1, 1),
-		};
-		static readonly Commit[] NewlyCommitted =
-		{
-			BuildCommitStub(2, 2),
-			BuildCommitStub(3, 3),
-		};
-		static int attempts;
-		static int reattemptSequence;
-		static int reattemptRevision;
-
-		Establish context = () =>
-		{
-			persistence.Setup(x => x.GetFrom(streamId, 0, int.MaxValue)).Returns(Committed);
-			persistence.Setup(x => x.Commit(Moq.It.IsAny<Commit>())).Callback<Commit>(attempt =>
-			{
-				if (0 == attempts++)
-					throw new ConcurrencyException(NewlyCommitted);
-
-				reattemptRevision = attempt.StreamRevision;
-				reattemptSequence = attempt.CommitSequence;
-			});
-		};
-
-		Because of = () =>
-		{
-			using (var stream = store.OpenStream(streamId, 0, int.MaxValue))
-			{
-				stream.Add(string.Empty);
-
-				try
-				{
-					stream.CommitChanges(Guid.NewGuid(), null);
-				}
-				catch (ConcurrencyException)
-				{
-					stream.CommitChanges(Guid.NewGuid(), null); // re-attempt
-				}
-			}
-		};
-
-		// These checks are related to the CommitTracker.  If the commits from the exception were not
-		// tracked (or passed through the CommitTracker), any future commit attempts would never get
-		// past the head revision checks because the OptimisticEventStore would be comparing the attempt
-		// against an out-of-date stream head.
-		It should_only_allow_attempts_whose_commit_sequence_reflects_the_newly_discovered_commits = () =>
-			reattemptSequence.ShouldEqual(NewlyCommitted.Last().CommitSequence + 1);
-
-		It should_only_allow_attempts_whose_stream_revision_reflects_the_newly_discovered_commits = () =>
-			reattemptRevision.ShouldEqual(NewlyCommitted.Last().StreamRevision + 1);
-	}
-
-	[Subject("OptimisticEventStore")]
 	public class when_disposing_the_event_store : using_persistence
 	{
 		private Because of = () =>
