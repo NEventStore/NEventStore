@@ -39,17 +39,18 @@ namespace EventStore
 		}
 		public virtual IEventStream OpenStream(Guid streamId, int minRevision, int maxRevision)
 		{
+			maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
 			var stream = new OptimisticEventStream(streamId, this, minRevision, maxRevision);
 			return stream.CommitSequence == 0 ? null : stream;
 		}
 		public virtual IEventStream OpenStream(Snapshot snapshot, int maxRevision)
 		{
+			maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
 			return new OptimisticEventStream(snapshot, this, maxRevision);
 		}
 
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
 		{
-			maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
 			var commits = this.persistence.GetFrom(streamId, minRevision, maxRevision);
 			foreach (var commit in commits)
 			{

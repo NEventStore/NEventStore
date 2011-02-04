@@ -142,14 +142,34 @@ namespace EventStore.Core.UnitTests
 	[Subject("OptimisticEventStore")]
 	public class when_reading_up_to_revision_revision_zero : using_persistence
 	{
-		Establish context = () =>
-			persistence.Setup(x => x.GetFrom(streamId, 0, int.MaxValue)).Returns(new Commit[] { });
+		static readonly Commit Committed = BuildCommitStub(1, 1);
+
+		Establish context = () => persistence
+			.Setup(x => x.GetFrom(streamId, 0, int.MaxValue))
+			.Returns(new[] { Committed });
 
 		Because of = () =>
-			store.GetFrom(streamId, 0, 0).ToList();
+			store.OpenStream(streamId, 0, 0);
 
 		It should_pass_the_maximum_possible_revision_to_the_persistence_infrastructure = () =>
 			persistence.Verify(x => x.GetFrom(streamId, 0, int.MaxValue), Times.Once());
+	}
+
+	[Subject("OptimisticEventStore")]
+	public class when_reading_from_a_snapshot_up_to_revision_revision_zero : using_persistence
+	{
+		static readonly Snapshot snapshot = new Snapshot(streamId, 1, "snapshot");
+		static readonly Commit Committed = BuildCommitStub(1, 1);
+
+		Establish context = () => persistence
+			.Setup(x => x.GetFrom(streamId, snapshot.StreamRevision, int.MaxValue))
+			.Returns(new[] { Committed });
+
+		Because of = () =>
+			store.OpenStream(snapshot, 0);
+
+		It should_pass_the_maximum_possible_revision_to_the_persistence_infrastructure = () =>
+			persistence.Verify(x => x.GetFrom(streamId, snapshot.StreamRevision, int.MaxValue), Times.Once());
 	}
 
 	[Subject("OptimisticEventStore")]
