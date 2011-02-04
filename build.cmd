@@ -17,8 +17,6 @@ set ILMERGE_VERSION=%3
 :build
 if exist output ( rmdir /s /q output )
 if exist output ( rmdir /s /q output )
-if exist publish ( rmdir /s /q publish )
-if exist publish ( rmdir /s /q publish )
 
 mkdir output
 mkdir output\bin
@@ -26,7 +24,7 @@ mkdir output\bin
 echo === COMPILING ===
 echo Compiling / Target: %FRAMEWORK_VERSION% / Config: %TARGET_CONFIG%
 msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=%TARGET_CONFIG% /t:Clean
-msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=%TARGET_CONFIG% /property:TargetFrameworkVersion=%FRAMEWORK_VERSION%
+msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=%TARGET_CONFIG% /p:TargetFrameworkVersion=%FRAMEWORK_VERSION%
 
 echo.
 echo === TESTS ===
@@ -35,7 +33,6 @@ echo Unit Tests
 echo Acceptance Tests
 "bin/machine.specifications-bin/.NET 4.0/mspec.exe" src/tests/EventStore.Persistence.AcceptanceTests/bin/%TARGET_CONFIG%/EventStore.Persistence.AcceptanceTests.dll
 call acceptance-serialization.cmd
-
 
 echo.
 echo === MERGING ===
@@ -51,7 +48,7 @@ del exclude.txt
 
 echo Rereferencing Merged Assembly
 msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=%TARGET_CONFIG% /t:Clean
-msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=%TARGET_CONFIG% /property:TargetFrameworkVersion=%FRAMEWORK_VERSION%
+msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=%TARGET_CONFIG% /p:ILMerge=true /p:TargetFrameworkVersion=%FRAMEWORK_VERSION%
 
 echo Merging Mongo Persistence
 set FILES_TO_MERGE=
@@ -76,8 +73,6 @@ echo Copying
 mkdir output\doc
 copy doc\*.* output\doc
 copy "lib\Json.NET\license.txt" "output\doc\Newtonsoft Json.NET license.txt"
-
-move output publish
 
 echo.
 echo === CLEANUP ===
