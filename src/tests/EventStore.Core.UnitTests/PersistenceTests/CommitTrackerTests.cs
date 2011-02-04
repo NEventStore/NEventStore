@@ -53,7 +53,7 @@ namespace EventStore.Core.UnitTests.PersistenceTests
 
 		private static Commit BuildCommit(Guid streamId, Guid commitId)
 		{
-			return new Commit(streamId, 0, commitId, 0, null, null);
+			return new Commit(streamId, 0, commitId, 0, DateTime.UtcNow, null, null);
 		}
 	}
 }

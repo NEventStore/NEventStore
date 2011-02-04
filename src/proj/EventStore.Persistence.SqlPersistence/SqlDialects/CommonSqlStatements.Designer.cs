@@ -84,7 +84,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT StreamId, StreamRevision, CommitId, CommitSequence, Headers, Payload
+        ///   Looks up a localized string similar to SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
         ///  FROM Commits
         /// WHERE CommitStamp &gt;= @CommitStamp
         /// ORDER BY CommitStamp;.
@@ -96,7 +96,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT StreamId, StreamRevision, CommitId, CommitSequence, Headers, Payload
+        ///   Looks up a localized string similar to SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
         ///  FROM Commits
         /// WHERE StreamId = @StreamId
         ///   AND StreamRevision &gt;= @StreamRevision
@@ -139,7 +139,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT StreamId, StreamRevision, CommitId, CommitSequence, Headers, Payload
+        ///   Looks up a localized string similar to SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
         ///  FROM Commits
         /// WHERE Dispatched = 0;.
         /// </summary>

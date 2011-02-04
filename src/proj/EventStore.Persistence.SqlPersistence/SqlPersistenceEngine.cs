@@ -66,7 +66,7 @@ namespace EventStore.Persistence.SqlPersistence
 				cmd.AddParameter(this.dialect.Items, attempt.Events.Count);
 				cmd.AddParameter(this.dialect.CommitId, attempt.CommitId);
 				cmd.AddParameter(this.dialect.CommitSequence, attempt.CommitSequence);
-				cmd.AddParameter(this.dialect.CommitStamp, DateTime.UtcNow);
+				cmd.AddParameter(this.dialect.CommitStamp, attempt.CommitStamp);
 				cmd.AddParameter(this.dialect.Headers, this.serializer.Serialize(attempt.Headers));
 				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(attempt.Events));
 

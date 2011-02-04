@@ -17,6 +17,7 @@ namespace EventStore
 		/// <param name="streamRevision">The value which indicates the revision of the most recent event in the stream to which this commit applies.</param>
 		/// <param name="commitId">The value which uniquely identifies the commit within the stream.</param>
 		/// <param name="commitSequence">The value which indicates the sequence (or position) in the stream to which this commit applies.</param>
+		/// <param name="commitStamp">The point in time at which the commit was persisted.</param>
 		/// <param name="headers">The metadata which provides additional, unstructured information about this commit.</param>
 		/// <param name="events">The collection of event messages to be committed as a single unit.</param>
 		public Commit(
@@ -24,6 +25,7 @@ namespace EventStore
 			int streamRevision,
 			Guid commitId,
 			int commitSequence,
+			DateTime commitStamp,
 			Dictionary<string, object> headers,
 			List<EventMessage> events)
 			:this()
@@ -32,6 +34,7 @@ namespace EventStore
 			this.CommitId = commitId;
 			this.StreamRevision = streamRevision;
 			this.CommitSequence = commitSequence;
+			this.CommitStamp = commitStamp;
 			this.Headers = headers ?? new Dictionary<string, object>();
 			this.Events = events ?? new List<EventMessage>();
 		}
@@ -62,6 +65,11 @@ namespace EventStore
 		/// Gets the value which indicates the sequence (or position) in the stream to which this commit applies.
 		/// </summary>
 		[DataMember] public virtual int CommitSequence { get; private set; }
+
+		/// <summary>
+		/// Gets the point in time at which the commit was persisted.
+		/// </summary>
+		[DataMember] public virtual DateTime CommitStamp { get; private set; }
 
 		/// <summary>
 		/// Gets the metadata which provides additional, unstructured information about this commit.

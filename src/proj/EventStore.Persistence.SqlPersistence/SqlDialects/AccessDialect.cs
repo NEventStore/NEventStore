@@ -46,15 +46,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			public override void AddParameter(string name, object value)
 			{
 				if (value is DateTime)
-					value = FixDateTime((DateTime)value);
+					value = (decimal)((DateTime)value).Ticks;
 
 				base.AddParameter(name, value);
-			}
-			private static object FixDateTime(DateTime value)
-			{
-				// http://connect.microsoft.com/VisualStudio/feedback/details/94377/oledbparameter-with-dbtype-datetime-throws-data-type-mismatch-in-criteria-expression
-				return new DateTime(
-					value.Year, value.Month, value.Day, value.Hour, value.Minute, value.Second);
 			}
 
 			protected override void BuildParameters(IDbCommand command)

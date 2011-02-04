@@ -5,7 +5,7 @@ namespace EventStore.Persistence.AcceptanceTests
 
 	internal static class ExtensionMethods
 	{
-		public static Commit BuildAttempt(this Guid streamId)
+		public static Commit BuildAttempt(this Guid streamId, DateTime now)
 		{
 			var messages = new List<EventMessage>
 			{
@@ -18,8 +18,13 @@ namespace EventStore.Persistence.AcceptanceTests
 				2,
 				Guid.NewGuid(),
 				1,
+				now,
 				new Dictionary<string, object> { { "A header", "A string value" }, { "Another header", 2 } },
 				messages);
+		}
+		public static Commit BuildAttempt(this Guid streamId)
+		{
+			return streamId.BuildAttempt(DateTime.UtcNow);
 		}
 		public static Commit BuildNextAttempt(this Commit commit)
 		{
@@ -34,6 +39,7 @@ namespace EventStore.Persistence.AcceptanceTests
 				commit.StreamRevision + 2,
 				Guid.NewGuid(),
 				commit.CommitSequence + 1,
+				commit.CommitStamp,
 				new Dictionary<string, object>(),
 				messages);
 		}

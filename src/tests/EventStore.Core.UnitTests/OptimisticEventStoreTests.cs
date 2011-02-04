@@ -530,17 +530,17 @@ namespace EventStore.Core.UnitTests
 
 		protected static Commit BuildCommitStub(Guid commitId)
 		{
-			return new Commit(streamId, 1, commitId, 1, null, null);
+			return new Commit(streamId, 1, commitId, 1, DateTime.UtcNow, null, null);
 		}
 		protected static Commit BuildCommitStub(int streamRevision, int commitSequence)
 		{
 			var events = new[] { new EventMessage() } .ToList();
-			return new Commit(streamId, streamRevision, Guid.NewGuid(), commitSequence, null, events);
+			return new Commit(streamId, streamRevision, Guid.NewGuid(), commitSequence, DateTime.UtcNow, null, events);
 		}
 		protected static Commit BuildCommitStub(Guid commitId, int streamRevision, int commitSequence)
 		{
 			var events = new[] { new EventMessage() } .ToList();
-			return new Commit(streamId, streamRevision, commitId, commitSequence, null, events);
+			return new Commit(streamId, streamRevision, commitId, commitSequence, DateTime.UtcNow, null, events);
 		}
 	}
 }

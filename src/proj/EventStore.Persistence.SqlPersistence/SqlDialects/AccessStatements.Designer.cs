@@ -88,13 +88,13 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///       Items tinyint NOT NULL,
         ///       CommitId guid NOT NULL,
         ///       CommitSequence int NOT NULL,
-        ///       CommitStamp datetime NOT NULL,
+        ///       CommitStamp decimal NOT NULL,
         ///       Dispatched bit NOT NULL DEFAULT 0,
         ///       Headers image NULL,
         ///       Payload image NOT NULL,
         ///       CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)
         ///);
-        ///CR [rest of string was truncated]&quot;;.
+        ///CRE [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {

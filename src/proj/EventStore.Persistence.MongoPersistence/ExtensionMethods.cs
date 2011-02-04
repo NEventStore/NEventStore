@@ -18,7 +18,7 @@
 				StartingStreamRevision = commit.StreamRevision - (commit.Events.Count - 1),
 				StreamRevision = commit.StreamRevision,
 				CommitId = commit.CommitId,
-				CommitStamp = DateTime.UtcNow,
+				CommitStamp = commit.CommitStamp,
 				Headers = commit.Headers,
 				Payload = payload
 			};
@@ -30,6 +30,7 @@
 				commit.StreamRevision,
 				commit.CommitId,
 				commit.Id.CommitSequence,
+				commit.CommitStamp,
 				commit.Headers,
 				serializer.Deserialize(commit.Payload) as List<EventMessage>);
 		}

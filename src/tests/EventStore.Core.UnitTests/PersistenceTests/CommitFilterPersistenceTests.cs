@@ -30,8 +30,8 @@ namespace EventStore.Core.UnitTests.PersistenceTests
 		const int MaxRevision = 43; // doesn't matter in this test
 		private static readonly Commit[] commits = new[]
 		{
-			new Commit(streamId, 0, Guid.NewGuid(), 0, null, null),
-			new Commit(streamId, 0, Guid.NewGuid(), 0, null, null)
+			new Commit(streamId, 0, Guid.NewGuid(), 0, DateTime.UtcNow, null, null),
+			new Commit(streamId, 0, Guid.NewGuid(), 0, DateTime.UtcNow, null, null)
 		};
 		static Mock<IFilterCommits<Commit>> readFilter;
 		static Commit[] read;
@@ -100,7 +100,7 @@ namespace EventStore.Core.UnitTests.PersistenceTests
 	[Subject("CommitFilterPersistence")]
 	public class when_marking_a_commit_as_dispatched : using_mock_persistence
 	{
-		static readonly Commit commit = new Commit(streamId, 0, Guid.NewGuid(), 0, null, null);
+		static readonly Commit commit = new Commit(streamId, 0, Guid.NewGuid(), 0, DateTime.UtcNow, null, null);
 
 		Establish context = () =>
 			fakePersistence.Setup(x => x.MarkCommitAsDispatched(commit));
@@ -175,7 +175,7 @@ namespace EventStore.Core.UnitTests.PersistenceTests
 
 		protected static Commit BuildCommitStub()
 		{
-			return new Commit(streamId, 1, Guid.NewGuid(), 1, null, null);
+			return new Commit(streamId, 1, Guid.NewGuid(), 1, DateTime.UtcNow, null, null);
 		}
 	}
 }

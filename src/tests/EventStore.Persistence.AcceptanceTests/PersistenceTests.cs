@@ -5,17 +5,43 @@ namespace EventStore.Persistence.AcceptanceTests
 {
 	using System;
 	using System.Linq;
-	using System.Threading;
 	using Machine.Specifications;
 	using Persistence;
 
 	[Subject("Persistence")]
 	public class when_a_commit_is_successfully_persisted : using_the_persistence_engine
 	{
-		static readonly Commit attempt = streamId.BuildAttempt();
+		static readonly DateTime now = DateTime.UtcNow.AddYears(-1);
+		static readonly Commit attempt = streamId.BuildAttempt(now);
+		static Commit persisted;
+
+		Establish context = () =>
+			persistence.Commit(attempt);
 
 		Because of = () =>
-			persistence.Commit(attempt);
+			persisted = persistence.GetFrom(streamId, 0, int.MaxValue).First();
+
+		It should_correctly_persist_the_stream_identifier = () =>
+			persisted.StreamId.ShouldEqual(attempt.StreamId);
+
+		It should_correctly_persist_the_stream_stream_revision = () =>
+			persisted.StreamRevision.ShouldEqual(attempt.StreamRevision);
+
+		It should_correctly_persist_the_commit_identifier = () =>
+			persisted.CommitId.ShouldEqual(attempt.CommitId);
+
+		It should_correctly_persist_the_commit_sequence = () =>
+			persisted.CommitSequence.ShouldEqual(attempt.CommitSequence);
+
+		// persistence engines have varying levels of precision with respect to time.
+		It should_correctly_persist_the_commit_stamp = () =>
+			persisted.CommitStamp.Subtract(now).ShouldBeLessThan(TimeSpan.FromSeconds(1));
+
+		It should_correctly_persist_the_headers = () =>
+			persisted.Headers.Count.ShouldEqual(attempt.Headers.Count);
+
+		It should_correctly_persist_the_events = () =>
+			persisted.Events.Count.ShouldEqual(attempt.Events.Count);
 
 		It should_make_the_commit_available_to_be_read_from_the_stream = () =>
 			persistence.GetFrom(streamId, 0, int.MaxValue).First().CommitId.ShouldEqual(attempt.CommitId);
@@ -25,11 +51,6 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		It should_cause_the_stream_to_be_found_in_the_list_of_streams_to_snapshot = () =>
 			persistence.GetStreamsToSnapshot(1).First(x => x.StreamId == streamId).ShouldNotBeNull();
-
-		It should_serialize_and_deserialize_the_events_correctly = () =>
-			persistence.GetFrom(streamId, 0, int.MaxValue)
-				.Select(c => c.Events.First().Body as ExtensionMethods.SomeDomainEvent)
-				.First().SomeProperty.ShouldEqual("Test");
 	}
 
 	[Subject("Persistence")]
@@ -229,8 +250,8 @@ namespace EventStore.Persistence.AcceptanceTests
 	[Subject("Persistence")]
 	public class when_reading_all_commits_from_a_particular_point_in_time : using_the_persistence_engine
 	{
-		static readonly DateTime start = DateTime.UtcNow.AddMilliseconds(10);
-		static readonly Commit first = streamId.BuildAttempt();
+		static readonly DateTime now = DateTime.UtcNow;
+		static readonly Commit first = streamId.BuildAttempt(now.AddSeconds(1));
 		static readonly Commit second = first.BuildNextAttempt();
 		static readonly Commit third = second.BuildNextAttempt();
 		static readonly Commit fourth = third.BuildNextAttempt();
@@ -238,7 +259,6 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		Establish context = () =>
 		{
-			Thread.Sleep(10);
 			persistence.Commit(first);
 			persistence.Commit(second);
 			persistence.Commit(third);
@@ -246,7 +266,7 @@ namespace EventStore.Persistence.AcceptanceTests
 		};
 
 		Because of = () =>
-			committed = persistence.GetFrom(start).ToArray();
+			committed = persistence.GetFrom(now).ToArray();
 
 		It should_return_all_commits_on_or_after_the_point_in_time_specified = () =>
 			committed.Length.ShouldEqual(4);

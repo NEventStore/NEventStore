@@ -162,8 +162,7 @@ namespace EventStore.Core.UnitTests
 
 	[Subject("OptimisticEventStream")]
 	public class when_committing_any_uncommitted_changes : on_the_event_stream
-	{
-		static readonly Guid commitId = Guid.NewGuid();
+	{		static readonly Guid commitId = Guid.NewGuid();
 		static readonly EventMessage uncommitted = new EventMessage { Body = string.Empty };
 		static readonly Dictionary<string, object> headers = new Dictionary<string, object>();
 		static Commit constructed;
@@ -191,6 +190,9 @@ namespace EventStore.Core.UnitTests
 
 		It should_build_the_commit_with_an_incremented_commit_sequence = () =>
 			constructed.CommitSequence.ShouldEqual(DefaultCommitSequence);
+
+		It should_build_the_commit_with_the_correct_commit_stamp = () =>
+			DateTime.UtcNow.Subtract(constructed.CommitStamp).ShouldBeLessThan(TimeSpan.FromMilliseconds(50));
 
 		It should_build_the_commit_with_the_headers_provided = () =>
 			constructed.Headers.ShouldEqual(headers);
@@ -309,7 +311,7 @@ namespace EventStore.Core.UnitTests
 			for (var i = 0; i < eventCount; i++)
 				events.Add(new EventMessage());
 
-			return new Commit(streamId, revision, Guid.NewGuid(), sequence, null, events);
+			return new Commit(streamId, revision, Guid.NewGuid(), sequence, DateTime.UtcNow, null, events);
 		}
 	}
 }

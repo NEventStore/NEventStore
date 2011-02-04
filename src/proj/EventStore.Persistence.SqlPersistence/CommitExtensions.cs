@@ -11,8 +11,9 @@ namespace EventStore.Persistence.SqlPersistence
 		private const int StreamRevisionIndex = 1;
 		private const int CommitIdIndex = 2;
 		private const int CommitSequenceIndex = 3;
-		private const int HeadersIndex = 4;
-		private const int PayloadIndex = 5;
+		private const int CommitStampIndex = 4;
+		private const int HeadersIndex = 5;
+		private const int PayloadIndex = 6;
 
 		public static Commit GetCommit(this IDataRecord record, ISerialize serializer)
 		{
@@ -24,6 +25,7 @@ namespace EventStore.Persistence.SqlPersistence
 				record[StreamRevisionIndex].ToInt(),
 				record[CommitIdIndex].ToGuid(),
 				record[CommitSequenceIndex].ToInt(),
+				record[CommitStampIndex].ToDateTime(),
 				headers,
 				events);
 		}

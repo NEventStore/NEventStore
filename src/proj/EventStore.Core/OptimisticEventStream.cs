@@ -33,7 +33,7 @@ namespace EventStore
 			this.StreamRevision = snapshot.StreamRevision + this.committed.Count;
 		}
 
-		private void PopulateStream(int minRevision, int maxRevision, IEnumerable<Commit> commits)
+		protected virtual void PopulateStream(int minRevision, int maxRevision, IEnumerable<Commit> commits)
 		{
 			foreach (var commit in commits ?? new Commit[0])
 			{
@@ -116,14 +116,14 @@ namespace EventStore
 				throw;
 			}
 		}
-		private bool HasChanges()
+		protected virtual bool HasChanges()
 		{
 			if (this.disposed)
 				throw new ObjectDisposedException(Resources.AlreadyDisposed);
 
 			return this.uncommitted.Count > 0;
 		}
-		private void PersistChanges(Guid commitId, Dictionary<string, object> headers)
+		protected virtual void PersistChanges(Guid commitId, Dictionary<string, object> headers)
 		{
 			var commit = this.BuildCommit(commitId, headers);
 
@@ -132,13 +132,14 @@ namespace EventStore
 			this.PopulateStream(this.StreamRevision + 1, commit.StreamRevision, new[] { commit });
 			this.ClearChanges();
 		}
-		private Commit BuildCommit(Guid commitId, Dictionary<string, object> headers)
+		protected virtual Commit BuildCommit(Guid commitId, Dictionary<string, object> headers)
 		{
 			return new Commit(
 				this.StreamId,
 				this.StreamRevision + this.uncommitted.Count,
 				commitId,
 				this.CommitSequence + 1,
+				DateTime.UtcNow,
 				headers ?? new Dictionary<string, object>(),
 				this.uncommitted.ToList());
 		}
