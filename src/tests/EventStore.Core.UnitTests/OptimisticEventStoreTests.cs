@@ -127,7 +127,7 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_reading_from_reversion_zero : using_persistence
+	public class when_reading_from_revision_zero : using_persistence
 	{
 		Establish context = () =>
 			persistence.Setup(x => x.GetFrom(streamId, 0, int.MaxValue)).Returns(new Commit[] { });
@@ -136,6 +136,19 @@ namespace EventStore.Core.UnitTests
 			store.GetFrom(streamId, 0, int.MaxValue).ToList();
 
 		It should_pass_a_revision_range_to_the_persistence_infrastructure = () =>
+			persistence.Verify(x => x.GetFrom(streamId, 0, int.MaxValue), Times.Once());
+	}
+
+	[Subject("OptimisticEventStore")]
+	public class when_reading_up_to_revision_revision_zero : using_persistence
+	{
+		Establish context = () =>
+			persistence.Setup(x => x.GetFrom(streamId, 0, int.MaxValue)).Returns(new Commit[] { });
+
+		Because of = () =>
+			store.GetFrom(streamId, 0, 0).ToList();
+
+		It should_pass_the_maximum_possible_revision_to_the_persistence_infrastructure = () =>
 			persistence.Verify(x => x.GetFrom(streamId, 0, int.MaxValue), Times.Once());
 	}
 

@@ -49,6 +49,7 @@ namespace EventStore
 
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
 		{
+			maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
 			var commits = this.persistence.GetFrom(streamId, minRevision, maxRevision);
 			foreach (var commit in commits)
 			{
