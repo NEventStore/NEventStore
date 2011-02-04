@@ -72,11 +72,11 @@ namespace EventStore
 
 		public virtual ICollection<EventMessage> CommittedEvents
 		{
-			get { return new ReadonlyCollection<EventMessage>(this.committed); }
+			get { return new ReadOnlyCollection<EventMessage>(this.committed); }
 		}
 		public virtual ICollection<EventMessage> UncommittedEvents
 		{
-			get { return new ReadonlyCollection<EventMessage>(this.uncommitted); }
+			get { return new ReadOnlyCollection<EventMessage>(this.uncommitted); }
 		}
 
 		public virtual void Add(params EventMessage[] uncommittedEvents)

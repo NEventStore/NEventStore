@@ -6,3 +6,11 @@
 - Master/slave replication "helper"
   * When failing over from master to slave, ensure that the most recent commits are in the slave.
   * If not, push the commits to the slave to help avoid a split brain condition.
+
+- Polling Dispatcher which polls the event store at the specified frequency and dispatches and new
+  commits which have been added.
+
+- Multi-format Deserializer which attempts a number of internal deserializers (JSON, BSON, PB, Binary, XML, etc)
+  before giving up.  This would allow people to change their serialization in production if necessary
+  for things like encryption, etc.  For example, we're changing the encryption on all commits and we need to
+  support several keys simultaenously for a period of time...

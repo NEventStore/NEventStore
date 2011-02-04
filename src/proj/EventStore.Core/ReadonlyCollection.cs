@@ -3,12 +3,14 @@ namespace EventStore
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
+	using System.Linq;
 
-	internal class ReadonlyCollection<T> : ICollection<T>
+	internal class ReadOnlyCollection<T> : ICollection<T>, ICollection
 	{
+		private readonly object @lock = new object();
 		private readonly ICollection<T> inner;
 
-		public ReadonlyCollection(ICollection<T> inner)
+		public ReadOnlyCollection(ICollection<T> inner)
 		{
 			this.inner = inner;
 		}
@@ -16,6 +18,14 @@ namespace EventStore
 		public int Count
 		{
 			get { return this.inner.Count; }
+		}
+		public object SyncRoot
+		{
+			get { return this.@lock; }
+		}
+		public bool IsSynchronized
+		{
+			get { return false; }
 		}
 		public bool IsReadOnly
 		{
@@ -51,6 +61,10 @@ namespace EventStore
 		public void CopyTo(T[] array, int arrayIndex)
 		{
 			this.inner.CopyTo(array, arrayIndex);
+		}
+		public void CopyTo(Array array, int index)
+		{
+			this.CopyTo(array.Cast<T>().ToArray(), index);
 		}
 	}
 }
