@@ -511,6 +511,61 @@ namespace EventStore.Core.UnitTests
 			dispatcher.Verify(x => x.Dispose(), Times.Once());
 	}
 
+    [Subject("OptimisticEventstore")]
+    public class when_one_thread_persists_a_commit_whose_commitsequence_or_revision_was_made_stale_by_another_thread_and_recommits :
+        using_persistence
+    {
+        const int InitialRevision = 1;
+        const int InitialCommitSequence = 1;
+
+        static readonly Commit[] InitialCommits = new[] { BuildCommitStub(InitialRevision, InitialCommitSequence) };
+        static readonly Commit[] FurtherCommits = new[] { BuildCommitStub(InitialRevision + 1, InitialCommitSequence + 1) };
+
+        static ConcurrencyException concurrencyException;
+
+        Establish context = () =>
+        {
+            persistence.Setup(x => x.GetFrom(streamId, int.MinValue, int.MaxValue)).Returns(InitialCommits); // openstream calls                
+            persistence.Setup(x => x.GetFrom(streamId, InitialRevision + 1, int.MaxValue)).Returns(FurtherCommits); // call to update stream on concurrencyexception
+        };
+
+        Because of = () =>
+        {
+            // Simulate Thread1
+            var stream1 = store.OpenStream(streamId, int.MinValue, int.MaxValue);
+
+            // Simulate Thread2
+            var stream2 = store.OpenStream(streamId, int.MinValue, int.MaxValue);
+
+            // T1
+            stream1.Add(new EventMessage() { Body = "Thread1Message" });
+            stream1.CommitChanges(Guid.NewGuid(), null);
+            stream1.Dispose();
+
+            // T2
+            try
+            {
+                stream2.Add(new EventMessage() { Body = "Thread2Message" });
+                stream2.CommitChanges(Guid.NewGuid(), null);
+            }
+            catch (ConcurrencyException e)
+            {
+                concurrencyException = e;
+                stream2.CommitChanges(Guid.NewGuid(), null); // re-attempt
+            }
+            finally
+            {
+                stream2.Dispose();
+            }
+        };
+
+        // This method only tests concurrencyexceptions thrown by the OptimisticEventStore
+        // concurrencyexceptions thrown by the persistence layer are not covered by this test
+        It should_throw_a_ConcurrencyException = () => concurrencyException.ShouldNotBeNull();
+
+        It should_attach_commits_that_caused_the_exception = () => concurrencyException.Commits.Count.ShouldEqual(1);
+    }
+
 	public abstract class using_persistence
 	{
 		protected static Guid streamId = Guid.NewGuid();

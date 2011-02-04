@@ -37,11 +37,13 @@ namespace EventStore
 		{
 			return new OptimisticEventStream(streamId, this);
 		}
+
 		public virtual IEventStream OpenStream(Guid streamId, int minRevision, int maxRevision)
 		{
 			var stream = new OptimisticEventStream(streamId, this, minRevision, maxRevision);
 			return stream.CommitSequence == 0 ? null : stream;
 		}
+
 		public virtual IEventStream OpenStream(Snapshot snapshot, int maxRevision)
 		{
 			return new OptimisticEventStream(snapshot, this, maxRevision);
@@ -61,10 +63,19 @@ namespace EventStore
 		{
 			if (!attempt.IsValid() || attempt.IsEmpty())
 				return;
-
+            try
+            {
 			this.ThrowOnDuplicateOrConcurrentWrites(attempt);
 			this.PersistAndDispatch(attempt);
+            }
+            catch (ConcurrencyException e)
+            {
+                foreach (var commit in e.Commits)
+                    this.tracker.Track(commit);
+                throw;
+            }
 		}
+
 		protected virtual void ThrowOnDuplicateOrConcurrentWrites(Commit attempt)
 		{
 			if (this.tracker.Contains(attempt))
@@ -74,32 +85,29 @@ namespace EventStore
 			if (head == null)
 				return;
 
-			if (head.CommitSequence >= attempt.CommitSequence)
-				throw new ConcurrencyException();
+            if (head.CommitSequence >= attempt.CommitSequence)
+                throw new ConcurrencyException(this.GetCommitsSinceConflictRevision(attempt));
 
-			if (head.StreamRevision >= attempt.StreamRevision)
-				throw new ConcurrencyException();
+            if (head.StreamRevision >= attempt.StreamRevision)
+                throw new ConcurrencyException(this.GetCommitsSinceConflictRevision(attempt));
 
 			if (head.CommitSequence < attempt.CommitSequence - 1)
 				throw new StorageException(); // beyond the end of the stream
 
-			if (head.StreamRevision < attempt.StreamRevision - attempt.Events.Count)
-				throw new StorageException(); // beyond the end of the stream
-		}
-		protected virtual void PersistAndDispatch(Commit attempt)
-		{
-			try
-			{
-				this.persistence.Commit(attempt);
-			}
-			catch (ConcurrencyException e)
-			{
-				foreach (var commit in e.Commits)
-					this.tracker.Track(commit);
+            if (head.StreamRevision < attempt.StreamRevision - attempt.Events.Count)
+                throw new StorageException(); // beyond the end of the stream
+        }
 
-				throw;
-			}
+        protected virtual IEnumerable<Commit> GetCommitsSinceConflictRevision(Commit attempt)
+        {
+            var conflictRevision = attempt.StreamRevision - attempt.Events.Count + 1;
+            var commits = this.persistence.GetFrom(attempt.StreamId, conflictRevision, int.MaxValue);
+            return commits;
+        }
 
+        protected virtual void PersistAndDispatch(Commit attempt)
+        {
+            this.persistence.Commit(attempt);
 			this.tracker.Track(attempt);
 			this.dispatcher.Dispatch(attempt);
 		}
