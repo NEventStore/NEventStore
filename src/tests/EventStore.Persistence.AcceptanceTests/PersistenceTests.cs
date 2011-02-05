@@ -99,6 +99,12 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		It should_throw_a_ConcurrencyException = () =>
 			thrown.ShouldBeOfType<ConcurrencyException>();
+        
+	    Cleanup cleanup = () =>
+	    {
+	        persistence1.Dispose();
+            persistence2.Dispose();
+	    };
 	}
 
 	[Subject("Persistence")]
@@ -118,6 +124,12 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		It should_throw_a_ConcurrencyException = () =>
 			thrown.ShouldBeOfType<ConcurrencyException>();
+
+        Cleanup cleanup = () =>
+	    {
+	        persistence1.Dispose();
+            persistence2.Dispose();
+	    };
 	}
 
 	[Subject("Persistence")]

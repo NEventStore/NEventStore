@@ -42,6 +42,7 @@
     </Compile>
     <Compile Include="ConfigurationExtensions.cs" />
     <Compile Include="Engines\AcceptanceTestMongoPersistenceFactory.cs" />
+    <Compile Include="Engines\AcceptanceTestRavenPersistenceFactory.cs" />
     <Compile Include="Engines\AcceptanceTestSqlPersistenceFactory.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="PersistenceFactoryScanner.cs" />
@@ -67,6 +68,10 @@
     <ProjectReference Include="..\..\proj\EventStore.Persistence.MongoPersistence\EventStore.Persistence.MongoPersistence.csproj">
       <Project>{32ADD8CE-0F3F-41D8-BFA1-6E5D685E64DD}</Project>
       <Name>EventStore.Persistence.MongoPersistence</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\proj\EventStore.Persistence.RavenPersistence\EventStore.Persistence.RavenPersistence.csproj">
+      <Project>{F9E7FD69-0818-48CA-9249-5387739E1B6A}</Project>
+      <Name>EventStore.Persistence.RavenPersistence</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\proj\EventStore.Persistence.SqlPersistence\EventStore.Persistence.SqlPersistence.csproj">
       <Project>{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}</Project>
@@ -111,6 +116,9 @@
     </Reference>
     <Reference Include="Npgsql">
       <HintPath>..\..\..\bin\npgsql-bin\Npgsql.dll</HintPath>
+    </Reference>
+    <Reference Include="Raven.Client.Lightweight, Version=1.0.0.0, Culture=neutral, PublicKeyToken=37f41c7f99471593, processorArchitecture=MSIL">
+      <HintPath>..\..\..\bin\ravendb-bin\.NET 4.0\Raven.Client.Lightweight.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
