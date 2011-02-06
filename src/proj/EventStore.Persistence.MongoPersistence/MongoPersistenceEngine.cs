@@ -139,7 +139,7 @@
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
 			return this.PersistedSnapshots
-				.Find(streamId.ToSnapshotQuery(maxRevision))
+				.FindAs<BsonDocument>(streamId.ToSnapshotQuery(maxRevision))
 				.SetSortOrder(SortBy.Descending("_id"))
 				.SetLimit(1)
 				.Select(mc => mc.ToSnapshot(this.serializer))

@@ -43,15 +43,21 @@
 				Payload = snapshot.Payload.ToBsonValue(serializer)
 			};
 		}
-		public static Snapshot ToSnapshot(this MongoSnapshot snapshot, ISerialize serializer)
+		public static Snapshot ToSnapshot(this BsonDocument bsonDocument, ISerialize serializer)
 		{
-			if (snapshot == null)
+			if (bsonDocument == null)
 				return null;
 
+			var id = BsonSerializer.Deserialize<MongoSnapshotId>(bsonDocument["_id"].AsBsonDocument);
+			var bsonPayload = bsonDocument["Payload"];
+			var payload = bsonPayload.IsBsonDocument
+			              	? BsonSerializer.Deserialize(bsonPayload.AsBsonDocument, typeof (object))
+			              	: bsonPayload.RawValue;
+
 			return new Snapshot(
-				snapshot.Id.StreamId,
-				snapshot.Id.StreamRevision,
-				snapshot.Payload.RawValue);
+				id.StreamId,
+				id.StreamRevision,
+				payload);
 		}
 
 		public static StreamHead ToStreamHead(this MongoStreamHead streamhead)
