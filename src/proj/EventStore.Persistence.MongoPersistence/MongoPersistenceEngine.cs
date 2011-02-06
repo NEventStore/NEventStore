@@ -161,11 +161,8 @@
 
 				return true;
 			}
-			catch (MongoException e)
+			catch (MongoException)
 			{
-				if (!e.Message.StartsWith(ConcurrencyException))
-					throw new StorageException(e.Message, e);
-
 				return false;
 			}
 		}

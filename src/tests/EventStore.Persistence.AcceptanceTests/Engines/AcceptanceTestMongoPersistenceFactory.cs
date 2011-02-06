@@ -6,7 +6,7 @@
 	public class AcceptanceTestMongoPersistenceFactory : MongoPersistenceFactory
 	{
 		public AcceptanceTestMongoPersistenceFactory()
-			: base("Mongo", new BinarySerializer())
+			: base("Mongo", new MongoSerializer())
 		{
 		}
 		protected override string TransformConnectionString(string connectionString)

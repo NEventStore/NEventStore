@@ -2,6 +2,7 @@
 {
 	using System;
 	using System.Collections.Generic;
+	using MongoDB.Bson;
 
 	internal class MongoCommit
 	{
@@ -14,7 +15,7 @@
 		public DateTime CommitStamp { get; set; }
 
 		public Dictionary<string, object> Headers { get; set; }
-		public byte[] Payload { get; set; }
+		public BsonValue Payload { get; set; }
 
 		public bool Dispatched { get; set; }
 	}
