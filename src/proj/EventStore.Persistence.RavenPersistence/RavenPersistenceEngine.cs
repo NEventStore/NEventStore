@@ -1,217 +1,222 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using EventStore.Persistence.RavenPersistence.Indexes;
-using EventStore.Serialization;
-using Raven.Client;
-using Raven.Client.Exceptions;
-using Raven.Client.Indexes;
-using Raven.Database.Data;
-using Raven.Database.Json;
-
-namespace EventStore.Persistence.RavenPersistence
+﻿namespace EventStore.Persistence.RavenPersistence
 {
-    public class RavenPersistenceEngine : IPersistStreams
-    {
-        private readonly IDocumentStore store;
-        private readonly ISerialize serializer;
-        private bool disposed;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using Indexes;
+	using Raven.Client;
+	using Raven.Client.Exceptions;
+	using Raven.Client.Indexes;
+	using Raven.Database.Data;
+	using Raven.Database.Json;
+	using Serialization;
 
-        public RavenPersistenceEngine(IDocumentStore store, ISerialize serializer)
-        {
-            this.store = store;
-            this.serializer = serializer;
-        }
+	public class RavenPersistenceEngine : IPersistStreams
+	{
+		private readonly IDocumentStore store;
+		private readonly ISerialize serializer;
+		private bool disposed;
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+		public RavenPersistenceEngine(IDocumentStore store, ISerialize serializer)
+		{
+			this.store = store;
+			this.serializer = serializer;
+		}
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposing || disposed)
-                return;
+		public void Dispose()
+		{
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
 
-            disposed = true;
-            store.Dispose();
-        }
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposing || this.disposed)
+				return;
 
-        public virtual void Initialize()
-        {
-            IndexCreation.CreateIndexes(GetType().Assembly, store);
-        }
+			this.disposed = true;
+			this.store.Dispose();
+		}
 
-        public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
-        {
-            return QueryCommits<RavenCommitByRevisionRange>(x => x.StreamId == streamId
-                    && x.StreamRevision >= minRevision
-                    && x.StartingStreamRevision <= maxRevision);
-        }
+		public virtual void Initialize()
+		{
+			IndexCreation.CreateIndexes(this.GetType().Assembly, this.store);
+		}
 
-        public virtual IEnumerable<Commit> GetFrom(DateTime start)
-        {
-            return QueryCommits<RavenCommitByDate>(x => x.CommitStamp >= start);
-        }
+		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
+		{
+			return this.QueryCommits<RavenCommitByRevisionRange>(x =>
+				x.StreamId == streamId && x.StreamRevision >= minRevision && x.StartingStreamRevision <= maxRevision);
+		}
 
-        public virtual void Commit(Commit attempt)
-        {
-            try
-            {
-                using (var session = store.OpenSession())
-                {
-                    session.Advanced.UseOptimisticConcurrency = true;
-                    session.Store(attempt.ToRavenCommit(serializer));
+		public virtual IEnumerable<Commit> GetFrom(DateTime start)
+		{
+			return this.QueryCommits<RavenCommitByDate>(x => x.CommitStamp >= start);
+		}
 
-                    SaveStreamHead(session, attempt.ToRavenStreamHead());
+		public virtual void Commit(Commit attempt)
+		{
+			try
+			{
+				using (var session = this.store.OpenSession())
+				{
+					session.Advanced.UseOptimisticConcurrency = true;
+					session.Store(attempt.ToRavenCommit(this.serializer));
 
-                    session.SaveChanges();
-                }
-            }
-            catch (NonUniqueObjectException e)
-            {
-                throw new DuplicateCommitException(e.Message, e);
-            }
-            catch (Raven.Http.Exceptions.ConcurrencyException)
-            {
-                var savedCommit = LoadSavedCommit(attempt);
+					SaveStreamHead(session, attempt.ToRavenStreamHead());
 
-                if (savedCommit.CommitId == attempt.CommitId)
-                    throw new DuplicateCommitException();
+					session.SaveChanges();
+				}
+			}
+			catch (NonUniqueObjectException e)
+			{
+				throw new DuplicateCommitException(e.Message, e);
+			}
+			catch (Raven.Http.Exceptions.ConcurrencyException)
+			{
+				var savedCommit = this.LoadSavedCommit(attempt);
 
-                throw new ConcurrencyException();
-            }
-            catch (Exception e)
-            {
-                throw new StorageException(e.Message, e);
-            }
-        }
+				if (savedCommit.CommitId == attempt.CommitId)
+					throw new DuplicateCommitException();
 
-        public virtual IEnumerable<Commit> GetUndispatchedCommits()
-        {
-            return QueryCommits<RavenCommitsByDispatched>(c => c.Dispatched == false);
-        }
+				throw new ConcurrencyException();
+			}
+			catch (Exception e)
+			{
+				throw new StorageException(e.Message, e);
+			}
+		}
 
-        public virtual void MarkCommitAsDispatched(Commit commit)
-        {
-            if (commit == null) throw new ArgumentNullException("commit");
+		public virtual IEnumerable<Commit> GetUndispatchedCommits()
+		{
+			return this.QueryCommits<RavenCommitsByDispatched>(c => c.Dispatched == false);
+		}
 
-            var patch = new PatchRequest { Type = PatchCommandType.Set, Name = "Dispatched", Value = true };
-            var data = new PatchCommandData { Key = commit.ToRavenCommitId(), Patches = new[] { patch } };
+		public virtual void MarkCommitAsDispatched(Commit commit)
+		{
+			if (commit == null)
+				throw new ArgumentNullException("commit");
 
-            try
-            {
-                using (var session = store.OpenSession())
-                {
-                    session.Advanced.DatabaseCommands.Batch(new[] { data });
-                    session.SaveChanges();
-                }
-            }
-            catch (Exception e)
-            {
-                throw new StorageException(e.Message, e);
-            }
-        }
+			var patch = new PatchRequest
+			{
+				Type = PatchCommandType.Set,
+				Name = "Dispatched",
+				Value = true
+			};
+			var data = new PatchCommandData
+			{
+				Key = commit.ToRavenCommitId(),
+				Patches = new[] { patch }
+			};
 
-        public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
-        {
-            return Query<RavenStreamHead, RavenStreamHeadByHeadRevisionAndSnapshotRevision>(s => s.HeadRevision >= s.SnapshotRevision + maxThreshold).
-                Select(s => s.ToStreamHead());
-        }
+			try
+			{
+				using (var session = this.store.OpenSession())
+				{
+					session.Advanced.DatabaseCommands.Batch(new[] { data });
+					session.SaveChanges();
+				}
+			}
+			catch (Exception e)
+			{
+				throw new StorageException(e.Message, e);
+			}
+		}
 
-        public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
-        {
-            return Query<RavenSnapshot, RavenSnapshotByStreamIdAndRevision>(x =>
-                x.StreamId == streamId && x.StreamRevision <= maxRevision)
-                .OrderByDescending(x => x.StreamRevision)
-                .FirstOrDefault()
-                .ToSnapshot(serializer);
-        }
+		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
+		{
+			return this.Query<RavenStreamHead, RavenStreamHeadByHeadRevisionAndSnapshotRevision>(s =>
+				s.HeadRevision >= s.SnapshotRevision + maxThreshold).
+				Select(s => s.ToStreamHead());
+		}
 
-        public virtual bool AddSnapshot(Snapshot snapshot)
-        {
-            if (snapshot == null)
-                return false;
+		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
+		{
+			return this.Query<RavenSnapshot, RavenSnapshotByStreamIdAndRevision>(x =>
+					x.StreamId == streamId && x.StreamRevision <= maxRevision)
+				.OrderByDescending(x => x.StreamRevision)
+				.FirstOrDefault()
+				.ToSnapshot(this.serializer);
+		}
 
-            try
-            {
-                using (var session = store.OpenSession())
-                {
-                    var ravenSnapshot = snapshot.ToRavenSnapshot(serializer);
-                    session.Store(ravenSnapshot);
+		public virtual bool AddSnapshot(Snapshot snapshot)
+		{
+			if (snapshot == null)
+				return false;
 
-                    SaveStreamHead(session, snapshot.ToRavenStreamHead());
+			try
+			{
+				using (var session = this.store.OpenSession())
+				{
+					var ravenSnapshot = snapshot.ToRavenSnapshot(this.serializer);
+					session.Store(ravenSnapshot);
 
-                    session.SaveChanges();
-                }
+					SaveStreamHead(session, snapshot.ToRavenStreamHead());
 
-                return true;
-            }
-            catch (Raven.Http.Exceptions.ConcurrencyException)
-            {
-                return false;
-            }
-            catch (Exception e)
-            {
-                throw new StorageException(e.Message, e);
-            }
-        }
+					session.SaveChanges();
+				}
 
-        RavenCommit LoadSavedCommit(Commit attempt)
-        {
-            try
-            {
-                using (var session = store.OpenSession())
-                {
-                    return session.Load<RavenCommit>(attempt.ToRavenCommitId());
-                }
-            }
-            catch (Exception e)
-            {
-                throw new StorageException(e.Message, e);
-            }
-        }
+				return true;
+			}
+			catch (Raven.Http.Exceptions.ConcurrencyException)
+			{
+				return false;
+			}
+			catch (Exception e)
+			{
+				throw new StorageException(e.Message, e);
+			}
+		}
 
-        IEnumerable<Commit> QueryCommits<TIndex>(Func<RavenCommit, bool> query)
-            where TIndex : AbstractIndexCreationTask, new()
-        {
-            return Query<RavenCommit, TIndex>(query)
-                .Select(x => x.ToCommit(serializer));
-        }
+		private RavenCommit LoadSavedCommit(Commit attempt)
+		{
+			try
+			{
+				using (var session = this.store.OpenSession())
+					return session.Load<RavenCommit>(attempt.ToRavenCommitId());
+			}
+			catch (Exception e)
+			{
+				throw new StorageException(e.Message, e);
+			}
+		}
 
-        IEnumerable<T> Query<T, TIndex>(Func<T, bool> query)
-            where TIndex : AbstractIndexCreationTask, new()
-        {
-            try
-            {
-                using (var session = store.OpenSession())
-                {
-                    return session.Query<T, TIndex>()
-                        .Customize(x => x.WaitForNonStaleResults())
-                        .Where(query);
-                }
-            }
-            catch (Exception e)
-            {
-                throw new StorageException(e.Message, e);
-            }
-        }
+		private IEnumerable<Commit> QueryCommits<TIndex>(Func<RavenCommit, bool> query)
+			where TIndex : AbstractIndexCreationTask, new()
+		{
+			return this.Query<RavenCommit, TIndex>(query).Select(x => x.ToCommit(this.serializer));
+		}
 
-        void SaveStreamHead(IDocumentSession session, RavenStreamHead streamHead)
-        {
-            var head = session.Load<RavenStreamHead>(streamHead.Id);
+		private IEnumerable<T> Query<T, TIndex>(Func<T, bool> query)
+			where TIndex : AbstractIndexCreationTask, new()
+		{
+			try
+			{
+				using (var session = this.store.OpenSession())
+				{
+					return session.Query<T, TIndex>().Customize(x => x.WaitForNonStaleResults()).Where(query);
+				}
+			}
+			catch (Exception e)
+			{
+				throw new StorageException(e.Message, e);
+			}
+		}
 
-            if (head == null)
-            {
-                head = streamHead;
-                session.Store(head);
-            }
-            else
-            {
-                head.HeadRevision = streamHead.HeadRevision;
-                head.SnapshotRevision = streamHead.SnapshotRevision;
-            }
-        }
-    }
+		private static void SaveStreamHead(IDocumentSession session, RavenStreamHead streamHead)
+		{
+			var head = session.Load<RavenStreamHead>(streamHead.Id);
+
+			if (head == null)
+			{
+				head = streamHead;
+				session.Store(head);
+			}
+			else
+			{
+				head.HeadRevision = streamHead.HeadRevision;
+				head.SnapshotRevision = streamHead.SnapshotRevision;
+			}
+		}
+	}
 }

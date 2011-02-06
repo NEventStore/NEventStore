@@ -31,12 +31,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MongoDB.Bson, Version=0.11.1.17708, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="EventStore" Condition="'$(ILMerge)' == 'true'">
+      <HintPath>..\..\..\output\bin\EventStore.dll</HintPath>
+    </Reference>
+    <ProjectReference Include="..\EventStore\EventStore.csproj" Condition="'$(ILMerge)' != 'true'">
+      <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
+      <Name>EventStore</Name>
+    </ProjectReference>
+    <Reference Include="MongoDB.Bson">
       <HintPath>..\..\..\lib\MongoDB\MongoDB.Bson.dll</HintPath>
     </Reference>
-    <Reference Include="MongoDB.Driver, Version=0.11.1.17709, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="MongoDB.Driver">
       <HintPath>..\..\..\lib\MongoDB\MongoDB.Driver.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -62,15 +67,6 @@
     <Compile Include="MongoSnapshotId.cs" />
     <Compile Include="MongoStreamHead.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\EventStore\EventStore.csproj" Condition="'$(ILMerge)' != 'true'">
-      <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
-      <Name>EventStore</Name>
-    </ProjectReference>
-	<Reference Include="EventStore" Condition="'$(ILMerge)' == 'true'">
-		<HintPath>..\..\..\output\bin\EventStore.dll</HintPath>
-	</Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

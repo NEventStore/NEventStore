@@ -12,6 +12,8 @@
     <AssemblyName>EventStore.Persistence.RavenPersistence</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\EventStore.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,25 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\lib\Json.NET\.NET 4.0\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Raven.Abstractions">
-      <HintPath>..\..\..\bin\ravendb-bin\.NET 4.0\Raven.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Raven.Client.Lightweight">
-      <HintPath>..\..\..\bin\ravendb-bin\.NET 4.0\Raven.Client.Lightweight.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Indexes\RavenCommitsByDispatched.cs" />
     <Compile Include="Indexes\RavenCommitByRevisionRange.cs" />
@@ -64,17 +47,35 @@
     <Compile Include="RavenSnapshot.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EventStore\EventStore.csproj">
+	<Reference Include="EventStore" Condition="'$(ILMerge)' == 'true'">
+		<HintPath>..\..\..\output\bin\EventStore.dll</HintPath>
+	</Reference>
+    <ProjectReference Include="..\EventStore\EventStore.csproj" Condition="'$(ILMerge)' != 'true'">
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
       <Name>EventStore</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json" Condition="$(TargetFrameworkVersion)=='v4.0'">
+      <HintPath>..\..\..\lib\Json.NET\.NET 4.0\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+	<Reference Include="Newtonsoft.Json" Condition="$(TargetFrameworkVersion)=='v3.5'">
+      <HintPath>..\..\..\lib\Json.NET\.NET 3.5\Newtonsoft.Json.Net35.dll</HintPath>
+    </Reference>
+    <Reference Include="Raven.Abstractions" Condition="$(TargetFrameworkVersion)=='v4.0'">
+      <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Raven.Abstractions.dll</HintPath>
+    </Reference>
+	<Reference Include="Raven.Abstractions" Condition="$(TargetFrameworkVersion)=='v3.5'">
+      <HintPath>..\..\..\lib\RavenDB\.NET 3.5\Raven.Abstractions-3.5.dll</HintPath>
+    </Reference>
+    <Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v4.0'">
+      <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Raven.Client.Lightweight.dll</HintPath>
+    </Reference>
+	<Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v3.5'">
+      <HintPath>..\..\..\lib\RavenDB\.NET 3.5\Raven.Client.Lightweight-3.5.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" Condition="$(TargetFrameworkVersion)=='v4.0'" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

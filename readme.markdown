@@ -71,9 +71,9 @@ enlisting any resources (other than a message queue) in some form of a transacti
 [Planned] Amazon S3  
 
 ### Document Databases
-[In progress] RavenDB r264 (or later)  
-[Planned] CouchDB 1.0 (or later)  
+[Complete] RavenDB r264 (or later)  
 [Complete] MongoDB 1.6 (or later)  
+[Planned] CouchDB 1.0 (or later)  
 
 ### File System
 [Planned] .NET Managed System.IO APIs    

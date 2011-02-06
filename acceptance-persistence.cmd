@@ -18,6 +18,7 @@ CALL :run_test FirebirdPersistence localhost 0 /var/lib/firebird/data/EventStore
 
 ECHO === Document DBs ===
 CALL :run_test MongoPersistence localhost 0 EventStore2 "" ""
+CALL :run_test RavenPersistence localhost 0 EventStore2 "" ""
 
 ENDLOCAL
 GOTO :eof 

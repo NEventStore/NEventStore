@@ -109,16 +109,12 @@
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
       <HintPath>..\..\..\bin\moq-bin\.NET 4.0\Moq.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data, Version=6.3.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="MySql.Data">
       <HintPath>..\..\..\bin\mysql-bin\MySql.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Npgsql">
       <HintPath>..\..\..\bin\npgsql-bin\Npgsql.dll</HintPath>
-    </Reference>
-    <Reference Include="Raven.Client.Lightweight, Version=1.0.0.0, Culture=neutral, PublicKeyToken=37f41c7f99471593, processorArchitecture=MSIL">
-      <HintPath>..\..\..\bin\ravendb-bin\.NET 4.0\Raven.Client.Lightweight.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />

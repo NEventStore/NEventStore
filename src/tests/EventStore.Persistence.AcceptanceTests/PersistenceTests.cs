@@ -11,7 +11,7 @@ namespace EventStore.Persistence.AcceptanceTests
 	[Subject("Persistence")]
 	public class when_a_commit_is_successfully_persisted : using_the_persistence_engine
 	{
-		static readonly DateTime now = DateTime.UtcNow.AddYears(-1);
+		static readonly DateTime now = DateTime.UtcNow.AddYears(1);
 		static readonly Commit attempt = streamId.BuildAttempt(now);
 		static Commit persisted;
 
@@ -99,12 +99,12 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		It should_throw_a_ConcurrencyException = () =>
 			thrown.ShouldBeOfType<ConcurrencyException>();
-        
-	    Cleanup cleanup = () =>
-	    {
-	        persistence1.Dispose();
-            persistence2.Dispose();
-	    };
+
+		Cleanup cleanup = () =>
+		{
+			persistence1.Dispose();
+			persistence2.Dispose();
+		};
 	}
 
 	[Subject("Persistence")]
@@ -125,11 +125,11 @@ namespace EventStore.Persistence.AcceptanceTests
 		It should_throw_a_ConcurrencyException = () =>
 			thrown.ShouldBeOfType<ConcurrencyException>();
 
-        Cleanup cleanup = () =>
-	    {
-	        persistence1.Dispose();
-            persistence2.Dispose();
-	    };
+		Cleanup cleanup = () =>
+		{
+			persistence1.Dispose();
+			persistence2.Dispose();
+		};
 	}
 
 	[Subject("Persistence")]
@@ -256,7 +256,7 @@ namespace EventStore.Persistence.AcceptanceTests
 	[Subject("Persistence")]
 	public class when_reading_all_commits_from_a_particular_point_in_time : using_the_persistence_engine
 	{
-		static readonly DateTime now = DateTime.UtcNow;
+		static readonly DateTime now = DateTime.UtcNow.AddYears(1);
 		static readonly Commit first = streamId.BuildAttempt(now.AddSeconds(1));
 		static readonly Commit second = first.BuildNextAttempt();
 		static readonly Commit third = second.BuildNextAttempt();

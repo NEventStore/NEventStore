@@ -1,24 +1,24 @@
-using System;
-using System.Collections.Generic;
-
 namespace EventStore.Persistence.RavenPersistence
 {
-    public class RavenCommit
-    {
-        public string Id { get; set; }
+	using System;
+	using System.Collections.Generic;
 
-        public Guid StreamId { get; set; }
-        public int CommitSequence { get; set; }
+	public class RavenCommit
+	{
+		public string Id { get; set; }
 
-        public int StartingStreamRevision { get; set; }
-        public int StreamRevision { get; set; }
+		public Guid StreamId { get; set; }
+		public int CommitSequence { get; set; }
 
-        public Guid CommitId { get; set; }
-        public DateTime CommitStamp { get; set; }
+		public int StartingStreamRevision { get; set; }
+		public int StreamRevision { get; set; }
 
-        public Dictionary<string, object> Headers { get; set; }
-        public byte[] Payload { get; set; }
+		public Guid CommitId { get; set; }
+		public DateTime CommitStamp { get; set; }
 
-        public bool Dispatched { get; set; }
-    }
+		public Dictionary<string, object> Headers { get; set; }
+		public byte[] Payload { get; set; }
+
+		public bool Dispatched { get; set; }
+	}
 }

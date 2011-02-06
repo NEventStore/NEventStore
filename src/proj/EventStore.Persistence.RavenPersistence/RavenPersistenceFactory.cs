@@ -1,33 +1,32 @@
-﻿using EventStore.Serialization;
-using Raven.Client;
-using Raven.Client.Document;
-
-namespace EventStore.Persistence.RavenPersistence
+﻿namespace EventStore.Persistence.RavenPersistence
 {
-    public class RavenPersistenceFactory : IPersistenceFactory
-    {
-        private readonly ISerialize serializer;
+	using Raven.Client;
+	using Raven.Client.Document;
+	using Serialization;
 
-        protected string ConnectionStringName { get; private set; }
+	public class RavenPersistenceFactory : IPersistenceFactory
+	{
+		private readonly ISerialize serializer;
 
-        public RavenPersistenceFactory(string connectionName, ISerialize serializer)
-        {
-            ConnectionStringName = connectionName;
-            this.serializer = serializer;
-        }
+		protected string ConnectionStringName { get; private set; }
 
-        public virtual IPersistStreams Build()
-        {
-            var store = GetStore();
-            return new RavenPersistenceEngine(store, serializer);
-        }
+		public RavenPersistenceFactory(string connectionName, ISerialize serializer)
+		{
+			this.ConnectionStringName = connectionName;
+			this.serializer = serializer;
+		}
 
-        protected virtual IDocumentStore GetStore()
-        {
-            var store = new DocumentStore { ConnectionStringName = ConnectionStringName };
-            store.Initialize();
+		public virtual IPersistStreams Build()
+		{
+			var store = this.GetStore();
+			return new RavenPersistenceEngine(store, this.serializer);
+		}
+		protected virtual IDocumentStore GetStore()
+		{
+			var store = new DocumentStore { ConnectionStringName = this.ConnectionStringName };
+			store.Initialize();
 
-            return store;
-        }
-    }
+			return store;
+		}
+	}
 }

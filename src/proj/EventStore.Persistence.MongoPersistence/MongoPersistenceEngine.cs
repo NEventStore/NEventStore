@@ -145,7 +145,7 @@
 				.Select(mc => mc.ToSnapshot(this.serializer))
 				.FirstOrDefault();
 		}
-		
+
 		public virtual bool AddSnapshot(Snapshot snapshot)
 		{
 			if (snapshot == null)
