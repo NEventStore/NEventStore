@@ -127,15 +127,14 @@ namespace EventStore.Persistence.RavenPersistence
 
 		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
 		{
-			return this.Query<RavenStreamHead, RavenStreamHeadBySnapshotAge>(s =>
-				s.SnapshotAge >= maxThreshold).
-				Select(s => s.ToStreamHead());
+			return this.Query<RavenStreamHead, RavenStreamHeadBySnapshotAge>(s => s.SnapshotAge >= maxThreshold)
+				.Select(s => s.ToStreamHead());
 		}
 
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
-			return this.Query<RavenSnapshot, RavenSnapshotByStreamIdAndRevision>(x =>
-					x.StreamId == streamId && x.StreamRevision <= maxRevision)
+			return this.Query<RavenSnapshot, RavenSnapshotByStreamIdAndRevision>(
+					x => x.StreamId == streamId && x.StreamRevision <= maxRevision)
 				.OrderByDescending(x => x.StreamRevision)
 				.FirstOrDefault()
 				.ToSnapshot(this.serializer);
