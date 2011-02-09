@@ -38,7 +38,7 @@
     <Compile Include="Indexes\RavenCommitByRevisionRange.cs" />
     <Compile Include="Indexes\RavenCommitByDate.cs" />
     <Compile Include="Indexes\RavenSnapshotByStreamIdAndRevision.cs" />
-    <Compile Include="Indexes\RavenStreamHeadByHeadRevisionAndSnapshotRevision.cs" />
+    <Compile Include="Indexes\RavenStreamHeadBySnapshotAge.cs" />
     <Compile Include="RavenStreamHead.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RavenCommit.cs" />
@@ -47,9 +47,9 @@
     <Compile Include="RavenSnapshot.cs" />
   </ItemGroup>
   <ItemGroup>
-	<Reference Include="EventStore" Condition="'$(ILMerge)' == 'true'">
-		<HintPath>..\..\..\output\bin\EventStore.dll</HintPath>
-	</Reference>
+    <Reference Include="EventStore" Condition="'$(ILMerge)' == 'true'">
+      <HintPath>..\..\..\output\bin\EventStore.dll</HintPath>
+    </Reference>
     <ProjectReference Include="..\EventStore\EventStore.csproj" Condition="'$(ILMerge)' != 'true'">
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
       <Name>EventStore</Name>
@@ -59,19 +59,19 @@
     <Reference Include="Newtonsoft.Json" Condition="$(TargetFrameworkVersion)=='v4.0'">
       <HintPath>..\..\..\lib\Json.NET\.NET 4.0\Newtonsoft.Json.dll</HintPath>
     </Reference>
-	<Reference Include="Newtonsoft.Json" Condition="$(TargetFrameworkVersion)=='v3.5'">
+    <Reference Include="Newtonsoft.Json" Condition="$(TargetFrameworkVersion)=='v3.5'">
       <HintPath>..\..\..\lib\Json.NET\.NET 3.5\Newtonsoft.Json.Net35.dll</HintPath>
     </Reference>
     <Reference Include="Raven.Abstractions" Condition="$(TargetFrameworkVersion)=='v4.0'">
       <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Raven.Abstractions.dll</HintPath>
     </Reference>
-	<Reference Include="Raven.Abstractions" Condition="$(TargetFrameworkVersion)=='v3.5'">
+    <Reference Include="Raven.Abstractions" Condition="$(TargetFrameworkVersion)=='v3.5'">
       <HintPath>..\..\..\lib\RavenDB\.NET 3.5\Raven.Abstractions-3.5.dll</HintPath>
     </Reference>
     <Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v4.0'">
       <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Raven.Client.Lightweight.dll</HintPath>
     </Reference>
-	<Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v3.5'">
+    <Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v3.5'">
       <HintPath>..\..\..\lib\RavenDB\.NET 3.5\Raven.Client.Lightweight-3.5.dll</HintPath>
     </Reference>
     <Reference Include="System" />

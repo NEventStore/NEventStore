@@ -1,4 +1,7 @@
-﻿namespace EventStore.Persistence.RavenPersistence
+﻿using System.Linq.Expressions;
+using Raven.Client.Linq;
+
+namespace EventStore.Persistence.RavenPersistence
 {
 	using System;
 	using System.Collections.Generic;
@@ -125,8 +128,8 @@
 
 		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
 		{
-			return this.Query<RavenStreamHead, RavenStreamHeadByHeadRevisionAndSnapshotRevision>(s =>
-				s.HeadRevision >= s.SnapshotRevision + maxThreshold).
+			return this.Query<RavenStreamHead, RavenStreamHeadBySnapshotAge>(s =>
+				s.SnapshotAge >= maxThreshold).
 				Select(s => s.ToStreamHead());
 		}
 
@@ -181,20 +184,20 @@
 			}
 		}
 
-		private IEnumerable<Commit> QueryCommits<TIndex>(Func<RavenCommit, bool> query)
+		private IEnumerable<Commit> QueryCommits<TIndex>(Expression<Func<RavenCommit, bool>> query)
 			where TIndex : AbstractIndexCreationTask, new()
 		{
 			return this.Query<RavenCommit, TIndex>(query).Select(x => x.ToCommit(this.serializer));
 		}
 
-		private IEnumerable<T> Query<T, TIndex>(Func<T, bool> query)
+		private IEnumerable<T> Query<T, TIndex>(Expression<Func<T, bool>> query)
 			where TIndex : AbstractIndexCreationTask, new()
 		{
 			try
 			{
 				using (var session = this.store.OpenSession())
 				{
-					return session.Query<T, TIndex>().Customize(x => x.WaitForNonStaleResults()).Where(query);
+				    return session.Query<T, TIndex>().Customize(x => x.WaitForNonStaleResults()).Where(query);
 				}
 			}
 			catch (Exception e)
@@ -216,6 +219,7 @@
 			{
 				head.HeadRevision = streamHead.HeadRevision;
 				head.SnapshotRevision = streamHead.SnapshotRevision;
+			    head.SnapshotAge = streamHead.SnapshotAge;
 			}
 		}
 	}
