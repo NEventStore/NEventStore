@@ -74,25 +74,21 @@ namespace EventStore.Core.UnitTests
 	[Subject("OptimisticEventStream")]
 	public class when_adding_a_null_event_message : on_the_event_stream
 	{
-		static Exception thrown;
-
 		Because of = () =>
-			thrown = Catch.Exception(() => stream.Add(null));
+			stream.Add(null);
 
-		It should_throw_an_ArgumentNullException = () =>
-			thrown.ShouldBeOfType<ArgumentNullException>();
+		It should_be_ignored = () =>
+			stream.UncommittedEvents.ShouldBeEmpty();
 	}
 
 	[Subject("OptimisticEventStream")]
 	public class when_adding_an_unpopulated_event_message : on_the_event_stream
 	{
-		static Exception thrown;
-
 		Because of = () =>
-			thrown = Catch.Exception(() => stream.Add(new EventMessage { Body = null }));
+			stream.Add(new EventMessage { Body = null });
 
-		It should_throw_an_ArgumentException = () =>
-			thrown.ShouldBeOfType<ArgumentException>();
+		It should_be_ignored = () =>
+			stream.UncommittedEvents.ShouldBeEmpty();
 	}
 
 	[Subject("OptimisticEventStream")]

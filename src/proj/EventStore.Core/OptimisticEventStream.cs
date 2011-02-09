@@ -79,26 +79,26 @@ namespace EventStore
 			get { return new ReadOnlyCollection<EventMessage>(this.uncommitted); }
 		}
 
-		public virtual void Add(params EventMessage[] uncommittedEvents)
-		{
-			if (uncommittedEvents == null || uncommittedEvents.Length == 0)
-				throw new ArgumentNullException("uncommittedEvents");
-
-			foreach (var @event in uncommittedEvents)
-			{
-				if (@event.Body == null)
-					throw new ArgumentException(Resources.EventNotPopulated, "uncommittedEvents");
-
-				this.uncommitted.Add(@event);
-			}
-		}
 		public virtual void Add(params object[] uncommittedEvents)
 		{
-			if (uncommittedEvents == null || uncommittedEvents.Length == 0)
-				throw new ArgumentNullException("uncommittedEvents");
-
-			foreach (var @event in uncommittedEvents)
-				this.Add(new EventMessage { Body = @event });
+			this.Add(uncommittedEvents as IEnumerable<object>);
+		}
+		public virtual void Add(params EventMessage[] uncommittedEvents)
+		{
+			this.Add(uncommittedEvents as IEnumerable<EventMessage>);
+		}
+		public virtual void Add(IEnumerable<object> uncommittedEvents)
+		{
+			this.Add((uncommittedEvents ?? new object[0]).Select(x => new EventMessage
+			{
+				Body = x
+			}));
+		}
+		public virtual void Add(IEnumerable<EventMessage> uncommittedEvents)
+		{
+			uncommittedEvents = uncommittedEvents ?? new EventMessage[0];
+			foreach (var @event in uncommittedEvents.Where(@event => @event != null && @event.Body != null))
+				this.uncommitted.Add(@event);
 		}
 
 		public virtual void CommitChanges(Guid commitId, Dictionary<string, object> headers)
