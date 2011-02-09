@@ -7,7 +7,7 @@ namespace EventStore.Persistence.RavenPersistence.Indexes
 	{
 		public RavenStreamHeadBySnapshotAge()
 		{
-			Map = snapshots => from s in snapshots select new { s.SnapshotAge };
+			Map = snapshots => from s in snapshots select new { SnapshotAge = s.HeadRevision - s.SnapshotRevision };
 		}
 	}
 }

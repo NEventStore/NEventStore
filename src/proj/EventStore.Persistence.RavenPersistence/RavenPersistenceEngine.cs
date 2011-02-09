@@ -17,12 +17,14 @@ namespace EventStore.Persistence.RavenPersistence
 	{
 		private readonly IDocumentStore store;
 		private readonly ISerialize serializer;
+		private readonly bool consistentQueries;
 		private bool disposed;
 
-		public RavenPersistenceEngine(IDocumentStore store, ISerialize serializer)
+		public RavenPersistenceEngine(IDocumentStore store, ISerialize serializer, bool consistentQueries)
 		{
 			this.store = store;
 			this.serializer = serializer;
+			this.consistentQueries = consistentQueries;
 		}
 
 		public void Dispose()
@@ -64,11 +66,10 @@ namespace EventStore.Persistence.RavenPersistence
 				{
 					session.Advanced.UseOptimisticConcurrency = true;
 					session.Store(attempt.ToRavenCommit(this.serializer));
-
-					SaveStreamHead(session, attempt.ToRavenStreamHead());
-
 					session.SaveChanges();
 				}
+
+				this.SaveStreamHead(attempt.ToRavenStreamHead());
 			}
 			catch (NonUniqueObjectException e)
 			{
@@ -77,7 +78,6 @@ namespace EventStore.Persistence.RavenPersistence
 			catch (Raven.Http.Exceptions.ConcurrencyException)
 			{
 				var savedCommit = this.LoadSavedCommit(attempt);
-
 				if (savedCommit.CommitId == attempt.CommitId)
 					throw new DuplicateCommitException();
 
@@ -151,11 +151,10 @@ namespace EventStore.Persistence.RavenPersistence
 				{
 					var ravenSnapshot = snapshot.ToRavenSnapshot(this.serializer);
 					session.Store(ravenSnapshot);
-
-					SaveStreamHead(session, snapshot.ToRavenStreamHead());
-
 					session.SaveChanges();
 				}
+
+				this.SaveStreamHead(snapshot.ToRavenStreamHead());
 
 				return true;
 			}
@@ -194,7 +193,9 @@ namespace EventStore.Persistence.RavenPersistence
 			try
 			{
 				using (var session = this.store.OpenSession())
-					return session.Query<T, TIndex>().Customize(x => x.WaitForNonStaleResults()).Where(query);
+					return session.Query<T, TIndex>()
+						.Customize(x => { if (this.consistentQueries) x.WaitForNonStaleResults(); })
+						.Where(query);
 			}
 			catch (Exception e)
 			{
@@ -202,20 +203,14 @@ namespace EventStore.Persistence.RavenPersistence
 			}
 		}
 
-		private static void SaveStreamHead(IDocumentSession session, RavenStreamHead streamHead)
+		private void SaveStreamHead(RavenStreamHead streamHead)
 		{
-			var head = session.Load<RavenStreamHead>(streamHead.Id);
-
-			if (head == null)
+			// TODO: implicitly create/update the stream head using a server-side map/reduce function
+			using (var session = this.store.OpenAsyncSession())
 			{
-				head = streamHead;
-				session.Store(head);
-			}
-			else
-			{
-				head.HeadRevision = streamHead.HeadRevision;
-				head.SnapshotRevision = streamHead.SnapshotRevision;
-				head.SnapshotAge = streamHead.SnapshotAge;
+				session.Advanced.UseOptimisticConcurrency = false;
+				session.Store(streamHead);
+				session.SaveChangesAsync();
 			}
 		}
 	}

@@ -5,8 +5,9 @@ namespace EventStore.Persistence.AcceptanceTests.Engines
 
 	public class AcceptanceTestRavenPersistenceFactory : RavenPersistenceFactory
 	{
+		private const bool FullyConsistentResults = true;
 		public AcceptanceTestRavenPersistenceFactory()
-			: base("Raven", new BinarySerializer())
+			: base("Raven", new BinarySerializer(), FullyConsistentResults)
 		{
 		}
 	}
