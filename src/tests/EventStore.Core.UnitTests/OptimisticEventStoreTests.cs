@@ -133,7 +133,7 @@ namespace EventStore.Core.UnitTests
 			persistence.Setup(x => x.GetFrom(streamId, 0, int.MaxValue)).Returns(new Commit[] { });
 
 		Because of = () =>
-			store.GetFrom(streamId, 0, int.MaxValue).ToList();
+			((ICommitEvents)store).GetFrom(streamId, 0, int.MaxValue).ToList();
 
 		It should_pass_a_revision_range_to_the_persistence_infrastructure = () =>
 			persistence.Verify(x => x.GetFrom(streamId, 0, int.MaxValue), Times.Once());
@@ -178,7 +178,7 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Because of = () =>
-			thrown = Catch.Exception(() => store.Commit(null));
+			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(null));
 
 		It should_throw_an_ArgumentNullException = () =>
 			thrown.ShouldBeOfType<ArgumentNullException>();
@@ -192,7 +192,7 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Because of = () =>
-			thrown = Catch.Exception(() => store.Commit(unidentified));
+			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(unidentified));
 
 		It should_throw_an_ArgumentException = () =>
 			thrown.ShouldBeOfType<ArgumentException>();
@@ -207,7 +207,7 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Because of = () =>
-			thrown = Catch.Exception(() => store.Commit(corrupt));
+			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(corrupt));
 
 		It should_throw_a_StorageException = () =>
 			thrown.ShouldBeOfType<ArgumentException>();
@@ -222,7 +222,7 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Because of = () =>
-			thrown = Catch.Exception(() => store.Commit(invalidCommitSequence));
+			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(invalidCommitSequence));
 
 		It should_throw_an_ArgumentException = () =>
 			thrown.ShouldBeOfType<ArgumentException>();
@@ -237,7 +237,7 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Because of = () =>
-			thrown = Catch.Exception(() => store.Commit(invalidStreamRevision));
+			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(invalidStreamRevision));
 
 		It should_throw_an_ArgumentException = () =>
 			thrown.ShouldBeOfType<ArgumentException>();
@@ -262,8 +262,8 @@ namespace EventStore.Core.UnitTests
 
 		Because of = () =>
 		{
-			store.GetFrom(streamId, 0, int.MaxValue).ToList();
-			thrown = Catch.Exception(() => store.Commit(beyondEndOfStream));
+			((ICommitEvents)store).GetFrom(streamId, 0, int.MaxValue).ToList();
+			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(beyondEndOfStream));
 		};
 
 		It should_throw_a_PersistenceException = () =>
@@ -292,8 +292,8 @@ namespace EventStore.Core.UnitTests
 
 		Because of = () =>
 		{
-			store.GetFrom(streamId, 0, int.MaxValue).ToList();
-			thrown = Catch.Exception(() => store.Commit(beyondEndOfStream));
+			((ICommitEvents)store).GetFrom(streamId, 0, int.MaxValue).ToList();
+			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(beyondEndOfStream));
 		};
 
 		It should_throw_a_PersistenceException = () =>
@@ -309,7 +309,7 @@ namespace EventStore.Core.UnitTests
 			persistence.Setup(x => x.Commit(attemptWithNoEvents));
 
 		Because of = () =>
-			store.Commit(attemptWithNoEvents);
+			((ICommitEvents)store).Commit(attemptWithNoEvents);
 
 		It should_drop_the_commit_provided = () =>
 			persistence.Verify(x => x.Commit(attemptWithNoEvents), Times.AtMost(0));
@@ -327,7 +327,7 @@ namespace EventStore.Core.UnitTests
 		};
 
 		Because of = () =>
-			store.Commit(populatedAttempt);
+			((ICommitEvents)store).Commit(populatedAttempt);
 
 		It should_provide_the_commit_attempt_to_the_configured_persistence_mechanism = () =>
 			persistence.Verify(x => x.Commit(populatedAttempt), Times.Once());
@@ -359,8 +359,8 @@ namespace EventStore.Core.UnitTests
 
 		Because of = () =>
 		{
-			store.GetFrom(streamId, 0, MaxRevision).ToList();
-			thrown = Catch.Exception(() => store.Commit(DuplicateCommitAttempt));
+			((ICommitEvents)store).GetFrom(streamId, 0, MaxRevision).ToList();
+			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(DuplicateCommitAttempt));
 		};
 
 		It should_throw_a_DuplicateCommitException = () =>
@@ -376,10 +376,10 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Establish context = () =>
-			store.Commit(SuccessfulCommit);
+			((ICommitEvents)store).Commit(SuccessfulCommit);
 
 		Because of = () =>
-			thrown = Catch.Exception(() => store.Commit(DuplicateCommit));
+			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(DuplicateCommit));
 
 		It throw_a_DuplicateCommitException = () =>
 			thrown.ShouldBeOfType<DuplicateCommitException>();
@@ -401,8 +401,8 @@ namespace EventStore.Core.UnitTests
 
 		Because of = () =>
 		{
-			store.GetFrom(streamId, HeadStreamRevision, int.MaxValue).ToList();
-			thrown = Catch.Exception(() => store.Commit(Attempt));
+			((ICommitEvents)store).GetFrom(streamId, HeadStreamRevision, int.MaxValue).ToList();
+			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(Attempt));
 		};
 
 		It should_throw_a_ConcurrencyException = () =>
@@ -425,8 +425,8 @@ namespace EventStore.Core.UnitTests
 
 		Because of = () =>
 		{
-			store.GetFrom(streamId, HeadStreamRevision, int.MaxValue).ToList();
-			thrown = Catch.Exception(() => store.Commit(FailedAttempt));
+			((ICommitEvents)store).GetFrom(streamId, HeadStreamRevision, int.MaxValue).ToList();
+			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(FailedAttempt));
 		};
 
 		It should_throw_a_ConcurrencyException = () =>
@@ -443,10 +443,10 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Establish context = () =>
-			store.Commit(SuccessfulAttempt);
+			((ICommitEvents)store).Commit(SuccessfulAttempt);
 
 		Because of = () =>
-			thrown = Catch.Exception(() => store.Commit(FailedAttempt));
+			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(FailedAttempt));
 
 		It should_throw_a_ConcurrencyException = () =>
 			thrown.ShouldBeOfType<ConcurrencyException>();
@@ -462,10 +462,10 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Establish context = () =>
-			store.Commit(SuccessfulAttempt);
+			((ICommitEvents)store).Commit(SuccessfulAttempt);
 
 		Because of = () =>
-			thrown = Catch.Exception(() => store.Commit(FailedAttempt));
+			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(FailedAttempt));
 
 		It should_throw_a_ConcurrencyException = () =>
 			thrown.ShouldBeOfType<ConcurrencyException>();

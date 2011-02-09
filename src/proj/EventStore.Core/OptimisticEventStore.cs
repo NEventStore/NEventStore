@@ -49,7 +49,7 @@ namespace EventStore
 			return new OptimisticEventStream(snapshot, this, maxRevision);
 		}
 
-		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
+		IEnumerable<Commit> ICommitEvents.GetFrom(Guid streamId, int minRevision, int maxRevision)
 		{
 			var commits = this.persistence.GetFrom(streamId, minRevision, maxRevision);
 			foreach (var commit in commits)
@@ -59,7 +59,7 @@ namespace EventStore
 			}
 		}
 
-		public virtual void Commit(Commit attempt)
+		void ICommitEvents.Commit(Commit attempt)
 		{
 			if (!attempt.IsValid() || attempt.IsEmpty())
 				return;
@@ -97,12 +97,12 @@ namespace EventStore
 
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
-			// TODO: cache
+			// TODO: add to some kind of cache
 			return this.persistence.GetSnapshot(streamId, maxRevision);
 		}
 		public virtual bool AddSnapshot(Snapshot snapshot)
 		{
-			// TODO: update cache
+			// TODO: update the cache here
 			return this.persistence.AddSnapshot(snapshot);
 		}
 	}
