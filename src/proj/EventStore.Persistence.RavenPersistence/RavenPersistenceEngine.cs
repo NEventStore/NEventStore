@@ -1,11 +1,10 @@
-﻿using System.Linq.Expressions;
-using Raven.Client.Linq;
-
+﻿
 namespace EventStore.Persistence.RavenPersistence
 {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Linq.Expressions;
 	using Indexes;
 	using Raven.Client;
 	using Raven.Client.Exceptions;
@@ -196,9 +195,7 @@ namespace EventStore.Persistence.RavenPersistence
 			try
 			{
 				using (var session = this.store.OpenSession())
-				{
-				    return session.Query<T, TIndex>().Customize(x => x.WaitForNonStaleResults()).Where(query);
-				}
+					return session.Query<T, TIndex>().Customize(x => x.WaitForNonStaleResults()).Where(query);
 			}
 			catch (Exception e)
 			{
@@ -219,7 +216,7 @@ namespace EventStore.Persistence.RavenPersistence
 			{
 				head.HeadRevision = streamHead.HeadRevision;
 				head.SnapshotRevision = streamHead.SnapshotRevision;
-			    head.SnapshotAge = streamHead.SnapshotAge;
+				head.SnapshotAge = streamHead.SnapshotAge;
 			}
 		}
 	}
