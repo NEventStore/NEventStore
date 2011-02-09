@@ -117,11 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ReadonlyCollection" xml:space="preserve">
+  <data name="ReadOnlyCollection" xml:space="preserve">
     <value>The collection is read only and cannot be modified.</value>
-  </data>
-  <data name="EventNotPopulated" xml:space="preserve">
-    <value>The event must be fully populated.</value>
   </data>
   <data name="AlreadyDisposed" xml:space="preserve">
     <value>The object has already been disposed.</value>

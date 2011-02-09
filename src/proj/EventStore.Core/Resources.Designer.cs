@@ -70,20 +70,11 @@ namespace EventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The event must be fully populated..
-        /// </summary>
-        internal static string EventNotPopulated {
-            get {
-                return ResourceManager.GetString("EventNotPopulated", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The collection is read only and cannot be modified..
         /// </summary>
-        internal static string ReadonlyCollection {
+        internal static string ReadOnlyCollection {
             get {
-                return ResourceManager.GetString("ReadonlyCollection", resourceCulture);
+                return ResourceManager.GetString("ReadOnlyCollection", resourceCulture);
             }
         }
     }

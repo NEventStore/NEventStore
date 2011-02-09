@@ -43,15 +43,15 @@ namespace EventStore
 
 		public void Add(T item)
 		{
-			throw new NotSupportedException(Resources.ReadonlyCollection);
+			throw new NotSupportedException(Resources.ReadOnlyCollection);
 		}
 		public bool Remove(T item)
 		{
-			throw new NotSupportedException(Resources.ReadonlyCollection);
+			throw new NotSupportedException(Resources.ReadOnlyCollection);
 		}
 		public void Clear()
 		{
-			throw new NotSupportedException(Resources.ReadonlyCollection);
+			throw new NotSupportedException(Resources.ReadOnlyCollection);
 		}
 
 		public bool Contains(T item)
