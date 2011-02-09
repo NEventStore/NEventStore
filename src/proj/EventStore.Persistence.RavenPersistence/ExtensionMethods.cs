@@ -73,7 +73,8 @@ namespace EventStore.Persistence.RavenPersistence
 				Id = ToRavenStreamId(commit.StreamId),
 				StreamId = commit.StreamId,
 				HeadRevision = commit.StreamRevision,
-				SnapshotRevision = 0
+				SnapshotRevision = 0,
+                SnapshotAge = commit.StreamRevision
 			};
 		}
 
@@ -84,7 +85,8 @@ namespace EventStore.Persistence.RavenPersistence
 				Id = ToRavenStreamId(snapshot.StreamId),
 				StreamId = snapshot.StreamId,
 				HeadRevision = snapshot.StreamRevision,
-				SnapshotRevision = snapshot.StreamRevision
+				SnapshotRevision = snapshot.StreamRevision,
+                SnapshotAge = 0
 			};
 		}
 
