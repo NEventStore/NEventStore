@@ -79,25 +79,22 @@ namespace EventStore
 			get { return new ReadOnlyCollection<EventMessage>(this.uncommitted); }
 		}
 
-		public virtual void Add(params object[] uncommittedEvents)
+		public virtual void Add(params object[] events)
 		{
-			this.Add(uncommittedEvents as IEnumerable<object>);
+			this.Add(events as IEnumerable<object>);
 		}
-		public virtual void Add(params EventMessage[] uncommittedEvents)
+		public virtual void Add(params EventMessage[] events)
 		{
-			this.Add(uncommittedEvents as IEnumerable<EventMessage>);
+			this.Add(events as IEnumerable<EventMessage>);
 		}
-		public virtual void Add(IEnumerable<object> uncommittedEvents)
+		public virtual void Add(IEnumerable<object> events)
 		{
-			this.Add((uncommittedEvents ?? new object[0]).Select(x => new EventMessage
-			{
-				Body = x
-			}));
+			this.Add((events ?? new object[0]).Select(x => new EventMessage { Body = x }));
 		}
-		public virtual void Add(IEnumerable<EventMessage> uncommittedEvents)
+		public virtual void Add(IEnumerable<EventMessage> events)
 		{
-			uncommittedEvents = uncommittedEvents ?? new EventMessage[0];
-			foreach (var @event in uncommittedEvents.Where(@event => @event != null && @event.Body != null))
+			events = events ?? new EventMessage[0];
+			foreach (var @event in events.Where(@event => @event != null && @event.Body != null))
 				this.uncommitted.Add(@event);
 		}
 
@@ -142,7 +139,7 @@ namespace EventStore
 				commitId,
 				this.CommitSequence + 1,
 				DateTime.UtcNow,
-				headers ?? new Dictionary<string, object>(),
+				(headers ?? new Dictionary<string, object>()).ToDictionary(x => x.Key, x => x.Value),
 				this.uncommitted.ToList());
 		}
 

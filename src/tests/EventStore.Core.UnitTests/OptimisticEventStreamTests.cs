@@ -161,7 +161,7 @@ namespace EventStore.Core.UnitTests
 	{
 		static readonly Guid commitId = Guid.NewGuid();
 		static readonly EventMessage uncommitted = new EventMessage { Body = string.Empty };
-		static readonly Dictionary<string, object> headers = new Dictionary<string, object>();
+		static readonly Dictionary<string, object> headers = new Dictionary<string, object> { { "key", "value" } };
 		static Commit constructed;
 
 		Establish context = () =>
@@ -171,7 +171,10 @@ namespace EventStore.Core.UnitTests
 		};
 
 		Because of = () =>
+		{
 			stream.CommitChanges(commitId, headers);
+			headers.Clear();
+		};
 
 		It should_provide_a_commit_to_the_underlying_infrastructure = () =>
 			persistence.Verify(x => x.Commit(Moq.It.IsAny<Commit>()), Times.Once());
@@ -192,13 +195,16 @@ namespace EventStore.Core.UnitTests
 			DateTime.UtcNow.Subtract(constructed.CommitStamp).ShouldBeLessThan(TimeSpan.FromMilliseconds(50));
 
 		It should_build_the_commit_with_the_headers_provided = () =>
-			constructed.Headers.ShouldEqual(headers);
+			constructed.Headers["key"].ShouldEqual("value");
 
 		It should_build_the_commit_containing_all_uncommitted_events = () =>
 			constructed.Events.Count.ShouldEqual(1);
 
 		It should_build_the_commit_using_the_event_messages_provided = () =>
 			constructed.Events.First().ShouldEqual(uncommitted);
+
+		It should_contain_a_copy_of_the_headers_provided = () =>
+			constructed.Headers.ShouldNotBeEmpty();
 
 		It should_update_the_stream_revision = () =>
 			stream.StreamRevision.ShouldEqual(constructed.StreamRevision);
