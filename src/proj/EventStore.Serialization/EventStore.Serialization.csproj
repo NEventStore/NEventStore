@@ -46,7 +46,7 @@
     <Compile Include="BinarySerializer.cs" />
     <Compile Include="RijndaelSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UndisposableStream.cs" />
+    <Compile Include="IndisposableStream.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

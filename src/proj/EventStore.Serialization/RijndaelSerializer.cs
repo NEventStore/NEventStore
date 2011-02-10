@@ -33,10 +33,10 @@ namespace EventStore.Serialization
 				rijndael.GenerateIV();
 
 				using (var encryptor = rijndael.CreateEncryptor())
-				using (var outputWrapper = new UndisposableStream(output))
-				using (var encryptionStream = new CryptoStream(outputWrapper, encryptor, CryptoStreamMode.Write))
+				using (var wrappedOutput = new IndisposableStream(output))
+				using (var encryptionStream = new CryptoStream(wrappedOutput, encryptor, CryptoStreamMode.Write))
 				{
-					outputWrapper.Write(rijndael.IV, 0, rijndael.IV.Length);
+					wrappedOutput.Write(rijndael.IV, 0, rijndael.IV.Length);
 					this.inner.Serialize(encryptionStream, graph);
 					encryptionStream.Flush();
 					encryptionStream.FlushFinalBlock();

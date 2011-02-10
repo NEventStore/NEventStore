@@ -2,11 +2,11 @@ namespace EventStore.Serialization
 {
 	using System.IO;
 
-	internal class UndisposableStream : Stream
+	internal class IndisposableStream : Stream
 	{
 		private readonly Stream stream;
 
-		public UndisposableStream(Stream stream)
+		public IndisposableStream(Stream stream)
 		{
 			this.stream = stream;
 		}
