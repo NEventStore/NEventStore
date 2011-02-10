@@ -144,7 +144,7 @@ namespace EventStore.Core.UnitTests
 	public class when_committing_an_empty_changeset : on_the_event_stream
 	{
 		Because of = () =>
-			stream.CommitChanges(Guid.NewGuid(), null);
+			stream.CommitChanges(Guid.NewGuid());
 
 		It should_not_call_the_underlying_infrastructure = () =>
 			persistence.Verify(x => x.Commit(Moq.It.IsAny<Commit>()), Times.Never());
@@ -168,13 +168,12 @@ namespace EventStore.Core.UnitTests
 		{
 			persistence.Setup(x => x.Commit(Moq.It.IsAny<Commit>())).Callback<Commit>(x => constructed = x);
 			stream.Add(uncommitted);
+			foreach (var item in headers)
+				stream.UncommittedHeaders[item.Key] = item.Value;
 		};
 
 		Because of = () =>
-		{
-			stream.CommitChanges(commitId, headers);
-			headers.Clear();
-		};
+			stream.CommitChanges(commitId);
 
 		It should_provide_a_commit_to_the_underlying_infrastructure = () =>
 			persistence.Verify(x => x.Commit(Moq.It.IsAny<Commit>()), Times.Once());
@@ -195,10 +194,10 @@ namespace EventStore.Core.UnitTests
 			DateTime.UtcNow.Subtract(constructed.CommitStamp).ShouldBeLessThan(TimeSpan.FromMilliseconds(50));
 
 		It should_build_the_commit_with_the_headers_provided = () =>
-			constructed.Headers["key"].ShouldEqual("value");
+			constructed.Headers[headers.First().Key].ShouldEqual(headers.First().Value);
 
 		It should_build_the_commit_containing_all_uncommitted_events = () =>
-			constructed.Events.Count.ShouldEqual(1);
+			constructed.Events.Count.ShouldEqual(headers.Count);
 
 		It should_build_the_commit_using_the_event_messages_provided = () =>
 			constructed.Events.First().ShouldEqual(uncommitted);
@@ -215,8 +214,11 @@ namespace EventStore.Core.UnitTests
 		It should_add_the_uncommitted_events_the_committed_events = () =>
 			stream.CommittedEvents.Last().ShouldEqual(uncommitted);
 
-		It should_clear_the_uncommitted_events = () =>
-			stream.UncommittedEvents.Count.ShouldEqual(0);
+		It should_clear_the_uncommitted_events_on_the_stream = () =>
+			stream.UncommittedEvents.ShouldBeEmpty();
+
+		It should_clear_the_uncommitted_headers_on_the_stream = () =>
+			stream.UncommittedHeaders.ShouldBeEmpty();
 	}
 
 	[Subject("OptimisticEventStream")]
@@ -246,7 +248,7 @@ namespace EventStore.Core.UnitTests
 		};
 
 		Because of = () =>
-			thrown = Catch.Exception(() => stream.CommitChanges(Guid.NewGuid(), null));
+			thrown = Catch.Exception(() => stream.CommitChanges(Guid.NewGuid()));
 
 		It should_throw_a_ConcurrencyException = () =>
 			thrown.ShouldBeOfType<ConcurrencyException>();
@@ -273,7 +275,7 @@ namespace EventStore.Core.UnitTests
 			stream.Dispose();
 
 		Because of = () =>
-			thrown = Catch.Exception(() => stream.CommitChanges(Guid.NewGuid(), null));
+			thrown = Catch.Exception(() => stream.CommitChanges(Guid.NewGuid()));
 
 		It should_throw_a_ObjectDisposedException = () =>
 			thrown.ShouldBeOfType<ObjectDisposedException>();

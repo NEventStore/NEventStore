@@ -7,7 +7,8 @@ namespace EventStore
 	public class OptimisticEventStream : IEventStream
 	{
 		private readonly ICollection<EventMessage> committed = new LinkedList<EventMessage>();
-		private readonly ICollection<EventMessage> uncommitted = new LinkedList<EventMessage>();
+		private readonly ICollection<EventMessage> events = new LinkedList<EventMessage>();
+		private readonly IDictionary<string, object> headers = new Dictionary<string, object>();
 		private readonly ICommitEvents persistence;
 		private bool disposed;
 
@@ -76,36 +77,40 @@ namespace EventStore
 		}
 		public virtual ICollection<EventMessage> UncommittedEvents
 		{
-			get { return new ReadOnlyCollection<EventMessage>(this.uncommitted); }
+			get { return new ReadOnlyCollection<EventMessage>(this.events); }
+		}
+		public virtual IDictionary<string, object> UncommittedHeaders
+		{
+			get { return this.headers; }
 		}
 
-		public virtual void Add(params object[] events)
+		public virtual void Add(params object[] uncommittedEvents)
 		{
-			this.Add(events as IEnumerable<object>);
+			this.Add(uncommittedEvents as IEnumerable<object>);
 		}
-		public virtual void Add(params EventMessage[] events)
+		public virtual void Add(params EventMessage[] uncommittedEvents)
 		{
-			this.Add(events as IEnumerable<EventMessage>);
+			this.Add(uncommittedEvents as IEnumerable<EventMessage>);
 		}
-		public virtual void Add(IEnumerable<object> events)
+		public virtual void Add(IEnumerable<object> uncommittedEvents)
 		{
-			this.Add((events ?? new object[0]).Select(x => new EventMessage { Body = x }));
+			this.Add((uncommittedEvents ?? new object[0]).Select(x => new EventMessage { Body = x }));
 		}
-		public virtual void Add(IEnumerable<EventMessage> events)
+		public virtual void Add(IEnumerable<EventMessage> uncommittedEvents)
 		{
-			events = events ?? new EventMessage[0];
-			foreach (var @event in events.Where(@event => @event != null && @event.Body != null))
-				this.uncommitted.Add(@event);
+			uncommittedEvents = uncommittedEvents ?? new EventMessage[0];
+			foreach (var @event in uncommittedEvents.Where(@event => @event != null && @event.Body != null))
+				this.events.Add(@event);
 		}
 
-		public virtual void CommitChanges(Guid commitId, Dictionary<string, object> headers)
+		public virtual void CommitChanges(Guid commitId)
 		{
 			if (!this.HasChanges())
 				return;
 
 			try
 			{
-				this.PersistChanges(commitId, headers);
+				this.PersistChanges(commitId);
 			}
 			catch (ConcurrencyException)
 			{
@@ -120,32 +125,33 @@ namespace EventStore
 			if (this.disposed)
 				throw new ObjectDisposedException(Resources.AlreadyDisposed);
 
-			return this.uncommitted.Count > 0;
+			return this.events.Count > 0;
 		}
-		protected virtual void PersistChanges(Guid commitId, Dictionary<string, object> headers)
+		protected virtual void PersistChanges(Guid commitId)
 		{
-			var commit = this.BuildCommit(commitId, headers);
+			var commit = this.CopyValuesNewCommit(commitId);
 
 			this.persistence.Commit(commit);
 
 			this.PopulateStream(this.StreamRevision + 1, commit.StreamRevision, new[] { commit });
 			this.ClearChanges();
 		}
-		protected virtual Commit BuildCommit(Guid commitId, Dictionary<string, object> headers)
+		protected virtual Commit CopyValuesNewCommit(Guid commitId)
 		{
 			return new Commit(
 				this.StreamId,
-				this.StreamRevision + this.uncommitted.Count,
+				this.StreamRevision + this.events.Count,
 				commitId,
 				this.CommitSequence + 1,
 				DateTime.UtcNow,
-				(headers ?? new Dictionary<string, object>()).ToDictionary(x => x.Key, x => x.Value),
-				this.uncommitted.ToList());
+				this.headers.ToDictionary(x => x.Key, x => x.Value),
+				this.events.ToList());
 		}
 
 		public void ClearChanges()
 		{
-			this.uncommitted.Clear();
+			this.events.Clear();
+			this.headers.Clear();
 		}
 	}
 }
