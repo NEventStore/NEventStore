@@ -50,7 +50,7 @@ del exclude.txt
 
 echo Rereferencing Merged Assembly
 msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=%TARGET_CONFIG% /t:Clean
-msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=%TARGET_CONFIG% /p:ILMerge=true /p:TargetFrameworkVersion=%FRAMEWORK_VERSION%
+msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=%TARGET_CONFIG% /p:ILMerged=true /p:TargetFrameworkVersion=%FRAMEWORK_VERSION%
 
 echo Merging Mongo Persistence
 set FILES_TO_MERGE=
