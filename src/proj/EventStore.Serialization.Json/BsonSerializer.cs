@@ -20,12 +20,12 @@ namespace EventStore.Serialization
 				return;
 
 			using (var writer = new BsonWriter(output))
-				this.GetSerializer(graph).Serialize(writer, graph);
+				this.GetSerializer(graph.GetType()).Serialize(writer, graph);
 		}
 		public override T Deserialize<T>(Stream input)
 		{
 			using (var reader = new BsonReader(input))
-				return (T)this.GetSerializer(null).Deserialize(reader, typeof(T));
+				return (T)this.GetSerializer(typeof(T)).Deserialize(reader, typeof(T));
 		}
 	}
 }

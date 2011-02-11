@@ -43,23 +43,18 @@ namespace EventStore.Serialization
 
 			using (var streamWriter = new StreamWriter(output, Encoding.UTF8))
 			using (var writer = new JsonTextWriter(streamWriter))
-				this.GetSerializer(graph).Serialize(writer, graph);
+				this.GetSerializer(graph.GetType()).Serialize(writer, graph);
 		}
 		public virtual T Deserialize<T>(Stream input)
 		{
 			using (var streamReader = new StreamReader(input, Encoding.UTF8))
 			using (var reader = new JsonTextReader(streamReader))
-				return (T)this.GetSerializer(null).Deserialize(reader, typeof(T));
+				return (T)this.GetSerializer(typeof(T)).Deserialize(reader, typeof(T));
 		}
-		protected virtual JsonNetSerializer GetSerializer(object graph)
+		protected virtual JsonNetSerializer GetSerializer(Type typeToSerialize)
 		{
-			if (graph == null)
-				return this.typedSerializer;
-
-			if (this.knownTypes.Contains(graph.GetType()))
-				return this.untypedSerializer;
-
-			return this.typedSerializer;
+			return this.knownTypes.Contains(typeToSerialize)
+				? this.untypedSerializer : this.typedSerializer;
 		}
 	}
 }
