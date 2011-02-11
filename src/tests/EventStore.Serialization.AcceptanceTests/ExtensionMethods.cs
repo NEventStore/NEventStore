@@ -18,11 +18,10 @@ namespace EventStore.Serialization.AcceptanceTests
 			};
 		}
 
-		public static Commit BuildCommit()
+		public static Commit BuildCommit(this Guid streamId)
 		{
 			const int StreamRevision = 2;
 			const int CommitSequence = 2;
-			var streamId = Guid.NewGuid();
 			var commitId = Guid.NewGuid();
 			var headers = new Dictionary<string, object> { { "Key", "Value" }, { "Key2", (long)1234 }, { "Key3", null } };
 			var events = new[]

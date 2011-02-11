@@ -3,6 +3,7 @@
 
 namespace EventStore.Serialization.AcceptanceTests
 {
+	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using Machine.Specifications;
@@ -67,7 +68,7 @@ namespace EventStore.Serialization.AcceptanceTests
 	[Subject("Serialization")]
 	public class when_serializing_a_commit_message : using_serialization
 	{
-		static readonly Commit Message = ExtensionMethods.BuildCommit();
+		static readonly Commit Message = Guid.NewGuid().BuildCommit();
 		static byte[] serialized;
 		static Commit deserialized;
 
