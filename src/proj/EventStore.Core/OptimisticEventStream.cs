@@ -148,7 +148,7 @@ namespace EventStore
 				this.events.ToList());
 		}
 
-		public void ClearChanges()
+		public virtual void ClearChanges()
 		{
 			this.events.Clear();
 			this.headers.Clear();

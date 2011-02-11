@@ -33,7 +33,7 @@ namespace EventStore.Persistence
 			this.inner.Dispose();
 		}
 
-		public void Initialize()
+		public virtual void Initialize()
 		{
 			this.inner.Initialize();
 		}

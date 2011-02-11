@@ -100,7 +100,7 @@ namespace EventStore.Persistence.SqlPersistence
 				return query.ExecuteWithQuery(statement, record => record.GetStreamToSnapshot());
 			});
 		}
-		public Snapshot GetSnapshot(Guid streamId, int maxRevision)
+		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
 			return this.ExecuteQuery(streamId, query =>
 			{
@@ -110,7 +110,7 @@ namespace EventStore.Persistence.SqlPersistence
 				return query.ExecuteWithQuery(queryText, x => x.GetSnapshot(this.serializer)).FirstOrDefault();
 			});
 		}
-		public bool AddSnapshot(Snapshot snapshot)
+		public virtual bool AddSnapshot(Snapshot snapshot)
 		{
 			var rowsAffected = 0;
 			this.ExecuteCommand(snapshot.StreamId, cmd =>

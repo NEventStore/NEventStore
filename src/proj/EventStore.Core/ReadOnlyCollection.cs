@@ -15,24 +15,24 @@ namespace EventStore
 			this.inner = inner;
 		}
 
-		public int Count
+		public virtual int Count
 		{
 			get { return this.inner.Count; }
 		}
-		public object SyncRoot
+		public virtual object SyncRoot
 		{
 			get { return this.@lock; }
 		}
-		public bool IsSynchronized
+		public virtual bool IsSynchronized
 		{
 			get { return false; }
 		}
-		public bool IsReadOnly
+		public virtual bool IsReadOnly
 		{
 			get { return true; }
 		}
 
-		public IEnumerator<T> GetEnumerator()
+		public virtual IEnumerator<T> GetEnumerator()
 		{
 			return this.inner.GetEnumerator();
 		}
@@ -41,28 +41,28 @@ namespace EventStore
 			return this.GetEnumerator();
 		}
 
-		public void Add(T item)
+		public virtual void Add(T item)
 		{
 			throw new NotSupportedException(Resources.ReadOnlyCollection);
 		}
-		public bool Remove(T item)
+		public virtual bool Remove(T item)
 		{
 			throw new NotSupportedException(Resources.ReadOnlyCollection);
 		}
-		public void Clear()
+		public virtual void Clear()
 		{
 			throw new NotSupportedException(Resources.ReadOnlyCollection);
 		}
 
-		public bool Contains(T item)
+		public virtual bool Contains(T item)
 		{
 			return this.inner.Contains(item);
 		}
-		public void CopyTo(T[] array, int arrayIndex)
+		public virtual void CopyTo(T[] array, int arrayIndex)
 		{
 			this.inner.CopyTo(array, arrayIndex);
 		}
-		public void CopyTo(Array array, int index)
+		public virtual void CopyTo(Array array, int index)
 		{
 			this.CopyTo(array.Cast<T>().ToArray(), index);
 		}

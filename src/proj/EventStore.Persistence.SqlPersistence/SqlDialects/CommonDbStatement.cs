@@ -57,7 +57,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			return this.ExecuteNonQuery(commandText);
 		}
-		protected int ExecuteNonQuery(string commandText)
+		protected virtual int ExecuteNonQuery(string commandText)
 		{
 			try
 			{
@@ -72,7 +72,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 				throw;
 			}
 		}
-
 		protected virtual bool IsDuplicate(Exception exception)
 		{
 			var message = exception.Message.ToUpperInvariant();
@@ -100,8 +99,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 				throw;
 			}
 		}
-
-		private IDbCommand BuildCommand(string statement)
+		protected virtual IDbCommand BuildCommand(string statement)
 		{
 			var command = this.connection.CreateCommand();
 			command.Transaction = this.transaction;
