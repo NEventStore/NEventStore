@@ -12,6 +12,7 @@ namespace EventStore.Serialization
 	{
 		private readonly JsonNetSerializer untypedSerializer = new JsonNetSerializer
 		{
+			TypeNameHandling = TypeNameHandling.Auto,
 			DefaultValueHandling = DefaultValueHandling.Ignore,
 			NullValueHandling = NullValueHandling.Ignore
 		};
@@ -53,8 +54,10 @@ namespace EventStore.Serialization
 		}
 		protected virtual JsonNetSerializer GetSerializer(Type typeToSerialize)
 		{
-			return this.knownTypes.Contains(typeToSerialize)
-				? this.untypedSerializer : this.typedSerializer;
+			if (this.knownTypes.Contains(typeToSerialize))
+				return this.untypedSerializer;
+
+			return this.typedSerializer;
 		}
 	}
 }
