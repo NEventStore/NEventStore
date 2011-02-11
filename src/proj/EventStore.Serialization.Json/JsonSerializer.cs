@@ -28,30 +28,38 @@ namespace EventStore.Serialization
 			typeof(Dictionary<string, object>)
 		};
 
-		public JsonSerializer()
-			: this(null)
-		{
-		}
 		public JsonSerializer(params Type[] knownTypes)
 		{
+			if (knownTypes != null && knownTypes.Length == 0)
+				knownTypes = null;
+
 			this.knownTypes = knownTypes ?? this.knownTypes;
 		}
 
 		public virtual void Serialize(Stream output, object graph)
 		{
-			if (graph == null)
-				return;
-
 			using (var streamWriter = new StreamWriter(output, Encoding.UTF8))
-			using (var writer = new JsonTextWriter(streamWriter))
+				this.Serialize(new JsonTextWriter(streamWriter), graph);
+		}
+		protected virtual void Serialize(JsonWriter writer, object graph)
+		{
+			using (writer)
 				this.GetSerializer(graph.GetType()).Serialize(writer, graph);
 		}
+
 		public virtual T Deserialize<T>(Stream input)
 		{
 			using (var streamReader = new StreamReader(input, Encoding.UTF8))
-			using (var reader = new JsonTextReader(streamReader))
-				return (T)this.GetSerializer(typeof(T)).Deserialize(reader, typeof(T));
+				return this.Deserialize<T>(new JsonTextReader(streamReader));
 		}
+		protected virtual T Deserialize<T>(JsonReader reader)
+		{
+			var type = typeof(T);
+
+			using (reader)
+				return (T)this.GetSerializer(type).Deserialize(reader, type);
+		}
+
 		protected virtual JsonNetSerializer GetSerializer(Type typeToSerialize)
 		{
 			if (this.knownTypes.Contains(typeToSerialize))
