@@ -40,8 +40,7 @@ namespace EventStore
 		public virtual IEventStream OpenStream(Guid streamId, int minRevision, int maxRevision)
 		{
 			maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
-			var stream = new OptimisticEventStream(streamId, this, minRevision, maxRevision);
-			return stream.CommitSequence == 0 ? null : stream;
+			return new OptimisticEventStream(streamId, this, minRevision, maxRevision);
 		}
 		public virtual IEventStream OpenStream(Snapshot snapshot, int maxRevision)
 		{

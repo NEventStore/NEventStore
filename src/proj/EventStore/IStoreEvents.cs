@@ -16,13 +16,15 @@ namespace EventStore
 		IEventStream CreateStream(Guid streamId);
 
 		/// <summary>
-		/// Reads the stream indicated from the minimum revision specified up to the maximum revision specified.
+		/// Reads the stream indicated from the minimum revision specified up to the maximum revision specified or creates
+		/// an empty stream if no commits are found and a minimum revision of zero is provided.
 		/// </summary>
 		/// <param name="streamId">The value which uniquely identifies the stream from which the events will be read.</param>
 		/// <param name="minRevision">The minimum revision of the stream to be read.</param>
 		/// <param name="maxRevision">The maximum revision of the stream to be read.</param>
 		/// <returns>A series of committed events represented as a stream.</returns>
 		/// <exception cref="StorageException" />
+		/// <exception cref="StreamNotFoundException" />
 		IEventStream OpenStream(Guid streamId, int minRevision, int maxRevision);
 
 		/// <summary>
@@ -31,6 +33,7 @@ namespace EventStore
 		/// <param name="snapshot">The snapshot of the stream to be read.</param>
 		/// <param name="maxRevision">The maximum revision of the stream to be read.</param>
 		/// <returns>A series of committed events represented as a stream.</returns>
+		/// <exception cref="StorageException" />
 		IEventStream OpenStream(Snapshot snapshot, int maxRevision);
 	}
 }

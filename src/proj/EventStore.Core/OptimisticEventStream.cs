@@ -23,7 +23,7 @@ namespace EventStore
 			var commits = persistence.GetFrom(streamId, minRevision, maxRevision);
 			this.PopulateStream(minRevision, maxRevision, commits);
 
-			if (this.committed.Count == 0)
+			if (minRevision > 0 && this.committed.Count == 0)
 				throw new StreamNotFoundException();
 		}
 		public OptimisticEventStream(Snapshot snapshot, ICommitEvents persistence, int maxRevision)

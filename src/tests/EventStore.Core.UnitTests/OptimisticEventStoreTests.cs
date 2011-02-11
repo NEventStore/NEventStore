@@ -12,7 +12,7 @@ namespace EventStore.Core.UnitTests
 	using It = Machine.Specifications.It;
 
 	[Subject("OptimisticEventStore")]
-	public class when_creating_a_stream : using_persistence
+	public class when_creating_a_new_stream : using_persistence
 	{
 		static IEventStream stream;
 
@@ -31,15 +31,67 @@ namespace EventStore.Core.UnitTests
 		It should_return_a_stream_with_a_zero_commit_sequence = () =>
 			stream.CommitSequence.ShouldEqual(0);
 
-		It should_return_a_stream_with_no_committed_events = () =>
-			stream.CommittedEvents.Count.ShouldEqual(0);
-
 		It should_return_a_stream_with_no_uncommitted_events = () =>
-			stream.UncommittedEvents.Count.ShouldEqual(0);
+			stream.UncommittedEvents.ShouldBeEmpty();
+
+		It should_return_a_stream_with_no_committed_events = () =>
+			stream.CommittedEvents.ShouldBeEmpty();
+
+		It should_return_a_stream_with_empty_headers = () =>
+			stream.UncommittedHeaders.ShouldBeEmpty();
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_opening_a_stream : using_persistence
+	public class when_opening_an_empty_stream_starting_at_revision_zero : using_persistence
+	{
+		static IEventStream stream;
+
+		Establish context = () =>
+			persistence.Setup(x => x.GetFrom(streamId, 0, 0)).Returns(new Commit[0]);
+
+		Because of = () =>
+			stream = store.OpenStream(streamId, 0, 0);
+
+		It should_return_a_new_stream = () =>
+			stream.ShouldNotBeNull();
+
+		It should_return_a_stream_with_the_correct_stream_identifier = () =>
+			stream.StreamId.ShouldEqual(streamId);
+
+		It should_return_a_stream_with_a_zero_stream_revision = () =>
+			stream.StreamRevision.ShouldEqual(0);
+
+		It should_return_a_stream_with_a_zero_commit_sequence = () =>
+			stream.CommitSequence.ShouldEqual(0);
+
+		It should_return_a_stream_with_no_uncommitted_events = () =>
+			stream.UncommittedEvents.ShouldBeEmpty();
+
+		It should_return_a_stream_with_no_committed_events = () =>
+			stream.CommittedEvents.ShouldBeEmpty();
+
+		It should_return_a_stream_with_empty_headers = () =>
+			stream.UncommittedHeaders.ShouldBeEmpty();
+	}
+
+	[Subject("OptimisticEventStore")]
+	public class when_opening_an_empty_stream_starting_above_revision_zero : using_persistence
+	{
+		const int MinRevision = 1;
+		static Exception thrown;
+
+		Establish context = () =>
+			persistence.Setup(x => x.GetFrom(streamId, MinRevision, int.MaxValue)).Returns(new Commit[0]);
+
+		Because of = () =>
+			thrown = Catch.Exception(() => store.OpenStream(streamId, MinRevision, int.MaxValue));
+
+		It should_throw_a_StreamNotFoundException = () =>
+			thrown.ShouldBeOfType<StreamNotFoundException>();
+	}
+
+	[Subject("OptimisticEventStore")]
+	public class when_opening_a_populated_stream : using_persistence
 	{
 		const int MinRevision = 17;
 		const int MaxRevision = 42;
@@ -60,22 +112,7 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_opening_an_empty_stream : using_persistence
-	{
-		static Exception thrown;
-
-		Establish context = () =>
-			persistence.Setup(x => x.GetFrom(streamId, 0, 0)).Returns(new Commit[0]);
-
-		Because of = () =>
-			thrown = Catch.Exception(() => store.OpenStream(streamId, 0, 0));
-
-		It should_throw_a_StreamNotFoundException = () =>
-			thrown.ShouldBeOfType<StreamNotFoundException>();
-	}
-
-	[Subject("OptimisticEventStore")]
-	public class when_opening_a_stream_from_a_snapshot : using_persistence
+	public class when_opening_a_populated_stream_from_a_snapshot : using_persistence
 	{
 		const int MaxRevision = int.MaxValue;
 		static readonly Snapshot snapshot = new Snapshot(streamId, 42, "snapshot");
