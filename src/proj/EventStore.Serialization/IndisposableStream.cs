@@ -11,6 +11,15 @@ namespace EventStore.Serialization
 			this.stream = stream;
 		}
 
+		protected override void Dispose(bool disposing)
+		{
+			// no-op
+		}
+		public override void Close()
+		{
+			// no-op
+		}
+
 		public override bool CanRead
 		{
 			get { return this.stream.CanRead; }
@@ -52,15 +61,6 @@ namespace EventStore.Serialization
 		public override void Write(byte[] buffer, int offset, int count)
 		{
 			this.stream.Write(buffer, offset, count);
-		}
-
-		public override void Close()
-		{
-			// no-op
-		}
-		protected override void Dispose(bool disposing)
-		{
-			// no-op
 		}
 	}
 }
