@@ -17,7 +17,7 @@ namespace EventStore.Serialization.AcceptanceTests
 			serialized = Serializer.Serialize(Message);
 
 		Because of = () =>
-			deserialized = Serializer.Deserialize(serialized) as SimpleMessage;
+			deserialized = Serializer.Deserialize<SimpleMessage>(serialized);
 
 		It should_deserialize_a_message_which_contains_the_same_Id_as_the_serialized_message = () =>
 			deserialized.Id.ShouldEqual(Message.Id);
@@ -49,7 +49,7 @@ namespace EventStore.Serialization.AcceptanceTests
 			serialized = Serializer.Serialize(Message);
 
 		Because of = () =>
-			deserialized = Serializer.Deserialize(serialized) as Commit;
+			deserialized = Serializer.Deserialize<Commit>(serialized);
 
 		It should_deserialize_a_commit_which_contains_the_same_StreamId_as_the_serialized_commit = () =>
 			deserialized.StreamId.ShouldEqual(Message.StreamId);

@@ -17,8 +17,9 @@ namespace EventStore.Serialization
 		/// <summary>
 		/// Deserializes the stream provided and reconstructs the corresponding object graph.
 		/// </summary>
+		/// <typeparam name="T">The type of object to be deserialized.</typeparam>
 		/// <param name="input">The stream of bytes from which the object will be reconstructed.</param>
 		/// <returns>The reconstructed object.</returns>
-		object Deserialize(Stream input);
+		T Deserialize<T>(Stream input);
 	}
 }

@@ -44,7 +44,7 @@ namespace EventStore.Serialization
 			}
 		}
 
-		public virtual object Deserialize(Stream input)
+		public virtual T Deserialize<T>(Stream input)
 		{
 			using (var rijndael = new RijndaelManaged())
 			{
@@ -54,7 +54,7 @@ namespace EventStore.Serialization
 
 				using (var decryptor = rijndael.CreateDecryptor())
 				using (var decryptedStream = new CryptoStream(input, decryptor, CryptoStreamMode.Read))
-					return this.inner.Deserialize(decryptedStream);
+					return this.inner.Deserialize<T>(decryptedStream);
 			}
 		}
 		private static byte[] GetInitVectorFromStream(Stream encrypted, int initVectorSizeInBytes)

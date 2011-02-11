@@ -13,9 +13,9 @@ namespace EventStore.Serialization
 			if (null != graph)
 				this.formatter.Serialize(output, graph);
 		}
-		public virtual object Deserialize(Stream input)
+		public virtual T Deserialize<T>(Stream input)
 		{
-			return this.formatter.Deserialize(input);
+			return (T)this.formatter.Deserialize(input);
 		}
 	}
 }

@@ -1,27 +1,31 @@
 namespace EventStore.Serialization
 {
+	using System;
 	using System.IO;
-	using Newtonsoft.Json;
 	using Newtonsoft.Json.Bson;
 
-	public class BsonSerializer : ISerialize
+	public class BsonSerializer : JsonSerializer
 	{
-		private readonly Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer
+		public BsonSerializer()
 		{
-			TypeNameHandling = TypeNameHandling.All,
-			DefaultValueHandling = DefaultValueHandling.Ignore,
-			NullValueHandling = NullValueHandling.Ignore
-		};
-
-		public void Serialize(Stream output, object graph)
-		{
-			using (var writer = new BsonWriter(output))
-				this.serializer.Serialize(writer, graph);
 		}
-		public object Deserialize(Stream input)
+		public BsonSerializer(params Type[] knownTypes)
+			: base(knownTypes)
+		{
+		}
+
+		public override void Serialize(Stream output, object graph)
+		{
+			if (graph == null)
+				return;
+
+			using (var writer = new BsonWriter(output))
+				this.GetSerializer(graph).Serialize(writer, graph);
+		}
+		public override T Deserialize<T>(Stream input)
 		{
 			using (var reader = new BsonReader(input))
-				return this.serializer.Deserialize(reader);
+				return (T)this.GetSerializer(null).Deserialize(reader, typeof(T));
 		}
 	}
 }

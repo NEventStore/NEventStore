@@ -28,17 +28,18 @@ namespace EventStore.Serialization
 		/// <summary>
 		/// Deserializes the array of bytes provided.
 		/// </summary>
+		/// <typeparam name="T">The type of object to be deserialized.</typeparam>
 		/// <param name="serializer">The serializer to use.</param>
 		/// <param name="serialized">The serialized array of bytes.</param>
 		/// <returns>The reconstituted object, if any.</returns>
-		public static object Deserialize(this ISerialize serializer, byte[] serialized)
+		public static T Deserialize<T>(this ISerialize serializer, byte[] serialized)
 		{
 			serialized = serialized ?? new byte[] { };
 			if (serialized.Length == 0)
-				return null;
+				return default(T);
 
 			using (var stream = new MemoryStream(serialized))
-				return serializer.Deserialize(stream);
+				return serializer.Deserialize<T>(stream);
 		}
 	}
 }

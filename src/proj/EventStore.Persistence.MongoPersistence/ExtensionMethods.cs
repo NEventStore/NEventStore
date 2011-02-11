@@ -119,7 +119,7 @@
 				return new List<EventMessage>();
 
 			if (!(serializer is MongoSerializer))
-				return serializer.Deserialize(value.AsByteArray) as List<EventMessage>;
+				return serializer.Deserialize<List<EventMessage>>(value.AsByteArray);
 
 			return value.AsBsonArray.Select(item => BsonSerializer.Deserialize<EventMessage>(item.AsBsonDocument)).ToList();
 		}
