@@ -73,11 +73,11 @@ namespace EventStore
 
 		public virtual ICollection<EventMessage> CommittedEvents
 		{
-			get { return new ReadOnlyCollection<EventMessage>(this.committed); }
+			get { return new ImmutableCollection<EventMessage>(this.committed); }
 		}
 		public virtual ICollection<EventMessage> UncommittedEvents
 		{
-			get { return new ReadOnlyCollection<EventMessage>(this.events); }
+			get { return new ImmutableCollection<EventMessage>(this.events); }
 		}
 		public virtual IDictionary<string, object> UncommittedHeaders
 		{
