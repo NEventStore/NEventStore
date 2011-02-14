@@ -33,16 +33,16 @@ namespace EventStore.Core.UnitTests.PersistenceTests
 			new Commit(streamId, 0, Guid.NewGuid(), 0, DateTime.UtcNow, null, null),
 			new Commit(streamId, 0, Guid.NewGuid(), 0, DateTime.UtcNow, null, null)
 		};
-		static Mock<IFilterCommits<Commit>> readFilter;
+		static Mock<IFilterCommitReads> readFilter;
 		static Commit[] read;
 
 		Establish context = () =>
 		{
 			fakePersistence.Setup(x => x.GetFrom(streamId, MinRevision, MaxRevision)).Returns(commits);
 
-			readFilter = new Mock<IFilterCommits<Commit>>();
-			readFilter.Setup(x => x.Filter(commits.First())).Returns(commits.First());
-			readFilter.Setup(x => x.Filter(commits.Last())).Returns((Commit)null);
+			readFilter = new Mock<IFilterCommitReads>();
+			readFilter.Setup(x => x.FilterRead(commits.First())).Returns(commits.First());
+			readFilter.Setup(x => x.FilterRead(commits.Last())).Returns((Commit)null);
 
 			filterPersistence = new CommitFilterPersistence(
 				fakePersistence.Object,
@@ -68,12 +68,12 @@ namespace EventStore.Core.UnitTests.PersistenceTests
 	{
 		static readonly Commit attempt = BuildCommitStub();
 		static readonly Commit filtered = BuildCommitStub();
-		static Mock<IFilterCommits<Commit>> writeFilter;
+		static Mock<IFilterCommitWrites> writeFilter;
 
 		Establish context = () =>
 		{
-			writeFilter = new Mock<IFilterCommits<Commit>>();
-			writeFilter.Setup(x => x.Filter(attempt)).Returns(filtered);
+			writeFilter = new Mock<IFilterCommitWrites>();
+			writeFilter.Setup(x => x.FilterWrite(attempt)).Returns(filtered);
 			fakePersistence.Setup(x => x.Commit(filtered));
 
 			filterPersistence = new CommitFilterPersistence(

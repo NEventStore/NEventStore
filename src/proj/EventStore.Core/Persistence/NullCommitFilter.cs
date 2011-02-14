@@ -1,10 +1,14 @@
 namespace EventStore.Persistence
 {
-	public class NullCommitFilter<T> : IFilterCommits<T>
+	public class NullCommitFilter : IFilterCommitReads, IFilterCommitWrites
 	{
-		public T Filter(T commit)
+		public Commit FilterRead(Commit persisted)
 		{
-			return commit;
+			return persisted;
+		}
+		public Commit FilterWrite(Commit attempt)
+		{
+			return attempt;
 		}
 	}
 }

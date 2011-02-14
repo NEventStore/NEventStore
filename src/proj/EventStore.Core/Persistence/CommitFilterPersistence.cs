@@ -7,18 +7,18 @@ namespace EventStore.Persistence
 	public class CommitFilterPersistence : IPersistStreams
 	{
 		private readonly IPersistStreams inner;
-		private readonly IEnumerable<IFilterCommits<Commit>> readFilters;
-		private readonly IEnumerable<IFilterCommits<Commit>> writeFilters;
+		private readonly IEnumerable<IFilterCommitReads> readFilters;
+		private readonly IEnumerable<IFilterCommitWrites> writeFilters;
 		private bool disposed;
 
 		public CommitFilterPersistence(
 			IPersistStreams inner,
-			IEnumerable<IFilterCommits<Commit>> readFilter,
-			IEnumerable<IFilterCommits<Commit>> writeFilter)
+			IEnumerable<IFilterCommitReads> readFilter,
+			IEnumerable<IFilterCommitWrites> writeFilter)
 		{
 			this.inner = inner;
-			this.readFilters = readFilter ?? new IFilterCommits<Commit>[0];
-			this.writeFilters = writeFilter ?? new IFilterCommits<Commit>[0];
+			this.readFilters = readFilter ?? new IFilterCommitReads[0];
+			this.writeFilters = writeFilter ?? new IFilterCommitWrites[0];
 		}
 
 		public void Dispose()
@@ -43,20 +43,31 @@ namespace EventStore.Persistence
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
 		{
 			return this.inner.GetFrom(streamId, minRevision, maxRevision)
-				.Select(commit => Filter(commit, this.readFilters))
+				.Select(this.FilterRead)
 				.Where(x => x != null)
 				.ToArray();
 		}
+		private Commit FilterRead(Commit persisted)
+		{
+			foreach (var filter in this.readFilters)
+			{
+				persisted = filter.FilterRead(persisted);
+				if (persisted == null)
+					break;
+			}
+
+			return persisted;
+		}
+
 		public virtual void Commit(Commit attempt)
 		{
-			attempt = Filter(attempt, this.writeFilters);
-			this.inner.Commit(attempt);
+			this.inner.Commit(this.FilterWrite(attempt));
 		}
-		private static Commit Filter(Commit attempt, IEnumerable<IFilterCommits<Commit>> filters)
+		private Commit FilterWrite(Commit attempt)
 		{
-			foreach (var filter in filters)
+			foreach (var filter in this.writeFilters)
 			{
-				attempt = filter.Filter(attempt);
+				attempt = filter.FilterWrite(attempt);
 				if (attempt == null)
 					break;
 			}
