@@ -7,16 +7,18 @@ namespace EventStore.Persistence
 	public class CommitFilterPersistence : IPersistStreams
 	{
 		private readonly IPersistStreams inner;
-		private readonly IFilterCommits<Commit> readFilter;
-		private readonly IFilterCommits<Commit> writeFilter;
+		private readonly IEnumerable<IFilterCommits<Commit>> readFilters;
+		private readonly IEnumerable<IFilterCommits<Commit>> writeFilters;
 		private bool disposed;
 
 		public CommitFilterPersistence(
-			IPersistStreams inner, IFilterCommits<Commit> readFilter, IFilterCommits<Commit> writeFilter)
+			IPersistStreams inner,
+			IEnumerable<IFilterCommits<Commit>> readFilter,
+			IEnumerable<IFilterCommits<Commit>> writeFilter)
 		{
 			this.inner = inner;
-			this.readFilter = readFilter;
-			this.writeFilter = writeFilter;
+			this.readFilters = readFilter ?? new IFilterCommits<Commit>[0];
+			this.writeFilters = writeFilter ?? new IFilterCommits<Commit>[0];
 		}
 
 		public void Dispose()
@@ -41,15 +43,25 @@ namespace EventStore.Persistence
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
 		{
 			return this.inner.GetFrom(streamId, minRevision, maxRevision)
-				.Select(this.readFilter.Filter)
+				.Select(commit => Filter(commit, this.readFilters))
 				.Where(x => x != null)
 				.ToArray();
 		}
 		public virtual void Commit(Commit attempt)
 		{
-			attempt = this.writeFilter.Filter(attempt);
-			if (attempt != null)
-				this.inner.Commit(attempt);
+			attempt = Filter(attempt, this.writeFilters);
+			this.inner.Commit(attempt);
+		}
+		private static Commit Filter(Commit attempt, IEnumerable<IFilterCommits<Commit>> filters)
+		{
+			foreach (var filter in filters)
+			{
+				attempt = filter.Filter(attempt);
+				if (attempt == null)
+					break;
+			}
+
+			return attempt;
 		}
 
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)

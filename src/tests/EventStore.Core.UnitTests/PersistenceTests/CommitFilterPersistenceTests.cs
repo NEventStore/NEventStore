@@ -44,7 +44,10 @@ namespace EventStore.Core.UnitTests.PersistenceTests
 			readFilter.Setup(x => x.Filter(commits.First())).Returns(commits.First());
 			readFilter.Setup(x => x.Filter(commits.Last())).Returns((Commit)null);
 
-			filterPersistence = new CommitFilterPersistence(fakePersistence.Object, readFilter.Object, null);
+			filterPersistence = new CommitFilterPersistence(
+				fakePersistence.Object,
+				new[] { readFilter.Object },
+				null);
 		};
 
 		Because of = () =>
@@ -74,7 +77,7 @@ namespace EventStore.Core.UnitTests.PersistenceTests
 			fakePersistence.Setup(x => x.Commit(filtered));
 
 			filterPersistence = new CommitFilterPersistence(
-				fakePersistence.Object, null, writeFilter.Object);
+				fakePersistence.Object, null, new[] { writeFilter.Object });
 		};
 
 		Because of = () =>
