@@ -5,6 +5,7 @@ namespace EventStore.Persistence.RavenPersistence
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Linq.Expressions;
+	using System.Threading;
 	using Indexes;
 	using Raven.Client;
 	using Raven.Client.Exceptions;
@@ -209,12 +210,15 @@ namespace EventStore.Persistence.RavenPersistence
 
 		private void SaveStreamHead(RavenStreamHead streamHead)
 		{
-			// TODO: implicitly create/update the stream head using a server-side map/reduce function
-			using (var session = this.store.OpenAsyncSession())
+			ThreadPool.QueueUserWorkItem(x => this.SaveStreamHeadAsync(streamHead), null);
+		}
+		private void SaveStreamHeadAsync(RavenStreamHead streamHead)
+		{
+			using (var session = this.store.OpenSession())
 			{
 				session.Advanced.UseOptimisticConcurrency = false;
 				session.Store(streamHead);
-				session.SaveChangesAsync();
+				session.SaveChanges();
 			}
 		}
 	}
