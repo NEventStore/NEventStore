@@ -45,14 +45,8 @@ namespace EventStore
 		/// <summary>
 		/// Adds the event messages provided to the session to be tracked.
 		/// </summary>
-		/// <param name="uncommittedEvents">The events to be tracked.</param>
-		void Add(params EventMessage[] uncommittedEvents);
-
-		/// <summary>
-		/// Adds the event messages provided to the session to be tracked.
-		/// </summary>
-		/// <param name="uncommittedEvents">The events to be tracked.</param>
-		void Add(IEnumerable<EventMessage> uncommittedEvents);
+		/// <param name="uncommittedEvent">The event to be tracked.</param>
+		void Add(EventMessage uncommittedEvent);
 
 		/// <summary>
 		/// Commits the changes to durable storage.

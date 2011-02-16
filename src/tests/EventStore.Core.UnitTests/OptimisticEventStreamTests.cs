@@ -104,9 +104,11 @@ namespace EventStore.Core.UnitTests
 	[Subject("OptimisticEventStream")]
 	public class when_adding_multiple_populated_event_messages : on_the_event_stream
 	{
-		Because of = () => stream.Add(
-			new EventMessage { Body = "populated" },
-			new EventMessage { Body = "also populated" });
+		Because of = () =>
+		{
+			stream.Add(new EventMessage { Body = "populated" });
+			stream.Add(new EventMessage { Body = "also populated" });
+		};
 
 		It should_add_all_of_the_events_provided_to_the_set_of_uncommitted_events = () =>
 			stream.UncommittedEvents.Count.ShouldEqual(2);
@@ -117,8 +119,8 @@ namespace EventStore.Core.UnitTests
 	{
 		const string MyEvent = "some event data";
 
-        Because of = () =>
-            stream.Add(new EventMessage { Body = MyEvent });
+		Because of = () =>
+			stream.Add(new EventMessage { Body = MyEvent });
 
 		It should_add_the_uncommited_event_to_the_set_of_uncommitted_events = () =>
 			stream.UncommittedEvents.Count.ShouldEqual(1);

@@ -84,16 +84,10 @@ namespace EventStore
 			get { return this.headers; }
 		}
 
-		public virtual void Add(params EventMessage[] uncommittedEvents)
+		public virtual void Add(EventMessage uncommittedEvent)
 		{
-			this.Add(uncommittedEvents as IEnumerable<EventMessage>);
-		}
-		
-        public virtual void Add(IEnumerable<EventMessage> uncommittedEvents)
-		{
-			uncommittedEvents = uncommittedEvents ?? new EventMessage[0];
-			foreach (var @event in uncommittedEvents.Where(@event => @event != null && @event.Body != null))
-				this.events.Add(@event);
+			if (uncommittedEvent != null && uncommittedEvent.Body != null)
+				this.events.Add(uncommittedEvent);
 		}
 
 		public virtual void CommitChanges(Guid commitId)
