@@ -84,19 +84,12 @@ namespace EventStore
 			get { return this.headers; }
 		}
 
-		public virtual void Add(params object[] uncommittedEvents)
-		{
-			this.Add(uncommittedEvents as IEnumerable<object>);
-		}
 		public virtual void Add(params EventMessage[] uncommittedEvents)
 		{
 			this.Add(uncommittedEvents as IEnumerable<EventMessage>);
 		}
-		public virtual void Add(IEnumerable<object> uncommittedEvents)
-		{
-			this.Add((uncommittedEvents ?? new object[0]).Select(x => new EventMessage { Body = x }));
-		}
-		public virtual void Add(IEnumerable<EventMessage> uncommittedEvents)
+		
+        public virtual void Add(IEnumerable<EventMessage> uncommittedEvents)
 		{
 			uncommittedEvents = uncommittedEvents ?? new EventMessage[0];
 			foreach (var @event in uncommittedEvents.Where(@event => @event != null && @event.Body != null))

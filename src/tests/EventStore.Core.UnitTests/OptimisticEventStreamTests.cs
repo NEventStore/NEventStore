@@ -117,8 +117,8 @@ namespace EventStore.Core.UnitTests
 	{
 		const string MyEvent = "some event data";
 
-		Because of = () =>
-			stream.Add(MyEvent);
+        Because of = () =>
+            stream.Add(new EventMessage { Body = MyEvent });
 
 		It should_add_the_uncommited_event_to_the_set_of_uncommitted_events = () =>
 			stream.UncommittedEvents.Count.ShouldEqual(1);
