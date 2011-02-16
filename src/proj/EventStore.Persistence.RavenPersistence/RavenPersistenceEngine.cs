@@ -44,11 +44,11 @@ namespace EventStore.Persistence.RavenPersistence
 
 		public virtual void Initialize()
 		{
-			new RavenCommitByDate().Execute(store);
-            new RavenCommitByRevisionRange().Execute(store);
-            new RavenCommitsByDispatched().Execute(store);
-            new RavenSnapshotByStreamIdAndRevision().Execute(store);
-            new RavenStreamHeadBySnapshotAge().Execute(store);
+			new RavenCommitByDate().Execute(this.store);
+			new RavenCommitByRevisionRange().Execute(this.store);
+			new RavenCommitsByDispatched().Execute(this.store);
+			new RavenSnapshotByStreamIdAndRevision().Execute(this.store);
+			new RavenStreamHeadBySnapshotAge().Execute(this.store);
 		}
 
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
