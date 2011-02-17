@@ -94,9 +94,7 @@
 			{
 				// for concurrency / duplicate commit detection safe mode is required
 				this.PersistedCommits.Insert(commit, SafeMode.True);
-
-				var head = new MongoStreamHead(commit.Id.StreamId, commit.StreamRevision, 0);
-				this.SaveStreamHeadAsync(head);
+				this.UpdateStreamHeadAsync(commit.Id.StreamId, commit.StreamRevision, (commit.Id.CommitSequence == 1));
 			}
 			catch (MongoException e)
 			{
@@ -156,9 +154,7 @@
 			{
 				var mongoSnapshot = snapshot.ToMongoSnapshot(this.serializer);
 				this.PersistedSnapshots.Insert(mongoSnapshot);
-
-				var head = new MongoStreamHead(snapshot.StreamId, snapshot.StreamRevision, snapshot.StreamRevision);
-				this.SaveStreamHeadAsync(head);
+				this.PersistedStreamHeads.Update(Query.EQ("_id", snapshot.StreamId), Update.Set("SnapshotRevision", snapshot.StreamRevision));
 
 				return true;
 			}
@@ -168,9 +164,19 @@
 			}
 		}
 
-		private void SaveStreamHeadAsync(MongoStreamHead streamHead)
+		private void UpdateStreamHeadAsync(Guid streamId, int streamRevision, bool isFirstCommit)
 		{
-			ThreadPool.QueueUserWorkItem(x => this.PersistedStreamHeads.Save(streamHead), null);
+			if (isFirstCommit)
+			{
+				var head = new MongoStreamHead(streamId, streamRevision, 0);
+				this.PersistedStreamHeads.Insert(head, SafeMode.True);
+			}
+			else
+			{
+				var query = Query.EQ("_id", streamId);
+				var update = Update.Set("HeadRevision", streamRevision);
+				ThreadPool.QueueUserWorkItem(x => this.PersistedStreamHeads.Update(query, update), null);
+			}
 		}
 
 		private MongoCollection<MongoCommit> PersistedCommits
