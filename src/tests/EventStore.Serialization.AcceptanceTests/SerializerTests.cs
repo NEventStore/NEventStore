@@ -3,6 +3,8 @@
 
 namespace EventStore.Serialization.AcceptanceTests
 {
+	using System;
+	using System.Collections.Generic;
 	using System.Linq;
 	using Machine.Specifications;
 
@@ -17,7 +19,7 @@ namespace EventStore.Serialization.AcceptanceTests
 			serialized = Serializer.Serialize(Message);
 
 		Because of = () =>
-			deserialized = Serializer.Deserialize(serialized) as SimpleMessage;
+			deserialized = Serializer.Deserialize<SimpleMessage>(serialized);
 
 		It should_deserialize_a_message_which_contains_the_same_Id_as_the_serialized_message = () =>
 			deserialized.Id.ShouldEqual(Message.Id);
@@ -39,9 +41,60 @@ namespace EventStore.Serialization.AcceptanceTests
 	}
 
 	[Subject("Serialization")]
+	public class when_serializing_a_list_of_event_messages : using_serialization
+	{
+		private static readonly List<EventMessage> Messages = new List<EventMessage>
+		{
+			new EventMessage { Body = "some value" },
+			new EventMessage { Body = 42 },
+			new EventMessage { Body = new SimpleMessage() }
+		};
+		static byte[] serialized;
+		static List<EventMessage> deserialized;
+
+		Establish context = () =>
+			serialized = Serializer.Serialize(Messages);
+
+		Because of = () =>
+			deserialized = Serializer.Deserialize<List<EventMessage>>(serialized);
+
+		It should_deserialize_the_same_number_of_event_messages_as_it_serialized = () =>
+			Messages.Count.ShouldEqual(deserialized.Count);
+
+		It should_deserialize_the_the_complex_types_within_the_event_messages = () =>
+			deserialized.Last().Body.ShouldBeOfType<SimpleMessage>();
+	}
+
+	[Subject("Serialization")]
+	public class when_serializing_a_list_of_commit_headers : using_serialization
+	{
+		private static readonly Dictionary<string, object> Headers = new Dictionary<string, object>
+		{
+			{ "HeaderKey", "SomeValue" },
+			{ "AnotherKey", 42 },
+			{ "AndAnotherKey", Guid.NewGuid() },
+			{ "LastKey", new SimpleMessage() }
+		};
+		static byte[] serialized;
+		static Dictionary<string, object> deserialized;
+
+		Establish context = () =>
+			serialized = Serializer.Serialize(Headers);
+
+		Because of = () =>
+			deserialized = Serializer.Deserialize<Dictionary<string, object>>(serialized);
+
+		It should_deserialize_the_same_number_of_event_messages_as_it_serialized = () =>
+			Headers.Count.ShouldEqual(deserialized.Count);
+
+		It should_deserialize_the_the_complex_types_within_the_event_messages = () =>
+			deserialized.Last().Value.ShouldBeOfType<SimpleMessage>();
+	}
+
+	[Subject("Serialization")]
 	public class when_serializing_a_commit_message : using_serialization
 	{
-		static readonly Commit Message = ExtensionMethods.BuildCommit();
+		static readonly Commit Message = Guid.NewGuid().BuildCommit();
 		static byte[] serialized;
 		static Commit deserialized;
 
@@ -49,7 +102,7 @@ namespace EventStore.Serialization.AcceptanceTests
 			serialized = Serializer.Serialize(Message);
 
 		Because of = () =>
-			deserialized = Serializer.Deserialize(serialized) as Commit;
+			deserialized = Serializer.Deserialize<Commit>(serialized);
 
 		It should_deserialize_a_commit_which_contains_the_same_StreamId_as_the_serialized_commit = () =>
 			deserialized.StreamId.ShouldEqual(Message.StreamId);

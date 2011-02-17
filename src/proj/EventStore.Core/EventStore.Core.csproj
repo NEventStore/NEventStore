@@ -47,17 +47,17 @@
     <Compile Include="OptimisticEventStore.cs" />
     <Compile Include="OptimisticEventStream.cs" />
     <Compile Include="Persistence\CommitTracker.cs" />
-    <Compile Include="Persistence\DelegateCommitFilter.cs" />
+    <Compile Include="Persistence\IFilterCommitWrites.cs" />
     <Compile Include="Dispatcher\DelegateMessagePublisher.cs" />
     <Compile Include="Dispatcher\IDispatchMessages.cs" />
-    <Compile Include="Persistence\IFilterCommits.cs" />
+    <Compile Include="Persistence\IFilterCommitsReads.cs" />
     <Compile Include="Persistence\InMemoryPersistenceEngine.cs" />
     <Compile Include="Persistence\InMemoryPersistenceFactory.cs" />
     <Compile Include="Persistence\NullCommitFilter.cs" />
     <Compile Include="Persistence\CommitFilterPersistence.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Dispatcher\SynchronousDispatcher.cs" />
-    <Compile Include="ReadOnlyCollection.cs" />
+    <Compile Include="ImmutableCollection.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

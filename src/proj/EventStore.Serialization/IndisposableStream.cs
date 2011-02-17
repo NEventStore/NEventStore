@@ -2,13 +2,22 @@ namespace EventStore.Serialization
 {
 	using System.IO;
 
-	internal class UndisposableStream : Stream
+	internal class IndisposableStream : Stream
 	{
 		private readonly Stream stream;
 
-		public UndisposableStream(Stream stream)
+		public IndisposableStream(Stream stream)
 		{
 			this.stream = stream;
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			// no-op
+		}
+		public override void Close()
+		{
+			// no-op
 		}
 
 		public override bool CanRead
@@ -52,15 +61,6 @@ namespace EventStore.Serialization
 		public override void Write(byte[] buffer, int offset, int count)
 		{
 			this.stream.Write(buffer, offset, count);
-		}
-
-		public override void Close()
-		{
-			// no-op
-		}
-		protected override void Dispose(bool disposing)
-		{
-			// no-op
 		}
 	}
 }

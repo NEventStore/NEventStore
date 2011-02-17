@@ -14,3 +14,5 @@
   before giving up.  This would allow people to change their serialization in production if necessary
   for things like encryption, etc.  For example, we're changing the encryption on all commits and we need to
   support several keys simultaenously for a period of time...
+
+- migrate events to new storage engine

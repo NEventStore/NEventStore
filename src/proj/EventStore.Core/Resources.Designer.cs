@@ -70,20 +70,47 @@ namespace EventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The event must be fully populated..
+        ///   Looks up a localized string similar to The commit must be uniquely identified..
         /// </summary>
-        internal static string EventNotPopulated {
+        internal static string CommitsMustBeUniquelyIdentified {
             get {
-                return ResourceManager.GetString("EventNotPopulated", resourceCulture);
+                return ResourceManager.GetString("CommitsMustBeUniquelyIdentified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stream revision must be a positive number..
+        /// </summary>
+        internal static string NonPositiveRevisionNumber {
+            get {
+                return ResourceManager.GetString("NonPositiveRevisionNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The commit sequence must be a positive number..
+        /// </summary>
+        internal static string NonPositiveSequenceNumber {
+            get {
+                return ResourceManager.GetString("NonPositiveSequenceNumber", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The collection is read only and cannot be modified..
         /// </summary>
-        internal static string ReadonlyCollection {
+        internal static string ReadOnlyCollection {
             get {
-                return ResourceManager.GetString("ReadonlyCollection", resourceCulture);
+                return ResourceManager.GetString("ReadOnlyCollection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stream revision must always be greater than or equal to the commit sequence..
+        /// </summary>
+        internal static string RevisionTooSmall {
+            get {
+                return ResourceManager.GetString("RevisionTooSmall", resourceCulture);
             }
         }
     }

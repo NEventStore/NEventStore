@@ -30,6 +30,11 @@ namespace EventStore.Persistence.SqlPersistence
 			this.shards = shards >= 0 ? shards : DefaultShards;
 		}
 
+		public virtual ConnectionStringSettings Settings
+		{
+			get { return ConfigurationManager.ConnectionStrings[this.masterConnectionName]; }
+		}
+
 		public virtual IDbConnection OpenMaster(Guid streamId)
 		{
 			return this.Open(streamId, this.masterConnectionName);

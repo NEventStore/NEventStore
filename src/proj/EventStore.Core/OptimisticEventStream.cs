@@ -7,7 +7,8 @@ namespace EventStore
 	public class OptimisticEventStream : IEventStream
 	{
 		private readonly ICollection<EventMessage> committed = new LinkedList<EventMessage>();
-		private readonly ICollection<EventMessage> uncommitted = new LinkedList<EventMessage>();
+		private readonly ICollection<EventMessage> events = new LinkedList<EventMessage>();
+		private readonly IDictionary<string, object> headers = new Dictionary<string, object>();
 		private readonly ICommitEvents persistence;
 		private bool disposed;
 
@@ -22,7 +23,7 @@ namespace EventStore
 			var commits = persistence.GetFrom(streamId, minRevision, maxRevision);
 			this.PopulateStream(minRevision, maxRevision, commits);
 
-			if (this.committed.Count == 0)
+			if (minRevision > 0 && this.committed.Count == 0)
 				throw new StreamNotFoundException();
 		}
 		public OptimisticEventStream(Snapshot snapshot, ICommitEvents persistence, int maxRevision)
@@ -72,43 +73,31 @@ namespace EventStore
 
 		public virtual ICollection<EventMessage> CommittedEvents
 		{
-			get { return new ReadOnlyCollection<EventMessage>(this.committed); }
+			get { return new ImmutableCollection<EventMessage>(this.committed); }
 		}
 		public virtual ICollection<EventMessage> UncommittedEvents
 		{
-			get { return new ReadOnlyCollection<EventMessage>(this.uncommitted); }
+			get { return new ImmutableCollection<EventMessage>(this.events); }
 		}
-
-		public virtual void Add(params EventMessage[] uncommittedEvents)
+		public virtual IDictionary<string, object> UncommittedHeaders
 		{
-			if (uncommittedEvents == null || uncommittedEvents.Length == 0)
-				throw new ArgumentNullException("uncommittedEvents");
-
-			foreach (var @event in uncommittedEvents)
-			{
-				if (@event.Body == null)
-					throw new ArgumentException(Resources.EventNotPopulated, "uncommittedEvents");
-
-				this.uncommitted.Add(@event);
-			}
+			get { return this.headers; }
 		}
-		public virtual void Add(params object[] uncommittedEvents)
+
+		public virtual void Add(EventMessage uncommittedEvent)
 		{
-			if (uncommittedEvents == null || uncommittedEvents.Length == 0)
-				throw new ArgumentNullException("uncommittedEvents");
-
-			foreach (var @event in uncommittedEvents)
-				this.Add(new EventMessage { Body = @event });
+			if (uncommittedEvent != null && uncommittedEvent.Body != null)
+				this.events.Add(uncommittedEvent);
 		}
 
-		public virtual void CommitChanges(Guid commitId, Dictionary<string, object> headers)
+		public virtual void CommitChanges(Guid commitId)
 		{
 			if (!this.HasChanges())
 				return;
 
 			try
 			{
-				this.PersistChanges(commitId, headers);
+				this.PersistChanges(commitId);
 			}
 			catch (ConcurrencyException)
 			{
@@ -123,32 +112,33 @@ namespace EventStore
 			if (this.disposed)
 				throw new ObjectDisposedException(Resources.AlreadyDisposed);
 
-			return this.uncommitted.Count > 0;
+			return this.events.Count > 0;
 		}
-		protected virtual void PersistChanges(Guid commitId, Dictionary<string, object> headers)
+		protected virtual void PersistChanges(Guid commitId)
 		{
-			var commit = this.BuildCommit(commitId, headers);
+			var commit = this.CopyValuesNewCommit(commitId);
 
 			this.persistence.Commit(commit);
 
 			this.PopulateStream(this.StreamRevision + 1, commit.StreamRevision, new[] { commit });
 			this.ClearChanges();
 		}
-		protected virtual Commit BuildCommit(Guid commitId, Dictionary<string, object> headers)
+		protected virtual Commit CopyValuesNewCommit(Guid commitId)
 		{
 			return new Commit(
 				this.StreamId,
-				this.StreamRevision + this.uncommitted.Count,
+				this.StreamRevision + this.events.Count,
 				commitId,
 				this.CommitSequence + 1,
 				DateTime.UtcNow,
-				headers ?? new Dictionary<string, object>(),
-				this.uncommitted.ToList());
+				this.headers.ToDictionary(x => x.Key, x => x.Value),
+				this.events.ToList());
 		}
 
-		public void ClearChanges()
+		public virtual void ClearChanges()
 		{
-			this.uncommitted.Clear();
+			this.events.Clear();
+			this.headers.Clear();
 		}
 	}
 }

@@ -14,7 +14,7 @@ namespace EventStore.Persistence.SqlPersistence
 			return new Snapshot(
 				record[StreamIdIndex].ToGuid(),
 				record[StreamRevisionIndex].ToInt(),
-				serializer.Deserialize(record, PayloadIndex));
+				serializer.Deserialize<object>(record, PayloadIndex));
 		}
 	}
 }

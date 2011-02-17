@@ -17,8 +17,8 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public static Commit GetCommit(this IDataRecord record, ISerialize serializer)
 		{
-			var headers = serializer.Deserialize(record, HeadersIndex) as Dictionary<string, object>;
-			var events = serializer.Deserialize(record, PayloadIndex) as List<EventMessage>;
+			var headers = serializer.Deserialize<Dictionary<string, object>>(record, HeadersIndex);
+			var events = serializer.Deserialize<List<EventMessage>>(record, PayloadIndex);
 
 			return new Commit(
 				record[StreamIdIndex].ToGuid(),
@@ -30,17 +30,17 @@ namespace EventStore.Persistence.SqlPersistence
 				events);
 		}
 
-		public static object Deserialize(this ISerialize serializer, IDataRecord record, int index)
+		public static T Deserialize<T>(this ISerialize serializer, IDataRecord record, int index)
 		{
 			if (index >= record.FieldCount)
-				return null;
+				return default(T);
 
 			var value = record[index];
 			if (value == null || value == DBNull.Value)
-				return null;
+				return default(T);
 
 			var bytes = (byte[])value;
-			return bytes.Length == 0 ? null : serializer.Deserialize(bytes);
+			return bytes.Length == 0 ? default(T) : serializer.Deserialize<T>(bytes);
 		}
 	}
 }

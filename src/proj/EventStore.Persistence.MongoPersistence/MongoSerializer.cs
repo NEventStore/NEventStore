@@ -1,14 +1,14 @@
-﻿namespace EventStore.Serialization
+﻿namespace EventStore.Persistence.MongoPersistence
 {
-	using System;
 	using System.IO;
 	using MongoDB.Bson;
 	using MongoDB.Bson.IO;
 	using MongoDB.Bson.Serialization;
+	using Serialization;
 
 	public class MongoSerializer : ISerialize
 	{
-		public void Serialize(Stream output, object graph)
+		public virtual void Serialize(Stream output, object graph)
 		{
 			using (var writer = BsonWriter.Create(output))
 			{
@@ -16,13 +16,10 @@
 				writer.WriteBinaryData(data.Bytes, BsonBinarySubType.Binary);
 			}
 		}
-
-		public object Deserialize(Stream input)
+		public virtual T Deserialize<T>(Stream input)
 		{
 			using (var reader = BsonReader.Create(input))
-			{
-				return BsonSerializer.Deserialize<object>(reader);
-			}
+				return BsonSerializer.Deserialize<T>(reader);
 		}
 	}
 }

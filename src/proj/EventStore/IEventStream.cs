@@ -38,26 +38,24 @@ namespace EventStore
 		ICollection<EventMessage> UncommittedEvents { get; }
 
 		/// <summary>
-		/// Adds the event messages provided to the session to be tracked.
+		/// Gets the collection of yet-to-be-committed headers associated with the uncommitted events.
 		/// </summary>
-		/// <param name="uncommittedEvents">The events to be tracked.</param>
-		void Add(params EventMessage[] uncommittedEvents);
+		IDictionary<string, object> UncommittedHeaders { get; }
 
 		/// <summary>
 		/// Adds the event messages provided to the session to be tracked.
 		/// </summary>
-		/// <param name="uncommittedEvents">The events to be tracked.</param>
-		void Add(params object[] uncommittedEvents);
+		/// <param name="uncommittedEvent">The event to be tracked.</param>
+		void Add(EventMessage uncommittedEvent);
 
 		/// <summary>
 		/// Commits the changes to durable storage.
 		/// </summary>
 		/// <param name="commitId">The value which uniquely identifies the commit.</param>
-		/// <param name="headers">Any optional metadata which belongs to the event being committed.</param>
 		/// <exception cref="DuplicateCommitException" />
 		/// <exception cref="ConcurrencyException" />
 		/// <exception cref="StorageException" />
-		void CommitChanges(Guid commitId, Dictionary<string, object> headers);
+		void CommitChanges(Guid commitId);
 
 		/// <summary>
 		/// Clears the uncommitted changes.

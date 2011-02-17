@@ -1,8 +1,11 @@
-﻿namespace EventStore.Persistence.RavenPersistence
+﻿
+namespace EventStore.Persistence.RavenPersistence
 {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Linq.Expressions;
+	using System.Threading;
 	using Indexes;
 	using Raven.Client;
 	using Raven.Client.Exceptions;
@@ -15,12 +18,14 @@
 	{
 		private readonly IDocumentStore store;
 		private readonly ISerialize serializer;
+		private readonly bool consistentQueries;
 		private bool disposed;
 
-		public RavenPersistenceEngine(IDocumentStore store, ISerialize serializer)
+		public RavenPersistenceEngine(IDocumentStore store, ISerialize serializer, bool consistentQueries)
 		{
 			this.store = store;
 			this.serializer = serializer;
+			this.consistentQueries = consistentQueries;
 		}
 
 		public void Dispose()
@@ -40,7 +45,11 @@
 
 		public virtual void Initialize()
 		{
-			IndexCreation.CreateIndexes(this.GetType().Assembly, this.store);
+			new RavenCommitByDate().Execute(this.store);
+			new RavenCommitByRevisionRange().Execute(this.store);
+			new RavenCommitsByDispatched().Execute(this.store);
+			new RavenSnapshotByStreamIdAndRevision().Execute(this.store);
+			new RavenStreamHeadBySnapshotAge().Execute(this.store);
 		}
 
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
@@ -62,11 +71,10 @@
 				{
 					session.Advanced.UseOptimisticConcurrency = true;
 					session.Store(attempt.ToRavenCommit(this.serializer));
-
-					SaveStreamHead(session, attempt.ToRavenStreamHead());
-
 					session.SaveChanges();
 				}
+
+				this.SaveStreamHead(attempt.ToRavenStreamHead());
 			}
 			catch (NonUniqueObjectException e)
 			{
@@ -75,7 +83,6 @@
 			catch (Raven.Http.Exceptions.ConcurrencyException)
 			{
 				var savedCommit = this.LoadSavedCommit(attempt);
-
 				if (savedCommit.CommitId == attempt.CommitId)
 					throw new DuplicateCommitException();
 
@@ -125,15 +132,14 @@
 
 		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
 		{
-			return this.Query<RavenStreamHead, RavenStreamHeadByHeadRevisionAndSnapshotRevision>(s =>
-				s.HeadRevision >= s.SnapshotRevision + maxThreshold).
-				Select(s => s.ToStreamHead());
+			return this.Query<RavenStreamHead, RavenStreamHeadBySnapshotAge>(s => s.SnapshotAge >= maxThreshold)
+				.Select(s => s.ToStreamHead());
 		}
 
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
-			return this.Query<RavenSnapshot, RavenSnapshotByStreamIdAndRevision>(x =>
-					x.StreamId == streamId && x.StreamRevision <= maxRevision)
+			return this.Query<RavenSnapshot, RavenSnapshotByStreamIdAndRevision>(
+					x => x.StreamId == streamId && x.StreamRevision <= maxRevision)
 				.OrderByDescending(x => x.StreamRevision)
 				.FirstOrDefault()
 				.ToSnapshot(this.serializer);
@@ -150,11 +156,10 @@
 				{
 					var ravenSnapshot = snapshot.ToRavenSnapshot(this.serializer);
 					session.Store(ravenSnapshot);
-
-					SaveStreamHead(session, snapshot.ToRavenStreamHead());
-
 					session.SaveChanges();
 				}
+
+				this.SaveStreamHead(snapshot.ToRavenStreamHead());
 
 				return true;
 			}
@@ -181,21 +186,21 @@
 			}
 		}
 
-		private IEnumerable<Commit> QueryCommits<TIndex>(Func<RavenCommit, bool> query)
+		private IEnumerable<Commit> QueryCommits<TIndex>(Expression<Func<RavenCommit, bool>> query)
 			where TIndex : AbstractIndexCreationTask, new()
 		{
 			return this.Query<RavenCommit, TIndex>(query).Select(x => x.ToCommit(this.serializer));
 		}
 
-		private IEnumerable<T> Query<T, TIndex>(Func<T, bool> query)
+		private IEnumerable<T> Query<T, TIndex>(Expression<Func<T, bool>> query)
 			where TIndex : AbstractIndexCreationTask, new()
 		{
 			try
 			{
 				using (var session = this.store.OpenSession())
-				{
-					return session.Query<T, TIndex>().Customize(x => x.WaitForNonStaleResults()).Where(query);
-				}
+					return session.Query<T, TIndex>()
+						.Customize(x => { if (this.consistentQueries) x.WaitForNonStaleResults(); })
+						.Where(query);
 			}
 			catch (Exception e)
 			{
@@ -203,19 +208,17 @@
 			}
 		}
 
-		private static void SaveStreamHead(IDocumentSession session, RavenStreamHead streamHead)
+		private void SaveStreamHead(RavenStreamHead streamHead)
 		{
-			var head = session.Load<RavenStreamHead>(streamHead.Id);
-
-			if (head == null)
+			ThreadPool.QueueUserWorkItem(x => this.SaveStreamHeadAsync(streamHead), null);
+		}
+		private void SaveStreamHeadAsync(RavenStreamHead streamHead)
+		{
+			using (var session = this.store.OpenSession())
 			{
-				head = streamHead;
-				session.Store(head);
-			}
-			else
-			{
-				head.HeadRevision = streamHead.HeadRevision;
-				head.SnapshotRevision = streamHead.SnapshotRevision;
+				session.Advanced.UseOptimisticConcurrency = false;
+				session.Store(streamHead);
+				session.SaveChanges();
 			}
 		}
 	}

@@ -100,7 +100,7 @@ namespace EventStore.Persistence.SqlPersistence
 				return query.ExecuteWithQuery(statement, record => record.GetStreamToSnapshot());
 			});
 		}
-		public Snapshot GetSnapshot(Guid streamId, int maxRevision)
+		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
 			return this.ExecuteQuery(streamId, query =>
 			{
@@ -110,7 +110,7 @@ namespace EventStore.Persistence.SqlPersistence
 				return query.ExecuteWithQuery(queryText, x => x.GetSnapshot(this.serializer)).FirstOrDefault();
 			});
 		}
-		public bool AddSnapshot(Snapshot snapshot)
+		public virtual bool AddSnapshot(Snapshot snapshot)
 		{
 			var rowsAffected = 0;
 			this.ExecuteCommand(snapshot.StreamId, cmd =>
@@ -125,7 +125,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 		protected virtual T ExecuteQuery<T>(Guid streamId, Func<IDbStatement, T> query)
 		{
-			var scope = new TransactionScope(TransactionScopeOption.Suppress);
+			var scope = this.OpenQueryScope();
 			IDbConnection connection = null;
 			IDbTransaction transaction = null;
 			IDbStatement statement = null;
@@ -152,7 +152,7 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		protected virtual void ExecuteCommand(Guid streamId, Action<IDbStatement> command)
 		{
-			using (var scope = new TransactionScope(TransactionScopeOption.Suppress))
+			using (var scope = this.OpenCommandScope())
 			using (var connection = this.connectionFactory.OpenMaster(streamId))
 			using (var transaction = this.dialect.OpenTransaction(connection))
 			using (var statement = this.dialect.BuildStatement(connection, transaction, scope))
@@ -162,6 +162,8 @@ namespace EventStore.Persistence.SqlPersistence
 					command(statement);
 					if (transaction != null)
 						transaction.Commit();
+
+					scope.Complete();
 				}
 				catch (Exception e)
 				{
@@ -171,6 +173,14 @@ namespace EventStore.Persistence.SqlPersistence
 					throw new StorageException(e.Message, e);
 				}
 			}
+		}
+		protected virtual TransactionScope OpenQueryScope()
+		{
+			return this.OpenCommandScope();
+		}
+		protected virtual TransactionScope OpenCommandScope()
+		{
+			return new TransactionScope(TransactionScopeOption.Suppress);
 		}
 	}
 }

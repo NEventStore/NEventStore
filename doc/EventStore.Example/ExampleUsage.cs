@@ -11,18 +11,23 @@ namespace EventStore.Example
 		{
 			eventStore = store;
 
-			CreateStream();
+			OpenOrCreateStream();
 			AppendToStream();
 			TakeSnapshot();
 			LoadFromSnapshotForwardAndAppend();
 		}
 
-		private static void CreateStream()
+		private static void OpenOrCreateStream()
 		{
-			using (var stream = eventStore.CreateStream(StreamId))
+			// we can call CreateStream(StreamId) if we know there isn't going to be any data.
+			// or we can call OpenStream(StreamId, 0, int.MaxValue) to read all commits,
+			// if no commits exist then it creates a new stream for us.
+			using (var stream = eventStore.OpenStream(StreamId, 0, int.MaxValue))
 			{
-				stream.Add(new SomeDomainEvent { Value = "Initial event." });
-				stream.CommitChanges(Guid.NewGuid(), null);
+				var @event = new SomeDomainEvent { Value = "Initial event." };
+
+				stream.Add(new EventMessage { Body = @event });
+				stream.CommitChanges(Guid.NewGuid());
 			}
 		}
 
@@ -30,8 +35,10 @@ namespace EventStore.Example
 		{
 			using (var stream = eventStore.OpenStream(StreamId, int.MinValue, int.MaxValue))
 			{
-				stream.Add(new SomeDomainEvent { Value = "Second event." });
-				stream.CommitChanges(Guid.NewGuid(), null);
+				var @event = new SomeDomainEvent { Value = "Second event." };
+
+				stream.Add(new EventMessage { Body = @event });
+				stream.CommitChanges(Guid.NewGuid());
 			}
 		}
 
@@ -47,8 +54,10 @@ namespace EventStore.Example
 
 			using (var stream = eventStore.OpenStream(latestSnapshot, int.MaxValue))
 			{
-				stream.Add(new SomeDomainEvent { Value = "Third event (first one after a snapshot)." });
-				stream.CommitChanges(Guid.NewGuid(), null);
+				var @event = new SomeDomainEvent { Value = "Third event (first one after a snapshot)." };
+
+				stream.Add(new EventMessage { Body = @event });
+				stream.CommitChanges(Guid.NewGuid());
 			}
 		}
 	}

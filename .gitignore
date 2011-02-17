@@ -4,6 +4,7 @@ bin
 *.suo
 *.orig
 output
+publish
 _ReSharper.*
 *.Resharper
 *.Cache
