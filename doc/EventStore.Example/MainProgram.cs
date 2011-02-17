@@ -4,7 +4,6 @@ namespace EventStore.Example
 	using Dispatcher;
 	using Persistence;
 	using Persistence.SqlPersistence;
-	using Persistence.SqlPersistence.SqlDialects;
 	using Serialization;
 
 	internal static class MainProgram
@@ -28,15 +27,16 @@ namespace EventStore.Example
 		private static IStoreEvents BuildEventStore()
 		{
 			var persistence = BuildPersistenceEngine();
+			persistence.Initialize();
+
 			var dispatcher = BuildDispatcher(persistence);
 			return new OptimisticEventStore(persistence, dispatcher);
 		}
 		private static IPersistStreams BuildPersistenceEngine()
 		{
-			return new SqlPersistenceEngine(
-				new ConfigurationConnectionFactory("EventStore"),
-				new MsSqlDialect(),
-				BuildSerializer());
+			return new SqlPersistenceFactory(
+				"EventStore",
+				BuildSerializer()).Build();
 		}
 		private static ISerialize BuildSerializer()
 		{

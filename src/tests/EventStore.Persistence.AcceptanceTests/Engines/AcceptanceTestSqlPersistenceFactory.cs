@@ -1,23 +1,33 @@
 namespace EventStore.Persistence.AcceptanceTests.Engines
 {
+	using System;
+	using System.Configuration;
 	using Serialization;
 	using SqlPersistence;
 
 	public abstract class AcceptanceTestSqlPersistenceFactory : SqlPersistenceFactory
 	{
 		protected AcceptanceTestSqlPersistenceFactory(string connectionName)
-			: base(connectionName, new BinarySerializer())
+			: base(new TransformConfigConnectionFactory(connectionName), new BinarySerializer())
+		{
+		}
+	}
+
+	public class TransformConfigConnectionFactory : ConfigurationConnectionFactory
+	{
+		public TransformConfigConnectionFactory(string connectionName)
+			: base(connectionName)
 		{
 		}
 
-		protected override string TransformConnectionString(string connectionString)
+		protected override string BuildConnectionString(Guid streamId, ConnectionStringSettings setting)
 		{
-			return connectionString
-				.Replace("[HOST]", "host".GetSetting() ?? "localhost")
-				.Replace("[PORT]", "port".GetSetting() ?? string.Empty)
-				.Replace("[DATABASE]", "database".GetSetting() ?? "EventStore2")
-				.Replace("[USER]", "user".GetSetting() ?? string.Empty)
-				.Replace("[PASSWORD]", "password".GetSetting() ?? string.Empty);
+			return setting.ConnectionString
+			   .Replace("[HOST]", "host".GetSetting() ?? "localhost")
+			   .Replace("[PORT]", "port".GetSetting() ?? string.Empty)
+			   .Replace("[DATABASE]", "database".GetSetting() ?? "EventStore2")
+			   .Replace("[USER]", "user".GetSetting() ?? string.Empty)
+			   .Replace("[PASSWORD]", "password".GetSetting() ?? string.Empty);
 		}
 	}
 
