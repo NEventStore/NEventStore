@@ -2,7 +2,7 @@
 {
 	using System;
 
-	internal class MongoSnapshotId
+	public class MongoSnapshotId
 	{
 		public Guid StreamId { get; private set; }
 		public int StreamRevision { get; private set; }

@@ -3,7 +3,7 @@
 	using System;
 	using MongoDB.Bson.DefaultSerializer;
 
-	internal class MongoStreamHead
+	public class MongoStreamHead
 	{
 		[BsonId]
 		public Guid StreamId { get; private set; }
