@@ -254,6 +254,31 @@ namespace EventStore.Persistence.AcceptanceTests
 	}
 
 	[Subject("Persistence")]
+	public class when_a_subsequent_commit_has_been_added_after_a_snapshot_has_been_made_of_a_stream : using_the_persistence_engine
+	{
+		const string SnapshotData = "snapshot";
+		static readonly Commit oldest = streamId.BuildAttempt();
+		static readonly Commit oldest2 = oldest.BuildNextAttempt();
+		static readonly Commit newest = oldest2.BuildNextAttempt();
+
+		Establish context = () =>
+		{
+			persistence.Commit(oldest);
+			persistence.Commit(oldest2);
+			persistence.AddSnapshot(new Snapshot(streamId, oldest2.StreamRevision, SnapshotData));
+		};
+
+		Because of = () =>
+			persistence.Commit(newest);
+
+		It should_find_the_stream_in_the_set_of_streams_to_be_snapshot_when_over_the_threshold = () =>
+			persistence.GetStreamsToSnapshot(2).First(x => x.StreamId == streamId).ShouldNotBeNull();
+
+		It should_not_find_the_stream_in_the_set_of_streams_to_be_snapshot_when_under_the_threshold = () =>
+			persistence.GetStreamsToSnapshot(3).Any(x => x.StreamId == streamId).ShouldBeFalse();
+	}
+
+	[Subject("Persistence")]
 	public class when_reading_all_commits_from_a_particular_point_in_time : using_the_persistence_engine
 	{
 		static readonly DateTime now = DateTime.UtcNow.AddYears(1);

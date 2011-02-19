@@ -47,10 +47,16 @@ namespace EventStore.Persistence
 
 				lock (this.heads)
 				{
-					var head = new StreamHead(attempt.StreamId, attempt.StreamRevision, 0);
-					if (this.heads.Contains(head))
-						this.heads.Remove(head);
-					this.heads.Add(head);
+					if (attempt.CommitSequence == 1) {
+						var head = new StreamHead(attempt.StreamId, attempt.StreamRevision, 0);
+						this.heads.Add(head);
+					}
+					else {
+						var currentHead = this.heads.First(h => h.StreamId == attempt.StreamId);
+						this.heads.Remove(currentHead);
+						var head = new StreamHead(attempt.StreamId, attempt.StreamRevision, currentHead.SnapshotRevision);
+						this.heads.Add(head);
+					}
 				}
 			}
 		}
