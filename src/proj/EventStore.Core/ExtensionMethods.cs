@@ -10,16 +10,16 @@ namespace EventStore
 				throw new ArgumentNullException("attempt");
 
 			if (!attempt.HasIdentifier())
-				throw new ArgumentException("The commit must be uniquely identified.", "attempt");
+				throw new ArgumentException(Resources.CommitsMustBeUniquelyIdentified, "attempt");
 
 			if (attempt.CommitSequence <= 0)
-				throw new ArgumentException("The commit sequence must be a positive number.", "attempt");
+				throw new ArgumentException(Resources.NonPositiveSequenceNumber, "attempt");
 
 			if (attempt.StreamRevision <= 0)
-				throw new ArgumentException("The stream revision must be a positive number.", "attempt");
+				throw new ArgumentException(Resources.NonPositiveRevisionNumber, "attempt");
 
 			if (attempt.StreamRevision < attempt.CommitSequence)
-				throw new ArgumentException("The stream revision must always be greater than or equal to the commit sequence.", "attempt");
+				throw new ArgumentException(Resources.RevisionTooSmall, "attempt");
 
 			return true;
 		}

@@ -3,6 +3,7 @@
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Threading;
 	using MongoDB.Bson;
 	using MongoDB.Driver;
 	using MongoDB.Driver.Builders;
@@ -169,13 +170,7 @@
 
 		private void SaveStreamHeadAsync(MongoStreamHead streamHead)
 		{
-			// ThreadPool.QueueUserWorkItem(item => this.PersistedStreamHeads.Save(item as StreamHead), streamHead);
-			var query = Query.EQ("_id", streamHead.StreamId);
-			var update = Update
-				.Set("HeadRevision", streamHead.HeadRevision)
-				.Set("SnapshotRevision", streamHead.SnapshotRevision);
-
-			this.PersistedStreamHeads.Update(query, update, UpdateFlags.Upsert);
+			ThreadPool.QueueUserWorkItem(x => this.PersistedStreamHeads.Save(streamHead), null);
 		}
 
 		private MongoCollection<MongoCommit> PersistedCommits

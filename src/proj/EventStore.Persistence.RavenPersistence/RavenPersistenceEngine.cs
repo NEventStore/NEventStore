@@ -5,6 +5,7 @@ namespace EventStore.Persistence.RavenPersistence
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Linq.Expressions;
+	using System.Threading;
 	using Indexes;
 	using Raven.Client;
 	using Raven.Client.Exceptions;
@@ -44,7 +45,11 @@ namespace EventStore.Persistence.RavenPersistence
 
 		public virtual void Initialize()
 		{
-			IndexCreation.CreateIndexes(this.GetType().Assembly, this.store);
+			new RavenCommitByDate().Execute(this.store);
+			new RavenCommitByRevisionRange().Execute(this.store);
+			new RavenCommitsByDispatched().Execute(this.store);
+			new RavenSnapshotByStreamIdAndRevision().Execute(this.store);
+			new RavenStreamHeadBySnapshotAge().Execute(this.store);
 		}
 
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
@@ -205,12 +210,15 @@ namespace EventStore.Persistence.RavenPersistence
 
 		private void SaveStreamHead(RavenStreamHead streamHead)
 		{
-			// TODO: implicitly create/update the stream head using a server-side map/reduce function
-			using (var session = this.store.OpenAsyncSession())
+			ThreadPool.QueueUserWorkItem(x => this.SaveStreamHeadAsync(streamHead), null);
+		}
+		private void SaveStreamHeadAsync(RavenStreamHead streamHead)
+		{
+			using (var session = this.store.OpenSession())
 			{
 				session.Advanced.UseOptimisticConcurrency = false;
 				session.Store(streamHead);
-				session.SaveChangesAsync();
+				session.SaveChanges();
 			}
 		}
 	}

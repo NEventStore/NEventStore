@@ -45,7 +45,6 @@
     <Compile Include="CommitExtensions.cs" />
     <Compile Include="ConfigurationConnectionFactory.cs" />
     <Compile Include="SnapshotExtensions.cs" />
-    <Compile Include="DelegateConnectionFactory.cs" />
     <Compile Include="DisposableEnumeration.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="IConnectionFactory.cs" />

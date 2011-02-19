@@ -73,34 +73,21 @@ namespace EventStore
 
 		public virtual ICollection<EventMessage> CommittedEvents
 		{
-			get { return new ReadOnlyCollection<EventMessage>(this.committed); }
+			get { return new ImmutableCollection<EventMessage>(this.committed); }
 		}
 		public virtual ICollection<EventMessage> UncommittedEvents
 		{
-			get { return new ReadOnlyCollection<EventMessage>(this.events); }
+			get { return new ImmutableCollection<EventMessage>(this.events); }
 		}
 		public virtual IDictionary<string, object> UncommittedHeaders
 		{
 			get { return this.headers; }
 		}
 
-		public virtual void Add(params object[] uncommittedEvents)
+		public virtual void Add(EventMessage uncommittedEvent)
 		{
-			this.Add(uncommittedEvents as IEnumerable<object>);
-		}
-		public virtual void Add(params EventMessage[] uncommittedEvents)
-		{
-			this.Add(uncommittedEvents as IEnumerable<EventMessage>);
-		}
-		public virtual void Add(IEnumerable<object> uncommittedEvents)
-		{
-			this.Add((uncommittedEvents ?? new object[0]).Select(x => new EventMessage { Body = x }));
-		}
-		public virtual void Add(IEnumerable<EventMessage> uncommittedEvents)
-		{
-			uncommittedEvents = uncommittedEvents ?? new EventMessage[0];
-			foreach (var @event in uncommittedEvents.Where(@event => @event != null && @event.Body != null))
-				this.events.Add(@event);
+			if (uncommittedEvent != null && uncommittedEvent.Body != null)
+				this.events.Add(uncommittedEvent);
 		}
 
 		public virtual void CommitChanges(Guid commitId)

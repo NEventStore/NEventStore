@@ -123,4 +123,16 @@
   <data name="AlreadyDisposed" xml:space="preserve">
     <value>The object has already been disposed.</value>
   </data>
+	<data name="CommitsMustBeUniquelyIdentified">
+		<value xml:space="preserve">The commit must be uniquely identified.</value>
+	</data>
+	<data name="NonPositiveSequenceNumber">
+		<value xml:space="preserve">The commit sequence must be a positive number.</value>
+	</data>
+	<data name="NonPositiveRevisionNumber">
+		<value xml:space="preserve">The stream revision must be a positive number.</value>
+	</data>
+	<data name="RevisionTooSmall">
+		<value xml:space="preserve">The stream revision must always be greater than or equal to the commit sequence.</value>
+	</data>
 </root>

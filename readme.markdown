@@ -97,7 +97,7 @@ enlisting any resources (other than a message queue) in some form of a transacti
 [Planned] HampsterDB  
 
 ## Project Goals
-* Mono 2.6 support  
+* Mono 2.4 support  
 * Medium-trust support  
 * Support more storage engines than any other event storage implementation  
 * Easily support virtually any storage engine (NoSQL, etc.)  

@@ -5,12 +5,12 @@ namespace EventStore
 	using System.Collections.Generic;
 	using System.Linq;
 
-	internal class ReadOnlyCollection<T> : ICollection<T>, ICollection
+	internal class ImmutableCollection<T> : ICollection<T>, ICollection
 	{
 		private readonly object @lock = new object();
 		private readonly ICollection<T> inner;
 
-		public ReadOnlyCollection(ICollection<T> inner)
+		public ImmutableCollection(ICollection<T> inner)
 		{
 			this.inner = inner;
 		}
