@@ -173,15 +173,15 @@
 			ThreadPool.QueueUserWorkItem(x => this.PersistedStreamHeads.Save(streamHead), null);
 		}
 
-		protected MongoCollection<MongoCommit> PersistedCommits
+		protected virtual MongoCollection<MongoCommit> PersistedCommits
 		{
 			get { return this.store.GetCollection<MongoCommit>("Commits"); }
 		}
-		protected MongoCollection<MongoSnapshot> PersistedSnapshots
+		protected virtual MongoCollection<MongoSnapshot> PersistedSnapshots
 		{
 			get { return this.store.GetCollection<MongoSnapshot>("Snapshots"); }
 		}
-		protected MongoCollection<MongoStreamHead> PersistedStreamHeads
+		protected virtual MongoCollection<MongoStreamHead> PersistedStreamHeads
 		{
 			get { return this.store.GetCollection<MongoStreamHead>("Streams"); }
 		}
