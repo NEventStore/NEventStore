@@ -4,7 +4,7 @@
 	using System.Collections.Generic;
 	using MongoDB.Bson;
 
-	internal class MongoCommit
+	public class MongoCommit
 	{
 		public MongoCommitId Id { get; set; }
 

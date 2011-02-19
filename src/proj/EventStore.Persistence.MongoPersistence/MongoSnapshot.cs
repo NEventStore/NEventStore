@@ -2,7 +2,7 @@
 {
 	using MongoDB.Bson;
 
-	internal class MongoSnapshot
+	public class MongoSnapshot
 	{
 		public MongoSnapshotId Id { get; set; }
 		public BsonValue Payload { get; set; }

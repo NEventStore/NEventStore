@@ -2,7 +2,7 @@
 {
 	using System;
 
-	internal class MongoCommitId
+    public class MongoCommitId
 	{
 		public Guid StreamId { get; private set; }
 		public int CommitSequence { get; private set; }
