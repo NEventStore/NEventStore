@@ -51,8 +51,8 @@
 			var id = BsonSerializer.Deserialize<MongoSnapshotId>(bsonDocument["_id"].AsBsonDocument);
 			var bsonPayload = bsonDocument["Payload"];
 			var payload = bsonPayload.IsBsonDocument
-			              	? BsonSerializer.Deserialize(bsonPayload.AsBsonDocument, typeof (object))
-			              	: bsonPayload.RawValue;
+				? BsonSerializer.Deserialize(bsonPayload.AsBsonDocument, typeof(object))
+				: bsonPayload.RawValue;
 
 			return new Snapshot(
 				id.StreamId,
