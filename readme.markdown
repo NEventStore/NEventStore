@@ -88,10 +88,9 @@ enlisting any resources (other than a message queue) in some form of a transacti
 [Planned] HBase  
 [Planned] Redis  
 [Planned] Tokyo Cabinet  
-[Planned] Memcached
-[Planned] Membase
-[Planned] Microsoft Velocity
-[Planned] SharedCache
+[Planned] Memcached (Membase, Gear6, etc.)  
+[Planned] Microsoft Velocity  
+[Planned] SharedCache  
 [Planned] Hibari  
 [Planned] Keyspace  
 [Planned] OrientDB / OrientKV  
