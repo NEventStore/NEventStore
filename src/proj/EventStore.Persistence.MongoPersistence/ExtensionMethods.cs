@@ -8,7 +8,7 @@
 	using MongoDB.Driver.Builders;
 	using Serialization;
 
-	internal static class ExtensionMethods
+	public static class ExtensionMethods
 	{
 		public static MongoCommit ToMongoCommit(this Commit commit, ISerialize serializer)
 		{
