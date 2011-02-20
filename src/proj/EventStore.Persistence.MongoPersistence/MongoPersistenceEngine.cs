@@ -154,7 +154,9 @@
 			{
 				var mongoSnapshot = snapshot.ToMongoSnapshot(this.serializer);
 				this.PersistedSnapshots.Insert(mongoSnapshot);
-				this.PersistedStreamHeads.Update(Query.EQ("_id", snapshot.StreamId), Update.Set("SnapshotRevision", snapshot.StreamRevision));
+				this.PersistedStreamHeads.Update(
+					Query.EQ("_id", snapshot.StreamId),
+					Update.Set("SnapshotRevision", snapshot.StreamRevision));
 
 				return true;
 			}
@@ -166,17 +168,18 @@
 
 		private void UpdateStreamHeadAsync(Guid streamId, int streamRevision, bool isFirstCommit)
 		{
-			if (isFirstCommit)
+			ThreadPool.QueueUserWorkItem(x =>
 			{
-				var head = new MongoStreamHead(streamId, streamRevision, 0);
-				this.PersistedStreamHeads.Insert(head, SafeMode.True);
-			}
-			else
-			{
-				var query = Query.EQ("_id", streamId);
-				var update = Update.Set("HeadRevision", streamRevision);
-				ThreadPool.QueueUserWorkItem(x => this.PersistedStreamHeads.Update(query, update), null);
-			}
+				if (isFirstCommit)
+					this.PersistedStreamHeads.Insert(
+						new MongoStreamHead(streamId, streamRevision, 0),
+						SafeMode.False);
+				else
+					this.PersistedStreamHeads.Update(
+						Query.EQ("_id", streamId),
+						Update.Set("HeadRevision", streamRevision),
+						SafeMode.False);
+			}, null);
 		}
 
 		protected virtual MongoCollection<MongoCommit> PersistedCommits

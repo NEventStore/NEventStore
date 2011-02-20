@@ -254,8 +254,10 @@ namespace EventStore.Persistence.AcceptanceTests
 	}
 
 	[Subject("Persistence")]
-	public class when_a_subsequent_commit_has_been_added_after_a_snapshot_has_been_made_of_a_stream : using_the_persistence_engine
+	public class when_adding_a_commit_after_a_snapshot : using_the_persistence_engine
 	{
+		const int WithinThreshold = 2;
+		const int OverThreshold = 3;
 		const string SnapshotData = "snapshot";
 		static readonly Commit oldest = streamId.BuildAttempt();
 		static readonly Commit oldest2 = oldest.BuildNextAttempt();
@@ -271,11 +273,11 @@ namespace EventStore.Persistence.AcceptanceTests
 		Because of = () =>
 			persistence.Commit(newest);
 
-		It should_find_the_stream_in_the_set_of_streams_to_be_snapshot_when_over_the_threshold = () =>
-			persistence.GetStreamsToSnapshot(2).First(x => x.StreamId == streamId).ShouldNotBeNull();
+		It should_find_the_stream_in_the_set_of_streams_to_be_snapshot_when_within_the_threshold = () =>
+			persistence.GetStreamsToSnapshot(WithinThreshold).First(x => x.StreamId == streamId).ShouldNotBeNull();
 
 		It should_not_find_the_stream_in_the_set_of_streams_to_be_snapshot_when_under_the_threshold = () =>
-			persistence.GetStreamsToSnapshot(3).Any(x => x.StreamId == streamId).ShouldBeFalse();
+			persistence.GetStreamsToSnapshot(OverThreshold).Any(x => x.StreamId == streamId).ShouldBeFalse();
 	}
 
 	[Subject("Persistence")]
