@@ -5,7 +5,7 @@ namespace EventStore.Persistence.RavenPersistence
 	using System.Globalization;
 	using Serialization;
 
-	internal static class ExtensionMethods
+	public static class ExtensionMethods
 	{
 		public static string ToRavenCommitId(this Commit commit)
 		{

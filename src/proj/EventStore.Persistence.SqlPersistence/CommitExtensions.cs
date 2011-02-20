@@ -5,7 +5,7 @@ namespace EventStore.Persistence.SqlPersistence
 	using System.Data;
 	using Serialization;
 
-	internal static class CommitExtensions
+	public static class CommitExtensions
 	{
 		private const int StreamIdIndex = 0;
 		private const int StreamRevisionIndex = 1;

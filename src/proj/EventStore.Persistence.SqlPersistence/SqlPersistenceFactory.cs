@@ -28,16 +28,31 @@ namespace EventStore.Persistence.SqlPersistence
 			this.dialect = dialect;
 		}
 
-		public virtual IPersistStreams Build()
+	    protected IConnectionFactory ConnectionFactory
+	    {
+	        get { return connectionFactory; }
+	    }
+
+	    protected ISqlDialect Dialect
+	    {
+	        get { return dialect; }
+	    }
+
+	    protected ISerialize Serializer
+	    {
+	        get { return serializer; }
+	    }
+
+	    public virtual IPersistStreams Build()
 		{
-			return new SqlPersistenceEngine(this.connectionFactory, this.GetDialect(), this.serializer);
+			return new SqlPersistenceEngine(this.ConnectionFactory, this.GetDialect(), this.Serializer);
 		}
 		protected virtual ISqlDialect GetDialect()
 		{
-			if (this.dialect != null)
-				return this.dialect;
+			if (this.Dialect != null)
+				return this.Dialect;
 
-			var settings = this.connectionFactory.Settings;
+			var settings = this.ConnectionFactory.Settings;
 			var connectionString = (settings.ConnectionString ?? string.Empty).ToUpperInvariant();
 			var providerName = (settings.ProviderName ?? string.Empty).ToUpperInvariant();
 

@@ -12,7 +12,7 @@
 	{
 		public static MongoCommit ToMongoCommit(this Commit commit, ISerialize serializer)
 		{
-		return new MongoCommit
+		    return new MongoCommit
 			{
 				Id = new MongoCommitId(commit.StreamId, commit.CommitSequence),
 				StartingStreamRevision = commit.StreamRevision - (commit.Events.Count - 1),
