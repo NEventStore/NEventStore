@@ -14,20 +14,18 @@ namespace EventStore.Persistence.SqlPersistence
 		private readonly ISqlDialect dialect;
 		private readonly ISerialize serializer;
 
-        protected IConnectionFactory ConnectionFactory
-        {
-            get { return connectionFactory; }
-        }
-
-        protected ISqlDialect Dialect
-        {
-            get { return dialect; }
-        }
-
-        protected ISerialize Serializer
-        {
-            get { return serializer; }
-        }
+		protected virtual IConnectionFactory ConnectionFactory
+		{
+			get { return this.connectionFactory; }
+		}
+		protected virtual ISqlDialect Dialect
+		{
+			get { return this.dialect; }
+		}
+		protected virtual ISerialize Serializer
+		{
+			get { return this.serializer; }
+		}
 
 		public SqlPersistenceEngine(IConnectionFactory connectionFactory, ISqlDialect dialect, ISerialize serializer)
 		{
@@ -36,7 +34,7 @@ namespace EventStore.Persistence.SqlPersistence
 			this.serializer = serializer;
 		}
 
-	    public void Dispose()
+		public void Dispose()
 		{
 			this.Dispose(true);
 			GC.SuppressFinalize(this);
