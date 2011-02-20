@@ -16,3 +16,6 @@
   support several keys simultaenously for a period of time...
 
 - migrate events to new storage engine
+
+- Add tests to show paging issues when querying large number of commits from document/blob storage engines
+  - Mongo, Raven, Azure, SimpleDB, Couch?, etc.
