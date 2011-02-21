@@ -5,8 +5,9 @@ namespace EventStore.Persistence.SqlPersistence
 	using System.Data;
 	using System.Data.Common;
 	using System.Data.SqlClient;
+	using System.Linq;
 
-	public class ConfigurationConnectionFactory : IConnectionFactory
+    public class ConfigurationConnectionFactory : IConnectionFactory
 	{
 		private const int DefaultShards = 16;
 		private const string DefaultConnectionName = "EventStore";
@@ -45,14 +46,26 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		protected virtual IDbConnection Open(Guid streamId, string connectionName)
 		{
-			var setting = ConfigurationManager.ConnectionStrings[connectionName];
+			var setting = GetConnectionStringSettings(connectionName);
 			var factory = DbProviderFactories.GetFactory(setting.ProviderName ?? DefaultProvider);
 			var connection = factory.CreateConnection() ?? new SqlConnection();
 			connection.ConnectionString = this.BuildConnectionString(streamId, setting);
 			connection.Open();
 			return connection;
 		}
-		protected virtual string BuildConnectionString(Guid streamId, ConnectionStringSettings setting)
+
+	    private ConnectionStringSettings GetConnectionStringSettings(string connectionName)
+	    {
+            var keyExists = ConfigurationManager.ConnectionStrings
+                .Cast<ConnectionStringSettings>()
+	            .Any(p => p.Name == connectionName);
+
+            if (!keyExists)
+                throw new StorageException("Could not find connectionstring '{0}' in your configuration");
+	        return ConfigurationManager.ConnectionStrings[connectionName];
+	    }
+
+	    protected virtual string BuildConnectionString(Guid streamId, ConnectionStringSettings setting)
 		{
 			if (this.shards == 0)
 				return setting.ConnectionString;
