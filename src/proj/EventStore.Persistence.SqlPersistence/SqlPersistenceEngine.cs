@@ -160,6 +160,9 @@ namespace EventStore.Persistence.SqlPersistence
 					connection.Dispose();
 				scope.Dispose();
 
+				if (e is StorageOfflineException)
+					throw;
+
 				throw new StorageException(e.Message, e);
 			}
 		}
@@ -180,7 +183,7 @@ namespace EventStore.Persistence.SqlPersistence
 				}
 				catch (Exception e)
 				{
-					if (e is ConcurrencyException || e is DuplicateCommitException)
+					if (e is ConcurrencyException || e is DuplicateCommitException || e is StorageOfflineException)
 						throw;
 
 					throw new StorageException(e.Message, e);
