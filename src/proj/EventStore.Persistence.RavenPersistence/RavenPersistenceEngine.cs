@@ -6,6 +6,7 @@ namespace EventStore.Persistence.RavenPersistence
 	using System.Linq;
 	using System.Linq.Expressions;
 	using System.Threading;
+	using System.Transactions;
 	using Indexes;
 	using Raven.Client;
 	using Raven.Client.Exceptions;
@@ -45,11 +46,16 @@ namespace EventStore.Persistence.RavenPersistence
 
 		public virtual void Initialize()
 		{
-			new RavenCommitByDate().Execute(this.store);
-			new RavenCommitByRevisionRange().Execute(this.store);
-			new RavenCommitsByDispatched().Execute(this.store);
-			new RavenSnapshotByStreamIdAndRevision().Execute(this.store);
-			new RavenStreamHeadBySnapshotAge().Execute(this.store);
+			using (var scope = this.OpenCommandScope())
+			{
+				new RavenCommitByDate().Execute(this.store);
+				new RavenCommitByRevisionRange().Execute(this.store);
+				new RavenCommitsByDispatched().Execute(this.store);
+				new RavenSnapshotByStreamIdAndRevision().Execute(this.store);
+				new RavenStreamHeadBySnapshotAge().Execute(this.store);
+
+				scope.Complete();
+			}
 		}
 
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
@@ -67,11 +73,13 @@ namespace EventStore.Persistence.RavenPersistence
 		{
 			try
 			{
+				using (var scope = this.OpenCommandScope())
 				using (var session = this.store.OpenSession())
 				{
 					session.Advanced.UseOptimisticConcurrency = true;
 					session.Store(attempt.ToRavenCommit(this.serializer));
 					session.SaveChanges();
+					scope.Complete();
 				}
 
 				this.SaveStreamHead(attempt.ToRavenStreamHead());
@@ -118,10 +126,12 @@ namespace EventStore.Persistence.RavenPersistence
 
 			try
 			{
+				using (var scope = this.OpenCommandScope())
 				using (var session = this.store.OpenSession())
 				{
 					session.Advanced.DatabaseCommands.Batch(new[] { data });
 					session.SaveChanges();
+					scope.Complete();
 				}
 			}
 			catch (Exception e)
@@ -152,11 +162,13 @@ namespace EventStore.Persistence.RavenPersistence
 
 			try
 			{
+				using (var scope = this.OpenCommandScope())
 				using (var session = this.store.OpenSession())
 				{
 					var ravenSnapshot = snapshot.ToRavenSnapshot(this.serializer);
 					session.Store(ravenSnapshot);
 					session.SaveChanges();
+					scope.Complete();
 				}
 
 				this.SaveStreamHead(snapshot.ToRavenStreamHead());
@@ -177,6 +189,7 @@ namespace EventStore.Persistence.RavenPersistence
 		{
 			try
 			{
+				using (this.OpenQueryScope())
 				using (var session = this.store.OpenSession())
 					return session.Load<RavenCommit>(attempt.ToRavenCommitId());
 			}
@@ -197,6 +210,7 @@ namespace EventStore.Persistence.RavenPersistence
 		{
 			try
 			{
+				using (this.OpenQueryScope())
 				using (var session = this.store.OpenSession())
 					return session.Query<T, TIndex>()
 						.Customize(x => { if (this.consistentQueries) x.WaitForNonStaleResults(); })
@@ -214,12 +228,22 @@ namespace EventStore.Persistence.RavenPersistence
 		}
 		private void SaveStreamHeadAsync(RavenStreamHead streamHead)
 		{
+			using (var scope = this.OpenCommandScope())
 			using (var session = this.store.OpenSession())
 			{
 				session.Advanced.UseOptimisticConcurrency = false;
 				session.Store(streamHead);
 				session.SaveChanges();
+				scope.Complete();
 			}
+		}
+		protected virtual TransactionScope OpenQueryScope()
+		{
+			return this.OpenCommandScope();
+		}
+		protected virtual TransactionScope OpenCommandScope()
+		{
+			return new TransactionScope(TransactionScopeOption.Suppress);
 		}
 	}
 }

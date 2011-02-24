@@ -54,6 +54,7 @@
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
       <Name>EventStore</Name>
     </ProjectReference>
+    <Reference Include="System.Transactions" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json" Condition="$(TargetFrameworkVersion)=='v4.0'">
