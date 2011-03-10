@@ -60,7 +60,7 @@ namespace EventStore.Persistence.SqlPersistence
 				.FirstOrDefault(x => x.Name == connectionName);
 
 			if (settings == null)
-				throw new StorageException("Could not find connection string '{0}' in your configuration.");
+				throw new StorageException(string.Format("Could not find connection string '{0}' in your configuration.", connectionName));
 
 			return settings;
 		}
