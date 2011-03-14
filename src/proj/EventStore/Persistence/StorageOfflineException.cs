@@ -7,7 +7,7 @@ namespace EventStore.Persistence
 	/// Indicates that the underlying persistence medium is unavailable or offline.
 	/// </summary>
 	[Serializable]
-	public class StorageOfflineException : Exception
+	public class StorageOfflineException : StorageException
 	{
 		/// <summary>
 		/// Initializes a new instance of the StorageOfflineException class.
