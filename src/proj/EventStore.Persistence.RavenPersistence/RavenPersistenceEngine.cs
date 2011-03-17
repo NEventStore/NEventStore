@@ -21,6 +21,7 @@ namespace EventStore.Persistence.RavenPersistence
 		private readonly ISerialize serializer;
 		private readonly bool consistentQueries;
 		private bool disposed;
+		private int initialized;
 
 		public RavenPersistenceEngine(IDocumentStore store, ISerialize serializer, bool consistentQueries)
 		{
@@ -46,6 +47,9 @@ namespace EventStore.Persistence.RavenPersistence
 
 		public virtual void Initialize()
 		{
+			if (Interlocked.Increment(ref this.initialized) > 1)
+				return;
+
 			using (var scope = this.OpenCommandScope())
 			{
 				new RavenCommitByDate().Execute(this.store);

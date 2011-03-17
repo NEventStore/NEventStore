@@ -4,6 +4,7 @@ namespace EventStore.Persistence.SqlPersistence
 	using System.Collections.Generic;
 	using System.Data;
 	using System.Linq;
+	using System.Threading;
 	using System.Transactions;
 	using Persistence;
 	using Serialization;
@@ -13,6 +14,7 @@ namespace EventStore.Persistence.SqlPersistence
 		private readonly IConnectionFactory connectionFactory;
 		private readonly ISqlDialect dialect;
 		private readonly ISerialize serializer;
+		private int initialized;
 
 		protected virtual IConnectionFactory ConnectionFactory
 		{
@@ -46,6 +48,9 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public virtual void Initialize()
 		{
+			if (Interlocked.Increment(ref this.initialized) > 1)
+				return;
+
 			this.ExecuteCommand(Guid.Empty, statement =>
 				statement.ExecuteWithSuppression(this.Dialect.InitializeStorage));
 		}
@@ -160,7 +165,7 @@ namespace EventStore.Persistence.SqlPersistence
 					connection.Dispose();
 				scope.Dispose();
 
-				if (e is StorageOfflineException)
+				if (e is StorageUnavailableException)
 					throw;
 
 				throw new StorageException(e.Message, e);
@@ -183,7 +188,7 @@ namespace EventStore.Persistence.SqlPersistence
 				}
 				catch (Exception e)
 				{
-					if (e is ConcurrencyException || e is DuplicateCommitException || e is StorageOfflineException)
+					if (e is ConcurrencyException || e is DuplicateCommitException || e is StorageUnavailableException)
 						throw;
 
 					throw new StorageException(e.Message, e);

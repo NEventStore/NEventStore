@@ -15,6 +15,7 @@
 		private readonly MongoDatabase store;
 		private readonly ISerialize serializer;
 		private bool disposed;
+		private int initialized;
 
 		public MongoPersistenceEngine(MongoDatabase store, ISerialize serializer)
 		{
@@ -37,6 +38,9 @@
 
 		public virtual void Initialize()
 		{
+			if (Interlocked.Increment(ref this.initialized) > 1)
+				return;
+
 			this.PersistedCommits.EnsureIndex(
 				IndexKeys.Ascending("Dispatched").Ascending("CommitStamp"),
 				IndexOptions.SetName("Dispatched_Index").SetUnique(false));

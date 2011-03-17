@@ -47,7 +47,7 @@
     <Compile Include="ConcurrencyException.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Persistence\StorageOfflineException.cs" />
+    <Compile Include="Persistence\StorageUnavailableException.cs" />
     <Compile Include="StreamNotFoundException.cs" />
     <Compile Include="Dispatcher\IDispatchCommits.cs" />
     <Compile Include="ICommitEvents.cs" />
