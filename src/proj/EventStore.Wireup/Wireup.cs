@@ -2,37 +2,60 @@ namespace EventStore
 {
 	using Dispatcher;
 	using Persistence;
+	using Serialization;
 
 	public class Wireup
 	{
+		private readonly Wireup inner;
+		private readonly NanoContainer container;
+
+		protected Wireup(NanoContainer container)
+		{
+			this.container = container;
+		}
+		protected Wireup(Wireup inner)
+		{
+			this.inner = inner;
+		}
+
 		public static Wireup Init()
 		{
-			return new Wireup();
+			var container = new NanoContainer();
+
+			container.Register<IPersistStreams>(new InMemoryPersistenceEngine());
+			container.Register<ISerialize>(new BinarySerializer());
+			container.Register<IDispatchCommits>(c => new SynchronousDispatcher(
+				c.Resolve<IPublishMessages>(), c.Resolve<IPersistStreams>()));
+			container.Register<IStoreEvents>(c => new OptimisticEventStore(
+				c.Resolve<IPersistStreams>(), c.Resolve<IDispatchCommits>()));
+
+			return new Wireup(container);
 		}
 
-		protected Wireup()
+		protected NanoContainer Container
 		{
-			this.Persistence = new InMemoryPersistenceEngine();
+			get { return this.container ?? this.inner.Container; }
 		}
 
-		protected virtual IPersistStreams Persistence { get; private set; }
 		public virtual Wireup WithPersistence(IPersistStreams instance)
 		{
-			this.Persistence = instance; // TODO: null check
+			this.Container.Register(instance);
 			return this;
 		}
-
-		protected virtual IDispatchCommits Dispatcher { get; private set; }
 		public virtual Wireup WithDispatcher(IDispatchCommits instance)
 		{
-			this.Dispatcher = instance; // TODO: null check
+			this.Container.Register(instance);
+			return this;
+		}
+		public virtual Wireup WithSerializer(ISerialize instance)
+		{
+			this.Container.Register(instance);
 			return this;
 		}
 
 		public virtual IStoreEvents Build()
 		{
-			// TODO: assert that persistence and dispatcher have been configured
-			return new OptimisticEventStore(this.Persistence, this.Dispatcher);
+			return this.Container.Resolve<IStoreEvents>();
 		}
 	}
 }

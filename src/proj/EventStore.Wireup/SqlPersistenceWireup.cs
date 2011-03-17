@@ -5,32 +5,20 @@ namespace EventStore
 
 	public class SqlPersistenceWireup : PersistenceWireup
 	{
-		private readonly IConnectionFactory connectionFactory;
-		private ISerialize serializer = new BinarySerializer();
-		private ISqlDialect dialect; // auto-detect by default
-
 		public SqlPersistenceWireup(Wireup wireup, IConnectionFactory connectionFactory)
 			: base(wireup)
 		{
-			this.connectionFactory = connectionFactory;
-		}
+			this.Container.Register<ISqlDialect>(c => null); // auto-detect
 
-		public virtual SqlPersistenceWireup WithSerializer(ISerialize instance)
-		{
-			this.serializer = instance; // TODO: null check
-			return this.Prebuild();
+			this.Container.Register(c => new SqlPersistenceFactory(
+				connectionFactory,
+				c.Resolve<ISerialize>(),
+				c.Resolve<ISqlDialect>()));
 		}
 
 		public virtual SqlPersistenceWireup WithDialect(ISqlDialect instance)
 		{
-			this.dialect = instance; // TODO: null check
-			return this.Prebuild();
-		}
-
-		protected virtual SqlPersistenceWireup Prebuild()
-		{
-			var factory = new SqlPersistenceFactory(this.connectionFactory, this.serializer, this.dialect);
-			this.WithPersistence(factory.Build());
+			this.Container.Register(instance);
 			return this;
 		}
 	}

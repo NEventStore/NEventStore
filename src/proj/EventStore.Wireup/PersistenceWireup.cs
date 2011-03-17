@@ -4,17 +4,16 @@ namespace EventStore
 
 	public class PersistenceWireup : Wireup
 	{
-		private readonly Wireup inner;
 		private bool initialize;
 
 		public PersistenceWireup(Wireup inner)
+			: base(inner)
 		{
-			this.inner = inner;
 		}
 
 		public override Wireup WithPersistence(IPersistStreams instance)
 		{
-			return this.inner.WithPersistence(instance);
+			return this.WithPersistence(instance);
 		}
 
 		public virtual PersistenceWireup InitalizePersistence()
@@ -26,9 +25,9 @@ namespace EventStore
 		public override IStoreEvents Build()
 		{
 			if (this.initialize)
-				this.Persistence.Initialize();
+				this.Container.Resolve<IPersistStreams>().Initialize();
 
-			return this.inner.Build();
+			return base.Build();
 		}
 	}
 }
