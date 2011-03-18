@@ -26,13 +26,13 @@ namespace EventStore.Example
 		{
 			return Wireup.Init()
 				.UsingSqlPersistence("EventStore")
-					.CreateSchema()
+					.InitializeDatabaseSchema()
 				.UsingCustomSerializer(new JsonSerializer())
 					.Compress()
-					.Encrypt(EncryptionKey)
+					.EncryptWith(EncryptionKey)
 				.UsingAsynchronousDispatcher()
 					.PublishTo(new DelegateMessagePublisher(DispatchCommit))
-					.HandleExceptionsWith(OnDispatchError)
+					.HandleExceptionsWith(DispatchErrorHandler)
 				.Build();
 		}
 		private static void DispatchCommit(Commit commit)
@@ -40,7 +40,7 @@ namespace EventStore.Example
 			// this is where we'd hook into our messaging infrastructure, e.g. NServiceBus.
 			Console.WriteLine(Resources.MessagesPublished);
 		}
-		private static void OnDispatchError(Commit commit, Exception exception)
+		private static void DispatchErrorHandler(Commit commit, Exception exception)
 		{
 			// if for some reason our messaging infrastructure couldn't dispatch the messages we've committed
 			// we would be alerted here.
