@@ -33,9 +33,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AsynchronousDispatcherWireup.cs" />
+    <Compile Include="AsynchronousDispatcherWireupExtensions.cs" />
     <Compile Include="NanoContainer.cs" />
     <Compile Include="PersistenceWireup.cs" />
     <Compile Include="PersistenceWireupExtensions.cs" />
+    <Compile Include="SerializationWireup.cs" />
+    <Compile Include="SerializationWireupExtensions.cs" />
     <Compile Include="SqlPersistenceWireup.cs" />
     <Compile Include="SqlPersistenceWireupExtensions.cs" />
     <Compile Include="SynchronousDispatcherWireup.cs" />

@@ -23,9 +23,8 @@ namespace EventStore
 			var container = new NanoContainer();
 
 			container.Register<IPersistStreams>(new InMemoryPersistenceEngine());
+			container.Register<IDispatchCommits>(new NullDispatcher());
 			container.Register<ISerialize>(new BinarySerializer());
-			container.Register<IDispatchCommits>(c => new SynchronousDispatcher(
-				c.Resolve<IPublishMessages>(), c.Resolve<IPersistStreams>()));
 			container.Register<IStoreEvents>(c => new OptimisticEventStore(
 				c.Resolve<IPersistStreams>(), c.Resolve<IDispatchCommits>()));
 
