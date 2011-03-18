@@ -16,7 +16,7 @@ namespace EventStore
 			return this.WithPersistence(instance);
 		}
 
-		public virtual PersistenceWireup InitalizePersistence()
+		public virtual PersistenceWireup InitializeDatabaseSchema()
 		{
 			this.initialize = true;
 			return this;

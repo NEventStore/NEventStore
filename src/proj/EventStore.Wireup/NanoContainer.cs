@@ -38,7 +38,7 @@ namespace EventStore
 	{
 		private readonly Func<NanoContainer, object> resolve;
 		private object instance;
-		private bool instancePerCall = true;
+		private bool instancePerCall;
 
 		public ContainerRegistration(object instance)
 		{

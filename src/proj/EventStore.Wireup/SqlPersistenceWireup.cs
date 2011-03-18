@@ -13,7 +13,7 @@ namespace EventStore
 			this.Container.Register(c => new SqlPersistenceFactory(
 				connectionFactory,
 				c.Resolve<ISerialize>(),
-				c.Resolve<ISqlDialect>()));
+				c.Resolve<ISqlDialect>()).Build());
 		}
 
 		public virtual SqlPersistenceWireup WithDialect(ISqlDialect instance)

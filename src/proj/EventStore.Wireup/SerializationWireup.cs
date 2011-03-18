@@ -10,17 +10,17 @@ namespace EventStore
 			this.Container.Register(serializer);
 		}
 
-		public SerializationWireup Compressed()
+		public SerializationWireup Compress()
 		{
 			var wrapped = this.Container.Resolve<ISerialize>();
-			this.Container.Register(new GzipSerializer(wrapped));
+			this.Container.Register<ISerialize>(new GzipSerializer(wrapped));
 			return this;
 		}
 
-		public SerializationWireup Encrypted(byte[] encryptionKey)
+		public SerializationWireup EncryptWith(byte[] encryptionKey)
 		{
 			var wrapped = this.Container.Resolve<ISerialize>();
-			this.Container.Register(new RijndaelSerializer(wrapped, encryptionKey));
+			this.Container.Register<ISerialize>(new RijndaelSerializer(wrapped, encryptionKey));
 			return this;
 		}
 	}

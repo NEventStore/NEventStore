@@ -2,8 +2,6 @@ namespace EventStore.Example
 {
 	using System;
 	using Dispatcher;
-	using Persistence;
-	using Persistence.SqlPersistence;
 	using Serialization;
 
 	internal static class MainProgram
@@ -26,30 +24,16 @@ namespace EventStore.Example
 
 		private static IStoreEvents BuildEventStore()
 		{
-			var persistence = BuildPersistenceEngine();
-			persistence.Initialize();
-
-			var dispatcher = BuildDispatcher(persistence);
-			return new OptimisticEventStore(persistence, dispatcher);
-		}
-		private static IPersistStreams BuildPersistenceEngine()
-		{
-			return new SqlPersistenceFactory(
-				"EventStore",
-				BuildSerializer()).Build();
-		}
-		private static ISerialize BuildSerializer()
-		{
-			var serializer = new JsonSerializer() as ISerialize;
-			serializer = new GzipSerializer(serializer);
-			return new RijndaelSerializer(serializer, EncryptionKey);
-		}
-		private static IDispatchCommits BuildDispatcher(IPersistStreams persistence)
-		{
-			return new AsynchronousDispatcher(
-				new DelegateMessagePublisher(DispatchCommit),
-				persistence,
-				OnDispatchError);
+			return Wireup.Init()
+				.UsingSqlPersistence("EventStore")
+					.CreateSchema()
+				.UsingCustomSerializer(new JsonSerializer())
+					.Compress()
+					.Encrypt(EncryptionKey)
+				.UsingAsynchronousDispatcher()
+					.PublishTo(new DelegateMessagePublisher(DispatchCommit))
+					.HandleExceptionsWith(OnDispatchError)
+				.Build();
 		}
 		private static void DispatchCommit(Commit commit)
 		{
