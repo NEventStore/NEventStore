@@ -6,6 +6,10 @@ The EventStore is a persistence library used to abstract different storage imple
 when using event sourcing as storage mechanism.  Event sourcing is most closely associated
 with a concept known as [CQRS](http://cqrsinfo.com).
 
+### Need Help? Have a Question?
+Ask your question on [Stack Overflow](http://stackoverflow.com) and tag your question with
+the CQRS tag and the word "EventStore" in the title.
+
 ### Purpose and Theory
 The purpose of the EventStore is to represent a series of events as a stream.  Furthermore,
 it provides hooks whereby any events committed to the stream can be dispatched to interested
@@ -116,4 +120,36 @@ For .NET v4.0, simply run **build.cmd** from the command line.  Users requiring 
 Once built, the files will be placed in the "output" subdirectory.
 
 ## Using the EventStore
-Please see [EventStore.Example](https://github.com/joliver/EventStore/blob/master/doc/EventStore.Example/ExampleUsage.cs) project in the doc subdirectory.
+
+	var store = Wireup.Init()
+		.UsingSqlPersistence("Name Of EventStore ConnectionString In Config File")
+			.InitializeDatabaseSchema()
+		.UsingCustomSerializer(new JsonSerializer())
+			.Compress()
+			.EncryptWith(EncryptionKey)
+		.UsingAsynchronousDispatcher()
+			.PublishTo(new NServiceBusPublisher())
+			.HandleExceptionsWith(new DispatchErrorHandler()) // if not handled by publisher
+		.Build();    
+
+	/* REMEMBER: This is *example* code.  I would never write production code like this. */		
+
+	using (store)
+	{
+		// some business code here
+		using (var stream = store.CreateStream(myMessage.CustomerId))
+		{
+			stream.Add(new EventMessage { Body = myMessage });
+			stream.CommitChanges(myMessage.MessageId);
+		}
+		
+		using (var stream = store.OpenStream(myMessage.CustomerId, 0, int.MaxValue))
+		{
+			foreach (var @event in stream.CommittedEvents)
+			{
+				// business processing...
+			}
+		}
+	}
+
+For a more complete example, please see [EventStore.Example](https://github.com/joliver/EventStore/blob/master/doc/EventStore.Example/ExampleUsage.cs) project in the doc subdirectory.

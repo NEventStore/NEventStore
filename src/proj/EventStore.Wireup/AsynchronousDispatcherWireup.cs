@@ -2,34 +2,31 @@ namespace EventStore
 {
 	using System;
 	using Dispatcher;
+	using Persistence;
 
-	public class AsynchronousDispatcherWireup : DispatcherWireup
+	public class AsynchronousDispatcherWireup : Wireup
 	{
-		private Action<Commit, Exception> handler = (c, e) => { };
-		private IPublishMessages publisher;
-
-		public AsynchronousDispatcherWireup(Wireup wireup, IPublishMessages publisher)
+		public AsynchronousDispatcherWireup(
+			Wireup wireup,
+			IPublishMessages publisher,
+			Action<Commit, Exception> exceptionHandler)
 			: base(wireup)
 		{
-			this.publisher = publisher;
+			this.PublishTo(publisher ?? new NullPublisher());
+			this.Container.Register<IDispatchCommits>(c => new AsynchronousDispatcher(
+				c.Resolve<IPublishMessages>(), c.Resolve<IPersistStreams>(), exceptionHandler));
 		}
 
-		public AsynchronousDispatcherWireup WithPublisher(IPublishMessages instance)
+		public AsynchronousDispatcherWireup PublishTo(IPublishMessages instance)
 		{
-			this.publisher = instance;
+			this.Container.Register(instance);
 			return this;
 		}
 
-		public AsynchronousDispatcherWireup RouteErrorsTo(Action<Commit, Exception> instance)
+		public AsynchronousDispatcherWireup HandleExceptionsWith(Action<Commit, Exception> instance)
 		{
-			this.handler = instance;
+			this.Container.Register(instance);
 			return this;
-		}
-
-		public override IStoreEvents Build()
-		{
-			this.WithDispatcher(new AsynchronousDispatcher(this.publisher, this.Persistence, this.handler));
-			return base.Build();
 		}
 	}
 }

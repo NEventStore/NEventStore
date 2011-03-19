@@ -1,27 +1,22 @@
 namespace EventStore
 {
 	using Dispatcher;
+	using Persistence;
 
-	public class SynchronousDispatcherWireup : DispatcherWireup
+	public class SynchronousDispatcherWireup : Wireup
 	{
-		private IPublishMessages publisher;
-
 		public SynchronousDispatcherWireup(Wireup wireup, IPublishMessages publisher)
 			: base(wireup)
 		{
-			this.publisher = publisher;
+			this.PublishTo(publisher ?? new NullPublisher());
+			this.Container.Register<IDispatchCommits>(c => new SynchronousDispatcher(
+				c.Resolve<IPublishMessages>(), c.Resolve<IPersistStreams>()));
 		}
 
-		public SynchronousDispatcherWireup WithPublisher(IPublishMessages instance)
+		public SynchronousDispatcherWireup PublishTo(IPublishMessages instance)
 		{
-			this.publisher = instance;
+			this.Container.Register(instance);
 			return this;
-		}
-
-		public override IStoreEvents Build()
-		{
-			this.WithDispatcher(new SynchronousDispatcher(this.publisher, this.Persistence));
-			return base.Build();
 		}
 	}
 }

@@ -71,6 +71,10 @@
       <Project>{A5BF4B86-26F6-418D-BE35-C6CC3A623D27}</Project>
       <Name>EventStore.Serialization</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\proj\EventStore.Wireup\EventStore.Wireup.csproj">
+      <Project>{421664DB-C18D-4499-ABC1-C9086D525F80}</Project>
+      <Name>EventStore.Wireup</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\proj\EventStore\EventStore.csproj">
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
       <Name>EventStore</Name>

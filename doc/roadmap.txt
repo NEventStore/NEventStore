@@ -1,6 +1,5 @@
 - Add documentation and quickstart examples
 - Version on build (git specific?)
-- Create fluent configuration code that doesn't require an IoC container.
 - Create adapters for the storage engines listed in readme.
 - Website?
 - Master/slave replication "helper"

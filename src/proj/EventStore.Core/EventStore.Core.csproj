@@ -43,13 +43,15 @@
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Dispatcher\AsynchronousDispatcher.cs" />
+    <Compile Include="Dispatcher\NullDispatcher.cs" />
+    <Compile Include="Dispatcher\NullPublisher.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="OptimisticEventStore.cs" />
     <Compile Include="OptimisticEventStream.cs" />
     <Compile Include="Persistence\CommitTracker.cs" />
     <Compile Include="Persistence\IFilterCommitWrites.cs" />
     <Compile Include="Dispatcher\DelegateMessagePublisher.cs" />
-    <Compile Include="Dispatcher\IDispatchMessages.cs" />
+    <Compile Include="Dispatcher\IPublishMessages.cs" />
     <Compile Include="Persistence\IFilterCommitsReads.cs" />
     <Compile Include="Persistence\InMemoryPersistenceEngine.cs" />
     <Compile Include="Persistence\InMemoryPersistenceFactory.cs" />
