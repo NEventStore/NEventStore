@@ -113,7 +113,7 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			return this.ExecuteQuery(Guid.Empty, query =>
 			{
-				var statement = this.Dialect.GetStreamsRequiringSnaphots;
+				var statement = this.Dialect.GetStreamsRequiringSnapshots;
 				query.AddParameter(this.Dialect.Threshold, maxThreshold);
 				return query.ExecuteWithQuery(statement, record => record.GetStreamToSnapshot());
 			});

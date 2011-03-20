@@ -26,7 +26,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return base.GetSnapshot.Replace("SELECT *", "SELECT TOP 1 *").Replace("LIMIT 1", string.Empty); }
 		}
-		public override string GetStreamsRequiringSnaphots
+		public override string GetStreamsRequiringSnapshots
 		{
 			get { return AccessStatements.GetStreamsToSnapshot; }
 		}

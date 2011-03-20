@@ -12,7 +12,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 		string PersistCommit { get; }
 
-		string GetStreamsRequiringSnaphots { get; }
+		string GetStreamsRequiringSnapshots { get; }
 		string GetSnapshot { get; }
 		string AppendSnapshotToCommit { get; }
 

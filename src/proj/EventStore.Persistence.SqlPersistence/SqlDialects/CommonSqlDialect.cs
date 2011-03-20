@@ -20,9 +20,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			get { return CommonSqlStatements.PersistCommit; }
 		}
 
-		public virtual string GetStreamsRequiringSnaphots
+		public virtual string GetStreamsRequiringSnapshots
 		{
-			get { return CommonSqlStatements.GetStreamsRequiringSnaphots; }
+			get { return CommonSqlStatements.GetStreamsRequiringSnapshots; }
 		}
 		public virtual string GetSnapshot
 		{
