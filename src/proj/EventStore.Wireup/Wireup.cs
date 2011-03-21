@@ -4,7 +4,7 @@ namespace EventStore
 	using Persistence;
 	using Serialization;
 
-	public class Wireup
+	public class Wireup : IWireup
 	{
 		private readonly Wireup inner;
 		private readonly NanoContainer container;
@@ -36,17 +36,23 @@ namespace EventStore
 			get { return this.container ?? this.inner.Container; }
 		}
 
-		public virtual Wireup WithPersistence(IPersistStreams instance)
+		public virtual IWireup With<T>(T instance) where T : class
 		{
 			this.Container.Register(instance);
 			return this;
 		}
-		public virtual Wireup WithDispatcher(IDispatchCommits instance)
+
+		public virtual IWireup WithPersistence(IPersistStreams instance)
 		{
 			this.Container.Register(instance);
 			return this;
 		}
-		public virtual Wireup WithSerializer(ISerialize instance)
+		public virtual IWireup WithDispatcher(IDispatchCommits instance)
+		{
+			this.Container.Register(instance);
+			return this;
+		}
+		public virtual IWireup WithSerializer(ISerialize instance)
 		{
 			this.Container.Register(instance);
 			return this;

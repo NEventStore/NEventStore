@@ -152,4 +152,4 @@ Once built, the files will be placed in the "output" subdirectory.
 		}
 	}
 
-For a more complete example, please see [EventStore.Example](https://github.com/joliver/EventStore/blob/master/doc/EventStore.Example/ExampleUsage.cs) project in the doc subdirectory.
+For a more complete example, please see [EventStore.Example](https://github.com/joliver/EventStore/blob/master/doc/EventStore.Example/MainProgram.cs) project in the doc subdirectory.
