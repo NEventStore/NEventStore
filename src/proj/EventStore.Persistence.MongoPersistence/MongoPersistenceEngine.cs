@@ -41,22 +41,25 @@
 			if (Interlocked.Increment(ref this.initialized) > 1)
 				return;
 
-			this.PersistedCommits.EnsureIndex(
+			this.TryMongo(() =>
+			{
+				this.PersistedCommits.EnsureIndex(
 				IndexKeys.Ascending("Dispatched").Ascending("CommitStamp"),
 				IndexOptions.SetName("Dispatched_Index").SetUnique(false));
 
-			this.PersistedCommits.EnsureIndex(
-				IndexKeys.Ascending("_id.StreamId", "StartingStreamRevision", "StreamRevision"),
-				IndexOptions.SetName("GetFrom_Index").SetUnique(true));
+				this.PersistedCommits.EnsureIndex(
+					IndexKeys.Ascending("_id.StreamId", "StartingStreamRevision", "StreamRevision"),
+					IndexOptions.SetName("GetFrom_Index").SetUnique(true));
 
-			this.PersistedCommits.EnsureIndex(
-				IndexKeys.Ascending("CommitStamp"),
-				IndexOptions.SetName("CommitStamp_Index").SetUnique(false));
+				this.PersistedCommits.EnsureIndex(
+					IndexKeys.Ascending("CommitStamp"),
+					IndexOptions.SetName("CommitStamp_Index").SetUnique(false));
+			});
 		}
 
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
 		{
-			try
+			return this.TryMongo(() =>
 			{
 				var query = Query.And(
 					Query.EQ("_id.StreamId", streamId),
@@ -67,86 +70,80 @@
 					.Find(query)
 					.SetSortOrder("StartingStreamRevision")
 					.Select(mc => mc.ToCommit(this.serializer));
-			}
-			catch (Exception e)
-			{
-				throw new StorageException(e.Message, e);
-			}
+			});
 		}
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
 		{
-			try
-			{
-				var query = Query.GTE("CommitStamp", start);
-
-				return this.PersistedCommits
-					.Find(query)
-					.SetSortOrder("CommitStamp")
-					.Select(x => x.ToCommit(this.serializer));
-			}
-			catch (Exception e)
-			{
-				throw new StorageException(e.Message, e);
-			}
+			return this.TryMongo(() => this.PersistedCommits
+				.Find(Query.GTE("CommitStamp", start))
+				.SetSortOrder("CommitStamp")
+				.Select(x => x.ToCommit(this.serializer)));
 		}
 
 		public virtual void Commit(Commit attempt)
 		{
-			var commit = attempt.ToMongoCommit(this.serializer);
-
-			try
+			this.TryMongo(() =>
 			{
-				// for concurrency / duplicate commit detection safe mode is required
-				this.PersistedCommits.Insert(commit, SafeMode.True);
-				this.UpdateStreamHeadAsync(commit.Id.StreamId, commit.StreamRevision, (commit.Id.CommitSequence == 1));
-			}
-			catch (MongoException e)
-			{
-				if (!e.Message.Contains(ConcurrencyException))
-					throw new StorageException(e.Message, e);
+				var commit = attempt.ToMongoCommit(this.serializer);
 
-				var committed = this.PersistedCommits.FindOne(commit.ToMongoCommitIdQuery());
-				if (committed == null || committed.CommitId == commit.CommitId)
-					throw new DuplicateCommitException();
+				try
+				{
+					// for concurrency / duplicate commit detection safe mode is required
+					this.PersistedCommits.Insert(commit, SafeMode.True);
+					this.UpdateStreamHeadAsync(commit.Id.StreamId, commit.StreamRevision, (commit.Id.CommitSequence == 1));
+				}
+				catch (MongoException e)
+				{
+					if (!e.Message.Contains(ConcurrencyException))
+						throw;
 
-				throw new ConcurrencyException();
-			}
+					var committed = this.PersistedCommits.FindOne(commit.ToMongoCommitIdQuery());
+					if (committed == null || committed.CommitId == commit.CommitId)
+						throw new DuplicateCommitException();
+
+					throw new ConcurrencyException();
+				}
+			});
 		}
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
-			var query = Query.EQ("Dispatched", false);
-
-			return this.PersistedCommits
-				.Find(query)
+			return this.TryMongo(() => this.PersistedCommits
+				.Find(Query.EQ("Dispatched", false))
 				.SetSortOrder("CommitStamp")
-				.Select(mc => mc.ToCommit(this.serializer));
+				.Select(mc => mc.ToCommit(this.serializer)));
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
-			var query = commit.ToMongoCommitIdQuery();
-			var update = Update.Set("Dispatched", true);
-			this.PersistedCommits.Update(query, update);
+			this.TryMongo(() =>
+			{
+				var query = commit.ToMongoCommitIdQuery();
+				var update = Update.Set("Dispatched", true);
+				this.PersistedCommits.Update(query, update);
+			});
 		}
 
 		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
 		{
-			var query = Query
+			return this.TryMongo(() =>
+			{
+				var query = Query
 				.Where(BsonJavaScript.Create("this.HeadRevision >= this.SnapshotRevision + " + maxThreshold));
 
-			return this.PersistedStreamHeads
-				.Find(query)
-				.ToArray()
-				.Select(x => x.ToStreamHead());
+				return this.PersistedStreamHeads
+					.Find(query)
+					.ToArray()
+					.Select(x => x.ToStreamHead());
+			});
 		}
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
-			return this.PersistedSnapshots
+			return this.TryMongo(() => this.PersistedSnapshots
 				.FindAs<BsonDocument>(streamId.ToSnapshotQuery(maxRevision))
 				.SetSortOrder(SortBy.Descending("_id"))
 				.SetLimit(1)
 				.Select(mc => mc.ToSnapshot(this.serializer))
-				.FirstOrDefault();
+				.FirstOrDefault());
 		}
 
 		public virtual bool AddSnapshot(Snapshot snapshot)
@@ -164,7 +161,7 @@
 
 				return true;
 			}
-			catch (MongoException)
+			catch (Exception)
 			{
 				return false;
 			}
@@ -172,7 +169,7 @@
 
 		private void UpdateStreamHeadAsync(Guid streamId, int streamRevision, bool isFirstCommit)
 		{
-			ThreadPool.QueueUserWorkItem(x =>
+			ThreadPool.QueueUserWorkItem(x => this.TryMongo(() =>
 			{
 				if (isFirstCommit)
 					this.PersistedStreamHeads.Insert(
@@ -183,7 +180,7 @@
 						Query.EQ("_id", streamId),
 						Update.Set("HeadRevision", streamRevision),
 						SafeMode.False);
-			}, null);
+			}), null);
 		}
 
 		protected virtual MongoCollection<MongoCommit> PersistedCommits
@@ -197,6 +194,33 @@
 		protected virtual MongoCollection<MongoStreamHead> PersistedStreamHeads
 		{
 			get { return this.store.GetCollection<MongoStreamHead>("Streams"); }
+		}
+
+		protected virtual T TryMongo<T>(Func<T> callback)
+		{
+			var results = default(T);
+
+			this.TryMongo(() =>
+			{
+				results = callback();
+			});
+
+			return results;
+		}
+		protected virtual void TryMongo(Action callback)
+		{
+			try
+			{
+				callback();
+			}
+			catch (MongoConnectionException e)
+			{
+				throw new StorageUnavailableException(e.Message, e);
+			}
+			catch (MongoException e)
+			{
+				throw new StorageException(e.Message, e);
+			}
 		}
 	}
 }
