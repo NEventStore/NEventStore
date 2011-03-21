@@ -44,6 +44,7 @@ set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore\bin\%TARGET_CONFIG%\Eve
 set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Core\bin\%TARGET_CONFIG%\EventStore.Core.dll"
 set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization\bin\%TARGET_CONFIG%\EventStore.Serialization.dll"
 set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.SqlPersistence\bin\%TARGET_CONFIG%\EventStore.Persistence.SqlPersistence.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Wireup\bin\%TARGET_CONFIG%\EventStore.Wireup.dll"
 (echo.|set /p =EventStore.*)>exclude.txt
 bin\ilmerge-bin\ILMerge.exe /keyfile:src/EventStore.snk /internalize:"exclude.txt" /xmldocs /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.dll %FILES_TO_MERGE%
 del exclude.txt
