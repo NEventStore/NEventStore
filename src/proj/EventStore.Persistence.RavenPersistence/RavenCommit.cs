@@ -17,7 +17,7 @@ namespace EventStore.Persistence.RavenPersistence
 		public DateTime CommitStamp { get; set; }
 
 		public Dictionary<string, object> Headers { get; set; }
-		public byte[] Payload { get; set; }
+		public object Payload { get; set; }
 
 		public bool Dispatched { get; set; }
 	}

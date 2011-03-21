@@ -5,6 +5,7 @@ namespace EventStore.Persistence.RavenPersistence
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Linq.Expressions;
+	using System.Net;
 	using System.Threading;
 	using System.Transactions;
 	using Indexes;
@@ -18,12 +19,12 @@ namespace EventStore.Persistence.RavenPersistence
 	public class RavenPersistenceEngine : IPersistStreams
 	{
 		private readonly IDocumentStore store;
-		private readonly ISerialize serializer;
+		private readonly IDocumentSerializer serializer;
 		private readonly bool consistentQueries;
 		private bool disposed;
 		private int initialized;
 
-		public RavenPersistenceEngine(IDocumentStore store, ISerialize serializer, bool consistentQueries)
+		public RavenPersistenceEngine(IDocumentStore store, IDocumentSerializer serializer, bool consistentQueries)
 		{
 			this.store = store;
 			this.serializer = serializer;
@@ -50,15 +51,21 @@ namespace EventStore.Persistence.RavenPersistence
 			if (Interlocked.Increment(ref this.initialized) > 1)
 				return;
 
-			using (var scope = this.OpenCommandScope())
+			try
 			{
-				new RavenCommitByDate().Execute(this.store);
-				new RavenCommitByRevisionRange().Execute(this.store);
-				new RavenCommitsByDispatched().Execute(this.store);
-				new RavenSnapshotByStreamIdAndRevision().Execute(this.store);
-				new RavenStreamHeadBySnapshotAge().Execute(this.store);
-
-				scope.Complete();
+				using (var scope = this.OpenCommandScope())
+				{
+					new RavenCommitByDate().Execute(this.store);
+					new RavenCommitByRevisionRange().Execute(this.store);
+					new RavenCommitsByDispatched().Execute(this.store);
+					new RavenSnapshotByStreamIdAndRevision().Execute(this.store);
+					new RavenStreamHeadBySnapshotAge().Execute(this.store);
+					scope.Complete();
+				}
+			}
+			catch (WebException e)
+			{
+				throw new StorageUnavailableException(e.Message, e);
 			}
 		}
 
@@ -87,6 +94,10 @@ namespace EventStore.Persistence.RavenPersistence
 				}
 
 				this.SaveStreamHead(attempt.ToRavenStreamHead());
+			}
+			catch (WebException e)
+			{
+				throw new StorageUnavailableException(e.Message, e);
 			}
 			catch (NonUniqueObjectException e)
 			{
@@ -138,6 +149,10 @@ namespace EventStore.Persistence.RavenPersistence
 					scope.Complete();
 				}
 			}
+			catch (WebException e)
+			{
+				throw new StorageUnavailableException(e.Message, e);
+			}
 			catch (Exception e)
 			{
 				throw new StorageException(e.Message, e);
@@ -179,6 +194,10 @@ namespace EventStore.Persistence.RavenPersistence
 
 				return true;
 			}
+			catch (WebException e)
+			{
+				throw new StorageUnavailableException(e.Message, e);
+			}
 			catch (Raven.Http.Exceptions.ConcurrencyException)
 			{
 				return false;
@@ -196,6 +215,10 @@ namespace EventStore.Persistence.RavenPersistence
 				using (this.OpenQueryScope())
 				using (var session = this.store.OpenSession())
 					return session.Load<RavenCommit>(attempt.ToRavenCommitId());
+			}
+			catch (WebException e)
+			{
+				throw new StorageUnavailableException(e.Message, e);
 			}
 			catch (Exception e)
 			{
@@ -219,6 +242,10 @@ namespace EventStore.Persistence.RavenPersistence
 					return session.Query<T, TIndex>()
 						.Customize(x => { if (this.consistentQueries) x.WaitForNonStaleResults(); })
 						.Where(query);
+			}
+			catch (WebException e)
+			{
+				throw new StorageUnavailableException(e.Message, e);
 			}
 			catch (Exception e)
 			{

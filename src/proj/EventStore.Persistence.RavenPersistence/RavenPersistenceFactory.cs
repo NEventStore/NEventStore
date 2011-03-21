@@ -6,16 +6,16 @@
 
 	public class RavenPersistenceFactory : IPersistenceFactory
 	{
-		private readonly ISerialize serializer;
+		private readonly IDocumentSerializer serializer;
 		private readonly bool consistentQueries;
 
 		protected string ConnectionStringName { get; private set; }
 
-		public RavenPersistenceFactory(string connectionName, ISerialize serializer)
+		public RavenPersistenceFactory(string connectionName, IDocumentSerializer serializer)
 			: this(connectionName, serializer, false)
 		{
 		}
-		public RavenPersistenceFactory(string connectionName, ISerialize serializer, bool consistentQueries)
+		public RavenPersistenceFactory(string connectionName, IDocumentSerializer serializer, bool consistentQueries)
 		{
 			this.ConnectionStringName = connectionName;
 			this.serializer = serializer;
