@@ -42,8 +42,10 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ByteStreamDocumentSerializer.cs" />
     <Compile Include="GzipSerializer.cs" />
     <Compile Include="BinarySerializer.cs" />
+    <Compile Include="NullDocumentSerializer.cs" />
     <Compile Include="RijndaelSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IndisposableStream.cs" />

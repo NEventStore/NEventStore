@@ -276,7 +276,7 @@ namespace EventStore.Persistence.AcceptanceTests
 		It should_find_the_stream_in_the_set_of_streams_to_be_snapshot_when_within_the_threshold = () =>
 			persistence.GetStreamsToSnapshot(WithinThreshold).First(x => x.StreamId == streamId).ShouldNotBeNull();
 
-		It should_not_find_the_stream_in_the_set_of_streams_to_be_snapshot_when_under_the_threshold = () =>
+		It should_not_find_the_stream_in_the_set_of_streams_to_be_snapshot_when_over_the_threshold = () =>
 			persistence.GetStreamsToSnapshot(OverThreshold).Any(x => x.StreamId == streamId).ShouldBeFalse();
 	}
 
