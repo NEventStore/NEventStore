@@ -11,7 +11,7 @@ namespace EventStore
 		{
 		}
 
-		public override Wireup WithPersistence(IPersistStreams instance)
+		public virtual Wireup WithPersistence(IPersistStreams instance)
 		{
 			return this.WithPersistence(instance);
 		}

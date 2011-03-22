@@ -7,7 +7,7 @@ namespace EventStore.Persistence.AcceptanceTests.Engines
 	{
 		private const bool FullyConsistentResults = true;
 		public AcceptanceTestRavenPersistenceFactory()
-			: base("Raven", new BinarySerializer(), FullyConsistentResults)
+			: base("Raven", new NullDocumentSerializer(), FullyConsistentResults)
 		{
 		}
 	}

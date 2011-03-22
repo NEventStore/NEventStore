@@ -36,20 +36,9 @@ namespace EventStore
 			get { return this.container ?? this.inner.Container; }
 		}
 
-		public virtual Wireup WithPersistence(IPersistStreams instance)
+		public virtual void With<T>(T instance) where T : class
 		{
 			this.Container.Register(instance);
-			return this;
-		}
-		public virtual Wireup WithDispatcher(IDispatchCommits instance)
-		{
-			this.Container.Register(instance);
-			return this;
-		}
-		public virtual Wireup WithSerializer(ISerialize instance)
-		{
-			this.Container.Register(instance);
-			return this;
 		}
 
 		public virtual IStoreEvents Build()

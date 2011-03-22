@@ -6,10 +6,10 @@ namespace EventStore
 	{
 		public static SerializationWireup UsingBinarySerialization(this Wireup wireup)
 		{
-			return wireup.UsingCustomSerializer(new BinarySerializer());
+			return wireup.UsingCustomSerialization(new BinarySerializer());
 		}
 
-		public static SerializationWireup UsingCustomSerializer(this Wireup wireup, ISerialize serializer)
+		public static SerializationWireup UsingCustomSerialization(this Wireup wireup, ISerialize serializer)
 		{
 			return new SerializationWireup(wireup, serializer);
 		}

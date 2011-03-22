@@ -48,6 +48,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Persistence\StorageUnavailableException.cs" />
+    <Compile Include="Serialization\IDocumentSerializer.cs" />
     <Compile Include="StreamNotFoundException.cs" />
     <Compile Include="Dispatcher\IDispatchCommits.cs" />
     <Compile Include="ICommitEvents.cs" />

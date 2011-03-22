@@ -156,7 +156,7 @@ SELECT @StreamId, @StreamRevision, @Payload
  ORDER BY StreamRevision DESC
  LIMIT 1;</value>
   </data>
-  <data name="GetStreamsRequiringSnaphots" xml:space="preserve">
+  <data name="GetStreamsRequiringSnapshots" xml:space="preserve">
     <value>SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(COALESCE(S.StreamRevision, 0)) AS SnapshotRevision
   FROM Commits AS C
  LEFT OUTER JOIN Snapshots AS S

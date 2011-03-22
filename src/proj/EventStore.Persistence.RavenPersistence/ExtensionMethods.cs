@@ -12,7 +12,7 @@ namespace EventStore.Persistence.RavenPersistence
 			return string.Format(CultureInfo.InvariantCulture, "{0}/{1}", commit.StreamId, commit.CommitSequence);
 		}
 
-		public static RavenCommit ToRavenCommit(this Commit commit, ISerialize serializer)
+		public static RavenCommit ToRavenCommit(this Commit commit, IDocumentSerializer serializer)
 		{
 			return new RavenCommit
 			{
@@ -28,7 +28,7 @@ namespace EventStore.Persistence.RavenPersistence
 			};
 		}
 
-		public static Commit ToCommit(this RavenCommit commit, ISerialize serializer)
+		public static Commit ToCommit(this RavenCommit commit, IDocumentSerializer serializer)
 		{
 			return new Commit(
 				commit.StreamId,
@@ -40,7 +40,7 @@ namespace EventStore.Persistence.RavenPersistence
 				serializer.Deserialize<List<EventMessage>>(commit.Payload));
 		}
 
-		public static RavenSnapshot ToRavenSnapshot(this Snapshot snapshot, ISerialize serializer)
+		public static RavenSnapshot ToRavenSnapshot(this Snapshot snapshot, IDocumentSerializer serializer)
 		{
 			return new RavenSnapshot
 			{
@@ -50,7 +50,7 @@ namespace EventStore.Persistence.RavenPersistence
 			};
 		}
 
-		public static Snapshot ToSnapshot(this RavenSnapshot snapshot, ISerialize serializer)
+		public static Snapshot ToSnapshot(this RavenSnapshot snapshot, IDocumentSerializer serializer)
 		{
 			if (snapshot == null)
 				return null;

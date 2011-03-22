@@ -6,6 +6,6 @@
 	{
 		public Guid StreamId { get; set; }
 		public int StreamRevision { get; set; }
-		public byte[] Payload { get; set; }
+		public object Payload { get; set; }
 	}
 }

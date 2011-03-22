@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A5BF4B86-26F6-418D-BE35-C6CC3A623D27}</ProjectGuid>
+    <ProjectGuid>{DEFFE0C3-2988-4C58-9E36-1302842FFDBD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EventStore.Serialization</RootNamespace>
-    <AssemblyName>EventStore.Serialization</AssemblyName>
+    <RootNamespace>EventStore</RootNamespace>
+    <AssemblyName>EventStore.Serialization.Json.Wireup</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SignAssembly>true</SignAssembly>
@@ -42,28 +42,30 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="ByteStreamDocumentSerializer.cs" />
-    <Compile Include="GzipSerializer.cs" />
-    <Compile Include="BinarySerializer.cs" />
-    <Compile Include="NullDocumentSerializer.cs" />
-    <Compile Include="RijndaelSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="IndisposableStream.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Runtime.Serialization" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\EventStore\EventStore.csproj">
-      <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
-      <Name>EventStore</Name>
-    </ProjectReference>
+    <Compile Include="SerializationWireupExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\CustomDictionary.xml">
       <Link>Properties\CustomDictionary.xml</Link>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EventStore.Serialization.Json\EventStore.Serialization.Json.csproj">
+      <Project>{CFD895BD-7CB2-4811-A6FA-1851DF769B67}</Project>
+      <Name>EventStore.Serialization.Json</Name>
+    </ProjectReference>
+	<Reference Include="EventStore (ILMerged)" Condition="'$(ILMerged)' == 'true'">
+      <HintPath>..\..\..\output\bin\EventStore.dll</HintPath>
+    </Reference>
+    <ProjectReference Include="..\EventStore\EventStore.csproj" Condition="'$(ILMerged)' != 'true'">
+      <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
+      <Name>EventStore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EventStore.Wireup\EventStore.Wireup.csproj" Condition="'$(ILMerged)' != 'true'">
+      <Project>{421664DB-C18D-4499-ABC1-C9086D525F80}</Project>
+      <Name>EventStore.Wireup</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

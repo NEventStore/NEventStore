@@ -1,7 +1,7 @@
 ﻿namespace EventStore.Persistence.MongoPersistence
 {
 	using System;
-	using MongoDB.Bson.DefaultSerializer;
+	using MongoDB.Bson.Serialization.Attributes;
 
 	public class MongoStreamHead
 	{
