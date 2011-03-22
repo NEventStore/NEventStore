@@ -9,7 +9,7 @@ namespace EventStore
 			return wireup.UsingCustomSerialization(new JsonSerializer());
 		}
 
-		public static Wireup UsingBsonSerialization(this Wireup wireup)
+		public static SerializationWireup UsingBsonSerialization(this Wireup wireup)
 		{
 			return wireup.UsingCustomSerialization(new BsonSerializer());
 		}

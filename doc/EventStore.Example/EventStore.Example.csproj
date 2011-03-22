@@ -58,21 +58,9 @@
       <Project>{D6413244-42F5-4233-B347-D0A804B09CC9}</Project>
       <Name>EventStore.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\proj\EventStore.Dispatchers.Wireup\EventStore.Dispatchers.Wireup.csproj">
-      <Project>{E9D5D8C5-944A-4FA8-B8A6-30FCBB410D62}</Project>
-      <Name>EventStore.Dispatchers.Wireup</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\proj\EventStore.Persistence.SqlPersistence.Wireup\EventStore.Persistence.SqlPersistence.Wireup.csproj">
-      <Project>{AEBE70AD-86E2-4312-B662-4C7C9DB8868A}</Project>
-      <Name>EventStore.Persistence.SqlPersistence.Wireup</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\proj\EventStore.Persistence.SqlPersistence\EventStore.Persistence.SqlPersistence.csproj">
       <Project>{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}</Project>
       <Name>EventStore.Persistence.SqlPersistence</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\proj\EventStore.Serialization.Json.Wireup\EventStore.Serialization.Json.Wireup.csproj">
-      <Project>{DEFFE0C3-2988-4C58-9E36-1302842FFDBD}</Project>
-      <Name>EventStore.Serialization.Json.Wireup</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\proj\EventStore.Serialization.Json\EventStore.Serialization.Json.csproj">
       <Project>{CFD895BD-7CB2-4811-A6FA-1851DF769B67}</Project>

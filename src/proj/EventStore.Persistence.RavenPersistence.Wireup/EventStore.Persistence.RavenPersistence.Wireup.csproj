@@ -12,6 +12,8 @@
     <AssemblyName>EventStore.Persistence.RavenPersistence.Wireup</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\EventStore.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -53,21 +55,17 @@
       <Project>{F9E7FD69-0818-48CA-9249-5387739E1B6A}</Project>
       <Name>EventStore.Persistence.RavenPersistence</Name>
     </ProjectReference>
-    <ProjectReference Include="..\EventStore.Wireup\EventStore.Wireup.csproj">
-      <Project>{421664DB-C18D-4499-ABC1-C9086D525F80}</Project>
-      <Name>EventStore.Wireup</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EventStore\EventStore.csproj">
+	<Reference Include="EventStore (ILMerged)" Condition="'$(ILMerged)' == 'true'">
+      <HintPath>..\..\..\output\bin\EventStore.dll</HintPath>
+    </Reference>
+    <ProjectReference Include="..\EventStore\EventStore.csproj" Condition="'$(ILMerged)' != 'true'">
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
       <Name>EventStore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\EventStore.Wireup\EventStore.Wireup.csproj" Condition="'$(ILMerged)' != 'true'">
+      <Project>{421664DB-C18D-4499-ABC1-C9086D525F80}</Project>
+      <Name>EventStore.Wireup</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

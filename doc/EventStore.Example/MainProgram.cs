@@ -2,6 +2,7 @@ namespace EventStore.Example
 {
 	using System;
 	using Dispatcher;
+	using Serialization;
 
 	internal static class MainProgram
 	{
@@ -13,7 +14,7 @@ namespace EventStore.Example
 		private static readonly IStoreEvents Store = Wireup.Init()
 			.UsingSqlPersistence("EventStore")
 				.InitializeDatabaseSchema()
-			.UsingJsonSerialization()
+			.UsingCustomSerialization(new JsonSerializer())
 				.Compress()
 				.EncryptWith(EncryptionKey)
 			.UsingAsynchronousDispatcher()
