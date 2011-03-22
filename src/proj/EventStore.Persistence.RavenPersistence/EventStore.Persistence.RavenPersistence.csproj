@@ -45,7 +45,6 @@
     <Compile Include="RavenPersistenceEngine.cs" />
     <Compile Include="RavenPersistenceFactory.cs" />
     <Compile Include="RavenSnapshot.cs" />
-    <Compile Include="WireupExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="EventStore (ILMerged)" Condition="'$(ILMerged)' == 'true'">

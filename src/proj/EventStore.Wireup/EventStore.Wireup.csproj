@@ -33,28 +33,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AsynchronousDispatcherWireup.cs" />
-    <Compile Include="AsynchronousDispatcherWireupExtensions.cs" />
     <Compile Include="NanoContainer.cs" />
     <Compile Include="PersistenceWireup.cs" />
     <Compile Include="PersistenceWireupExtensions.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerializationWireup.cs" />
     <Compile Include="SerializationWireupExtensions.cs" />
-    <Compile Include="SqlPersistenceWireup.cs" />
-    <Compile Include="SqlPersistenceWireupExtensions.cs" />
-    <Compile Include="SynchronousDispatcherWireup.cs" />
-    <Compile Include="SynchronousDispatcherWireupExtensions.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Wireup.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EventStore.Core\EventStore.Core.csproj">
       <Project>{D6413244-42F5-4233-B347-D0A804B09CC9}</Project>
       <Name>EventStore.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EventStore.Persistence.SqlPersistence\EventStore.Persistence.SqlPersistence.csproj">
-      <Project>{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}</Project>
-      <Name>EventStore.Persistence.SqlPersistence</Name>
     </ProjectReference>
     <ProjectReference Include="..\EventStore.Serialization\EventStore.Serialization.csproj">
       <Project>{A5BF4B86-26F6-418D-BE35-C6CC3A623D27}</Project>

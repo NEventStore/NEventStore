@@ -6,7 +6,7 @@ namespace EventStore
 	{
 		public static PersistenceWireup UsingInMemoryPersistence(this Wireup wireup)
 		{
-			wireup.WithPersistence(new InMemoryPersistenceEngine());
+			wireup.With<IPersistStreams>(new InMemoryPersistenceEngine());
 
 			return new PersistenceWireup(wireup);
 		}
