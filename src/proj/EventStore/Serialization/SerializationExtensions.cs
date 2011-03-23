@@ -10,14 +10,12 @@ namespace EventStore.Serialization
 		/// <summary>
 		/// Serializes the object provided.
 		/// </summary>
+		/// <typeparam name="T">The type of object to be serialized</typeparam>
 		/// <param name="serializer">The serializer to use.</param>
 		/// <param name="value">The object graph to be serialized.</param>
 		/// <returns>A serialized representation of the object graph provided.</returns>
-		public static byte[] Serialize(this ISerialize serializer, object value)
+		public static byte[] Serialize<T>(this ISerialize serializer, T value)
 		{
-			if (value == null)
-				return new byte[] { };
-
 			using (var stream = new MemoryStream())
 			{
 				serializer.Serialize(stream, value);

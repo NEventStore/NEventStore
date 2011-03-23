@@ -36,7 +36,7 @@ namespace EventStore.Serialization
 			this.knownTypes = knownTypes ?? this.knownTypes;
 		}
 
-		public virtual void Serialize(Stream output, object graph)
+		public virtual void Serialize<T>(Stream output, T graph)
 		{
 			using (var streamWriter = new StreamWriter(output, Encoding.UTF8))
 				this.Serialize(new JsonTextWriter(streamWriter), graph);

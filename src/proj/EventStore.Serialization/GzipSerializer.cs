@@ -12,7 +12,7 @@ namespace EventStore.Serialization
 			this.inner = inner;
 		}
 
-		public virtual void Serialize(Stream output, object graph)
+		public virtual void Serialize<T>(Stream output, T graph)
 		{
 			using (var compress = new DeflateStream(output, CompressionMode.Compress, true))
 				this.inner.Serialize(compress, graph);

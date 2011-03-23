@@ -12,7 +12,7 @@ namespace EventStore.Serialization
 		{
 		}
 
-		public override void Serialize(Stream output, object graph)
+		public override void Serialize<T>(Stream output, T graph)
 		{
 			this.Serialize(new BsonWriter(output), graph);
 		}
