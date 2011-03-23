@@ -36,9 +36,10 @@ namespace EventStore
 			get { return this.container ?? this.inner.Container; }
 		}
 
-		public virtual void With<T>(T instance) where T : class
+		public virtual Wireup With<T>(T instance) where T : class
 		{
 			this.Container.Register(instance);
+			return this;
 		}
 
 		public virtual IStoreEvents Build()
