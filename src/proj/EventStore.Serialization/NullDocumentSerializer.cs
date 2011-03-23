@@ -2,7 +2,7 @@ namespace EventStore.Serialization
 {
 	public class NullDocumentSerializer : IDocumentSerializer
 	{
-		public object Serialize(object graph)
+		public object Serialize<T>(T graph)
 		{
 			return graph;
 		}

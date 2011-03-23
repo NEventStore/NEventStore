@@ -10,9 +10,10 @@ namespace EventStore.Serialization
 		/// <summary>
 		/// Serializes the object graph provided and writes a serialized representation to the output stream provided.
 		/// </summary>
+		/// <typeparam name="T">The type of object to be serialized</typeparam>
 		/// <param name="output">The stream into which the serialized object graph should be written.</param>
 		/// <param name="graph">The object graph to be serialized.</param>
-		void Serialize(Stream output, object graph);
+		void Serialize<T>(Stream output, T graph);
 
 		/// <summary>
 		/// Deserializes the stream provided and reconstructs the corresponding object graph.

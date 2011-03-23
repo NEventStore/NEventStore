@@ -9,7 +9,7 @@ namespace EventStore.Serialization
 			this.serializer = serializer;
 		}
 
-		public object Serialize(object graph)
+		public object Serialize<T>(T graph)
 		{
 			return this.serializer.Serialize(graph);
 		}

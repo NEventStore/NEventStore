@@ -8,9 +8,10 @@ namespace EventStore.Serialization
 		/// <summary>
 		/// Serializes the object graph provided into a document.
 		/// </summary>
+		/// <typeparam name="T">The type of object to be serialized</typeparam>
 		/// <param name="graph">The object graph to be serialized.</param>
 		/// <returns>The document form of the graph provided.</returns>
-		object Serialize(object graph);
+		object Serialize<T>(T graph);
 
 		/// <summary>
 		/// Deserializes the document provided into an object graph.
