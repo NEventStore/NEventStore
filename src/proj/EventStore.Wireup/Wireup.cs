@@ -42,6 +42,9 @@ namespace EventStore
 
 		public virtual IStoreEvents Build()
 		{
+			if (this.inner != null)
+				return this.inner.Build();
+
 			return this.Container.Resolve<IStoreEvents>();
 		}
 	}
