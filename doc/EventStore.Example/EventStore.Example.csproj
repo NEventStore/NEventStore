@@ -54,11 +54,18 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\proj\EventStore.Core\EventStore.Core.csproj">
+	<Reference Include="EventStore (ILMerged)" Condition="'$(ILMerged)' == 'true'">
+      <HintPath>..\..\output\bin\EventStore.dll</HintPath>
+    </Reference>
+    <ProjectReference Include="..\..\src\proj\EventStore\EventStore.csproj" Condition="'$(ILMerged)' != 'true'">
+      <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
+      <Name>EventStore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\proj\EventStore.Core\EventStore.Core.csproj" Condition="'$(ILMerged)' != 'true'">
       <Project>{D6413244-42F5-4233-B347-D0A804B09CC9}</Project>
       <Name>EventStore.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\proj\EventStore.Persistence.SqlPersistence\EventStore.Persistence.SqlPersistence.csproj">
+    <ProjectReference Include="..\..\src\proj\EventStore.Persistence.SqlPersistence\EventStore.Persistence.SqlPersistence.csproj" Condition="'$(ILMerged)' != 'true'">
       <Project>{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}</Project>
       <Name>EventStore.Persistence.SqlPersistence</Name>
     </ProjectReference>
@@ -66,21 +73,17 @@
       <Project>{DEFFE0C3-2988-4C58-9E36-1302842FFDBD}</Project>
       <Name>EventStore.Serialization.Json.Wireup</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\proj\EventStore.Serialization.Json\EventStore.Serialization.Json.csproj">
+    <ProjectReference Include="..\..\src\proj\EventStore.Serialization.Json\EventStore.Serialization.Json.csproj" Condition="'$(ILMerged)' != 'true'">
       <Project>{CFD895BD-7CB2-4811-A6FA-1851DF769B67}</Project>
       <Name>EventStore.Serialization.Json</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\proj\EventStore.Serialization\EventStore.Serialization.csproj">
+    <ProjectReference Include="..\..\src\proj\EventStore.Serialization\EventStore.Serialization.csproj" Condition="'$(ILMerged)' != 'true'">
       <Project>{A5BF4B86-26F6-418D-BE35-C6CC3A623D27}</Project>
       <Name>EventStore.Serialization</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\proj\EventStore.Wireup\EventStore.Wireup.csproj">
+    <ProjectReference Include="..\..\src\proj\EventStore.Wireup\EventStore.Wireup.csproj" Condition="'$(ILMerged)' != 'true'">
       <Project>{421664DB-C18D-4499-ABC1-C9086D525F80}</Project>
       <Name>EventStore.Wireup</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\proj\EventStore\EventStore.csproj">
-      <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
-      <Name>EventStore</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

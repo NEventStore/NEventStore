@@ -90,7 +90,7 @@ set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization.ServiceSt
 set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization.ServiceStack\bin\%TARGET_CONFIG%\ServiceStack.Text.dll"
 set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization.ServiceStack.Wireup\bin\%TARGET_CONFIG%\EventStore.Serialization.ServiceStack.Wireup.dll"
 (echo.|set /p =EventStore.*)>>exclude.txt
-bin\ilmerge-bin\ILMerge.exe /internalize:"exclude.txt" /xmldocs /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Serialization.Json.dll %FILES_TO_MERGE%
+bin\ilmerge-bin\ILMerge.exe /keyfile:src/EventStore.snk /internalize:"exclude.txt" /xmldocs /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Serialization.ServiceStack.dll %FILES_TO_MERGE%
 del exclude.txt
 
 echo.
