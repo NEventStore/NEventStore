@@ -4,7 +4,7 @@ namespace EventStore
 
 	public static class WireupExtensions
 	{
-		public static SerializationWireup UsingServiceStackJsonSerialization(this Wireup wireup)
+		public static SerializationWireup UsingServiceStackJsonSerialization(this PersistenceWireup wireup)
 		{
 			return wireup.UsingCustomSerialization(new ServiceStackJsonSerializer());
 		}

@@ -2,7 +2,6 @@ namespace EventStore
 {
 	using Dispatcher;
 	using Persistence;
-	using Serialization;
 
 	public class Wireup
 	{
@@ -24,7 +23,6 @@ namespace EventStore
 
 			container.Register<IPersistStreams>(new InMemoryPersistenceEngine());
 			container.Register<IDispatchCommits>(new NullDispatcher());
-			container.Register<ISerialize>(new BinarySerializer());
 			container.Register<IStoreEvents>(c => new OptimisticEventStore(
 				c.Resolve<IPersistStreams>(), c.Resolve<IDispatchCommits>()));
 

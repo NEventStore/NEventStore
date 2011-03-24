@@ -4,12 +4,12 @@ namespace EventStore
 
 	public static class WireupExtensions
 	{
-		public static SerializationWireup UsingJsonSerialization(this Wireup wireup)
+		public static SerializationWireup UsingJsonSerialization(this PersistenceWireup wireup)
 		{
 			return wireup.UsingCustomSerialization(new JsonSerializer());
 		}
 
-		public static SerializationWireup UsingBsonSerialization(this Wireup wireup)
+		public static SerializationWireup UsingBsonSerialization(this PersistenceWireup wireup)
 		{
 			return wireup.UsingCustomSerialization(new BsonSerializer());
 		}
