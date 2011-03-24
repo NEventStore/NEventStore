@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyCompany("Jonathan Oliver")]
 [assembly: AssemblyProduct("EventStore")]
-[assembly: AssemblyCopyright("Copyright © Jonathan Oliver 2010")]
+[assembly: AssemblyCopyright("Copyright © Jonathan Oliver 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCulture("")]
