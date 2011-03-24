@@ -107,4 +107,11 @@
 	<data name="PressAnyKey">
 		<value xml:space="preserve">Press any key to continue...</value>
 	</data>
+                                      
+	<data name="UnableToPublish">
+                                      
+		<value><![CDATA[If for some reason we are unable to publish, we'd just handle it here.]]></value>
+                                      
+	</data>
+                                      
 </root>

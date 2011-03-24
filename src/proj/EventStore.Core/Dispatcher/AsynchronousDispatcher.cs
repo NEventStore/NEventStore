@@ -8,15 +8,12 @@ namespace EventStore.Dispatcher
 	{
 		private readonly IPublishMessages bus;
 		private readonly IPersistStreams persistence;
-		private readonly Action<Commit, Exception> handleException;
 		private bool disposed;
 
-		public AsynchronousDispatcher(
-			IPublishMessages bus, IPersistStreams persistence, Action<Commit, Exception> handleException)
+		public AsynchronousDispatcher(IPublishMessages bus, IPersistStreams persistence)
 		{
 			this.bus = bus;
 			this.persistence = persistence;
-			this.handleException = handleException ?? ((c, e) => { });
 
 			this.Start();
 		}
@@ -46,19 +43,11 @@ namespace EventStore.Dispatcher
 
 		public virtual void Dispatch(Commit commit)
 		{
-			ThreadPool.QueueUserWorkItem(state => this.BeginDispatch(commit));
-		}
-		protected virtual void BeginDispatch(Commit commit)
-		{
-			try
+			ThreadPool.QueueUserWorkItem(state =>
 			{
 				this.bus.Publish(commit);
 				this.persistence.MarkCommitAsDispatched(commit);
-			}
-			catch (Exception e)
-			{
-				this.handleException(commit, e);
-			}
+			});
 		}
 	}
 }
