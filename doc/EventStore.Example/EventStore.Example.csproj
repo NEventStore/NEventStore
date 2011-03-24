@@ -62,6 +62,10 @@
       <Project>{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}</Project>
       <Name>EventStore.Persistence.SqlPersistence</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\proj\EventStore.Serialization.Json.Wireup\EventStore.Serialization.Json.Wireup.csproj">
+      <Project>{DEFFE0C3-2988-4C58-9E36-1302842FFDBD}</Project>
+      <Name>EventStore.Serialization.Json.Wireup</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\proj\EventStore.Serialization.Json\EventStore.Serialization.Json.csproj">
       <Project>{CFD895BD-7CB2-4811-A6FA-1851DF769B67}</Project>
       <Name>EventStore.Serialization.Json</Name>
