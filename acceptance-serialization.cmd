@@ -9,6 +9,7 @@ CALL :run_test Gzip
 CALL :run_test Rijndael
 CALL :run_test Json
 CALL :run_test Bson
+CALL :run_test ServiceStackJson
 
 ENDLOCAL
 GOTO :eof 

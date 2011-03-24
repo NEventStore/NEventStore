@@ -75,7 +75,7 @@ echo EventStore.*>exclude.txt
 bin\ilmerge-bin\ILMerge.exe /keyfile:src/EventStore.snk /internalize:"exclude.txt" /xmldocs /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Persistence.RavenPersistence.dll %FILES_TO_MERGE%
 del exclude.txt
 
-echo Merging Json Serialization
+echo Merging Newtonsoft Json.NET Serialization
 set FILES_TO_MERGE=
 set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization.Json\bin\%TARGET_CONFIG%\EventStore.Serialization.Json.dll"
 set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization.Json\bin\%TARGET_CONFIG%\Newtonsoft.Json*.dll"
@@ -84,12 +84,22 @@ set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization.Json.Wire
 bin\ilmerge-bin\ILMerge.exe /keyfile:src/EventStore.snk /internalize:"exclude.txt" /xmldocs /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Serialization.Json.dll %FILES_TO_MERGE%
 del exclude.txt
 
+echo Merging ServiceStack.Text Serialization
+set FILES_TO_MERGE=
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization.ServiceStack\bin\%TARGET_CONFIG%\EventStore.Serialization.ServiceStack.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization.ServiceStack\bin\%TARGET_CONFIG%\ServiceStack.Text.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization.ServiceStack.Wireup\bin\%TARGET_CONFIG%\EventStore.Serialization.ServiceStack.Wireup.dll"
+(echo.|set /p =EventStore.*)>>exclude.txt
+bin\ilmerge-bin\ILMerge.exe /internalize:"exclude.txt" /xmldocs /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Serialization.Json.dll %FILES_TO_MERGE%
+del exclude.txt
+
 echo.
 echo === FINALIZING ===
 echo Copying
 mkdir output\doc
 copy doc\*.* output\doc
 copy "lib\Json.NET\license.txt" "output\doc\Newtonsoft Json.NET license.txt"
+copy "lib\ServiceStack\license.txt" "output\doc\ServiceStack license.txt"
 
 move output publish
 
