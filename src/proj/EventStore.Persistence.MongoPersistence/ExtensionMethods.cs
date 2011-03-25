@@ -20,7 +20,7 @@
 				CommitId = commit.CommitId,
 				CommitStamp = commit.CommitStamp,
 				Headers = commit.Headers,
-				Payload = BsonArray.Create(commit.Events.Select(item => BsonDocumentWrapper.Create(serializer.Serialize(item))).ToList())
+				Payload = BsonDocumentWrapper.Create(serializer.Serialize(commit.Events))
 			};
 		}
 		public static Commit ToCommit(this MongoCommit commit, IDocumentSerializer serializer)
@@ -32,7 +32,7 @@
 				commit.Id.CommitSequence,
 				commit.CommitStamp,
 				commit.Headers,
-				commit.Payload.AsBsonArray.Select(item => item.IsBsonDocument ? BsonSerializer.Deserialize<EventMessage>(item.AsBsonDocument) : serializer.Deserialize<EventMessage>(item.AsByteArray)).ToList());
+				commit.Payload.IsBsonBinaryData ? serializer.Deserialize<List<EventMessage>>(commit.Payload.AsByteArray) : commit.Payload.AsBsonArray.Select(item => BsonSerializer.Deserialize<EventMessage>(item.AsBsonDocument)).ToList());
 		}
 
 		public static MongoSnapshot ToMongoSnapshot(this Snapshot snapshot, IDocumentSerializer serializer)
