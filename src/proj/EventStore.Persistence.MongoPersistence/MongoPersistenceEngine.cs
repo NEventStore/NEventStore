@@ -48,7 +48,7 @@
 				IndexOptions.SetName("Dispatched_Index").SetUnique(false));
 
 				this.PersistedCommits.EnsureIndex(
-					IndexKeys.Ascending("_id.StreamId", "StartingStreamRevision", "StreamRevision"),
+					IndexKeys.Ascending("_id.StreamId", "StreamRevision", "StartingStreamRevision"),
 					IndexOptions.SetName("GetFrom_Index").SetUnique(true));
 
 				this.PersistedCommits.EnsureIndex(
