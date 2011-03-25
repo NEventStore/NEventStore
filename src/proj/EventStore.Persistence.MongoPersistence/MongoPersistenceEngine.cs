@@ -13,11 +13,11 @@
 	{
 		private const string ConcurrencyException = "E1100";
 		private readonly MongoDatabase store;
-		private readonly ISerialize serializer;
+		private readonly IDocumentSerializer serializer;
 		private bool disposed;
 		private int initialized;
 
-		public MongoPersistenceEngine(MongoDatabase store, ISerialize serializer)
+		public MongoPersistenceEngine(MongoDatabase store, IDocumentSerializer serializer)
 		{
 			this.store = store;
 			this.serializer = serializer;
@@ -141,7 +141,7 @@
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
 			return this.TryMongo(() => this.PersistedSnapshots
-				.FindAs<BsonDocument>(streamId.ToSnapshotQuery(maxRevision))
+				.Find(streamId.ToSnapshotQuery(maxRevision))
 				.SetSortOrder(SortBy.Descending("_id"))
 				.SetLimit(1)
 				.Select(mc => mc.ToSnapshot(this.serializer))
