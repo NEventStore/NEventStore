@@ -429,7 +429,7 @@ namespace EventStore.Core.UnitTests
 		const int HeadCommitSequence = 42;
 		const int DupliateCommitSequence = HeadCommitSequence;
 		static readonly Commit[] Committed = new[] { BuildCommitStub(HeadStreamRevision, HeadCommitSequence) };
-		private static readonly Commit Attempt = BuildCommitStub(HeadStreamRevision + 1, DupliateCommitSequence);
+		static readonly Commit Attempt = BuildCommitStub(HeadStreamRevision + 1, DupliateCommitSequence);
 
 		static Exception thrown;
 
@@ -509,9 +509,27 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
+	public class when_the_underlying_persistece_has_filtered_out_a_commit_attempt : using_persistence
+	{
+		static readonly Commit Attempt = BuildCommitStub(1, 1);
+
+		Establish context = () =>
+		{
+			persistence.Setup(x => x.Commit(Attempt)).Returns((Commit)null);
+			dispatcher.Setup(x => x.Dispatch(Moq.It.IsAny<Commit>()));
+		};
+
+		Because of = () =>
+			((ICommitEvents)store).Commit(Attempt);
+
+		It should_not_dispatch_the_commit = () =>
+			dispatcher.Verify(x => x.Dispatch(Moq.It.IsAny<Commit>()), Times.Never());
+	}
+
+	[Subject("OptimisticEventStore")]
 	public class when_disposing_the_event_store : using_persistence
 	{
-		private Because of = () =>
+		Because of = () =>
 		{
 			store.Dispose();
 			store.Dispose();

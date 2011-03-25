@@ -75,7 +75,7 @@ namespace EventStore.Persistence.SqlPersistence
 			});
 		}
 
-		public virtual void Commit(Commit attempt)
+		public virtual Commit Commit(Commit attempt)
 		{
 			this.ExecuteCommand(attempt.StreamId, cmd =>
 			{
@@ -92,6 +92,8 @@ namespace EventStore.Persistence.SqlPersistence
 				if (rowsAffected <= 0)
 					throw new ConcurrencyException();
 			});
+
+			return attempt;
 		}
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()

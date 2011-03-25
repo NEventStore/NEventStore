@@ -88,6 +88,33 @@ namespace EventStore.Core.UnitTests.PersistenceTests
 	}
 
 	[Subject("CommitFilterPersistence")]
+	public class when_filtering_out_a_persistence_attempt : using_mock_persistence
+	{
+		static readonly Commit attempt = BuildCommitStub();
+		static Mock<IFilterCommitWrites> writeFilter;
+		static Commit persisted;
+
+		Establish context = () =>
+		{
+			writeFilter = new Mock<IFilterCommitWrites>();
+			writeFilter.Setup(x => x.FilterWrite(attempt)).Returns((Commit)null);
+			fakePersistence.Setup(x => x.Commit(Moq.It.IsAny<Commit>()));
+
+			filterPersistence = new CommitFilterPersistence(
+				fakePersistence.Object, null, new[] { writeFilter.Object });
+		};
+
+		Because of = () =>
+			persisted = filterPersistence.Commit(attempt);
+
+		It skip_providing_the_commit_to_the_underlying_persistence_infrastructure = () =>
+			fakePersistence.Verify(x => x.Commit(Moq.It.IsAny<Commit>()), Times.Never());
+
+		It should_return_null_to_the_caller = () =>
+			persisted.ShouldBeNull();
+	}
+
+	[Subject("CommitFilterPersistence")]
 	public class when_retreiving_undispatched_commits : using_mock_persistence
 	{
 		Establish context = () =>

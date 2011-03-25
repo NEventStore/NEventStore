@@ -58,13 +58,13 @@ namespace EventStore
 			}
 		}
 
-		void ICommitEvents.Commit(Commit attempt)
+		Commit ICommitEvents.Commit(Commit attempt)
 		{
 			if (!attempt.IsValid() || attempt.IsEmpty())
-				return;
+				return null;
 
 			this.ThrowOnDuplicateOrConcurrentWrites(attempt);
-			this.PersistAndDispatch(attempt);
+			return this.PersistAndDispatch(attempt);
 		}
 		protected virtual void ThrowOnDuplicateOrConcurrentWrites(Commit attempt)
 		{
@@ -87,13 +87,15 @@ namespace EventStore
 			if (head.StreamRevision < attempt.StreamRevision - attempt.Events.Count)
 				throw new StorageException(); // beyond the end of the stream
 		}
-		protected virtual void PersistAndDispatch(Commit attempt)
+		protected virtual Commit PersistAndDispatch(Commit attempt)
 		{
-			// TODO: if the commit is not persisted but is filtered, we need to know
-			// about it to suppress dispatching and tracking.
-			this.persistence.Commit(attempt);
-			this.tracker.Track(attempt);
-			this.dispatcher.Dispatch(attempt);
+			var committed = this.persistence.Commit(attempt);
+			if (committed == null)
+				return null;
+
+			this.tracker.Track(committed);
+			this.dispatcher.Dispatch(committed);
+			return committed;
 		}
 
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)

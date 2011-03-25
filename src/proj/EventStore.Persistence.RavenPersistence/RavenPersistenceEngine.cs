@@ -80,7 +80,7 @@ namespace EventStore.Persistence.RavenPersistence
 			return this.QueryCommits<RavenCommitByDate>(x => x.CommitStamp >= start);
 		}
 
-		public virtual void Commit(Commit attempt)
+		public virtual Commit Commit(Commit attempt)
 		{
 			try
 			{
@@ -94,6 +94,8 @@ namespace EventStore.Persistence.RavenPersistence
 				}
 
 				this.SaveStreamHead(attempt.ToRavenStreamHead());
+
+				return attempt;
 			}
 			catch (WebException e)
 			{
