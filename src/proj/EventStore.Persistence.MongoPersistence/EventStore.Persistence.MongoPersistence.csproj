@@ -65,7 +65,6 @@
     <Compile Include="MongoCommitId.cs" />
     <Compile Include="MongoPersistenceEngine.cs" />
     <Compile Include="MongoPersistenceFactory.cs" />
-    <Compile Include="MongoSerializer.cs" />
     <Compile Include="MongoSnapshot.cs" />
     <Compile Include="MongoSnapshotId.cs" />
     <Compile Include="MongoStreamHead.cs" />
