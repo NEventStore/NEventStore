@@ -51,7 +51,7 @@ namespace EventStore
 				engine.Initialize();
 
 			if (this.readFilters.Count > 0 || this.writeFilters.Count > 0)
-				this.Container.Register(new CommitFilterPersistence(engine, this.readFilters, this.writeFilters));
+				this.Container.Register<IPersistStreams>(new CommitFilterPersistence(engine, this.readFilters, this.writeFilters));
 
 			return base.Build();
 		}

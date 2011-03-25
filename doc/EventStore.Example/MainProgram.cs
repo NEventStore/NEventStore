@@ -13,7 +13,11 @@ namespace EventStore.Example
 		private static readonly IStoreEvents Store = Wireup.Init()
 			.UsingSqlPersistence("EventStore")
 				.InitializeDatabaseSchema()
-				.UsingJsonSerialization().Compress().EncryptWith(EncryptionKey)
+				.FilterReadsUsing(new[] { new PreventUnauthorizedReadsFilter() })
+				.FilterWritesUsing(new[] { new PreventUnauthorizedWritesFilter() })
+				.UsingJsonSerialization()
+					.Compress()
+					.EncryptWith(EncryptionKey)
 			.UsingAsynchronousDispatcher()
 				.PublishTo(new DelegateMessagePublisher(DispatchCommit))
 			.Build();

@@ -5,7 +5,7 @@ namespace EventStore
 
 	public static class MongoPersistenceWireupExtensions
 	{
-		public static Wireup UsingRavenPersistence(
+		public static Wireup UsingMongoPersistence(
 			this Wireup wireup, string connectionName, ISerialize serializer)
 		{
 			wireup.With(new MongoPersistenceFactory(connectionName, serializer).Build());

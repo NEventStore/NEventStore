@@ -20,7 +20,10 @@ namespace EventStore
 			where TService : class
 		{
 			if (instance == null)
-				throw new ArgumentNullException("instance", "The instance provided cannot be null.");
+				throw new ArgumentNullException("instance", Messages.InstanceCannotBeNull);
+
+			if (!typeof(TService).IsInterface)
+				throw new ArgumentException(Messages.TypeMustBeInterface, "instance");
 
 			var registration = new ContainerRegistration(instance);
 			this.registrations[typeof(TService)] = registration;

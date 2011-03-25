@@ -89,6 +89,8 @@ namespace EventStore
 		}
 		protected virtual void PersistAndDispatch(Commit attempt)
 		{
+			// TODO: if the commit is not persisted but is filtered, we need to know
+			// about it to suppress dispatching and tracking.
 			this.persistence.Commit(attempt);
 			this.tracker.Track(attempt);
 			this.dispatcher.Dispatch(attempt);
