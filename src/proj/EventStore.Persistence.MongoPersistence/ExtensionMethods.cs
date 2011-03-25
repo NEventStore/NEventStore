@@ -44,12 +44,32 @@
 			};
 		}
 
-		public static Snapshot ToSnapshot(this MongoSnapshot snapshot, IDocumentSerializer serializer)
+		public static Snapshot ToSnapshot(this BsonDocument bsonDocument, IDocumentSerializer serializer)
 		{
+			if (bsonDocument == null)
+				return null;
+
+			var id = BsonSerializer.Deserialize<MongoSnapshotId>(bsonDocument["_id"].AsBsonDocument);
+			var bsonPayload = bsonDocument["Payload"];
+
+			object payload;
+			switch(bsonPayload.BsonType)
+			{
+				case BsonType.Binary:
+					payload = serializer.Deserialize<object>(bsonPayload.AsByteArray);
+					break;
+				case BsonType.Document:
+					payload = BsonSerializer.Deserialize<object>(bsonPayload.AsBsonDocument);
+					break;
+				default:
+					payload = bsonPayload.RawValue;
+					break;
+			}
+
 			return new Snapshot(
-				snapshot.Id.StreamId,
-				snapshot.Id.StreamRevision,
-				snapshot.Payload.IsBsonBinaryData ? serializer.Deserialize<object>(snapshot.Payload.AsByteArray) : snapshot.Payload.RawValue);
+				id.StreamId,
+				id.StreamRevision,
+				payload);
 		}
 
 		public static StreamHead ToStreamHead(this MongoStreamHead streamhead)
