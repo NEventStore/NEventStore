@@ -87,12 +87,10 @@ namespace EventStore.Core.UnitTests.PersistenceTests
 			fakePersistence.Verify(x => x.Commit(filtered), Times.Once());
 	}
 
-	[Subject("CommitFilterPersistence")]
 	public class when_filtering_out_a_persistence_attempt : using_mock_persistence
 	{
 		static readonly Commit attempt = BuildCommitStub();
 		static Mock<IFilterCommitWrites> writeFilter;
-		static bool persisted;
 
 		Establish context = () =>
 		{
@@ -105,13 +103,10 @@ namespace EventStore.Core.UnitTests.PersistenceTests
 		};
 
 		Because of = () =>
-			persisted = filterPersistence.Commit(attempt);
+			filterPersistence.Commit(attempt);
 
 		It skip_providing_the_commit_to_the_underlying_persistence_infrastructure = () =>
 			fakePersistence.Verify(x => x.Commit(Moq.It.IsAny<Commit>()), Times.Never());
-
-		It should_return_false_to_the_caller = () =>
-			persisted.ShouldBeFalse();
 	}
 
 	[Subject("CommitFilterPersistence")]

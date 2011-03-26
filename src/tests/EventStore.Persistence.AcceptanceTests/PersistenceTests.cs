@@ -14,16 +14,12 @@ namespace EventStore.Persistence.AcceptanceTests
 		static readonly DateTime now = DateTime.UtcNow.AddYears(1);
 		static readonly Commit attempt = streamId.BuildAttempt(now);
 		static Commit persisted;
-		static bool success;
 
 		Establish context = () =>
-			success = persistence.Commit(attempt);
+			persistence.Commit(attempt);
 
 		Because of = () =>
 			persisted = persistence.GetFrom(streamId, 0, int.MaxValue).First();
-
-		It should_indicate_the_commit_was_persisted = () =>
-			success.ShouldBeTrue();
 
 		It should_correctly_persist_the_stream_identifier = () =>
 			persisted.StreamId.ShouldEqual(attempt.StreamId);

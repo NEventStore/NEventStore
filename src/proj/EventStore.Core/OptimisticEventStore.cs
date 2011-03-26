@@ -81,13 +81,13 @@ namespace EventStore
 			}
 		}
 
-		bool ICommitEvents.Commit(Commit attempt)
+		void ICommitEvents.Commit(Commit attempt)
 		{
 			if (!attempt.IsValid() || attempt.IsEmpty())
-				return false;
+				return;
 
 			this.ThrowOnDuplicateOrConcurrentWrites(attempt);
-			return this.PersistAndDispatch(attempt);
+			this.PersistAndDispatch(attempt);
 		}
 		protected virtual void ThrowOnDuplicateOrConcurrentWrites(Commit attempt)
 		{
@@ -115,10 +115,7 @@ namespace EventStore
 			if (this.commitHooks.Any(x => !x.PreCommit(attempt)))
 				return false;
 
-			var committed = this.persistence.Commit(attempt);
-			if (!committed)
-				return false;
-
+			this.persistence.Commit(attempt);
 			this.tracker.Track(attempt);
 			this.dispatcher.Dispatch(attempt);
 

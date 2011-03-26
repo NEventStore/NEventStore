@@ -367,7 +367,7 @@ namespace EventStore.Core.UnitTests
 
 		Establish context = () =>
 		{
-			persistence.Setup(x => x.Commit(populatedAttempt)).Returns(true);
+			persistence.Setup(x => x.Commit(populatedAttempt));
 			dispatcher.Setup(x => x.Dispatch(populatedAttempt));
 
 			commitHooks.Add(new Mock<IHookCommitAttempts>());
@@ -452,13 +452,10 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Establish context = () =>
-			persistence.Setup(x => x.Commit(Moq.It.IsAny<Commit>())).Returns(true);
+			((ICommitEvents)store).Commit(SuccessfulCommit);
 
 		Because of = () =>
-		{
-			((ICommitEvents)store).Commit(SuccessfulCommit);
 			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(DuplicateCommit));
-		};
 
 		It throw_a_DuplicateCommitException = () =>
 			thrown.ShouldBeOfType<DuplicateCommitException>();
@@ -522,13 +519,10 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Establish context = () =>
-			persistence.Setup(x => x.Commit(Moq.It.IsAny<Commit>())).Returns(true);
+			((ICommitEvents)store).Commit(SuccessfulAttempt);
 
 		Because of = () =>
-		{
-			((ICommitEvents)store).Commit(SuccessfulAttempt);
 			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(FailedAttempt));
-		};
 
 		It should_throw_a_ConcurrencyException = () =>
 			thrown.ShouldBeOfType<ConcurrencyException>();
@@ -544,34 +538,13 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Establish context = () =>
-			persistence.Setup(x => x.Commit(Moq.It.IsAny<Commit>())).Returns(true);
+			((ICommitEvents)store).Commit(SuccessfulAttempt);
 
 		Because of = () =>
-		{
-			((ICommitEvents)store).Commit(SuccessfulAttempt);
 			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(FailedAttempt));
-		};
 
 		It should_throw_a_ConcurrencyException = () =>
 			thrown.ShouldBeOfType<ConcurrencyException>();
-	}
-
-	[Subject("OptimisticEventStore")]
-	public class when_the_underlying_persistence_has_filtered_out_a_commit_attempt : using_persistence
-	{
-		static readonly Commit Attempt = BuildCommitStub(1, 1);
-
-		Establish context = () =>
-		{
-			persistence.Setup(x => x.Commit(Attempt));
-			dispatcher.Setup(x => x.Dispatch(Moq.It.IsAny<Commit>()));
-		};
-
-		Because of = () =>
-			((ICommitEvents)store).Commit(Attempt);
-
-		It should_not_dispatch_the_commit = () =>
-			dispatcher.Verify(x => x.Dispatch(Moq.It.IsAny<Commit>()), Times.Never());
 	}
 
 	[Subject("OptimisticEventStore")]

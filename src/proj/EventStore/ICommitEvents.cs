@@ -25,10 +25,9 @@ namespace EventStore
 		/// Writes the to-be-commited events provided to the underlying persistence mechanism.
 		/// </summary>
 		/// <param name="attempt">The series of events and associated metadata to be commited.</param>
-		/// <returns>A indicating whether the commit was successfully persisted.</returns>
 		/// <exception cref="ConcurrencyException" />
 		/// <exception cref="StorageException" />
 		/// <exception cref="StorageUnavailableException" />
-		bool Commit(Commit attempt);
+		void Commit(Commit attempt);
 	}
 }
