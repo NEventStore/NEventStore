@@ -48,7 +48,7 @@
 				IndexOptions.SetName("Dispatched_Index").SetUnique(false));
 
 				this.PersistedCommits.EnsureIndex(
-					IndexKeys.Ascending("_id.StreamId", "StreamRevision", "StartingStreamRevision"),
+					IndexKeys.Ascending("_id.StreamId", "StreamRevisions"),
 					IndexOptions.SetName("GetFrom_Index").SetUnique(true));
 
 				this.PersistedCommits.EnsureIndex(
@@ -63,12 +63,12 @@
 			{
 				var query = Query.And(
 					Query.EQ("_id.StreamId", streamId),
-					Query.GTE("StreamRevision", minRevision),
-					Query.LTE("StartingStreamRevision", maxRevision));
+					Query.GTE("StreamRevisions", minRevision),
+					Query.LTE("StreamRevisions", maxRevision));
 
 				return this.PersistedCommits
 					.Find(query)
-					.SetSortOrder("StartingStreamRevision")
+					.SetSortOrder("_id")
 					.Select(mc => mc.ToCommit(this.serializer));
 			});
 		}
@@ -90,7 +90,7 @@
 				{
 					// for concurrency / duplicate commit detection safe mode is required
 					this.PersistedCommits.Insert(commit, SafeMode.True);
-					this.UpdateStreamHeadAsync(commit.Id.StreamId, commit.StreamRevision, (commit.Id.CommitSequence == 1));
+					this.UpdateStreamHeadAsync(commit.Id.StreamId, commit.StreamRevisions.Last(), (commit.Id.CommitSequence == 1));
 				}
 				catch (MongoException e)
 				{
