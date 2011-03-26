@@ -10,11 +10,7 @@ namespace EventStore
 		private readonly IPersistStreams persistence;
 		private readonly IEnumerable<IPipelineHook> pipelineHooks;
 
-		private bool disposed;
-
-		public OptimisticEventStore(
-			IPersistStreams persistence,
-			IEnumerable<IPipelineHook> pipelineHooks)
+		public OptimisticEventStore(IPersistStreams persistence, IEnumerable<IPipelineHook> pipelineHooks)
 		{
 			this.persistence = persistence;
 			this.pipelineHooks = pipelineHooks ?? new IPipelineHook[0];
@@ -27,11 +23,8 @@ namespace EventStore
 		}
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!disposing || this.disposed)
-				return;
-
-			this.disposed = true;
-			this.persistence.Dispose();
+			if (disposing)
+				this.persistence.Dispose();
 		}
 
 		public virtual IEventStream CreateStream(Guid streamId)
@@ -64,7 +57,6 @@ namespace EventStore
 				yield return commit;
 			}
 		}
-
 		void ICommitEvents.Commit(Commit attempt)
 		{
 			if (!attempt.IsValid() || attempt.IsEmpty())
