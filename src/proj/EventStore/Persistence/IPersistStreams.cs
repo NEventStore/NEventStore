@@ -12,6 +12,7 @@ namespace EventStore.Persistence
 		/// Initializes and prepares the storage for use, if not already performed.
 		/// </summary>
 		/// <exception cref="StorageException" />
+		/// <exception cref="StorageUnavailableException" />
 		void Initialize();
 
 		/// <summary>
@@ -20,6 +21,7 @@ namespace EventStore.Persistence
 		/// <param name="start">The point in time at which to start.</param>
 		/// <returns>All commits that have occurred on or after the specified starting time.</returns>
 		/// <exception cref="StorageException" />
+		/// <exception cref="StorageUnavailableException" />
 		IEnumerable<Commit> GetFrom(DateTime start);
 
 		/// <summary>
@@ -27,6 +29,7 @@ namespace EventStore.Persistence
 		/// </summary>
 		/// <returns>The set of commits to be dispatched.</returns>
 		/// <exception cref="StorageException" />
+		/// <exception cref="StorageUnavailableException" />
 		IEnumerable<Commit> GetUndispatchedCommits();
 
 		/// <summary>
@@ -34,6 +37,7 @@ namespace EventStore.Persistence
 		/// </summary>
 		/// <param name="commit">The commit to be marked as dispatched.</param>
 		/// <exception cref="StorageException" />
+		/// <exception cref="StorageUnavailableException" />
 		void MarkCommitAsDispatched(Commit commit);
 
 		/// <summary>
@@ -42,6 +46,7 @@ namespace EventStore.Persistence
 		/// <param name="maxThreshold">The maximum difference between the head and most recent snapshot revisions.</param>
 		/// <returns>The streams for which the head and snapshot revisions differ by at least the threshold specified.</returns>
 		/// <exception cref="StorageException" />
+		/// <exception cref="StorageUnavailableException" />
 		IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold);
 	}
 }

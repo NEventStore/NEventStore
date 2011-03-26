@@ -92,7 +92,7 @@ namespace EventStore.Core.UnitTests.PersistenceTests
 	{
 		static readonly Commit attempt = BuildCommitStub();
 		static Mock<IFilterCommitWrites> writeFilter;
-		static Commit persisted;
+		static bool persisted;
 
 		Establish context = () =>
 		{
@@ -110,8 +110,8 @@ namespace EventStore.Core.UnitTests.PersistenceTests
 		It skip_providing_the_commit_to_the_underlying_persistence_infrastructure = () =>
 			fakePersistence.Verify(x => x.Commit(Moq.It.IsAny<Commit>()), Times.Never());
 
-		It should_return_null_to_the_caller = () =>
-			persisted.ShouldBeNull();
+		It should_return_false_to_the_caller = () =>
+			persisted.ShouldBeFalse();
 	}
 
 	[Subject("CommitFilterPersistence")]

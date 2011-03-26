@@ -80,9 +80,9 @@
 				.Select(x => x.ToCommit(this.serializer)));
 		}
 
-		public virtual Commit Commit(Commit attempt)
+		public virtual bool Commit(Commit attempt)
 		{
-			this.TryMongo(() =>
+			return this.TryMongo(() =>
 			{
 				var commit = attempt.ToMongoCommit(this.serializer);
 
@@ -91,6 +91,7 @@
 					// for concurrency / duplicate commit detection safe mode is required
 					this.PersistedCommits.Insert(commit, SafeMode.True);
 					this.UpdateStreamHeadAsync(commit.Id.StreamId, commit.StreamRevision, (commit.Id.CommitSequence == 1));
+					return true;
 				}
 				catch (MongoException e)
 				{
@@ -104,8 +105,6 @@
 					throw new ConcurrencyException();
 				}
 			});
-
-			return attempt;
 		}
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()

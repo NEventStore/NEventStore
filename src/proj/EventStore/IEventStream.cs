@@ -55,6 +55,7 @@ namespace EventStore
 		/// <exception cref="DuplicateCommitException" />
 		/// <exception cref="ConcurrencyException" />
 		/// <exception cref="StorageException" />
+		/// <exception cref="StorageUnavailableException" />
 		void CommitChanges(Guid commitId);
 
 		/// <summary>

@@ -59,10 +59,10 @@ namespace EventStore.Persistence
 			return persisted;
 		}
 
-		public virtual Commit Commit(Commit attempt)
+		public virtual bool Commit(Commit attempt)
 		{
 			var filtered = this.FilterWrite(attempt);
-			return filtered != null ? this.inner.Commit(filtered) : null;
+			return filtered != null ? this.inner.Commit(filtered) : false;
 		}
 		private Commit FilterWrite(Commit attempt)
 		{
