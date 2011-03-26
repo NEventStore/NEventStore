@@ -1,7 +1,8 @@
-namespace EventStore.Persistence
+namespace EventStore
 {
 	using System;
 	using System.Collections.Generic;
+	using Persistence;
 
 	/// <summary>
 	/// Tracks the commits for a set of streams to determine if a particular commit has already
@@ -15,23 +16,59 @@ namespace EventStore.Persistence
 	/// For storage engines with stronger consistency guarantees, such as a relational database,
 	/// the CommitTracker helps to avoid the increased latency incurred from extra roundtrips.
 	/// </remarks>
-	public class CommitTracker
+	public class OptimisticPipelineHook : IPipelineHook
 	{
 		private const int MaxCommitsTrackedPerStream = 1000;
 		private readonly IDictionary<Guid, TrackedStream> streams = new Dictionary<Guid, TrackedStream>();
 		private readonly int commitsToTrackPerStream;
 
-		public CommitTracker()
+		public OptimisticPipelineHook()
 			: this(MaxCommitsTrackedPerStream)
 		{
 		}
-		public CommitTracker(int commitsToTrackPerStream)
+		public OptimisticPipelineHook(int commitsToTrackPerStream)
 		{
 			this.commitsToTrackPerStream = commitsToTrackPerStream;
 		}
 
+		public virtual Commit Select(Commit committed)
+		{
+			this.Track(committed);
+			return committed;
+		}
+		public virtual bool PreCommit(Commit attempt)
+		{
+			if (this.Contains(attempt))
+				throw new DuplicateCommitException();
+
+			var head = this.GetStreamHead(attempt.StreamId);
+			if (head == null)
+				return true;
+
+			if (head.CommitSequence >= attempt.CommitSequence)
+				throw new ConcurrencyException();
+
+			if (head.StreamRevision >= attempt.StreamRevision)
+				throw new ConcurrencyException();
+
+			if (head.CommitSequence < attempt.CommitSequence - 1)
+				throw new StorageException(); // beyond the end of the stream
+
+			if (head.StreamRevision < attempt.StreamRevision - attempt.Events.Count)
+				throw new StorageException(); // beyond the end of the stream
+
+			return true;
+		}
+		public virtual void PostCommit(Commit committed)
+		{
+			this.Track(committed);
+		}
+
 		public virtual void Track(Commit committed)
 		{
+			if (committed == null)
+				return;
+
 			TrackedStream stream;
 
 			lock (this.streams)

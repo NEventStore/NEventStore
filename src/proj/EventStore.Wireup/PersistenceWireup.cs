@@ -8,8 +8,7 @@ namespace EventStore
 	public class PersistenceWireup : Wireup
 	{
 		private bool initialize;
-		private ICollection<IFilterCommitReads> readFilters;
-		private ICollection<IFilterCommitWrites> writeFilters;
+		private ICollection<IPipelineHook> pipelineHooks;
 
 		public PersistenceWireup(Wireup inner)
 			: base(inner)
@@ -32,14 +31,14 @@ namespace EventStore
 			return this;
 		}
 
-		public virtual PersistenceWireup FilterReadsUsing(IEnumerable<IFilterCommitReads> filters)
+		public virtual PersistenceWireup HookIntoPipelineUsing(params IPipelineHook[] hooks)
 		{
-			this.readFilters = (filters ?? new IFilterCommitReads[] { }).Where(x => x != null).ToArray();
+			this.pipelineHooks = (hooks ?? new IPipelineHook[] { }).Where(x => x != null).ToArray();
 			return this;
 		}
-		public virtual PersistenceWireup FilterWritesUsing(IEnumerable<IFilterCommitWrites> filters)
+		public virtual PersistenceWireup HookIntoPipelineUsing(IEnumerable<IPipelineHook> hooks)
 		{
-			this.writeFilters = (filters ?? new IFilterCommitWrites[] { }).Where(x => x != null).ToArray();
+			this.pipelineHooks = (hooks ?? new IPipelineHook[] { }).Where(x => x != null).ToArray();
 			return this;
 		}
 
@@ -50,8 +49,8 @@ namespace EventStore
 			if (this.initialize)
 				engine.Initialize();
 
-			if (this.readFilters.Count > 0 || this.writeFilters.Count > 0)
-				this.Container.Register<IPersistStreams>(new CommitFilterPersistence(engine, this.readFilters, this.writeFilters));
+			if (this.pipelineHooks.Count > 0)
+				this.Container.Register(this.pipelineHooks);
 
 			return base.Build();
 		}

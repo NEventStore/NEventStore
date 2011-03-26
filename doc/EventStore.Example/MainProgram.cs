@@ -13,8 +13,7 @@ namespace EventStore.Example
 		private static readonly IStoreEvents Store = Wireup.Init()
 			.UsingSqlPersistence("EventStore")
 				.InitializeDatabaseSchema()
-				.FilterReadsUsing(new[] { new PreventUnauthorizedReadsFilter() })
-				.FilterWritesUsing(new[] { new PreventUnauthorizedWritesFilter() })
+				.HookIntoPipelineUsing(new[] { new AuthorizationPipelineHook() })
 				.UsingJsonSerialization()
 					.Compress()
 					.EncryptWith(EncryptionKey)
@@ -90,14 +89,5 @@ namespace EventStore.Example
 				stream.CommitChanges(Guid.NewGuid());
 			}
 		}
-	}
-
-	internal class SomeDomainEvent
-	{
-		public string Value { get; set; }
-	}
-	internal class AggregateMemento
-	{
-		public string Value { get; set; }
 	}
 }

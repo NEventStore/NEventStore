@@ -30,7 +30,7 @@ namespace EventStore.Persistence
 			lock (this.commits)
 				return this.commits.Where(x => x.StreamId == streamId && x.StreamRevision >= minRevision && (x.StreamRevision - x.Events.Count + 1) <= maxRevision).ToArray();
 		}
-		public virtual bool Commit(Commit attempt)
+		public virtual void Commit(Commit attempt)
 		{
 			lock (this.commits)
 			{
@@ -53,8 +53,6 @@ namespace EventStore.Persistence
 					var snapshotRevision = head == null ? 0 : head.SnapshotRevision;
 					this.heads.Add(new StreamHead(attempt.StreamId, attempt.StreamRevision, snapshotRevision));
 				}
-
-				return true;
 			}
 		}
 

@@ -4,8 +4,8 @@
 namespace EventStore.Core.UnitTests
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Linq;
-	using Dispatcher;
 	using Machine.Specifications;
 	using Moq;
 	using Persistence;
@@ -99,13 +99,20 @@ namespace EventStore.Core.UnitTests
 		static IEventStream stream;
 
 		Establish context = () =>
+		{
 			persistence.Setup(x => x.GetFrom(streamId, MinRevision, MaxRevision)).Returns(Committed);
+			pipelineHooks.Add(new Mock<IPipelineHook>());
+			pipelineHooks[0].Setup(x => x.Select(Committed.First()));
+		};
 
 		Because of = () =>
 			stream = store.OpenStream(streamId, MinRevision, MaxRevision);
 
 		It should_invoke_the_underlying_infrastructure_with_the_values_provided = () =>
 			persistence.Verify(x => x.GetFrom(streamId, MinRevision, MaxRevision), Times.Once());
+
+		It should_provide_the_commits_to_the_selection_hooks = () =>
+			pipelineHooks.ForEach(x => x.Verify(hook => hook.Select(Committed.First()), Times.Once()));
 
 		It should_return_an_event_stream_containing_the_correct_stream_identifer = () =>
 			stream.StreamId.ShouldEqual(streamId);
@@ -281,63 +288,6 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_committing_with_a_sequence_beyond_the_known_end_of_a_stream : using_persistence
-	{
-		const int HeadStreamRevision = 5;
-		const int HeadCommitSequence = 1;
-		const int ExpectedNextCommitSequence = HeadCommitSequence + 1;
-		const int BeyondEndOfStreamCommitSequence = ExpectedNextCommitSequence + 1;
-		static readonly Commit beyondEndOfStream = BuildCommitStub(HeadStreamRevision + 1, BeyondEndOfStreamCommitSequence);
-		static readonly Commit[] alreadyCommitted = new[]
-		{
-			BuildCommitStub(HeadStreamRevision, HeadCommitSequence)
-		};
-		static Exception thrown;
-
-		Establish context = () =>
-			persistence.Setup(x => x.GetFrom(streamId, 0, int.MaxValue)).Returns(alreadyCommitted);
-
-		Because of = () =>
-		{
-			((ICommitEvents)store).GetFrom(streamId, 0, int.MaxValue).ToList();
-			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(beyondEndOfStream));
-		};
-
-		It should_throw_a_PersistenceException = () =>
-			thrown.ShouldBeOfType<StorageException>();
-	}
-
-	[Subject("OptimisticEventStore")]
-	public class when_committing_with_a_revision_beyond_the_known_end_of_a_stream : using_persistence
-	{
-		const int HeadCommitSequence = 1;
-		const int HeadStreamRevision = 1;
-		const int NumberOfEventsBeingCommitted = 1;
-		const int ExpectedNextStreamRevision = HeadStreamRevision + 1 + NumberOfEventsBeingCommitted;
-		const int BeyondEndOfStreamRevision = ExpectedNextStreamRevision + 1;
-
-		static readonly Commit[] alreadyCommitted = new[]
-		{
-			BuildCommitStub(HeadStreamRevision, HeadCommitSequence)
-		};
-		static readonly Commit beyondEndOfStream = BuildCommitStub(
-			BeyondEndOfStreamRevision, HeadCommitSequence + 1);
-		static Exception thrown;
-
-		Establish context = () =>
-			persistence.Setup(x => x.GetFrom(streamId, 0, int.MaxValue)).Returns(alreadyCommitted);
-
-		Because of = () =>
-		{
-			((ICommitEvents)store).GetFrom(streamId, 0, int.MaxValue).ToList();
-			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(beyondEndOfStream));
-		};
-
-		It should_throw_a_PersistenceException = () =>
-			thrown.ShouldBeOfType<StorageException>();
-	}
-
-	[Subject("OptimisticEventStore")]
 	public class when_committing_an_empty_attempt_to_a_stream : using_persistence
 	{
 		static readonly Commit attemptWithNoEvents = BuildCommitStub(Guid.NewGuid());
@@ -360,170 +310,44 @@ namespace EventStore.Core.UnitTests
 		Establish context = () =>
 		{
 			persistence.Setup(x => x.Commit(populatedAttempt));
-			dispatcher.Setup(x => x.Dispatch(populatedAttempt));
+
+			pipelineHooks.Add(new Mock<IPipelineHook>());
+			pipelineHooks[0].Setup(x => x.PreCommit(populatedAttempt)).Returns(true);
+			pipelineHooks[0].Setup(x => x.PostCommit(populatedAttempt));
 		};
 
 		Because of = () =>
 			((ICommitEvents)store).Commit(populatedAttempt);
 
+		It should_provide_the_commit_to_the_precommit_hooks = () =>
+			pipelineHooks.ForEach(x => x.Verify(hook => hook.PreCommit(populatedAttempt), Times.Once()));
+
 		It should_provide_the_commit_attempt_to_the_configured_persistence_mechanism = () =>
 			persistence.Verify(x => x.Commit(populatedAttempt), Times.Once());
 
-		It should_provide_the_commit_to_the_dispatcher = () =>
-			dispatcher.Verify(x => x.Dispatch(populatedAttempt), Times.Once());
-	}
-
-	/// <summary>
-	/// This behavior is primarily to support a NoSQL storage solution where CommitId is not being used as the "primary key"
-	/// in a NoSQL environment, we'll most likely use StreamId + CommitSequence, which also enables optimistic concurrency.
-	/// </summary>
-	[Subject("OptimisticEventStore")]
-	public class when_committing_with_an_identifier_that_was_previously_read : using_persistence
-	{
-		const int MaxRevision = 2;
-		static readonly Guid AlreadyCommittedId = Guid.NewGuid();
-		static readonly Commit[] Committed = new[]
-		{
-			BuildCommitStub(AlreadyCommittedId, 1, 1),
-			BuildCommitStub(Guid.NewGuid(), 1, 1)
-		};
-		static readonly Commit DuplicateCommitAttempt = BuildCommitStub(
-			AlreadyCommittedId, Committed.Last().StreamRevision + 1, Committed.Last().CommitSequence + 1);
-		static Exception thrown;
-
-		Establish context = () =>
-			persistence.Setup(x => x.GetFrom(streamId, 0, MaxRevision)).Returns(Committed);
-
-		Because of = () =>
-		{
-			((ICommitEvents)store).GetFrom(streamId, 0, MaxRevision).ToList();
-			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(DuplicateCommitAttempt));
-		};
-
-		It should_throw_a_DuplicateCommitException = () =>
-			thrown.ShouldBeOfType<DuplicateCommitException>();
+		It should_provide_the_commit_to_the_postcommit_hooks = () =>
+			pipelineHooks.ForEach(x => x.Verify(hook => hook.PostCommit(populatedAttempt), Times.Once()));
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_committing_with_the_same_commit_identifier_more_than_once : using_persistence
+	public class when_a_precommit_hook_rejects_a_commit : using_persistence
 	{
-		static readonly Guid DuplicateCommitId = Guid.NewGuid();
-		static readonly Commit SuccessfulCommit = BuildCommitStub(DuplicateCommitId, 1, 1);
-		static readonly Commit DuplicateCommit = BuildCommitStub(DuplicateCommitId, 2, 2);
-		static Exception thrown;
-
-		Establish context = () =>
-			((ICommitEvents)store).Commit(SuccessfulCommit);
-
-		Because of = () =>
-			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(DuplicateCommit));
-
-		It throw_a_DuplicateCommitException = () =>
-			thrown.ShouldBeOfType<DuplicateCommitException>();
-	}
-
-	[Subject("OptimisticEventStore")]
-	public class when_committing_with_a_sequence_less_or_equal_to_the_most_recent_sequence_for_the_stream : using_persistence
-	{
-		const int HeadStreamRevision = 42;
-		const int HeadCommitSequence = 42;
-		const int DupliateCommitSequence = HeadCommitSequence;
-		static readonly Commit[] Committed = new[] { BuildCommitStub(HeadStreamRevision, HeadCommitSequence) };
-		static readonly Commit Attempt = BuildCommitStub(HeadStreamRevision + 1, DupliateCommitSequence);
-
-		static Exception thrown;
-
-		Establish context = () =>
-			persistence.Setup(x => x.GetFrom(streamId, HeadStreamRevision, int .MaxValue)).Returns(Committed);
-
-		Because of = () =>
-		{
-			((ICommitEvents)store).GetFrom(streamId, HeadStreamRevision, int.MaxValue).ToList();
-			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(Attempt));
-		};
-
-		It should_throw_a_ConcurrencyException = () =>
-			thrown.ShouldBeOfType<ConcurrencyException>();
-	}
-
-	[Subject("OptimisticEventStore")]
-	public class when_committing_with_a_revision_less_or_equal_to_than_the_most_recent_revision_read_for_the_stream : using_persistence
-	{
-		const int HeadStreamRevision = 3;
-		const int HeadCommitSequence = 2;
-		const int DuplicateStreamRevision = HeadStreamRevision;
-		static readonly Commit[] Committed = new[] { BuildCommitStub(HeadStreamRevision, HeadCommitSequence) };
-		static readonly Commit FailedAttempt = BuildCommitStub(DuplicateStreamRevision, HeadCommitSequence + 1);
-
-		static Exception thrown;
-
-		Establish context = () =>
-			persistence.Setup(x => x.GetFrom(streamId, HeadStreamRevision, int.MaxValue)).Returns(Committed);
-
-		Because of = () =>
-		{
-			((ICommitEvents)store).GetFrom(streamId, HeadStreamRevision, int.MaxValue).ToList();
-			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(FailedAttempt));
-		};
-
-		It should_throw_a_ConcurrencyException = () =>
-			thrown.ShouldBeOfType<ConcurrencyException>();
-	}
-
-	[Subject("OptimisticEventStore")]
-	public class when_committing_with_a_commit_sequence_less_than_or_equal_to_the_most_recent_commit_for_the_stream : using_persistence
-	{
-		const int DuplicateCommitSequence = 1;
-
-		static readonly Commit SuccessfulAttempt = BuildCommitStub(1, DuplicateCommitSequence);
-		static readonly Commit FailedAttempt = BuildCommitStub(2, DuplicateCommitSequence);
-		static Exception thrown;
-
-		Establish context = () =>
-			((ICommitEvents)store).Commit(SuccessfulAttempt);
-
-		Because of = () =>
-			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(FailedAttempt));
-
-		It should_throw_a_ConcurrencyException = () =>
-			thrown.ShouldBeOfType<ConcurrencyException>();
-	}
-
-	[Subject("OptimisticEventStore")]
-	public class when_committing_with_a_stream_revision_less_than_or_equal_to_the_most_recent_commit_for_the_stream : using_persistence
-	{
-		const int DuplicateStreamRevision = 2;
-
-		static readonly Commit SuccessfulAttempt = BuildCommitStub(DuplicateStreamRevision, 1);
-		static readonly Commit FailedAttempt = BuildCommitStub(DuplicateStreamRevision, 2);
-		static Exception thrown;
-
-		Establish context = () =>
-			((ICommitEvents)store).Commit(SuccessfulAttempt);
-
-		Because of = () =>
-			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(FailedAttempt));
-
-		It should_throw_a_ConcurrencyException = () =>
-			thrown.ShouldBeOfType<ConcurrencyException>();
-	}
-
-	[Subject("OptimisticEventStore")]
-	public class when_the_underlying_persistece_has_filtered_out_a_commit_attempt : using_persistence
-	{
-		static readonly Commit Attempt = BuildCommitStub(1, 1);
+		static readonly Commit attempt = BuildCommitStub(1, 1);
 
 		Establish context = () =>
 		{
-			persistence.Setup(x => x.Commit(Attempt));
-			dispatcher.Setup(x => x.Dispatch(Moq.It.IsAny<Commit>()));
+			pipelineHooks.Add(new Mock<IPipelineHook>());
+			pipelineHooks[0].Setup(x => x.PreCommit(attempt)).Returns(false);
 		};
 
 		Because of = () =>
-			((ICommitEvents)store).Commit(Attempt);
+			((ICommitEvents)store).Commit(attempt);
 
-		It should_not_dispatch_the_commit = () =>
-			dispatcher.Verify(x => x.Dispatch(Moq.It.IsAny<Commit>()), Times.Never());
+		It should_not_call_the_underlying_infrastructure = () =>
+			persistence.Verify(x => x.Commit(attempt), Times.Never());
+
+		It should_not_provide_the_commit_to_the_postcommit_hooks = () =>
+			pipelineHooks.ForEach(x => x.Verify(y => y.PostCommit(attempt), Times.Never()));
 	}
 
 	[Subject("OptimisticEventStore")]
@@ -537,23 +361,20 @@ namespace EventStore.Core.UnitTests
 
 		It should_dispose_the_underlying_persistence_exactly_once = () =>
 			persistence.Verify(x => x.Dispose(), Times.Once());
-
-		It should_dispose_the_underlying_dispatcher_exactly_once = () =>
-			dispatcher.Verify(x => x.Dispose(), Times.Once());
 	}
 
 	public abstract class using_persistence
 	{
 		protected static Guid streamId = Guid.NewGuid();
 		protected static Mock<IPersistStreams> persistence;
-		protected static Mock<IDispatchCommits> dispatcher;
 		protected static OptimisticEventStore store;
+		protected static List<Mock<IPipelineHook>> pipelineHooks;
 
 		Establish context = () =>
 		{
 			persistence = new Mock<IPersistStreams>();
-			dispatcher = new Mock<IDispatchCommits>();
-			store = new OptimisticEventStore(persistence.Object, dispatcher.Object);
+			pipelineHooks = new List<Mock<IPipelineHook>>();
+			store = new OptimisticEventStore(persistence.Object, pipelineHooks.Select(x => x.Object));
 		};
 
 		Cleanup everything = () =>
