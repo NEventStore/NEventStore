@@ -50,7 +50,7 @@ namespace EventStore
 
 		private static IStoreEvents BuildEventStore(NanoContainer context)
 		{
-			var concurrentHook = new OptimisticReadPipelineHook();
+			var concurrentHook = new OptimisticPipelineHook();
 			var dispatcherHook = new DispatchPipelineHook(context.Resolve<IDispatchCommits>());
 
 			var pipelineHooks = context.Resolve<ICollection<IPipelineHook>>() ?? new IPipelineHook[0];

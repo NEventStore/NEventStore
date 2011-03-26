@@ -177,15 +177,63 @@ namespace EventStore.Core.UnitTests
 			thrown.ShouldBeOfType<ConcurrencyException>();
 	}
 
+	[Subject("CommitTracker")]
+	public class when_tracking_commits
+	{
+		const int MaxCommitsToTrackPerStream = 2;
+		static readonly Guid StreamId = Guid.NewGuid();
+		static readonly Commit[] TrackedCommits = new[]
+		{
+			BuildCommit(StreamId, Guid.NewGuid()),
+			BuildCommit(StreamId, Guid.NewGuid()),
+			BuildCommit(StreamId, Guid.NewGuid())
+		};
+
+		static OptimisticPipelineHook hook;
+
+		Establish context = () =>
+			hook = new OptimisticPipelineHook(MaxCommitsToTrackPerStream);
+
+		Because of = () =>
+		{
+			foreach (var commit in TrackedCommits)
+				hook.Track(commit);
+		};
+
+		It should_only_contain_streams_explicitly_tracked = () =>
+		{
+			var untracked = BuildCommit(Guid.Empty, TrackedCommits[0].CommitId);
+			hook.Contains(untracked).ShouldBeFalse();
+		};
+
+		It should_find_tracked_commits = () =>
+		{
+			var stillTracked = BuildCommit(TrackedCommits.Last().StreamId, TrackedCommits.Last().CommitId);
+			hook.Contains(stillTracked).ShouldBeTrue();
+		};
+
+		It should_only_track_the_specified_number_of_commits = () =>
+		{
+			var droppedFromTracking = BuildCommit(
+				TrackedCommits.First().StreamId, TrackedCommits.First().CommitId);
+			hook.Contains(droppedFromTracking).ShouldBeFalse();
+		};
+
+		private static Commit BuildCommit(Guid streamId, Guid commitId)
+		{
+			return new Commit(streamId, 0, commitId, 0, DateTime.UtcNow, null, null);
+		}
+	}
+
 	public abstract class using_commit_hooks
 	{
 		protected static Guid streamId = Guid.NewGuid();
-		protected static OptimisticReadPipelineHook hook;
+		protected static OptimisticPipelineHook hook;
 
 		Establish context = () =>
 		{
 			streamId = Guid.NewGuid();
-			hook = new OptimisticReadPipelineHook();
+			hook = new OptimisticPipelineHook();
 		};
 
 		Cleanup everything = () =>

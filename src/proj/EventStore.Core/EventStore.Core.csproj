@@ -43,14 +43,13 @@
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DispatchPipelineHook.cs" />
-    <Compile Include="OptimisticReadPipelineHook.cs" />
+    <Compile Include="OptimisticPipelineHook.cs" />
     <Compile Include="Dispatcher\AsynchronousDispatcher.cs" />
     <Compile Include="Dispatcher\NullDispatcher.cs" />
     <Compile Include="Dispatcher\NullPublisher.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="OptimisticEventStore.cs" />
     <Compile Include="OptimisticEventStream.cs" />
-    <Compile Include="Persistence\CommitTracker.cs" />
     <Compile Include="Dispatcher\DelegateMessagePublisher.cs" />
     <Compile Include="Dispatcher\IPublishMessages.cs" />
     <Compile Include="Persistence\InMemoryPersistenceEngine.cs" />
