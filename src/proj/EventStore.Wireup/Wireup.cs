@@ -23,8 +23,16 @@ namespace EventStore
 
 			container.Register<IPersistStreams>(new InMemoryPersistenceEngine());
 			container.Register<IDispatchCommits>(new NullDispatcher());
-			container.Register<IStoreEvents>(c => new OptimisticEventStore(
-				c.Resolve<IPersistStreams>(), c.Resolve<IDispatchCommits>()));
+			container.Register<IStoreEvents>(c =>
+			{
+				var concurrentHook = new OptimisticCommitHook();
+
+				return new OptimisticEventStore(
+					c.Resolve<IPersistStreams>(),
+					c.Resolve<IDispatchCommits>(),
+					new[] { concurrentHook },
+					new[] { concurrentHook });
+			});
 
 			return new Wireup(container);
 		}

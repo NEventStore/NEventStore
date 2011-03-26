@@ -8,7 +8,6 @@ namespace EventStore
 
 	public class OptimisticEventStore : IStoreEvents, ICommitEvents
 	{
-		private readonly CommitTracker tracker = new CommitTracker();
 		private readonly IPersistStreams persistence;
 		private readonly IDispatchCommits dispatcher;
 		private readonly IEnumerable<IHookCommitAttempts> commitHooks;
@@ -76,7 +75,6 @@ namespace EventStore
 						continue;
 				}
 
-				this.tracker.Track(commit);
 				yield return commit;
 			}
 		}
@@ -86,43 +84,14 @@ namespace EventStore
 			if (!attempt.IsValid() || attempt.IsEmpty())
 				return;
 
-			this.ThrowOnDuplicateOrConcurrentWrites(attempt);
-			this.PersistAndDispatch(attempt);
-		}
-		protected virtual void ThrowOnDuplicateOrConcurrentWrites(Commit attempt)
-		{
-			if (this.tracker.Contains(attempt))
-				throw new DuplicateCommitException();
-
-			var head = this.tracker.GetStreamHead(attempt.StreamId);
-			if (head == null)
+			if (this.commitHooks.Any(x => !x.PreCommit(attempt)))
 				return;
 
-			if (head.CommitSequence >= attempt.CommitSequence)
-				throw new ConcurrencyException();
-
-			if (head.StreamRevision >= attempt.StreamRevision)
-				throw new ConcurrencyException();
-
-			if (head.CommitSequence < attempt.CommitSequence - 1)
-				throw new StorageException(); // beyond the end of the stream
-
-			if (head.StreamRevision < attempt.StreamRevision - attempt.Events.Count)
-				throw new StorageException(); // beyond the end of the stream
-		}
-		protected virtual bool PersistAndDispatch(Commit attempt)
-		{
-			if (this.commitHooks.Any(x => !x.PreCommit(attempt)))
-				return false;
-
 			this.persistence.Commit(attempt);
-			this.tracker.Track(attempt);
 			this.dispatcher.Dispatch(attempt);
 
 			foreach (var hook in this.commitHooks)
 				hook.PostCommit(attempt);
-
-			return true;
 		}
 
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
