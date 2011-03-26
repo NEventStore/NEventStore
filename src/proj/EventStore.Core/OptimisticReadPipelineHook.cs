@@ -2,7 +2,7 @@ namespace EventStore
 {
 	using Persistence;
 
-	public class OptimisticReadCommitHook : IReadHook, ICommitHook
+	public class OptimisticReadPipelineHook : IPipelineHook
 	{
 		private readonly CommitTracker tracker = new CommitTracker();
 

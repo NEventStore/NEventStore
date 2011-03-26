@@ -14,13 +14,13 @@ namespace EventStore.Core.UnitTests
 	{
 		static readonly Commit commit = new Commit(Guid.NewGuid(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
 		static readonly Mock<IDispatchCommits> dispatcher = new Mock<IDispatchCommits>();
-		static readonly DispatchCommitHook CommitHook = new DispatchCommitHook(dispatcher.Object);
+		static readonly DispatchPipelineHook PipelineHook = new DispatchPipelineHook(dispatcher.Object);
 
 		Establish context = () =>
 			dispatcher.Setup(x => x.Dispatch(null));
 
 		Because of = () =>
-			CommitHook.PostCommit(commit);
+			PipelineHook.PostCommit(commit);
 
 		It should_invoke_the_configured_dispatcher = () =>
 			dispatcher.Verify(x => x.Dispatch(commit), Times.Once());
@@ -30,14 +30,28 @@ namespace EventStore.Core.UnitTests
 	public class when_the_hook_has_no_dispatcher_configured
 	{
 		static readonly Commit commit = new Commit(Guid.NewGuid(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
-		static readonly DispatchCommitHook CommitHook = new DispatchCommitHook();
+		static readonly DispatchPipelineHook PipelineHook = new DispatchPipelineHook();
 		static Exception thrown;
 
 		Because of = () =>
-			thrown = Catch.Exception(() => CommitHook.PostCommit(commit));
+			thrown = Catch.Exception(() => PipelineHook.PostCommit(commit));
 
 		It should_not_throw_an_exception = () =>
 			thrown.ShouldBeNull();
+	}
+
+	[Subject("DispatchCommitHook")]
+	public class when_a_commit_is_selected
+	{
+		static readonly Commit commit = new Commit(Guid.NewGuid(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
+		static readonly DispatchPipelineHook PipelineHook = new DispatchPipelineHook();
+		static Commit selected;
+
+		Because of = () =>
+			selected = PipelineHook.Select(commit);
+
+		It should_always_return_the_exact_same_commit = () =>
+			object.ReferenceEquals(selected, commit).ShouldBeTrue();
 	}
 }
 

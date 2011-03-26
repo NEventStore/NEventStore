@@ -42,8 +42,8 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="DispatchCommitHook.cs" />
-    <Compile Include="OptimisticReadCommitHook.cs" />
+    <Compile Include="DispatchPipelineHook.cs" />
+    <Compile Include="OptimisticReadPipelineHook.cs" />
     <Compile Include="Dispatcher\AsynchronousDispatcher.cs" />
     <Compile Include="Dispatcher\NullDispatcher.cs" />
     <Compile Include="Dispatcher\NullPublisher.cs" />

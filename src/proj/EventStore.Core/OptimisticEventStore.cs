@@ -8,19 +8,16 @@ namespace EventStore
 	public class OptimisticEventStore : IStoreEvents, ICommitEvents
 	{
 		private readonly IPersistStreams persistence;
-		private readonly IEnumerable<ICommitHook> commitHooks;
-		private readonly IEnumerable<IReadHook> readHooks;
+		private readonly IEnumerable<IPipelineHook> pipelineHooks;
 
 		private bool disposed;
 
 		public OptimisticEventStore(
 			IPersistStreams persistence,
-			IEnumerable<ICommitHook> commitHooks,
-			IEnumerable<IReadHook> readHooks)
+			IEnumerable<IPipelineHook> pipelineHooks)
 		{
 			this.persistence = persistence;
-			this.commitHooks = commitHooks ?? new ICommitHook[0];
-			this.readHooks = readHooks ?? new IReadHook[0];
+			this.pipelineHooks = pipelineHooks ?? new IPipelineHook[0];
 		}
 
 		public void Dispose()
@@ -57,7 +54,7 @@ namespace EventStore
 			var commits = this.persistence.GetFrom(streamId, minRevision, maxRevision);
 			foreach (var commit in commits)
 			{
-				foreach (var hook in this.readHooks)
+				foreach (var hook in this.pipelineHooks)
 				{
 					var filtered = hook.Select(commit);
 					if (filtered == null)
@@ -73,12 +70,12 @@ namespace EventStore
 			if (!attempt.IsValid() || attempt.IsEmpty())
 				return;
 
-			if (this.commitHooks.Any(x => !x.PreCommit(attempt)))
+			if (this.pipelineHooks.Any(x => !x.PreCommit(attempt)))
 				return;
 
 			this.persistence.Commit(attempt);
 
-			foreach (var hook in this.commitHooks)
+			foreach (var hook in this.pipelineHooks)
 				hook.PostCommit(attempt);
 		}
 

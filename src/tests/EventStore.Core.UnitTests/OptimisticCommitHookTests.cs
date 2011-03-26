@@ -21,10 +21,10 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Establish context = () =>
-			readCommitHook.PostCommit(alreadyCommitted);
+			hook.PostCommit(alreadyCommitted);
 
 		Because of = () =>
-			thrown = Catch.Exception(() => readCommitHook.PreCommit(beyondEndOfStream));
+			thrown = Catch.Exception(() => hook.PreCommit(beyondEndOfStream));
 
 		It should_throw_a_PersistenceException = () =>
 			thrown.ShouldBeOfType<StorageException>();
@@ -43,10 +43,10 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Establish context = () =>
-			readCommitHook.PostCommit(alreadyCommitted);
+			hook.PostCommit(alreadyCommitted);
 
 		Because of = () =>
-			thrown = Catch.Exception(() => readCommitHook.PreCommit(beyondEndOfStream));
+			thrown = Catch.Exception(() => hook.PreCommit(beyondEndOfStream));
 
 		It should_throw_a_PersistenceException = () =>
 			thrown.ShouldBeOfType<StorageException>();
@@ -71,10 +71,10 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Establish context = () =>
-			Committed.ToList().ForEach(x => readCommitHook.PostCommit(x));
+			Committed.ToList().ForEach(x => hook.PostCommit(x));
 
 		Because of = () =>
-			thrown = Catch.Exception(() => readCommitHook.PreCommit(DuplicateCommitAttempt));
+			thrown = Catch.Exception(() => hook.PreCommit(DuplicateCommitAttempt));
 
 		It should_throw_a_DuplicateCommitException = () =>
 			thrown.ShouldBeOfType<DuplicateCommitException>();
@@ -89,10 +89,10 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Establish context = () =>
-			readCommitHook.PostCommit(SuccessfulCommit);
+			hook.PostCommit(SuccessfulCommit);
 
 		Because of = () =>
-			thrown = Catch.Exception(() => readCommitHook.PreCommit(DuplicateCommit));
+			thrown = Catch.Exception(() => hook.PreCommit(DuplicateCommit));
 
 		It throw_a_DuplicateCommitException = () =>
 			thrown.ShouldBeOfType<DuplicateCommitException>();
@@ -110,10 +110,10 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Establish context = () =>
-			readCommitHook.PostCommit(Committed);
+			hook.PostCommit(Committed);
 
 		Because of = () =>
-			thrown = Catch.Exception(() => readCommitHook.PreCommit(Attempt));
+			thrown = Catch.Exception(() => hook.PreCommit(Attempt));
 
 		It should_throw_a_ConcurrencyException = () =>
 			thrown.ShouldBeOfType<ConcurrencyException>();
@@ -130,10 +130,10 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Establish context = () =>
-			readCommitHook.PostCommit(Committed);
+			hook.PostCommit(Committed);
 
 		Because of = () =>
-			thrown = Catch.Exception(() => readCommitHook.PreCommit(FailedAttempt));
+			thrown = Catch.Exception(() => hook.PreCommit(FailedAttempt));
 
 		It should_throw_a_ConcurrencyException = () =>
 			thrown.ShouldBeOfType<ConcurrencyException>();
@@ -149,10 +149,10 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Establish context = () =>
-			readCommitHook.PostCommit(SuccessfulAttempt);
+			hook.PostCommit(SuccessfulAttempt);
 
 		Because of = () =>
-			thrown = Catch.Exception(() => readCommitHook.PreCommit(FailedAttempt));
+			thrown = Catch.Exception(() => hook.PreCommit(FailedAttempt));
 
 		It should_throw_a_ConcurrencyException = () =>
 			thrown.ShouldBeOfType<ConcurrencyException>();
@@ -168,10 +168,10 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Establish context = () =>
-			readCommitHook.PostCommit(SuccessfulAttempt);
+			hook.PostCommit(SuccessfulAttempt);
 
 		Because of = () =>
-			thrown = Catch.Exception(() => readCommitHook.PreCommit(FailedAttempt));
+			thrown = Catch.Exception(() => hook.PreCommit(FailedAttempt));
 
 		It should_throw_a_ConcurrencyException = () =>
 			thrown.ShouldBeOfType<ConcurrencyException>();
@@ -180,12 +180,12 @@ namespace EventStore.Core.UnitTests
 	public abstract class using_commit_hooks
 	{
 		protected static Guid streamId = Guid.NewGuid();
-		protected static OptimisticReadCommitHook readCommitHook;
+		protected static OptimisticReadPipelineHook hook;
 
 		Establish context = () =>
 		{
 			streamId = Guid.NewGuid();
-			readCommitHook = new OptimisticReadCommitHook();
+			hook = new OptimisticReadPipelineHook();
 		};
 
 		Cleanup everything = () =>

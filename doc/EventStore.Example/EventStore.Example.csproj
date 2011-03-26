@@ -46,9 +46,8 @@
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AggregateMemento.cs" />
-    <Compile Include="PreventUnauthorizedWritesCommitHook.cs" />
+    <Compile Include="AuthorizationPipelineHook.cs" />
     <Compile Include="MainProgram.cs" />
-    <Compile Include="PreventUnauthorizedReadHook.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>

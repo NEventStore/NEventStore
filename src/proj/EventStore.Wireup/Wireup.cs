@@ -50,16 +50,13 @@ namespace EventStore
 
 		private static IStoreEvents BuildEventStore(NanoContainer context)
 		{
-			var concurrentHook = new OptimisticReadCommitHook();
-			var dispatcherHook = new DispatchCommitHook(context.Resolve<IDispatchCommits>());
+			var concurrentHook = new OptimisticReadPipelineHook();
+			var dispatcherHook = new DispatchPipelineHook(context.Resolve<IDispatchCommits>());
 
-			var readHooks = context.Resolve<IEnumerable<IReadHook>>() ?? new IReadHook[0];
-			readHooks = new IReadHook[] { concurrentHook } .Concat(readHooks).ToArray();
+			var pipelineHooks = context.Resolve<ICollection<IPipelineHook>>() ?? new IPipelineHook[0];
+			pipelineHooks = new IPipelineHook[] { concurrentHook, dispatcherHook } .Concat(pipelineHooks).ToArray();
 
-			var commitHooks = context.Resolve<IEnumerable<ICommitHook>>() ?? new ICommitHook[0];
-			commitHooks = new ICommitHook[] { concurrentHook, dispatcherHook } .Concat(commitHooks).ToArray();
-
-			return new OptimisticEventStore(context.Resolve<IPersistStreams>(), commitHooks, readHooks);
+			return new OptimisticEventStore(context.Resolve<IPersistStreams>(), pipelineHooks);
 		}
 	}
 }

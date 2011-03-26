@@ -8,8 +8,7 @@ namespace EventStore
 	public class PersistenceWireup : Wireup
 	{
 		private bool initialize;
-		private ICollection<IReadHook> readHooks;
-		private ICollection<ICommitHook> commitHooks;
+		private ICollection<IPipelineHook> pipelineHooks;
 
 		public PersistenceWireup(Wireup inner)
 			: base(inner)
@@ -32,14 +31,14 @@ namespace EventStore
 			return this;
 		}
 
-		public virtual PersistenceWireup FilterReadsUsing(IEnumerable<IReadHook> filters)
+		public virtual PersistenceWireup HookIntoPipelineUsing(params IPipelineHook[] hooks)
 		{
-			this.readHooks = (filters ?? new IReadHook[] { }).Where(x => x != null).ToArray();
+			this.pipelineHooks = (hooks ?? new IPipelineHook[] { }).Where(x => x != null).ToArray();
 			return this;
 		}
-		public virtual PersistenceWireup FilterWritesUsing(IEnumerable<ICommitHook> filters)
+		public virtual PersistenceWireup HookIntoPipelineUsing(IEnumerable<IPipelineHook> hooks)
 		{
-			this.commitHooks = (filters ?? new ICommitHook[] { }).Where(x => x != null).ToArray();
+			this.pipelineHooks = (hooks ?? new IPipelineHook[] { }).Where(x => x != null).ToArray();
 			return this;
 		}
 
@@ -50,11 +49,8 @@ namespace EventStore
 			if (this.initialize)
 				engine.Initialize();
 
-			if (this.readHooks.Count > 0)
-				this.Container.Register(this.readHooks);
-
-			if (this.commitHooks.Count > 0)
-				this.Container.Register(this.commitHooks);
+			if (this.pipelineHooks.Count > 0)
+				this.Container.Register(this.pipelineHooks);
 
 			return base.Build();
 		}

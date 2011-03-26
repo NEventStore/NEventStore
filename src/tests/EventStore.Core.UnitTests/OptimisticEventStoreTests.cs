@@ -101,8 +101,8 @@ namespace EventStore.Core.UnitTests
 		Establish context = () =>
 		{
 			persistence.Setup(x => x.GetFrom(streamId, MinRevision, MaxRevision)).Returns(Committed);
-			readHooks.Add(new Mock<IReadHook>());
-			readHooks[0].Setup(x => x.Select(Committed.First()));
+			pipelineHooks.Add(new Mock<IPipelineHook>());
+			pipelineHooks[0].Setup(x => x.Select(Committed.First()));
 		};
 
 		Because of = () =>
@@ -112,7 +112,7 @@ namespace EventStore.Core.UnitTests
 			persistence.Verify(x => x.GetFrom(streamId, MinRevision, MaxRevision), Times.Once());
 
 		It should_provide_the_commits_to_the_selection_hooks = () =>
-			readHooks.ForEach(x => x.Verify(hook => hook.Select(Committed.First()), Times.Once()));
+			pipelineHooks.ForEach(x => x.Verify(hook => hook.Select(Committed.First()), Times.Once()));
 
 		It should_return_an_event_stream_containing_the_correct_stream_identifer = () =>
 			stream.StreamId.ShouldEqual(streamId);
@@ -311,22 +311,22 @@ namespace EventStore.Core.UnitTests
 		{
 			persistence.Setup(x => x.Commit(populatedAttempt));
 
-			commitHooks.Add(new Mock<ICommitHook>());
-			commitHooks[0].Setup(x => x.PreCommit(populatedAttempt)).Returns(true);
-			commitHooks[0].Setup(x => x.PostCommit(populatedAttempt));
+			pipelineHooks.Add(new Mock<IPipelineHook>());
+			pipelineHooks[0].Setup(x => x.PreCommit(populatedAttempt)).Returns(true);
+			pipelineHooks[0].Setup(x => x.PostCommit(populatedAttempt));
 		};
 
 		Because of = () =>
 			((ICommitEvents)store).Commit(populatedAttempt);
 
 		It should_provide_the_commit_to_the_precommit_hooks = () =>
-			commitHooks.ForEach(x => x.Verify(hook => hook.PreCommit(populatedAttempt), Times.Once()));
+			pipelineHooks.ForEach(x => x.Verify(hook => hook.PreCommit(populatedAttempt), Times.Once()));
 
 		It should_provide_the_commit_attempt_to_the_configured_persistence_mechanism = () =>
 			persistence.Verify(x => x.Commit(populatedAttempt), Times.Once());
 
 		It should_provide_the_commit_to_the_postcommit_hooks = () =>
-			commitHooks.ForEach(x => x.Verify(hook => hook.PostCommit(populatedAttempt), Times.Once()));
+			pipelineHooks.ForEach(x => x.Verify(hook => hook.PostCommit(populatedAttempt), Times.Once()));
 	}
 
 	[Subject("OptimisticEventStore")]
@@ -336,8 +336,8 @@ namespace EventStore.Core.UnitTests
 
 		Establish context = () =>
 		{
-			commitHooks.Add(new Mock<ICommitHook>());
-			commitHooks[0].Setup(x => x.PreCommit(attempt)).Returns(false);
+			pipelineHooks.Add(new Mock<IPipelineHook>());
+			pipelineHooks[0].Setup(x => x.PreCommit(attempt)).Returns(false);
 		};
 
 		Because of = () =>
@@ -347,7 +347,7 @@ namespace EventStore.Core.UnitTests
 			persistence.Verify(x => x.Commit(attempt), Times.Never());
 
 		It should_not_provide_the_commit_to_the_postcommit_hooks = () =>
-			commitHooks.ForEach(x => x.Verify(y => y.PostCommit(attempt), Times.Never()));
+			pipelineHooks.ForEach(x => x.Verify(y => y.PostCommit(attempt), Times.Never()));
 	}
 
 	[Subject("OptimisticEventStore")]
@@ -368,18 +368,13 @@ namespace EventStore.Core.UnitTests
 		protected static Guid streamId = Guid.NewGuid();
 		protected static Mock<IPersistStreams> persistence;
 		protected static OptimisticEventStore store;
-		protected static List<Mock<ICommitHook>> commitHooks;
-		protected static List<Mock<IReadHook>> readHooks;
+		protected static List<Mock<IPipelineHook>> pipelineHooks;
 
 		Establish context = () =>
 		{
 			persistence = new Mock<IPersistStreams>();
-			commitHooks = new List<Mock<ICommitHook>>();
-			readHooks = new List<Mock<IReadHook>>();
-			store = new OptimisticEventStore(
-			    persistence.Object,
-			    commitHooks.Select(x => x.Object),
-			    readHooks.Select((x => x.Object)));
+			pipelineHooks = new List<Mock<IPipelineHook>>();
+			store = new OptimisticEventStore(persistence.Object, pipelineHooks.Select(x => x.Object));
 		};
 
 		Cleanup everything = () =>

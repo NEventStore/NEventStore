@@ -2,19 +2,23 @@ namespace EventStore
 {
 	using Dispatcher;
 
-	public class DispatchCommitHook : ICommitHook
+	public class DispatchPipelineHook : IPipelineHook
 	{
 		private readonly IDispatchCommits dispatcher;
 
-		public DispatchCommitHook()
+		public DispatchPipelineHook()
 			: this(null)
 		{
 		}
-		public DispatchCommitHook(IDispatchCommits dispatcher)
+		public DispatchPipelineHook(IDispatchCommits dispatcher)
 		{
 			this.dispatcher = dispatcher ?? new NullDispatcher();
 		}
 
+		public Commit Select(Commit committed)
+		{
+			return committed;
+		}
 		public virtual bool PreCommit(Commit attempt)
 		{
 			return true;
