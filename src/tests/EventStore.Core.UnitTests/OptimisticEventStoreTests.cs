@@ -359,7 +359,7 @@ namespace EventStore.Core.UnitTests
 
 		Establish context = () =>
 		{
-			persistence.Setup(x => x.Commit(populatedAttempt));
+			persistence.Setup(x => x.Commit(populatedAttempt)).Returns(true);
 			dispatcher.Setup(x => x.Dispatch(populatedAttempt));
 		};
 
@@ -413,10 +413,13 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Establish context = () =>
-			((ICommitEvents)store).Commit(SuccessfulCommit);
+			persistence.Setup(x => x.Commit(Moq.It.IsAny<Commit>())).Returns(true);
 
 		Because of = () =>
+		{
+			((ICommitEvents)store).Commit(SuccessfulCommit);
 			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(DuplicateCommit));
+		};
 
 		It throw_a_DuplicateCommitException = () =>
 			thrown.ShouldBeOfType<DuplicateCommitException>();
@@ -480,10 +483,13 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Establish context = () =>
-			((ICommitEvents)store).Commit(SuccessfulAttempt);
+			persistence.Setup(x => x.Commit(Moq.It.IsAny<Commit>())).Returns(true);
 
 		Because of = () =>
+		{
+			((ICommitEvents)store).Commit(SuccessfulAttempt);
 			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(FailedAttempt));
+		};
 
 		It should_throw_a_ConcurrencyException = () =>
 			thrown.ShouldBeOfType<ConcurrencyException>();
@@ -499,10 +505,13 @@ namespace EventStore.Core.UnitTests
 		static Exception thrown;
 
 		Establish context = () =>
-			((ICommitEvents)store).Commit(SuccessfulAttempt);
+			persistence.Setup(x => x.Commit(Moq.It.IsAny<Commit>())).Returns(true);
 
 		Because of = () =>
+		{
+			((ICommitEvents)store).Commit(SuccessfulAttempt);
 			thrown = Catch.Exception(() => ((ICommitEvents)store).Commit(FailedAttempt));
+		};
 
 		It should_throw_a_ConcurrencyException = () =>
 			thrown.ShouldBeOfType<ConcurrencyException>();
