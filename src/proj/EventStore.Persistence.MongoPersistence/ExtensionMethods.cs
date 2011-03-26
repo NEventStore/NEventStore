@@ -15,7 +15,8 @@
 			return new MongoCommit
 			{
 				Id = new MongoCommitId(commit.StreamId, commit.CommitSequence),
-				StreamRevisions = Enumerable.Range(commit.StreamRevision - (commit.Events.Count - 1), commit.Events.Count).ToArray(),
+				StartingStreamRevision = commit.StreamRevision - (commit.Events.Count - 1),
+				StreamRevision = commit.StreamRevision,
 				CommitId = commit.CommitId,
 				CommitStamp = commit.CommitStamp,
 				Headers = commit.Headers,
@@ -26,7 +27,7 @@
 		{
 			return new Commit(
 				commit.Id.StreamId,
-				commit.StreamRevisions.Last(),
+				commit.StreamRevision,
 				commit.CommitId,
 				commit.Id.CommitSequence,
 				commit.CommitStamp,
