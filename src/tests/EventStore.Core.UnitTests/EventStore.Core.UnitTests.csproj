@@ -48,9 +48,6 @@
     <Compile Include="OptimisticCommitHookTests.cs" />
     <Compile Include="OptimisticEventStoreTests.cs" />
     <Compile Include="OptimisticEventStreamTests.cs" />
-    <Compile Include="PersistenceTests\CommitFilterPersistenceTests.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="PersistenceTests\CommitTrackerTests.cs">
       <SubType>Code</SubType>
     </Compile>

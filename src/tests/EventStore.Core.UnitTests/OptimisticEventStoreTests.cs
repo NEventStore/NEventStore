@@ -101,8 +101,8 @@ namespace EventStore.Core.UnitTests
 		Establish context = () =>
 		{
 			persistence.Setup(x => x.GetFrom(streamId, MinRevision, MaxRevision)).Returns(Committed);
-			selectHooks.Add(new Mock<IHookCommitSelects>());
-			selectHooks[0].Setup(x => x.Select(Committed.First()));
+			readHooks.Add(new Mock<IReadHook>());
+			readHooks[0].Setup(x => x.Select(Committed.First()));
 		};
 
 		Because of = () =>
@@ -112,7 +112,7 @@ namespace EventStore.Core.UnitTests
 			persistence.Verify(x => x.GetFrom(streamId, MinRevision, MaxRevision), Times.Once());
 
 		It should_provide_the_commits_to_the_selection_hooks = () =>
-			selectHooks.ForEach(x => x.Verify(hook => hook.Select(Committed.First()), Times.Once()));
+			readHooks.ForEach(x => x.Verify(hook => hook.Select(Committed.First()), Times.Once()));
 
 		It should_return_an_event_stream_containing_the_correct_stream_identifer = () =>
 			stream.StreamId.ShouldEqual(streamId);
@@ -311,7 +311,7 @@ namespace EventStore.Core.UnitTests
 		{
 			persistence.Setup(x => x.Commit(populatedAttempt));
 
-			commitHooks.Add(new Mock<IHookCommitAttempts>());
+			commitHooks.Add(new Mock<ICommitHook>());
 			commitHooks[0].Setup(x => x.PreCommit(populatedAttempt)).Returns(true);
 			commitHooks[0].Setup(x => x.PostCommit(populatedAttempt));
 		};
@@ -336,7 +336,7 @@ namespace EventStore.Core.UnitTests
 
 		Establish context = () =>
 		{
-			commitHooks.Add(new Mock<IHookCommitAttempts>());
+			commitHooks.Add(new Mock<ICommitHook>());
 			commitHooks[0].Setup(x => x.PreCommit(attempt)).Returns(false);
 		};
 
@@ -368,18 +368,18 @@ namespace EventStore.Core.UnitTests
 		protected static Guid streamId = Guid.NewGuid();
 		protected static Mock<IPersistStreams> persistence;
 		protected static OptimisticEventStore store;
-		protected static List<Mock<IHookCommitAttempts>> commitHooks;
-		protected static List<Mock<IHookCommitSelects>> selectHooks;
+		protected static List<Mock<ICommitHook>> commitHooks;
+		protected static List<Mock<IReadHook>> readHooks;
 
 		Establish context = () =>
 		{
 			persistence = new Mock<IPersistStreams>();
-			commitHooks = new List<Mock<IHookCommitAttempts>>();
-			selectHooks = new List<Mock<IHookCommitSelects>>();
+			commitHooks = new List<Mock<ICommitHook>>();
+			readHooks = new List<Mock<IReadHook>>();
 			store = new OptimisticEventStore(
 			    persistence.Object,
 			    commitHooks.Select(x => x.Object),
-			    selectHooks.Select((x => x.Object)));
+			    readHooks.Select((x => x.Object)));
 		};
 
 		Cleanup everything = () =>

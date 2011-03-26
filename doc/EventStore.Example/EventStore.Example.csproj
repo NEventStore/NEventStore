@@ -45,15 +45,17 @@
     <Compile Include="..\..\src\proj\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="PreventUnauthorizedWritesFilter.cs" />
+    <Compile Include="AggregateMemento.cs" />
+    <Compile Include="PreventUnauthorizedWritesCommitHook.cs" />
     <Compile Include="MainProgram.cs" />
-    <Compile Include="PreventUnauthorizedReadsFilter.cs" />
+    <Compile Include="PreventUnauthorizedReadHook.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="SomeDomainEvent.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="EventStore (ILMerged)" Condition="'$(ILMerged)' == 'true'">

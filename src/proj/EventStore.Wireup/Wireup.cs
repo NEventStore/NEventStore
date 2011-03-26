@@ -1,5 +1,7 @@
 namespace EventStore
 {
+	using System.Collections.Generic;
+	using System.Linq;
 	using Dispatcher;
 	using Persistence;
 
@@ -22,17 +24,7 @@ namespace EventStore
 			var container = new NanoContainer();
 
 			container.Register<IPersistStreams>(new InMemoryPersistenceEngine());
-			container.Register<IDispatchCommits>(new NullDispatcher());
-			container.Register<IStoreEvents>(c =>
-			{
-				var concurrentHook = new OptimisticCommitHook();
-				var dispatcherHook = new DispatchCommitHook(c.Resolve<IDispatchCommits>());
-
-				return new OptimisticEventStore(
-					c.Resolve<IPersistStreams>(),
-					new IHookCommitAttempts[] { concurrentHook, dispatcherHook },
-					new IHookCommitSelects[] { concurrentHook });
-			});
+			container.Register(BuildEventStore);
 
 			return new Wireup(container);
 		}
@@ -54,6 +46,20 @@ namespace EventStore
 				return this.inner.Build();
 
 			return this.Container.Resolve<IStoreEvents>();
+		}
+
+		private static IStoreEvents BuildEventStore(NanoContainer context)
+		{
+			var concurrentHook = new OptimisticReadCommitHook();
+			var dispatcherHook = new DispatchCommitHook(context.Resolve<IDispatchCommits>());
+
+			var readHooks = context.Resolve<IEnumerable<IReadHook>>() ?? new IReadHook[0];
+			readHooks = new IReadHook[] { concurrentHook } .Concat(readHooks).ToArray();
+
+			var commitHooks = context.Resolve<IEnumerable<ICommitHook>>() ?? new ICommitHook[0];
+			commitHooks = new ICommitHook[] { concurrentHook, dispatcherHook } .Concat(commitHooks).ToArray();
+
+			return new OptimisticEventStore(context.Resolve<IPersistStreams>(), commitHooks, readHooks);
 		}
 	}
 }

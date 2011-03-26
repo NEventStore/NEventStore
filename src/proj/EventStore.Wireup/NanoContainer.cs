@@ -33,7 +33,11 @@ namespace EventStore
 		public virtual TService Resolve<TService>()
 			where TService : class
 		{
-			return this.registrations[typeof(TService)].Resolve(this) as TService;
+			ContainerRegistration registration;
+			if (!this.registrations.TryGetValue(typeof(TService), out registration))
+				return null;
+
+			return registration.Resolve(this) as TService;
 		}
 	}
 

@@ -14,16 +14,30 @@ namespace EventStore.Core.UnitTests
 	{
 		static readonly Commit commit = new Commit(Guid.NewGuid(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
 		static readonly Mock<IDispatchCommits> dispatcher = new Mock<IDispatchCommits>();
-		static readonly DispatchCommitHook hook = new DispatchCommitHook(dispatcher.Object);
+		static readonly DispatchCommitHook CommitHook = new DispatchCommitHook(dispatcher.Object);
 
 		Establish context = () =>
 			dispatcher.Setup(x => x.Dispatch(null));
 
 		Because of = () =>
-			hook.PostCommit(commit);
+			CommitHook.PostCommit(commit);
 
 		It should_invoke_the_configured_dispatcher = () =>
 			dispatcher.Verify(x => x.Dispatch(commit), Times.Once());
+	}
+
+	[Subject("DispatchCommitHook")]
+	public class when_the_hook_has_no_dispatcher_configured
+	{
+		static readonly Commit commit = new Commit(Guid.NewGuid(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
+		static readonly DispatchCommitHook CommitHook = new DispatchCommitHook();
+		static Exception thrown;
+
+		Because of = () =>
+			thrown = Catch.Exception(() => CommitHook.PostCommit(commit));
+
+		It should_not_throw_an_exception = () =>
+			thrown.ShouldBeNull();
 	}
 }
 

@@ -2,14 +2,14 @@ namespace EventStore
 {
 	using Persistence;
 
-	public class OptimisticCommitHook : IHookCommitSelects, IHookCommitAttempts
+	public class OptimisticReadCommitHook : IReadHook, ICommitHook
 	{
 		private readonly CommitTracker tracker = new CommitTracker();
 
-		public virtual Commit Select(Commit persisted)
+		public virtual Commit Select(Commit committed)
 		{
-			this.tracker.Track(persisted);
-			return persisted;
+			this.Track(committed);
+			return committed;
 		}
 		public virtual bool PreCommit(Commit attempt)
 		{
@@ -34,9 +34,15 @@ namespace EventStore
 
 			return true;
 		}
-		public virtual void PostCommit(Commit persisted)
+		public virtual void PostCommit(Commit committed)
 		{
-			this.tracker.Track(persisted);
+			this.Track(committed);
+		}
+
+		private void Track(Commit persisted)
+		{
+			if (persisted != null)
+				this.tracker.Track(persisted);
 		}
 	}
 }
