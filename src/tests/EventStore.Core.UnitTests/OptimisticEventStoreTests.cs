@@ -4,6 +4,7 @@
 namespace EventStore.Core.UnitTests
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Linq;
 	using Dispatcher;
 	using Machine.Specifications;
@@ -99,13 +100,20 @@ namespace EventStore.Core.UnitTests
 		static IEventStream stream;
 
 		Establish context = () =>
+		{
 			persistence.Setup(x => x.GetFrom(streamId, MinRevision, MaxRevision)).Returns(Committed);
+			selectHooks.Add(new Mock<IHookCommitSelects>());
+			selectHooks[0].Setup(x => x.Select(Committed.First()));
+		};
 
 		Because of = () =>
 			stream = store.OpenStream(streamId, MinRevision, MaxRevision);
 
 		It should_invoke_the_underlying_infrastructure_with_the_values_provided = () =>
 			persistence.Verify(x => x.GetFrom(streamId, MinRevision, MaxRevision), Times.Once());
+
+		It should_provide_the_commits_to_the_selection_hooks = () =>
+			selectHooks.ForEach(x => x.Verify(hook => hook.Select(Committed.First()), Times.Once()));
 
 		It should_return_an_event_stream_containing_the_correct_stream_identifer = () =>
 			stream.StreamId.ShouldEqual(streamId);
@@ -361,16 +369,47 @@ namespace EventStore.Core.UnitTests
 		{
 			persistence.Setup(x => x.Commit(populatedAttempt)).Returns(true);
 			dispatcher.Setup(x => x.Dispatch(populatedAttempt));
+
+			commitHooks.Add(new Mock<IHookCommitAttempts>());
+			commitHooks[0].Setup(x => x.PreCommit(populatedAttempt)).Returns(true);
+			commitHooks[0].Setup(x => x.PostCommit(populatedAttempt));
 		};
 
 		Because of = () =>
 			((ICommitEvents)store).Commit(populatedAttempt);
 
+		It should_provide_the_commit_to_the_precommit_hooks = () =>
+			commitHooks.ForEach(x => x.Verify(hook => hook.PreCommit(populatedAttempt), Times.Once()));
+
 		It should_provide_the_commit_attempt_to_the_configured_persistence_mechanism = () =>
 			persistence.Verify(x => x.Commit(populatedAttempt), Times.Once());
 
+		It should_provide_the_commit_to_the_postcommit_hooks = () =>
+			commitHooks.ForEach(x => x.Verify(hook => hook.PostCommit(populatedAttempt), Times.Once()));
+
 		It should_provide_the_commit_to_the_dispatcher = () =>
 			dispatcher.Verify(x => x.Dispatch(populatedAttempt), Times.Once());
+	}
+
+	[Subject("OptimisticEventStore")]
+	public class when_a_precommit_hook_rejects_a_commit : using_persistence
+	{
+		static readonly Commit attempt = BuildCommitStub(1, 1);
+
+		Establish context = () =>
+		{
+			commitHooks.Add(new Mock<IHookCommitAttempts>());
+			commitHooks[0].Setup(x => x.PreCommit(attempt)).Returns(false);
+		};
+
+		Because of = () =>
+			((ICommitEvents)store).Commit(attempt);
+
+		It should_not_call_the_underlying_infrastructure = () =>
+			persistence.Verify(x => x.Commit(attempt), Times.Never());
+
+		It should_not_provide_the_commit_to_the_postcommit_hooks = () =>
+			commitHooks.ForEach(x => x.Verify(y => y.PostCommit(attempt), Times.Never()));
 	}
 
 	/// <summary>
@@ -518,7 +557,7 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
-	public class when_the_underlying_persistece_has_filtered_out_a_commit_attempt : using_persistence
+	public class when_the_underlying_persistence_has_filtered_out_a_commit_attempt : using_persistence
 	{
 		static readonly Commit Attempt = BuildCommitStub(1, 1);
 
@@ -557,12 +596,20 @@ namespace EventStore.Core.UnitTests
 		protected static Mock<IPersistStreams> persistence;
 		protected static Mock<IDispatchCommits> dispatcher;
 		protected static OptimisticEventStore store;
+		protected static List<Mock<IHookCommitAttempts>> commitHooks;
+		protected static List<Mock<IHookCommitSelects>> selectHooks;
 
 		Establish context = () =>
 		{
 			persistence = new Mock<IPersistStreams>();
 			dispatcher = new Mock<IDispatchCommits>();
-			store = new OptimisticEventStore(persistence.Object, dispatcher.Object);
+			commitHooks = new List<Mock<IHookCommitAttempts>>();
+			selectHooks = new List<Mock<IHookCommitSelects>>();
+			store = new OptimisticEventStore(
+			    persistence.Object,
+			    dispatcher.Object,
+			    commitHooks.Select(x => x.Object),
+			    selectHooks.Select((x => x.Object)));
 		};
 
 		Cleanup everything = () =>

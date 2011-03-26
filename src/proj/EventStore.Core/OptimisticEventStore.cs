@@ -2,6 +2,7 @@ namespace EventStore
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Linq;
 	using Dispatcher;
 	using Persistence;
 
@@ -10,12 +11,27 @@ namespace EventStore
 		private readonly CommitTracker tracker = new CommitTracker();
 		private readonly IPersistStreams persistence;
 		private readonly IDispatchCommits dispatcher;
+		private readonly IEnumerable<IHookCommitAttempts> commitHooks;
+		private readonly IEnumerable<IHookCommitSelects> selectHooks;
+
 		private bool disposed;
 
 		public OptimisticEventStore(IPersistStreams persistence, IDispatchCommits dispatcher)
+			: this(persistence, dispatcher, null, null)
 		{
 			this.persistence = persistence;
 			this.dispatcher = dispatcher;
+		}
+		public OptimisticEventStore(
+			IPersistStreams persistence,
+			IDispatchCommits dispatcher,
+			IEnumerable<IHookCommitAttempts> commitHooks,
+			IEnumerable<IHookCommitSelects> selectHooks)
+		{
+			this.persistence = persistence;
+			this.dispatcher = dispatcher;
+			this.commitHooks = commitHooks ?? new IHookCommitAttempts[0];
+			this.selectHooks = selectHooks ?? new IHookCommitSelects[0];
 		}
 
 		public void Dispose()
@@ -53,6 +69,13 @@ namespace EventStore
 			var commits = this.persistence.GetFrom(streamId, minRevision, maxRevision);
 			foreach (var commit in commits)
 			{
+				foreach (var hook in this.selectHooks)
+				{
+					var filtered = hook.Select(commit);
+					if (filtered == null)
+						continue;
+				}
+
 				this.tracker.Track(commit);
 				yield return commit;
 			}
@@ -89,12 +112,19 @@ namespace EventStore
 		}
 		protected virtual bool PersistAndDispatch(Commit attempt)
 		{
+			if (this.commitHooks.Any(x => !x.PreCommit(attempt)))
+				return false;
+
 			var committed = this.persistence.Commit(attempt);
 			if (!committed)
 				return false;
 
 			this.tracker.Track(attempt);
 			this.dispatcher.Dispatch(attempt);
+
+			foreach (var hook in this.commitHooks)
+				hook.PostCommit(attempt);
+
 			return true;
 		}
 

@@ -47,6 +47,8 @@
     <Compile Include="ConcurrencyException.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="IHookCommitSelects.cs" />
+    <Compile Include="IHookCommitAttempts.cs" />
     <Compile Include="Persistence\StorageUnavailableException.cs" />
     <Compile Include="Serialization\IDocumentSerializer.cs" />
     <Compile Include="StreamNotFoundException.cs" />
