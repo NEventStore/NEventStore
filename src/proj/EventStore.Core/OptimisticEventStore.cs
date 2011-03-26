@@ -3,32 +3,22 @@ namespace EventStore
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using Dispatcher;
 	using Persistence;
 
 	public class OptimisticEventStore : IStoreEvents, ICommitEvents
 	{
 		private readonly IPersistStreams persistence;
-		private readonly IDispatchCommits dispatcher;
 		private readonly IEnumerable<IHookCommitAttempts> commitHooks;
 		private readonly IEnumerable<IHookCommitSelects> selectHooks;
 
 		private bool disposed;
 
-		public OptimisticEventStore(IPersistStreams persistence, IDispatchCommits dispatcher)
-			: this(persistence, dispatcher, null, null)
-		{
-			this.persistence = persistence;
-			this.dispatcher = dispatcher;
-		}
 		public OptimisticEventStore(
 			IPersistStreams persistence,
-			IDispatchCommits dispatcher,
 			IEnumerable<IHookCommitAttempts> commitHooks,
 			IEnumerable<IHookCommitSelects> selectHooks)
 		{
 			this.persistence = persistence;
-			this.dispatcher = dispatcher;
 			this.commitHooks = commitHooks ?? new IHookCommitAttempts[0];
 			this.selectHooks = selectHooks ?? new IHookCommitSelects[0];
 		}
@@ -44,7 +34,6 @@ namespace EventStore
 				return;
 
 			this.disposed = true;
-			this.dispatcher.Dispose();
 			this.persistence.Dispose();
 		}
 
@@ -88,7 +77,6 @@ namespace EventStore
 				return;
 
 			this.persistence.Commit(attempt);
-			this.dispatcher.Dispatch(attempt);
 
 			foreach (var hook in this.commitHooks)
 				hook.PostCommit(attempt);

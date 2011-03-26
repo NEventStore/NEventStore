@@ -6,7 +6,6 @@ namespace EventStore.Core.UnitTests
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using Dispatcher;
 	using Machine.Specifications;
 	using Moq;
 	using Persistence;
@@ -311,7 +310,6 @@ namespace EventStore.Core.UnitTests
 		Establish context = () =>
 		{
 			persistence.Setup(x => x.Commit(populatedAttempt));
-			dispatcher.Setup(x => x.Dispatch(populatedAttempt));
 
 			commitHooks.Add(new Mock<IHookCommitAttempts>());
 			commitHooks[0].Setup(x => x.PreCommit(populatedAttempt)).Returns(true);
@@ -329,9 +327,6 @@ namespace EventStore.Core.UnitTests
 
 		It should_provide_the_commit_to_the_postcommit_hooks = () =>
 			commitHooks.ForEach(x => x.Verify(hook => hook.PostCommit(populatedAttempt), Times.Once()));
-
-		It should_provide_the_commit_to_the_dispatcher = () =>
-			dispatcher.Verify(x => x.Dispatch(populatedAttempt), Times.Once());
 	}
 
 	[Subject("OptimisticEventStore")]
@@ -366,16 +361,12 @@ namespace EventStore.Core.UnitTests
 
 		It should_dispose_the_underlying_persistence_exactly_once = () =>
 			persistence.Verify(x => x.Dispose(), Times.Once());
-
-		It should_dispose_the_underlying_dispatcher_exactly_once = () =>
-			dispatcher.Verify(x => x.Dispose(), Times.Once());
 	}
 
 	public abstract class using_persistence
 	{
 		protected static Guid streamId = Guid.NewGuid();
 		protected static Mock<IPersistStreams> persistence;
-		protected static Mock<IDispatchCommits> dispatcher;
 		protected static OptimisticEventStore store;
 		protected static List<Mock<IHookCommitAttempts>> commitHooks;
 		protected static List<Mock<IHookCommitSelects>> selectHooks;
@@ -383,12 +374,10 @@ namespace EventStore.Core.UnitTests
 		Establish context = () =>
 		{
 			persistence = new Mock<IPersistStreams>();
-			dispatcher = new Mock<IDispatchCommits>();
 			commitHooks = new List<Mock<IHookCommitAttempts>>();
 			selectHooks = new List<Mock<IHookCommitSelects>>();
 			store = new OptimisticEventStore(
 			    persistence.Object,
-			    dispatcher.Object,
 			    commitHooks.Select(x => x.Object),
 			    selectHooks.Select((x => x.Object)));
 		};

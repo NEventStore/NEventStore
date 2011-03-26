@@ -42,6 +42,7 @@
     <Compile Include="..\..\proj\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DispatchCommitHookTests.cs" />
     <Compile Include="DispatcherTests\AsynchronousDispatcherTests.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="OptimisticCommitHookTests.cs" />

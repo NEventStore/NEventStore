@@ -26,12 +26,12 @@ namespace EventStore
 			container.Register<IStoreEvents>(c =>
 			{
 				var concurrentHook = new OptimisticCommitHook();
+				var dispatcherHook = new DispatchCommitHook(c.Resolve<IDispatchCommits>());
 
 				return new OptimisticEventStore(
 					c.Resolve<IPersistStreams>(),
-					c.Resolve<IDispatchCommits>(),
-					new[] { concurrentHook },
-					new[] { concurrentHook });
+					new IHookCommitAttempts[] { concurrentHook, dispatcherHook },
+					new IHookCommitSelects[] { concurrentHook });
 			});
 
 			return new Wireup(container);
