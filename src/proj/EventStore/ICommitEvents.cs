@@ -18,15 +18,17 @@ namespace EventStore
 		/// <param name="maxRevision">The maximum revision of the stream to be read.</param>
 		/// <returns>A series of committed events from the stream specified sorted in ascending order..</returns>
 		/// <exception cref="StorageException" />
+		/// <exception cref="StorageUnavailableException" />
 		IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision);
 
 		/// <summary>
 		/// Writes the to-be-commited events provided to the underlying persistence mechanism.
 		/// </summary>
 		/// <param name="attempt">The series of events and associated metadata to be commited.</param>
-		/// <returns>A reference to the fully persisted commit.</returns>
+		/// <returns>A indicating whether the commit was successfully persisted.</returns>
 		/// <exception cref="ConcurrencyException" />
 		/// <exception cref="StorageException" />
-		Commit Commit(Commit attempt);
+		/// <exception cref="StorageUnavailableException" />
+		bool Commit(Commit attempt);
 	}
 }

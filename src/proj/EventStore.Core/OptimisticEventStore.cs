@@ -58,10 +58,10 @@ namespace EventStore
 			}
 		}
 
-		Commit ICommitEvents.Commit(Commit attempt)
+		bool ICommitEvents.Commit(Commit attempt)
 		{
 			if (!attempt.IsValid() || attempt.IsEmpty())
-				return null;
+				return false;
 
 			this.ThrowOnDuplicateOrConcurrentWrites(attempt);
 			return this.PersistAndDispatch(attempt);
@@ -87,15 +87,15 @@ namespace EventStore
 			if (head.StreamRevision < attempt.StreamRevision - attempt.Events.Count)
 				throw new StorageException(); // beyond the end of the stream
 		}
-		protected virtual Commit PersistAndDispatch(Commit attempt)
+		protected virtual bool PersistAndDispatch(Commit attempt)
 		{
 			var committed = this.persistence.Commit(attempt);
-			if (committed == null)
-				return null;
+			if (!committed)
+				return false;
 
-			this.tracker.Track(committed);
-			this.dispatcher.Dispatch(committed);
-			return committed;
+			this.tracker.Track(attempt);
+			this.dispatcher.Dispatch(attempt);
+			return true;
 		}
 
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)

@@ -24,6 +24,7 @@ namespace EventStore
 		/// <param name="maxRevision">The maximum revision of the stream to be read.</param>
 		/// <returns>A series of committed events represented as a stream.</returns>
 		/// <exception cref="StorageException" />
+		/// <exception cref="StorageUnavailableException" />
 		/// <exception cref="StreamNotFoundException" />
 		IEventStream OpenStream(Guid streamId, int minRevision, int maxRevision);
 
@@ -34,6 +35,7 @@ namespace EventStore
 		/// <param name="maxRevision">The maximum revision of the stream to be read.</param>
 		/// <returns>A series of committed events represented as a stream.</returns>
 		/// <exception cref="StorageException" />
+		/// <exception cref="StorageUnavailableException" />
 		IEventStream OpenStream(Snapshot snapshot, int maxRevision);
 	}
 }

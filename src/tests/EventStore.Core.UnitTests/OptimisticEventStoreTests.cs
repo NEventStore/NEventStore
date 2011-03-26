@@ -515,7 +515,7 @@ namespace EventStore.Core.UnitTests
 
 		Establish context = () =>
 		{
-			persistence.Setup(x => x.Commit(Attempt)).Returns((Commit)null);
+			persistence.Setup(x => x.Commit(Attempt));
 			dispatcher.Setup(x => x.Dispatch(Moq.It.IsAny<Commit>()));
 		};
 
