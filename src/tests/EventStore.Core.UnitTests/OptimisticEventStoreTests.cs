@@ -354,12 +354,9 @@ namespace EventStore.Core.UnitTests
 	public class when_disposing_the_event_store : using_persistence
 	{
 		Because of = () =>
-		{
 			store.Dispose();
-			store.Dispose();
-		};
 
-		It should_dispose_the_underlying_persistence_exactly_once = () =>
+		It should_dispose_the_underlying_persistence = () =>
 			persistence.Verify(x => x.Dispose(), Times.Once());
 	}
 

@@ -2,7 +2,7 @@
 SETLOCAL
 
 ECHO === Building ===
-C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=Debug
+"C:/WINDOWS/Microsoft.NET/Framework/v4.0.30319/msbuild.exe" /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=Debug
 
 CALL :run_test Binary
 CALL :run_test Gzip
