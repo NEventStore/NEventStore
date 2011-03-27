@@ -58,26 +58,27 @@ enlisting any resources (other than a message queue) in some form of a transacti
 [Complete] PostgreSQL 8.0 (or later)  
 [Complete] Firebird 2.0 (or later)  
 [Planned] Oracle 8.0 (or later)  
-[Planned] IBM DB2  
-[Planned] Informix  
-[Planned] Sybase  
+[TBA] IBM DB2  
+[TBA] Informix  
+[TBA] Sybase  
 
 ### Embedded Relational Databases
 [Complete] SQLite 3.0 (or later)  
 [Complete] Microsoft SQL Server Compact Edition 3.5 (or later)  
 [Complete] Microsoft Access 2000 (or later)  
 
-### Cloud-based Relational Databases
+### Cloud-based Databases (relational or otherwise)
 [Complete] Microsoft SQL Azure  
-[Complete] Amazon RDS  
-[In progress] Azure Tables  
-[In progress] Amazon SimpleDB  
-[Planned] Amazon S3  
+[Complete] Amazon RDS (MySQL)  
+[Planned] Amazon RDS (Oracle)  
+[In progress] Azure Tables/Blobs  
+[In progress] Amazon SimpleDB/S3  
 
 ### Document Databases
 [Complete] RavenDB r264 (or later)  
 [Complete] MongoDB 1.6 (or later)  
 [Planned] CouchDB 1.0 (or later)  
+[TBA] OrientDB  
 
 ### File System
 [Planned] .NET Managed System.IO APIs    
@@ -85,22 +86,25 @@ enlisting any resources (other than a message queue) in some form of a transacti
 ### Dynamo Clones
 [Planned] Cassandra  
 [Planned] Riak  
-[Planned] Voldemort  
-[Planned] Dynomite  
+[TBA] Voldemort  
+[TBA] Dynomite  
 
 ### KV Stores / NoSQL
-[Planned] HBase  
 [Planned] Redis  
-[Planned] Tokyo Cabinet  
 [Planned] Memcached (Membase, Gear6, etc.)  
-[Planned] Microsoft Velocity  
-[Planned] SharedCache  
-[Planned] Hibari  
-[Planned] Keyspace  
-[Planned] OrientDB / OrientKV  
-[Planned] VoltDB  
-[Planned] BerkleyDB  
-[Planned] HampsterDB  
+[Planned] HBase  
+[TBA] HyperTable  
+[TBA] Tokyo Cabinet  
+[TBA] Microsoft Velocity  
+[TBA] SharedCache  
+[TBA] Hibari  
+[TBA] Scalaris  
+[TBA] Keyspace  
+[TBA] OrientKV  
+[TBA] VoltDB  
+[TBA] BerkleyDB  
+[TBA] Hazelcast  
+[TBA] HampsterDB  
 
 ## Project Goals
 * Mono 2.4 support  
