@@ -61,13 +61,8 @@
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="MongoCommit.cs" />
-    <Compile Include="MongoCommitId.cs" />
     <Compile Include="MongoPersistenceEngine.cs" />
     <Compile Include="MongoPersistenceFactory.cs" />
-    <Compile Include="MongoSnapshot.cs" />
-    <Compile Include="MongoSnapshotId.cs" />
-    <Compile Include="MongoStreamHead.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

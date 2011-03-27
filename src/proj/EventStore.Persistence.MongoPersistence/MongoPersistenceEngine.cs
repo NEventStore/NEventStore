@@ -16,11 +16,26 @@
 		private readonly IDocumentSerializer serializer;
 		private bool disposed;
 		private int initialized;
+		private readonly MongoCollectionSettings<BsonDocument> _persistedCommitsSettings;
+		private readonly MongoCollectionSettings<BsonDocument> _persistedSnapshotsSettings;
+		private readonly MongoCollectionSettings<BsonDocument> _persistedStreamHeadsSettings;
 
 		public MongoPersistenceEngine(MongoDatabase store, IDocumentSerializer serializer)
 		{
 			this.store = store;
 			this.serializer = serializer;
+
+			_persistedCommitsSettings = this.store.CreateCollectionSettings<BsonDocument>("Commits");
+			_persistedCommitsSettings.AssignIdOnInsert = false;
+			_persistedCommitsSettings.SafeMode = SafeMode.True;
+
+			_persistedSnapshotsSettings = this.store.CreateCollectionSettings<BsonDocument>("Snapshots");
+			_persistedSnapshotsSettings.AssignIdOnInsert = false;
+			_persistedSnapshotsSettings.SafeMode = SafeMode.True;
+
+			_persistedStreamHeadsSettings = this.store.CreateCollectionSettings<BsonDocument>("Streams");
+			_persistedStreamHeadsSettings.AssignIdOnInsert = false;
+			_persistedStreamHeadsSettings.SafeMode = SafeMode.False;
 		}
 
 		public void Dispose()
@@ -48,7 +63,7 @@
 				IndexOptions.SetName("Dispatched_Index").SetUnique(false));
 
 				this.PersistedCommits.EnsureIndex(
-					IndexKeys.Ascending("_id.StreamId", "StreamRevision", "StartingStreamRevision"),
+					IndexKeys.Ascending("_id.StreamId", "Events.StreamRevision", "_id.CommitSequence"),
 					IndexOptions.SetName("GetFrom_Index").SetUnique(true));
 
 				this.PersistedCommits.EnsureIndex(
@@ -63,12 +78,12 @@
 			{
 				var query = Query.And(
 					Query.EQ("_id.StreamId", streamId),
-					Query.GTE("StreamRevision", minRevision),
-					Query.LTE("StartingStreamRevision", maxRevision));
+					Query.GTE("Events.StreamRevision", minRevision),
+					Query.LTE("Events.StreamRevision", maxRevision));
 
 				return this.PersistedCommits
 					.Find(query)
-					.SetSortOrder("StartingStreamRevision")
+					.SetSortOrder("_id.CommitSequence")
 					.Select(mc => mc.ToCommit(this.serializer));
 			});
 		}
@@ -90,15 +105,15 @@
 				{
 					// for concurrency / duplicate commit detection safe mode is required
 					this.PersistedCommits.Insert(commit, SafeMode.True);
-					this.UpdateStreamHeadAsync(commit.Id.StreamId, commit.StreamRevision, (commit.Id.CommitSequence == 1));
+					this.UpdateStreamHeadAsync(attempt.StreamId, attempt.StreamRevision, (attempt.CommitSequence == 1));
 				}
 				catch (MongoException e)
 				{
 					if (!e.Message.Contains(ConcurrencyException))
 						throw;
 
-					var committed = this.PersistedCommits.FindOne(commit.ToMongoCommitIdQuery());
-					if (committed == null || committed.CommitId == commit.CommitId)
+					var committed = this.PersistedCommits.FindOne(attempt.ToMongoCommitIdQuery()).ToCommit(this.serializer);
+					if (committed == null || committed.CommitId == attempt.CommitId)
 						throw new DuplicateCommitException();
 
 					throw new ConcurrencyException();
@@ -139,7 +154,7 @@
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
 			return this.TryMongo(() => this.PersistedSnapshots
-				.FindAs<BsonDocument>(streamId.ToSnapshotQuery(maxRevision))
+				.Find(streamId.ToSnapshotQuery(maxRevision))
 				.SetSortOrder(SortBy.Descending("_id"))
 				.SetLimit(1)
 				.Select(mc => mc.ToSnapshot(this.serializer))
@@ -173,27 +188,30 @@
 			{
 				if (isFirstCommit)
 					this.PersistedStreamHeads.Insert(
-						new MongoStreamHead(streamId, streamRevision, 0),
-						SafeMode.False);
+						new BsonDocument
+							{
+								{ "_id", streamId },
+								{ "HeadRevision", streamRevision },
+								{ "SnapshotRevision", 0 }
+							});
 				else
 					this.PersistedStreamHeads.Update(
 						Query.EQ("_id", streamId),
-						Update.Set("HeadRevision", streamRevision),
-						SafeMode.False);
+						Update.Set("HeadRevision", streamRevision));
 			}), null);
 		}
 
-		protected virtual MongoCollection<MongoCommit> PersistedCommits
+		protected virtual MongoCollection<BsonDocument> PersistedCommits
 		{
-			get { return this.store.GetCollection<MongoCommit>("Commits"); }
+			get { return this.store.GetCollection(_persistedCommitsSettings); }
 		}
-		protected virtual MongoCollection<MongoSnapshot> PersistedSnapshots
+		protected virtual MongoCollection<BsonDocument> PersistedSnapshots
 		{
-			get { return this.store.GetCollection<MongoSnapshot>("Snapshots"); }
+			get { return this.store.GetCollection(_persistedSnapshotsSettings); }
 		}
-		protected virtual MongoCollection<MongoStreamHead> PersistedStreamHeads
+		protected virtual MongoCollection<BsonDocument> PersistedStreamHeads
 		{
-			get { return this.store.GetCollection<MongoStreamHead>("Streams"); }
+			get { return this.store.GetCollection(_persistedStreamHeadsSettings); }
 		}
 
 		protected virtual T TryMongo<T>(Func<T> callback)
