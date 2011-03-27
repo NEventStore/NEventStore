@@ -60,7 +60,7 @@ set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Persistence.MongoPersis
 set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Persistence.MongoPersistence.Wireup/bin/%TARGET_CONFIG%/EventStore.Persistence.MongoPersistence.Wireup.dll"
 echo EventStore.*>exclude.txt
 (echo.|set /p =MongoDB.*)>>exclude.txt
-"bin/ilmerge-bin/ILMerge.exe" /keyfile:src/EventStore.snk /internalize:"exclude.txt" /xmldocs /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Persistence.MongoPersistence.dll %FILES_TO_MERGE%
+"bin/ilmerge-bin/ILMerge.exe" /keyfile:src/EventStore.snk /internalize:"exclude.txt" /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Persistence.MongoPersistence.dll %FILES_TO_MERGE%
 del exclude.txt
 
 echo Merging Raven Persistence
@@ -72,7 +72,7 @@ set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Persistence.RavenPersis
 set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Persistence.RavenPersistence.Wireup/bin/%TARGET_CONFIG%/EventStore.Persistence.RavenPersistence.Wireup.dll"
 echo EventStore.*>exclude.txt
 (echo.|set /p =Raven.*)>>exclude.txt
-"bin/ilmerge-bin/ILMerge.exe" /keyfile:src/EventStore.snk /internalize:"exclude.txt" /xmldocs /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Persistence.RavenPersistence.dll %FILES_TO_MERGE%
+"bin/ilmerge-bin/ILMerge.exe" /keyfile:src/EventStore.snk /internalize:"exclude.txt" /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Persistence.RavenPersistence.dll %FILES_TO_MERGE%
 del exclude.txt
 
 echo Merging Newtonsoft Json.NET Serialization
@@ -81,7 +81,7 @@ set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Serialization.Json/bin/
 set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Serialization.Json/bin/%TARGET_CONFIG%/Newtonsoft.Json*.dll"
 set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Serialization.Json.Wireup/bin/%TARGET_CONFIG%/EventStore.Serialization.Json.Wireup.dll"
 (echo.|set /p =EventStore.*)>>exclude.txt
-"bin/ilmerge-bin/ILMerge.exe" /keyfile:src/EventStore.snk /internalize:"exclude.txt" /xmldocs /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Serialization.Json.dll %FILES_TO_MERGE%
+"bin/ilmerge-bin/ILMerge.exe" /keyfile:src/EventStore.snk /internalize:"exclude.txt" /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Serialization.Json.dll %FILES_TO_MERGE%
 del exclude.txt
 
 echo Merging ServiceStack.Text Serialization
@@ -90,7 +90,7 @@ set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Serialization.ServiceSt
 set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Serialization.ServiceStack/bin/%TARGET_CONFIG%/ServiceStack.Text.dll"
 set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Serialization.ServiceStack.Wireup/bin/%TARGET_CONFIG%/EventStore.Serialization.ServiceStack.Wireup.dll"
 (echo.|set /p =EventStore.*)>>exclude.txt
-"bin/ilmerge-bin/ILMerge.exe" /keyfile:src/EventStore.snk /internalize:"exclude.txt" /xmldocs /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Serialization.ServiceStack.dll %FILES_TO_MERGE%
+"bin/ilmerge-bin/ILMerge.exe" /keyfile:src/EventStore.snk /internalize:"exclude.txt" /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Serialization.ServiceStack.dll %FILES_TO_MERGE%
 del exclude.txt
 
 echo.
