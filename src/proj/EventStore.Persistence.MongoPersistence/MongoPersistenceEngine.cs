@@ -172,7 +172,11 @@
 			try
 			{
 				var mongoSnapshot = snapshot.ToMongoSnapshot(this.serializer);
-				this.PersistedSnapshots.Insert(mongoSnapshot);
+				var query = Query.EQ("_id", mongoSnapshot["_id"]);
+				var update = Update.Set("Payload", mongoSnapshot["Payload"]);
+				// doing an upsert instead of an insert allows us to overwrite an existing snapshot and not get stuck with a
+				// stream that needs to be snapshotted because the insert fails and the SnapshotRevision isn't being updated
+				this.PersistedSnapshots.Update(query, update, UpdateFlags.Upsert);
 				this.PersistedStreamHeads.Update(
 					Query.EQ("_id", snapshot.StreamId),
 					Update.Set("SnapshotRevision", snapshot.StreamRevision));
