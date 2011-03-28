@@ -63,7 +63,7 @@
 				IndexOptions.SetName("Dispatched_Index").SetUnique(false));
 
 				this.PersistedCommits.EnsureIndex(
-					IndexKeys.Ascending("_id.StreamId", "Events.StreamRevision", "_id.CommitSequence"),
+					IndexKeys.Ascending("_id.StreamId", "Events.StreamRevision"),
 					IndexOptions.SetName("GetFrom_Index").SetUnique(true));
 
 				this.PersistedCommits.EnsureIndex(
@@ -83,8 +83,7 @@
 
 				return this.PersistedCommits
 					.Find(query)
-					.SetFlags(QueryFlags.NoCursorTimeout | QueryFlags.Exhaust)
-					.SetSortOrder("_id.CommitSequence")
+					.SetSortOrder("Events.StreamRevision")
 					.Select(mc => mc.ToCommit(this.serializer))
 					.ToArray();
 			});
