@@ -83,6 +83,7 @@
 
 				return this.PersistedCommits
 					.Find(query)
+					.SetFlags(QueryFlags.NoCursorTimeout | QueryFlags.Exhaust)
 					.SetSortOrder("_id.CommitSequence")
 					.Select(mc => mc.ToCommit(this.serializer))
 					.ToArray();
