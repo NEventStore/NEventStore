@@ -1,6 +1,7 @@
 namespace EventStore
 {
 	using Persistence;
+	using Persistence.InMemoryPersistence;
 
 	public static class PersistenceWireupExtensions
 	{
