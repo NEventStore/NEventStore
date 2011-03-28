@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
 // <copyright file="GlobalAssemblyInfo.cs">
-//     Copyright (c) Jonathan Oliver. All rights reserved.
+//	 Copyright (c) Jonathan Oliver. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 using System;
