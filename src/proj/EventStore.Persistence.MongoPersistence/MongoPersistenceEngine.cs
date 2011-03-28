@@ -150,7 +150,6 @@
 
 				return this.PersistedStreamHeads
 					.Find(query)
-					.ToArray()
 					.Select(x => x.ToStreamHead())
 					.ToArray();
 			});
