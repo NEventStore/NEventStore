@@ -44,17 +44,14 @@ namespace EventStore
 
 		IEnumerable<Commit> ICommitEvents.GetFrom(Guid streamId, int minRevision, int maxRevision)
 		{
-			var commits = this.persistence.GetFrom(streamId, minRevision, maxRevision);
-			foreach (var commit in commits)
+			foreach (var commit in this.persistence.GetFrom(streamId, minRevision, maxRevision))
 			{
-				foreach (var hook in this.pipelineHooks)
-				{
-					var filtered = hook.Select(commit);
-					if (filtered == null)
-						continue;
-				}
+				var filtered = commit;
+				foreach (var hook in this.pipelineHooks.Where(x => (filtered = x.Select(filtered)) == null))
+					break;
 
-				yield return commit;
+				if (filtered != null)
+					yield return filtered;
 			}
 		}
 		void ICommitEvents.Commit(Commit attempt)
@@ -73,13 +70,11 @@ namespace EventStore
 
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
-			// TODO: add to some kind of cache
-			return this.persistence.GetSnapshot(streamId, maxRevision);
+			return this.persistence.GetSnapshot(streamId, maxRevision); // TODO: add to some kind of cache
 		}
 		public virtual bool AddSnapshot(Snapshot snapshot)
 		{
-			// TODO: update the cache here
-			return this.persistence.AddSnapshot(snapshot);
+			return this.persistence.AddSnapshot(snapshot); // TODO: update the cache here
 		}
 	}
 }
