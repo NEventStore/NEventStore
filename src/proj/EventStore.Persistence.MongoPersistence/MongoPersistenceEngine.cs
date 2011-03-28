@@ -35,7 +35,7 @@
 
 			_persistedStreamHeadsSettings = this.store.CreateCollectionSettings<BsonDocument>("Streams");
 			_persistedStreamHeadsSettings.AssignIdOnInsert = false;
-			_persistedStreamHeadsSettings.SafeMode = SafeMode.False;
+			_persistedStreamHeadsSettings.SafeMode = SafeMode.True;
 		}
 
 		public void Dispose()
