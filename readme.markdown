@@ -21,10 +21,11 @@ infrastructure components.  Specifically, most CQRS-style applications read from
 and perform some processing.  When processing is complete, the application then commits the work
 to storage and publishes the completed work.  In almost all cases, this requires a two-phase commit
 managed by a distributed transaction coordinator (MSDTC in .NET) along with various security settings
-and ports available whereby such components can communicate.
+and firewall ports opened and avaiable whereby such components can communicate, not to mention a
+ubiquitous requirement for Microsoft Windows on all machines in .NET environments.
 
-When using a two-phase commit in .NET, there are very few database drivers that support this scenario
-and even fewer message queues that support it as well.  In essence, if you want to implement a typical
+When using two-phase commit in .NET, there are very few database drivers that support this scenario
+and even fewer message queues that support it.  In essence, if you want to implement a typical
 CQRS-style application, you're stuck with MSMQ and SQL Server using MSDTC.  Granted, there are
 other choices, but the constraints imposed by a two-phase commit are burdensome.  This also
 creates additional issues when utilizing shared hosting or running on Mono as support in frameworks
@@ -36,7 +37,16 @@ Furthermore, it does this outside of any ambient transaction from a message queu
 persistence mechanisms.  In other words, application developers are free to use virtually any
 messaging queuing infrastructure, message bus (if at all), and storage engine.  Each will perform
 its own specific task in an isolated manner with full transactional integrity all without
-enlisting any resources (other than a message queue) in some form of a transaction.
+enlisting any resources (other than a message queue) in some form of transaction.
+
+Interestingly enough, even without the presence of distributed transactions across the various resources
+involved, such as a message queue and persistent storage, the EventStore is able to ensure a fully
+transactional experience.  This is achieved by breaking apart a distributed transaction into smaller
+pieces and performing each one individually.  This is one of the primary goals and motivations in the
+underlying model found in the EventStore.  Thus each message delivered by the queuing infrastructure is
+made to be idempotent, even though the message may be delivered multiple times, as per message queue
+"at-least-once" guarantees.  Following this, the EventStore is able to ensure that all events committed
+are always dispatched to any messaging infrastructure.
 
 ## Supported Storage Engines
 
