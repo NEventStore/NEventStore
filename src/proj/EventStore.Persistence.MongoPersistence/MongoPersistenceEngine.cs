@@ -69,6 +69,10 @@
 				this.PersistedCommits.EnsureIndex(
 					IndexKeys.Ascending("CommitStamp"),
 					IndexOptions.SetName("CommitStamp_Index").SetUnique(false));
+
+				this.PersistedSnapshots.EnsureIndex(
+					IndexKeys.Ascending("Unsnapshotted"),
+					IndexOptions.SetName("Unsnapshotted_Index").SetUnique(false));
 			});
 		}
 
@@ -107,7 +111,7 @@
 				{
 					// for concurrency / duplicate commit detection safe mode is required
 					this.PersistedCommits.Insert(commit, SafeMode.True);
-					this.UpdateStreamHeadAsync(attempt.StreamId, attempt.StreamRevision, (attempt.CommitSequence == 1));
+					this.UpdateStreamHeadAsync(attempt.StreamId, attempt.StreamRevision, attempt.Events.Count, (attempt.CommitSequence == 1));
 				}
 				catch (MongoException e)
 				{
@@ -145,16 +149,11 @@
 		{
 			return this.TryMongo(() =>
 			{
-				var query = Query.Where(BsonJavaScript.Create("this.HeadRevision >= this.SnapshotRevision + " + maxThreshold));
+				var query = Query.GTE("Unsnapshotted", maxThreshold);
 
 				return this.PersistedStreamHeads
 					.Find(query)
-					// NOTE: We need to limit the execution of this in some way as it is unable to use an index and if it starts taking so long that it times out
-					// then we can no longer create snapshots. So, this gets the first 1000 streams found that need to be snapshotted rather than *all* streams 
-					// but it's expected that this will be called repeatedly by some kind of service so it may be a reasonable solution. Other potential solutions 
-					// are to calc and store the number of unsnapshotted events when writing to the Stream collection OR run a MapReduce operation occasionally.
-					// Perhaps the method signature should include a maxiumum number of items to return so that it can be the callers decision to make ...
-					.SetLimit(1000)
+					.SetSortOrder(SortBy.Descending("Unsnapshotted"))
 					.Select(x => x.ToStreamHead())
 					.ToArray();
 			});
@@ -182,9 +181,14 @@
 				// doing an upsert instead of an insert allows us to overwrite an existing snapshot and not get stuck with a
 				// stream that needs to be snapshotted because the insert fails and the SnapshotRevision isn't being updated
 				this.PersistedSnapshots.Update(query, update, UpdateFlags.Upsert);
+				// More commits could have been made between us deciding that a snapshot is required and writing it so just 
+				// resetting the Unsnapshotted count may be a little off. Adding snapshots should be a separate process so 
+				// this is a good chance to make sure the numbers are still in-sync - it only adds a 'read' after all ...
+				var streamHead = this.PersistedStreamHeads.FindOneById(snapshot.StreamId).ToStreamHead();
+				var unsnapshotted = streamHead.HeadRevision - snapshot.StreamRevision;
 				this.PersistedStreamHeads.Update(
 					Query.EQ("_id", snapshot.StreamId),
-					Update.Set("SnapshotRevision", snapshot.StreamRevision));
+					Update.Set("SnapshotRevision", snapshot.StreamRevision).Set("Unsnapshotted", unsnapshotted));
 
 				return true;
 			}
@@ -194,7 +198,7 @@
 			}
 		}
 
-		private void UpdateStreamHeadAsync(Guid streamId, int streamRevision, bool isFirstCommit)
+		private void UpdateStreamHeadAsync(Guid streamId, int streamRevision, int eventsCount, bool isFirstCommit)
 		{
 			ThreadPool.QueueUserWorkItem(x => this.TryMongo(() =>
 			{
@@ -204,12 +208,13 @@
 							{
 								{ "_id", streamId },
 								{ "HeadRevision", streamRevision },
-								{ "SnapshotRevision", 0 }
+								{ "SnapshotRevision", 0 },
+								{ "Unsnapshotted", streamRevision }
 							});
 				else
 					this.PersistedStreamHeads.Update(
 						Query.EQ("_id", streamId),
-						Update.Set("HeadRevision", streamRevision));
+						Update.Set("HeadRevision", streamRevision).Inc("Unsnapshotted", eventsCount));
 			}), null);
 		}
 
