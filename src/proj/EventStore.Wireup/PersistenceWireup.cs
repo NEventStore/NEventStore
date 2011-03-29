@@ -7,8 +7,8 @@ namespace EventStore
 
 	public class PersistenceWireup : Wireup
 	{
+		private ICollection<IPipelineHook> pipelineHooks = new IPipelineHook[] { };
 		private bool initialize;
-		private ICollection<IPipelineHook> pipelineHooks;
 
 		public PersistenceWireup(Wireup inner)
 			: base(inner)
