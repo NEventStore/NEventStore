@@ -193,7 +193,7 @@ namespace EventStore.Core.UnitTests
 			constructed.CommitSequence.ShouldEqual(DefaultCommitSequence);
 
 		It should_build_the_commit_with_the_correct_commit_stamp = () =>
-			DateTime.UtcNow.Subtract(constructed.CommitStamp).ShouldBeLessThan(TimeSpan.FromMilliseconds(50));
+			DateTime.UtcNow.Subtract(constructed.CommitStamp).ShouldBeLessThan(TimeSpan.FromMilliseconds(150));
 
 		It should_build_the_commit_with_the_headers_provided = () =>
 			constructed.Headers[headers.First().Key].ShouldEqual(headers.First().Value);
