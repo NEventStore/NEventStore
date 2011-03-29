@@ -59,8 +59,8 @@
 			this.TryMongo(() =>
 			{
 				this.PersistedCommits.EnsureIndex(
-				IndexKeys.Ascending("Dispatched").Ascending("CommitStamp"),
-				IndexOptions.SetName("Dispatched_Index").SetUnique(false));
+					IndexKeys.Ascending("Dispatched").Ascending("CommitStamp"),
+					IndexOptions.SetName("Dispatched_Index").SetUnique(false));
 
 				this.PersistedCommits.EnsureIndex(
 					IndexKeys.Ascending("_id.StreamId", "Events.StreamRevision"),
