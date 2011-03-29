@@ -4,6 +4,7 @@ namespace EventStore
 	using System.Linq;
 	using Dispatcher;
 	using Persistence;
+	using Persistence.InMemoryPersistence;
 
 	public class Wireup
 	{

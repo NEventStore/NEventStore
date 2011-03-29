@@ -95,14 +95,14 @@ namespace EventStore.Core.UnitTests
 	{
 		const int MinRevision = 17;
 		const int MaxRevision = 42;
-		static readonly Commit[] Committed = new[] { BuildCommitStub(MinRevision, 1) };
+		static readonly Commit Committed = BuildCommitStub(MinRevision, 1);
 		static IEventStream stream;
 
 		Establish context = () =>
 		{
-			persistence.Setup(x => x.GetFrom(streamId, MinRevision, MaxRevision)).Returns(Committed);
+			persistence.Setup(x => x.GetFrom(streamId, MinRevision, MaxRevision)).Returns(new[] { Committed });
 			pipelineHooks.Add(new Mock<IPipelineHook>());
-			pipelineHooks[0].Setup(x => x.Select(Committed.First()));
+			pipelineHooks[0].Setup(x => x.Select(Committed)).Returns(Committed);
 		};
 
 		Because of = () =>
@@ -112,7 +112,7 @@ namespace EventStore.Core.UnitTests
 			persistence.Verify(x => x.GetFrom(streamId, MinRevision, MaxRevision), Times.Once());
 
 		It should_provide_the_commits_to_the_selection_hooks = () =>
-			pipelineHooks.ForEach(x => x.Verify(hook => hook.Select(Committed.First()), Times.Once()));
+			pipelineHooks.ForEach(x => x.Verify(hook => hook.Select(Committed), Times.Once()));
 
 		It should_return_an_event_stream_containing_the_correct_stream_identifer = () =>
 			stream.StreamId.ShouldEqual(streamId);

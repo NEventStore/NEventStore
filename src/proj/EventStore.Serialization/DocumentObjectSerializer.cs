@@ -1,6 +1,6 @@
 namespace EventStore.Serialization
 {
-	public class NullDocumentSerializer : IDocumentSerializer
+	public class DocumentObjectSerializer : IDocumentSerializer
 	{
 		public object Serialize<T>(T graph)
 		{
