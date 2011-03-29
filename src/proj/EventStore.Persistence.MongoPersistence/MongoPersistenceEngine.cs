@@ -145,11 +145,16 @@
 		{
 			return this.TryMongo(() =>
 			{
-				var query = Query
-				.Where(BsonJavaScript.Create("this.HeadRevision >= this.SnapshotRevision + " + maxThreshold));
+				var query = Query.Where(BsonJavaScript.Create("this.HeadRevision >= this.SnapshotRevision + " + maxThreshold));
 
 				return this.PersistedStreamHeads
 					.Find(query)
+					// NOTE: We need to limit the execution of this in some way as it is unable to use an index and if it starts taking so long that it times out
+					// then we can no longer create snapshots. So, this gets the first 1000 streams found that need to be snapshotted rather than *all* streams 
+					// but it's expected that this will be called repeatedly by some kind of service so it may be a reasonable solution. Other potential solutions 
+					// are to calc and store the number of unsnapshotted events when writing to the Stream collection OR run a MapReduce operation occasionally.
+					// Perhaps the method signature should include a maxiumum number of items to return so that it can be the callers decision to make ...
+					.SetLimit(1000)
 					.Select(x => x.ToStreamHead())
 					.ToArray();
 			});
