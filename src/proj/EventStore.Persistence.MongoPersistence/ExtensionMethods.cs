@@ -13,7 +13,7 @@
 		public static BsonDocument ToMongoCommit(this Commit commit, IDocumentSerializer serializer)
 		{
 			var streamRevision = commit.StreamRevision - (commit.Events.Count - 1);
-			var events = commit.Events.Select(e => new BsonDocument { { "StreamRevision", streamRevision++ }, { "Payload", BsonDocumentWrapper.Create(serializer.Serialize(e))}});
+			var events = commit.Events.Select(e => new BsonDocument { { "StreamRevision", streamRevision++ }, { "Payload", new BsonDocumentWrapper(typeof(EventMessage), serializer.Serialize(e)) } });
 			return new BsonDocument
 			{
 				{ "_id", new BsonDocument { { "StreamId", commit.StreamId }, { "CommitSequence", commit.CommitSequence } } },
