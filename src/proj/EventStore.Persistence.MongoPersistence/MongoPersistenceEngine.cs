@@ -5,6 +5,7 @@
 	using System.Linq;
 	using System.Threading;
 	using MongoDB.Bson;
+	using MongoDB.Bson.Serialization;
 	using MongoDB.Driver;
 	using MongoDB.Driver.Builders;
 	using Serialization;
@@ -58,6 +59,16 @@
 
 			this.TryMongo(() =>
 			{
+				try
+				{
+					// no discriminator required as we'll be checking the type ourselves
+					BsonClassMap.RegisterClassMap<EventMessage>(cm => cm.SetDiscriminatorIsRequired(false));
+				}
+				catch(ArgumentException)
+				{
+					// ignore (ClassMap may have already been setup)
+				}
+
 				this.PersistedCommits.EnsureIndex(
 					IndexKeys.Ascending("Dispatched").Ascending("CommitStamp"),
 					IndexOptions.SetName("Dispatched_Index").SetUnique(false));
