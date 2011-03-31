@@ -70,7 +70,7 @@
 					IndexKeys.Ascending("CommitStamp"),
 					IndexOptions.SetName("CommitStamp_Index").SetUnique(false));
 
-				this.PersistedSnapshots.EnsureIndex(
+				this.PersistedStreamHeads.EnsureIndex(
 					IndexKeys.Ascending("Unsnapshotted"),
 					IndexOptions.SetName("Unsnapshotted_Index").SetUnique(false));
 			});
