@@ -2,20 +2,18 @@ namespace EventStore
 {
 	using System;
 	using System.Collections.Generic;
-	using Dispatcher;
+	using System.Linq;
 	using Persistence;
 
 	public class OptimisticEventStore : IStoreEvents, ICommitEvents
 	{
-		private readonly CommitTracker tracker = new CommitTracker();
 		private readonly IPersistStreams persistence;
-		private readonly IDispatchCommits dispatcher;
-		private bool disposed;
+		private readonly IEnumerable<IPipelineHook> pipelineHooks;
 
-		public OptimisticEventStore(IPersistStreams persistence, IDispatchCommits dispatcher)
+		public OptimisticEventStore(IPersistStreams persistence, IEnumerable<IPipelineHook> pipelineHooks)
 		{
 			this.persistence = persistence;
-			this.dispatcher = dispatcher;
+			this.pipelineHooks = pipelineHooks ?? new IPipelineHook[0];
 		}
 
 		public void Dispose()
@@ -25,12 +23,8 @@ namespace EventStore
 		}
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!disposing || this.disposed)
-				return;
-
-			this.disposed = true;
-			this.dispatcher.Dispose();
-			this.persistence.Dispose();
+			if (disposing)
+				this.persistence.Dispose();
 		}
 
 		public virtual IEventStream CreateStream(Guid streamId)
@@ -50,59 +44,37 @@ namespace EventStore
 
 		IEnumerable<Commit> ICommitEvents.GetFrom(Guid streamId, int minRevision, int maxRevision)
 		{
-			var commits = this.persistence.GetFrom(streamId, minRevision, maxRevision);
-			foreach (var commit in commits)
+			foreach (var commit in this.persistence.GetFrom(streamId, minRevision, maxRevision))
 			{
-				this.tracker.Track(commit);
-				yield return commit;
+				var filtered = commit;
+				foreach (var hook in this.pipelineHooks.Where(x => (filtered = x.Select(filtered)) == null))
+					break;
+
+				if (filtered != null)
+					yield return filtered;
 			}
 		}
-
 		void ICommitEvents.Commit(Commit attempt)
 		{
 			if (!attempt.IsValid() || attempt.IsEmpty())
 				return;
 
-			this.ThrowOnDuplicateOrConcurrentWrites(attempt);
-			this.PersistAndDispatch(attempt);
-		}
-		protected virtual void ThrowOnDuplicateOrConcurrentWrites(Commit attempt)
-		{
-			if (this.tracker.Contains(attempt))
-				throw new DuplicateCommitException();
-
-			var head = this.tracker.GetStreamHead(attempt.StreamId);
-			if (head == null)
+			if (this.pipelineHooks.Any(x => !x.PreCommit(attempt)))
 				return;
 
-			if (head.CommitSequence >= attempt.CommitSequence)
-				throw new ConcurrencyException();
-
-			if (head.StreamRevision >= attempt.StreamRevision)
-				throw new ConcurrencyException();
-
-			if (head.CommitSequence < attempt.CommitSequence - 1)
-				throw new StorageException(); // beyond the end of the stream
-
-			if (head.StreamRevision < attempt.StreamRevision - attempt.Events.Count)
-				throw new StorageException(); // beyond the end of the stream
-		}
-		protected virtual void PersistAndDispatch(Commit attempt)
-		{
 			this.persistence.Commit(attempt);
-			this.tracker.Track(attempt);
-			this.dispatcher.Dispatch(attempt);
+
+			foreach (var hook in this.pipelineHooks)
+				hook.PostCommit(attempt);
 		}
 
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
-			// TODO: add to some kind of cache
-			return this.persistence.GetSnapshot(streamId, maxRevision);
+			return this.persistence.GetSnapshot(streamId, maxRevision); // TODO: add to some kind of cache
 		}
 		public virtual bool AddSnapshot(Snapshot snapshot)
 		{
-			// TODO: update the cache here
-			return this.persistence.AddSnapshot(snapshot);
+			return this.persistence.AddSnapshot(snapshot); // TODO: update the cache here
 		}
 	}
 }

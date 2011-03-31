@@ -1,10 +1,12 @@
 namespace EventStore
 {
 	using System;
+	using System.Runtime.Serialization;
 
 	/// <summary>
 	/// Represents a materialized view of a stream at specific revision.
 	/// </summary>
+	[DataContract, Serializable]
 	public class Snapshot
 	{
 		/// <summary>
@@ -31,16 +33,16 @@ namespace EventStore
 		/// <summary>
 		/// Gets the value which uniquely identifies the stream to which the snapshot applies.
 		/// </summary>
-		public Guid StreamId { get; private set; }
+		[DataMember] public virtual Guid StreamId { get; private set; }
 
 		/// <summary>
 		/// Gets the position at which the snapshot applies.
 		/// </summary>
-		public int StreamRevision { get; private set; }
+		[DataMember] public virtual int StreamRevision { get; private set; }
 
 		/// <summary>
 		/// Gets the snapshot or materialized view of the stream at the revision indicated.
 		/// </summary>
-		public object Payload { get; private set; }
+		[DataMember] public virtual object Payload { get; private set; }
 	}
 }

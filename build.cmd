@@ -1,5 +1,5 @@
 @echo off
-set FRAMEWORK_PATH=C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319
+set FRAMEWORK_PATH=C:/WINDOWS/Microsoft.NET/Framework/v4.0.30319
 set PATH=%PATH%;%FRAMEWORK_PATH%;
 
 :target_config
@@ -21,7 +21,7 @@ if exist publish ( rmdir /s /q publish )
 if exist publish ( rmdir /s /q publish )
 
 mkdir output
-mkdir output\bin
+mkdir "output\bin"
 
 echo === COMPILING ===
 echo Compiling / Target: %FRAMEWORK_VERSION% / Config: %TARGET_CONFIG%
@@ -40,13 +40,13 @@ echo.
 echo === MERGING ===
 echo Merging Primary Assembly
 set FILES_TO_MERGE=
-set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore\bin\%TARGET_CONFIG%\EventStore.dll"
-set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Core\bin\%TARGET_CONFIG%\EventStore.Core.dll"
-set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization\bin\%TARGET_CONFIG%\EventStore.Serialization.dll"
-set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.SqlPersistence\bin\%TARGET_CONFIG%\EventStore.Persistence.SqlPersistence.dll"
-set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Wireup\bin\%TARGET_CONFIG%\EventStore.Wireup.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore/bin/%TARGET_CONFIG%/EventStore.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Core/bin/%TARGET_CONFIG%/EventStore.Core.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Serialization/bin/%TARGET_CONFIG%/EventStore.Serialization.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Persistence.SqlPersistence/bin/%TARGET_CONFIG%/EventStore.Persistence.SqlPersistence.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Wireup/bin/%TARGET_CONFIG%/EventStore.Wireup.dll"
 (echo.|set /p =EventStore.*)>exclude.txt
-bin\ilmerge-bin\ILMerge.exe /keyfile:src/EventStore.snk /internalize:"exclude.txt" /xmldocs /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.dll %FILES_TO_MERGE%
+"bin/ilmerge-bin/ILMerge.exe" /keyfile:src/EventStore.snk /internalize:"exclude.txt" /xmldocs /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.dll %FILES_TO_MERGE%
 del exclude.txt
 
 echo Rereferencing Merged Assembly
@@ -55,38 +55,51 @@ msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=%TARGET_CON
 
 echo Merging Mongo Persistence
 set FILES_TO_MERGE=
-set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.MongoPersistence\bin\%TARGET_CONFIG%\EventStore.Persistence.MongoPersistence.dll"
-set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.MongoPersistence\bin\%TARGET_CONFIG%\MongoDB*.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Persistence.MongoPersistence/bin/%TARGET_CONFIG%/EventStore.Persistence.MongoPersistence.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Persistence.MongoPersistence/bin/%TARGET_CONFIG%/MongoDB*.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Persistence.MongoPersistence.Wireup/bin/%TARGET_CONFIG%/EventStore.Persistence.MongoPersistence.Wireup.dll"
 echo EventStore.*>exclude.txt
 (echo.|set /p =MongoDB.*)>>exclude.txt
-bin\ilmerge-bin\ILMerge.exe /keyfile:src/EventStore.snk /internalize:"exclude.txt" /xmldocs /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Persistence.MongoPersistence.dll %FILES_TO_MERGE%
+"bin/ilmerge-bin/ILMerge.exe" /keyfile:src/EventStore.snk /internalize:"exclude.txt" /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Persistence.MongoPersistence.dll %FILES_TO_MERGE%
 del exclude.txt
 
 echo Merging Raven Persistence
 set FILES_TO_MERGE=
-set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.RavenPersistence\bin\%TARGET_CONFIG%\EventStore.Persistence.RavenPersistence.dll"
-set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.RavenPersistence\bin\%TARGET_CONFIG%\MissingBitsFromClientProfile.dll"
-set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.RavenPersistence\bin\%TARGET_CONFIG%\Newtonsoft*.dll"
-set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Persistence.RavenPersistence\bin\%TARGET_CONFIG%\Raven*.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Persistence.RavenPersistence/bin/%TARGET_CONFIG%/EventStore.Persistence.RavenPersistence.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Persistence.RavenPersistence/bin/%TARGET_CONFIG%/MissingBitsFromClientProfile.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Persistence.RavenPersistence/bin/%TARGET_CONFIG%/Newtonsoft*.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Persistence.RavenPersistence/bin/%TARGET_CONFIG%/Raven*.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Persistence.RavenPersistence.Wireup/bin/%TARGET_CONFIG%/EventStore.Persistence.RavenPersistence.Wireup.dll"
 echo EventStore.*>exclude.txt
 (echo.|set /p =Raven.*)>>exclude.txt
-bin\ilmerge-bin\ILMerge.exe /keyfile:src/EventStore.snk /internalize:"exclude.txt" /xmldocs /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Persistence.RavenPersistence.dll %FILES_TO_MERGE%
+"bin/ilmerge-bin/ILMerge.exe" /keyfile:src/EventStore.snk /internalize:"exclude.txt" /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Persistence.RavenPersistence.dll %FILES_TO_MERGE%
 del exclude.txt
 
-echo Merging Json Serialization
+echo Merging Newtonsoft Json.NET Serialization
 set FILES_TO_MERGE=
-set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization.Json\bin\%TARGET_CONFIG%\EventStore.Serialization.Json.dll"
-set FILES_TO_MERGE=%FILES_TO_MERGE% "src\proj\EventStore.Serialization.Json\bin\%TARGET_CONFIG%\Newtonsoft.Json*.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Serialization.Json/bin/%TARGET_CONFIG%/EventStore.Serialization.Json.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Serialization.Json/bin/%TARGET_CONFIG%/Newtonsoft.Json*.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Serialization.Json.Wireup/bin/%TARGET_CONFIG%/EventStore.Serialization.Json.Wireup.dll"
 (echo.|set /p =EventStore.*)>>exclude.txt
-bin\ilmerge-bin\ILMerge.exe /keyfile:src/EventStore.snk /internalize:"exclude.txt" /xmldocs /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Serialization.Json.dll %FILES_TO_MERGE%
+"bin/ilmerge-bin/ILMerge.exe" /keyfile:src/EventStore.snk /internalize:"exclude.txt" /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Serialization.Json.dll %FILES_TO_MERGE%
+del exclude.txt
+
+echo Merging ServiceStack.Text Serialization
+set FILES_TO_MERGE=
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Serialization.ServiceStack/bin/%TARGET_CONFIG%/EventStore.Serialization.ServiceStack.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Serialization.ServiceStack/bin/%TARGET_CONFIG%/ServiceStack.Text.dll"
+set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Serialization.ServiceStack.Wireup/bin/%TARGET_CONFIG%/EventStore.Serialization.ServiceStack.Wireup.dll"
+(echo.|set /p =EventStore.*)>>exclude.txt
+"bin/ilmerge-bin/ILMerge.exe" /keyfile:src/EventStore.snk /internalize:"exclude.txt" /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/bin/EventStore.Serialization.ServiceStack.dll %FILES_TO_MERGE%
 del exclude.txt
 
 echo.
 echo === FINALIZING ===
 echo Copying
-mkdir output\doc
-copy doc\*.* output\doc
+mkdir "output\doc"
+copy "doc\*.*" "output\doc"
 copy "lib\Json.NET\license.txt" "output\doc\Newtonsoft Json.NET license.txt"
+copy "lib\ServiceStack\license.txt" "output\doc\ServiceStack license.txt"
 
 move output publish
 

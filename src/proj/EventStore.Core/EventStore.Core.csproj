@@ -42,21 +42,17 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DispatchPipelineHook.cs" />
+    <Compile Include="OptimisticPipelineHook.cs" />
     <Compile Include="Dispatcher\AsynchronousDispatcher.cs" />
     <Compile Include="Dispatcher\NullDispatcher.cs" />
-    <Compile Include="Dispatcher\NullPublisher.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="OptimisticEventStore.cs" />
     <Compile Include="OptimisticEventStream.cs" />
-    <Compile Include="Persistence\CommitTracker.cs" />
-    <Compile Include="Persistence\IFilterCommitWrites.cs" />
     <Compile Include="Dispatcher\DelegateMessagePublisher.cs" />
     <Compile Include="Dispatcher\IPublishMessages.cs" />
-    <Compile Include="Persistence\IFilterCommitsReads.cs" />
-    <Compile Include="Persistence\InMemoryPersistenceEngine.cs" />
-    <Compile Include="Persistence\InMemoryPersistenceFactory.cs" />
-    <Compile Include="Persistence\NullCommitFilter.cs" />
-    <Compile Include="Persistence\CommitFilterPersistence.cs" />
+    <Compile Include="Persistence\InMemoryPersistence\InMemoryPersistenceEngine.cs" />
+    <Compile Include="Persistence\InMemoryPersistence\InMemoryPersistenceFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Dispatcher\SynchronousDispatcher.cs" />
     <Compile Include="ImmutableCollection.cs" />

@@ -2,7 +2,6 @@ namespace EventStore.Example
 {
 	using System;
 	using Dispatcher;
-	using Serialization;
 
 	internal static class MainProgram
 	{
@@ -14,25 +13,26 @@ namespace EventStore.Example
 		private static readonly IStoreEvents Store = Wireup.Init()
 			.UsingSqlPersistence("EventStore")
 				.InitializeDatabaseSchema()
-			.UsingCustomSerialization(new JsonSerializer())
-				.Compress()
-				.EncryptWith(EncryptionKey)
+				.HookIntoPipelineUsing(new[] { new AuthorizationPipelineHook() })
+				.UsingJsonSerialization()
+					.Compress()
+					.EncryptWith(EncryptionKey)
 			.UsingAsynchronousDispatcher()
 				.PublishTo(new DelegateMessagePublisher(DispatchCommit))
-				.HandleExceptionsWith(DispatchErrorHandler)
 			.Build();
 
 		private static void DispatchCommit(Commit commit)
 		{
 			// this is where we'd hook into our messaging infrastructure, e.g. NServiceBus.
 			// this can be a class as well--just implement IPublishMessages
-			Console.WriteLine(Resources.MessagesPublished);
-		}
-		private static void DispatchErrorHandler(Commit commit, Exception exception)
-		{
-			// if for some reason our messaging infrastructure couldn't dispatch the messages we've committed
-			// we would be alerted here.
-			Console.WriteLine(Resources.ErrorWhilePublishing);
+			try
+			{
+				Console.WriteLine(Resources.MessagesPublished);
+			}
+			catch (Exception)
+			{
+				Console.WriteLine(Resources.UnableToPublish);
+			}
 		}
 
 		private static void Main()
@@ -89,14 +89,5 @@ namespace EventStore.Example
 				stream.CommitChanges(Guid.NewGuid());
 			}
 		}
-	}
-
-	internal class SomeDomainEvent
-	{
-		public string Value { get; set; }
-	}
-	internal class AggregateMemento
-	{
-		public string Value { get; set; }
 	}
 }

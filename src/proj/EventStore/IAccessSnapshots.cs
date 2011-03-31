@@ -15,6 +15,7 @@ namespace EventStore
 		/// <param name="maxRevision">The maximum revision possible for the desired snapshot.</param>
 		/// <returns>If found, it returns the snapshot; otherwise null is returned.</returns>
 		/// <exception cref="StorageException" />
+		/// <exception cref="StorageUnavailableException" />
 		Snapshot GetSnapshot(Guid streamId, int maxRevision);
 
 		/// <summary>
@@ -23,6 +24,7 @@ namespace EventStore
 		/// <param name="snapshot">The snapshot to save.</param>
 		/// <returns>If the snapshot was added, returns true; otherwise false.</returns>
 		/// <exception cref="StorageException" />
+		/// <exception cref="StorageUnavailableException" />
 		bool AddSnapshot(Snapshot snapshot);
 	}
 }

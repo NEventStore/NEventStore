@@ -23,6 +23,8 @@ namespace EventStore.Serialization.AcceptanceTests
 					return new JsonSerializer();
 				case "Bson":
 					return new BsonSerializer();
+				case "ServiceStackJson":
+					return new JsonSerializer();
 				default:
 					throw new NotSupportedException("The configured serializer is not registered with the SerializationFactory.");
 			}

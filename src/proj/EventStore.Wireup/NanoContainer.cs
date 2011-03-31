@@ -20,7 +20,10 @@ namespace EventStore
 			where TService : class
 		{
 			if (instance == null)
-				throw new ArgumentNullException("instance", "The instance provided cannot be null.");
+				throw new ArgumentNullException("instance", Messages.InstanceCannotBeNull);
+
+			if (!typeof(TService).IsInterface)
+				throw new ArgumentException(Messages.TypeMustBeInterface, "instance");
 
 			var registration = new ContainerRegistration(instance);
 			this.registrations[typeof(TService)] = registration;
@@ -30,7 +33,11 @@ namespace EventStore
 		public virtual TService Resolve<TService>()
 			where TService : class
 		{
-			return this.registrations[typeof(TService)].Resolve(this) as TService;
+			ContainerRegistration registration;
+			if (!this.registrations.TryGetValue(typeof(TService), out registration))
+				return null;
+
+			return registration.Resolve(this) as TService;
 		}
 	}
 

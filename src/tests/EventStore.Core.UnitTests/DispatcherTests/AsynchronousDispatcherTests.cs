@@ -33,7 +33,7 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 		};
 
 		Because of = () =>
-			new AsynchronousDispatcher(bus.Object, persistence.Object, null);
+			new AsynchronousDispatcher(bus.Object, persistence.Object);
 
 		It should_take_a_few_milliseconds_for_the_other_thread_to_execute = () =>
 			Thread.Sleep(25); // just a precaution because we're doing async tests
@@ -61,7 +61,7 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 			bus.Setup(x => x.Publish(commit));
 			persistence.Setup(x => x.MarkCommitAsDispatched(commit));
 
-			dispatcher = new AsynchronousDispatcher(bus.Object, persistence.Object, null);
+			dispatcher = new AsynchronousDispatcher(bus.Object, persistence.Object);
 		};
 
 		Because of = () =>
@@ -78,41 +78,6 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 	}
 
 	[Subject("AsynchronousDispatcher")]
-	public class when_an_asynchronously_dispatch_commit_throws_an_exception
-	{
-		static readonly Commit commit = new Commit(Guid.NewGuid(), 0, Guid.NewGuid(), 0, DateTime.UtcNow, null, null);
-
-		static AsynchronousDispatcher dispatcher;
-
-		static Exception thrown;
-		static Commit handedBack;
-
-		Establish context = () =>
-		{
-			dispatcher = new AsynchronousDispatcher(
-				null, // we want a NullReferenceException to be thrown
-				new Mock<IPersistStreams>().Object,
-				(c, e) =>
-				{
-					handedBack = c;
-					thrown = e;
-				});
-		};
-
-		Because of = () =>
-			dispatcher.Dispatch(commit);
-
-		It should_take_a_few_milliseconds_for_the_other_thread_to_execute = () =>
-			Thread.Sleep(25); // just a precaution because we're doing async tests
-
-		It should_handed_back_the_commit_that_caused_the_exception = () =>
-			handedBack.ShouldEqual(commit);
-
-		It should_provide_the_exception_that_indicates_the_problem = () =>
-			thrown.ShouldNotBeNull();
-	}
-
-	[Subject("AsynchronousDispatcher")]
 	public class when_disposing_the_async_dispatcher
 	{
 		static readonly Mock<IPublishMessages> bus = new Mock<IPublishMessages>();
@@ -123,7 +88,7 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 		{
 			bus.Setup(x => x.Dispose());
 			persistence.Setup(x => x.Dispose());
-			dispatcher = new AsynchronousDispatcher(bus.Object, persistence.Object, null);
+			dispatcher = new AsynchronousDispatcher(bus.Object, persistence.Object);
 		};
 
 		Because of = () =>
