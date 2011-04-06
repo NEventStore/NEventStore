@@ -17,10 +17,10 @@
 			return new BsonDocument
 			{
 				{ "_id", new BsonDocument { { "StreamId", commit.StreamId }, { "CommitSequence", commit.CommitSequence } } },
-				{ "CommitId" , commit.CommitId },
-				{ "CommitStamp" , commit.CommitStamp },
-				{ "Headers" , BsonDocumentWrapper.Create(commit.Headers) },
-				{ "Events" , BsonArray.Create(events) },
+				{ "CommitId", commit.CommitId },
+				{ "CommitStamp", commit.CommitStamp },
+				{ "Headers", BsonDocumentWrapper.Create(commit.Headers) },
+				{ "Events", BsonArray.Create(events) },
 				{ "Dispatched", false }
 			};
 		}
@@ -49,7 +49,7 @@
 		{
 			return new BsonDocument
 			{
-				{ "_id", new BsonDocument { {"StreamId", snapshot.StreamId}, {"StreamRevision", snapshot.StreamRevision} }},
+				{ "_id", new BsonDocument { { "StreamId", snapshot.StreamId }, { "StreamRevision", snapshot.StreamRevision } } },
 				{ "Payload", BsonDocumentWrapper.Create(serializer.Serialize(snapshot.Payload)) }
 			};
 		}
@@ -65,7 +65,7 @@
 			var bsonPayload = doc["Payload"];
 
 			object payload;
-			switch(bsonPayload.BsonType)
+			switch (bsonPayload.BsonType)
 			{
 				case BsonType.Binary:
 					payload = serializer.Deserialize<object>(bsonPayload.AsByteArray);
