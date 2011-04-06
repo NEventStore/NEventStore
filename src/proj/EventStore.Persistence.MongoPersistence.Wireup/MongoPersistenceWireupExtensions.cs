@@ -6,7 +6,7 @@ namespace EventStore
 	public static class MongoPersistenceWireupExtensions
 	{
 		public static Wireup UsingMongoPersistence(
-			this Wireup wireup, string connectionName, ISerialize serializer)
+			this Wireup wireup, string connectionName, IDocumentSerializer serializer)
 		{
 			wireup.With(new MongoPersistenceFactory(connectionName, serializer).Build());
 			return wireup;

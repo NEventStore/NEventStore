@@ -7,9 +7,9 @@
 	public class MongoPersistenceFactory : IPersistenceFactory
 	{
 		private readonly string connectionName;
-		private readonly ISerialize serializer;
+		private readonly IDocumentSerializer serializer;
 
-		public MongoPersistenceFactory(string connectionName, ISerialize serializer)
+		public MongoPersistenceFactory(string connectionName, IDocumentSerializer serializer)
 		{
 			this.connectionName = connectionName;
 			this.serializer = serializer;
