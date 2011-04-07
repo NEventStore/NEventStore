@@ -136,6 +136,7 @@ CREATE TABLE [dbo].[Commits]
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Commits] ON [dbo].[Commits] ([StreamId], [CommitId]);
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Commits_Revisions] ON [dbo].[Commits] ([StreamId], [StreamRevision], [Items]);
 CREATE INDEX [IX_Commits_Dispatched] ON [dbo].[Commits] ([Dispatched]);
+CREATE INDEX [IX_Commits_Stamp] ON Commits ([CommitStamp]);
 
 CREATE TABLE [dbo].[Snapshots]
 (

@@ -148,6 +148,7 @@ CREATE TABLE Commits
 CREATE UNIQUE INDEX IX_Commits ON Commits (StreamId, CommitId);
 CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (StreamId, StreamRevision, Items);
 CREATE INDEX IX_Commits_Dispatched ON Commits (Dispatched);
+CREATE INDEX IX_Commits_Stamp ON Commits (CommitStamp);
 
 CREATE TABLE Snapshots
 (
