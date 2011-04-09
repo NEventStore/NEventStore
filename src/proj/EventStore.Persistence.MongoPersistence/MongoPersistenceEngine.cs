@@ -31,11 +31,11 @@
 
 			this.snapshotSettings = this.store.CreateCollectionSettings<BsonDocument>("Snapshots");
 			this.snapshotSettings.AssignIdOnInsert = false;
-			this.snapshotSettings.SafeMode = SafeMode.True;
+			this.snapshotSettings.SafeMode = SafeMode.False;
 
 			this.streamSettings = this.store.CreateCollectionSettings<BsonDocument>("Streams");
 			this.streamSettings.AssignIdOnInsert = false;
-			this.streamSettings.SafeMode = SafeMode.True;
+			this.streamSettings.SafeMode = SafeMode.False;
 		}
 
 		public void Dispose()
