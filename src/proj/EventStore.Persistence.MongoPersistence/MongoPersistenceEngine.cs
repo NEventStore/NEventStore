@@ -109,7 +109,7 @@
 				{
 					// for concurrency / duplicate commit detection safe mode is required
 					this.PersistedCommits.Insert(commit, SafeMode.True);
-					this.UpdateStreamHeadAsync(attempt.StreamId, attempt.StreamRevision, attempt.Events.Count, (attempt.CommitSequence == 1));
+					this.UpdateStreamHeadAsync(attempt.StreamId, attempt.StreamRevision, attempt.Events.Count);
 				}
 				catch (MongoException e)
 				{
@@ -196,22 +196,14 @@
 			}
 		}
 
-		private void UpdateStreamHeadAsync(Guid streamId, int streamRevision, int eventsCount, bool isFirstCommit)
+		private void UpdateStreamHeadAsync(Guid streamId, int streamRevision, int eventsCount)
 		{
 			ThreadPool.QueueUserWorkItem(x => this.TryMongo(() =>
 			{
-				if (isFirstCommit)
-					this.PersistedStreamHeads.Insert(new BsonDocument
-					{
-						{ "_id", streamId },
-						{ "HeadRevision", streamRevision },
-						{ "SnapshotRevision", 0 },
-						{ "Unsnapshotted", streamRevision }
-					});
-				else
-					this.PersistedStreamHeads.Update(
-						Query.EQ("_id", streamId),
-						Update.Set("HeadRevision", streamRevision).Inc("Unsnapshotted", eventsCount));
+				this.PersistedStreamHeads.Update(
+					Query.EQ("_id", streamId),
+					Update.Set("HeadRevision", streamRevision).Inc("SnapshotRevision", 0).Inc("Unsnapshotted", eventsCount),
+					UpdateFlags.Upsert);
 			}), null);
 		}
 
