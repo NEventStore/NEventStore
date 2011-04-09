@@ -88,8 +88,7 @@
 				return this.PersistedCommits
 					.Find(query)
 					.SetSortOrder("Events.StreamRevision")
-					.Select(mc => mc.ToCommit(this.serializer))
-					.ToArray();
+					.Select(mc => mc.ToCommit(this.serializer));
 			});
 		}
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
@@ -97,8 +96,7 @@
 			return this.TryMongo(() => this.PersistedCommits
 				.Find(Query.GTE("CommitStamp", start))
 				.SetSortOrder("CommitStamp")
-				.Select(x => x.ToCommit(this.serializer))
-				.ToArray());
+				.Select(x => x.ToCommit(this.serializer)));
 		}
 
 		public virtual void Commit(Commit attempt)
@@ -132,8 +130,7 @@
 			return this.TryMongo(() => this.PersistedCommits
 				.Find(Query.EQ("Dispatched", false))
 				.SetSortOrder("CommitStamp")
-				.Select(mc => mc.ToCommit(this.serializer))
-				.ToArray());
+				.Select(mc => mc.ToCommit(this.serializer)));
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
@@ -154,8 +151,7 @@
 				return this.PersistedStreamHeads
 					.Find(query)
 					.SetSortOrder(SortBy.Descending("Unsnapshotted"))
-					.Select(x => x.ToStreamHead())
-					.ToArray();
+					.Select(x => x.ToStreamHead());
 			});
 		}
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
