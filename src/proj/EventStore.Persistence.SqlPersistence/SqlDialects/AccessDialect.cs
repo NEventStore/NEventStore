@@ -31,15 +31,22 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			get { return AccessStatements.GetStreamsToSnapshot; }
 		}
 
-		public override IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
+		public override IDbStatement BuildStatement(
+			IDbConnection connection,
+			IDbTransaction transaction,
+			params IDisposable[] resources)
 		{
-			return new AccessDbStatement(connection, transaction, resources);
+			return new AccessDbStatement(this, connection, transaction, resources);
 		}
 
 		private class AccessDbStatement : DelimitedDbStatement
 		{
-			public AccessDbStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
-				: base(connection, transaction, resources)
+			public AccessDbStatement(
+				ISqlDialect dialect,
+				IDbConnection connection,
+				IDbTransaction transaction,
+				params IDisposable[] resources)
+				: base(dialect, connection, transaction, resources)
 			{
 			}
 

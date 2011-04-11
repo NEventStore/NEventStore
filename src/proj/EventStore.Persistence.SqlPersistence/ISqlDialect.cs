@@ -1,6 +1,7 @@
 namespace EventStore.Persistence.SqlPersistence
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Data;
 
 	public interface ISqlDialect
@@ -29,6 +30,9 @@ namespace EventStore.Persistence.SqlPersistence
 		string Headers { get; }
 		string Payload { get; }
 		string Threshold { get; }
+
+		IEnumerable<int> DuplicateErrorCodes { get; }
+		bool IsDuplicate(Exception exception);
 
 		IDbTransaction OpenTransaction(IDbConnection connection);
 		IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources);

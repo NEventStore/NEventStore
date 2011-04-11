@@ -1,6 +1,7 @@
 namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Data;
 
 	public class SqlCeDialect : CommonSqlDialect
@@ -14,15 +15,33 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			get { return base.GetSnapshot.Replace("SELECT *", "SELECT TOP(1) *").Replace("LIMIT 1", string.Empty); }
 		}
 
-		public override IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
+		public override IEnumerable<int> DuplicateErrorCodes
 		{
-			return new SqlCeDbStatement(connection, transaction, resources);
+			get { return new int[0]; }
+		}
+		public override bool IsDuplicate(Exception exception)
+		{
+			// TODO: better way without using reflection and avoiding a dependency on SqlCE reference?
+			var message = exception.Message.ToUpperInvariant();
+			return message.Contains("DUPLICATE") || message.Contains("UNIQUE");
+		}
+
+		public override IDbStatement BuildStatement(
+			IDbConnection connection,
+			IDbTransaction transaction,
+			params IDisposable[] resources)
+		{
+			return new SqlCeDbStatement(this, connection, transaction, resources);
 		}
 
 		private class SqlCeDbStatement : DelimitedDbStatement
 		{
-			public SqlCeDbStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
-				: base(connection, transaction, resources)
+			public SqlCeDbStatement(
+				ISqlDialect dialect,
+				IDbConnection connection,
+				IDbTransaction transaction,
+				params IDisposable[] resources)
+				: base(dialect, connection, transaction, resources)
 			{
 			}
 		}

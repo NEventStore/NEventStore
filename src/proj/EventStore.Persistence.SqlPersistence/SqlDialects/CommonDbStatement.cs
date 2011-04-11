@@ -8,13 +8,20 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	public class CommonDbStatement : IDbStatement
 	{
 		protected IDictionary<string, object> Parameters { get; private set; }
+		private readonly ISqlDialect dialect;
 		private readonly IDbConnection connection;
 		private readonly IDbTransaction transaction;
 		private readonly IDisposable[] resources;
 
-		public CommonDbStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
+		public CommonDbStatement(
+			ISqlDialect dialect,
+			IDbConnection connection,
+			IDbTransaction transaction,
+			params IDisposable[] resources)
 		{
 			this.Parameters = new Dictionary<string, object>();
+
+			this.dialect = dialect;
 			this.connection = connection;
 			this.transaction = transaction;
 			this.resources = resources ?? new IDisposable[0];
@@ -66,16 +73,11 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			}
 			catch (Exception e)
 			{
-				if (this.IsDuplicate(e))
+				if (this.dialect.IsDuplicate(e))
 					throw new DuplicateCommitException(e.Message, e);
 
 				throw;
 			}
-		}
-		protected virtual bool IsDuplicate(Exception exception)
-		{
-			var message = exception.Message.ToUpperInvariant();
-			return message.Contains("DUPLICATE") || message.Contains("UNIQUE");
 		}
 
 		public virtual IEnumerable<T> ExecuteWithQuery<T>(string queryText, Func<IDataRecord, T> select)

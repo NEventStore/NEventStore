@@ -18,15 +18,22 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			get { return base.AppendSnapshotToCommit.Replace("/*FROM DUAL*/", "FROM DUAL"); }
 		}
 
-		public override IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
+		public override IDbStatement BuildStatement(
+			IDbConnection connection,
+			IDbTransaction transaction,
+			params IDisposable[] resources)
 		{
-			return new MySqlDbStatement(connection, transaction, resources);
+			return new MySqlDbStatement(this, connection, transaction, resources);
 		}
 
 		private class MySqlDbStatement : CommonDbStatement
 		{
-			public MySqlDbStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
-				: base(connection, transaction, resources)
+			public MySqlDbStatement(
+				ISqlDialect dialect,
+				IDbConnection connection,
+				IDbTransaction transaction,
+				params IDisposable[] resources)
+				: base(dialect, connection, transaction, resources)
 			{
 			}
 
