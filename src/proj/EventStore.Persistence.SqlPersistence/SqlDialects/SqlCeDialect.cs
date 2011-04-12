@@ -1,7 +1,6 @@
 namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
 	using System;
-	using System.Collections.Generic;
 	using System.Data;
 
 	public class SqlCeDialect : CommonSqlDialect
@@ -15,10 +14,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			get { return base.GetSnapshot.Replace("SELECT *", "SELECT TOP(1) *").Replace("LIMIT 1", string.Empty); }
 		}
 
-		public override IEnumerable<int> DuplicateErrorCodes
-		{
-			get { return new int[0]; }
-		}
 		public override bool IsDuplicate(Exception exception)
 		{
 			// TODO: better way without using reflection and avoiding a dependency on SqlCE reference?

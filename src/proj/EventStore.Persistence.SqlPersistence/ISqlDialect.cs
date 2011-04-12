@@ -31,10 +31,9 @@ namespace EventStore.Persistence.SqlPersistence
 		string Payload { get; }
 		string Threshold { get; }
 
-		IEnumerable<int> DuplicateErrorCodes { get; }
-		bool IsDuplicate(Exception exception);
-
 		IDbTransaction OpenTransaction(IDbConnection connection);
 		IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources);
+
+		bool IsDuplicate(Exception exception);
 	}
 }

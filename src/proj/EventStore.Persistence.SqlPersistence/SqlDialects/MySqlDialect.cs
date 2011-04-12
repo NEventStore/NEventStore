@@ -5,6 +5,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 	public class MySqlDialect : CommonSqlDialect
 	{
+		private const int UniqueKeyViolation = 1062;
+
 		public override string InitializeStorage
 		{
 			get { return MySqlStatements.InitializeStorage; }
@@ -16,6 +18,12 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		public override string AppendSnapshotToCommit
 		{
 			get { return base.AppendSnapshotToCommit.Replace("/*FROM DUAL*/", "FROM DUAL"); }
+		}
+
+		public override bool IsDuplicate(Exception exception)
+		{
+			var property = exception.GetType().GetProperty("Number");
+			return UniqueKeyViolation == (int)property.GetValue(exception, null);
 		}
 
 		public override IDbStatement BuildStatement(

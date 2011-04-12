@@ -3,7 +3,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	using System;
 	using System.Collections.Generic;
 	using System.Data;
-	using System.Data.Common;
 	using System.Linq;
 
 	public abstract class CommonSqlDialect : ISqlDialect
@@ -86,15 +85,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			get { return "@Threshold"; }
 		}
 
-		// The codes below are the common error codes implemented by virtually all .NET data providers.
-		public virtual IEnumerable<int> DuplicateErrorCodes
-		{
-			get { return new[] { -2147467259, -2146232060 }; }
-		}
 		public virtual bool IsDuplicate(Exception exception)
 		{
-			var dbException = exception as DbException;
-			return dbException != null && this.DuplicateErrorCodes.Any(x => x == dbException.ErrorCode);
+			var message = exception.Message.ToUpperInvariant();
+			return message.Contains("UNIQUE") || message.Contains("CONSTRAINT");
 		}
 
 		public virtual IDbTransaction OpenTransaction(IDbConnection connection)

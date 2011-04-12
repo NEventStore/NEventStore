@@ -1,7 +1,6 @@
 namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
 	using System;
-	using System.Collections.Generic;
 	using System.Data;
 
 	public class FirebirdSqlDialect : CommonSqlDialect
@@ -21,11 +20,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		public override string GetSnapshot
 		{
 			get { return base.GetSnapshot.Replace("SELECT *", "SELECT FIRST 1 *").Replace("LIMIT 1", string.Empty); }
-		}
-
-		public override IEnumerable<int> DuplicateErrorCodes
-		{
-			get { return new[] { 335544665 }; }
 		}
 
 		public override IDbStatement BuildStatement(
