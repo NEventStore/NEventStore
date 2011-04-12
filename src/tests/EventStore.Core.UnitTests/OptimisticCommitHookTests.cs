@@ -52,52 +52,6 @@ namespace EventStore.Core.UnitTests
 			thrown.ShouldBeOfType<StorageException>();
 	}
 
-	/// <summary>
-	/// This behavior is primarily to support a NoSQL storage solution where CommitId is not being used as the "primary key"
-	/// in a NoSQL environment, we'll most likely use StreamId + CommitSequence, which also enables optimistic concurrency.
-	/// </summary>
-	[Subject("OptimisticCommitHook")]
-	public class when_committing_with_an_identifier_that_was_previously_read : using_commit_hooks
-	{
-		const int MaxRevision = 2;
-		static readonly Guid AlreadyCommittedId = Guid.NewGuid();
-		static readonly Commit[] Committed = new[]
-		{
-			BuildCommitStub(AlreadyCommittedId, 1, 1),
-			BuildCommitStub(Guid.NewGuid(), 1, 1)
-		};
-		static readonly Commit DuplicateCommitAttempt = BuildCommitStub(
-			AlreadyCommittedId, Committed.Last().StreamRevision + 1, Committed.Last().CommitSequence + 1);
-		static Exception thrown;
-
-		Establish context = () =>
-			Committed.ToList().ForEach(x => hook.PostCommit(x));
-
-		Because of = () =>
-			thrown = Catch.Exception(() => hook.PreCommit(DuplicateCommitAttempt));
-
-		It should_throw_a_DuplicateCommitException = () =>
-			thrown.ShouldBeOfType<DuplicateCommitException>();
-	}
-
-	[Subject("OptimisticCommitHook")]
-	public class when_committing_with_the_same_commit_identifier_more_than_once : using_commit_hooks
-	{
-		static readonly Guid DuplicateCommitId = Guid.NewGuid();
-		static readonly Commit SuccessfulCommit = BuildCommitStub(DuplicateCommitId, 1, 1);
-		static readonly Commit DuplicateCommit = BuildCommitStub(DuplicateCommitId, 2, 2);
-		static Exception thrown;
-
-		Establish context = () =>
-			hook.PostCommit(SuccessfulCommit);
-
-		Because of = () =>
-			thrown = Catch.Exception(() => hook.PreCommit(DuplicateCommit));
-
-		It throw_a_DuplicateCommitException = () =>
-			thrown.ShouldBeOfType<DuplicateCommitException>();
-	}
-
 	[Subject("OptimisticCommitHook")]
 	public class when_committing_with_a_sequence_less_or_equal_to_the_most_recent_sequence_for_the_stream : using_commit_hooks
 	{
@@ -180,19 +134,19 @@ namespace EventStore.Core.UnitTests
 	[Subject("CommitTracker")]
 	public class when_tracking_commits
 	{
-		const int MaxCommitsToTrackPerStream = 2;
+		const int MaxStreamsToTrack = 2;
 		static readonly Guid StreamId = Guid.NewGuid();
 		static readonly Commit[] TrackedCommits = new[]
 		{
-			BuildCommit(StreamId, Guid.NewGuid()),
-			BuildCommit(StreamId, Guid.NewGuid()),
-			BuildCommit(StreamId, Guid.NewGuid())
+			BuildCommit(Guid.NewGuid(), Guid.NewGuid()),
+			BuildCommit(Guid.NewGuid(), Guid.NewGuid()),
+			BuildCommit(Guid.NewGuid(), Guid.NewGuid())
 		};
 
 		static OptimisticPipelineHook hook;
 
 		Establish context = () =>
-			hook = new OptimisticPipelineHook(MaxCommitsToTrackPerStream);
+			hook = new OptimisticPipelineHook(MaxStreamsToTrack);
 
 		Because of = () =>
 		{
@@ -206,13 +160,13 @@ namespace EventStore.Core.UnitTests
 			hook.Contains(untracked).ShouldBeFalse();
 		};
 
-		It should_find_tracked_commits = () =>
+		It should_find_tracked_streams = () =>
 		{
 			var stillTracked = BuildCommit(TrackedCommits.Last().StreamId, TrackedCommits.Last().CommitId);
 			hook.Contains(stillTracked).ShouldBeTrue();
 		};
 
-		It should_only_track_the_specified_number_of_commits = () =>
+		It should_only_track_the_specified_number_of_streams = () =>
 		{
 			var droppedFromTracking = BuildCommit(
 				TrackedCommits.First().StreamId, TrackedCommits.First().CommitId);
