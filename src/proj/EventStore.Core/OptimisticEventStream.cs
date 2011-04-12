@@ -9,6 +9,7 @@ namespace EventStore
 		private readonly ICollection<EventMessage> committed = new LinkedList<EventMessage>();
 		private readonly ICollection<EventMessage> events = new LinkedList<EventMessage>();
 		private readonly IDictionary<string, object> headers = new Dictionary<string, object>();
+		private readonly ICollection<Guid> identifiers = new HashSet<Guid>();
 		private readonly ICommitEvents persistence;
 		private bool disposed;
 
@@ -38,6 +39,8 @@ namespace EventStore
 		{
 			foreach (var commit in commits ?? new Commit[0])
 			{
+				this.identifiers.Add(commit.CommitId);
+
 				this.CommitSequence = commit.CommitSequence;
 				var currentRevision = commit.StreamRevision - commit.Events.Count + 1;
 				if (currentRevision > maxRevision)
@@ -92,6 +95,9 @@ namespace EventStore
 
 		public virtual void CommitChanges(Guid commitId)
 		{
+			if (this.identifiers.Contains(commitId))
+				throw new DuplicateCommitException();
+
 			if (!this.HasChanges())
 				return;
 

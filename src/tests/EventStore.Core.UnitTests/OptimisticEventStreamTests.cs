@@ -224,6 +224,30 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStream")]
+	public class when_committing_an_identifier_that_already_exists_on_the_stream : on_the_event_stream
+	{
+		static readonly Commit[] Committed = new[] { BuildCommitStub(1, 1, 1) };
+		static readonly Guid DupliateCommitId = Committed[0].CommitId;
+		static Exception thrown;
+
+		Establish context = () =>
+		{
+			persistence
+				.Setup(x => x.GetFrom(streamId, 0, int.MaxValue))
+				.Returns(Committed);
+
+			stream = new OptimisticEventStream(
+				streamId, persistence.Object, 0, int.MaxValue);
+		};
+
+		Because of = () =>
+			thrown = Catch.Exception(() => stream.CommitChanges(DupliateCommitId));
+
+		It should_throw_a_DuplicateCommitException = () =>
+			thrown.ShouldBeOfType<DuplicateCommitException>();
+	}
+
+	[Subject("OptimisticEventStream")]
 	public class when_committing_after_another_thread_or_process_has_moved_the_stream_head : on_the_event_stream
 	{
 		const int StreamRevision = 1;
