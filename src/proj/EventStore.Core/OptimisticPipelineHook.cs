@@ -38,13 +38,14 @@ namespace EventStore
 		}
 		public virtual bool PreCommit(Commit attempt)
 		{
-			if (this.Contains(attempt))
-				throw new DuplicateCommitException();
-
-			var head = this.GetStreamHead(attempt.StreamId);
-			if (head == null)
+			var stream = this.GetStream(attempt.StreamId);
+			if (stream == null)
 				return true;
 
+			if (stream.Contains(attempt.CommitId))
+				throw new DuplicateCommitException();
+
+			var head = stream.Head;
 			if (head.CommitSequence >= attempt.CommitSequence)
 				throw new ConcurrencyException();
 
