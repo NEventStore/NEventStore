@@ -41,6 +41,17 @@ namespace EventStore
 			return this;
 		}
 
+		public virtual Wireup HookIntoPipelineUsing(IEnumerable<IPipelineHook> hooks)
+		{
+			return this.HookIntoPipelineUsing((hooks ?? new IPipelineHook[0]).ToArray());
+		}
+		public virtual Wireup HookIntoPipelineUsing(params IPipelineHook[] hooks)
+		{
+			ICollection<IPipelineHook> collection = (hooks ?? new IPipelineHook[] { }).Where(x => x != null).ToArray();
+			this.Container.Register(collection);
+			return this;
+		}
+
 		public virtual IStoreEvents Build()
 		{
 			if (this.inner != null)

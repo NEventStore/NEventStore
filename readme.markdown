@@ -137,11 +137,11 @@ Once built, the files will be placed in the "output" subdirectory.
 
 	var store = Wireup.Init()
 		.UsingSqlPersistence("Name Of EventStore ConnectionString In Config File")
-			.InitializeDatabaseSchema()
-			.HookIntoPipelineUsing(new[] { new AuthorizationPipelineHook() })
+			.InitializeStorageEngine()
 			.UsingJsonSerialization()
 				.Compress()
 				.EncryptWith(EncryptionKey)
+		.HookIntoPipelineUsing(new[] { new AuthorizationPipelineHook() })
 		.UsingAsynchronousDispatcher()
 			.PublishTo(new My_NServiceBus_Or_MassTransit_Publisher())
 		.Build();		
