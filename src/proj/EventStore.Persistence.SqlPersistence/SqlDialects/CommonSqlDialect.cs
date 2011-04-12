@@ -88,7 +88,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		public virtual bool IsDuplicate(Exception exception)
 		{
 			var message = exception.Message.ToUpperInvariant();
-			return message.Contains("UNIQUE") || message.Contains("CONSTRAINT");
+			return message.Contains("DUPLICATE") || message.Contains("UNIQUE") || message.Contains("CONSTRAINT");
 		}
 
 		public virtual IDbTransaction OpenTransaction(IDbConnection connection)
