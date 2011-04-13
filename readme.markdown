@@ -85,7 +85,7 @@ are always dispatched to any messaging infrastructure.
 [In progress] Amazon SimpleDB/S3  
 
 ### Document Databases
-[Complete] RavenDB r264 (or later)  
+[Complete] RavenDB r322 (or later)  
 [Complete] MongoDB 1.6 (or later)  
 [Planned] CouchDB 1.0 (or later)  
 [TBA] OrientDB  
