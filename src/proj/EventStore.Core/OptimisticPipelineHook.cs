@@ -5,30 +5,22 @@ namespace EventStore
 	using Persistence;
 
 	/// <summary>
-	/// Tracks the commits for a set of streams to determine if a particular commit has already
-	/// been committed thus relaxing the requirements upon the persistence engine as well as
-	/// reducing latency by avoiding needless database roundtrips through keeping the values which
-	/// uniquely identify each commit in memory.
+	/// Tracks the heads of streams to reduce latency by avoiding roundtrips to storage.
 	/// </summary>
-	/// <remarks>
-	/// For storage engines with relaxed consistency guarantees, such as a document database,
-	/// the CommitTracker prevents the need to query the persistence engine prior to a commit.
-	/// For storage engines with stronger consistency guarantees, such as a relational database,
-	/// the CommitTracker helps to avoid the increased latency incurred from extra roundtrips.
-	/// </remarks>
 	public class OptimisticPipelineHook : IPipelineHook
 	{
-		private const int MaxCommitsTrackedPerStream = 1000;
-		private readonly IDictionary<Guid, TrackedStream> streams = new Dictionary<Guid, TrackedStream>();
-		private readonly int commitsToTrackPerStream;
+		private const int MaxStreamsToTrack = 100;
+		private readonly LinkedList<Guid> tracked = new LinkedList<Guid>();
+		private readonly IDictionary<Guid, Commit> heads = new Dictionary<Guid, Commit>();
+		private readonly int maxStreamsToTrack;
 
 		public OptimisticPipelineHook()
-			: this(MaxCommitsTrackedPerStream)
+			: this(MaxStreamsToTrack)
 		{
 		}
-		public OptimisticPipelineHook(int commitsToTrackPerStream)
+		public OptimisticPipelineHook(int maxStreamsToTrack)
 		{
-			this.commitsToTrackPerStream = commitsToTrackPerStream;
+			this.maxStreamsToTrack = maxStreamsToTrack;
 		}
 
 		public virtual Commit Select(Commit committed)
@@ -38,9 +30,6 @@ namespace EventStore
 		}
 		public virtual bool PreCommit(Commit attempt)
 		{
-			if (this.Contains(attempt))
-				throw new DuplicateCommitException();
-
 			var head = this.GetStreamHead(attempt.StreamId);
 			if (head == null)
 				return true;
@@ -69,75 +58,46 @@ namespace EventStore
 			if (committed == null)
 				return;
 
-			TrackedStream stream;
-
-			lock (this.streams)
-				if (!this.streams.TryGetValue(committed.StreamId, out stream))
-					this.streams[committed.StreamId] = stream = new TrackedStream(this.commitsToTrackPerStream);
-
-			stream.Track(committed);
+			lock (this.tracked)
+			{
+				this.UpdateStreamHead(committed);
+				this.TrackUpToCapacity(committed);
+			}
 		}
+		private void UpdateStreamHead(Commit committed)
+		{
+			var head = this.GetStreamHead(committed.StreamId);
+			if (AlreadyTracked(head))
+				this.tracked.Remove(committed.StreamId);
+
+			this.heads[committed.StreamId] = head ?? committed;
+		}
+		private static bool AlreadyTracked(Commit head)
+		{
+			return head != null;
+		}
+		private void TrackUpToCapacity(Commit committed)
+		{
+			this.tracked.AddFirst(committed.StreamId);
+			if (this.tracked.Count <= this.maxStreamsToTrack)
+				return;
+
+			this.heads.Remove(this.tracked.Last.Value);
+			this.tracked.RemoveLast();
+		}
+
 		public virtual bool Contains(Commit attempt)
 		{
-			var stream = this.GetStream(attempt.StreamId);
-			return stream != null && stream.Contains(attempt.CommitId);
-		}
-		public virtual Commit GetStreamHead(Guid streamId)
-		{
-			var stream = this.GetStream(streamId);
-			return stream == null ? null : stream.Head;
+			return this.GetStreamHead(attempt.StreamId) != null;
 		}
 
-		private TrackedStream GetStream(Guid streamId)
+		private Commit GetStreamHead(Guid streamId)
 		{
-			lock (this.streams)
+			lock (this.tracked)
 			{
-				TrackedStream stream;
-				this.streams.TryGetValue(streamId, out stream);
-				return stream;
-			}
-		}
-
-		private class TrackedStream
-		{
-			private readonly ICollection<Guid> lookup = new HashSet<Guid>();
-			private readonly LinkedList<Guid> ordered = new LinkedList<Guid>();
-			private readonly int commitsToTrack;
-
-			public TrackedStream(int commitsToTrack)
-			{
-				this.commitsToTrack = commitsToTrack;
-			}
-
-			public Commit Head { get; private set; }
-
-			public void Track(Commit committed)
-			{
-				if (this.lookup.Contains(committed.CommitId))
-					return;
-
-				lock (this.lookup)
-				{
-					if (this.lookup.Contains(committed.CommitId))
-						return;
-
-					if (this.Head == null || committed.CommitSequence == this.Head.CommitSequence + 1)
-						this.Head = committed;
-
-					this.lookup.Add(committed.CommitId);
-					this.ordered.AddLast(committed.CommitId);
-
-					if (this.ordered.Count <= this.commitsToTrack)
-						return;
-
-					var commitIdToRemove = this.ordered.First;
-					this.ordered.RemoveFirst();
-					this.lookup.Remove(commitIdToRemove.Value);
-				}
-			}
-			public bool Contains(Guid commitId)
-			{
-				return this.lookup.Contains(commitId);
+				Commit head;
+				this.heads.TryGetValue(streamId, out head);
+				return head;
 			}
 		}
 	}

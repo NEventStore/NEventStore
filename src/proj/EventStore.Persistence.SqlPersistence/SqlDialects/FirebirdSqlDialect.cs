@@ -22,15 +22,22 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			get { return base.GetSnapshot.Replace("SELECT *", "SELECT FIRST 1 *").Replace("LIMIT 1", string.Empty); }
 		}
 
-		public override IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
+		public override IDbStatement BuildStatement(
+			IDbConnection connection,
+			IDbTransaction transaction,
+			params IDisposable[] resources)
 		{
-			return new FirebirdDbStatement(connection, transaction, resources);
+			return new FirebirdDbStatement(this, connection, transaction, resources);
 		}
 
 		private class FirebirdDbStatement : DelimitedDbStatement
 		{
-			public FirebirdDbStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
-				: base(connection, transaction, resources)
+			public FirebirdDbStatement(
+				ISqlDialect dialect,
+				IDbConnection connection,
+				IDbTransaction transaction,
+				params IDisposable[] resources)
+				: base(dialect, connection, transaction, resources)
 			{
 			}
 		}

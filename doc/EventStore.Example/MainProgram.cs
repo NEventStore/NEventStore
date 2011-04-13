@@ -12,11 +12,11 @@ namespace EventStore.Example
 		};
 		private static readonly IStoreEvents Store = Wireup.Init()
 			.UsingSqlPersistence("EventStore")
-				.InitializeDatabaseSchema()
-				.HookIntoPipelineUsing(new[] { new AuthorizationPipelineHook() })
+				.InitializeStorageEngine()
 				.UsingJsonSerialization()
 					.Compress()
 					.EncryptWith(EncryptionKey)
+			.HookIntoPipelineUsing(new[] { new AuthorizationPipelineHook() })
 			.UsingAsynchronousDispatcher()
 				.PublishTo(new DelegateMessagePublisher(DispatchCommit))
 			.Build();

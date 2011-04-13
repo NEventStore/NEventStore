@@ -9,8 +9,12 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	{
 		private const string Delimiter = ";";
 
-		public DelimitedDbStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
-			: base(connection, transaction, resources)
+		public DelimitedDbStatement(
+			ISqlDialect dialect,
+			IDbConnection connection,
+			IDbTransaction transaction,
+			params IDisposable[] resources)
+			: base(dialect, connection, transaction, resources)
 		{
 		}
 

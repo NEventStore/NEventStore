@@ -1,7 +1,9 @@
 namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Data;
+	using System.Linq;
 
 	public abstract class CommonSqlDialect : ISqlDialect
 	{
@@ -83,13 +85,22 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			get { return "@Threshold"; }
 		}
 
+		public virtual bool IsDuplicate(Exception exception)
+		{
+			var message = exception.Message.ToUpperInvariant();
+			return message.Contains("DUPLICATE") || message.Contains("UNIQUE") || message.Contains("CONSTRAINT");
+		}
+
 		public virtual IDbTransaction OpenTransaction(IDbConnection connection)
 		{
 			return null;
 		}
-		public virtual IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources)
+		public virtual IDbStatement BuildStatement(
+			IDbConnection connection,
+			IDbTransaction transaction,
+			params IDisposable[] resources)
 		{
-			return new CommonDbStatement(connection, transaction, resources);
+			return new CommonDbStatement(this, connection, transaction, resources);
 		}
 	}
 }

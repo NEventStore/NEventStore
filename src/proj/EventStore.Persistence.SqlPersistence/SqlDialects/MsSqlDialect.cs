@@ -1,7 +1,12 @@
 namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
+	using System;
+	using System.Data.SqlClient;
+
 	public class MsSqlDialect : CommonSqlDialect
 	{
+		private const int UniqueKeyViolation = 2627;
+
 		public override string InitializeStorage
 		{
 			get { return MsSqlStatements.InitializeStorage; }
@@ -9,6 +14,11 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		public override string GetSnapshot
 		{
 			get { return base.GetSnapshot.Replace("SELECT *", "SELECT TOP 1 *").Replace("LIMIT 1", string.Empty); }
+		}
+		public override bool IsDuplicate(Exception exception)
+		{
+			var dbException = exception as SqlException;
+			return dbException != null && dbException.Number == UniqueKeyViolation;
 		}
 	}
 }

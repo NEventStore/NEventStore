@@ -223,6 +223,34 @@ namespace EventStore.Core.UnitTests
 			stream.UncommittedHeaders.ShouldBeEmpty();
 	}
 
+	/// <summary>
+	/// This behavior is primarily to support a NoSQL storage solution where CommitId is not being used as the "primary key"
+	/// in a NoSQL environment, we'll most likely use StreamId + CommitSequence, which also enables optimistic concurrency.
+	/// </summary>
+	[Subject("OptimisticEventStream")]
+	public class when_committing_with_an_identifier_that_was_previously_read : on_the_event_stream
+	{
+		static readonly Commit[] Committed = new[] { BuildCommitStub(1, 1, 1) };
+		static readonly Guid DupliateCommitId = Committed[0].CommitId;
+		static Exception thrown;
+
+		Establish context = () =>
+		{
+			persistence
+				.Setup(x => x.GetFrom(streamId, 0, int.MaxValue))
+				.Returns(Committed);
+
+			stream = new OptimisticEventStream(
+				streamId, persistence.Object, 0, int.MaxValue);
+		};
+
+		Because of = () =>
+			thrown = Catch.Exception(() => stream.CommitChanges(DupliateCommitId));
+
+		It should_throw_a_DuplicateCommitException = () =>
+			thrown.ShouldBeOfType<DuplicateCommitException>();
+	}
+
 	[Subject("OptimisticEventStream")]
 	public class when_committing_after_another_thread_or_process_has_moved_the_stream_head : on_the_event_stream
 	{
