@@ -10,7 +10,7 @@ namespace EventStore
 	public class OptimisticPipelineHook : IPipelineHook
 	{
 		private const int MaxStreamsToTrack = 100;
-		private readonly LinkedList<Guid> tracked = new LinkedList<Guid>();
+		private readonly LinkedList<Guid> maxItemsToTrack = new LinkedList<Guid>();
 		private readonly IDictionary<Guid, Commit> heads = new Dictionary<Guid, Commit>();
 		private readonly int maxStreamsToTrack;
 
@@ -58,7 +58,7 @@ namespace EventStore
 			if (committed == null)
 				return;
 
-			lock (this.tracked)
+			lock (this.maxItemsToTrack)
 			{
 				this.UpdateStreamHead(committed);
 				this.TrackUpToCapacity(committed);
@@ -68,9 +68,12 @@ namespace EventStore
 		{
 			var head = this.GetStreamHead(committed.StreamId);
 			if (AlreadyTracked(head))
-				this.tracked.Remove(committed.StreamId);
+				this.maxItemsToTrack.Remove(committed.StreamId);
 
-			this.heads[committed.StreamId] = head ?? committed;
+			head = head ?? committed;
+			head = head.StreamRevision > committed.StreamRevision ? head : committed;
+
+			this.heads[committed.StreamId] = head;
 		}
 		private static bool AlreadyTracked(Commit head)
 		{
@@ -78,12 +81,12 @@ namespace EventStore
 		}
 		private void TrackUpToCapacity(Commit committed)
 		{
-			this.tracked.AddFirst(committed.StreamId);
-			if (this.tracked.Count <= this.maxStreamsToTrack)
+			this.maxItemsToTrack.AddFirst(committed.StreamId);
+			if (this.maxItemsToTrack.Count <= this.maxStreamsToTrack)
 				return;
 
-			this.heads.Remove(this.tracked.Last.Value);
-			this.tracked.RemoveLast();
+			this.heads.Remove(this.maxItemsToTrack.Last.Value);
+			this.maxItemsToTrack.RemoveLast();
 		}
 
 		public virtual bool Contains(Commit attempt)
@@ -93,7 +96,7 @@ namespace EventStore
 
 		private Commit GetStreamHead(Guid streamId)
 		{
-			lock (this.tracked)
+			lock (this.maxItemsToTrack)
 			{
 				Commit head;
 				this.heads.TryGetValue(streamId, out head);
