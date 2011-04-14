@@ -5,6 +5,9 @@ namespace EventStore.Serialization
 	/// <summary>
 	/// Provides the ability to serialize and deserialize an object graph.
 	/// </summary>
+	/// <remarks>
+	/// Instances of this class must be designed to be multi-thread safe such that they can be shared between threads.
+	/// </remarks>
 	public interface ISerialize
 	{
 		/// <summary>

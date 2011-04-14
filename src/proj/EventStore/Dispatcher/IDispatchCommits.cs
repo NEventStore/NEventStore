@@ -5,6 +5,9 @@ namespace EventStore.Dispatcher
 	/// <summary>
 	/// Indicates the ability to dispatch or publish all messages associated with a particular commit.
 	/// </summary>
+	/// <remarks>
+	/// Instances of this class must be designed to be multi-thread safe such that they can be shared between threads.
+	/// </remarks>
 	public interface IDispatchCommits : IDisposable
 	{
 		/// <summary>

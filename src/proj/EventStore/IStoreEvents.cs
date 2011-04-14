@@ -6,6 +6,9 @@ namespace EventStore
 	/// <summary>
 	/// Indicates the ability to store and retreive a stream of events.
 	/// </summary>
+	/// <remarks>
+	/// Instances of this class must be designed to be multi-thread safe such that they can be shared between threads.
+	/// </remarks>
 	public interface IStoreEvents : IDisposable, IAccessSnapshots
 	{
 		/// <summary>

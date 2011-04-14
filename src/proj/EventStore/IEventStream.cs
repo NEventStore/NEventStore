@@ -8,7 +8,7 @@ namespace EventStore
 	/// Indicates the ability to track a series of events and commit them to durable storage.
 	/// </summary>
 	/// <remarks>
-	/// This class is single threaded and should not be shared between threads.
+	/// Instances of this class are single threaded and should not be shared between threads.
 	/// </remarks>
 	public interface IEventStream : IDisposable
 	{

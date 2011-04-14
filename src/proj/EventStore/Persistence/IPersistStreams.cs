@@ -6,6 +6,9 @@ namespace EventStore.Persistence
 	/// <summary>
 	/// Indicates the ability to adapt the underlying persistence infrastructure to behave like a stream of events.
 	/// </summary>
+	/// <remarks>
+	/// Instances of this class must be designed to be multi-thread safe such that they can be shared between threads.
+	/// </remarks>
 	public interface IPersistStreams : IDisposable, ICommitEvents, IAccessSnapshots
 	{
 		/// <summary>
