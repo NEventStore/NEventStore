@@ -4,14 +4,12 @@ namespace EventStore.Persistence.SqlPersistence
 	using System.Configuration;
 	using System.Data;
 	using System.Data.Common;
-	using System.Data.SqlClient;
 	using System.Linq;
 
 	public class ConfigurationConnectionFactory : IConnectionFactory
 	{
 		private const int DefaultShards = 16;
 		private const string DefaultConnectionName = "EventStore";
-		private const string DefaultProvider = "System.Data.SqlClient";
 		private readonly string masterConnectionName;
 		private readonly string slaveConnectionName;
 		private readonly int shards;
@@ -24,7 +22,8 @@ namespace EventStore.Persistence.SqlPersistence
 			: this(connectionName, connectionName, DefaultShards)
 		{
 		}
-		public ConfigurationConnectionFactory(string masterConnectionName, string slaveConnectionName, int shards)
+		public ConfigurationConnectionFactory(
+			string masterConnectionName, string slaveConnectionName, int shards)
 		{
 			this.masterConnectionName = masterConnectionName ?? DefaultConnectionName;
 			this.slaveConnectionName = slaveConnectionName ?? this.masterConnectionName;
@@ -33,7 +32,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public virtual ConnectionStringSettings Settings
 		{
-			get { return ConfigurationManager.ConnectionStrings[this.masterConnectionName]; }
+			get { return GetConnectionStringSettings(this.masterConnectionName); }
 		}
 
 		public virtual IDbConnection OpenMaster(Guid streamId)
@@ -47,25 +46,37 @@ namespace EventStore.Persistence.SqlPersistence
 		protected virtual IDbConnection Open(Guid streamId, string connectionName)
 		{
 			var setting = GetConnectionStringSettings(connectionName);
-			var factory = DbProviderFactories.GetFactory(setting.ProviderName ?? DefaultProvider);
-			var connection = factory.CreateConnection() ?? new SqlConnection();
+			var factory = DbProviderFactories.GetFactory(setting.ProviderName);
+			var connection = factory.CreateConnection();
 			connection.ConnectionString = this.BuildConnectionString(streamId, setting);
 			connection.Open();
 			return connection;
 		}
 
-		private static ConnectionStringSettings GetConnectionStringSettings(string connectionName)
+		private static ConnectionStringSettings GetConnectionStringSettings(
+			string connectionName)
 		{
-			var settings = ConfigurationManager.ConnectionStrings.Cast<ConnectionStringSettings>()
+			var settings = ConfigurationManager.ConnectionStrings
+				.Cast<ConnectionStringSettings>()
 				.FirstOrDefault(x => x.Name == connectionName);
 
 			if (settings == null)
-				throw new StorageException(string.Format("Could not find connection string '{0}' in your configuration.", connectionName));
+				throw new ConfigurationErrorsException(
+					Messages.ConnectionNotFound.FormatWith(connectionName));
+
+			if ((settings.ConnectionString ?? string.Empty).Trim().Length == 0)
+				throw new ConfigurationErrorsException(
+					Messages.MissingConnectionString.FormatWith(connectionName));
+
+			if ((settings.ProviderName ?? string.Empty).Trim().Length == 0)
+				throw new ConfigurationErrorsException(
+					Messages.MissingProviderName.FormatWith(connectionName));
 
 			return settings;
 		}
 
-		protected virtual string BuildConnectionString(Guid streamId, ConnectionStringSettings setting)
+		protected virtual string BuildConnectionString(
+			Guid streamId, ConnectionStringSettings setting)
 		{
 			if (this.shards == 0)
 				return setting.ConnectionString;

@@ -51,8 +51,8 @@ namespace EventStore.Persistence.SqlPersistence
 				return this.Dialect;
 
 			var settings = this.ConnectionFactory.Settings;
-			var connectionString = (settings.ConnectionString ?? string.Empty).ToUpperInvariant();
-			var providerName = (settings.ProviderName ?? string.Empty).ToUpperInvariant();
+			var connectionString = settings.ConnectionString.ToUpperInvariant();
+			var providerName = settings.ProviderName.ToUpperInvariant();
 
 			if (providerName.Contains("MYSQL"))
 				return new MySqlDialect();
@@ -60,7 +60,7 @@ namespace EventStore.Persistence.SqlPersistence
 			if (providerName.Contains("SQLITE"))
 				return new SqliteDialect();
 
-			if (providerName.Contains("SQLSERVERCE"))
+			if (providerName.Contains("SQLSERVERCE") || connectionString.Contains(".SDF"))
 				return new SqlCeDialect();
 
 			if (providerName.Contains("FIREBIRD"))

@@ -44,6 +44,11 @@
     </Compile>
     <Compile Include="CommitExtensions.cs" />
     <Compile Include="ConfigurationConnectionFactory.cs" />
+    <Compile Include="Messages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Messages.resx</DependentUpon>
+    </Compile>
     <Compile Include="SnapshotExtensions.cs" />
     <Compile Include="DisposableEnumeration.cs" />
     <Compile Include="ExtensionMethods.cs" />
@@ -136,6 +141,10 @@
     <Reference Include="System.Transactions" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Messages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="SqlDialects\AccessStatements.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>AccessStatements.Designer.cs</LastGenOutput>
