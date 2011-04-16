@@ -58,8 +58,9 @@ namespace EventStore.Persistence.AcceptanceTests
 
 				Factories[key] = factory;
 			}
-			catch (Exception)
+			catch
 			{
+				return; // no-op (added to suppress a warning)
 			}
 		}
 
