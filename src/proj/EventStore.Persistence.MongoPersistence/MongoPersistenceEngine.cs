@@ -116,8 +116,8 @@
 					if (!e.Message.Contains(ConcurrencyException))
 						throw;
 
-					var committed = this.PersistedCommits.FindOne(attempt.ToMongoCommitIdQuery()).ToCommit(this.serializer);
-					if (committed == null || committed.CommitId == attempt.CommitId)
+					var savedCommit = this.PersistedCommits.FindOne(attempt.ToMongoCommitIdQuery()).ToCommit(this.serializer);
+					if (savedCommit.CommitId == attempt.CommitId)
 						throw new DuplicateCommitException();
 
 					throw new ConcurrencyException();
