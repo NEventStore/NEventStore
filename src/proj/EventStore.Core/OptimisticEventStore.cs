@@ -70,6 +70,7 @@ namespace EventStore
 
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
+			maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
 			return this.persistence.GetSnapshot(streamId, maxRevision); // TODO: add to some kind of cache
 		}
 		public virtual bool AddSnapshot(Snapshot snapshot)
