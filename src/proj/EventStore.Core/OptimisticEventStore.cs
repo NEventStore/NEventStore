@@ -76,5 +76,9 @@ namespace EventStore
 		{
 			return this.persistence.AddSnapshot(snapshot); // TODO: update the cache here
 		}
+		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
+		{
+			return this.persistence.GetStreamsToSnapshot(maxThreshold);
+		}
 	}
 }
