@@ -67,10 +67,10 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json" Condition="$(TargetFrameworkVersion)=='v4.0'">
-      <HintPath>..\..\..\lib\Json.NET\.NET 4.0\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json" Condition="$(TargetFrameworkVersion)=='v3.5'">
-      <HintPath>..\..\..\lib\Json.NET\.NET 3.5\Newtonsoft.Json.Net35.dll</HintPath>
+      <HintPath>..\..\..\lib\RavenDB\.NET 3.5\Newtonsoft.Json.Net35.dll</HintPath>
     </Reference>
     <Reference Include="Raven.Abstractions" Condition="$(TargetFrameworkVersion)=='v4.0'">
       <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Raven.Abstractions.dll</HintPath>
