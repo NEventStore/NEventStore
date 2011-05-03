@@ -31,11 +31,11 @@
 
 			this.snapshotSettings = this.store.CreateCollectionSettings<BsonDocument>("Snapshots");
 			this.snapshotSettings.AssignIdOnInsert = false;
-			this.snapshotSettings.SafeMode = SafeMode.True;
+			this.snapshotSettings.SafeMode = SafeMode.False;
 
 			this.streamSettings = this.store.CreateCollectionSettings<BsonDocument>("Streams");
 			this.streamSettings.AssignIdOnInsert = false;
-			this.streamSettings.SafeMode = SafeMode.True;
+			this.streamSettings.SafeMode = SafeMode.False;
 		}
 
 		public void Dispose()
@@ -88,8 +88,7 @@
 				return this.PersistedCommits
 					.Find(query)
 					.SetSortOrder("Events.StreamRevision")
-					.Select(mc => mc.ToCommit(this.serializer))
-					.ToArray();
+					.Select(mc => mc.ToCommit(this.serializer));
 			});
 		}
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
@@ -97,8 +96,7 @@
 			return this.TryMongo(() => this.PersistedCommits
 				.Find(Query.GTE("CommitStamp", start))
 				.SetSortOrder("CommitStamp")
-				.Select(x => x.ToCommit(this.serializer))
-				.ToArray());
+				.Select(x => x.ToCommit(this.serializer)));
 		}
 
 		public virtual void Commit(Commit attempt)
@@ -111,15 +109,15 @@
 				{
 					// for concurrency / duplicate commit detection safe mode is required
 					this.PersistedCommits.Insert(commit, SafeMode.True);
-					this.UpdateStreamHeadAsync(attempt.StreamId, attempt.StreamRevision, attempt.Events.Count, (attempt.CommitSequence == 1));
+					this.UpdateStreamHeadAsync(attempt.StreamId, attempt.StreamRevision, attempt.Events.Count);
 				}
 				catch (MongoException e)
 				{
 					if (!e.Message.Contains(ConcurrencyException))
 						throw;
 
-					var committed = this.PersistedCommits.FindOne(attempt.ToMongoCommitIdQuery()).ToCommit(this.serializer);
-					if (committed == null || committed.CommitId == attempt.CommitId)
+					var savedCommit = this.PersistedCommits.FindOne(attempt.ToMongoCommitIdQuery()).ToCommit(this.serializer);
+					if (savedCommit.CommitId == attempt.CommitId)
 						throw new DuplicateCommitException();
 
 					throw new ConcurrencyException();
@@ -132,8 +130,7 @@
 			return this.TryMongo(() => this.PersistedCommits
 				.Find(Query.EQ("Dispatched", false))
 				.SetSortOrder("CommitStamp")
-				.Select(mc => mc.ToCommit(this.serializer))
-				.ToArray());
+				.Select(mc => mc.ToCommit(this.serializer)));
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
@@ -154,8 +151,7 @@
 				return this.PersistedStreamHeads
 					.Find(query)
 					.SetSortOrder(SortBy.Descending("Unsnapshotted"))
-					.Select(x => x.ToStreamHead())
-					.ToArray();
+					.Select(x => x.ToStreamHead());
 			});
 		}
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
@@ -200,22 +196,14 @@
 			}
 		}
 
-		private void UpdateStreamHeadAsync(Guid streamId, int streamRevision, int eventsCount, bool isFirstCommit)
+		private void UpdateStreamHeadAsync(Guid streamId, int streamRevision, int eventsCount)
 		{
 			ThreadPool.QueueUserWorkItem(x => this.TryMongo(() =>
 			{
-				if (isFirstCommit)
-					this.PersistedStreamHeads.Insert(new BsonDocument
-					{
-						{ "_id", streamId },
-						{ "HeadRevision", streamRevision },
-						{ "SnapshotRevision", 0 },
-						{ "Unsnapshotted", streamRevision }
-					});
-				else
-					this.PersistedStreamHeads.Update(
-						Query.EQ("_id", streamId),
-						Update.Set("HeadRevision", streamRevision).Inc("Unsnapshotted", eventsCount));
+				this.PersistedStreamHeads.Update(
+					Query.EQ("_id", streamId),
+					Update.Set("HeadRevision", streamRevision).Inc("SnapshotRevision", 0).Inc("Unsnapshotted", eventsCount),
+					UpdateFlags.Upsert);
 			}), null);
 		}
 
