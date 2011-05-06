@@ -9,11 +9,12 @@ namespace EventStore.Persistence.RavenPersistence
 	using System.Threading;
 	using System.Transactions;
 	using Indexes;
+	using Raven.Abstractions.Commands;
+	using Raven.Abstractions.Data;
 	using Raven.Client;
 	using Raven.Client.Exceptions;
 	using Raven.Client.Indexes;
-	using Raven.Database.Data;
-	using Raven.Database.Json;
+	using Raven.Json.Linq;
 	using Serialization;
 
 	public class RavenPersistenceEngine : IPersistStreams
@@ -103,7 +104,7 @@ namespace EventStore.Persistence.RavenPersistence
 			{
 				throw new DuplicateCommitException(e.Message, e);
 			}
-			catch (Raven.Http.Exceptions.ConcurrencyException)
+			catch (Raven.Abstractions.Exceptions.ConcurrencyException)
 			{
 				var savedCommit = this.LoadSavedCommit(attempt);
 				if (savedCommit.CommitId == attempt.CommitId)
@@ -131,7 +132,7 @@ namespace EventStore.Persistence.RavenPersistence
 			{
 				Type = PatchCommandType.Set,
 				Name = "Dispatched",
-				Value = true
+				Value = RavenJToken.Parse("true")
 			};
 			var data = new PatchCommandData
 			{
@@ -198,7 +199,7 @@ namespace EventStore.Persistence.RavenPersistence
 			{
 				throw new StorageUnavailableException(e.Message, e);
 			}
-			catch (Raven.Http.Exceptions.ConcurrencyException)
+			catch (Raven.Abstractions.Exceptions.ConcurrencyException)
 			{
 				return false;
 			}
