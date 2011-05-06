@@ -37,7 +37,6 @@ namespace EventStore.Persistence.RavenPersistence
 			this.Dispose(true);
 			GC.SuppressFinalize(this);
 		}
-
 		protected virtual void Dispose(bool disposing)
 		{
 			if (!disposing || this.disposed)
@@ -258,13 +257,18 @@ namespace EventStore.Persistence.RavenPersistence
 		{
 			ThreadPool.QueueUserWorkItem(x => this.SaveStreamHeadAsync(streamHead), null);
 		}
-		private void SaveStreamHeadAsync(RavenStreamHead streamHead)
+		private void SaveStreamHeadAsync(RavenStreamHead updated)
 		{
 			using (var scope = this.OpenCommandScope())
 			using (var session = this.store.OpenSession())
 			{
+				var current = session.Load<RavenStreamHead>(updated.StreamId.ToRavenStreamId()) ?? updated;
+				current.HeadRevision = updated.HeadRevision;
+				current.SnapshotRevision = updated.SnapshotRevision > 0
+					? updated.SnapshotRevision : current.SnapshotRevision;
+
 				session.Advanced.UseOptimisticConcurrency = false;
-				session.Store(streamHead);
+				session.Store(current);
 				session.SaveChanges();
 				scope.Complete();
 			}

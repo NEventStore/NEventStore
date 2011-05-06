@@ -61,7 +61,7 @@ namespace EventStore.Persistence.RavenPersistence
 				serializer.Deserialize<object>(snapshot.Payload));
 		}
 
-		public static string ToRavenStreamId(Guid streamId)
+		public static string ToRavenStreamId(this Guid streamId)
 		{
 			return string.Format("StreamHeads/{0}", streamId);
 		}
@@ -70,7 +70,7 @@ namespace EventStore.Persistence.RavenPersistence
 		{
 			return new RavenStreamHead
 			{
-				Id = ToRavenStreamId(commit.StreamId),
+				Id = commit.StreamId.ToRavenStreamId(),
 				StreamId = commit.StreamId,
 				HeadRevision = commit.StreamRevision,
 				SnapshotRevision = 0
@@ -81,7 +81,7 @@ namespace EventStore.Persistence.RavenPersistence
 		{
 			return new RavenStreamHead
 			{
-				Id = ToRavenStreamId(snapshot.StreamId),
+				Id = snapshot.StreamId.ToRavenStreamId(),
 				StreamId = snapshot.StreamId,
 				HeadRevision = snapshot.StreamRevision,
 				SnapshotRevision = snapshot.StreamRevision
