@@ -67,7 +67,7 @@
       <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Raven.Json.dll</HintPath>
     </Reference>
     <Reference Include="Raven.Json" Condition="$(TargetFrameworkVersion)=='v3.5'">
-      <HintPath>..\..\..\lib\RavenDB\.NET 3.5\Raven.Json.dll</HintPath>
+      <HintPath>..\..\..\lib\RavenDB\.NET 3.5\Raven.Json-3.5.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json" Condition="$(TargetFrameworkVersion)=='v4.0'">
       <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Newtonsoft.Json.dll</HintPath>
