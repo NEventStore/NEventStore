@@ -68,6 +68,11 @@ namespace EventStore
 				hook.PostCommit(attempt);
 		}
 
+		public virtual IEnumerable<Commit> GetFrom(DateTime started)
+		{
+			return this.persistence.GetFrom(started);
+		}
+
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
 			maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
