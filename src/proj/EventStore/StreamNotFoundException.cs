@@ -4,7 +4,7 @@ namespace EventStore
 	using System.Runtime.Serialization;
 
 	/// <summary>
-	/// Represents an attempt to commit the same information more than once.
+	/// Represents an attempt to retrieve a nonexistent event stream.
 	/// </summary>
 	[Serializable]
 	public class StreamNotFoundException : Exception
