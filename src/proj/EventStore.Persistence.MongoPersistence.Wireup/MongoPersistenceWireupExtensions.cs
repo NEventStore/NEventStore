@@ -5,11 +5,11 @@ namespace EventStore
 
 	public static class MongoPersistenceWireupExtensions
 	{
-		public static Wireup UsingMongoPersistence(
+		public static PersistenceWireup UsingMongoPersistence(
 			this Wireup wireup, string connectionName, IDocumentSerializer serializer)
 		{
-			wireup.With(new MongoPersistenceFactory(connectionName, serializer).Build());
-			return wireup;
+			var persistence = new MongoPersistenceFactory(connectionName, serializer).Build();
+			return new PersistenceWireup(wireup, persistence);
 		}
 	}
 }

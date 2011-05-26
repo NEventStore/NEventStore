@@ -55,7 +55,7 @@
       <Project>{F9E7FD69-0818-48CA-9249-5387739E1B6A}</Project>
       <Name>EventStore.Persistence.RavenPersistence</Name>
     </ProjectReference>
-	<Reference Include="EventStore (ILMerged)" Condition="'$(ILMerged)' == 'true'">
+    <Reference Include="EventStore (ILMerged)" Condition="'$(ILMerged)' == 'true'">
       <HintPath>..\..\..\output\bin\EventStore.dll</HintPath>
     </Reference>
     <ProjectReference Include="..\EventStore\EventStore.csproj" Condition="'$(ILMerged)' != 'true'">

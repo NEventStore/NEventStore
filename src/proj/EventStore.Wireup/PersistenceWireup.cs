@@ -8,13 +8,20 @@ namespace EventStore
 		private bool initialize;
 
 		public PersistenceWireup(Wireup inner)
-			: base(inner)
+			: this(inner, null)
 		{
 		}
-
-		public virtual Wireup WithPersistence(IPersistStreams instance)
+		public PersistenceWireup(Wireup inner, IPersistStreams instance)
+			: base(inner)
 		{
-			return this.With(instance);
+			if (inner != null && instance != null)
+				inner.With(instance);
+		}
+
+		public virtual PersistenceWireup WithPersistence(IPersistStreams instance)
+		{
+			this.With(instance);
+			return this;
 		}
 
 		protected virtual SerializationWireup WithSerializer(ISerialize serializer)
