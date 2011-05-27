@@ -2,6 +2,7 @@ namespace EventStore
 {
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Transactions;
 	using Dispatcher;
 	using Persistence;
 	using Persistence.InMemoryPersistence;
@@ -62,11 +63,15 @@ namespace EventStore
 
 		private static IStoreEvents BuildEventStore(NanoContainer context)
 		{
-			var concurrentHook = new OptimisticPipelineHook();
+			var scopeOption = context.Resolve<TransactionScopeOption>();
+			var concurrentHook = scopeOption == TransactionScopeOption.Suppress ? null : new OptimisticPipelineHook();
 			var dispatcherHook = new DispatchPipelineHook(context.Resolve<IDispatchCommits>());
 
 			var pipelineHooks = context.Resolve<ICollection<IPipelineHook>>() ?? new IPipelineHook[0];
-			pipelineHooks = new IPipelineHook[] { concurrentHook, dispatcherHook } .Concat(pipelineHooks).ToArray();
+			pipelineHooks = new IPipelineHook[] { concurrentHook, dispatcherHook }
+				.Concat(pipelineHooks)
+				.Where(x => x != null)
+				.ToArray();
 
 			return new OptimisticEventStore(context.Resolve<IPersistStreams>(), pipelineHooks);
 		}

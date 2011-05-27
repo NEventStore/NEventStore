@@ -21,11 +21,16 @@ namespace EventStore.Persistence.RavenPersistence
 	{
 		private readonly IDocumentStore store;
 		private readonly IDocumentSerializer serializer;
+		private readonly TransactionScopeOption scopeOption;
 		private readonly bool consistentQueries;
 		private bool disposed;
 		private int initialized;
 
-		public RavenPersistenceEngine(IDocumentStore store, IDocumentSerializer serializer, bool consistentQueries)
+		public RavenPersistenceEngine(
+			IDocumentStore store,
+			IDocumentSerializer serializer,
+			TransactionScopeOption scopeOption,
+			bool consistentQueries)
 		{
 			if (store == null)
 				throw new ArgumentNullException("store");
@@ -35,6 +40,7 @@ namespace EventStore.Persistence.RavenPersistence
 
 			this.store = store;
 			this.serializer = serializer;
+			this.scopeOption = scopeOption;
 			this.consistentQueries = consistentQueries;
 		}
 
@@ -285,7 +291,7 @@ namespace EventStore.Persistence.RavenPersistence
 		}
 		protected virtual TransactionScope OpenCommandScope()
 		{
-			return new TransactionScope(TransactionScopeOption.Suppress);
+			return new TransactionScope(this.scopeOption);
 		}
 	}
 }

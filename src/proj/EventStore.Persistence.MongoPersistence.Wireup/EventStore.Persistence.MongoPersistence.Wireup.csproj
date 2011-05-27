@@ -42,6 +42,7 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="MongoPersistenceWireup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MongoPersistenceWireupExtensions.cs" />
   </ItemGroup>

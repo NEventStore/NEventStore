@@ -1,5 +1,6 @@
 namespace EventStore
 {
+	using System.Transactions;
 	using Persistence.SqlPersistence;
 	using Serialization;
 
@@ -13,7 +14,8 @@ namespace EventStore
 			this.Container.Register(c => new SqlPersistenceFactory(
 				connectionFactory,
 				c.Resolve<ISerialize>(),
-				c.Resolve<ISqlDialect>()).Build());
+				c.Resolve<ISqlDialect>(),
+				c.Resolve<TransactionScopeOption>()).Build());
 		}
 
 		public virtual SqlPersistenceWireup WithDialect(ISqlDialect instance)

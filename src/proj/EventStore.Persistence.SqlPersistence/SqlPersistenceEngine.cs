@@ -14,6 +14,7 @@ namespace EventStore.Persistence.SqlPersistence
 		private readonly IConnectionFactory connectionFactory;
 		private readonly ISqlDialect dialect;
 		private readonly ISerialize serializer;
+		private readonly TransactionScopeOption scopeOption;
 		private int initialized;
 
 		protected virtual IConnectionFactory ConnectionFactory
@@ -29,7 +30,11 @@ namespace EventStore.Persistence.SqlPersistence
 			get { return this.serializer; }
 		}
 
-		public SqlPersistenceEngine(IConnectionFactory connectionFactory, ISqlDialect dialect, ISerialize serializer)
+		public SqlPersistenceEngine(
+			IConnectionFactory connectionFactory,
+			ISqlDialect dialect,
+			ISerialize serializer,
+			TransactionScopeOption scopeOption)
 		{
 			if (connectionFactory == null)
 				throw new ArgumentNullException("connectionFactory");
@@ -43,6 +48,7 @@ namespace EventStore.Persistence.SqlPersistence
 			this.connectionFactory = connectionFactory;
 			this.dialect = dialect;
 			this.serializer = serializer;
+			this.scopeOption = scopeOption;
 		}
 
 		public void Dispose()
@@ -210,7 +216,7 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		protected virtual TransactionScope OpenCommandScope()
 		{
-			return new TransactionScope(TransactionScopeOption.Suppress);
+			return new TransactionScope(this.scopeOption);
 		}
 	}
 }

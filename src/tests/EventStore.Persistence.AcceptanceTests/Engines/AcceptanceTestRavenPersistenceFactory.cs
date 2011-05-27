@@ -1,5 +1,6 @@
 namespace EventStore.Persistence.AcceptanceTests.Engines
 {
+	using System.Transactions;
 	using RavenPersistence;
 	using Serialization;
 
@@ -7,7 +8,7 @@ namespace EventStore.Persistence.AcceptanceTests.Engines
 	{
 		private const bool FullyConsistentResults = true;
 		public AcceptanceTestRavenPersistenceFactory()
-			: base("Raven", new DocumentObjectSerializer(), FullyConsistentResults)
+			: base("Raven", new DocumentObjectSerializer(), TransactionScopeOption.Suppress, FullyConsistentResults)
 		{
 		}
 	}

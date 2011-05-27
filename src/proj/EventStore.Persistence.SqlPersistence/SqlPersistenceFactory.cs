@@ -1,5 +1,6 @@
 namespace EventStore.Persistence.SqlPersistence
 {
+	using System.Transactions;
 	using Serialization;
 	using SqlDialects;
 
@@ -8,6 +9,7 @@ namespace EventStore.Persistence.SqlPersistence
 		private readonly IConnectionFactory connectionFactory;
 		private readonly ISqlDialect dialect;
 		private readonly ISerialize serializer;
+		private readonly TransactionScopeOption scopeOption;
 
 		public SqlPersistenceFactory(string connectionName, ISerialize serializer)
 			: this(connectionName, serializer, null)
@@ -22,10 +24,19 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 		}
 		public SqlPersistenceFactory(IConnectionFactory factory, ISerialize serializer, ISqlDialect dialect)
+			: this(factory, serializer, dialect, TransactionScopeOption.Suppress)
+		{
+		}
+		public SqlPersistenceFactory(
+			IConnectionFactory factory,
+			ISerialize serializer,
+			ISqlDialect dialect,
+			TransactionScopeOption scopeOption)
 		{
 			this.connectionFactory = factory;
 			this.serializer = serializer;
 			this.dialect = dialect;
+			this.scopeOption = scopeOption;
 		}
 
 		protected virtual IConnectionFactory ConnectionFactory
@@ -43,7 +54,8 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public virtual IPersistStreams Build()
 		{
-			return new SqlPersistenceEngine(this.ConnectionFactory, this.GetDialect(), this.Serializer);
+			return new SqlPersistenceEngine(
+				this.ConnectionFactory, this.GetDialect(), this.Serializer, this.scopeOption);
 		}
 		protected virtual ISqlDialect GetDialect()
 		{

@@ -17,12 +17,11 @@ namespace EventStore
 		}
 
 		public virtual ContainerRegistration Register<TService>(TService instance)
-			where TService : class
 		{
-			if (instance == null)
+			if (Equals(instance, null))
 				throw new ArgumentNullException("instance", Messages.InstanceCannotBeNull);
 
-			if (!typeof(TService).IsInterface)
+			if (!typeof(TService).IsValueType && !typeof(TService).IsInterface)
 				throw new ArgumentException(Messages.TypeMustBeInterface, "instance");
 
 			var registration = new ContainerRegistration(instance);
@@ -31,13 +30,12 @@ namespace EventStore
 		}
 
 		public virtual TService Resolve<TService>()
-			where TService : class
 		{
 			ContainerRegistration registration;
 			if (!this.registrations.TryGetValue(typeof(TService), out registration))
-				return null;
+				return default(TService);
 
-			return registration.Resolve(this) as TService;
+			return (TService)registration.Resolve(this);
 		}
 	}
 

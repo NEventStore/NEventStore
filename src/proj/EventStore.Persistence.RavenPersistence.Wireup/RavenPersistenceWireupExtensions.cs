@@ -1,6 +1,5 @@
 namespace EventStore
 {
-	using Persistence.RavenPersistence;
 	using Serialization;
 
 	public static class RavenPersistenceWireupExtensions
@@ -8,8 +7,12 @@ namespace EventStore
 		public static PersistenceWireup UsingRavenPersistence(
 			this Wireup wireup, string connectionName, IDocumentSerializer serializer)
 		{
-			var persistence = new RavenPersistenceFactory(connectionName, serializer).Build();
-			return new PersistenceWireup(wireup, persistence);
+			return wireup.UsingRavenPersistence(connectionName, serializer, false);
+		}
+		public static PersistenceWireup UsingRavenPersistence(
+			this Wireup wireup, string connectionName, IDocumentSerializer serializer, bool consistentQueries)
+		{
+			return new RavenPersistenceWireup(wireup, connectionName, serializer, consistentQueries);
 		}
 	}
 }

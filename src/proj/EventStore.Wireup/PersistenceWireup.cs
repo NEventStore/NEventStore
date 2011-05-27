@@ -1,5 +1,6 @@
 namespace EventStore
 {
+	using System.Transactions;
 	using Persistence;
 	using Serialization;
 
@@ -8,14 +9,9 @@ namespace EventStore
 		private bool initialize;
 
 		public PersistenceWireup(Wireup inner)
-			: this(inner, null)
-		{
-		}
-		public PersistenceWireup(Wireup inner, IPersistStreams instance)
 			: base(inner)
 		{
-			if (inner != null && instance != null)
-				inner.With(instance);
+			this.Container.Register(TransactionScopeOption.Suppress);
 		}
 
 		public virtual PersistenceWireup WithPersistence(IPersistStreams instance)
@@ -32,6 +28,12 @@ namespace EventStore
 		public virtual PersistenceWireup InitializeStorageEngine()
 		{
 			this.initialize = true;
+			return this;
+		}
+
+		public virtual PersistenceWireup EnlistInAmbientTransaction()
+		{
+			this.Container.Register(TransactionScopeOption.Required);
 			return this;
 		}
 
