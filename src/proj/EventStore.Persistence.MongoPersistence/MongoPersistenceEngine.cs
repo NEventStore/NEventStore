@@ -22,6 +22,12 @@
 
 		public MongoPersistenceEngine(MongoDatabase store, IDocumentSerializer serializer)
 		{
+			if (store == null)
+				throw new ArgumentNullException("store");
+
+			if (serializer == null)
+				throw new ArgumentNullException("serializer");
+
 			this.store = store;
 			this.serializer = serializer;
 

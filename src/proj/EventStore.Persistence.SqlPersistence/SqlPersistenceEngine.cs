@@ -31,6 +31,15 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public SqlPersistenceEngine(IConnectionFactory connectionFactory, ISqlDialect dialect, ISerialize serializer)
 		{
+			if (connectionFactory == null)
+				throw new ArgumentNullException("connectionFactory");
+
+			if (dialect == null)
+				throw new ArgumentNullException("dialect");
+
+			if (serializer == null)
+				throw new ArgumentNullException("serializer");
+
 			this.connectionFactory = connectionFactory;
 			this.dialect = dialect;
 			this.serializer = serializer;

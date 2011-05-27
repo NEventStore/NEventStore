@@ -12,6 +12,9 @@ namespace EventStore
 
 		public OptimisticEventStore(IPersistStreams persistence, IEnumerable<IPipelineHook> pipelineHooks)
 		{
+			if (persistence == null)
+				throw new ArgumentNullException("persistence");
+
 			this.persistence = persistence;
 			this.pipelineHooks = pipelineHooks ?? new IPipelineHook[0];
 		}

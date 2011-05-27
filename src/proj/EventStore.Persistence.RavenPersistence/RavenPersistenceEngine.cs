@@ -27,6 +27,12 @@ namespace EventStore.Persistence.RavenPersistence
 
 		public RavenPersistenceEngine(IDocumentStore store, IDocumentSerializer serializer, bool consistentQueries)
 		{
+			if (store == null)
+				throw new ArgumentNullException("store");
+
+			if (serializer == null)
+				throw new ArgumentNullException("serializer");
+
 			this.store = store;
 			this.serializer = serializer;
 			this.consistentQueries = consistentQueries;
