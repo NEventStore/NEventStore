@@ -32,7 +32,6 @@ namespace EventStore.Example
 			 return Wireup.Init()
 				.UsingSqlPersistence("EventStore")
 					.InitializeStorageEngine()
-					.EnlistInAmbientTransaction()
 					.UsingJsonSerialization()
 						.Compress()
 						.EncryptWith(EncryptionKey)

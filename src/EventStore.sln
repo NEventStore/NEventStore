@@ -17,6 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{CD37080A-F48
 		..\doc\EventStore - Architectural Overview.docx = ..\doc\EventStore - Architectural Overview.docx
 		..\doc\EventStore - Transactional Integrity without Transactions.docx = ..\doc\EventStore - Transactional Integrity without Transactions.docx
 		..\doc\license.txt = ..\doc\license.txt
+		..\readme.markdown = ..\readme.markdown
 		..\doc\roadmap.txt = ..\doc\roadmap.txt
 	EndProjectSection
 EndProject
