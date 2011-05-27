@@ -16,7 +16,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 		public override bool IsDuplicate(Exception exception)
 		{
-			// TODO: better way without using reflection and avoiding a dependency on SqlCE reference?
+			// TODO: better way without using reflection and avoiding a reference to SqlCE?
 			var message = exception.Message.ToUpperInvariant();
 			return message.Contains("DUPLICATE") || message.Contains("UNIQUE");
 		}
