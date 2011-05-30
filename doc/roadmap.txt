@@ -23,3 +23,24 @@
 - Create a PersistenceEngine implementation that can be exposed as an endpoint, e.g. REST or HTTP, etc. such that
   the OptimisticEventStore could use that endpoint as the underlying storage. This would create a logical layering
   point which could then be separated into physical layers more easily.
+
+
+2.0:
+ - NuGet Package
+
+2.1:
+ - .NET 4.0 only
+ - Logging?
+ - Merge CommonDomain
+ - CouchDB persistence
+ - Oracle persistence
+ - Azure Tables persistence
+ - ProtocolBuffers serializer
+
+2.2:
+ - Amazon S3/Tables persistence
+ - FileSystem persistence
+
+2.3:
+ - Redis
+ - Master/slave failover
