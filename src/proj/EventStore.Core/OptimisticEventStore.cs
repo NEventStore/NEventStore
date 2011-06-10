@@ -71,23 +71,9 @@ namespace EventStore
 				hook.PostCommit(attempt);
 		}
 
-		public virtual IEnumerable<Commit> GetFrom(DateTime started)
+		public virtual IPersistStreams Advanced
 		{
-			return this.persistence.GetFrom(started);
-		}
-
-		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
-		{
-			maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
-			return this.persistence.GetSnapshot(streamId, maxRevision); // TODO: add to some kind of cache
-		}
-		public virtual bool AddSnapshot(Snapshot snapshot)
-		{
-			return this.persistence.AddSnapshot(snapshot); // TODO: update the cache here
-		}
-		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
-		{
-			return this.persistence.GetStreamsToSnapshot(maxThreshold);
+			get { return this.persistence; }
 		}
 	}
 }

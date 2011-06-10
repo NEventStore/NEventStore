@@ -1,7 +1,6 @@
 namespace EventStore
 {
 	using System;
-	using System.Collections.Generic;
 	using Persistence;
 
 	/// <summary>
@@ -10,7 +9,7 @@ namespace EventStore
 	/// <remarks>
 	/// Instances of this class must be designed to be multi-thread safe such that they can be shared between threads.
 	/// </remarks>
-	public interface IStoreEvents : IDisposable, IAccessSnapshots
+	public interface IStoreEvents : IDisposable
 	{
 		/// <summary>
 		/// Creates a new stream.
@@ -43,12 +42,8 @@ namespace EventStore
 		IEventStream OpenStream(Snapshot snapshot, int maxRevision);
 
 		/// <summary>
-		/// Gets all commits on or after from the specified starting time.
+		/// Gets a reference to the underlying persistence engine which allows direct access to persistence operations.
 		/// </summary>
-		/// <param name="start">The point in time at which to start.</param>
-		/// <returns>All commits that have occurred on or after the specified starting time.</returns>
-		/// <exception cref="StorageException" />
-		/// <exception cref="StorageUnavailableException" />
-		IEnumerable<Commit> GetFrom(DateTime start);
+		IPersistStreams Advanced { get; }
 	}
 }

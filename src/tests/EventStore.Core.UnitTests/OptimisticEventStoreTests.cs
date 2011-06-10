@@ -351,6 +351,13 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
+	public class when_accessing_the_underlying_persistence : using_persistence
+	{
+		It should_return_a_reference_to_the_underlying_persistence_infrastructure = () =>
+			store.Advanced.ShouldBeTheSameAs(persistence.Object);
+	}
+
+	[Subject("OptimisticEventStore")]
 	public class when_disposing_the_event_store : using_persistence
 	{
 		Because of = () =>

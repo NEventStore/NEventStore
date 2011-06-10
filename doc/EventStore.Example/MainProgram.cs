@@ -80,11 +80,11 @@ namespace EventStore.Example
 		private static void TakeSnapshot()
 		{
 			var memento = new AggregateMemento { Value = "snapshot" };
-			store.AddSnapshot(new Snapshot(StreamId, 2, memento));
+			store.Advanced.AddSnapshot(new Snapshot(StreamId, 2, memento));
 		}
 		private static void LoadFromSnapshotForwardAndAppend()
 		{
-			var latestSnapshot = store.GetSnapshot(StreamId, int.MaxValue);
+			var latestSnapshot = store.Advanced.GetSnapshot(StreamId, int.MaxValue);
 
 			using (var stream = store.OpenStream(latestSnapshot, int.MaxValue))
 			{
