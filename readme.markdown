@@ -7,7 +7,7 @@ when using event sourcing as storage mechanism.  Event sourcing is most closely 
 with a concept known as [CQRS](http://cqrsinfo.com).
 
 ### Need Help? Have a Question?
-Ask your question on [Stack Overflow](http://stackoverflow.com) and tag your question with
+Ask your question on [Stack Overflow](http://stackoverflow.com/search?q=[cqrs]+eventstore) and tag your question with
 the CQRS tag and the word "EventStore" in the title.
 
 ### Purpose and Theory
