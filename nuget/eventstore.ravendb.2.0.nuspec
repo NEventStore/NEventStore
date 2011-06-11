@@ -14,22 +14,13 @@
     <tags>events, event sourcing, cqrs, storage, persistence, database, ravendb</tags>
     <dependencies>
       <dependency id="eventstore" version="2.0" />
+      <dependency id="RavenDB" version="1.0.0.360" />
     </dependencies>
   </metadata>
   <files>
     <file src="..\publish-v3.5\plugins\persistence\raven\EventStore.Persistence.RavenPersistence.dll" target="lib\net35"/>
     <file src="..\publish-v3.5\plugins\persistence\raven\EventStore.Persistence.RavenPersistence.pdb" target="lib\net35"/>
-    <file src="..\publish-v3.5\plugins\persistence\raven\MissingBitsFromClientProfile.dll" target="lib\net35"/>
-    <file src="..\publish-v3.5\plugins\persistence\raven\Newtonsoft.Json.Net35.dll" target="lib\net35"/>
-    <file src="..\publish-v3.5\plugins\persistence\raven\Raven.Abstractions-3.5.dll" target="lib\net35"/>
-    <file src="..\publish-v3.5\plugins\persistence\raven\Raven.Client.Lightweight-3.5.dll" target="lib\net35"/>
-    <file src="..\publish-v3.5\plugins\persistence\raven\Raven.Json-3.5.dll" target="lib\net35"/>
     <file src="..\publish-v4.0\plugins\persistence\raven\EventStore.Persistence.RavenPersistence.dll" target="lib\net40"/>
     <file src="..\publish-v4.0\plugins\persistence\raven\EventStore.Persistence.RavenPersistence.pdb" target="lib\net40"/>
-    <file src="..\publish-v4.0\plugins\persistence\raven\MissingBitsFromClientProfile.dll" target="lib\net40"/>
-    <file src="..\publish-v4.0\plugins\persistence\raven\Newtonsoft.Json.dll" target="lib\net40"/>
-    <file src="..\publish-v4.0\plugins\persistence\raven\Raven.Abstractions.dll" target="lib\net40"/>
-    <file src="..\publish-v4.0\plugins\persistence\raven\Raven.Client.Lightweight.dll" target="lib\net40"/>
-    <file src="..\publish-v4.0\plugins\persistence\raven\Raven.Json.dll" target="lib\net40"/>
   </files>
 </package>
