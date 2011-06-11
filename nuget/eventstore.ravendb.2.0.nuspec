@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>eventstore.ravendb</id>
+    <version>2.0</version>
+    <title>CQRS EventStore RavenDB provider</title>
+    <authors>Simon Green</authors>
+    <owners>Jonathan Oliver</owners>
+    <projectUrl>https://github.com/joliver/EventStore</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Additional persistence provider for EventStore using on RavenDB.</description>
+    <summary>MongoDB persistence provider for EventStore.</summary>
+    <language>es-US</language>
+    <tags>events, event sourcing, cqrs, storage, persistence, database, ravendb</tags>
+    <dependencies>
+      <dependency id="eventstore" version="2.0" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\publish-v3.5\plugins\persistence\raven\EventStore.Persistence.RavenPersistence.dll" target="lib\net35"/>
+    <file src="..\publish-v3.5\plugins\persistence\raven\EventStore.Persistence.RavenPersistence.pdb" target="lib\net35"/>
+    <file src="..\publish-v3.5\plugins\persistence\raven\MissingBitsFromClientProfile.dll" target="lib\net35"/>
+    <file src="..\publish-v3.5\plugins\persistence\raven\Newtonsoft.Json.Net35.dll" target="lib\net35"/>
+    <file src="..\publish-v3.5\plugins\persistence\raven\Raven.Abstractions-3.5.dll" target="lib\net35"/>
+    <file src="..\publish-v3.5\plugins\persistence\raven\Raven.Client.Lightweight-3.5.dll" target="lib\net35"/>
+    <file src="..\publish-v3.5\plugins\persistence\raven\Raven.Json-3.5.dll" target="lib\net35"/>
+    <file src="..\publish-v4.0\plugins\persistence\raven\EventStore.Persistence.RavenPersistence.dll" target="lib\net40"/>
+    <file src="..\publish-v4.0\plugins\persistence\raven\EventStore.Persistence.RavenPersistence.pdb" target="lib\net40"/>
+    <file src="..\publish-v4.0\plugins\persistence\raven\MissingBitsFromClientProfile.dll" target="lib\net40"/>
+    <file src="..\publish-v4.0\plugins\persistence\raven\Newtonsoft.Json.dll" target="lib\net40"/>
+    <file src="..\publish-v4.0\plugins\persistence\raven\Raven.Abstractions.dll" target="lib\net40"/>
+    <file src="..\publish-v4.0\plugins\persistence\raven\Raven.Client.Lightweight.dll" target="lib\net40"/>
+    <file src="..\publish-v4.0\plugins\persistence\raven\Raven.Json.dll" target="lib\net40"/>
+  </files>
+</package>

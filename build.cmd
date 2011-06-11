@@ -15,10 +15,11 @@ set FRAMEWORK_VERSION=%2
 set ILMERGE_VERSION=%3
 
 :build
+set publish=publish-%FRAMEWORK_VERSION%
 if exist output ( rmdir /s /q output )
 if exist output ( rmdir /s /q output )
-if exist publish ( rmdir /s /q publish )
-if exist publish ( rmdir /s /q publish )
+if exist %publish% ( rmdir /s /q %publish% )
+if exist %publish% ( rmdir /s /q %publish% )
 
 mkdir output
 mkdir "output\bin"
@@ -108,7 +109,7 @@ echo Copying
 mkdir "output\doc"
 copy "doc\*.*" "output\doc"
 
-move output publish
+move output %publish%
 
 echo.
 echo === CLEANUP ===
