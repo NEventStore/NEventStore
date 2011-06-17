@@ -59,14 +59,17 @@
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
       <Name>EventStore</Name>
     </ProjectReference>
+    <Reference Include="Newtonsoft.Json, Version=4.0.2.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.4.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json" Condition="$(TargetFrameworkVersion)=='v4.0'">
-      <HintPath>..\..\..\lib\Json.NET\.NET 4.0\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json" Condition="$(TargetFrameworkVersion)=='v3.5'">
       <HintPath>..\..\..\lib\Json.NET\.NET 3.5\Newtonsoft.Json.Net35.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

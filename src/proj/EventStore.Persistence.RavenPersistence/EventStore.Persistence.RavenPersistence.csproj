@@ -56,6 +56,9 @@
     <Compile Include="RavenSnapshot.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="AsyncCtpLibrary, Version=1.0.4107.18181, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\RavenDB.1.0.0.371\lib\net40\AsyncCtpLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="EventStore (ILMerged)" Condition="'$(ILMerged)' == 'true'">
       <HintPath>..\..\..\output\bin\EventStore.dll</HintPath>
     </Reference>
@@ -63,29 +66,33 @@
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
       <Name>EventStore</Name>
     </ProjectReference>
-    <Reference Include="Raven.Json" Condition="$(TargetFrameworkVersion)=='v4.0'">
-      <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Raven.Json.dll</HintPath>
+    <Reference Include="MissingBitsFromClientProfile, Version=0.0.0.0, Culture=neutral, PublicKeyToken=37f41c7f99471593, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\RavenDB.1.0.0.371\lib\net40\MissingBitsFromClientProfile.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.0.2.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Newtonsoft.Json.4.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Raven.Abstractions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=37f41c7f99471593, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\RavenDB.1.0.0.371\lib\net40\Raven.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Raven.Client.Lightweight, Version=1.0.0.0, Culture=neutral, PublicKeyToken=37f41c7f99471593, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\RavenDB.1.0.0.371\lib\net40\Raven.Client.Lightweight.dll</HintPath>
     </Reference>
     <Reference Include="Raven.Json" Condition="$(TargetFrameworkVersion)=='v3.5'">
       <HintPath>..\..\..\lib\RavenDB\.NET 3.5\Raven.Json-3.5.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json" Condition="$(TargetFrameworkVersion)=='v4.0'">
-      <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json" Condition="$(TargetFrameworkVersion)=='v3.5'">
       <HintPath>..\..\..\lib\RavenDB\.NET 3.5\Newtonsoft.Json.Net35.dll</HintPath>
-    </Reference>
-    <Reference Include="Raven.Abstractions" Condition="$(TargetFrameworkVersion)=='v4.0'">
-      <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Raven.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Raven.Abstractions" Condition="$(TargetFrameworkVersion)=='v3.5'">
       <HintPath>..\..\..\lib\RavenDB\.NET 3.5\Raven.Abstractions-3.5.dll</HintPath>
     </Reference>
-    <Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v4.0'">
-      <HintPath>..\..\..\lib\RavenDB\.NET 4.0\Raven.Client.Lightweight.dll</HintPath>
-    </Reference>
     <Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v3.5'">
       <HintPath>..\..\..\lib\RavenDB\.NET 3.5\Raven.Client.Lightweight-3.5.dll</HintPath>
+    </Reference>
+    <Reference Include="Raven.Json, Version=1.0.0.0, Culture=neutral, PublicKeyToken=37f41c7f99471593, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\RavenDB.1.0.0.371\lib\net40\Raven.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" Condition="$(TargetFrameworkVersion)=='v4.0'" />
@@ -95,6 +102,9 @@
     <Content Include="..\CustomDictionary.xml">
       <Link>Properties\CustomDictionary.xml</Link>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
