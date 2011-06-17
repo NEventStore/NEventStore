@@ -14,6 +14,7 @@
     <tags>events, event sourcing, cqrs, storage, persistence, database, servicestack, json, serialization</tags>
     <dependencies>
       <dependency id="eventstore" version="2.0" />
+      <dependency id="ServiceStack.Text" version="2.20" />
     </dependencies>
   </metadata>
   <files>

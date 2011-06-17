@@ -70,8 +70,11 @@
     <Reference Include="Machine.Specifications">
       <HintPath>..\..\packages\Machine.Specifications.0.4.13.0\lib\Machine.Specifications.dll</HintPath>
     </Reference>
-    <Reference Include="Moq">
+    <Reference Include="Moq" Condition="$(TargetFrameworkVersion)=='v4.0'">
       <HintPath>..\..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="Moq" Condition="$(TargetFrameworkVersion)=='v3.5'">
+      <HintPath>..\..\packages\Moq.4.0.10827\lib\NET35\Moq.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

@@ -93,18 +93,27 @@
     <Reference Include="Machine.Specifications">
       <HintPath>..\..\packages\Machine.Specifications.0.4.13.0\lib\Machine.Specifications.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Security, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+    <Reference Include="Mono.Security" Condition="$(TargetFrameworkVersion)=='v4.0'">
       <HintPath>..\..\packages\Npgsql.2.0.11\lib\Net40\Mono.Security.dll</HintPath>
     </Reference>
-    <Reference Include="Moq">
+    <Reference Include="Mono.Security" Condition="$(TargetFrameworkVersion)=='v3.5'">
+      <HintPath>..\..\packages\Npgsql.2.0.11\lib\Net35\Mono.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Moq" Condition="$(TargetFrameworkVersion)=='v4.0'">
       <HintPath>..\..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data, Version=6.3.6.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\MySql.Data.6.3.6\lib\MySql.Data.dll</HintPath>
+    <Reference Include="Moq" Condition="$(TargetFrameworkVersion)=='v3.5'">
+      <HintPath>..\..\packages\Moq.4.0.10827\lib\NET35\Moq.dll</HintPath>
     </Reference>
-    <Reference Include="Npgsql, Version=2.0.11.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+    <Reference Include="MySql.Data">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\bin\mysql-bin\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Npgsql" Condition="$(TargetFrameworkVersion)=='v4.0'">
       <HintPath>..\..\packages\Npgsql.2.0.11\lib\Net40\Npgsql.dll</HintPath>
+    </Reference>
+    <Reference Include="Npgsql" Condition="$(TargetFrameworkVersion)=='v3.5'">
+      <HintPath>..\..\packages\Npgsql.2.0.11\lib\Net35\Npgsql.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
