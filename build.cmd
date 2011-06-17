@@ -86,6 +86,7 @@ set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Serialization.Json.Wire
 (echo.|set /p =EventStore.*)>>exclude.txt
 "bin/ilmerge-bin/ILMerge.exe" /keyfile:src/EventStore.snk /internalize:"exclude.txt" /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/plugins/serialization/json-net/EventStore.Serialization.Json.dll %FILES_TO_MERGE%
 del exclude.txt
+copy "src\proj\EventStore.Serialization.Json\bin\%TARGET_CONFIG%\Newtonsoft.Json*.dll" "output\plugins\serialization\json-net"
 
 mkdir output\plugins\serialization\servicestack
 echo Merging ServiceStack.Text Serialization
@@ -95,6 +96,7 @@ set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Serialization.ServiceSt
 (echo.|set /p =EventStore.*)>>exclude.txt
 "bin/ilmerge-bin/ILMerge.exe" /keyfile:src/EventStore.snk /internalize:"exclude.txt" /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/plugins/serialization/servicestack/EventStore.Serialization.ServiceStack.dll %FILES_TO_MERGE%
 del exclude.txt
+copy "src\proj\EventStore.Serialization.ServiceStack\bin\%TARGET_CONFIG%\ServiceStack*.dll" "output\plugins\serialization\servicestack"
 
 echo.
 echo === FINALIZING ===
