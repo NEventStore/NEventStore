@@ -1,0 +1,21 @@
+Index
+Stream id	16
+# of events	2
+Size of commit	4 (- 1 bit)
+Dispatched	1 bit
+--------------- 22
+
+Commit header
+Stream id	16
+# of events	2  (commit sequence is derived)
+commit id	16
+commit stamp dif4
+Length of body	4
+Checksum	16 (*including* header)--MD5
+--------------- 58
+
+Commit body	?
+
+
+
+Engine should track "head" for each stream and head of file stream...
