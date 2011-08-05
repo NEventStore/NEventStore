@@ -49,15 +49,16 @@ namespace EventStore
 		{
 			this.instance = instance;
 
-            // With .NET 3.5 passing an argument of type Func<NanoContainer, IPersistStreams> will 
-            // resolve to ctor(object) while .NET 4 will resolve to ctor(Func<NanoContainer, object>).
-            // In order to support .NET 3.5, we add a shim.
-            if (instance != null && instance is Delegate)
-            {
-                // Add a shim so that we can invoke the delegate in .NET 3.5
-                this.resolve = (NanoContainer c) => ((Delegate)instance).DynamicInvoke(c);
-                this.instance = null;
-            }
+			// With .NET 3.5 passing an argument of type Func<NanoContainer, IPersistStreams> will 
+			// resolve to ctor(object) while in .NET 4 it will resolve to ctor(Func<NanoContainer, object>)
+			// because it supports covariant return types. In order to support .NET 3.5, a shim is needed
+			// to convert between the different delegate signatures.
+			if (instance != null && instance is Delegate)
+			{
+				// Add a shim so that we can invoke the delegate in .NET 3.5
+				this.resolve = (NanoContainer c) => ((Delegate)instance).DynamicInvoke(c);
+				this.instance = null;
+			}
 		}
 		public ContainerRegistration(Func<NanoContainer, object> resolve)
 		{
