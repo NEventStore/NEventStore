@@ -48,7 +48,7 @@ namespace EventStore.Serialization.AcceptanceTests
 				}
 			};
 
-			return new Commit(streamId, StreamRevision, commitId, CommitSequence, DateTime.UtcNow, headers, events.ToList());
+			return new Commit(streamId, StreamRevision, commitId, CommitSequence, SystemTime.UtcNow(), headers, events.ToList());
 		}
 	}
 }
