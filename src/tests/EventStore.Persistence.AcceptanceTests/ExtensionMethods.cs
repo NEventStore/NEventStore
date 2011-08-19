@@ -24,7 +24,7 @@ namespace EventStore.Persistence.AcceptanceTests
 		}
 		public static Commit BuildAttempt(this Guid streamId)
 		{
-			return streamId.BuildAttempt(DateTime.UtcNow);
+			return streamId.BuildAttempt(SystemTime.UtcNow());
 		}
 		public static Commit BuildNextAttempt(this Commit commit)
 		{
