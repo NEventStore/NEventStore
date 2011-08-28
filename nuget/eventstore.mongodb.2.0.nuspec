@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>eventstore.mongodb</id>
+    <version>2.0</version>
+    <title>CQRS EventStore MongoDB provider</title>
+    <authors>Simon Green</authors>
+    <owners>Jonathan Oliver</owners>
+    <projectUrl>https://github.com/joliver/EventStore</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Additional persistence provider for EventStore using on MongoDB.</description>
+    <summary>MongoDB persistence provider for EventStore.</summary>
+    <language>es-US</language>
+    <tags>events, event sourcing, cqrs, storage, persistence, database, mongodb</tags>
+    <dependencies>
+      <dependency id="eventstore" version="2.0" />
+      <dependency id="mongocsharpdriver" version="1.1" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\publish-v3.5\plugins\persistence\mongo\EventStore.Persistence.MongoPersistence.dll" target="lib\net35"/>
+    <file src="..\publish-v3.5\plugins\persistence\mongo\EventStore.Persistence.MongoPersistence.pdb" target="lib\net35"/>
+    <file src="..\publish-v4.0\plugins\persistence\mongo\EventStore.Persistence.MongoPersistence.dll" target="lib\net40"/>
+    <file src="..\publish-v4.0\plugins\persistence\mongo\EventStore.Persistence.MongoPersistence.pdb" target="lib\net40"/>
+  </files>
+</package>

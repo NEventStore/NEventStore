@@ -35,7 +35,7 @@ SET password=%~6
 
 ECHO ===============
 ECHO TESTING: %~1
-"bin/machine.specifications-bin/.NET 4.0/mspec.exe" src/tests/EventStore.Persistence.AcceptanceTests/bin/Debug/EventStore.Persistence.AcceptanceTests.dll
+"src\packages\Machine.Specifications.0.4.13.0\tools\mspec-clr4.exe" src/tests/EventStore.Persistence.AcceptanceTests/bin/Debug/EventStore.Persistence.AcceptanceTests.dll
 ECHO.
 
 ENDLOCAL

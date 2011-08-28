@@ -15,10 +15,11 @@ set FRAMEWORK_VERSION=%2
 set ILMERGE_VERSION=%3
 
 :build
+set publish=publish-%FRAMEWORK_VERSION%
 if exist output ( rmdir /s /q output )
 if exist output ( rmdir /s /q output )
-if exist publish ( rmdir /s /q publish )
-if exist publish ( rmdir /s /q publish )
+if exist %publish% ( rmdir /s /q %publish% )
+if exist %publish% ( rmdir /s /q %publish% )
 
 mkdir output
 mkdir "output\bin"
@@ -31,9 +32,9 @@ msbuild /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=%TARGET_CON
 echo.
 echo === TESTS ===
 echo Unit Tests
-"bin/machine.specifications-bin/.NET 4.0/mspec.exe" src/tests/EventStore.Core.UnitTests/bin/%TARGET_CONFIG%/EventStore.Core.UnitTests.dll
+"src\packages\Machine.Specifications.0.4.13.0\tools\mspec-clr4.exe" src/tests/EventStore.Core.UnitTests/bin/%TARGET_CONFIG%/EventStore.Core.UnitTests.dll
 echo Acceptance Tests
-"bin/machine.specifications-bin/.NET 4.0/mspec.exe" src/tests/EventStore.Persistence.AcceptanceTests/bin/%TARGET_CONFIG%/EventStore.Persistence.AcceptanceTests.dll
+"src\packages\Machine.Specifications.0.4.13.0\tools\mspec-clr4.exe" src/tests/EventStore.Persistence.AcceptanceTests/bin/%TARGET_CONFIG%/EventStore.Persistence.AcceptanceTests.dll
 call acceptance-serialization.cmd
 
 echo.
@@ -63,7 +64,6 @@ echo EventStore.*>exclude.txt
 "bin/ilmerge-bin/ILMerge.exe" /keyfile:src/EventStore.snk /internalize:"exclude.txt" /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/plugins/persistence/mongo/EventStore.Persistence.MongoPersistence.dll %FILES_TO_MERGE%
 del exclude.txt
 copy "src\proj\EventStore.Persistence.MongoPersistence\bin\%TARGET_CONFIG%\MongoDB*.dll" "output\plugins\persistence\mongo"
-copy "lib\MongoDB\license.txt" "output\plugins\persistence\mongo"
 
 mkdir output\plugins\persistence\raven
 echo Merging Raven Persistence
@@ -77,30 +77,26 @@ del exclude.txt
 copy "src\proj\EventStore.Persistence.RavenPersistence\bin\%TARGET_CONFIG%\MissingBitsFromClientProfile.dll" "output\plugins\persistence\raven"
 copy "src\proj\EventStore.Persistence.RavenPersistence\bin\%TARGET_CONFIG%\Newtonsoft*.dll" "output\plugins\persistence\raven"
 copy "src\proj\EventStore.Persistence.RavenPersistence\bin\%TARGET_CONFIG%\Raven*.dll" output\plugins\persistence\raven"
-copy "lib\RavenDB\license.txt" "output\plugins\persistence\raven"
-copy "lib\Json.NET\license.txt" "output\plugins\persistence\raven\Json.NET License.txt"
 
 mkdir output\plugins\serialization\json-net
 echo Merging Newtonsoft Json.NET Serialization
 set FILES_TO_MERGE=
 set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Serialization.Json/bin/%TARGET_CONFIG%/EventStore.Serialization.Json.dll"
-set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Serialization.Json/bin/%TARGET_CONFIG%/Newtonsoft.Json*.dll"
 set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Serialization.Json.Wireup/bin/%TARGET_CONFIG%/EventStore.Serialization.Json.Wireup.dll"
 (echo.|set /p =EventStore.*)>>exclude.txt
 "bin/ilmerge-bin/ILMerge.exe" /keyfile:src/EventStore.snk /internalize:"exclude.txt" /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/plugins/serialization/json-net/EventStore.Serialization.Json.dll %FILES_TO_MERGE%
 del exclude.txt
-copy "lib\Json.NET\license.txt" "output\plugins\serialization\json-net"
+copy "src\proj\EventStore.Serialization.Json\bin\%TARGET_CONFIG%\Newtonsoft.Json*.dll" "output\plugins\serialization\json-net"
 
 mkdir output\plugins\serialization\servicestack
 echo Merging ServiceStack.Text Serialization
 set FILES_TO_MERGE=
 set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Serialization.ServiceStack/bin/%TARGET_CONFIG%/EventStore.Serialization.ServiceStack.dll"
-set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Serialization.ServiceStack/bin/%TARGET_CONFIG%/ServiceStack.Text.dll"
 set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Serialization.ServiceStack.Wireup/bin/%TARGET_CONFIG%/EventStore.Serialization.ServiceStack.Wireup.dll"
 (echo.|set /p =EventStore.*)>>exclude.txt
 "bin/ilmerge-bin/ILMerge.exe" /keyfile:src/EventStore.snk /internalize:"exclude.txt" /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/plugins/serialization/servicestack/EventStore.Serialization.ServiceStack.dll %FILES_TO_MERGE%
 del exclude.txt
-copy "lib\ServiceStack\license.txt" "output\plugins\serialization\servicestack"
+copy "src\proj\EventStore.Serialization.ServiceStack\bin\%TARGET_CONFIG%\ServiceStack*.dll" "output\plugins\serialization\servicestack"
 
 echo.
 echo === FINALIZING ===
@@ -108,7 +104,7 @@ echo Copying
 mkdir "output\doc"
 copy "doc\*.*" "output\doc"
 
-move output publish
+move output %publish%
 
 echo.
 echo === CLEANUP ===

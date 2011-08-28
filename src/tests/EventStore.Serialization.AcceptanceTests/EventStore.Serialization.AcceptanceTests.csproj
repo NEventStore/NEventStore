@@ -74,12 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Machine.Specifications">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-      <HintPath>..\..\..\bin\machine.specifications-bin\.NET 3.5\Machine.Specifications.dll</HintPath>
-    </Reference>
-    <Reference Include="Machine.Specifications" Condition="$(TargetFrameworkVersion)=='v4.0'">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-      <HintPath>..\..\..\bin\machine.specifications-bin\.NET 4.0\Machine.Specifications.dll</HintPath>
+      <HintPath>..\..\packages\Machine.Specifications.0.4.13.0\lib\Machine.Specifications.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -88,6 +83,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

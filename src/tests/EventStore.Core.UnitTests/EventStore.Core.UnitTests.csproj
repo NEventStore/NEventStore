@@ -52,24 +52,6 @@
     <Compile Include="DispatcherTests\SynchronousDispatcherTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Machine.Specifications">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-      <HintPath>..\..\..\bin\machine.specifications-bin\.NET 3.5\Machine.Specifications.dll</HintPath>
-    </Reference>
-    <Reference Include="Machine.Specifications" Condition="$(TargetFrameworkVersion)=='v4.0'">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-      <HintPath>..\..\..\bin\machine.specifications-bin\.NET 4.0\Machine.Specifications.dll</HintPath>
-    </Reference>
-    <Reference Include="Moq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-      <HintPath>..\..\..\bin\moq-bin\.NET 3.5\Moq.dll</HintPath>
-    </Reference>
-    <Reference Include="Moq" Condition="$(TargetFrameworkVersion)=='v4.0'">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-      <HintPath>..\..\..\bin\moq-bin\.NET 4.0\Moq.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="..\..\proj\CustomDictionary.xml">
       <Link>Properties\CustomDictionary.xml</Link>
     </Content>
@@ -84,6 +66,19 @@
       <Name>EventStore</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="Machine.Specifications">
+      <HintPath>..\..\packages\Machine.Specifications.0.4.13.0\lib\Machine.Specifications.dll</HintPath>
+    </Reference>
+    <Reference Include="Moq" Condition="$(TargetFrameworkVersion)=='v4.0'">
+      <HintPath>..\..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="Moq" Condition="$(TargetFrameworkVersion)=='v3.5'">
+      <HintPath>..\..\packages\Moq.4.0.10827\lib\NET35\Moq.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

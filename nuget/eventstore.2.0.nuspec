@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>eventstore</id>
+    <version>2.0</version>
+    <title>CQRS EventStore</title>
+    <authors>Simon Green</authors>
+    <owners>Jonathan Oliver</owners>
+    <projectUrl>https://github.com/joliver/EventStore</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>The purpose of the EventStore is to represent a series of events as a stream. Furthermore, it provides hooks whereby any events committed to the stream can be dispatched to interested parties.</description>
+    <summary>The EventStore is a persistence library used to abstract different storage implementations when using event sourcing as storage mechanism. Most often associated with CQRS.</summary>
+    <language>es-US</language>
+    <tags>events, event sourcing, cqrs, storage, persistence, database</tags>
+  </metadata>
+  <files>
+    <file src="..\publish-v4.0\doc\license.txt" target="content\App_Readme\EventStore.license.txt"/>
+    <file src="..\publish-v4.0\doc\EventStore - Architectural Overview.docx" target="content\App_Readme\EventStore - Architectural Overview.docx"/>
+    <file src="..\publish-v4.0\doc\EventStore - Transactional Integrity without Transactions.docx" target="content\App_Readme\EventStore - Transactional Integrity without Transactions.docx"/>
+    <file src="..\publish-v3.5\bin\EventStore.dll" target="lib\net35"/>
+    <file src="..\publish-v3.5\bin\EventStore.pdb" target="lib\net35"/>
+    <file src="..\publish-v4.0\bin\EventStore.dll" target="lib\net40"/>
+    <file src="..\publish-v4.0\bin\EventStore.pdb" target="lib\net40"/>
+  </files>
+</package>
