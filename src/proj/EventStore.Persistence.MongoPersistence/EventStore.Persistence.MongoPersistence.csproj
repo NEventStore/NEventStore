@@ -14,6 +14,8 @@
     <FileAlignment>512</FileAlignment>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\EventStore.snk</AssemblyOriginatorKeyFile>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -41,10 +43,10 @@
       <Name>EventStore</Name>
     </ProjectReference>
     <Reference Include="MongoDB.Bson">
-      <HintPath>..\..\..\lib\MongoDB\MongoDB.Bson.dll</HintPath>
+      <HintPath>..\..\..\bin\mongocsharpdriver.1.1\lib\net35\MongoDB.Bson.dll</HintPath>
     </Reference>
     <Reference Include="MongoDB.Driver">
-      <HintPath>..\..\..\lib\MongoDB\MongoDB.Driver.dll</HintPath>
+      <HintPath>..\..\..\bin\mongocsharpdriver.1.1\lib\net35\MongoDB.Driver.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -70,5 +72,9 @@
       <Link>Properties\CustomDictionary.xml</Link>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\..\bin\nuget\NuGet.targets" />
 </Project>

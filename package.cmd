@@ -14,16 +14,26 @@ if exist packages ( rmdir /s /q packages )
 mkdir packages
 
 call build.cmd
-cd publish
+cd publish-net40
 "../bin/7zip-bin/7za.exe" a -mx9 -r -y "../packages/EventStore-%VERSION%.%BUILD%-net40.zip" *.*
 cd ..
 
 call build-net35.cmd
-cd publish
+cd publish-net35
 "../bin/7zip-bin/7za.exe" a -mx9 -r -y "../packages/EventStore-%VERSION%.%BUILD%-net35.zip" *.*
 cd ..
 
-rmdir /s /q publish
+cd "bin\nuget"
+nuget Pack eventstore.2.0.nuspec -Version %VERSION%.%BUILD% -OutputDirectory ..\..\packages
+nuget Pack eventstore.mongodb.2.0.nuspec -Version %VERSION%.%BUILD% -OutputDirectory ..\..\packages
+nuget Pack eventstore.ravendb.2.0.nuspec -Version %VERSION%.%BUILD% -OutputDirectory ..\..\packages
+nuget Pack eventstore.json.2.0.nuspec -Version %VERSION%.%BUILD% -OutputDirectory ..\..\packages
+nuget Pack eventstore.servicestack.2.0.nuspec -Version %VERSION%.%BUILD% -OutputDirectory ..\..\packages
+cd..\..
+
+rmdir /s /q publish-net40
+rmdir /s /q publish-net35
 
 git checkout "src/proj/VersionAssemblyInfo.cs"
 git tag -afm %VERSION%.%BUILD% "%VERSION%.%BUILD%"
+echo Remember to run: git push origin --tags

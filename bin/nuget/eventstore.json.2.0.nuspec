@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>eventstore.json</id>
+    <version>2.0</version>
+    <title>CQRS EventStore Newtonsoft JSON Serialization</title>
+    <authors>Simon Green, Jonathan Oliver</authors>
+    <owners>Jonathan Oliver</owners>
+    <projectUrl>https://github.com/joliver/EventStore</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Additional serialization provider for EventStore based on Newtonsoft JSON library.</description>
+    <summary>Newtonsoft JSON Serializer for EventStore.</summary>
+    <language>es-US</language>
+    <tags>events, event sourcing, cqrs, storage, persistence, database, newtonsoft, json, serialization</tags>
+    <dependencies>
+      <dependency id="eventstore" version="2.0" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\..\publish-net35\plugins\serialization\json-net\EventStore.Serialization.Json.dll" target="lib\net35"/>
+    <file src="..\..\publish-net35\plugins\serialization\json-net\EventStore.Serialization.Json.pdb" target="lib\net35"/>
+    <file src="..\..\publish-net40\plugins\serialization\json-net\EventStore.Serialization.Json.dll" target="lib\net40"/>
+    <file src="..\..\publish-net40\plugins\serialization\json-net\EventStore.Serialization.Json.pdb" target="lib\net40"/>
+  </files>
+</package>

@@ -4,7 +4,7 @@ bin
 *.suo
 *.orig
 output
-publish
+publish-*
 packages
 _ReSharper.*
 *.Resharper

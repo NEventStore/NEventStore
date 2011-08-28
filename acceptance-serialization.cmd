@@ -21,7 +21,7 @@ SET serializer=%~1
 
 ECHO ===============
 ECHO TESTING: %serializer%
-"bin/machine.specifications-bin/.NET 4.0/mspec.exe" src/tests/EventStore.Serialization.AcceptanceTests/bin/Debug/EventStore.Serialization.AcceptanceTests.dll
+"bin/Machine.Specifications.0.4.24.0/tools/mspec-clr4.exe" src/tests/EventStore.Serialization.AcceptanceTests/bin/Debug/EventStore.Serialization.AcceptanceTests.dll
 ECHO.
 
 ENDLOCAL
