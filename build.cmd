@@ -78,7 +78,6 @@ echo EventStore.*>exclude.txt
 (echo.|set /p =Raven.*)>>exclude.txt
 "%ILMERGE_PATH%/ILMerge.exe" /keyfile:src/EventStore.snk /internalize:"exclude.txt" /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/plugins/persistence/raven/EventStore.Persistence.RavenPersistence.dll %FILES_TO_MERGE%
 del exclude.txt
-copy "src\proj\EventStore.Persistence.RavenPersistence\bin\%TARGET_CONFIG%\MissingBitsFromClientProfile.dll" "output\plugins\persistence\raven"
 copy "src\proj\EventStore.Persistence.RavenPersistence\bin\%TARGET_CONFIG%\Raven*.dll" output\plugins\persistence\raven"
 
 mkdir output\plugins\serialization\json-net

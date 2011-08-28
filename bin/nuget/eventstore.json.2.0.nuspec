@@ -17,9 +17,9 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="..\..\publish-net35\plugins\serialization\json-net\EventStore.Serialization.Json.dll" target="lib\net35"/>
-    <file src="..\..\publish-net35\plugins\serialization\json-net\EventStore.Serialization.Json.pdb" target="lib\net35"/>
-    <file src="..\..\publish-net40\plugins\serialization\json-net\EventStore.Serialization.Json.dll" target="lib\net40"/>
-    <file src="..\..\publish-net40\plugins\serialization\json-net\EventStore.Serialization.Json.pdb" target="lib\net40"/>
+    <file src="publish-net35\plugins\serialization\json-net\EventStore.Serialization.Json.dll" target="lib\net35"/>
+    <file src="publish-net35\plugins\serialization\json-net\EventStore.Serialization.Json.pdb" target="lib\net35"/>
+    <file src="publish-net40\plugins\serialization\json-net\EventStore.Serialization.Json.dll" target="lib\net40"/>
+    <file src="publish-net40\plugins\serialization\json-net\EventStore.Serialization.Json.pdb" target="lib\net40"/>
   </files>
 </package>
