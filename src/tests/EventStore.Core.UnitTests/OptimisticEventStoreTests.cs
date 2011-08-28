@@ -390,12 +390,12 @@ namespace EventStore.Core.UnitTests
 		}
 		protected static Commit BuildCommitStub(int streamRevision, int commitSequence)
 		{
-			var events = new[] { new EventMessage() } .ToList();
+			var events = new[] { new EventMessage() }.ToList();
 			return new Commit(streamId, streamRevision, Guid.NewGuid(), commitSequence, SystemTime.UtcNow(), null, events);
 		}
 		protected static Commit BuildCommitStub(Guid commitId, int streamRevision, int commitSequence)
 		{
-			var events = new[] { new EventMessage() } .ToList();
+			var events = new[] { new EventMessage() }.ToList();
 			return new Commit(streamId, streamRevision, commitId, commitSequence, SystemTime.UtcNow(), null, events);
 		}
 	}
