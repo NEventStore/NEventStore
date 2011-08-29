@@ -27,17 +27,15 @@ cd ..
 move "publish-net35" "bin\nuget"
 move "publish-net40" "bin\nuget"
 
-cd "bin\nuget"
-nuget Pack eventstore.2.0.nuspec -Version %VERSION%.%BUILD% -OutputDirectory ..\..\packages
-nuget Pack eventstore.mongodb.2.0.nuspec -Version %VERSION%.%BUILD% -OutputDirectory ..\..\packages
-nuget Pack eventstore.ravendb.2.0.nuspec -Version %VERSION%.%BUILD% -OutputDirectory ..\..\packages
-nuget Pack eventstore.json.2.0.nuspec -Version %VERSION%.%BUILD% -OutputDirectory ..\..\packages
-nuget Pack eventstore.servicestack.2.0.nuspec -Version %VERSION%.%BUILD% -OutputDirectory ..\..\packages
-cd..\..
+"bin/nuget/nuget.exe" Pack "bin/nuget/eventstore.2.0.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
+"bin/nuget/nuget.exe" Pack "bin/nuget/eventstore.mongodb.2.0.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
+"bin/nuget/nuget.exe" Pack "bin/nuget/eventstore.ravendb.2.0.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
+"bin/nuget/nuget.exe" Pack "bin/nuget/eventstore.json.2.0.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
+"bin/nuget/nuget.exe" Pack "bin/nuget/eventstore.servicestack.2.0.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
 
 rmdir /s /q bin\nuget\publish-net40
 rmdir /s /q bin\nuget\publish-net35
 
-git checkout "src/proj/VersionAssemblyInfo.cs"
-git tag -afm %VERSION%.%BUILD% "%VERSION%.%BUILD%"
+CALL git checkout "src/proj/VersionAssemblyInfo.cs"
+CALL git tag -afm %VERSION%.%BUILD% "%VERSION%.%BUILD%"
 echo Remember to run: git push origin --tags
