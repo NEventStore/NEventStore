@@ -7,3 +7,6 @@ Simon Green                             https://github.com/CaptainCodeman    htt
 Chris Nicola        @lucisferre         https://github.com/lucisferre        http://www.lucisferre.net
 Pieter Joost        @pjvds              https://github.com/pjvds             http://ncqrs.org
 Daniel Hoelbling    @tigraine           https://github.com/Tigraine          http://www.tigraine.at
+Damian Hickey       @randompunter       https://github.com/damianh           http://dhickey.ie/
+John Downey         @jtdowney           https://github.com/jtdowney          http://jtdowney.com
+Jimit Ndiaye        @jimitndiaye        https://github.com/jimitndiaye

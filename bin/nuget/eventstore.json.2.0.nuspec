@@ -1,19 +1,20 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>eventstore.json</id>
+    <id>EventStore.Serialization.Json</id>
     <version>2.0</version>
-    <title>CQRS EventStore Newtonsoft JSON Serialization</title>
+    <title>EventStore Newtonsoft JSON Serialization Plugin</title>
     <authors>Simon Green, Jonathan Oliver</authors>
     <owners>Jonathan Oliver</owners>
     <projectUrl>https://github.com/joliver/EventStore</projectUrl>
+	<licenseUrl>https://github.com/joliver/EventStore/blob/master/doc/license.txt</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Additional serialization provider for EventStore based on Newtonsoft JSON library.</description>
-    <summary>Newtonsoft JSON Serializer for EventStore.</summary>
+    <description>Additional serialization provider for EventStore based on the Newtonsoft JSON.NET library.</description>
+    <summary>Newtonsoft JSON.NET Serializer for EventStore.</summary>
     <language>es-US</language>
     <tags>events, event sourcing, cqrs, storage, persistence, database, newtonsoft, json, serialization</tags>
     <dependencies>
-      <dependency id="eventstore" version="2.0" />
+      <dependency id="EventStore" version="2.0" />
     </dependencies>
   </metadata>
   <files>

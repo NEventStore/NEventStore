@@ -1,19 +1,20 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>eventstore.servicestack</id>
+    <id>EventStore.Serialization.ServiceStack</id>
     <version>2.0</version>
-    <title>CQRS EventStore ServiceStack JSON Serialization</title>
+    <title>EventStore ServiceStack JSON Serialization Plugin</title>
     <authors>Simon Green, Jonathan Oliver</authors>
     <owners>Jonathan Oliver</owners>
     <projectUrl>https://github.com/joliver/EventStore</projectUrl>
+	<licenseUrl>https://github.com/joliver/EventStore/blob/master/doc/license.txt</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Additional serialization provider for EventStore based on ServiceStack JSON library.</description>
     <summary>ServiceStack JSON Serializer for EventStore.</summary>
     <language>es-US</language>
     <tags>events, event sourcing, cqrs, storage, persistence, database, servicestack, json, serialization</tags>
     <dependencies>
-      <dependency id="eventstore" version="2.0" />
+      <dependency id="EventStore" version="2.0" />
     </dependencies>
   </metadata>
   <files>
