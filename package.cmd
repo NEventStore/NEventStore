@@ -27,11 +27,11 @@ cd ..
 move "publish-net35" "bin\nuget"
 move "publish-net40" "bin\nuget"
 
-"bin/nuget/nuget.exe" Pack "bin/nuget/eventstore.2.0.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
-"bin/nuget/nuget.exe" Pack "bin/nuget/eventstore.mongodb.2.0.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
-"bin/nuget/nuget.exe" Pack "bin/nuget/eventstore.ravendb.2.0.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
-"bin/nuget/nuget.exe" Pack "bin/nuget/eventstore.json.2.0.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
-"bin/nuget/nuget.exe" Pack "bin/nuget/eventstore.servicestack.2.0.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
+"bin/nuget/nuget.exe" Pack "bin/nuget/EventStore.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
+"bin/nuget/nuget.exe" Pack "bin/nuget/EventStore.Serialization.Json.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
+"bin/nuget/nuget.exe" Pack "bin/nuget/EventStore.Serialization.ServiceStack.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
+"bin/nuget/nuget.exe" Pack "bin/nuget/EventStore.Persistence.RavenPersistence.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
+"bin/nuget/nuget.exe" Pack "bin/nuget/EventStore.Persistence.MongoPersistence.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
 
 rmdir /s /q bin\nuget\publish-net40
 rmdir /s /q bin\nuget\publish-net35
