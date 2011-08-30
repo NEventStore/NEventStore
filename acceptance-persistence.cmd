@@ -12,8 +12,8 @@ CALL :run_test MsSqlPersistence localhost 0 EventStore2 "" ""
 CALL :run_test SqlitePersistence localhost 0 EventStore2 "" ""
 CALL :run_test SqlCePersistence localhost 0 EventStore2 "" ""
 CALL :run_test AccessPersistence localhost 0 EventStore2 "" ""
-CALL :run_test MySqlPersistence localhost 0 EventStore2 root ""
-CALL :run_test PostgreSqlPersistence localhost 0 EventStore2 postgres ""
+CALL :run_test MySqlPersistence localhost 0 EventStore2 "" ""
+CALL :run_test PostgreSqlPersistence localhost 0 EventStore2 "" ""
 CALL :run_test FirebirdPersistence localhost 0 /var/lib/firebird/data/EventStore2.fb SYSDBA masterkey
 
 ECHO === Document DBs ===
@@ -35,7 +35,7 @@ SET password=%~6
 
 ECHO ===============
 ECHO TESTING: %~1
-"bin/Machine.Specifications.0.4.24.0/tools/mspec-clr4.exe" src/tests/EventStore.Persistence.AcceptanceTests/bin/Debug/EventStore.Persistence.AcceptanceTests.dll
+"bin/Machine.Specifications.0.4.24.0/tools/mspec-x86-clr4.exe" src/tests/EventStore.Persistence.AcceptanceTests/bin/Debug/EventStore.Persistence.AcceptanceTests.dll
 ECHO.
 
 ENDLOCAL
