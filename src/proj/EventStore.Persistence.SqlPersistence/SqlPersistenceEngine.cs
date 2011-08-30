@@ -74,10 +74,11 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			return this.ExecuteQuery(streamId, query =>
 			{
+				var statement = this.Dialect.GetCommitsFromStartingRevision;
 				query.AddParameter(this.Dialect.StreamId, streamId);
 				query.AddParameter(this.Dialect.StreamRevision, minRevision);
 				query.AddParameter(this.Dialect.MaxStreamRevision, maxRevision);
-				return query.ExecuteWithQuery(this.Dialect.GetCommitsFromStartingRevision, x => x.GetCommit(this.Serializer));
+				return query.ExecuteWithQuery(statement, x => x.GetCommit(this.Serializer));
 			});
 		}
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
