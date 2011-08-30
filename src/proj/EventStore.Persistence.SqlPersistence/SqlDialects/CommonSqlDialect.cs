@@ -1,9 +1,7 @@
 namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
 	using System;
-	using System.Collections.Generic;
 	using System.Data;
-	using System.Linq;
 
 	public abstract class CommonSqlDialect : ISqlDialect
 	{

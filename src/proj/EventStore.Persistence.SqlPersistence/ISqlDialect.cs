@@ -1,7 +1,6 @@
 namespace EventStore.Persistence.SqlPersistence
 {
 	using System;
-	using System.Collections.Generic;
 	using System.Data;
 
 	public interface ISqlDialect
