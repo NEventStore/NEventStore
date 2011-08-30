@@ -131,8 +131,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 		public virtual IEnumerable<T> ExecutePagedQuery<T>(string queryText, Func<IDataRecord, T> select)
 		{
-			// TODO
-			return null;
+			return this.ExecuteWithQuery(queryText, select); // TODO
 		}
 	}
 }
