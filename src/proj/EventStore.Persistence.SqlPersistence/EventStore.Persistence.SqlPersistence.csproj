@@ -52,7 +52,7 @@
       <DependentUpon>Messages.resx</DependentUpon>
     </Compile>
     <Compile Include="SnapshotExtensions.cs" />
-    <Compile Include="DisposableEnumeration.cs" />
+    <Compile Include="SqlDialects\DisposableEnumeration.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="IConnectionFactory.cs" />
     <Compile Include="IDbStatement.cs" />
