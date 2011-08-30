@@ -27,7 +27,6 @@
     <Rule Name="AbstractTypesShouldNotHaveConstructors" Enabled="True" />
     <Rule Name="AssembliesShouldHaveValidStrongNames" Enabled="True" />
     <Rule Name="AvoidExcessiveParametersOnGenericTypes" Enabled="True" />
-    <Rule Name="AvoidNamespacesWithFewTypes" Enabled="True" />
     <Rule Name="AvoidOutParameters" Enabled="True" />
     <Rule Name="CollectionsShouldImplementGenericInterface" Enabled="True" />
     <Rule Name="ConsiderPassingBaseTypesAsParameters" Enabled="True" />
@@ -101,7 +100,7 @@
     <Rule Name="EventsShouldNotHaveBeforeOrAfterPrefix" Enabled="True" />
     <Rule Name="FlagsEnumsShouldHavePluralNames" Enabled="True" />
     <Rule Name="IdentifiersShouldBeSpelledCorrectly" Enabled="True" />
-    <Rule Name="IdentifiersShouldDifferByMoreThanCase" Enabled="True" />
+    <Rule Name="IdentifiersShouldDifferByMoreThanCase" Enabled="False" />
     <Rule Name="IdentifiersShouldHaveCorrectPrefix" Enabled="True" />
     <Rule Name="IdentifiersShouldHaveCorrectSuffix" Enabled="True" />
     <Rule Name="IdentifiersShouldNotContainTypeNames" Enabled="True" />
@@ -134,7 +133,10 @@
     <Rule Name="TestForEmptyStringsUsingStringLength" Enabled="True" />
     <Rule Name="UseLiteralsWhereAppropriate" Enabled="True" />
    </RuleFile>
-   <RuleFile Name="$(FxCopDir)\Rules\PortabilityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\PortabilityRules.dll" Enabled="True" AllRulesEnabled="False">
+    <Rule Name="PInvokeDeclarationsShouldBePortable" Enabled="True" />
+    <Rule Name="ValueTypeFieldsShouldBePortable" Enabled="True" />
+   </RuleFile>
    <RuleFile Name="$(FxCopDir)\Rules\SecurityRules.dll" Enabled="True" AllRulesEnabled="True" />
    <RuleFile Name="$(FxCopDir)\Rules\UsageRules.dll" Enabled="True" AllRulesEnabled="False">
     <Rule Name="AttributeStringLiteralsShouldParseCorrectly" Enabled="True" />
