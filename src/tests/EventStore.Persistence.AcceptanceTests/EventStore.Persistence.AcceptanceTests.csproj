@@ -109,11 +109,11 @@
     </Reference>
 	<Reference Include="MySql.Data">
 	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
-      <HintPath>..\..\..\bin\MySql.Data.6.4.3\lib\net20\MySql.Data.dll</HintPath>
+      <HintPath>..\..\..\bin\MySql.Data.6.3.7\lib\net20\MySql.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MySql.Data" Condition="$(TargetFrameworkVersion)=='v4.0'">
-      <HintPath>..\..\..\bin\MySql.Data.6.4.3\lib\net40\MySql.Data.dll</HintPath>
+      <HintPath>..\..\..\bin\MySql.Data.6.3.7\lib\net40\MySql.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Mono.Security">
