@@ -67,10 +67,11 @@ are always dispatched to any messaging infrastructure.
 * [Untested] BerkleyDB  
 [Complete] PostgreSQL 8.0 (or later)  
 [Complete] Firebird 2.0 (or later)  
+[In progress] Sybase (ASE)  
+[In progress] Sybase (SQL Anywhere)  
 [Planned] Oracle 8.0 (or later)  
 [TBA] IBM DB2  
 [TBA] Informix  
-[In progress] Sybase  
 
 ### Embedded Relational Databases
 [Complete] SQLite 3.0 (or later)  
