@@ -9,6 +9,6 @@ namespace EventStore.Persistence.SqlPersistence
 		ConnectionStringSettings Settings { get; }
 
 		IDbConnection OpenMaster(Guid streamId);
-		IDbConnection OpenSlave(Guid streamId);
+		IDbConnection OpenReplica(Guid streamId);
 	}
 }

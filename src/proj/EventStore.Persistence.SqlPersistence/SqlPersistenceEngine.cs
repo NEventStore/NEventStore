@@ -165,7 +165,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 			try
 			{
-				connection = this.ConnectionFactory.OpenSlave(streamId);
+				connection = this.ConnectionFactory.OpenReplica(streamId);
 				transaction = this.Dialect.OpenTransaction(connection);
 				statement = this.Dialect.BuildStatement(connection, transaction, scope);
 				return query(statement);

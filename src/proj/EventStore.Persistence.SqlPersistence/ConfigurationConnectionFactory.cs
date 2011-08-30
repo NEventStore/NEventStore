@@ -39,7 +39,7 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			return this.Open(streamId, this.masterConnectionName);
 		}
-		public virtual IDbConnection OpenSlave(Guid streamId)
+		public virtual IDbConnection OpenReplica(Guid streamId)
 		{
 			return this.Open(streamId, this.slaveConnectionName);
 		}
