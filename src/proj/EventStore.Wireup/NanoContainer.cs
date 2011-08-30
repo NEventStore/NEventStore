@@ -11,7 +11,7 @@ namespace EventStore
 		public virtual ContainerRegistration Register<TService>(Func<NanoContainer, TService> resolve)
 			where TService : class
 		{
-			var registration = new ContainerRegistration(resolve);
+			var registration = new ContainerRegistration(c => (object)resolve(c));
 			this.registrations[typeof(TService)] = registration;
 			return registration;
 		}
@@ -61,9 +61,13 @@ namespace EventStore
 		}
 		public virtual object Resolve(NanoContainer container)
 		{
-			return this.instancePerCall
-				? this.resolve(container)
-				: (this.instance ?? (this.instance = this.resolve(container)));
+			if (this.instancePerCall)
+				return this.resolve(container);
+
+			if (this.instance == null)
+				this.instance = this.resolve(container);
+
+			return this.instance;
 		}
 	}
 }
