@@ -30,6 +30,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return AccessStatements.GetStreamsToSnapshot; }
 		}
+		public override bool CanPage
+		{
+			get { return false; }
+		}
 
 		public override IDbStatement BuildStatement(
 			IDbConnection connection,

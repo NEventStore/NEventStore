@@ -11,6 +11,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 	public class SqlPersistenceEngine : IPersistStreams
 	{
+		private const int ConfiguredPageSize = 10; // TODO: config
 		private readonly IConnectionFactory connectionFactory;
 		private readonly ISqlDialect dialect;
 		private readonly ISerialize serializer;
@@ -65,7 +66,7 @@ namespace EventStore.Persistence.SqlPersistence
 				query.AddParameter(this.dialect.StreamId, streamId);
 				query.AddParameter(this.dialect.StreamRevision, minRevision);
 				query.AddParameter(this.dialect.MaxStreamRevision, maxRevision);
-				return query.ExecutePagedQuery(statement, this.Transform);
+				return query.ExecutePagedQuery(statement, ConfiguredPageSize, this.Transform);
 			});
 		}
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
@@ -74,7 +75,7 @@ namespace EventStore.Persistence.SqlPersistence
 			{
 				var statement = this.dialect.GetCommitsFromInstant;
 				query.AddParameter(this.dialect.CommitStamp, start);
-				return query.ExecutePagedQuery(statement, this.Transform);
+				return query.ExecutePagedQuery(statement, ConfiguredPageSize, this.Transform);
 			});
 		}
 		private Commit Transform(IDataRecord record)
@@ -107,7 +108,7 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			var statement = this.dialect.GetUndispatchedCommits;
 			return this.ExecuteQuery(Guid.Empty, query =>
-				query.ExecutePagedQuery(statement, this.Transform));
+				query.ExecutePagedQuery(statement, ConfiguredPageSize, this.Transform));
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
@@ -125,7 +126,7 @@ namespace EventStore.Persistence.SqlPersistence
 			{
 				var statement = this.dialect.GetStreamsRequiringSnapshots;
 				query.AddParameter(this.dialect.Threshold, maxThreshold);
-				return query.ExecutePagedQuery(statement, x => x.GetStreamToSnapshot());
+				return query.ExecutePagedQuery(statement, ConfiguredPageSize, x => x.GetStreamToSnapshot());
 			});
 		}
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)

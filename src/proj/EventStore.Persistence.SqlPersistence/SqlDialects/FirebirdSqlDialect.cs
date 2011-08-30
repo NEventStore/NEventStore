@@ -21,6 +21,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return base.GetSnapshot.Replace("SELECT *", "SELECT FIRST 1 *").Replace("LIMIT 1", string.Empty); }
 		}
+		public override bool CanPage
+		{
+			get { return false; } // TODO
+		}
 
 		public override IDbStatement BuildStatement(
 			IDbConnection connection,

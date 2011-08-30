@@ -83,6 +83,19 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			get { return "@Threshold"; }
 		}
 
+		public virtual string Limit
+		{
+			get { return "@Limit"; }
+		}
+		public virtual string Skip
+		{
+			get { return "@Skip"; }
+		}
+		public virtual bool CanPage
+		{
+			get { return true; }
+		}
+
 		public virtual bool IsDuplicate(Exception exception)
 		{
 			var message = exception.Message.ToUpperInvariant();

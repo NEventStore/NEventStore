@@ -14,5 +14,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return base.MarkCommitAsDispatched.Replace("1", "true"); }
 		}
+		public override bool CanPage
+		{
+			get { return false; } // TODO
+		}
 	}
 }
