@@ -128,5 +128,11 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			param.Value = value ?? DBNull.Value;
 			param.DbType = type ?? (value == null ? DbType.Binary : param.DbType);
 		}
+
+		public virtual IEnumerable<T> ExecutePagedQuery<T>(string queryText, Func<IDataRecord, T> select)
+		{
+			// TODO
+			return null;
+		}
 	}
 }

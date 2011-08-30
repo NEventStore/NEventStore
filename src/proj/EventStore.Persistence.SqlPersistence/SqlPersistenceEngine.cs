@@ -78,7 +78,7 @@ namespace EventStore.Persistence.SqlPersistence
 				query.AddParameter(this.Dialect.StreamId, streamId);
 				query.AddParameter(this.Dialect.StreamRevision, minRevision);
 				query.AddParameter(this.Dialect.MaxStreamRevision, maxRevision);
-				return query.ExecuteWithQuery(statement, x => x.GetCommit(this.Serializer));
+				return query.ExecutePagedQuery(statement, this.Transform);
 			});
 		}
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
@@ -87,8 +87,12 @@ namespace EventStore.Persistence.SqlPersistence
 			{
 				var statement = this.Dialect.GetCommitsFromInstant;
 				query.AddParameter(this.Dialect.CommitStamp, start);
-				return query.ExecuteWithQuery(statement, x => x.GetCommit(this.Serializer));
+				return query.ExecutePagedQuery(statement, this.Transform);
 			});
+		}
+		private Commit Transform(IDataRecord record)
+		{
+			return record.GetCommit(this.serializer);
 		}
 
 		public virtual void Commit(Commit attempt)
@@ -112,8 +116,8 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
-			return this.ExecuteQuery(Guid.Empty, query =>
-				query.ExecuteWithQuery(this.Dialect.GetUndispatchedCommits, x => x.GetCommit(this.Serializer)));
+			var statement = this.Dialect.GetUndispatchedCommits;
+			return this.ExecuteQuery(Guid.Empty, query => query.ExecutePagedQuery(statement, this.Transform));
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
@@ -131,17 +135,17 @@ namespace EventStore.Persistence.SqlPersistence
 			{
 				var statement = this.Dialect.GetStreamsRequiringSnapshots;
 				query.AddParameter(this.Dialect.Threshold, maxThreshold);
-				return query.ExecuteWithQuery(statement, record => record.GetStreamToSnapshot());
+				return query.ExecutePagedQuery(statement, x => x.GetStreamToSnapshot());
 			});
 		}
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
 			return this.ExecuteQuery(streamId, query =>
 			{
-				var queryText = this.Dialect.GetSnapshot;
+				var statement = this.Dialect.GetSnapshot;
 				query.AddParameter(this.Dialect.StreamId, streamId);
 				query.AddParameter(this.Dialect.StreamRevision, maxRevision);
-				return query.ExecuteWithQuery(queryText, x => x.GetSnapshot(this.Serializer)).FirstOrDefault();
+				return query.ExecuteWithQuery(statement, x => x.GetSnapshot(this.Serializer)).FirstOrDefault();
 			});
 		}
 		public virtual bool AddSnapshot(Snapshot snapshot)
