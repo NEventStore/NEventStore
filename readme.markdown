@@ -70,7 +70,7 @@ are always dispatched to any messaging infrastructure.
 [Planned] Oracle 8.0 (or later)  
 [TBA] IBM DB2  
 [TBA] Informix  
-[TBA] Sybase  
+[In progress] Sybase  
 
 ### Embedded Relational Databases
 [Complete] SQLite 3.0 (or later)  
@@ -131,7 +131,7 @@ are always dispatched to any messaging infrastructure.
 
 ## Building
 For .NET v4.0, simply run **build.cmd** from the command line.  Users requiring a .NET v3.5 build may run **build-net35.cmd**.  
-Once built, the files will be placed in the "output" subdirectory.
+Once built, the files will be placed in the "publish-net40" or "publish-net35" subdirectory.
 
 ## Using the EventStore
 
