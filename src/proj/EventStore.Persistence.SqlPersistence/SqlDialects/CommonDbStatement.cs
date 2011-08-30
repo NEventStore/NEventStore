@@ -49,7 +49,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			this.Parameters[name] = value;
 		}
 
-		public virtual int ExecuteWithSuppression(string commandText)
+		public virtual int ExecuteWithoutExceptions(string commandText)
 		{
 			try
 			{

@@ -9,7 +9,7 @@ namespace EventStore.Persistence.SqlPersistence
 		void AddParameter(string name, object value);
 
 		int Execute(string commandText);
-		int ExecuteWithSuppression(string commandText);
+		int ExecuteWithoutExceptions(string commandText);
 
 		IEnumerable<T> ExecuteWithQuery<T>(string queryText, Func<IDataRecord, T> select);
 	}

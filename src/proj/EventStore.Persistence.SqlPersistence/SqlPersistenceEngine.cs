@@ -67,7 +67,7 @@ namespace EventStore.Persistence.SqlPersistence
 				return;
 
 			this.ExecuteCommand(Guid.Empty, statement =>
-				statement.ExecuteWithSuppression(this.Dialect.InitializeStorage));
+				statement.ExecuteWithoutExceptions(this.Dialect.InitializeStorage));
 		}
 
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
@@ -120,7 +120,7 @@ namespace EventStore.Persistence.SqlPersistence
 			{
 				cmd.AddParameter(this.Dialect.StreamId, commit.StreamId);
 				cmd.AddParameter(this.Dialect.CommitSequence, commit.CommitSequence);
-				cmd.ExecuteWithSuppression(this.Dialect.MarkCommitAsDispatched);
+				cmd.ExecuteWithoutExceptions(this.Dialect.MarkCommitAsDispatched);
 			});
 		}
 
@@ -151,7 +151,7 @@ namespace EventStore.Persistence.SqlPersistence
 				cmd.AddParameter(this.Dialect.StreamId, snapshot.StreamId);
 				cmd.AddParameter(this.Dialect.StreamRevision, snapshot.StreamRevision);
 				cmd.AddParameter(this.Dialect.Payload, this.Serializer.Serialize(snapshot.Payload));
-				rowsAffected = cmd.ExecuteWithSuppression(this.Dialect.AppendSnapshotToCommit);
+				rowsAffected = cmd.ExecuteWithoutExceptions(this.Dialect.AppendSnapshotToCommit);
 			});
 			return rowsAffected > 0;
 		}
