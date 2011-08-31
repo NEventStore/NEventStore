@@ -29,8 +29,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		protected virtual void Dispose(bool disposing)
 		{
 			if (disposing && this.reader != null)
-				this.reader = null;
+				this.reader.Dispose();
 
+			this.reader = null;
 			this.currentPage = 0;
 		}
 
@@ -46,10 +47,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		bool IEnumerator.MoveNext()
 		{
 			this.reader = this.reader ?? this.OpenNextPage();
-			this.currentIndex++;
 
 			if (this.reader.Read())
-				return true;
+				return ++this.currentIndex > 0;
 
 			if (!this.PagingEnabled())
 				return false;
@@ -58,8 +58,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 				return false;
 
 			this.reader.Dispose();
-			this.reader = this.OpenNextPage();
-			return this.reader.Read();
+			this.reader = null;
+			return ((IEnumerator)this).MoveNext();
 		}
 		private bool PagingEnabled()
 		{
@@ -73,7 +73,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			try
 			{
-				this.skip.Value = this.pageSize * this.currentPage++;
+				if (this.skip != null)
+					this.skip.Value = this.pageSize * this.currentPage++;
+
 				return this.command.ExecuteReader();
 			}
 			catch (Exception e)

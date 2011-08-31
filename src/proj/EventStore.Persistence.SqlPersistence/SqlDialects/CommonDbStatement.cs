@@ -92,7 +92,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			this.Parameters.Add(this.dialect.Skip, 0);
 
 			var command = this.BuildCommand(queryText);
-			var skip = command.Parameters[this.dialect.Skip] as IDataParameter;
+			IDataParameter skip = null;
+			if (this.dialect.CanPage && command.Parameters.Contains(this.dialect.Skip))
+				skip = command.Parameters[this.dialect.Skip] as IDataParameter;
 
 			try
 			{

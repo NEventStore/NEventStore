@@ -13,6 +13,22 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return base.GetSnapshot.Replace("SELECT *", "SELECT TOP(1) *").Replace("LIMIT 1", string.Empty); }
 		}
+		public override string GetStreamsRequiringSnapshots
+		{
+			get { return base.GetStreamsRequiringSnapshots.NonPaged(); }
+		}
+		public override string GetCommitsFromInstant
+		{
+			get { return base.GetCommitsFromInstant.NonPaged(); }
+		}
+		public override string GetCommitsFromStartingRevision
+		{
+			get { return base.GetCommitsFromStartingRevision.NonPaged(); }
+		}
+		public override string GetUndispatchedCommits
+		{
+			get { return base.GetUndispatchedCommits.NonPaged(); }
+		}
 		public override bool CanPage
 		{
 			get { return false; }

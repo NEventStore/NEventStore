@@ -30,6 +30,18 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return AccessStatements.GetStreamsToSnapshot; }
 		}
+		public override string GetCommitsFromInstant
+		{
+			get { return base.GetCommitsFromInstant.NonPaged(); }
+		}
+		public override string GetCommitsFromStartingRevision
+		{
+			get { return base.GetCommitsFromStartingRevision.NonPaged(); }
+		}
+		public override string GetUndispatchedCommits
+		{
+			get { return base.GetUndispatchedCommits.NonPaged(); }
+		}
 		public override bool CanPage
 		{
 			get { return false; }
