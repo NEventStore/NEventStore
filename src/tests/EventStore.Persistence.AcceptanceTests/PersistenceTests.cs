@@ -184,7 +184,7 @@ namespace EventStore.Persistence.AcceptanceTests
 	[Subject("Persistence")]
 	public class when_committing_more_events_than_the_configured_page_size : using_the_persistence_engine
 	{
-		const int ConfiguredPageSize = 5; // TODO: determine how to get this into the persistence factory
+		static readonly int ConfiguredPageSize = FactoryScanner.PageSize;
 		static readonly HashSet<Guid> committed = new HashSet<Guid>();
 		static readonly ICollection<Guid> loaded = new LinkedList<Guid>();
 		static Commit attempt = streamId.BuildAttempt();
@@ -192,7 +192,7 @@ namespace EventStore.Persistence.AcceptanceTests
 		Establish context = () =>
 		{
 			var attempt = streamId.BuildAttempt();
-			for (var i = 0; i < ConfiguredPageSize; i++)
+			for (var i = 0; i < ConfiguredPageSize + 1; i++)
 			{
 				persistence.Commit(attempt);
 				committed.Add(attempt.CommitId);
@@ -209,7 +209,6 @@ namespace EventStore.Persistence.AcceptanceTests
 		It should_load_the_same_commits_which_have_been_persisted = () =>
 			committed.All(x => loaded.Contains(x)).ShouldBeTrue();
 	}
-
 
 	[Subject("Persistence")]
 	public class when_saving_a_snapshot : using_the_persistence_engine
@@ -338,7 +337,8 @@ namespace EventStore.Persistence.AcceptanceTests
 
 	public abstract class using_the_persistence_engine
 	{
-		protected static readonly IPersistenceFactory Factory = new PersistenceFactoryScanner().GetFactory();
+		protected static readonly PersistenceFactoryScanner FactoryScanner = new PersistenceFactoryScanner();
+		protected static readonly IPersistenceFactory Factory = FactoryScanner.GetFactory();
 		protected static Guid streamId = Guid.NewGuid();
 		protected static IPersistStreams persistence;
 

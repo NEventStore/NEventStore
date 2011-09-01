@@ -11,5 +11,9 @@ namespace EventStore
 
 			return new PersistenceWireup(wireup);
 		}
+		public static int Records(this int records)
+		{
+			return records;
+		}
 	}
 }

@@ -10,6 +10,9 @@ namespace EventStore.Persistence.AcceptanceTests.Engines
 		protected AcceptanceTestSqlPersistenceFactory(string connectionName)
 			: base(new TransformConfigConnectionFactory(connectionName), new BinarySerializer())
 		{
+			var pageSize = "pageSize".GetSetting();
+			if (!string.IsNullOrEmpty(pageSize))
+				this.PageSize = int.Parse(pageSize);
 		}
 	}
 

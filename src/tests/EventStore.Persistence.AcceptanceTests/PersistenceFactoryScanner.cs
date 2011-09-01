@@ -82,5 +82,10 @@ namespace EventStore.Persistence.AcceptanceTests
 				throw new StorageException(message);
 			}
 		}
+
+		public virtual int PageSize
+		{
+			get { return int.Parse("pageSize".GetSetting() ?? "0"); }
+		}
 	}
 }

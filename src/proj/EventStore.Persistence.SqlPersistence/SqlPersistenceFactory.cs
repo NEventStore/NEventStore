@@ -6,6 +6,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 	public class SqlPersistenceFactory : IPersistenceFactory
 	{
+		private const int DefaultPageSize = 128;
 		private readonly IConnectionFactory connectionFactory;
 		private readonly ISqlDialect dialect;
 		private readonly ISerialize serializer;
@@ -24,19 +25,22 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 		}
 		public SqlPersistenceFactory(IConnectionFactory factory, ISerialize serializer, ISqlDialect dialect)
-			: this(factory, serializer, dialect, TransactionScopeOption.Suppress)
+			: this(factory, serializer, dialect, TransactionScopeOption.Suppress, DefaultPageSize)
 		{
 		}
 		public SqlPersistenceFactory(
 			IConnectionFactory factory,
 			ISerialize serializer,
 			ISqlDialect dialect,
-			TransactionScopeOption scopeOption)
+			TransactionScopeOption scopeOption,
+			int pageSize)
 		{
 			this.connectionFactory = factory;
 			this.serializer = serializer;
 			this.dialect = dialect;
 			this.scopeOption = scopeOption;
+
+			this.PageSize = pageSize;
 		}
 
 		protected virtual IConnectionFactory ConnectionFactory
@@ -51,11 +55,12 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			get { return this.serializer; }
 		}
+		protected int PageSize { get; set; }
 
 		public virtual IPersistStreams Build()
 		{
 			return new SqlPersistenceEngine(
-				this.ConnectionFactory, this.GetDialect(), this.Serializer, this.scopeOption);
+				this.ConnectionFactory, this.GetDialect(), this.Serializer, this.scopeOption, this.PageSize);
 		}
 		protected virtual ISqlDialect GetDialect()
 		{
