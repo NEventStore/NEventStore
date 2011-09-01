@@ -8,17 +8,17 @@ ECHO === In Memory ===
 CALL :run_test InMemoryPersistence
 
 ECHO === RDBMS ===
-CALL :run_test MsSqlPersistence localhost 0 EventStore2 "" ""
-CALL :run_test SqlitePersistence localhost 0 EventStore2 "" ""
-CALL :run_test SqlCePersistence localhost 0 EventStore2 "" ""
-CALL :run_test AccessPersistence localhost 0 EventStore2 "" ""
-CALL :run_test MySqlPersistence localhost 0 EventStore2 "" ""
-CALL :run_test PostgreSqlPersistence localhost 0 EventStore2 "" ""
-CALL :run_test FirebirdPersistence localhost 0 /var/lib/firebird/data/EventStore2.fb SYSDBA masterkey
+CALL :run_test MsSqlPersistence localhost 0 EventStore "" ""
+CALL :run_test SqlitePersistence localhost 0 EventStore "" ""
+CALL :run_test SqlCePersistence localhost 0 EventStore "" ""
+CALL :run_test AccessPersistence localhost 0 EventStore "" ""
+CALL :run_test MySqlPersistence localhost 0 EventStore "" ""
+CALL :run_test PostgreSqlPersistence localhost 0 EventStore "" ""
+CALL :run_test FirebirdPersistence localhost 3050 EventStore SYSDBA masterkey
 
 ECHO === Document DBs ===
-CALL :run_test MongoPersistence localhost 0 EventStore2 "" ""
-CALL :run_test RavenPersistence localhost 0 EventStore2 "" ""
+CALL :run_test MongoPersistence localhost 0 EventStore "" ""
+CALL :run_test RavenPersistence localhost 0 EventStore "" ""
 
 ENDLOCAL
 GOTO :eof 
