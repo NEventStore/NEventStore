@@ -336,6 +336,18 @@ namespace EventStore.Persistence.AcceptanceTests
 			committed.Length.ShouldEqual(4);
 	}
 
+	[Subject("Persistence")]
+	public class when_reading_all_commits_from_the_beginning_of_time : using_the_persistence_engine
+	{
+		static Exception thrown;
+
+		Because of = () =>
+			thrown = Catch.Exception(() => persistence.GetFrom(DateTime.MinValue).FirstOrDefault());
+
+		It should_NOT_throw_an_exception = () =>
+			thrown.ShouldBeNull();
+	}
+
 	public abstract class using_the_persistence_engine
 	{
 		protected static readonly PersistenceFactoryScanner FactoryScanner = new PersistenceFactoryScanner();
