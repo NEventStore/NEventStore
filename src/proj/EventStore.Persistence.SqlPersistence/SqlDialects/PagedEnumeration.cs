@@ -49,7 +49,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			this.reader = this.reader ?? this.OpenNextPage();
 
 			if (this.reader.Read())
-				return ++this.position > 0;
+				return this.IncrementPosition();
 
 			if (!this.PagingEnabled())
 				return false;
@@ -61,10 +61,15 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			this.reader = this.OpenNextPage();
 
 			if (reader.Read())
-				return ++this.position > 0;
+				return this.IncrementPosition();
 
 			return false;
 		}
+		private bool IncrementPosition()
+		{
+			return ++this.position > 0;
+		}
+
 		private bool PagingEnabled()
 		{
 			return this.pageSize > 0;

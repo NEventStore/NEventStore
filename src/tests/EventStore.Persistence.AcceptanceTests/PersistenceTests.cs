@@ -4,6 +4,7 @@
 namespace EventStore.Persistence.AcceptanceTests
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Linq;
 	using Machine.Specifications;
 	using Persistence;
@@ -179,6 +180,36 @@ namespace EventStore.Persistence.AcceptanceTests
 		It should_no_longer_be_found_in_the_set_of_undispatched_commits = () =>
 			persistence.GetUndispatchedCommits().FirstOrDefault(x => x.CommitId == attempt.CommitId).ShouldBeNull();
 	}
+
+	[Subject("Persistence")]
+	public class when_committing_more_events_than_the_configured_page_size : using_the_persistence_engine
+	{
+		const int ConfiguredPageSize = 5; // TODO: determine how to get this into the persistence factory
+		static readonly HashSet<Guid> committed = new HashSet<Guid>();
+		static readonly ICollection<Guid> loaded = new LinkedList<Guid>();
+		static Commit attempt = streamId.BuildAttempt();
+
+		Establish context = () =>
+		{
+			var attempt = streamId.BuildAttempt();
+			for (var i = 0; i < ConfiguredPageSize; i++)
+			{
+				persistence.Commit(attempt);
+				committed.Add(attempt.CommitId);
+				attempt = attempt.BuildNextAttempt();
+			}
+		};
+
+		Because of = () =>
+			persistence.GetFrom(streamId, 0, int.MaxValue).ToList().ForEach(x => loaded.Add(x.CommitId));
+
+		It should_load_the_same_number_of_commits_which_have_been_persisted = () =>
+			committed.Count.ShouldEqual(loaded.Count);
+
+		It should_load_the_same_commits_which_have_been_persisted = () =>
+			committed.All(x => loaded.Contains(x)).ShouldBeTrue();
+	}
+
 
 	[Subject("Persistence")]
 	public class when_saving_a_snapshot : using_the_persistence_engine
