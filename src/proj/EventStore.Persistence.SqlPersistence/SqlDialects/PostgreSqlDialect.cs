@@ -27,6 +27,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			return statement.Replace(";", "\nLIMIT @Limit OFFSET @Skip;");
 		}
+		public override bool CanPage
+		{
+			get { return true; }
+		}
 
 		public override string MarkCommitAsDispatched
 		{

@@ -42,8 +42,11 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			var from = statement.Substring(fromIndex);
 			var select = statement.Substring(0, fromIndex);
 
-			var query = MsSqlStatements.PagedQueryFormat.FormatWith(select, orderBy, from);
-			return query;
+			return MsSqlStatements.PagedQueryFormat.FormatWith(select, orderBy, from);
+		}
+		public override bool CanPage
+		{
+			get { return true; }
 		}
 
 		public override bool IsDuplicate(Exception exception)

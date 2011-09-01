@@ -27,5 +27,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			return statement.Replace(";", "\nLIMIT @Skip, @Limit;");
 		}
+		public override bool CanPage
+		{
+			get { return true; }
+		}
 	}
 }

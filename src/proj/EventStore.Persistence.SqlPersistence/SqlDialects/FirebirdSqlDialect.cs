@@ -42,6 +42,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			return statement.Replace("SELECT ", "SELECT FIRST @Limit SKIP @Skip ");
 		}
+		public override bool CanPage
+		{
+			get { return true; }
+		}
 
 		public override IDbStatement BuildStatement(
 			IDbConnection connection,

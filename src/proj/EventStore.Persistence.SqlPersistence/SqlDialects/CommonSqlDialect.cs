@@ -93,7 +93,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		public virtual bool CanPage
 		{
-			get { return true; }
+			get { return false; }
 		}
 
 		public virtual bool IsDuplicate(Exception exception)
