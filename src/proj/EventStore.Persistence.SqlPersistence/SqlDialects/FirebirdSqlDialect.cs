@@ -40,14 +40,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		private static string Paged(string statement)
 		{
-			return statement
-				.Replace("SELECT ", "SELECT FIRST @Limit SKIP @Skip ")
-				.Replace("LIMIT @Skip, @Limit;", ";");
-		}
-
-		public override bool CanPage
-		{
-			get { return true; }
+			return statement.Replace("SELECT ", "SELECT FIRST @Limit SKIP @Skip ");
 		}
 
 		public override IDbStatement BuildStatement(

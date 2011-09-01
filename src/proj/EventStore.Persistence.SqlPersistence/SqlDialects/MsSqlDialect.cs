@@ -15,10 +15,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return base.GetSnapshot.Replace("SELECT *", "SELECT TOP 1 *").Replace("LIMIT 1", string.Empty); }
 		}
-		public override bool CanPage
-		{
-			get { return false; } // TODO; also, what about SQL 2000? Different dialect or drop support?
-		}
 
 		public override bool IsDuplicate(Exception exception)
 		{

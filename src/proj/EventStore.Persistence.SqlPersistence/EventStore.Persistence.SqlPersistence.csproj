@@ -74,7 +74,6 @@
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="SqlDialects\DelimitedDbStatement.cs" />
-    <Compile Include="SqlDialects\ExtensionMethods.cs" />
     <Compile Include="SqlDialects\FirebirdSqlDialect.cs">
       <SubType>Code</SubType>
     </Compile>

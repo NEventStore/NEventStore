@@ -87,8 +87,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///   Looks up a localized string similar to SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
         ///  FROM Commits
         /// WHERE CommitStamp &gt;= @CommitStamp
-        /// ORDER BY CommitStamp
-        /// LIMIT @Skip, @Limit;.
+        /// ORDER BY CommitStamp;.
         /// </summary>
         internal static string GetCommitsFromInstant {
             get {
@@ -102,8 +101,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         /// WHERE StreamId = @StreamId
         ///   AND StreamRevision &gt;= @StreamRevision
         ///   AND (StreamRevision - Items) &lt;= @MaxStreamRevision
-        /// ORDER BY CommitSequence
-        /// LIMIT @Skip, @Limit;.
+        /// ORDER BY CommitSequence;.
         /// </summary>
         internal static string GetCommitsFromStartingRevision {
             get {
@@ -133,8 +131,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///   AND C.StreamRevision &gt;= S.StreamRevision
         /// GROUP BY C.StreamId
         ///HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Threshold
-        /// ORDER BY C.StreamId
-        /// LIMIT @Skip, @Limit;.
+        /// ORDER BY C.StreamId;.
         /// </summary>
         internal static string GetStreamsRequiringSnapshots {
             get {
@@ -146,8 +143,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///   Looks up a localized string similar to SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
         ///  FROM Commits
         /// WHERE Dispatched = 0
-        /// ORDER BY StreamId, CommitSequence
-        /// LIMIT @Skip, @Limit;.
+        /// ORDER BY CommitStamp;.
         /// </summary>
         internal static string GetUndispatchedCommits {
             get {
