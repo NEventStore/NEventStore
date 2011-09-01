@@ -60,14 +60,15 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			this.reader.Dispose();
 			this.reader = this.OpenNextPage();
 
-			if (reader.Read())
+			if (this.reader.Read())
 				return this.IncrementPosition();
 
 			return false;
 		}
 		private bool IncrementPosition()
 		{
-			return ++this.position > 0;
+			this.position++;
+			return true;
 		}
 
 		private bool PagingEnabled()
