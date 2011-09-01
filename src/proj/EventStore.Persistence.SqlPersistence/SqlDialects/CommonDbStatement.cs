@@ -82,22 +82,28 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 		public virtual IEnumerable<T> ExecuteWithQuery<T>(string queryText, Func<IDataRecord, T> select)
 		{
+			return this.ExecutePagedQuery(queryText, 0, select);
+		}
+		public virtual IEnumerable<T> ExecutePagedQuery<T>(
+			string queryText, int pageSize, Func<IDataRecord, T> select)
+		{
+			pageSize = this.dialect.CanPage ? pageSize : 0;
+			this.Parameters.Add(this.dialect.Limit, pageSize);
+			this.Parameters.Add(this.dialect.Skip, 0);
+
 			var command = this.BuildCommand(queryText);
-			IDataReader reader = null;
+			IDataParameter skip = null;
+			if (this.dialect.CanPage && command.Parameters.Contains(this.dialect.Skip))
+				skip = command.Parameters[this.dialect.Skip] as IDataParameter;
 
 			try
 			{
-				reader = command.ExecuteReader();
-				var rows = reader.AsEnumerable(select);
-				return new DisposableEnumeration<T>(rows, reader, command, this);
+				var rows = new PagedEnumeration(command, skip, pageSize).Select(select);
+				return new DisposableEnumeration<T>(rows, command, this);
 			}
 			catch (Exception)
 			{
-				if (reader != null)
-					reader.Dispose();
-
 				command.Dispose();
-
 				throw;
 			}
 		}

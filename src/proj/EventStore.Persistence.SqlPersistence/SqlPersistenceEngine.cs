@@ -15,26 +15,15 @@ namespace EventStore.Persistence.SqlPersistence
 		private readonly ISqlDialect dialect;
 		private readonly ISerialize serializer;
 		private readonly TransactionScopeOption scopeOption;
+		private readonly int pageSize;
 		private int initialized;
-
-		protected virtual IConnectionFactory ConnectionFactory
-		{
-			get { return this.connectionFactory; }
-		}
-		protected virtual ISqlDialect Dialect
-		{
-			get { return this.dialect; }
-		}
-		protected virtual ISerialize Serializer
-		{
-			get { return this.serializer; }
-		}
 
 		public SqlPersistenceEngine(
 			IConnectionFactory connectionFactory,
 			ISqlDialect dialect,
 			ISerialize serializer,
-			TransactionScopeOption scopeOption)
+			TransactionScopeOption scopeOption,
+			int pageSize)
 		{
 			if (connectionFactory == null)
 				throw new ArgumentNullException("connectionFactory");
@@ -45,10 +34,14 @@ namespace EventStore.Persistence.SqlPersistence
 			if (serializer == null)
 				throw new ArgumentNullException("serializer");
 
+			if (pageSize < 0)
+				throw new ArgumentException("pageSize");
+
 			this.connectionFactory = connectionFactory;
 			this.dialect = dialect;
 			this.serializer = serializer;
 			this.scopeOption = scopeOption;
+			this.pageSize = pageSize;
 		}
 
 		public void Dispose()
@@ -67,61 +60,68 @@ namespace EventStore.Persistence.SqlPersistence
 				return;
 
 			this.ExecuteCommand(Guid.Empty, statement =>
-				statement.ExecuteWithoutExceptions(this.Dialect.InitializeStorage));
+				statement.ExecuteWithoutExceptions(this.dialect.InitializeStorage));
 		}
 
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
 		{
 			return this.ExecuteQuery(streamId, query =>
 			{
-				var statement = this.Dialect.GetCommitsFromStartingRevision;
-				query.AddParameter(this.Dialect.StreamId, streamId);
-				query.AddParameter(this.Dialect.StreamRevision, minRevision);
-				query.AddParameter(this.Dialect.MaxStreamRevision, maxRevision);
-				return query.ExecuteWithQuery(statement, x => x.GetCommit(this.Serializer));
+				var statement = this.dialect.GetCommitsFromStartingRevision;
+				query.AddParameter(this.dialect.StreamId, streamId);
+				query.AddParameter(this.dialect.StreamRevision, minRevision);
+				query.AddParameter(this.dialect.MaxStreamRevision, maxRevision);
+				return query.ExecutePagedQuery(statement, this.pageSize, this.Transform);
 			});
 		}
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
 		{
 			return this.ExecuteQuery(Guid.Empty, query =>
 			{
-				var statement = this.Dialect.GetCommitsFromInstant;
-				query.AddParameter(this.Dialect.CommitStamp, start);
-				return query.ExecuteWithQuery(statement, x => x.GetCommit(this.Serializer));
+				var statement = this.dialect.GetCommitsFromInstant;
+				query.AddParameter(this.dialect.CommitStamp, start);
+				return query.ExecutePagedQuery(statement, this.pageSize, this.Transform);
 			});
+		}
+		private Commit Transform(IDataRecord record)
+		{
+			return record.GetCommit(this.serializer);
 		}
 
 		public virtual void Commit(Commit attempt)
 		{
 			this.ExecuteCommand(attempt.StreamId, cmd =>
 			{
-				cmd.AddParameter(this.Dialect.StreamId, attempt.StreamId);
-				cmd.AddParameter(this.Dialect.StreamRevision, attempt.StreamRevision);
-				cmd.AddParameter(this.Dialect.Items, attempt.Events.Count);
-				cmd.AddParameter(this.Dialect.CommitId, attempt.CommitId);
-				cmd.AddParameter(this.Dialect.CommitSequence, attempt.CommitSequence);
-				cmd.AddParameter(this.Dialect.CommitStamp, attempt.CommitStamp);
-				cmd.AddParameter(this.Dialect.Headers, this.Serializer.Serialize(attempt.Headers));
-				cmd.AddParameter(this.Dialect.Payload, this.Serializer.Serialize(attempt.Events));
+				cmd.AddParameter(this.dialect.StreamId, attempt.StreamId);
+				cmd.AddParameter(this.dialect.StreamRevision, attempt.StreamRevision);
+				cmd.AddParameter(this.dialect.Items, attempt.Events.Count);
+				cmd.AddParameter(this.dialect.CommitId, attempt.CommitId);
+				cmd.AddParameter(this.dialect.CommitSequence, attempt.CommitSequence);
+				cmd.AddParameter(this.dialect.CommitStamp, attempt.CommitStamp);
+				cmd.AddParameter(this.dialect.Headers, this.serializer.Serialize(attempt.Headers));
+				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(attempt.Events));
 
-				var rowsAffected = cmd.Execute(this.Dialect.PersistCommit);
+				var rowsAffected = cmd.Execute(this.dialect.PersistCommit);
 				if (rowsAffected <= 0)
 					throw new ConcurrencyException();
+
+				return rowsAffected;
 			});
 		}
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
+			var statement = this.dialect.GetUndispatchedCommits;
 			return this.ExecuteQuery(Guid.Empty, query =>
-				query.ExecuteWithQuery(this.Dialect.GetUndispatchedCommits, x => x.GetCommit(this.Serializer)));
+				query.ExecutePagedQuery(statement, this.pageSize, this.Transform));
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
 			this.ExecuteCommand(commit.StreamId, cmd =>
 			{
-				cmd.AddParameter(this.Dialect.StreamId, commit.StreamId);
-				cmd.AddParameter(this.Dialect.CommitSequence, commit.CommitSequence);
-				cmd.ExecuteWithoutExceptions(this.Dialect.MarkCommitAsDispatched);
+				cmd.AddParameter(this.dialect.StreamId, commit.StreamId);
+				cmd.AddParameter(this.dialect.CommitSequence, commit.CommitSequence);
+				return cmd.ExecuteWithoutExceptions(this.dialect.MarkCommitAsDispatched);
 			});
 		}
 
@@ -129,32 +129,30 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			return this.ExecuteQuery(Guid.Empty, query =>
 			{
-				var statement = this.Dialect.GetStreamsRequiringSnapshots;
-				query.AddParameter(this.Dialect.Threshold, maxThreshold);
-				return query.ExecuteWithQuery(statement, record => record.GetStreamToSnapshot());
+				var statement = this.dialect.GetStreamsRequiringSnapshots;
+				query.AddParameter(this.dialect.Threshold, maxThreshold);
+				return query.ExecutePagedQuery(statement, this.pageSize, x => x.GetStreamToSnapshot());
 			});
 		}
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
 			return this.ExecuteQuery(streamId, query =>
 			{
-				var queryText = this.Dialect.GetSnapshot;
-				query.AddParameter(this.Dialect.StreamId, streamId);
-				query.AddParameter(this.Dialect.StreamRevision, maxRevision);
-				return query.ExecuteWithQuery(queryText, x => x.GetSnapshot(this.Serializer)).FirstOrDefault();
+				var statement = this.dialect.GetSnapshot;
+				query.AddParameter(this.dialect.StreamId, streamId);
+				query.AddParameter(this.dialect.StreamRevision, maxRevision);
+				return query.ExecuteWithQuery(statement, x => x.GetSnapshot(this.serializer)).FirstOrDefault();
 			});
 		}
 		public virtual bool AddSnapshot(Snapshot snapshot)
 		{
-			var rowsAffected = 0;
-			this.ExecuteCommand(snapshot.StreamId, cmd =>
+			return this.ExecuteCommand(snapshot.StreamId, cmd =>
 			{
-				cmd.AddParameter(this.Dialect.StreamId, snapshot.StreamId);
-				cmd.AddParameter(this.Dialect.StreamRevision, snapshot.StreamRevision);
-				cmd.AddParameter(this.Dialect.Payload, this.Serializer.Serialize(snapshot.Payload));
-				rowsAffected = cmd.ExecuteWithoutExceptions(this.Dialect.AppendSnapshotToCommit);
-			});
-			return rowsAffected > 0;
+				cmd.AddParameter(this.dialect.StreamId, snapshot.StreamId);
+				cmd.AddParameter(this.dialect.StreamRevision, snapshot.StreamRevision);
+				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(snapshot.Payload));
+				return cmd.ExecuteWithoutExceptions(this.dialect.AppendSnapshotToCommit);
+			}) > 0;
 		}
 
 		protected virtual T ExecuteQuery<T>(Guid streamId, Func<IDbStatement, T> query)
@@ -166,9 +164,9 @@ namespace EventStore.Persistence.SqlPersistence
 
 			try
 			{
-				connection = this.ConnectionFactory.OpenReplica(streamId);
-				transaction = this.Dialect.OpenTransaction(connection);
-				statement = this.Dialect.BuildStatement(connection, transaction, scope);
+				connection = this.connectionFactory.OpenReplica(streamId);
+				transaction = this.dialect.OpenTransaction(connection);
+				statement = this.dialect.BuildStatement(connection, transaction, scope);
 				return query(statement);
 			}
 			catch (Exception e)
@@ -187,20 +185,23 @@ namespace EventStore.Persistence.SqlPersistence
 				throw new StorageException(e.Message, e);
 			}
 		}
-		protected virtual void ExecuteCommand(Guid streamId, Action<IDbStatement> command)
+		protected virtual int ExecuteCommand(Guid streamId, Func<IDbStatement, int> command)
 		{
 			using (var scope = this.OpenCommandScope())
-			using (var connection = this.ConnectionFactory.OpenMaster(streamId))
-			using (var transaction = this.Dialect.OpenTransaction(connection))
-			using (var statement = this.Dialect.BuildStatement(connection, transaction, scope))
+			using (var connection = this.connectionFactory.OpenMaster(streamId))
+			using (var transaction = this.dialect.OpenTransaction(connection))
+			using (var statement = this.dialect.BuildStatement(connection, transaction, scope))
 			{
 				try
 				{
-					command(statement);
+					var rowsAffected = command(statement);
 					if (transaction != null)
 						transaction.Commit();
 
-					scope.Complete();
+					if (scope != null)
+						scope.Complete();
+
+					return rowsAffected;
 				}
 				catch (Exception e)
 				{

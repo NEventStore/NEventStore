@@ -30,6 +30,10 @@ namespace EventStore.Persistence.SqlPersistence
 		string Payload { get; }
 		string Threshold { get; }
 
+		string Limit { get; }
+		string Skip { get; }
+		bool CanPage { get; }
+
 		IDbTransaction OpenTransaction(IDbConnection connection);
 		IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources);
 
