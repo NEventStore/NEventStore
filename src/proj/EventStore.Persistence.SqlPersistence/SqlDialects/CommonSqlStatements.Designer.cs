@@ -181,5 +181,15 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
                 return ResourceManager.GetString("PersistCommit", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DELETE FROM Snapshots;
+        ///DELETE FROM Commits;.
+        /// </summary>
+        internal static string PurgeStorage {
+            get {
+                return ResourceManager.GetString("PurgeStorage", resourceCulture);
+            }
+        }
     }
 }

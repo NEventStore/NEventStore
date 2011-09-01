@@ -158,6 +158,12 @@ namespace EventStore.Persistence.SqlPersistence
 			}) > 0;
 		}
 
+		public virtual void Purge()
+		{
+			this.ExecuteCommand(Guid.Empty, cmd =>
+				cmd.Execute(this.dialect.PurgeStorage));
+		}
+
 		protected virtual T ExecuteQuery<T>(Guid streamId, Func<IDbStatement, T> query)
 		{
 			var scope = this.OpenQueryScope();

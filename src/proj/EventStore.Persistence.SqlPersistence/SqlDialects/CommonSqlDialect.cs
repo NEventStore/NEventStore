@@ -6,6 +6,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	public abstract class CommonSqlDialect : ISqlDialect
 	{
 		public abstract string InitializeStorage { get; }
+		public virtual string PurgeStorage
+		{
+			get { return CommonSqlStatements.PurgeStorage; }
+		}
 
 		public virtual string GetCommitsFromStartingRevision
 		{

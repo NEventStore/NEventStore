@@ -42,5 +42,10 @@ namespace EventStore.Persistence
 		/// <exception cref="StorageException" />
 		/// <exception cref="StorageUnavailableException" />
 		void MarkCommitAsDispatched(Commit commit);
+
+		/// <summary>
+		/// Completely DESTROYS the contents of ANY and ALL streams that have been successfully persisted.  Use with caution.
+		/// </summary>
+		void Purge();
 	}
 }

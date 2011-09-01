@@ -191,4 +191,8 @@ SELECT @StreamId, @CommitId, @CommitSequence, @StreamRevision, @Items, @CommitSt
           AND CommitId &lt;&gt; @CommitId
           AND CommitSequence &gt;= @CommitSequence );</value>
   </data>
+  <data name="PurgeStorage" xml:space="preserve">
+    <value>DELETE FROM Snapshots;
+DELETE FROM Commits;</value>
+  </data>
 </root>

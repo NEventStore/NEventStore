@@ -6,6 +6,7 @@ namespace EventStore.Persistence.SqlPersistence
 	public interface ISqlDialect
 	{
 		string InitializeStorage { get; }
+		string PurgeStorage { get; }
 
 		string GetCommitsFromStartingRevision { get; }
 		string GetCommitsFromInstant { get; }

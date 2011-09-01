@@ -104,7 +104,6 @@
 				.SetSortOrder("CommitStamp")
 				.Select(x => x.ToCommit(this.serializer)));
 		}
-
 		public virtual void Commit(Commit attempt)
 		{
 			this.TryMongo(() =>
@@ -169,7 +168,6 @@
 				.Select(mc => mc.ToSnapshot(this.serializer))
 				.FirstOrDefault());
 		}
-
 		public virtual bool AddSnapshot(Snapshot snapshot)
 		{
 			if (snapshot == null)
@@ -200,6 +198,10 @@
 			{
 				return false;
 			}
+		}
+
+		public virtual void Purge()
+		{
 		}
 
 		private void UpdateStreamHeadAsync(Guid streamId, int streamRevision, int eventsCount)

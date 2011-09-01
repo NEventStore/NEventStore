@@ -348,6 +348,25 @@ namespace EventStore.Persistence.AcceptanceTests
 			thrown.ShouldBeNull();
 	}
 
+	[Subject("Persistence")]
+	public class when_purging_all_commits : using_the_persistence_engine
+	{
+		Establish context = () =>
+			persistence.Commit(streamId.BuildAttempt());
+
+		Because of = () =>
+			persistence.Purge();
+
+		It should_not_find_any_commits_stored = () =>
+			persistence.GetFrom(DateTime.MinValue).Count().ShouldEqual(0);
+
+		It should_not_find_any_streams_to_snapshot = () =>
+			persistence.GetStreamsToSnapshot(0).Count().ShouldEqual(0);
+
+		It should_not_find_any_undispatched_commits = () =>
+			persistence.GetUndispatchedCommits().Count().ShouldEqual(0);
+	}
+
 	public abstract class using_the_persistence_engine
 	{
 		protected static readonly PersistenceFactoryScanner FactoryScanner = new PersistenceFactoryScanner();
