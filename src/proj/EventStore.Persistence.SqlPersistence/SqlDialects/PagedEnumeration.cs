@@ -12,7 +12,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		private readonly int pageSize;
 		private IDataReader reader;
 		private int currentPage;
-		private int currentIndex;
+		private int position;
 
 		public PagedEnumeration(IDbCommand command, IDataParameter skip, int pageSize)
 		{
@@ -32,7 +32,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 				this.reader.Dispose();
 
 			this.reader = null;
-			this.currentPage = 0;
+			this.currentPage = this.position = 0;
 		}
 
 		public virtual IEnumerator<IDataRecord> GetEnumerator()
@@ -49,7 +49,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			this.reader = this.reader ?? this.OpenNextPage();
 
 			if (this.reader.Read())
-				return ++this.currentIndex > 0;
+				return ++this.position > 0;
 
 			if (!this.PagingEnabled())
 				return false;
@@ -58,8 +58,12 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 				return false;
 
 			this.reader.Dispose();
-			this.reader = null;
-			return ((IEnumerator)this).MoveNext();
+			this.reader = this.OpenNextPage();
+
+			if (reader.Read())
+				return ++this.position > 0;
+
+			return false;
 		}
 		private bool PagingEnabled()
 		{
@@ -67,7 +71,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		private bool PageCompletelyEnumerated()
 		{
-			return this.pageSize == this.currentIndex;
+			return this.position > 0 && 0 == this.position % this.pageSize;
 		}
 		private IDataReader OpenNextPage()
 		{
