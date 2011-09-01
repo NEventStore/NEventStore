@@ -11,6 +11,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 	public class SqlPersistenceEngine : IPersistStreams
 	{
+		private static readonly DateTime EpochTime = new DateTime(1970, 1, 1);
 		private readonly IConnectionFactory connectionFactory;
 		private readonly ISqlDialect dialect;
 		private readonly ISerialize serializer;
@@ -76,6 +77,8 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
 		{
+			start = start < EpochTime ? EpochTime : start;
+
 			return this.ExecuteQuery(Guid.Empty, query =>
 			{
 				var statement = this.dialect.GetCommitsFromInstant;
