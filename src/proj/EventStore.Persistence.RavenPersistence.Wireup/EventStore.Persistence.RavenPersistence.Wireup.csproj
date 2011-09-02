@@ -61,6 +61,10 @@
     <Reference Include="EventStore (ILMerged)" Condition="'$(ILMerged)' == 'true'">
       <HintPath>..\..\..\output\bin\EventStore.dll</HintPath>
     </Reference>
+    <ProjectReference Include="..\EventStore.Serialization\EventStore.Serialization.csproj" Condition="'$(ILMerged)' != 'true'">
+      <Project>{A5BF4B86-26F6-418D-BE35-C6CC3A623D27}</Project>
+      <Name>EventStore.Serialization</Name>
+    </ProjectReference>
     <ProjectReference Include="..\EventStore\EventStore.csproj" Condition="'$(ILMerged)' != 'true'">
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
       <Name>EventStore</Name>

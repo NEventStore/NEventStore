@@ -18,6 +18,7 @@
 
 	public class RavenPersistenceEngine : IPersistStreams
 	{
+		private const int MinPageSize = 10;
 		private readonly IDocumentStore store;
 		private readonly IDocumentSerializer serializer;
 		private readonly TransactionScopeOption scopeOption;
@@ -26,27 +27,25 @@
 		private bool disposed;
 		private int initialized;
 
-		public RavenPersistenceEngine(
-			IDocumentStore store,
-			IDocumentSerializer serializer,
-			TransactionScopeOption scopeOption,
-			bool consistentQueries,
-			int pageSize)
+		public RavenPersistenceEngine(IDocumentStore store, RavenConfiguration config)
 		{
 			if (store == null)
 				throw new ArgumentNullException("store");
 
-			if (serializer == null)
-				throw new ArgumentNullException("serializer");
+			if (config == null)
+				throw new ArgumentNullException();
 
-			if (pageSize <= 0)
-				throw new ArgumentNullException("pageSize");
+			if (config.Serializer == null)
+				throw new ArgumentException("Serializer cannot be null.", "config");
+
+			if (config.PageSize < MinPageSize)
+				throw new ArgumentException("Configured paging size is too small.", "config");
 
 			this.store = store;
-			this.serializer = serializer;
-			this.scopeOption = scopeOption;
-			this.consistentQueries = consistentQueries;
-			this.pageSize = pageSize;
+			this.serializer = config.Serializer;
+			this.scopeOption = config.ScopeOption;
+			this.consistentQueries = config.ConsistentQueries;
+			this.pageSize = config.PageSize;
 		}
 
 		public void Dispose()

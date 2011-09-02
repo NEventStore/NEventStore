@@ -46,7 +46,8 @@ namespace EventStore.Example
 			// this can be a class as well--just implement IPublishMessages
 			try
 			{
-				Console.WriteLine(Resources.MessagesPublished);
+				foreach (var @event in commit.Events)
+					Console.WriteLine(Resources.MessagesPublished + ": " + ((SomeDomainEvent)@event.Body).Value);
 			}
 			catch (Exception)
 			{

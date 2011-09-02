@@ -51,6 +51,7 @@
     <Compile Include="Indexes\RavenSnapshotByStreamIdAndRevision.cs" />
     <Compile Include="Indexes\RavenStreamHeadBySnapshotAge.cs" />
     <Compile Include="PagedEnumeration.cs" />
+    <Compile Include="RavenConfiguration.cs" />
     <Compile Include="RavenStreamHead.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RavenCommit.cs" />
