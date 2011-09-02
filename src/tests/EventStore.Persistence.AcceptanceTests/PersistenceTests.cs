@@ -304,6 +304,7 @@ namespace EventStore.Persistence.AcceptanceTests
 		Because of = () =>
 			persistence.Commit(newest);
 
+		// every so often the persistence engines that update the stream head asynchronously will fail this test
 		It should_find_the_stream_in_the_set_of_streams_to_be_snapshot_when_within_the_threshold = () =>
 			persistence.GetStreamsToSnapshot(WithinThreshold).First(x => x.StreamId == streamId).ShouldNotBeNull();
 
@@ -346,6 +347,26 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		It should_NOT_throw_an_exception = () =>
 			thrown.ShouldBeNull();
+	}
+
+	[Ignore("RavenDB still needs to be implemented")]
+	[Subject("Persistence")]
+	public class when_purging_all_commits : using_the_persistence_engine
+	{
+		Establish context = () =>
+			persistence.Commit(streamId.BuildAttempt());
+
+		Because of = () =>
+			persistence.Purge();
+
+		It should_not_find_any_commits_stored = () =>
+			persistence.GetFrom(DateTime.MinValue).Count().ShouldEqual(0);
+
+		It should_not_find_any_streams_to_snapshot = () =>
+			persistence.GetStreamsToSnapshot(0).Count().ShouldEqual(0);
+
+		It should_not_find_any_undispatched_commits = () =>
+			persistence.GetUndispatchedCommits().Count().ShouldEqual(0);
 	}
 
 	public abstract class using_the_persistence_engine

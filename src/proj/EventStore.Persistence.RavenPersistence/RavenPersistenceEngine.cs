@@ -85,12 +85,10 @@
 			return this.QueryCommits<RavenCommitByRevisionRange>(x =>
 				x.StreamId == streamId && x.StreamRevision >= minRevision && x.StartingStreamRevision <= maxRevision);
 		}
-
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
 		{
 			return this.QueryCommits<RavenCommitByDate>(x => x.CommitStamp >= start);
 		}
-
 		public virtual void Commit(Commit attempt)
 		{
 			try
@@ -132,7 +130,6 @@
 		{
 			return this.QueryCommits<RavenCommitsByDispatched>(c => c.Dispatched == false);
 		}
-
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
 			if (commit == null)
@@ -175,7 +172,6 @@
 			return this.Query<RavenStreamHead, RavenStreamHeadBySnapshotAge>(s => s.SnapshotAge >= maxThreshold)
 				.Select(s => s.ToStreamHead());
 		}
-
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
 			return this.Query<RavenSnapshot, RavenSnapshotByStreamIdAndRevision>(
@@ -184,7 +180,6 @@
 				.FirstOrDefault()
 				.ToSnapshot(this.serializer);
 		}
-
 		public virtual bool AddSnapshot(Snapshot snapshot)
 		{
 			if (snapshot == null)
@@ -219,6 +214,11 @@
 			}
 		}
 
+		public virtual void Purge()
+		{
+			// TODO
+		}
+
 		private RavenCommit LoadSavedCommit(Commit attempt)
 		{
 			try
@@ -236,13 +236,11 @@
 				throw new StorageException(e.Message, e);
 			}
 		}
-
 		private IEnumerable<Commit> QueryCommits<TIndex>(Expression<Func<RavenCommit, bool>> query)
 			where TIndex : AbstractIndexCreationTask, new()
 		{
 			return this.Query<RavenCommit, TIndex>(query).Select(x => x.ToCommit(this.serializer));
 		}
-
 		private IEnumerable<T> Query<T, TIndex>(Expression<Func<T, bool>> query)
 			where TIndex : AbstractIndexCreationTask, new()
 		{

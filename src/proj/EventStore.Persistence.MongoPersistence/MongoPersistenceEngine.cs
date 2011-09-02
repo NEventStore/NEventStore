@@ -104,7 +104,6 @@
 				.SetSortOrder("CommitStamp")
 				.Select(x => x.ToCommit(this.serializer)));
 		}
-
 		public virtual void Commit(Commit attempt)
 		{
 			this.TryMongo(() =>
@@ -169,7 +168,6 @@
 				.Select(mc => mc.ToSnapshot(this.serializer))
 				.FirstOrDefault());
 		}
-
 		public virtual bool AddSnapshot(Snapshot snapshot)
 		{
 			if (snapshot == null)
@@ -202,6 +200,13 @@
 			}
 		}
 
+		public virtual void Purge()
+		{
+			this.PersistedCommits.Drop();
+			this.PersistedStreamHeads.Drop();
+			this.PersistedSnapshots.Drop();
+		}
+
 		private void UpdateStreamHeadAsync(Guid streamId, int streamRevision, int eventsCount)
 		{
 			ThreadPool.QueueUserWorkItem(x => this.TryMongo(() =>
@@ -217,13 +222,13 @@
 		{
 			get { return this.store.GetCollection(this.commitSettings); }
 		}
-		protected virtual MongoCollection<BsonDocument> PersistedSnapshots
-		{
-			get { return this.store.GetCollection(this.snapshotSettings); }
-		}
 		protected virtual MongoCollection<BsonDocument> PersistedStreamHeads
 		{
 			get { return this.store.GetCollection(this.streamSettings); }
+		}
+		protected virtual MongoCollection<BsonDocument> PersistedSnapshots
+		{
+			get { return this.store.GetCollection(this.snapshotSettings); }
 		}
 
 		protected virtual T TryMongo<T>(Func<T> callback)
