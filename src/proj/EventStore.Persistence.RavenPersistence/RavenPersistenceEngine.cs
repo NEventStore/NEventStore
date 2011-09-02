@@ -22,6 +22,7 @@
 		private readonly IDocumentSerializer serializer;
 		private readonly TransactionScopeOption scopeOption;
 		private readonly bool consistentQueries;
+		private readonly int pageSize;
 		private bool disposed;
 		private int initialized;
 
@@ -29,7 +30,8 @@
 			IDocumentStore store,
 			IDocumentSerializer serializer,
 			TransactionScopeOption scopeOption,
-			bool consistentQueries)
+			bool consistentQueries,
+			int pageSize)
 		{
 			if (store == null)
 				throw new ArgumentNullException("store");
@@ -37,10 +39,14 @@
 			if (serializer == null)
 				throw new ArgumentNullException("serializer");
 
+			if (pageSize <= 0)
+				throw new ArgumentNullException("pageSize");
+
 			this.store = store;
 			this.serializer = serializer;
 			this.scopeOption = scopeOption;
 			this.consistentQueries = consistentQueries;
+			this.pageSize = pageSize;
 		}
 
 		public void Dispose()
@@ -83,11 +89,13 @@
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
 		{
 			return this.QueryCommits<RavenCommitByRevisionRange>(x =>
-				x.StreamId == streamId && x.StreamRevision >= minRevision && x.StartingStreamRevision <= maxRevision);
+					x.StreamId == streamId && x.StreamRevision >= minRevision && x.StartingStreamRevision <= maxRevision)
+				.OrderBy(x => x.CommitSequence);
 		}
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
 		{
-			return this.QueryCommits<RavenCommitByDate>(x => x.CommitStamp >= start);
+			return this.QueryCommits<RavenCommitByDate>(x => x.CommitStamp >= start)
+				.OrderBy(x => x.CommitStamp);
 		}
 		public virtual void Commit(Commit attempt)
 		{
@@ -128,7 +136,8 @@
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
-			return this.QueryCommits<RavenCommitsByDispatched>(c => c.Dispatched == false);
+			return this.QueryCommits<RavenCommitsByDispatched>(c => c.Dispatched == false)
+				.OrderBy(x => x.CommitStamp);
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
@@ -175,7 +184,7 @@
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
 			return this.Query<RavenSnapshot, RavenSnapshotByStreamIdAndRevision>(
-					x => x.StreamId == streamId && x.StreamRevision <= maxRevision)
+				x => x.StreamId == streamId && x.StreamRevision <= maxRevision)
 				.OrderByDescending(x => x.StreamRevision)
 				.FirstOrDefault()
 				.ToSnapshot(this.serializer);
@@ -247,10 +256,11 @@
 			try
 			{
 				using (this.OpenQueryScope())
-				using (var session = this.store.OpenSession())
+				using (var session = this.OpenQuerySession())
 					return session.Query<T, TIndex>()
 						.Customize(x => { if (this.consistentQueries) x.WaitForNonStaleResults(); })
-						.Where(query);
+						.Where(query)
+						.Page(this.pageSize);
 			}
 			catch (WebException e)
 			{
@@ -260,6 +270,18 @@
 			{
 				throw new StorageException(e.Message, e);
 			}
+		}
+
+		protected virtual IDocumentSession OpenQuerySession()
+		{
+			var session = this.store.OpenSession();
+
+			// defaults to 30 total requests per session (not good for paging over large data sets)
+			// which may be encountered when calling GetFrom() and enumerating over the entire store.
+			// see http://ravendb.net/documentation/safe-by-default for more information.
+			session.Advanced.MaxNumberOfRequestsPerSession = int.MaxValue;
+
+			return session;
 		}
 
 		private void SaveStreamHead(RavenStreamHead streamHead)
