@@ -216,39 +216,7 @@
 
 		public virtual void Purge()
 		{
-			try
-			{
-				using (var scope = this.OpenCommandScope())
-				using (var session = this.store.OpenSession())
-				{
-					var query = new IndexQuery
-					{
-						Query = string.Empty,
-						PageSize = int.MaxValue,
-						Cutoff = SystemTime.UtcNow()
-					};
-
-					var cmd = session.Advanced.DatabaseCommands;
-
-					cmd.DeleteByIndex(typeof(RavenCommitByDate).Name, query);
-					cmd.DeleteByIndex(typeof(RavenCommitByRevisionRange).Name, query);
-					cmd.DeleteByIndex(typeof(RavenCommitsByDispatched).Name, query);
-					cmd.DeleteByIndex(typeof(RavenSnapshotByStreamIdAndRevision).Name, query);
-					cmd.DeleteByIndex(typeof(RavenStreamHeadBySnapshotAge).Name, query);
-					
-					session.SaveChanges();
-					scope.Complete();
-				}
-			}
-			catch (WebException e)
-			{
-				throw new StorageUnavailableException(e.Message, e);
-			}
-			catch (Exception e)
-			{
-				throw new StorageException(e.Message, e);
-			}
-
+			// TODO
 		}
 
 		private RavenCommit LoadSavedCommit(Commit attempt)

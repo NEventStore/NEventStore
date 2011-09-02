@@ -202,6 +202,9 @@
 
 		public virtual void Purge()
 		{
+			this.PersistedCommits.Drop();
+			this.PersistedStreamHeads.Drop();
+			this.PersistedSnapshots.Drop();
 		}
 
 		private void UpdateStreamHeadAsync(Guid streamId, int streamRevision, int eventsCount)
@@ -219,13 +222,13 @@
 		{
 			get { return this.store.GetCollection(this.commitSettings); }
 		}
-		protected virtual MongoCollection<BsonDocument> PersistedSnapshots
-		{
-			get { return this.store.GetCollection(this.snapshotSettings); }
-		}
 		protected virtual MongoCollection<BsonDocument> PersistedStreamHeads
 		{
 			get { return this.store.GetCollection(this.streamSettings); }
+		}
+		protected virtual MongoCollection<BsonDocument> PersistedSnapshots
+		{
+			get { return this.store.GetCollection(this.snapshotSettings); }
 		}
 
 		protected virtual T TryMongo<T>(Func<T> callback)
