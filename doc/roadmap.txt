@@ -40,3 +40,11 @@
 
 4.0:
  - Master/slave failover
+
+ - Potentially split "Commits" table for SQL, e.g. Commits and Dispatch.  The Dispatch would hold the commit until it
+   was dispatched and then it would be moved into the Commits table along with the Streams being updated.  We could
+   use uNION ALL to make it feel like it's a single table for the EventStore on top.  This would eliminate the need
+   for complex joins and it would make updating the stream heads async as well.  The only "loss" is the double write
+   that would occur when moving the data between commits and dispatch.  This could also potentially eliminate the need
+   for the 'Dispatched' bit column.  Migration to the new schema wouldn't be particularly difficult and would require
+   a small script.
