@@ -3,6 +3,7 @@ namespace EventStore.Persistence.RavenPersistence
 	using System;
 	using System.Collections.Generic;
 	using System.Globalization;
+	using System.Linq;
 	using Serialization;
 
 	public static class ExtensionMethods
@@ -94,6 +95,11 @@ namespace EventStore.Persistence.RavenPersistence
 				streamhead.StreamId,
 				streamhead.HeadRevision,
 				streamhead.SnapshotRevision);
+		}
+
+		public static IEnumerable<T> Page<T>(this IQueryable<T> query, int pageSize)
+		{
+			return new PagedEnumeration<T>(query, pageSize);
 		}
 	}
 }

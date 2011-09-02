@@ -6,6 +6,8 @@ namespace EventStore
 
 	public class RavenPersistenceWireup : PersistenceWireup
 	{
+		private int pageSize = 128;
+
 		public RavenPersistenceWireup(
 			Wireup inner,
 			string connectionName,
@@ -17,7 +19,14 @@ namespace EventStore
 				connectionName,
 				serializer,
 				this.Container.Resolve<TransactionScopeOption>(),
-				consistentQueries).Build());
+				consistentQueries,
+				this.pageSize).Build());
+		}
+
+		public virtual RavenPersistenceWireup PageEvery(int records)
+		{
+			this.pageSize = records;
+			return this;
 		}
 	}
 }
