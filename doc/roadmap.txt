@@ -15,26 +15,28 @@
   for things like encryption, etc.  For example, we're changing the encryption on all commits and we need to
   support several keys simultaenously for a period of time...
 
-- Add tests to show paging issues when querying large number of commits from document/blob storage engines
-  - Mongo, Raven, Azure, SimpleDB, Couch?, etc.
-
 - Create a PersistenceEngine implementation that can be exposed as an endpoint, e.g. REST or HTTP, etc. such that
   the OptimisticEventStore could use that endpoint as the underlying storage. This would create a logical layering
   point which could then be separated into physical layers more easily.
 
 3.0:
- - .NET 4.0 only
+ - .NET 4.0 only?
  - Logging?
  - Merge CommonDomain
- - CouchDB persistence
- - Oracle persistence
- - Azure Tables persistence
- - ProtocolBuffers serializer
- - Amazon S3/Tables persistence
 
-3.1:
- - FileSystem persistence
+3.1
+ - Amazon S3/Tables persistence
+ - CouchDB persistence
+ - Azure Tables persistence
+ - Oracle persistence
+ - Sybase ASE persistence
+ - Sybase SQL Anywhere persistence
+ - ProtocolBuffers serializer
+
 
 3.2:
+ - FileSystem persistence
  - Redis
+
+4.0:
  - Master/slave failover
