@@ -126,4 +126,7 @@
   <data name="MissingProviderName" xml:space="preserve">
     <value>Could not find the required attribute 'providerName' on the connection name '{0}' in the configuration file.</value>
   </data>
+	<data name="BadConnectionName">
+		<value xml:space="preserve">A connection could not be created for the specified named connection.</value>
+	</data>
 </root>

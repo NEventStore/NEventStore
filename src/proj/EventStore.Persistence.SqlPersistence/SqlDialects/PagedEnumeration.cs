@@ -90,7 +90,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			}
 			catch (Exception e)
 			{
-				throw new StorageException(e.Message, e);
+				throw new StorageUnavailableException(e.Message, e);
 			}
 		}
 
