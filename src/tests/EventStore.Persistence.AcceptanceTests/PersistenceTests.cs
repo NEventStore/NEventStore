@@ -44,14 +44,11 @@ namespace EventStore.Persistence.AcceptanceTests
 		It should_correctly_persist_the_events = () =>
 			persisted.Events.Count.ShouldEqual(attempt.Events.Count);
 
-		It should_make_the_commit_available_to_be_read_from_the_stream = () =>
-			persistence.GetFrom(streamId, 0, int.MaxValue).First().CommitId.ShouldEqual(attempt.CommitId);
-
 		It should_add_the_commit_to_the_set_of_undispatched_commits = () =>
 			persistence.GetUndispatchedCommits().FirstOrDefault(x => x.CommitId == attempt.CommitId).ShouldNotBeNull();
 
 		It should_cause_the_stream_to_be_found_in_the_list_of_streams_to_snapshot = () =>
-			persistence.GetStreamsToSnapshot(1).First(x => x.StreamId == streamId).ShouldNotBeNull();
+			persistence.GetStreamsToSnapshot(1).FirstOrDefault(x => x.StreamId == streamId).ShouldNotBeNull();
 	}
 
 	[Subject("Persistence")]
