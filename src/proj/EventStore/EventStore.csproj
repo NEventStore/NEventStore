@@ -50,6 +50,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IPipelineHook.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Persistence\StorageUnavailableException.cs" />
     <Compile Include="Serialization\IDocumentSerializer.cs" />
     <Compile Include="StreamNotFoundException.cs" />
