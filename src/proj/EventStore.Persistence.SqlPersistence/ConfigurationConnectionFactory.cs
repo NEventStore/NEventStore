@@ -1,6 +1,7 @@
 namespace EventStore.Persistence.SqlPersistence
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Configuration;
 	using System.Data;
 	using System.Data.Common;
@@ -10,6 +11,12 @@ namespace EventStore.Persistence.SqlPersistence
 	{
 		private const int DefaultShards = 16;
 		private const string DefaultConnectionName = "EventStore";
+
+		private static readonly IDictionary<string, ConnectionStringSettings> CachedSettings =
+			new Dictionary<string, ConnectionStringSettings>();
+		private static readonly IDictionary<string, DbProviderFactory> CachedFactories =
+			new Dictionary<string, DbProviderFactory>();
+
 		private readonly string masterConnectionName;
 		private readonly string slaveConnectionName;
 		private readonly int shards;
@@ -45,16 +52,51 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		protected virtual IDbConnection Open(Guid streamId, string connectionName)
 		{
-			var setting = GetConnectionStringSettings(connectionName);
-			var factory = DbProviderFactories.GetFactory(setting.ProviderName);
+			var setting = this.GetSetting(connectionName);
+			var factory = this.GetFactory(setting);
 			var connection = factory.CreateConnection();
+			if (connection == null)
+				throw new ConfigurationErrorsException(Messages.BadConnectionName);
+
 			connection.ConnectionString = this.BuildConnectionString(streamId, setting);
-			connection.Open();
+
+			try
+			{
+				connection.Open();
+			}
+			catch (Exception e)
+			{
+				throw new StorageUnavailableException(e.Message, e);
+			}
+
 			return connection;
 		}
 
-		private static ConnectionStringSettings GetConnectionStringSettings(
-			string connectionName)
+		protected virtual ConnectionStringSettings GetSetting(string connectionName)
+		{
+			lock (CachedSettings)
+			{
+				ConnectionStringSettings setting;
+				if (CachedSettings.TryGetValue(connectionName, out setting))
+					return setting;
+
+				setting = GetConnectionStringSettings(connectionName);
+				return CachedSettings[connectionName] = setting;
+			}
+		}
+		protected virtual DbProviderFactory GetFactory(ConnectionStringSettings setting)
+		{
+			lock (CachedFactories)
+			{
+				DbProviderFactory factory;
+				if (CachedFactories.TryGetValue(setting.Name, out factory))
+					return factory;
+
+				factory = DbProviderFactories.GetFactory(setting.ProviderName);
+				return CachedFactories[setting.Name] = factory;
+			}
+		}
+		private static ConnectionStringSettings GetConnectionStringSettings(string connectionName)
 		{
 			var settings = ConfigurationManager.ConnectionStrings
 				.Cast<ConnectionStringSettings>()
