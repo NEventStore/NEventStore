@@ -78,7 +78,7 @@ echo EventStore.*>exclude.txt
 (echo.|set /p =Raven.*)>>exclude.txt
 "%ILMERGE_PATH%/ILMerge.exe" /keyfile:src/EventStore.snk /internalize:"exclude.txt" /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/plugins/persistence/raven/EventStore.Persistence.RavenPersistence.dll %FILES_TO_MERGE%
 del exclude.txt
-copy "src\proj\EventStore.Persistence.RavenPersistence\bin\%TARGET_CONFIG%\Raven*.dll" output\plugins\persistence\raven"
+copy "src\proj\EventStore.Persistence.RavenPersistence\bin\%TARGET_CONFIG%\Raven*.dll" "output\plugins\persistence\raven"
 
 mkdir output\plugins\serialization\json-net
 echo Merging Newtonsoft Json.NET Serialization
@@ -99,6 +99,14 @@ set FILES_TO_MERGE=%FILES_TO_MERGE% "src/proj/EventStore.Serialization.ServiceSt
 (echo.|set /p =EventStore.*)>>exclude.txt
 "%ILMERGE_PATH%/ILMerge.exe" /keyfile:src/EventStore.snk /internalize:"exclude.txt" /wildcards /targetplatform:%ILMERGE_VERSION% /out:output/plugins/serialization/servicestack/EventStore.Serialization.ServiceStack.dll %FILES_TO_MERGE%
 del exclude.txt
+
+mkdir output\plugins\logging\nlog
+copy "src\proj\EventStore.Logging.NLog\bin\%TARGET_CONFIG%\EventStore.Logging.NLog.*" "output\plugins\logging\nlog"
+copy "src\proj\EventStore.Logging.NLog\bin\%TARGET_CONFIG%\NLog.dll" "output\plugins\logging\nlog"
+
+mkdir output\plugins\logging\log4net
+copy "src\proj\EventStore.Logging.Log4Net\bin\%TARGET_CONFIG%\EventStore.Logging.Log4Net.*" "output\plugins\logging\log4net"
+copy "src\proj\EventStore.Logging.Log4Net\bin\%TARGET_CONFIG%\log4net.dll" "output\plugins\logging\log4net"
 
 echo.
 echo === FINALIZING ===

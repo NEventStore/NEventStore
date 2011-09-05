@@ -32,6 +32,8 @@ move "publish-net40" "bin\nuget"
 "bin/nuget/nuget.exe" Pack "bin/nuget/EventStore.Serialization.ServiceStack.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
 "bin/nuget/nuget.exe" Pack "bin/nuget/EventStore.Persistence.RavenPersistence.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
 "bin/nuget/nuget.exe" Pack "bin/nuget/EventStore.Persistence.MongoPersistence.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
+"bin/nuget/nuget.exe" Pack "bin/nuget/EventStore.Logging.Log4Net.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
+"bin/nuget/nuget.exe" Pack "bin/nuget/EventStore.Logging.NLog.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
 
 rmdir /s /q bin\nuget\publish-net40
 rmdir /s /q bin\nuget\publish-net35
