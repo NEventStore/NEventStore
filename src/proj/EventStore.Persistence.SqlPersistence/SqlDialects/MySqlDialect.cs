@@ -70,7 +70,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 				IDbConnection connection,
 				IDbTransaction transaction,
 				params IDisposable[] resources)
-				: base(dialect, connection, transaction, resources)
+				: base(dialect, transaction, connection, resources)
 			{
 			}
 

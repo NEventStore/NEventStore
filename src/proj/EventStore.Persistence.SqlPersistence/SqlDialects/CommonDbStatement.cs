@@ -9,14 +9,14 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	{
 		protected IDictionary<string, object> Parameters { get; private set; }
 		private readonly ISqlDialect dialect;
-		private readonly IDbConnection connection;
 		private readonly IDbTransaction transaction;
+		private readonly IDbConnection connection;
 		private readonly IDisposable[] resources;
 
 		public CommonDbStatement(
 			ISqlDialect dialect,
-			IDbConnection connection,
 			IDbTransaction transaction,
+			IDbConnection connection,
 			params IDisposable[] resources)
 		{
 			this.Parameters = new Dictionary<string, object>();
@@ -41,7 +41,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 				this.connection.Dispose();
 
 			foreach (var resource in this.resources.Reverse().Where(resource => resource != null))
-				resource.Dispose();
+				resource.Dispose(); // dispose from the inside out
 		}
 
 		public virtual void AddParameter(string name, object value)

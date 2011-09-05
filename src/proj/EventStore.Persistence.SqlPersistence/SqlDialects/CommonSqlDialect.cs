@@ -115,7 +115,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			IDbTransaction transaction,
 			params IDisposable[] resources)
 		{
-			return new CommonDbStatement(this, connection, transaction, resources);
+			return new CommonDbStatement(this, transaction, connection, resources);
 		}
 	}
 }
