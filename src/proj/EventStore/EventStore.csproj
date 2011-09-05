@@ -49,8 +49,9 @@
     <Compile Include="ConcurrencyException.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Logging\ILog.cs" />
     <Compile Include="IPipelineHook.cs" />
-    <Compile Include="Logger.cs" />
+    <Compile Include="Logging\LogFactory.cs" />
     <Compile Include="Persistence\StorageUnavailableException.cs" />
     <Compile Include="Serialization\IDocumentSerializer.cs" />
     <Compile Include="StreamNotFoundException.cs" />

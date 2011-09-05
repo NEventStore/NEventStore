@@ -37,6 +37,7 @@
   <ItemGroup>
     <Compile Include="AsynchronousDispatcherWireup.cs" />
     <Compile Include="AsynchronousDispatcherWireupExtensions.cs" />
+    <Compile Include="LoggingWireupExtensions.cs" />
     <Compile Include="Messages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
