@@ -96,6 +96,7 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Include="SqlDialects\NextPageDelegate.cs" />
     <Compile Include="SqlDialects\PagedEnumeration.cs" />
     <Compile Include="SqlDialects\PostgreSqlDialect.cs">
       <SubType>Code</SubType>

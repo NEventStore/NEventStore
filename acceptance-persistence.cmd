@@ -14,7 +14,7 @@ CALL :run_test SqlCePersistence localhost 0 EventStore "" ""
 CALL :run_test AccessPersistence localhost 0 EventStore "" ""
 CALL :run_test MySqlPersistence localhost 0 EventStore "" ""
 CALL :run_test PostgreSqlPersistence localhost 0 EventStore "" ""
-CALL :run_test FirebirdPersistence localhost 3050 EventStore SYSDBA masterkey
+CALL :run_test FirebirdPersistence localhost 3050 EventStore "SYSDBA" "masterkey"
 
 ECHO === Document DBs ===
 CALL :run_test MongoPersistence localhost 0 EventStore "" ""

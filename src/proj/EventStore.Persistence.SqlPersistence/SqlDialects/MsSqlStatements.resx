@@ -146,12 +146,4 @@ CREATE TABLE [dbo].[Snapshots]
        CONSTRAINT [PK_Snapshots] PRIMARY KEY CLUSTERED ([StreamId], [StreamRevision])
 );</value>
   </data>
-  <data name="PagedQueryFormat" xml:space="preserve">
-    <value>WITH [cte] AS
-( {0}, ROW_NUMBER() OVER ({1}) AS [row] {2} )
-
-SELECT *
-  FROM [cte]
- WHERE [row] BETWEEN @Skip + 1 AND @Limit + @Skip;</value>
-  </data>
 </root>

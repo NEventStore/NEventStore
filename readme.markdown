@@ -51,7 +51,7 @@ are always dispatched to any messaging infrastructure.
 ## Supported Storage Engines
 
 ### Relational Databases
-[Complete] Microsoft SQL Server 2005 (or later)  
+[Complete] Microsoft SQL Server 2000 (or later)  
 [Complete] MySQL 5.0 (or later)  
 * [Complete] InnoDB  
 * [Complete] NDB/MySQL Cluster  

@@ -3,6 +3,7 @@ namespace EventStore.Persistence.SqlPersistence
 	using System;
 	using System.Collections.Generic;
 	using System.Data;
+	using SqlDialects;
 
 	public interface IDbStatement : IDisposable
 	{
@@ -12,6 +13,7 @@ namespace EventStore.Persistence.SqlPersistence
 		int ExecuteWithoutExceptions(string commandText);
 
 		IEnumerable<T> ExecuteWithQuery<T>(string queryText, Func<IDataRecord, T> select);
-		IEnumerable<T> ExecutePagedQuery<T>(string queryText, int pageSize, Func<IDataRecord, T> select);
+		IEnumerable<T> ExecutePagedQuery<T>(
+			string queryText, Func<IDataRecord, T> select, NextPageDelegate<T> onNextPage, int pageSize);
 	}
 }
