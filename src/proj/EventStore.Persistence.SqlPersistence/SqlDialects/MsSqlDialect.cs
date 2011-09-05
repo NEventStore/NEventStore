@@ -13,40 +13,24 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		public override string GetSnapshot
 		{
-			get { return base.GetSnapshot.Replace("SELECT *", "SELECT TOP 1 *").Replace("LIMIT 1", string.Empty); }
+			get { return "SET ROWCOUNT 1;\n" + base.GetSnapshot.Replace("LIMIT 1;", ";"); }
 		}
 
-		public override string GetStreamsRequiringSnapshots
+		public override string GetCommitsFromStartingRevision
 		{
-			get { return Paged(base.GetStreamsRequiringSnapshots); }
+			get { return Paged(base.GetCommitsFromStartingRevision); }
 		}
 		public override string GetCommitsFromInstant
 		{
 			get { return Paged(base.GetCommitsFromInstant); }
 		}
-		public override string GetCommitsFromStartingRevision
+		public override string GetStreamsRequiringSnapshots
 		{
-			get { return Paged(base.GetCommitsFromStartingRevision); }
+			get { return Paged(base.GetStreamsRequiringSnapshots); }
 		}
-		public override string GetUndispatchedCommits
+		private static string Paged(string query)
 		{
-			get { return Paged(base.GetUndispatchedCommits); }
-		}
-		private static string Paged(string statement)
-		{
-			var orderByIndex = statement.IndexOf("ORDER BY");
-			var orderBy = statement.Substring(orderByIndex).Replace(";", string.Empty);
-			statement = statement.Substring(0, orderByIndex);
-
-			var fromIndex = statement.IndexOf("FROM ");
-			var from = statement.Substring(fromIndex);
-			var select = statement.Substring(0, fromIndex);
-
-			return MsSqlStatements.PagedQueryFormat.FormatWith(select, orderBy, from);
-		}
-		public override bool CanPage
-		{
-			get { return true; }
+			return "SET ROWCOUNT @Limit;\n" + query.Replace("LIMIT @Limit;", ";");
 		}
 
 		public override bool IsDuplicate(Exception exception)

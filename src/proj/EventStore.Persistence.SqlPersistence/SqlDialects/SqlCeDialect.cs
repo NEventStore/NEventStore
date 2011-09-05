@@ -14,6 +14,28 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			get { return base.GetSnapshot.Replace("SELECT *", "SELECT TOP(1) *").Replace("LIMIT 1", string.Empty); }
 		}
 
+		public override string GetCommitsFromStartingRevision
+		{
+			get { return RemovePaging(base.GetCommitsFromStartingRevision); }
+		}
+		public override string GetCommitsFromInstant
+		{
+			get { return RemovePaging(base.GetCommitsFromInstant); }
+		}
+		public override string GetStreamsRequiringSnapshots
+		{
+			get { return RemovePaging(base.GetStreamsRequiringSnapshots); }
+		}
+		private static string RemovePaging(string query)
+		{
+			return query.Replace("LIMIT @Limit;", ";");
+		}
+
+		public override bool CanPage
+		{
+			get { return false; }
+		}
+
 		public override bool IsDuplicate(Exception exception)
 		{
 			// TODO: better way without using reflection and avoiding a reference to SqlCE?

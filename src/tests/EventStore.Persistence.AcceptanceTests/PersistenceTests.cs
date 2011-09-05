@@ -301,9 +301,9 @@ namespace EventStore.Persistence.AcceptanceTests
 		Because of = () =>
 			persistence.Commit(newest);
 
-		// every so often the persistence engines that update the stream head asynchronously will fail this test
+		// Because Raven and Mongo update the stream head asynchronously, occasionally will fail this test
 		It should_find_the_stream_in_the_set_of_streams_to_be_snapshot_when_within_the_threshold = () =>
-			persistence.GetStreamsToSnapshot(WithinThreshold).First(x => x.StreamId == streamId).ShouldNotBeNull();
+			persistence.GetStreamsToSnapshot(WithinThreshold).FirstOrDefault(x => x.StreamId == streamId).ShouldNotBeNull();
 
 		It should_not_find_the_stream_in_the_set_of_streams_to_be_snapshot_when_over_the_threshold = () =>
 			persistence.GetStreamsToSnapshot(OverThreshold).Any(x => x.StreamId == streamId).ShouldBeFalse();
@@ -335,7 +335,7 @@ namespace EventStore.Persistence.AcceptanceTests
 	}
 
 	[Subject("Persistence")]
-	public class when_reading_all_commits_from_the_beginning_of_time : using_the_persistence_engine
+	public class when_reading_all_commits_from_the_year_1_AD : using_the_persistence_engine
 	{
 		static Exception thrown;
 

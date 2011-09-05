@@ -28,7 +28,36 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		public override string GetStreamsRequiringSnapshots
 		{
-			get { return AccessStatements.GetStreamsToSnapshot; }
+			get { return RemovePaging(AccessStatements.GetStreamsToSnapshot); }
+		}
+		public override string GetCommitsFromInstant
+		{
+			get { return RemovePaging(base.GetCommitsFromInstant); }
+		}
+		public override string GetCommitsFromStartingRevision
+		{
+			get { return RemovePaging(base.GetCommitsFromStartingRevision); }
+		}
+		public override string GetUndispatchedCommits
+		{
+			get { return RemovePaging(base.GetUndispatchedCommits); }
+		}
+		private static string RemovePaging(string query)
+		{
+			return query.Replace("LIMIT @Limit;", ";");
+		}
+
+		public override bool CanPage
+		{
+			get { return false; }
+		}
+
+		public override object CoalesceParameterValue(object value)
+		{
+			if (value is DateTime)
+				return (decimal)((DateTime)value).Ticks;
+
+			return value;
 		}
 
 		public override IDbStatement BuildStatement(
@@ -48,14 +77,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 				params IDisposable[] resources)
 				: base(dialect, connection, transaction, resources)
 			{
-			}
-
-			public override void AddParameter(string name, object value)
-			{
-				if (value is DateTime)
-					value = (decimal)((DateTime)value).Ticks;
-
-				base.AddParameter(name, value);
 			}
 
 			protected override void BuildParameters(IDbCommand command)

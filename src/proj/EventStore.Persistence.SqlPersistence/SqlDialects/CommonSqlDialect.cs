@@ -91,13 +91,14 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return "@Limit"; }
 		}
-		public virtual string Skip
-		{
-			get { return "@Skip"; }
-		}
 		public virtual bool CanPage
 		{
-			get { return false; }
+			get { return true; }
+		}
+
+		public virtual object CoalesceParameterValue(object value)
+		{
+			return value;
 		}
 
 		public virtual bool IsDuplicate(Exception exception)

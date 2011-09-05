@@ -5,20 +5,24 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	using System.Collections.Generic;
 	using System.Data;
 
-	public class PagedEnumeration : IEnumerable<IDataRecord>, IEnumerator<IDataRecord>
+	public class PagedEnumeration<T> : IEnumerable<T>, IEnumerator<T>
 	{
 		private readonly IDbCommand command;
-		private readonly IDataParameter skip;
+		private readonly Func<IDataRecord, T> select;
+		private readonly NextPageDelegate<T> onNextPage;
 		private readonly int pageSize;
 		private IDataReader reader;
-		private int currentPage;
 		private int position;
+		private T latest;
 
-		public PagedEnumeration(IDbCommand command, IDataParameter skip, int pageSize)
+		public PagedEnumeration(
+			IDbCommand command, Func<IDataRecord, T> select, NextPageDelegate<T> onNextPage, int pageSize)
 		{
 			this.command = command;
-			this.skip = skip;
+			this.select = select;
+			this.onNextPage = onNextPage;
 			this.pageSize = pageSize;
+			this.latest = default(T);
 		}
 
 		public void Dispose()
@@ -32,10 +36,11 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 				this.reader.Dispose();
 
 			this.reader = null;
-			this.currentPage = this.position = 0;
+			this.position = 0;
+			this.latest = default(T);
 		}
 
-		public virtual IEnumerator<IDataRecord> GetEnumerator()
+		public virtual IEnumerator<T> GetEnumerator()
 		{
 			return this;
 		}
@@ -81,11 +86,11 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		private IDataReader OpenNextPage()
 		{
+			if (this.pageSize > 0 && this.position >= this.pageSize)
+				this.onNextPage(this.command, this.latest);
+
 			try
 			{
-				if (this.skip != null)
-					this.skip.Value = this.pageSize * this.currentPage++;
-
 				return this.command.ExecuteReader();
 			}
 			catch (Exception e)
@@ -98,9 +103,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			throw new NotSupportedException("Forward-only readers.");
 		}
-		IDataRecord IEnumerator<IDataRecord>.Current
+		T IEnumerator<T>.Current
 		{
-			get { return this.reader; }
+			get { return this.latest = this.select(this.reader); }
 		}
 		object IEnumerator.Current
 		{

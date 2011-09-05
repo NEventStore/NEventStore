@@ -138,7 +138,10 @@ SELECT @StreamId, @StreamRevision, @Payload
     <value>SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
   FROM Commits
  WHERE CommitStamp &gt;= @CommitStamp
- ORDER BY CommitStamp;</value>
+   AND StreamId &gt;= @StreamId
+   AND StreamRevision &gt; @StreamRevision
+ ORDER BY CommitStamp, StreamId, StreamRevision
+ LIMIT @Limit;</value>
   </data>
   <data name="GetCommitsFromStartingRevision" xml:space="preserve">
     <value>SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
@@ -146,7 +149,9 @@ SELECT @StreamId, @StreamRevision, @Payload
  WHERE StreamId = @StreamId
    AND StreamRevision &gt;= @StreamRevision
    AND (StreamRevision - Items) &lt;= @MaxStreamRevision
- ORDER BY CommitSequence;</value>
+   AND CommitSequence &gt; @CommitSequence
+ ORDER BY CommitSequence
+ LIMIT @Limit;</value>
   </data>
   <data name="GetSnapshot" xml:space="preserve">
     <value>SELECT *
@@ -162,9 +167,11 @@ SELECT @StreamId, @StreamRevision, @Payload
  LEFT OUTER JOIN Snapshots AS S
     ON C.StreamId = S.StreamId
    AND C.StreamRevision &gt;= S.StreamRevision
+ WHERE C.StreamId &gt; @StreamId
  GROUP BY C.StreamId
 HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Threshold
- ORDER BY C.StreamId;</value>
+ ORDER BY C.StreamId
+ LIMIT @Limit;</value>
   </data>
   <data name="GetUndispatchedCommits" xml:space="preserve">
     <value>SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload

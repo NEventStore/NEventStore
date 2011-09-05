@@ -78,19 +78,5 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
                 return ResourceManager.GetString("InitializeStorage", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to WITH [cte] AS
-        ///( {0}, ROW_NUMBER() OVER ({1}) AS [row] {2} )
-        ///
-        ///SELECT *
-        ///  FROM [cte]
-        /// WHERE [row] BETWEEN @Skip + 1 AND @Limit + @Skip;.
-        /// </summary>
-        internal static string PagedQueryFormat {
-            get {
-                return ResourceManager.GetString("PagedQueryFormat", resourceCulture);
-            }
-        }
     }
 }

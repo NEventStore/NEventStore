@@ -72,7 +72,11 @@ namespace EventStore.Persistence.SqlPersistence
 				query.AddParameter(this.dialect.StreamId, streamId);
 				query.AddParameter(this.dialect.StreamRevision, minRevision);
 				query.AddParameter(this.dialect.MaxStreamRevision, maxRevision);
-				return query.ExecutePagedQuery(statement, this.pageSize, this.Transform);
+				query.AddParameter(this.dialect.CommitSequence, 0);
+				return query.ExecutePagedQuery(statement,
+					x => x.GetCommit(this.serializer),
+					(q, c) => q.SetParameter(this.dialect.CommitSequence, c.CommitSequence),
+					this.pageSize);
 			});
 		}
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
@@ -83,14 +87,16 @@ namespace EventStore.Persistence.SqlPersistence
 			{
 				var statement = this.dialect.GetCommitsFromInstant;
 				query.AddParameter(this.dialect.CommitStamp, start);
-				return query.ExecutePagedQuery(statement, this.pageSize, this.Transform);
+				query.AddParameter(this.dialect.StreamId, Guid.Empty);
+				query.AddParameter(this.dialect.StreamRevision, 0);
+				return query.ExecutePagedQuery(
+					statement,
+					x => x.GetCommit(this.serializer),
+					(q, c) => q.SetParameter(this.dialect.StreamId, this.dialect.CoalesceParameterValue(c.StreamId))
+						.SetParameter(this.dialect.StreamRevision, c.StreamRevision),
+					this.pageSize);
 			});
 		}
-		private Commit Transform(IDataRecord record)
-		{
-			return record.GetCommit(this.serializer);
-		}
-
 		public virtual void Commit(Commit attempt)
 		{
 			this.ExecuteCommand(attempt.StreamId, cmd =>
@@ -114,9 +120,8 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
-			var statement = this.dialect.GetUndispatchedCommits;
 			return this.ExecuteQuery(Guid.Empty, query =>
-				query.ExecutePagedQuery(statement, this.pageSize, this.Transform));
+				query.ExecuteWithQuery(this.dialect.GetUndispatchedCommits, x => x.GetCommit(this.serializer)));
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
@@ -133,8 +138,13 @@ namespace EventStore.Persistence.SqlPersistence
 			return this.ExecuteQuery(Guid.Empty, query =>
 			{
 				var statement = this.dialect.GetStreamsRequiringSnapshots;
+				query.AddParameter(this.dialect.StreamId, Guid.Empty);
 				query.AddParameter(this.dialect.Threshold, maxThreshold);
-				return query.ExecutePagedQuery(statement, this.pageSize, x => x.GetStreamToSnapshot());
+				return query.ExecutePagedQuery(
+					statement,
+					x => x.GetStreamToSnapshot(),
+					(q, s) => q.SetParameter(this.dialect.StreamId, this.dialect.CoalesceParameterValue(s.StreamId)),
+					this.pageSize);
 			});
 		}
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)

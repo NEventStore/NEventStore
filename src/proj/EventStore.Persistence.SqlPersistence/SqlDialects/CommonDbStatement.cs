@@ -7,6 +7,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 	public class CommonDbStatement : IDbStatement
 	{
+		private const int InfinitePageSize = 0;
 		protected IDictionary<string, object> Parameters { get; private set; }
 		private readonly ISqlDialect dialect;
 		private readonly IDbTransaction transaction;
@@ -46,7 +47,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 		public virtual void AddParameter(string name, object value)
 		{
-			this.Parameters[name] = value;
+			this.Parameters[name] = this.dialect.CoalesceParameterValue(value);
 		}
 
 		public virtual int ExecuteWithoutExceptions(string commandText)
@@ -82,23 +83,20 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 		public virtual IEnumerable<T> ExecuteWithQuery<T>(string queryText, Func<IDataRecord, T> select)
 		{
-			return this.ExecutePagedQuery(queryText, 0, select);
+			return this.ExecutePagedQuery(queryText, select, (query, latest) => { }, InfinitePageSize);
 		}
 		public virtual IEnumerable<T> ExecutePagedQuery<T>(
-			string queryText, int pageSize, Func<IDataRecord, T> select)
+			string queryText, Func<IDataRecord, T> select, NextPageDelegate<T> onNextPage, int pageSize)
 		{
-			pageSize = this.dialect.CanPage ? pageSize : 0;
-			this.Parameters.Add(this.dialect.Limit, pageSize);
-			this.Parameters.Add(this.dialect.Skip, 0);
+			pageSize = this.dialect.CanPage ? pageSize : InfinitePageSize;
+			if (pageSize > 0)
+				this.Parameters.Add(this.dialect.Limit, pageSize);
 
 			var command = this.BuildCommand(queryText);
-			IDataParameter skip = null;
-			if (this.dialect.CanPage && command.Parameters.Contains(this.dialect.Skip))
-				skip = command.Parameters[this.dialect.Skip] as IDataParameter;
 
 			try
 			{
-				var rows = new PagedEnumeration(command, skip, pageSize).Select(select);
+				var rows = new PagedEnumeration<T>(command, select, onNextPage, pageSize);
 				return new DisposableEnumeration<T>(rows, command, this);
 			}
 			catch (Exception)

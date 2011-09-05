@@ -1,6 +1,7 @@
 namespace EventStore.Persistence.SqlPersistence
 {
 	using System;
+	using System.Data;
 	using System.Globalization;
 
 	internal static class ExtensionMethods
@@ -26,6 +27,13 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			value = value is decimal ? (long)(decimal)value : value;
 			return value is long ? new DateTime((long)value) : (DateTime)value;
+		}
+
+		public static IDbCommand SetParameter(this IDbCommand command, string name, object value)
+		{
+			var parameter = (IDataParameter)command.Parameters[name];
+			parameter.Value = value;
+			return command;
 		}
 	}
 }

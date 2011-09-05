@@ -32,8 +32,9 @@ namespace EventStore.Persistence.SqlPersistence
 		string Threshold { get; }
 
 		string Limit { get; }
-		string Skip { get; }
 		bool CanPage { get; }
+
+		object CoalesceParameterValue(object value);
 
 		IDbTransaction OpenTransaction(IDbConnection connection);
 		IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources);
