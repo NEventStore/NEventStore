@@ -346,7 +346,6 @@ namespace EventStore.Persistence.AcceptanceTests
 			thrown.ShouldBeNull();
 	}
 
-	[Ignore("RavenDB still needs to be implemented")]
 	[Subject("Persistence")]
 	public class when_purging_all_commits : using_the_persistence_engine
 	{
