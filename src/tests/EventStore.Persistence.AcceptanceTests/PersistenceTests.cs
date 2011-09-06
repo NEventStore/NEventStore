@@ -6,6 +6,7 @@ namespace EventStore.Persistence.AcceptanceTests
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Threading;
 	using Machine.Specifications;
 	using Persistence;
 
@@ -346,15 +347,17 @@ namespace EventStore.Persistence.AcceptanceTests
 			thrown.ShouldBeNull();
 	}
 
-	[Ignore("RavenDB still needs to be implemented")]
 	[Subject("Persistence")]
 	public class when_purging_all_commits : using_the_persistence_engine
 	{
 		Establish context = () =>
 			persistence.Commit(streamId.BuildAttempt());
 
-		Because of = () =>
+		private Because of = () =>
+		{
+			Thread.Sleep(50); // 50 ms = enough time for Raven to become consistent
 			persistence.Purge();
+		};
 
 		It should_not_find_any_commits_stored = () =>
 			persistence.GetFrom(DateTime.MinValue).Count().ShouldEqual(0);

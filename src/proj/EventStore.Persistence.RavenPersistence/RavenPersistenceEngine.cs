@@ -11,6 +11,7 @@
 	using Raven.Abstractions.Commands;
 	using Raven.Abstractions.Data;
 	using Raven.Client;
+	using Raven.Client.Connection;
 	using Raven.Client.Exceptions;
 	using Raven.Client.Indexes;
 	using Raven.Json.Linq;
@@ -224,7 +225,32 @@
 
 		public virtual void Purge()
 		{
-			// TODO
+			try
+			{
+				using (var scope = this.OpenCommandScope())
+				using (var session = this.store.OpenSession())
+				{
+					var cmd = session.Advanced.DatabaseCommands;
+					PurgeCollection(cmd, "Tag:[[RavenCommits]]");
+					PurgeCollection(cmd, "Tag:[[RavenSnapshots]]");
+					PurgeCollection(cmd, "Tag:[[RavenStreamHeads]]");
+
+					session.SaveChanges();
+					scope.Complete();
+				}
+			}
+			catch (WebException e)
+			{
+				throw new StorageUnavailableException(e.Message, e);
+			}
+			catch (Exception e)
+			{
+				throw new StorageException(e.Message, e);
+			}
+		}
+		private static void PurgeCollection(IDatabaseCommands commands, string tag)
+		{
+			commands.DeleteByIndex("Raven/DocumentsByEntityName", new IndexQuery { Query = tag }, true);
 		}
 
 		private RavenCommit LoadSavedCommit(Commit attempt)
@@ -300,7 +326,7 @@
 				session.Advanced.UseOptimisticConcurrency = false;
 				session.Store(current);
 				session.SaveChanges();
-				scope.Complete();
+				scope.Complete(); // if this fails it's no big deal, stream heads can be updated whenever
 			}
 		}
 		protected virtual TransactionScope OpenQueryScope()
