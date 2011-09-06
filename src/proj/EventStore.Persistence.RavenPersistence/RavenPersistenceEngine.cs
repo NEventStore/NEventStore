@@ -68,7 +68,7 @@
 			if (Interlocked.Increment(ref this.initialized) > 1)
 				return;
 
-			try
+			this.TryRaven(() =>
 			{
 				using (var scope = this.OpenCommandScope())
 				{
@@ -79,11 +79,8 @@
 					new RavenStreamHeadBySnapshotAge().Execute(this.store);
 					scope.Complete();
 				}
-			}
-			catch (WebException e)
-			{
-				throw new StorageUnavailableException(e.Message, e);
-			}
+				return true;
+			});
 		}
 
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
@@ -101,24 +98,20 @@
 		{
 			try
 			{
-				using (var scope = this.OpenCommandScope())
-				using (var session = this.store.OpenSession())
+				this.TryRaven(() =>
 				{
-					session.Advanced.UseOptimisticConcurrency = true;
-					session.Store(attempt.ToRavenCommit(this.serializer));
-					session.SaveChanges();
-					scope.Complete();
-				}
+					using (var scope = this.OpenCommandScope())
+					using (var session = this.store.OpenSession())
+					{
+						session.Advanced.UseOptimisticConcurrency = true;
+						session.Store(attempt.ToRavenCommit(this.serializer));
+						session.SaveChanges();
+						scope.Complete();
+					}
 
-				this.SaveStreamHead(attempt.ToRavenStreamHead());
-			}
-			catch (WebException e)
-			{
-				throw new StorageUnavailableException(e.Message, e);
-			}
-			catch (NonUniqueObjectException e)
-			{
-				throw new DuplicateCommitException(e.Message, e);
+					this.SaveStreamHead(attempt.ToRavenStreamHead());
+					return true;
+				});
 			}
 			catch (Raven.Abstractions.Exceptions.ConcurrencyException)
 			{
@@ -127,10 +120,6 @@
 					throw new DuplicateCommitException();
 
 				throw new ConcurrencyException();
-			}
-			catch (Exception e)
-			{
-				throw new StorageException(e.Message, e);
 			}
 		}
 
@@ -156,7 +145,7 @@
 				Patches = new[] { patch }
 			};
 
-			try
+			this.TryRaven(() =>
 			{
 				using (var scope = this.OpenCommandScope())
 				using (var session = this.store.OpenSession())
@@ -164,16 +153,9 @@
 					session.Advanced.DatabaseCommands.Batch(new[] { data });
 					session.SaveChanges();
 					scope.Complete();
+					return true;
 				}
-			}
-			catch (WebException e)
-			{
-				throw new StorageUnavailableException(e.Message, e);
-			}
-			catch (Exception e)
-			{
-				throw new StorageException(e.Message, e);
-			}
+			});
 		}
 
 		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
@@ -196,36 +178,31 @@
 
 			try
 			{
-				using (var scope = this.OpenCommandScope())
-				using (var session = this.store.OpenSession())
+				return this.TryRaven(() =>
 				{
-					var ravenSnapshot = snapshot.ToRavenSnapshot(this.serializer);
-					session.Store(ravenSnapshot);
-					session.SaveChanges();
-					scope.Complete();
-				}
+					using (var scope = this.OpenCommandScope())
+					using (var session = this.store.OpenSession())
+					{
+						var ravenSnapshot = snapshot.ToRavenSnapshot(this.serializer);
+						session.Store(ravenSnapshot);
+						session.SaveChanges();
+						scope.Complete();
+					}
 
-				this.SaveStreamHead(snapshot.ToRavenStreamHead());
+					this.SaveStreamHead(snapshot.ToRavenStreamHead());
 
-				return true;
-			}
-			catch (WebException e)
-			{
-				throw new StorageUnavailableException(e.Message, e);
+					return true;
+				});
 			}
 			catch (Raven.Abstractions.Exceptions.ConcurrencyException)
 			{
 				return false;
 			}
-			catch (Exception e)
-			{
-				throw new StorageException(e.Message, e);
-			}
 		}
 
 		public virtual void Purge()
 		{
-			try
+			this.TryRaven(() =>
 			{
 				using (var scope = this.OpenCommandScope())
 				using (var session = this.store.OpenSession())
@@ -237,16 +214,9 @@
 
 					session.SaveChanges();
 					scope.Complete();
+					return true;
 				}
-			}
-			catch (WebException e)
-			{
-				throw new StorageUnavailableException(e.Message, e);
-			}
-			catch (Exception e)
-			{
-				throw new StorageException(e.Message, e);
-			}
+			});
 		}
 		private static void PurgeCollection(IDatabaseCommands commands, string tag)
 		{
@@ -255,20 +225,12 @@
 
 		private RavenCommit LoadSavedCommit(Commit attempt)
 		{
-			try
+			return this.TryRaven(() =>
 			{
 				using (this.OpenQueryScope())
 				using (var session = this.store.OpenSession())
 					return session.Load<RavenCommit>(attempt.ToRavenCommitId());
-			}
-			catch (WebException e)
-			{
-				throw new StorageUnavailableException(e.Message, e);
-			}
-			catch (Exception e)
-			{
-				throw new StorageException(e.Message, e);
-			}
+			});
 		}
 		private IEnumerable<Commit> QueryCommits<TIndex>(Expression<Func<RavenCommit, bool>> query)
 			where TIndex : AbstractIndexCreationTask, new()
@@ -278,7 +240,7 @@
 		private IEnumerable<T> Query<T, TIndex>(Expression<Func<T, bool>> query)
 			where TIndex : AbstractIndexCreationTask, new()
 		{
-			try
+			return this.TryRaven(() =>
 			{
 				using (this.OpenQueryScope())
 				using (var session = this.OpenQuerySession())
@@ -286,18 +248,9 @@
 						.Customize(x => { if (this.consistentQueries) x.WaitForNonStaleResults(); })
 						.Where(query)
 						.Page(this.pageSize);
-			}
-			catch (WebException e)
-			{
-				throw new StorageUnavailableException(e.Message, e);
-			}
-			catch (Exception e)
-			{
-				throw new StorageException(e.Message, e);
-			}
+			});
 		}
-
-		protected virtual IDocumentSession OpenQuerySession()
+		private IDocumentSession OpenQuerySession()
 		{
 			var session = this.store.OpenSession();
 
@@ -318,19 +271,47 @@
 		}
 		private void SaveStreamHeadAsync(RavenStreamHead updated)
 		{
-			using (var scope = this.OpenCommandScope())
-			using (var session = this.store.OpenSession())
+			this.TryRaven(() =>
 			{
-				var current = session.Load<RavenStreamHead>(updated.StreamId.ToRavenStreamId()) ?? updated;
-				current.HeadRevision = updated.HeadRevision;
+				using (var scope = this.OpenCommandScope())
+				using (var session = this.store.OpenSession())
+				{
+					var current = session.Load<RavenStreamHead>(updated.StreamId.ToRavenStreamId()) ?? updated;
+					current.HeadRevision = updated.HeadRevision;
 
-				if (updated.SnapshotRevision > 0)
-					current.SnapshotRevision = updated.SnapshotRevision;
+					if (updated.SnapshotRevision > 0)
+						current.SnapshotRevision = updated.SnapshotRevision;
 
-				session.Advanced.UseOptimisticConcurrency = false;
-				session.Store(current);
-				session.SaveChanges();
-				scope.Complete(); // if this fails it's no big deal, stream heads can be updated whenever
+					session.Advanced.UseOptimisticConcurrency = false;
+					session.Store(current);
+					session.SaveChanges();
+					scope.Complete(); // if this fails it's no big deal, stream heads can be updated whenever
+				}
+				return true;
+			});
+		}
+
+		protected virtual T TryRaven<T>(Func<T> callback)
+		{
+			try
+			{
+				return callback();
+			}
+			catch (WebException e)
+			{
+				throw new StorageUnavailableException(e.Message, e);
+			}
+			catch (NonUniqueObjectException e)
+			{
+				throw new DuplicateCommitException(e.Message, e);
+			}
+			catch (Raven.Abstractions.Exceptions.ConcurrencyException)
+			{
+				throw;
+			}
+			catch (Exception e)
+			{
+				throw new StorageException(e.Message, e);
 			}
 		}
 		protected virtual TransactionScope OpenQueryScope()
