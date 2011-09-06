@@ -311,7 +311,10 @@
 
 		private void SaveStreamHead(RavenStreamHead streamHead)
 		{
-			ThreadPool.QueueUserWorkItem(x => this.SaveStreamHeadAsync(streamHead), null);
+			if (this.consistentQueries)
+				this.SaveStreamHeadAsync(streamHead);
+			else
+				ThreadPool.QueueUserWorkItem(x => this.SaveStreamHeadAsync(streamHead), null);
 		}
 		private void SaveStreamHeadAsync(RavenStreamHead updated)
 		{
@@ -320,8 +323,9 @@
 			{
 				var current = session.Load<RavenStreamHead>(updated.StreamId.ToRavenStreamId()) ?? updated;
 				current.HeadRevision = updated.HeadRevision;
-				current.SnapshotRevision = updated.SnapshotRevision > 0
-					? updated.SnapshotRevision : current.SnapshotRevision;
+
+				if (updated.SnapshotRevision > 0)
+					current.SnapshotRevision = updated.SnapshotRevision;
 
 				session.Advanced.UseOptimisticConcurrency = false;
 				session.Store(current);
