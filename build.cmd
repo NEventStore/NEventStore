@@ -38,7 +38,7 @@ echo Unit Tests
 "%MSPEC_PATH%/mspec-clr4.exe" src/tests/EventStore.Core.UnitTests/bin/%TARGET_CONFIG%/EventStore.Core.UnitTests.dll
 
 echo Acceptance Tests
-"%MSPEC_PATH%/mspec-clr4.exe" src/tests/EventStore.Persistence.AcceptanceTests/bin/%TARGET_CONFIG%/EventStore.Persistence.AcceptanceTests.dll
+"%MSPEC_PATH%/mspec-x86-clr4.exe" src/tests/EventStore.Persistence.AcceptanceTests/bin/%TARGET_CONFIG%/EventStore.Persistence.AcceptanceTests.dll
 call acceptance-serialization.cmd
 
 echo.
