@@ -91,6 +91,12 @@
     <Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v3.5'">
       <HintPath>..\..\..\bin\RavenDB.1.0.0.465\lib\net35\Raven.Client.Lightweight-3.5.dll</HintPath>
     </Reference>
+	<Reference Include="NLog" Condition="$(TargetFrameworkVersion)=='v4.0'">
+      <HintPath>..\..\..\bin\NLog.2.0.0.2000\lib\net40\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog" Condition="$(TargetFrameworkVersion)=='v3.5'">
+      <HintPath>..\..\..\bin\NLog.2.0.0.2000\lib\net35\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" Condition="$(TargetFrameworkVersion)=='v4.0'" />
     <Reference Include="System.Transactions" />
