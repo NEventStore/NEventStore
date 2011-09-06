@@ -42,7 +42,19 @@ namespace EventStore.Persistence.RavenPersistence
 		}
 		private static object FromBase64(this object value)
 		{
-			return value is string ? Convert.FromBase64String(value as string) : value;
+			const string Base64Prefix = "AAEAAAD/////";
+
+			if (!(value is string))
+				return value;
+
+			var @string = value as string;
+			if (string.IsNullOrEmpty(@string))
+				return value;
+
+			if (@string.StartsWith(Base64Prefix))
+				return Convert.FromBase64String(value as string);
+
+			return value;
 		}
 
 		public static RavenSnapshot ToRavenSnapshot(this Snapshot snapshot, IDocumentSerializer serializer)
