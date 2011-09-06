@@ -38,7 +38,11 @@ namespace EventStore.Persistence.RavenPersistence
 				commit.CommitSequence,
 				commit.CommitStamp,
 				commit.Headers,
-				serializer.Deserialize<List<EventMessage>>(commit.Payload));
+				serializer.Deserialize<List<EventMessage>>(commit.Payload.FromBase64()));
+		}
+		private static object FromBase64(this object value)
+		{
+			return value is string ? Convert.FromBase64String(value as string) : value;
 		}
 
 		public static RavenSnapshot ToRavenSnapshot(this Snapshot snapshot, IDocumentSerializer serializer)
@@ -59,7 +63,7 @@ namespace EventStore.Persistence.RavenPersistence
 			return new Snapshot(
 				snapshot.StreamId,
 				snapshot.StreamRevision,
-				serializer.Deserialize<object>(snapshot.Payload));
+				serializer.Deserialize<object>(snapshot.Payload.FromBase64()));
 		}
 
 		public static string ToRavenStreamId(this Guid streamId)
