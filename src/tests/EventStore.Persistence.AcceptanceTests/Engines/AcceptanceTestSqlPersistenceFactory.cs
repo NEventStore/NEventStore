@@ -26,11 +26,11 @@ namespace EventStore.Persistence.AcceptanceTests.Engines
 		protected override string BuildConnectionString(Guid streamId, ConnectionStringSettings setting)
 		{
 			return setting.ConnectionString
-			   .Replace("[HOST]", "host".GetSetting() ?? "localhost")
-			   .Replace("[PORT]", "port".GetSetting() ?? string.Empty)
-			   .Replace("[DATABASE]", "database".GetSetting() ?? "EventStore")
-			   .Replace("[USER]", "user".GetSetting() ?? string.Empty)
-			   .Replace("[PASSWORD]", "password".GetSetting() ?? string.Empty);
+				.Replace("[HOST]", "host".GetSetting() ?? "localhost")
+				.Replace("[PORT]", "port".GetSetting() ?? string.Empty)
+				.Replace("[DATABASE]", "database".GetSetting() ?? "EventStore")
+				.Replace("[USER]", "user".GetSetting() ?? string.Empty)
+				.Replace("[PASSWORD]", "password".GetSetting() ?? string.Empty);
 		}
 	}
 
