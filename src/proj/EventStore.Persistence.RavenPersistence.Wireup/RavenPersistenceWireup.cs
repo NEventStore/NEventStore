@@ -7,11 +7,12 @@ namespace EventStore
     public class RavenPersistenceWireup : PersistenceWireup
     {
         // these values are considered "safe by default" according to Raven docs
-        private int pageSize = 128;
-        private int maxServerPageSize = 1024;
-        private bool consistentQueries; // stale queries perform better
-        private IDocumentSerializer serializer = new DocumentObjectSerializer();
+        int pageSize = 128;
+        int maxServerPageSize = 1024;
+        bool consistentQueries; // stale queries perform better
+        IDocumentSerializer serializer = new DocumentObjectSerializer();
         string url;
+        string defaultDatabase;
 
 
         public RavenPersistenceWireup(Wireup inner)
@@ -31,10 +32,17 @@ namespace EventStore
                 MaxServerPageSize = this.maxServerPageSize,
                 RequestedPageSize = this.pageSize,
                 ConnectionName = connectionName,
+                DefaultDatabase = this.defaultDatabase,
                 Url = this.url
             });
 
             this.Container.Register(c => new RavenPersistenceFactory(c.Resolve<RavenConfiguration>()).Build());
+        }
+
+        public virtual RavenPersistenceWireup DefaultDatabase(string database)
+        {
+            this.defaultDatabase = database;
+            return this;
         }
 
         public virtual RavenPersistenceWireup Url(string explicitUrl)

@@ -27,7 +27,9 @@
 
             if (!string.IsNullOrEmpty(config.Url))
                 store.Url = config.Url;
-			
+
+            if (!string.IsNullOrEmpty(config.DefaultDatabase))
+                store.DefaultDatabase = config.DefaultDatabase;
 
             store.Initialize();
 
