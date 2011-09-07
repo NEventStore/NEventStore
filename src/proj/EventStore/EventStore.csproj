@@ -49,6 +49,7 @@
     <Compile Include="ConcurrencyException.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Logging\ILog.cs" />
     <Compile Include="IPipelineHook.cs" />
     <Compile Include="Logging\LogFactory.cs" />

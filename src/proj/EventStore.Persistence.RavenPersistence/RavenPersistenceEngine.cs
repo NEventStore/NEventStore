@@ -122,6 +122,19 @@
 				throw new ConcurrencyException();
 			}
 		}
+		private RavenCommit LoadSavedCommit(Commit attempt)
+		{
+			return this.TryRaven(() =>
+			{
+				using (var scope = this.OpenQueryScope())
+				using (var session = this.store.OpenSession())
+				{
+					var commit = session.Load<RavenCommit>(attempt.ToRavenCommitId());
+					scope.Complete();
+					return commit;
+				}
+			});
+		}
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
@@ -223,15 +236,6 @@
 			commands.DeleteByIndex("Raven/DocumentsByEntityName", new IndexQuery { Query = tag }, true);
 		}
 
-		private RavenCommit LoadSavedCommit(Commit attempt)
-		{
-			return this.TryRaven(() =>
-			{
-				using (this.OpenQueryScope())
-				using (var session = this.store.OpenSession())
-					return session.Load<RavenCommit>(attempt.ToRavenCommitId());
-			});
-		}
 		private IEnumerable<Commit> QueryCommits<TIndex>(Expression<Func<RavenCommit, bool>> query)
 			where TIndex : AbstractIndexCreationTask, new()
 		{
@@ -242,12 +246,26 @@
 		{
 			return this.TryRaven(() =>
 			{
-				using (this.OpenQueryScope())
-				using (var session = this.OpenQuerySession())
-					return session.Query<T, TIndex>()
-						.Customize(x => { if (this.consistentQueries) x.WaitForNonStaleResults(); })
-						.Where(query)
-						.Page(this.pageSize);
+				var scope = this.OpenQueryScope();
+
+				try
+				{
+					using (var session = this.OpenQuerySession())
+						return session.Query<T, TIndex>()
+							.Customize(x => { if (this.consistentQueries) x.WaitForNonStaleResults(); })
+							.Where(query)
+							.Page(this.pageSize)
+							.Yield(() =>
+							{
+								scope.Complete();
+								scope.Dispose();
+							});
+				}
+				catch (Exception)
+				{
+					scope.Dispose();
+					throw;
+				}
 			});
 		}
 		private IDocumentSession OpenQuerySession()
@@ -316,7 +334,7 @@
 		}
 		protected virtual TransactionScope OpenQueryScope()
 		{
-			return this.OpenCommandScope();
+			return this.OpenCommandScope() ?? new TransactionScope(TransactionScopeOption.Suppress);
 		}
 		protected virtual TransactionScope OpenCommandScope()
 		{
