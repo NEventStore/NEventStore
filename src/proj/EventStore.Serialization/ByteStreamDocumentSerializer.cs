@@ -1,7 +1,10 @@
 namespace EventStore.Serialization
 {
+	using System;
+
 	public class ByteStreamDocumentSerializer : IDocumentSerializer
 	{
+		private const string Base64Prefix = "AAEAAAD/////";
 		private readonly ISerialize serializer;
 
 		public ByteStreamDocumentSerializer(ISerialize serializer)
@@ -15,7 +18,18 @@ namespace EventStore.Serialization
 		}
 		public T Deserialize<T>(object document)
 		{
-			return this.serializer.Deserialize<T>(document as byte[]);
+			var bytes = FromBase64(document as string) ?? document as byte[];
+			return this.serializer.Deserialize<T>(bytes);
+		}
+		private static byte[] FromBase64(string value)
+		{
+			if (string.IsNullOrEmpty(value))
+				return null;
+
+			if (!value.StartsWith(Base64Prefix))
+				return null;
+
+			return Convert.FromBase64String(value);
 		}
 	}
 }
