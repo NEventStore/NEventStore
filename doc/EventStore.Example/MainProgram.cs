@@ -47,7 +47,7 @@ namespace EventStore.Example
 			try
 			{
 				foreach (var @event in commit.Events)
-					Console.WriteLine(Resources.MessagesPublished + ": " + ((SomeDomainEvent)@event.Body).Value);
+					Console.WriteLine(Resources.MessagesPublished + ((SomeDomainEvent)@event.Body).Value);
 			}
 			catch (Exception)
 			{
