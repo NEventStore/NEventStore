@@ -7,11 +7,8 @@
 	{
 		private readonly RavenConfiguration config;
 
-		protected string ConnectionStringName { get; private set; }
-
-		public RavenPersistenceFactory(string connectionName, RavenConfiguration config)
+		public RavenPersistenceFactory(RavenConfiguration config)
 		{
-			this.ConnectionStringName = connectionName;
 			this.config = config;
 		}
 
@@ -22,7 +19,17 @@
 		}
 		protected virtual IDocumentStore GetStore()
 		{
-			var store = new DocumentStore { ConnectionStringName = this.ConnectionStringName };
+			var store = new DocumentStore();
+
+			if (!string.IsNullOrEmpty(this.config.ConnectionName))
+				store.ConnectionStringName = this.config.ConnectionName;
+
+			if (!string.IsNullOrEmpty(this.config.Url))
+				store.Url = this.config.Url;
+
+			if (!string.IsNullOrEmpty(this.config.DefaultDatabase))
+				store.DefaultDatabase = this.config.DefaultDatabase;
+
 			store.Initialize();
 
 			return store;

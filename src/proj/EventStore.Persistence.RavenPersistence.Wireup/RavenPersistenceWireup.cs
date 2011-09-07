@@ -11,6 +11,13 @@ namespace EventStore
 		private int maxServerPageSize = 1024;
 		private bool consistentQueries; // stale queries perform better
 		private IDocumentSerializer serializer = new DocumentObjectSerializer();
+		private string url;
+		private string defaultDatabase;
+
+		public RavenPersistenceWireup(Wireup inner)
+			: this(inner, string.Empty)
+		{
+		}
 
 		public RavenPersistenceWireup(Wireup inner, string connectionName)
 			: base(inner)
@@ -21,11 +28,24 @@ namespace EventStore
 				ScopeOption = c.Resolve<TransactionScopeOption>(),
 				ConsistentQueries = this.consistentQueries,
 				MaxServerPageSize = this.maxServerPageSize,
-				RequestedPageSize = this.pageSize
+				RequestedPageSize = this.pageSize,
+				ConnectionName = connectionName,
+				DefaultDatabase = this.defaultDatabase,
+				Url = this.url
 			});
 
-			this.Container.Register(c => new RavenPersistenceFactory(
-				connectionName, c.Resolve<RavenConfiguration>()).Build());
+			this.Container.Register(c => new RavenPersistenceFactory(c.Resolve<RavenConfiguration>()).Build());
+		}
+
+		public virtual RavenPersistenceWireup DefaultDatabase(string database)
+		{
+			this.defaultDatabase = database;
+			return this;
+		}
+		public virtual RavenPersistenceWireup Url(string explicitUrl)
+		{
+			this.url = explicitUrl;
+			return this;
 		}
 
 		public virtual RavenPersistenceWireup PageEvery(int records)
