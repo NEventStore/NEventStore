@@ -185,8 +185,12 @@ namespace EventStore.Persistence.SqlPersistence
 			{
 				connection = this.connectionFactory.OpenReplica(streamId);
 				transaction = this.dialect.OpenTransaction(connection);
-				statement = this.dialect.BuildStatement(connection, transaction); // enumeration disposes resources
-				return EnumerateQuery(() => query(statement), scope);
+				statement = this.dialect.BuildStatement(connection, transaction);
+				return query(statement).Yield(() =>
+				{
+					scope.Complete();
+					scope.Dispose();
+				});
 			}
 			catch (Exception e)
 			{
@@ -206,18 +210,7 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		protected virtual TransactionScope OpenQueryScope()
 		{
-			return this.OpenCommandScope();
-		}
-		private static IEnumerable<T> EnumerateQuery<T>(Func<IEnumerable<T>> query, TransactionScope scope)
-		{
-			foreach (var item in query())
-				yield return item;
-
-			if (scope != null)
-			{
-				scope.Complete();
-				scope.Dispose();
-			}
+			return this.OpenCommandScope() ?? new TransactionScope(TransactionScopeOption.Suppress);
 		}
 
 		protected virtual int ExecuteCommand(Guid streamId, Func<IDbStatement, int> command)
