@@ -7,7 +7,6 @@
 	{
 		private readonly RavenConfiguration config;
 
-
 		public RavenPersistenceFactory(RavenConfiguration config)
 		{
 			this.config = config;
@@ -20,18 +19,18 @@
 		}
 		protected virtual IDocumentStore GetStore()
 		{
-		    var store = new DocumentStore();
+			var store = new DocumentStore();
 
-            if(!string.IsNullOrEmpty(config.ConnectionName))
-                store.ConnectionStringName = config.ConnectionName;
+			if (!string.IsNullOrEmpty(this.config.ConnectionName))
+				store.ConnectionStringName = this.config.ConnectionName;
 
-            if (!string.IsNullOrEmpty(config.Url))
-                store.Url = config.Url;
+			if (!string.IsNullOrEmpty(this.config.Url))
+				store.Url = this.config.Url;
 
-            if (!string.IsNullOrEmpty(config.DefaultDatabase))
-                store.DefaultDatabase = config.DefaultDatabase;
+			if (!string.IsNullOrEmpty(this.config.DefaultDatabase))
+				store.DefaultDatabase = this.config.DefaultDatabase;
 
-            store.Initialize();
+			store.Initialize();
 
 			return store;
 		}

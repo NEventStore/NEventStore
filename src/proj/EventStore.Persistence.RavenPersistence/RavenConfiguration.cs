@@ -5,6 +5,10 @@ namespace EventStore.Persistence.RavenPersistence
 
 	public class RavenConfiguration
 	{
+		public string ConnectionName { get; set; }
+		public string Url { get; set; }
+		public string DefaultDatabase { get; set; }
+
 		public IDocumentSerializer Serializer { get; set; }
 		public TransactionScopeOption ScopeOption { get; set; }
 		public bool ConsistentQueries { get; set; }
@@ -20,11 +24,5 @@ namespace EventStore.Persistence.RavenPersistence
 				return this.RequestedPageSize;
 			}
 		}
-
-	    public string ConnectionName { get; set; }
-
-	    public string Url { get; set; }
-
-	    public string DefaultDatabase { get; set; }
 	}
 }
