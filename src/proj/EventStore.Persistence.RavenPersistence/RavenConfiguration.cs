@@ -20,5 +20,9 @@ namespace EventStore.Persistence.RavenPersistence
 				return this.RequestedPageSize;
 			}
 		}
+
+	    public string ConnectionName { get; set; }
+
+	    public string Url { get; set; }
 	}
 }
