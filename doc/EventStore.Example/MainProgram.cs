@@ -38,6 +38,7 @@ namespace EventStore.Example
 				.HookIntoPipelineUsing(new[] { new AuthorizationPipelineHook() })
 				.UsingAsynchronousDispatcher()
 					.PublishTo(new DelegateMessagePublisher(DispatchCommit))
+				.LogToConsoleWindow()
 				.Build();
 		}
 		private static void DispatchCommit(Commit commit)
