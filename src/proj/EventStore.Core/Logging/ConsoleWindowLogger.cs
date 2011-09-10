@@ -4,14 +4,9 @@ namespace EventStore.Logging
 
 	public class ConsoleWindowLogger : ILog
 	{
-		public static void MakePrimaryLogger()
-		{
-			LogFactory.BuildLogger = type => new ConsoleWindowLogger(type);
-		}
-
 		private static readonly object Sync = new object();
-		private readonly Type typeToLog;
 		private readonly ConsoleColor originalColor = Console.ForegroundColor;
+		private readonly Type typeToLog;
 
 		public ConsoleWindowLogger(Type typeToLog)
 		{
@@ -20,7 +15,7 @@ namespace EventStore.Logging
 
 		public virtual void Verbose(string message, params object[] values)
 		{
-			this.Log(ConsoleColor.Green, message, values);
+			this.Log(ConsoleColor.DarkGreen, message, values);
 		}
 		public virtual void Debug(string message, params object[] values)
 		{
@@ -36,7 +31,7 @@ namespace EventStore.Logging
 		}
 		public virtual void Error(string message, params object[] values)
 		{
-			this.Log(ConsoleColor.Red, message, values);
+			this.Log(ConsoleColor.DarkRed, message, values);
 		}
 		public virtual void Fatal(string message, params object[] values)
 		{

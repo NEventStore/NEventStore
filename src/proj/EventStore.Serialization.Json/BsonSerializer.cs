@@ -3,10 +3,13 @@ namespace EventStore.Serialization
 	using System;
 	using System.Collections;
 	using System.IO;
+	using Logging;
 	using Newtonsoft.Json.Bson;
 
 	public class BsonSerializer : JsonSerializer
 	{
+		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(BsonSerializer));
+
 		public BsonSerializer(params Type[] knownTypes)
 			: base(knownTypes)
 		{
@@ -23,8 +26,12 @@ namespace EventStore.Serialization
 		}
 		private static bool IsArray(Type type)
 		{
-			return typeof(IEnumerable).IsAssignableFrom(type)
+			var array = typeof(IEnumerable).IsAssignableFrom(type)
 				&& !typeof(IDictionary).IsAssignableFrom(type);
+
+			Logger.Verbose(Messages.TypeIsArray, type, array);
+
+			return array;
 		}
 	}
 }

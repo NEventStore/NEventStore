@@ -69,6 +69,7 @@
       <Project>{421664DB-C18D-4499-ABC1-C9086D525F80}</Project>
       <Name>EventStore.Wireup</Name>
     </ProjectReference>
+    <Reference Include="System.Transactions" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\..\bin\nuget\NuGet.targets" />

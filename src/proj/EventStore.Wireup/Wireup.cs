@@ -25,6 +25,7 @@ namespace EventStore
 		{
 			var container = new NanoContainer();
 
+			container.Register(TransactionScopeOption.Suppress);
 			container.Register<IPersistStreams>(new InMemoryPersistenceEngine());
 			container.Register(BuildEventStore);
 

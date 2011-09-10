@@ -4,9 +4,11 @@ namespace EventStore.Serialization
 	using System.Collections;
 	using System.IO;
 	using System.Security.Cryptography;
+	using Logging;
 
 	public class RijndaelSerializer : ISerialize
 	{
+		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(RijndaelSerializer));
 		private const int KeyLength = 16; // bytes
 		private readonly ISerialize inner;
 		private readonly byte[] encryptionKey;
@@ -14,7 +16,7 @@ namespace EventStore.Serialization
 		public RijndaelSerializer(ISerialize inner, byte[] encryptionKey)
 		{
 			if (!KeyIsValid(encryptionKey, KeyLength))
-				throw new ArgumentException("The key must be exactly 16 bytes.", "encryptionKey");
+				throw new ArgumentException(Messages.InvalidKeyLength, "encryptionKey");
 
 			this.encryptionKey = encryptionKey;
 			this.inner = inner;
@@ -26,6 +28,8 @@ namespace EventStore.Serialization
 
 		public virtual void Serialize<T>(Stream output, T graph)
 		{
+			Logger.Verbose(Messages.SerializingGraph, typeof(T));
+
 			using (var rijndael = new RijndaelManaged())
 			{
 				rijndael.Key = this.encryptionKey;
@@ -46,6 +50,8 @@ namespace EventStore.Serialization
 
 		public virtual T Deserialize<T>(Stream input)
 		{
+			Logger.Verbose(Messages.DeserializingStream, typeof(T));
+
 			using (var rijndael = new RijndaelManaged())
 			{
 				rijndael.Key = this.encryptionKey;

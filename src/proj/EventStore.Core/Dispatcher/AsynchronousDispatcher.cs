@@ -1,53 +1,26 @@
 namespace EventStore.Dispatcher
 {
-	using System;
 	using System.Threading;
+	using Logging;
 	using Persistence;
 
-	public class AsynchronousDispatcher : IDispatchCommits
+	public class AsynchronousDispatcher : SynchronousDispatcher
 	{
-		private readonly IPublishMessages bus;
-		private readonly IPersistStreams persistence;
-		private bool disposed;
+		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(AsynchronousDispatcher));
 
 		public AsynchronousDispatcher(IPublishMessages bus, IPersistStreams persistence)
+			: base(bus, persistence)
 		{
-			this.bus = bus;
-			this.persistence = persistence;
-
-			this.Start();
 		}
 
-		public void Dispose()
+		public override void Dispatch(Commit commit)
 		{
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
+			Logger.Info(Resources.SchedulingDelivery, commit.CommitId);
+			ThreadPool.QueueUserWorkItem(x => this.Callback(commit));
 		}
-		protected virtual void Dispose(bool disposing)
+		private void Callback(Commit commit)
 		{
-			if (!disposing || this.disposed)
-				return;
-
-			this.disposed = true;
-			this.bus.Dispose();
-			this.persistence.Dispose();
-		}
-
-		private void Start()
-		{
-			this.persistence.Initialize();
-			var commits = this.persistence.GetUndispatchedCommits();
-			foreach (var commit in commits)
-				this.Dispatch(commit);
-		}
-
-		public virtual void Dispatch(Commit commit)
-		{
-			ThreadPool.QueueUserWorkItem(state =>
-			{
-				this.bus.Publish(commit);
-				this.persistence.MarkCommitAsDispatched(commit);
-			});
+			base.Dispatch(commit);
 		}
 	}
 }

@@ -5,11 +5,13 @@ namespace EventStore.Serialization
 	using System.IO;
 	using System.Linq;
 	using System.Text;
+	using Logging;
 	using Newtonsoft.Json;
 	using JsonNetSerializer = Newtonsoft.Json.JsonSerializer;
 
 	public class JsonSerializer : ISerialize
 	{
+		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(JsonSerializer));
 		private readonly JsonNetSerializer untypedSerializer = new JsonNetSerializer
 		{
 			TypeNameHandling = TypeNameHandling.Auto,
@@ -34,10 +36,14 @@ namespace EventStore.Serialization
 				knownTypes = null;
 
 			this.knownTypes = knownTypes ?? this.knownTypes;
+
+			foreach (var type in this.knownTypes)
+				Logger.Debug(Messages.RegisteringKnownType, type);
 		}
 
 		public virtual void Serialize<T>(Stream output, T graph)
 		{
+			Logger.Verbose(Messages.SerializingGraph, typeof(T));
 			using (var streamWriter = new StreamWriter(output, Encoding.UTF8))
 				this.Serialize(new JsonTextWriter(streamWriter), graph);
 		}
@@ -49,6 +55,7 @@ namespace EventStore.Serialization
 
 		public virtual T Deserialize<T>(Stream input)
 		{
+			Logger.Verbose(Messages.DeserializingStream, typeof(T));
 			using (var streamReader = new StreamReader(input, Encoding.UTF8))
 				return this.Deserialize<T>(new JsonTextReader(streamReader));
 		}
@@ -63,8 +70,12 @@ namespace EventStore.Serialization
 		protected virtual JsonNetSerializer GetSerializer(Type typeToSerialize)
 		{
 			if (this.knownTypes.Contains(typeToSerialize))
+			{
+				Logger.Verbose(Messages.UsingUntypedSerializer, typeToSerialize);
 				return this.untypedSerializer;
+			}
 
+			Logger.Verbose(Messages.UsingTypedSerializer, typeToSerialize);
 			return this.typedSerializer;
 		}
 	}
