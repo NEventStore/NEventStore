@@ -1,5 +1,6 @@
-EventStore v2.0
+EventStore v3.0 Beta
 ======================================================================
+For the current official release, please refer to [v2.0](https://github.com/joliver/EventStore/tree/2.0).
 
 ## Overview
 The EventStore is a persistence library used to abstract different storage implementations
@@ -47,6 +48,14 @@ underlying model found in the EventStore.  Thus each message delivered by the qu
 made to be idempotent, even though the message may be delivered multiple times, as per message queue
 "at-least-once" guarantees.  Following this, the EventStore is able to ensure that all events committed
 are always dispatched to any messaging infrastructure.
+
+**New in v3.0:** I knew you guys couldn't live without it, so for those storage engines and message systems
+which support and participate two-phase commits, there now exists the ability to specify a
+TransactionScopeOption of 'Required'.  Simply indicate this using the following wireup overload:
+
+	var store = Wireup.Init()
+		.UsingSqlPersistence("connection-name-here") // also works with UsingRavenPersistence()
+			.EnlistInAmbientTransaction()
 
 ## Supported Storage Engines
 
