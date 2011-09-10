@@ -156,4 +156,40 @@
   <data name="MarkingCommitAsDispatched" xml:space="preserve">
     <value>Marking commit '{0}' as dispatched.</value>
   </data>
+	<data name="DisposingEngine">
+		<value xml:space="preserve">Disposing engine.</value>
+	</data>
+	<data name="InitializingEngine">
+		<value xml:space="preserve">Initializing engine.</value>
+	</data>
+	<data name="GettingAllCommitsFromRevision">
+		<value><![CDATA[Getting all commits for stream '{0}' between '{1}' and '{2}'.]]></value>
+	</data>
+	<data name="GettingAllCommitsFromTime">
+		<value><![CDATA[Getting all commits from '{0}' forward.]]></value>
+	</data>
+	<data name="AttemptingToCommit">
+		<value><![CDATA[Attempting to append commit '{0}' to stream '{1}' at position '{2}'.]]></value>
+	</data>
+	<data name="UpdatingStreamHead">
+		<value><![CDATA[Updating stream head for stream '{0}'.]]></value>
+	</data>
+	<data name="RetrievingUndispatchedCommits">
+		<value xml:space="preserve">Retrieiving all {0} undispatched commits.</value>
+	</data>
+	<data name="MarkingAsDispatched">
+		<value><![CDATA[Marking commit '{0}' as dispatched.]]></value>
+	</data>
+	<data name="GettingStreamsToSnapshot">
+		<value xml:space="preserve">Getting the set of all streams to be snapshot which exceed {0} revisions without a snapshot.</value>
+	</data>
+	<data name="GettingSnapshotForStream">
+		<value><![CDATA[Getting the most recent snapshot for stream '{0}' on/since revision '{1}'.]]></value>
+	</data>
+	<data name="AddingSnapshot">
+		<value><![CDATA[Adding a snapshot for stream '{0}' at revision '{1}'.]]></value>
+	</data>
+	<data name="PurgingStore">
+		<value xml:space="preserve">Puring all data from storage.</value>
+	</data>
 </root>

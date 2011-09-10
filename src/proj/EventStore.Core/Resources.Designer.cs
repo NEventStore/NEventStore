@@ -61,11 +61,29 @@ namespace EventStore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Adding a snapshot for stream &apos;{0}&apos; at revision &apos;{1}&apos;..
+        /// </summary>
+        internal static string AddingSnapshot {
+            get {
+                return ResourceManager.GetString("AddingSnapshot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The object has already been disposed..
         /// </summary>
         internal static string AlreadyDisposed {
             get {
                 return ResourceManager.GetString("AlreadyDisposed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attempting to append commit &apos;{0}&apos; to stream &apos;{1}&apos; at position &apos;{2}&apos;..
+        /// </summary>
+        internal static string AttemptingToCommit {
+            get {
+                return ResourceManager.GetString("AttemptingToCommit", resourceCulture);
             }
         }
         
@@ -79,6 +97,51 @@ namespace EventStore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Disposing engine..
+        /// </summary>
+        internal static string DisposingEngine {
+            get {
+                return ResourceManager.GetString("DisposingEngine", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Getting all commits for stream &apos;{0}&apos; between &apos;{1}&apos; and &apos;{2}&apos;..
+        /// </summary>
+        internal static string GettingAllCommitsFromRevision {
+            get {
+                return ResourceManager.GetString("GettingAllCommitsFromRevision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Getting all commits from &apos;{0}&apos; forward..
+        /// </summary>
+        internal static string GettingAllCommitsFromTime {
+            get {
+                return ResourceManager.GetString("GettingAllCommitsFromTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Getting the most recent snapshot for stream &apos;{0}&apos; on/since revision &apos;{1}&apos;..
+        /// </summary>
+        internal static string GettingSnapshotForStream {
+            get {
+                return ResourceManager.GetString("GettingSnapshotForStream", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Getting the set of all streams to be snapshot which exceed {0} revisions without a snapshot..
+        /// </summary>
+        internal static string GettingStreamsToSnapshot {
+            get {
+                return ResourceManager.GetString("GettingStreamsToSnapshot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Getting undispatched commits from persistence engine..
         /// </summary>
         internal static string GettingUndispatchedCommits {
@@ -88,11 +151,29 @@ namespace EventStore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Initializing engine..
+        /// </summary>
+        internal static string InitializingEngine {
+            get {
+                return ResourceManager.GetString("InitializingEngine", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Initializing persistence engine..
         /// </summary>
         internal static string InitializingPersistence {
             get {
                 return ResourceManager.GetString("InitializingPersistence", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Marking commit &apos;{0}&apos; as dispatched..
+        /// </summary>
+        internal static string MarkingAsDispatched {
+            get {
+                return ResourceManager.GetString("MarkingAsDispatched", resourceCulture);
             }
         }
         
@@ -133,11 +214,29 @@ namespace EventStore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Puring all data from storage..
+        /// </summary>
+        internal static string PurgingStore {
+            get {
+                return ResourceManager.GetString("PurgingStore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The collection is read only and cannot be modified..
         /// </summary>
         internal static string ReadOnlyCollection {
             get {
                 return ResourceManager.GetString("ReadOnlyCollection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Retrieiving all {0} undispatched commits..
+        /// </summary>
+        internal static string RetrievingUndispatchedCommits {
+            get {
+                return ResourceManager.GetString("RetrievingUndispatchedCommits", resourceCulture);
             }
         }
         
@@ -174,6 +273,15 @@ namespace EventStore {
         internal static string StoppingDispatcher {
             get {
                 return ResourceManager.GetString("StoppingDispatcher", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updating stream head for stream &apos;{0}&apos;..
+        /// </summary>
+        internal static string UpdatingStreamHead {
+            get {
+                return ResourceManager.GetString("UpdatingStreamHead", resourceCulture);
             }
         }
     }
