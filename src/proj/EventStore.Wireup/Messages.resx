@@ -123,4 +123,85 @@
   <data name="TypeMustBeInterface" xml:space="preserve">
     <value>The type provided must be registered as an interface rather than as a concrete type, e.g. "container.Register&lt;IDispatchCommits&gt;(instance);".</value>
   </data>
+	<data name="AsyncDispatcherRegistered">
+		<value xml:space="preserve">Configuring store to dispatch messages asynchronously.</value>
+	</data>
+	<data name="MessagePublisherRegistered">
+		<value><![CDATA[Registering message publisher of type '{0}'.]]></value>
+	</data>
+	<data name="AddingWireupRegistration">
+		<value><![CDATA[Adding wireup registration for an object instance of type '{0}'.]]></value>
+	</data>
+	<data name="AddingWireupCallback">
+		<value xml:space="preserve">Adding wireup registration callback.</value>
+	</data>
+	<data name="ConfiguringInstancePerCall">
+		<value xml:space="preserve">Registration configured to resolve a new instance per call.</value>
+	</data>
+	<data name="ResolvingInstance">
+		<value xml:space="preserve">Resolving instance.</value>
+	</data>
+	<data name="BuildingNewInstance">
+		<value xml:space="preserve">Building new instance.</value>
+	</data>
+	<data name="AttemptingToResolveInstance">
+		<value xml:space="preserve">Attempting to resolve existing instance.</value>
+	</data>
+	<data name="BuildingAndStoringNewInstance">
+		<value xml:space="preserve">Building (and storing) new instance for later calls.</value>
+	</data>
+	<data name="RegisteringWireupCallback">
+		<value><![CDATA[Registering wireup resolver for service of type '{0}'.]]></value>
+	</data>
+	<data name="RegisteringServiceInstance">
+		<value><![CDATA[Registering wireup instance for service of type '{0}'.]]></value>
+	</data>
+	<data name="ResolvingService">
+		<value><![CDATA[Attempting to resolve instance for service of type '{0}'.]]></value>
+	</data>
+	<data name="UnableToResolve">
+		<value><![CDATA[Unable to resolve requested instance of type '{0}'.]]></value>
+	</data>
+	<data name="RegisteringPersistenceEngine">
+		<value><![CDATA[Registering persistence engine of type '{0}'.]]></value>
+	</data>
+	<data name="ConfiguringEngineInitialization">
+		<value xml:space="preserve">Configuring persistence engine to initialize.</value>
+	</data>
+	<data name="ConfiguringEngineEnlistment">
+		<value xml:space="preserve">Configuring persistence engine to enlist in ambient transactions using TransactionScope.</value>
+	</data>
+	<data name="BuildingEngine">
+		<value xml:space="preserve">Building the persistence engine.</value>
+	</data>
+	<data name="InitializingEngine">
+		<value xml:space="preserve">Initializing the configured persistence engine.</value>
+	</data>
+	<data name="ConfiguringCompression">
+		<value xml:space="preserve">Configuring serializer to compress the serialized payload.</value>
+	</data>
+	<data name="WrappingSerializerGZip">
+		<value><![CDATA[Wrapping serializer of type '{0}' in GZipSerializer.]]></value>
+	</data>
+	<data name="ConfiguringEncryption">
+		<value xml:space="preserve">Configuring serializer to encrypt the serialized payload.</value>
+	</data>
+	<data name="WrappingSerializerEncryption">
+		<value><![CDATA[Wrapping serializer of type '{0}' in RijndaelSerializer.]]></value>
+	</data>
+	<data name="AutoDetectDialect">
+		<value xml:space="preserve">Configuring SQL engine to auto-detect dialect.</value>
+	</data>
+	<data name="PagingSpecified">
+		<value><![CDATA[Persistence engine configured to page every '{0}' records.]]></value>
+	</data>
+	<data name="DialectSpecified">
+		<value><![CDATA[Registering SQL dialect of type '{0}'.]]></value>
+	</data>
+	<data name="ConnectionFactorySpecified">
+		<value><![CDATA[Using SQL connection factory of type '{0}'.]]></value>
+	</data>
+	<data name="SyncDispatcherRegistered">
+		<value xml:space="preserve">Configuring store to dispatch messages synchronously.</value>
+	</data>
 </root>

@@ -30,6 +30,7 @@ namespace EventStore.Example
 		private static IStoreEvents WireupEventStore()
 		{
 			 return Wireup.Init()
+				.LogToConsoleWindow()
 				.UsingSqlPersistence("EventStore")
 					.InitializeStorageEngine()
 					.UsingJsonSerialization()
@@ -38,7 +39,6 @@ namespace EventStore.Example
 				.HookIntoPipelineUsing(new[] { new AuthorizationPipelineHook() })
 				.UsingAsynchronousDispatcher()
 					.PublishTo(new DelegateMessagePublisher(DispatchCommit))
-				.LogToConsoleWindow()
 				.Build();
 		}
 		private static void DispatchCommit(Commit commit)

@@ -75,9 +75,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Messages.resx">
+      <SubType>Designer</SubType>
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
