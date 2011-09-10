@@ -2,6 +2,7 @@ namespace EventStore
 {
 	using System;
 	using System.Collections.Generic;
+	using Logging;
 	using Persistence;
 
 	/// <summary>
@@ -9,6 +10,7 @@ namespace EventStore
 	/// </summary>
 	public class OptimisticPipelineHook : IPipelineHook
 	{
+		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(OptimisticPipelineHook));
 		private const int MaxStreamsToTrack = 100;
 		private readonly LinkedList<Guid> maxItemsToTrack = new LinkedList<Guid>();
 		private readonly IDictionary<Guid, Commit> heads = new Dictionary<Guid, Commit>();
@@ -20,6 +22,7 @@ namespace EventStore
 		}
 		public OptimisticPipelineHook(int maxStreamsToTrack)
 		{
+			Logger.Debug(Resources.TrackingStreams, maxStreamsToTrack);
 			this.maxStreamsToTrack = maxStreamsToTrack;
 		}
 
@@ -30,6 +33,8 @@ namespace EventStore
 		}
 		public virtual bool PreCommit(Commit attempt)
 		{
+			Logger.Debug(Resources.OptimisticConcurrencyCheck, attempt.StreamId);
+
 			var head = this.GetStreamHead(attempt.StreamId);
 			if (head == null)
 				return true;
@@ -46,6 +51,7 @@ namespace EventStore
 			if (head.StreamRevision < attempt.StreamRevision - attempt.Events.Count)
 				throw new StorageException(); // beyond the end of the stream
 
+			Logger.Debug(Resources.NoConflicts, attempt.StreamId);
 			return true;
 		}
 		public virtual void PostCommit(Commit committed)
@@ -81,11 +87,15 @@ namespace EventStore
 		}
 		private void TrackUpToCapacity(Commit committed)
 		{
+			Logger.Verbose(Resources.TrackingCommit, committed.CommitSequence, committed.StreamId);
 			this.maxItemsToTrack.AddFirst(committed.StreamId);
 			if (this.maxItemsToTrack.Count <= this.maxStreamsToTrack)
 				return;
 
-			this.heads.Remove(this.maxItemsToTrack.Last.Value);
+			var expired = this.maxItemsToTrack.Last.Value;
+			Logger.Verbose(Resources.NoLongerTrackingStream, expired);
+
+			this.heads.Remove(expired);
 			this.maxItemsToTrack.RemoveLast();
 		}
 

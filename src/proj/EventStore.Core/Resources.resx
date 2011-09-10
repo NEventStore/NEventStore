@@ -192,4 +192,49 @@
 	<data name="PurgingStore">
 		<value xml:space="preserve">Puring all data from storage.</value>
 	</data>
+	<data name="TrackingStreams">
+		<value xml:space="preserve">Tracking up to {0} streams.</value>
+	</data>
+	<data name="OptimisticConcurrencyCheck">
+		<value><![CDATA[Verifying that no other commits have succeed on the stream '{0}'.]]></value>
+	</data>
+	<data name="NoConflicts">
+		<value><![CDATA[No other commits have been discovered that conflict for stream '{0}'.]]></value>
+	</data>
+	<data name="TrackingCommit">
+		<value><![CDATA[Tracking commit {0} on stream '{1}'.]]></value>
+	</data>
+	<data name="NoLongerTrackingStream">
+		<value><![CDATA[Purging all commits on stream '{0}' from tracking.]]></value>
+	</data>
+	<data name="CreatingStream">
+		<value><![CDATA[Creating stream '{0}'.]]></value>
+	</data>
+	<data name="OpeningStreamAtRevision">
+		<value><![CDATA[Opening stream '{0}' between revisions {1} and {2}.]]></value>
+	</data>
+	<data name="OpeningStreamWithSnapshot">
+		<value><![CDATA[Opening stream '{0}' with snapshot at {1} up to revision {2}.]]></value>
+	</data>
+	<data name="PipelineHookSkippedCommit">
+		<value><![CDATA[Pipeline hook of type '{0}' skipped over commit '{1}'.]]></value>
+	</data>
+	<data name="PipelineHookFilteredCommit">
+		<value xml:space="preserve">One or more pipeline hooks filtered out the commit.</value>
+	</data>
+	<data name="CommitAttemptFailedIntegrityChecks">
+		<value xml:space="preserve">Commit attempt failed one or more integrity checks.</value>
+	</data>
+	<data name="InvokingPreCommitHooks">
+		<value><![CDATA[Pushing commit '{0}' to pre-commit hook of type '{1}'.]]></value>
+	</data>
+	<data name="CommitRejectedByPipelineHook">
+		<value><![CDATA[Pipeline hook of type '{0}' rejected attempt '{1}'.]]></value>
+	</data>
+	<data name="CommitingAttempt">
+		<value><![CDATA[Commiting attempt '{0}' to the underlying persistence engine.]]></value>
+	</data>
+	<data name="InvokingPostCommitPipelineHooks">
+		<value><![CDATA[Pushing commit '{0}' to post-commit hook of type '{1}'.]]></value>
+	</data>
 </root>

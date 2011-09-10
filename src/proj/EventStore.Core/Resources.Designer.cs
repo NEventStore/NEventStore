@@ -88,11 +88,47 @@ namespace EventStore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Commit attempt failed one or more integrity checks..
+        /// </summary>
+        internal static string CommitAttemptFailedIntegrityChecks {
+            get {
+                return ResourceManager.GetString("CommitAttemptFailedIntegrityChecks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Commiting attempt &apos;{0}&apos; to the underlying persistence engine..
+        /// </summary>
+        internal static string CommitingAttempt {
+            get {
+                return ResourceManager.GetString("CommitingAttempt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pipeline hook of type &apos;{0}&apos; rejected attempt &apos;{1}&apos;..
+        /// </summary>
+        internal static string CommitRejectedByPipelineHook {
+            get {
+                return ResourceManager.GetString("CommitRejectedByPipelineHook", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The commit must be uniquely identified..
         /// </summary>
         internal static string CommitsMustBeUniquelyIdentified {
             get {
                 return ResourceManager.GetString("CommitsMustBeUniquelyIdentified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Creating stream &apos;{0}&apos;..
+        /// </summary>
+        internal static string CreatingStream {
+            get {
+                return ResourceManager.GetString("CreatingStream", resourceCulture);
             }
         }
         
@@ -169,6 +205,24 @@ namespace EventStore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Pushing commit &apos;{0}&apos; to post-commit hook of type &apos;{1}&apos;..
+        /// </summary>
+        internal static string InvokingPostCommitPipelineHooks {
+            get {
+                return ResourceManager.GetString("InvokingPostCommitPipelineHooks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pushing commit &apos;{0}&apos; to pre-commit hook of type &apos;{1}&apos;..
+        /// </summary>
+        internal static string InvokingPreCommitHooks {
+            get {
+                return ResourceManager.GetString("InvokingPreCommitHooks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Marking commit &apos;{0}&apos; as dispatched..
         /// </summary>
         internal static string MarkingAsDispatched {
@@ -187,6 +241,24 @@ namespace EventStore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No other commits have been discovered that conflict for stream &apos;{0}&apos;..
+        /// </summary>
+        internal static string NoConflicts {
+            get {
+                return ResourceManager.GetString("NoConflicts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Purging all commits on stream &apos;{0}&apos; from tracking..
+        /// </summary>
+        internal static string NoLongerTrackingStream {
+            get {
+                return ResourceManager.GetString("NoLongerTrackingStream", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The stream revision must be a positive number..
         /// </summary>
         internal static string NonPositiveRevisionNumber {
@@ -201,6 +273,51 @@ namespace EventStore {
         internal static string NonPositiveSequenceNumber {
             get {
                 return ResourceManager.GetString("NonPositiveSequenceNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Opening stream &apos;{0}&apos; between revisions {1} and {2}..
+        /// </summary>
+        internal static string OpeningStreamAtRevision {
+            get {
+                return ResourceManager.GetString("OpeningStreamAtRevision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Opening stream &apos;{0}&apos; with snapshot at {1} up to revision {2}..
+        /// </summary>
+        internal static string OpeningStreamWithSnapshot {
+            get {
+                return ResourceManager.GetString("OpeningStreamWithSnapshot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Verifying that no other commits have succeed on the stream &apos;{0}&apos;..
+        /// </summary>
+        internal static string OptimisticConcurrencyCheck {
+            get {
+                return ResourceManager.GetString("OptimisticConcurrencyCheck", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One or more pipeline hooks filtered out the commit..
+        /// </summary>
+        internal static string PipelineHookFilteredCommit {
+            get {
+                return ResourceManager.GetString("PipelineHookFilteredCommit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pipeline hook of type &apos;{0}&apos; skipped over commit &apos;{1}&apos;..
+        /// </summary>
+        internal static string PipelineHookSkippedCommit {
+            get {
+                return ResourceManager.GetString("PipelineHookSkippedCommit", resourceCulture);
             }
         }
         
@@ -273,6 +390,24 @@ namespace EventStore {
         internal static string StoppingDispatcher {
             get {
                 return ResourceManager.GetString("StoppingDispatcher", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tracking commit {0} on stream &apos;{1}&apos;..
+        /// </summary>
+        internal static string TrackingCommit {
+            get {
+                return ResourceManager.GetString("TrackingCommit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tracking up to {0} streams..
+        /// </summary>
+        internal static string TrackingStreams {
+            get {
+                return ResourceManager.GetString("TrackingStreams", resourceCulture);
             }
         }
         
