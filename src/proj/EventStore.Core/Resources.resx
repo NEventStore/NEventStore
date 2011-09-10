@@ -123,16 +123,37 @@
   <data name="AlreadyDisposed" xml:space="preserve">
     <value>The object has already been disposed.</value>
   </data>
-	<data name="CommitsMustBeUniquelyIdentified">
-		<value xml:space="preserve">The commit must be uniquely identified.</value>
-	</data>
-	<data name="NonPositiveSequenceNumber">
-		<value xml:space="preserve">The commit sequence must be a positive number.</value>
-	</data>
-	<data name="NonPositiveRevisionNumber">
-		<value xml:space="preserve">The stream revision must be a positive number.</value>
-	</data>
-	<data name="RevisionTooSmall">
-		<value xml:space="preserve">The stream revision must always be greater than or equal to the commit sequence.</value>
-	</data>
+  <data name="CommitsMustBeUniquelyIdentified" xml:space="preserve">
+    <value>The commit must be uniquely identified.</value>
+  </data>
+  <data name="NonPositiveSequenceNumber" xml:space="preserve">
+    <value>The commit sequence must be a positive number.</value>
+  </data>
+  <data name="NonPositiveRevisionNumber" xml:space="preserve">
+    <value>The stream revision must be a positive number.</value>
+  </data>
+  <data name="RevisionTooSmall" xml:space="preserve">
+    <value>The stream revision must always be greater than or equal to the commit sequence.</value>
+  </data>
+  <data name="StoppingDispatcher" xml:space="preserve">
+    <value>Stopping dispatcher</value>
+  </data>
+  <data name="StartingDispatcher" xml:space="preserve">
+    <value>Starting dispatcher</value>
+  </data>
+  <data name="InitializingPersistence" xml:space="preserve">
+    <value>Initializing persistence engine.</value>
+  </data>
+  <data name="GettingUndispatchedCommits" xml:space="preserve">
+    <value>Getting undispatched commits from persistence engine.</value>
+  </data>
+  <data name="SchedulingDelivery" xml:space="preserve">
+    <value>Scheduling commit '{0}' for delivery.</value>
+  </data>
+  <data name="PublishingCommit" xml:space="preserve">
+    <value>Pushing commit '{0}' to message publisher.</value>
+  </data>
+  <data name="MarkingCommitAsDispatched" xml:space="preserve">
+    <value>Marking commit '{0}' as dispatched.</value>
+  </data>
 </root>
