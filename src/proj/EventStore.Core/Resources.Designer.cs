@@ -61,6 +61,15 @@ namespace EventStore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Adding commit &apos;{0} with {1} events to stream &apos;{2}&apos;..
+        /// </summary>
+        internal static string AddingCommitsToStream {
+            get {
+                return ResourceManager.GetString("AddingCommitsToStream", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Adding a snapshot for stream &apos;{0}&apos; at revision &apos;{1}&apos;..
         /// </summary>
         internal static string AddingSnapshot {
@@ -79,11 +88,47 @@ namespace EventStore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Appending uncommitted event to stream &apos;{0}&apos;.
+        /// </summary>
+        internal static string AppendingUncommittedToStream {
+            get {
+                return ResourceManager.GetString("AppendingUncommittedToStream", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Attempting to append commit &apos;{0}&apos; to stream &apos;{1}&apos; at position &apos;{2}&apos;..
         /// </summary>
         internal static string AttemptingToCommit {
             get {
                 return ResourceManager.GetString("AttemptingToCommit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attempting to commit all changes on stream &apos;{0}&apos; to the underlying store..
+        /// </summary>
+        internal static string AttemptingToCommitChanges {
+            get {
+                return ResourceManager.GetString("AttemptingToCommitChanges", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Building a commit attempt &apos;{0}&apos; on stream &apos;{1}&apos;..
+        /// </summary>
+        internal static string BuildingCommitAttempt {
+            get {
+                return ResourceManager.GetString("BuildingCommitAttempt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clearing all uncommitted changes on stream &apos;{0}&apos;..
+        /// </summary>
+        internal static string ClearingUncommittedChanges {
+            get {
+                return ResourceManager.GetString("ClearingUncommittedChanges", resourceCulture);
             }
         }
         
@@ -187,6 +232,24 @@ namespace EventStore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ignoring some events on commit &apos;{0}&apos; of stream &apos;{1}&apos; because they starting before revision {2}..
+        /// </summary>
+        internal static string IgnoringBeforeRevision {
+            get {
+                return ResourceManager.GetString("IgnoringBeforeRevision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ignoring some events on commit &apos;{0}&apos; of stream &apos;{1}&apos; because they go beyond revision {2}..
+        /// </summary>
+        internal static string IgnoringBeyondRevision {
+            get {
+                return ResourceManager.GetString("IgnoringBeyondRevision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Initializing engine..
         /// </summary>
         internal static string InitializingEngine {
@@ -237,6 +300,15 @@ namespace EventStore {
         internal static string MarkingCommitAsDispatched {
             get {
                 return ResourceManager.GetString("MarkingCommitAsDispatched", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are no outstanding changes to be committed stream &apos;{0}&apos;..
+        /// </summary>
+        internal static string NoChangesToCommit {
+            get {
+                return ResourceManager.GetString("NoChangesToCommit", resourceCulture);
             }
         }
         
@@ -300,6 +372,15 @@ namespace EventStore {
         internal static string OptimisticConcurrencyCheck {
             get {
                 return ResourceManager.GetString("OptimisticConcurrencyCheck", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pushing attempt &apos;{0}&apos; on stream &apos;{1}&apos; to the underlying store..
+        /// </summary>
+        internal static string PersistingCommit {
+            get {
+                return ResourceManager.GetString("PersistingCommit", resourceCulture);
             }
         }
         
@@ -408,6 +489,15 @@ namespace EventStore {
         internal static string TrackingStreams {
             get {
                 return ResourceManager.GetString("TrackingStreams", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The underlying stream &apos;{0}&apos; has changed since the last known commit, refreshing the stream..
+        /// </summary>
+        internal static string UnderlyingStreamHasChanged {
+            get {
+                return ResourceManager.GetString("UnderlyingStreamHasChanged", resourceCulture);
             }
         }
         

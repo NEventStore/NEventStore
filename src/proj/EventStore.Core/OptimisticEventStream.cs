@@ -3,9 +3,11 @@ namespace EventStore
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using Logging;
 
 	public class OptimisticEventStream : IEventStream
 	{
+		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(OptimisticEventStream));
 		private readonly ICollection<EventMessage> committed = new LinkedList<EventMessage>();
 		private readonly ICollection<EventMessage> events = new LinkedList<EventMessage>();
 		private readonly IDictionary<string, object> headers = new Dictionary<string, object>();
@@ -39,6 +41,7 @@ namespace EventStore
 		{
 			foreach (var commit in commits ?? new Commit[0])
 			{
+				Logger.Verbose(Resources.AddingCommitsToStream, commit.CommitId, commit.Events.Count, this.StreamId);
 				this.identifiers.Add(commit.CommitId);
 
 				this.CommitSequence = commit.CommitSequence;
@@ -49,10 +52,16 @@ namespace EventStore
 				foreach (var @event in commit.Events)
 				{
 					if (currentRevision > maxRevision)
+					{
+						Logger.Debug(Resources.IgnoringBeyondRevision, commit.CommitId, this.StreamId, maxRevision);
 						break;
+					}
 
 					if (currentRevision++ < minRevision)
+					{
+						Logger.Debug(Resources.IgnoringBeforeRevision, commit.CommitId, this.StreamId, maxRevision);
 						continue;
+					}
 
 					this.committed.Add(@event);
 					this.StreamRevision = currentRevision - 1;
@@ -89,17 +98,25 @@ namespace EventStore
 
 		public virtual void Add(EventMessage uncommittedEvent)
 		{
-			if (uncommittedEvent != null && uncommittedEvent.Body != null)
-				this.events.Add(uncommittedEvent);
+			if (uncommittedEvent == null || uncommittedEvent.Body == null)
+				return;
+
+			Logger.Debug(Resources.AppendingUncommittedToStream, this.StreamId);
+			this.events.Add(uncommittedEvent);
 		}
 
 		public virtual void CommitChanges(Guid commitId)
 		{
+			Logger.Debug(Resources.AttemptingToCommitChanges, this.StreamId);
+
 			if (this.identifiers.Contains(commitId))
 				throw new DuplicateCommitException();
 
 			if (!this.HasChanges())
+			{
+				Logger.Debug(Resources.NoChangesToCommit, this.StreamId);
 				return;
+			}
 
 			try
 			{
@@ -107,6 +124,7 @@ namespace EventStore
 			}
 			catch (ConcurrencyException)
 			{
+				Logger.Info(Resources.UnderlyingStreamHasChanged, this.StreamId);
 				var commits = this.persistence.GetFrom(this.StreamId, this.StreamRevision + 1, int.MaxValue);
 				this.PopulateStream(this.StreamRevision + 1, int.MaxValue, commits);
 
@@ -122,15 +140,17 @@ namespace EventStore
 		}
 		protected virtual void PersistChanges(Guid commitId)
 		{
-			var commit = this.CopyValuesNewCommit(commitId);
+			var commit = this.BuildCommitAttempt(commitId);
 
+			Logger.Debug(Resources.PersistingCommit, commitId, this.StreamId);
 			this.persistence.Commit(commit);
 
 			this.PopulateStream(this.StreamRevision + 1, commit.StreamRevision, new[] { commit });
 			this.ClearChanges();
 		}
-		protected virtual Commit CopyValuesNewCommit(Guid commitId)
+		protected virtual Commit BuildCommitAttempt(Guid commitId)
 		{
+			Logger.Debug(Resources.BuildingCommitAttempt, commitId, this.StreamId);
 			return new Commit(
 				this.StreamId,
 				this.StreamRevision + this.events.Count,
@@ -143,6 +163,7 @@ namespace EventStore
 
 		public virtual void ClearChanges()
 		{
+			Logger.Debug(Resources.ClearingUncommittedChanges, this.StreamId);
 			this.events.Clear();
 			this.headers.Clear();
 		}

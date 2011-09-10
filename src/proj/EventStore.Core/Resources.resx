@@ -237,4 +237,34 @@
 	<data name="InvokingPostCommitPipelineHooks">
 		<value><![CDATA[Pushing commit '{0}' to post-commit hook of type '{1}'.]]></value>
 	</data>
+	<data name="AddingCommitsToStream">
+		<value><![CDATA[Adding commit '{0} with {1} events to stream '{2}'.]]></value>
+	</data>
+	<data name="IgnoringBeyondRevision">
+		<value><![CDATA[Ignoring some events on commit '{0}' of stream '{1}' because they go beyond revision {2}.]]></value>
+	</data>
+	<data name="IgnoringBeforeRevision">
+		<value><![CDATA[Ignoring some events on commit '{0}' of stream '{1}' because they starting before revision {2}.]]></value>
+	</data>
+	<data name="AppendingUncommittedToStream">
+		<value><![CDATA[Appending uncommitted event to stream '{0}']]></value>
+	</data>
+	<data name="AttemptingToCommitChanges">
+		<value><![CDATA[Attempting to commit all changes on stream '{0}' to the underlying store.]]></value>
+	</data>
+	<data name="NoChangesToCommit">
+		<value><![CDATA[There are no outstanding changes to be committed stream '{0}'.]]></value>
+	</data>
+	<data name="UnderlyingStreamHasChanged">
+		<value><![CDATA[The underlying stream '{0}' has changed since the last known commit, refreshing the stream.]]></value>
+	</data>
+	<data name="PersistingCommit">
+		<value><![CDATA[Pushing attempt '{0}' on stream '{1}' to the underlying store.]]></value>
+	</data>
+	<data name="BuildingCommitAttempt">
+		<value><![CDATA[Building a commit attempt '{0}' on stream '{1}'.]]></value>
+	</data>
+	<data name="ClearingUncommittedChanges">
+		<value><![CDATA[Clearing all uncommitted changes on stream '{0}'.]]></value>
+	</data>
 </root>
