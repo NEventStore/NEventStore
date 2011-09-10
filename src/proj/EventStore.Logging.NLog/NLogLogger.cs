@@ -2,6 +2,7 @@ namespace EventStore.Logging.NLog
 {
 	using System;
 	using global::NLog;
+	using global::NLog.Config;
 
 	public class NLogLogger : ILog
 	{
@@ -11,6 +12,10 @@ namespace EventStore.Logging.NLog
 		public NLogLogger(Type typeToLog)
 		{
 			this.log = Factory.GetLogger(typeToLog.FullName);
+		}
+		public NLogLogger(Type typeToLog, LoggingConfiguration configuration)
+		{
+			this.log = new LogFactory(configuration).GetLogger(typeToLog.FullName);
 		}
 
 		public virtual void Verbose(string message, params object[] values)
