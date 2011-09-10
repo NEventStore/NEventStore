@@ -5,11 +5,6 @@ namespace EventStore.Logging
 
 	public class OutputWindowLogger : ILog
 	{
-		public static void MakePrimaryLogger()
-		{
-			LogFactory.BuildLogger = type => new OutputWindowLogger(type);
-		}
-
 		private static readonly object Sync = new object();
 		private readonly Type typeToLog;
 
