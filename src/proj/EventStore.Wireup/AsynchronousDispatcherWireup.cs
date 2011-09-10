@@ -1,5 +1,6 @@
 namespace EventStore
 {
+	using System.Transactions;
 	using Dispatcher;
 	using Logging;
 	using Persistence;
@@ -11,6 +12,10 @@ namespace EventStore
 		public AsynchronousDispatcherWireup(Wireup wireup, IPublishMessages publisher)
 			: base(wireup)
 		{
+			var option = this.Container.Resolve<TransactionScopeOption>();
+			if (option == TransactionScopeOption.Required)
+				Logger.Warn(Messages.SynchronousDispatcherTwoPhaseCommits);
+
 			Logger.Debug(Messages.AsyncDispatcherRegistered);
 			this.PublishTo(publisher ?? new NullDispatcher());
 			this.Container.Register<IDispatchCommits>(c => new AsynchronousDispatcher(

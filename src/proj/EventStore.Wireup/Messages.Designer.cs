@@ -286,6 +286,15 @@ namespace EventStore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Only the synchronous dispatcher can enlist in two-phase commits..
+        /// </summary>
+        internal static string SynchronousDispatcherTwoPhaseCommits {
+            get {
+                return ResourceManager.GetString("SynchronousDispatcherTwoPhaseCommits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The type provided must be registered as an interface rather than as a concrete type, e.g. &quot;container.Register&lt;IDispatchCommits&gt;(instance);&quot;..
         /// </summary>
         internal static string TypeMustBeInterface {

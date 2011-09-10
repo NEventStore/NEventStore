@@ -1,5 +1,6 @@
 namespace EventStore
 {
+	using System.Transactions;
 	using Logging;
 	using Persistence.MongoPersistence;
 	using Serialization;
@@ -12,6 +13,10 @@ namespace EventStore
 			: base(inner)
 		{
 			Logger.Debug("Configuring Mongo persistence engine.");
+
+			var options = this.Container.Resolve<TransactionScopeOption>();
+			if (options == TransactionScopeOption.Required)
+				Logger.Warn("MongoDB does not participate in transactions using TransactionScope.");
 
 			this.Container.Register(c => new MongoPersistenceFactory(
 				connectionName,

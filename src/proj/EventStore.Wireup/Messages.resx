@@ -204,4 +204,7 @@
 	<data name="SyncDispatcherRegistered">
 		<value xml:space="preserve">Configuring store to dispatch messages synchronously.</value>
 	</data>
+	<data name="SynchronousDispatcherTwoPhaseCommits">
+		<value xml:space="preserve">Only the synchronous dispatcher can enlist in two-phase commits.</value>
+	</data>
 </root>
