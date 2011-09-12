@@ -412,6 +412,15 @@ namespace EventStore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Publishing message to /dev/null..
+        /// </summary>
+        internal static string PublishingToDevNull {
+            get {
+                return ResourceManager.GetString("PublishingToDevNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Purging all data from storage..
         /// </summary>
         internal static string PurgingStore {
@@ -453,6 +462,33 @@ namespace EventStore {
         internal static string SchedulingDelivery {
             get {
                 return ResourceManager.GetString("SchedulingDelivery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shutting down dispatcher..
+        /// </summary>
+        internal static string ShuttingDownDispatcher {
+            get {
+                return ResourceManager.GetString("ShuttingDownDispatcher", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shutting down publisher..
+        /// </summary>
+        internal static string ShuttingDownPublisher {
+            get {
+                return ResourceManager.GetString("ShuttingDownPublisher", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shutting down event store..
+        /// </summary>
+        internal static string ShuttingDownStore {
+            get {
+                return ResourceManager.GetString("ShuttingDownStore", resourceCulture);
             }
         }
         

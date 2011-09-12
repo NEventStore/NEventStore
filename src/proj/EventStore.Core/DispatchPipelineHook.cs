@@ -13,7 +13,7 @@ namespace EventStore
 		}
 		public DispatchPipelineHook(IDispatchCommits dispatcher)
 		{
-			this.dispatcher = dispatcher ?? new NullDispatcher();
+			this.dispatcher = dispatcher ?? new NullPublisher();
 		}
 		public void Dispose()
 		{

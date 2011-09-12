@@ -56,7 +56,11 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		protected virtual void Dispose(bool disposing)
 		{
-			// no-op
+			if (!disposing)
+				return;
+
+			// no op: we want to be sure any async operations (if any) are able to complete successfully.
+			Logger.Debug(Messages.ShuttingDownPersistence);
 		}
 
 		public virtual void Initialize()

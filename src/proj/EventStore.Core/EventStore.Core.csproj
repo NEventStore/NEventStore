@@ -50,7 +50,7 @@
     <Compile Include="Logging\OutputWindowLogger.cs" />
     <Compile Include="OptimisticPipelineHook.cs" />
     <Compile Include="Dispatcher\AsynchronousDispatcher.cs" />
-    <Compile Include="Dispatcher\NullDispatcher.cs" />
+    <Compile Include="Dispatcher\NullPublisher.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="OptimisticEventStore.cs" />
     <Compile Include="OptimisticEventStream.cs" />

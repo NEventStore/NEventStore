@@ -430,6 +430,15 @@ namespace EventStore.Persistence.SqlPersistence {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Shutting down persistence..
+        /// </summary>
+        internal static string ShuttingDownPersistence {
+            get {
+                return ResourceManager.GetString("ShuttingDownPersistence", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Storage threw exception of type &apos;{0}&apos;, wrapping and re-throwing..
         /// </summary>
         internal static string StorageThrewException {

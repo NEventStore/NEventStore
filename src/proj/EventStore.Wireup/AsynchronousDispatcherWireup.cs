@@ -17,7 +17,7 @@ namespace EventStore
 				Logger.Warn(Messages.SynchronousDispatcherTwoPhaseCommits);
 
 			Logger.Debug(Messages.AsyncDispatcherRegistered);
-			this.PublishTo(publisher ?? new NullDispatcher());
+			this.PublishTo(publisher ?? new NullPublisher());
 			this.Container.Register<IDispatchCommits>(c => new AsynchronousDispatcher(
 				c.Resolve<IPublishMessages>(), c.Resolve<IPersistStreams>()));
 		}

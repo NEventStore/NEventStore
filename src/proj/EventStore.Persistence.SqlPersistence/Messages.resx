@@ -246,4 +246,7 @@
   <data name="EnumerationThrewException" xml:space="preserve">
     <value>Enumeration of paged results threw exception of type '{0}'.</value>
   </data>
+  <data name="ShuttingDownPersistence" xml:space="preserve">
+    <value>Shutting down persistence.</value>
+  </data>
 </root>

@@ -21,10 +21,10 @@ namespace EventStore.Example
 				AppendToStream();
 				TakeSnapshot();
 				LoadFromSnapshotForwardAndAppend();
-
-				Console.WriteLine(Resources.PressAnyKey);
-				Console.ReadLine();
 			}
+
+			Console.WriteLine(Resources.PressAnyKey);
+			Console.ReadLine();
 		}
 
 		private static IStoreEvents WireupEventStore()

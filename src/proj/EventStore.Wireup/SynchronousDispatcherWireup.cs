@@ -12,7 +12,7 @@ namespace EventStore
 			: base(wireup)
 		{
 			Logger.Debug(Messages.SyncDispatcherRegistered);
-			this.PublishTo(publisher ?? new NullDispatcher());
+			this.PublishTo(publisher ?? new NullPublisher());
 			this.Container.Register<IDispatchCommits>(c => new SynchronousDispatcher(
 				c.Resolve<IPublishMessages>(), c.Resolve<IPersistStreams>()));
 		}

@@ -267,4 +267,16 @@
   <data name="ClearingUncommittedChanges" xml:space="preserve">
     <value>Clearing all uncommitted changes on stream '{0}'.</value>
   </data>
+  <data name="ShuttingDownStore" xml:space="preserve">
+    <value>Shutting down event store.</value>
+  </data>
+	<data name="ShuttingDownDispatcher">
+		<value xml:space="preserve">Shutting down dispatcher.</value>
+	</data>
+	<data name="ShuttingDownPublisher">
+		<value xml:space="preserve">Shutting down publisher.</value>
+	</data>
+	<data name="PublishingToDevNull">
+		<value xml:space="preserve">Publishing message to /dev/null.</value>
+	</data>
 </root>

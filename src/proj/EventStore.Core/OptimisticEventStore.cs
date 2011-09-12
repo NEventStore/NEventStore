@@ -31,6 +31,7 @@ namespace EventStore
 			if (!disposing)
 				return;
 
+			Logger.Info(Resources.ShuttingDownStore);
 			this.persistence.Dispose();
 			foreach (var hook in this.pipelineHooks)
 				hook.Dispose();

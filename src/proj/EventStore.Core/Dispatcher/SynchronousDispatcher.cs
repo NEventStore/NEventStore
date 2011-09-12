@@ -30,6 +30,7 @@ namespace EventStore.Dispatcher
 			if (!disposing || this.disposed)
 				return;
 
+			Logger.Debug(Resources.ShuttingDownDispatcher);
 			this.disposed = true;
 			this.bus.Dispose();
 			this.persistence.Dispose();
