@@ -126,7 +126,124 @@
   <data name="MissingProviderName" xml:space="preserve">
     <value>Could not find the required attribute 'providerName' on the connection name '{0}' in the configuration file.</value>
   </data>
-	<data name="BadConnectionName">
-		<value xml:space="preserve">A connection could not be created for the specified named connection.</value>
-	</data>
+  <data name="BadConnectionName" xml:space="preserve">
+    <value>A connection could not be created for the specified named connection.</value>
+  </data>
+  <data name="ConfiguringConnections" xml:space="preserve">
+    <value>Configuring connections: master '{0}'; replica '{1}', shards: {2}.</value>
+  </data>
+  <data name="OpeningMasterConnection" xml:space="preserve">
+    <value>Opening master connection '{0}'</value>
+  </data>
+  <data name="OpeningReplicaConnection" xml:space="preserve">
+    <value>Opening replica connection '{0}'.</value>
+  </data>
+  <data name="OpeningConnection" xml:space="preserve">
+    <value>Opening connection '{0}'.</value>
+  </data>
+  <data name="OpenFailed" xml:space="preserve">
+    <value>Unable to open connection '{0}'.</value>
+  </data>
+  <data name="DiscoveredConnectionProvider" xml:space="preserve">
+    <value>Discovered DB provider factory settings for '{0}', using '{1}'.</value>
+  </data>
+  <data name="DiscoveringConnectionSettings" xml:space="preserve">
+    <value>Discovering connection settings for '{0}'.</value>
+  </data>
+  <data name="EmbeddingShardKey" xml:space="preserve">
+    <value>Embedding sharding key into connection string for '{0}'.</value>
+  </data>
+  <data name="StorageThrewException" xml:space="preserve">
+    <value>Storage threw exception of type '{0}', wrapping and rethrowing.</value>
+  </data>
+  <data name="QueryCompleted" xml:space="preserve">
+    <value>Query completed successfully, completing and disposing ambient scope.</value>
+  </data>
+  <data name="UsingScope" xml:space="preserve">
+    <value>Participating in connection with ambient transaction scope of </value>
+  </data>
+  <data name="ExecutingCommand" xml:space="preserve">
+    <value>Executing command.</value>
+  </data>
+  <data name="CommandExecuted" xml:space="preserve">
+    <value>Command executed, {0} rows affected.</value>
+  </data>
+  <data name="ExecutingQuery" xml:space="preserve">
+    <value>Executing query.</value>
+  </data>
+  <data name="DeserializingCommit" xml:space="preserve">
+    <value>Deserializing commit from record using serializer of type '{0}'.</value>
+  </data>
+  <data name="CommitPersisted" xml:space="preserve">
+    <value>Commit persisted, {0} rows affected.</value>
+  </data>
+  <data name="AttemptingToCommit" xml:space="preserve">
+    <value>Attempting to commit {0} events on stream '{1}' at sequence {2}.</value>
+  </data>
+  <data name="MarkingCommitAsDispatched" xml:space="preserve">
+    <value>Marking commit '{0}' as dispatched.</value>
+  </data>
+  <data name="GettingStreamsToSnapshot" xml:space="preserve">
+    <value>Getting a list of streams to snapshot.</value>
+  </data>
+  <data name="GettingRevision" xml:space="preserve">
+    <value>Getting snapshot for stream '{0}' on or before revision {1}.</value>
+  </data>
+  <data name="AddingSnapshot" xml:space="preserve">
+    <value>Adding snapshot to stream '{0}' at position {1}.</value>
+  </data>
+  <data name="GettingUndispatchedCommits" xml:space="preserve">
+    <value>Getting the list of all undispatched commits.</value>
+  </data>
+  <data name="GettingAllCommitsFrom" xml:space="preserve">
+    <value>Getting all commits from '{0}' forward.</value>
+  </data>
+  <data name="GettingAllCommitsBetween" xml:space="preserve">
+    <value>Getting all commits for stream '{0}' between revisions '{1}' and '{2}'.</value>
+  </data>
+  <data name="InitializingStorage" xml:space="preserve">
+    <value>Initializing storage engine.</value>
+  </data>
+  <data name="PurgingStorage" xml:space="preserve">
+    <value>Purging all stored data.</value>
+  </data>
+  <data name="DeserializingSnapshot" xml:space="preserve">
+    <value>Deserializing snapshot from data record.</value>
+  </data>
+  <data name="ExceptionSuppressed" xml:space="preserve">
+    <value>Executed statement threw an exception, but the exception was suppressed.</value>
+  </data>
+  <data name="AddingParameter" xml:space="preserve">
+    <value>Adding parameter named '{0}' to statement.</value>
+  </data>
+  <data name="DisposingStatement" xml:space="preserve">
+    <value>Disposing SQL statement resources, including any transactions and connections.</value>
+  </data>
+  <data name="DuplicateCommit" xml:space="preserve">
+    <value>Duplicate commit detected; throwing.</value>
+  </data>
+  <data name="CommandThrewException" xml:space="preserve">
+    <value>Non-query statement threw an exception of type '{0}'.</value>
+  </data>
+  <data name="MaxPageSize" xml:space="preserve">
+    <value>Executing query with max page size of {0}.</value>
+  </data>
+  <data name="CreatingCommand" xml:space="preserve">
+    <value>Creating command.</value>
+  </data>
+  <data name="ClientControlledTransaction" xml:space="preserve">
+    <value>Command has client-controlled transaction: {0}.</value>
+  </data>
+  <data name="CommandTextToExecute" xml:space="preserve">
+    <value>Command text to be executed: {0}</value>
+  </data>
+  <data name="BindingParameter" xml:space="preserve">
+    <value>Binding parameter '{0}' with value: {1}</value>
+  </data>
+  <data name="EnumeratedRowCount" xml:space="preserve">
+    <value>Enumerated {0} rows, requerying for next page.</value>
+  </data>
+  <data name="EnumerationThrewException" xml:space="preserve">
+    <value>Enumeration of paged results threw exception of type '{0}'.</value>
+  </data>
 </root>

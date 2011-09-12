@@ -3,6 +3,7 @@ namespace EventStore.Persistence.SqlPersistence
 	using System;
 	using System.Collections.Generic;
 	using System.Data;
+	using Logging;
 	using Serialization;
 
 	public static class CommitExtensions
@@ -14,9 +15,11 @@ namespace EventStore.Persistence.SqlPersistence
 		private const int CommitStampIndex = 4;
 		private const int HeadersIndex = 5;
 		private const int PayloadIndex = 6;
+		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(CommitExtensions));
 
 		public static Commit GetCommit(this IDataRecord record, ISerialize serializer)
 		{
+			Logger.Verbose(Messages.DeserializingCommit, serializer.GetType());
 			var headers = serializer.Deserialize<Dictionary<string, object>>(record, HeadersIndex);
 			var events = serializer.Deserialize<List<EventMessage>>(record, PayloadIndex);
 

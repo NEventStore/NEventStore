@@ -2,9 +2,12 @@ namespace EventStore.Persistence.SqlPersistence
 {
 	using System;
 	using System.Data;
+	using Logging;
 
 	internal static class ExtensionMethods
 	{
+		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(ExtensionMethods));
+
 		public static Guid ToGuid(this object value)
 		{
 			if (value is Guid)
@@ -25,6 +28,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public static IDbCommand SetParameter(this IDbCommand command, string name, object value)
 		{
+			Logger.Verbose("Rebinding parameter '{0}' with value: {1}", name, value);
 			var parameter = (IDataParameter)command.Parameters[name];
 			parameter.Value = value;
 			return command;

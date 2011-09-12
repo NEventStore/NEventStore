@@ -6,11 +6,13 @@ namespace EventStore.Persistence.SqlPersistence
 	using System.Linq;
 	using System.Threading;
 	using System.Transactions;
+	using Logging;
 	using Persistence;
 	using Serialization;
 
 	public class SqlPersistenceEngine : IPersistStreams
 	{
+		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(SqlPersistenceEngine));
 		private static readonly DateTime EpochTime = new DateTime(1970, 1, 1);
 		private readonly IConnectionFactory connectionFactory;
 		private readonly ISqlDialect dialect;
@@ -43,6 +45,8 @@ namespace EventStore.Persistence.SqlPersistence
 			this.serializer = serializer;
 			this.scopeOption = scopeOption;
 			this.pageSize = pageSize;
+
+			Logger.Debug(Messages.UsingScope, this.scopeOption.ToString());
 		}
 
 		public void Dispose()
@@ -60,12 +64,14 @@ namespace EventStore.Persistence.SqlPersistence
 			if (Interlocked.Increment(ref this.initialized) > 1)
 				return;
 
+			Logger.Debug(Messages.InitializingStorage);
 			this.ExecuteCommand(Guid.Empty, statement =>
 				statement.ExecuteWithoutExceptions(this.dialect.InitializeStorage));
 		}
 
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
 		{
+			Logger.Debug(Messages.GettingAllCommitsBetween, streamId, minRevision, maxRevision);
 			return this.ExecuteQuery(streamId, query =>
 			{
 				var statement = this.dialect.GetCommitsFromStartingRevision;
@@ -83,6 +89,7 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			start = start < EpochTime ? EpochTime : start;
 
+			Logger.Debug(Messages.GettingAllCommitsFrom, start);
 			return this.ExecuteQuery(Guid.Empty, query =>
 			{
 				var statement = this.dialect.GetCommitsFromInstant;
@@ -99,6 +106,9 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		public virtual void Commit(Commit attempt)
 		{
+			Logger.Debug(Messages.AttemptingToCommit, 
+				attempt.Events.Count, attempt.StreamId, attempt.CommitSequence);
+
 			this.ExecuteCommand(attempt.StreamId, cmd =>
 			{
 				cmd.AddParameter(this.dialect.StreamId, attempt.StreamId);
@@ -111,20 +121,24 @@ namespace EventStore.Persistence.SqlPersistence
 				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(attempt.Events));
 
 				var rowsAffected = cmd.Execute(this.dialect.PersistCommit);
-				if (rowsAffected <= 0)
-					throw new ConcurrencyException();
+				Logger.Debug(Messages.CommitPersisted, rowsAffected);
 
-				return rowsAffected;
+				if (rowsAffected > 0)
+					return rowsAffected;
+
+				throw new ConcurrencyException();
 			});
 		}
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
+			Logger.Debug(Messages.GettingUndispatchedCommits);
 			return this.ExecuteQuery(Guid.Empty, query =>
 				query.ExecuteWithQuery(this.dialect.GetUndispatchedCommits, x => x.GetCommit(this.serializer)));
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
+			Logger.Debug(Messages.MarkingCommitAsDispatched, commit.CommitId);
 			this.ExecuteCommand(commit.StreamId, cmd =>
 			{
 				cmd.AddParameter(this.dialect.StreamId, commit.StreamId);
@@ -135,6 +149,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
 		{
+			Logger.Debug(Messages.GettingStreamsToSnapshot);
 			return this.ExecuteQuery(Guid.Empty, query =>
 			{
 				var statement = this.dialect.GetStreamsRequiringSnapshots;
@@ -149,6 +164,7 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
+			Logger.Debug(Messages.GettingRevision, streamId, maxRevision);
 			return this.ExecuteQuery(streamId, query =>
 			{
 				var statement = this.dialect.GetSnapshot;
@@ -159,6 +175,7 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		public virtual bool AddSnapshot(Snapshot snapshot)
 		{
+			Logger.Debug(Messages.AddingSnapshot, snapshot.StreamId, snapshot.StreamRevision);
 			return this.ExecuteCommand(snapshot.StreamId, cmd =>
 			{
 				cmd.AddParameter(this.dialect.StreamId, snapshot.StreamId);
@@ -170,6 +187,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public virtual void Purge()
 		{
+			Logger.Warn(Messages.PurgingStorage);
 			this.ExecuteCommand(Guid.Empty, cmd =>
 				cmd.Execute(this.dialect.PurgeStorage));
 		}
@@ -186,8 +204,11 @@ namespace EventStore.Persistence.SqlPersistence
 				connection = this.connectionFactory.OpenReplica(streamId);
 				transaction = this.dialect.OpenTransaction(connection);
 				statement = this.dialect.BuildStatement(connection, transaction);
+
+				Logger.Verbose(Messages.ExecutingQuery);
 				return query(statement).Yield(() =>
 				{
+					Logger.Verbose(Messages.QueryCompleted);
 					scope.Complete();
 					scope.Dispose();
 				});
@@ -201,6 +222,8 @@ namespace EventStore.Persistence.SqlPersistence
 				if (connection != null)
 					connection.Dispose();
 				scope.Dispose();
+
+				Logger.Debug(Messages.StorageThrewException, e.GetType());
 
 				if (e is StorageUnavailableException)
 					throw;
@@ -222,7 +245,10 @@ namespace EventStore.Persistence.SqlPersistence
 			{
 				try
 				{
+					Logger.Verbose(Messages.ExecutingCommand);
 					var rowsAffected = command(statement);
+					Logger.Verbose(Messages.CommandExecuted, rowsAffected);
+
 					if (transaction != null)
 						transaction.Commit();
 
@@ -233,6 +259,7 @@ namespace EventStore.Persistence.SqlPersistence
 				}
 				catch (Exception e)
 				{
+					Logger.Debug(Messages.StorageThrewException, e.GetType());
 					if (e is ConcurrencyException || e is DuplicateCommitException || e is StorageUnavailableException)
 						throw;
 
