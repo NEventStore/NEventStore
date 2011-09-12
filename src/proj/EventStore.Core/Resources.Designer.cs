@@ -142,15 +142,6 @@ namespace EventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Commiting attempt &apos;{0}&apos; to the underlying persistence engine..
-        /// </summary>
-        internal static string CommitingAttempt {
-            get {
-                return ResourceManager.GetString("CommitingAttempt", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Pipeline hook of type &apos;{0}&apos; rejected attempt &apos;{1}&apos;..
         /// </summary>
         internal static string CommitRejectedByPipelineHook {
@@ -165,6 +156,15 @@ namespace EventStore {
         internal static string CommitsMustBeUniquelyIdentified {
             get {
                 return ResourceManager.GetString("CommitsMustBeUniquelyIdentified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Committing attempt &apos;{0}&apos; to the underlying persistence engine..
+        /// </summary>
+        internal static string CommittingAttempt {
+            get {
+                return ResourceManager.GetString("CommittingAttempt", resourceCulture);
             }
         }
         
@@ -412,7 +412,7 @@ namespace EventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Puring all data from storage..
+        ///   Looks up a localized string similar to Purging all data from storage..
         /// </summary>
         internal static string PurgingStore {
             get {
@@ -430,7 +430,7 @@ namespace EventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Retrieiving all {0} undispatched commits..
+        ///   Looks up a localized string similar to Retrieving all {0} undispatched commits..
         /// </summary>
         internal static string RetrievingUndispatchedCommits {
             get {

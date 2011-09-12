@@ -154,7 +154,7 @@
     <value>Embedding sharding key into connection string for '{0}'.</value>
   </data>
   <data name="StorageThrewException" xml:space="preserve">
-    <value>Storage threw exception of type '{0}', wrapping and rethrowing.</value>
+    <value>Storage threw exception of type '{0}', wrapping and re-throwing.</value>
   </data>
   <data name="QueryCompleted" xml:space="preserve">
     <value>Query completed successfully, completing and disposing ambient scope.</value>
@@ -241,7 +241,7 @@
     <value>Binding parameter '{0}' with value: {1}</value>
   </data>
   <data name="EnumeratedRowCount" xml:space="preserve">
-    <value>Enumerated {0} rows, requerying for next page.</value>
+    <value>Enumerated {0} rows, re-querying for next page.</value>
   </data>
   <data name="EnumerationThrewException" xml:space="preserve">
     <value>Enumeration of paged results threw exception of type '{0}'.</value>

@@ -12,7 +12,7 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 	using It = Machine.Specifications.It;
 
 	[Subject("SynchronousDispatcher")]
-	public class when_instantiaing_the_synchronous_dispatcher
+	public class when_instantiating_the_synchronous_dispatcher
 	{
 		static readonly Guid streamId = Guid.NewGuid();
 		private static readonly Commit[] commits =

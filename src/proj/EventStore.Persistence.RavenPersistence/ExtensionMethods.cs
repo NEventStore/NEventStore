@@ -89,12 +89,12 @@ namespace EventStore.Persistence.RavenPersistence
 			};
 		}
 
-		public static StreamHead ToStreamHead(this RavenStreamHead streamhead)
+		public static StreamHead ToStreamHead(this RavenStreamHead streamHead)
 		{
 			return new StreamHead(
-				streamhead.StreamId,
-				streamhead.HeadRevision,
-				streamhead.SnapshotRevision);
+				streamHead.StreamId,
+				streamHead.HeadRevision,
+				streamHead.SnapshotRevision);
 		}
 
 		public static IEnumerable<T> Page<T>(this IQueryable<T> query, int pageSize)

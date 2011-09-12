@@ -241,7 +241,7 @@ namespace EventStore.Persistence.SqlPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enumerated {0} rows, requerying for next page..
+        ///   Looks up a localized string similar to Enumerated {0} rows, re-querying for next page..
         /// </summary>
         internal static string EnumeratedRowCount {
             get {
@@ -430,7 +430,7 @@ namespace EventStore.Persistence.SqlPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Storage threw exception of type &apos;{0}&apos;, wrapping and rethrowing..
+        ///   Looks up a localized string similar to Storage threw exception of type &apos;{0}&apos;, wrapping and re-throwing..
         /// </summary>
         internal static string StorageThrewException {
             get {
