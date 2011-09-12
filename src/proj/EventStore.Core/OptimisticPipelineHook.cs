@@ -25,6 +25,16 @@ namespace EventStore
 			Logger.Debug(Resources.TrackingStreams, maxStreamsToTrack);
 			this.maxStreamsToTrack = maxStreamsToTrack;
 		}
+		public void Dispose()
+		{
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		protected virtual void Dispose(bool disposing)
+		{
+			this.heads.Clear();
+			this.maxItemsToTrack.Clear();
+		}
 
 		public virtual Commit Select(Commit committed)
 		{

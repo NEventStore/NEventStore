@@ -38,12 +38,12 @@ namespace EventStore.Logging
 			this.TraceWindow("Fatal", message, values);
 		}
 
-		private void DebugWindow(string category, string message, params object[] values)
+		protected virtual void DebugWindow(string category, string message, params object[] values)
 		{
 			lock (Sync)
 				System.Diagnostics.Debug.WriteLine(category, message.FormatMessage(this.typeToLog, values));
 		}
-		private void TraceWindow(string category, string message, params object[] values)
+		protected virtual void TraceWindow(string category, string message, params object[] values)
 		{
 			lock (Sync)
 				Trace.WriteLine(category, message.FormatMessage(this.typeToLog, values));

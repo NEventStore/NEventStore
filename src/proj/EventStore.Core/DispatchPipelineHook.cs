@@ -1,5 +1,6 @@
 namespace EventStore
 {
+	using System;
 	using Dispatcher;
 
 	public class DispatchPipelineHook : IPipelineHook
@@ -13,6 +14,15 @@ namespace EventStore
 		public DispatchPipelineHook(IDispatchCommits dispatcher)
 		{
 			this.dispatcher = dispatcher ?? new NullDispatcher();
+		}
+		public void Dispose()
+		{
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		protected virtual void Dispose(bool disposing)
+		{
+			this.dispatcher.Dispose();
 		}
 
 		public Commit Select(Commit committed)

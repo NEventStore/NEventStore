@@ -4,13 +4,13 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	using System.Collections;
 	using System.Collections.Generic;
 
-	public class DisposableEnumeration<T> : IEnumerable<T>, IEnumerator<T>
+	public class DisposableEnumerationCollection<T> : IEnumerable<T>, IEnumerator<T>
 	{
 		private readonly ICollection<IDisposable> resources = new IDisposable[] { };
 		private readonly IEnumerator<T> enumerator;
 		private bool disposed;
 
-		public DisposableEnumeration(IEnumerable<T> enumerable, params IDisposable[] resources)
+		public DisposableEnumerationCollection(IEnumerable<T> enumerable, params IDisposable[] resources)
 		{
 			this.enumerator = enumerable.GetEnumerator();
 			this.resources = resources ?? this.resources;

@@ -52,7 +52,7 @@
       <DependentUpon>Messages.resx</DependentUpon>
     </Compile>
     <Compile Include="SnapshotExtensions.cs" />
-    <Compile Include="SqlDialects\DisposableEnumeration.cs" />
+    <Compile Include="SqlDialects\DisposableEnumerationCollection.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="IConnectionFactory.cs" />
     <Compile Include="IDbStatement.cs" />
@@ -97,7 +97,7 @@
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="SqlDialects\NextPageDelegate.cs" />
-    <Compile Include="SqlDialects\PagedEnumeration.cs" />
+    <Compile Include="SqlDialects\PagedEnumerationCollection.cs" />
     <Compile Include="SqlDialects\PostgreSqlDialect.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -6,9 +6,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	using System.Data;
 	using Logging;
 
-	public class PagedEnumeration<T> : IEnumerable<T>, IEnumerator<T>
+	public class PagedEnumerationCollection<T> : IEnumerable<T>, IEnumerator<T>
 	{
-		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(PagedEnumeration<T>));
+		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(PagedEnumerationCollection<T>));
 		private readonly IDbCommand command;
 		private readonly Func<IDataRecord, T> select;
 		private readonly NextPageDelegate<T> onNextPage;
@@ -17,7 +17,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		private int position;
 		private T latest;
 
-		public PagedEnumeration(
+		public PagedEnumerationCollection(
 			IDbCommand command, Func<IDataRecord, T> select, NextPageDelegate<T> onNextPage, int pageSize)
 		{
 			this.command = command;

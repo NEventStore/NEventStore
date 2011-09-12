@@ -28,8 +28,12 @@ namespace EventStore
 		}
 		protected virtual void Dispose(bool disposing)
 		{
-			if (disposing)
-				this.persistence.Dispose();
+			if (!disposing)
+				return;
+
+			this.persistence.Dispose();
+			foreach (var hook in this.pipelineHooks)
+				hook.Dispose();
 		}
 
 		public virtual IEventStream CreateStream(Guid streamId)

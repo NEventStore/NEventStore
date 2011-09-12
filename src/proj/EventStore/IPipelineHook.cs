@@ -1,12 +1,14 @@
 namespace EventStore
 {
+	using System;
+
 	/// <summary>
 	/// Provides the ability to hook into the pipeline of persisting a commit.
 	/// </summary>
 	/// <remarks>
 	/// Instances of this class must be designed to be multi-thread safe such that they can be shared between threads.
 	/// </remarks>
-	public interface IPipelineHook
+	public interface IPipelineHook : IDisposable
 	{
 		/// <summary>
 		/// Hooks into the selection pipeline just prior to the commit being returned to the caller.
