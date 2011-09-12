@@ -10,9 +10,9 @@ namespace EventStore
 			return wireup.UsingSqlPersistence(factory);
 		}
 		public static SqlPersistenceWireup UsingSqlPersistence(
-			this Wireup wireup, string masterConnectionName, string slaveConnectionName)
+			this Wireup wireup, string masterConnectionName, string replicaConnectionName)
 		{
-			var factory = new ConfigurationConnectionFactory(masterConnectionName, slaveConnectionName, 1);
+			var factory = new ConfigurationConnectionFactory(masterConnectionName, replicaConnectionName, 1);
 			return wireup.UsingSqlPersistence(factory);
 		}
 		public static SqlPersistenceWireup UsingSqlPersistence(this Wireup wireup, IConnectionFactory factory)

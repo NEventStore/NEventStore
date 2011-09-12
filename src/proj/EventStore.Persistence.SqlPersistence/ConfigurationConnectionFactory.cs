@@ -18,7 +18,7 @@ namespace EventStore.Persistence.SqlPersistence
 			new Dictionary<string, DbProviderFactory>();
 
 		private readonly string masterConnectionName;
-		private readonly string slaveConnectionName;
+		private readonly string replicaConnectionName;
 		private readonly int shards;
 
 		public ConfigurationConnectionFactory()
@@ -30,10 +30,10 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 		}
 		public ConfigurationConnectionFactory(
-			string masterConnectionName, string slaveConnectionName, int shards)
+			string masterConnectionName, string replicaConnectionName, int shards)
 		{
 			this.masterConnectionName = masterConnectionName ?? DefaultConnectionName;
-			this.slaveConnectionName = slaveConnectionName ?? this.masterConnectionName;
+			this.replicaConnectionName = replicaConnectionName ?? this.masterConnectionName;
 			this.shards = shards >= 0 ? shards : DefaultShards;
 		}
 
@@ -48,7 +48,7 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		public virtual IDbConnection OpenReplica(Guid streamId)
 		{
-			return this.Open(streamId, this.slaveConnectionName);
+			return this.Open(streamId, this.replicaConnectionName);
 		}
 		protected virtual IDbConnection Open(Guid streamId, string connectionName)
 		{
