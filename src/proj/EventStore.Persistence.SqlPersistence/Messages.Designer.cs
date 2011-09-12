@@ -70,11 +70,47 @@ namespace EventStore.Persistence.SqlPersistence {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Configuring connections: master &apos;{0}&apos;; replica &apos;{1}&apos;, shards: {2}..
+        /// </summary>
+        internal static string ConfiguringConnections {
+            get {
+                return ResourceManager.GetString("ConfiguringConnections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not find connection name &apos;{0}&apos; in the configuration file..
         /// </summary>
         internal static string ConnectionNotFound {
             get {
                 return ResourceManager.GetString("ConnectionNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discovered DB provider factory settings for &apos;{0}&apos;, using &apos;{1}&apos;..
+        /// </summary>
+        internal static string DiscoveredConnectionProvider {
+            get {
+                return ResourceManager.GetString("DiscoveredConnectionProvider", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discovering connection settings for &apos;{0}&apos;..
+        /// </summary>
+        internal static string DiscoveringConnectionSettings {
+            get {
+                return ResourceManager.GetString("DiscoveringConnectionSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Embedding sharding key into connection string for &apos;{0}&apos;..
+        /// </summary>
+        internal static string EmbeddingShardKey {
+            get {
+                return ResourceManager.GetString("EmbeddingShardKey", resourceCulture);
             }
         }
         
@@ -93,6 +129,42 @@ namespace EventStore.Persistence.SqlPersistence {
         internal static string MissingProviderName {
             get {
                 return ResourceManager.GetString("MissingProviderName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to open connection &apos;{0}&apos;..
+        /// </summary>
+        internal static string OpenFailed {
+            get {
+                return ResourceManager.GetString("OpenFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Opening connection &apos;{0}&apos;..
+        /// </summary>
+        internal static string OpeningConnection {
+            get {
+                return ResourceManager.GetString("OpeningConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Opening master connection &apos;{0}&apos;.
+        /// </summary>
+        internal static string OpeningMasterConnection {
+            get {
+                return ResourceManager.GetString("OpeningMasterConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Opening replica connection &apos;{0}&apos;..
+        /// </summary>
+        internal static string OpeningReplicaConnection {
+            get {
+                return ResourceManager.GetString("OpeningReplicaConnection", resourceCulture);
             }
         }
     }

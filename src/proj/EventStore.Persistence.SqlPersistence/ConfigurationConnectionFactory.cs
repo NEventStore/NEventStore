@@ -6,12 +6,14 @@ namespace EventStore.Persistence.SqlPersistence
 	using System.Data;
 	using System.Data.Common;
 	using System.Linq;
+	using Logging;
 
 	public class ConfigurationConnectionFactory : IConnectionFactory
 	{
 		private const int DefaultShards = 16;
 		private const string DefaultConnectionName = "EventStore";
 
+		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(ConfigurationConnectionFactory));
 		private static readonly IDictionary<string, ConnectionStringSettings> CachedSettings =
 			new Dictionary<string, ConnectionStringSettings>();
 		private static readonly IDictionary<string, DbProviderFactory> CachedFactories =
@@ -35,6 +37,9 @@ namespace EventStore.Persistence.SqlPersistence
 			this.masterConnectionName = masterConnectionName ?? DefaultConnectionName;
 			this.replicaConnectionName = replicaConnectionName ?? this.masterConnectionName;
 			this.shards = shards >= 0 ? shards : DefaultShards;
+
+			Logger.Debug(Messages.ConfiguringConnections,
+				this.masterConnectionName, this.replicaConnectionName, this.shards);
 		}
 
 		public virtual ConnectionStringSettings Settings
@@ -44,10 +49,12 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public virtual IDbConnection OpenMaster(Guid streamId)
 		{
+			Logger.Verbose(Messages.OpeningMasterConnection, this.masterConnectionName);
 			return this.Open(streamId, this.masterConnectionName);
 		}
 		public virtual IDbConnection OpenReplica(Guid streamId)
 		{
+			Logger.Verbose(Messages.OpeningReplicaConnection, this.replicaConnectionName);
 			return this.Open(streamId, this.replicaConnectionName);
 		}
 		protected virtual IDbConnection Open(Guid streamId, string connectionName)
@@ -62,10 +69,12 @@ namespace EventStore.Persistence.SqlPersistence
 
 			try
 			{
+				Logger.Verbose(Messages.OpeningConnection, setting.Name);
 				connection.Open();
 			}
 			catch (Exception e)
 			{
+				Logger.Warn(Messages.OpenFailed, setting.Name);
 				throw new StorageUnavailableException(e.Message, e);
 			}
 
@@ -93,11 +102,14 @@ namespace EventStore.Persistence.SqlPersistence
 					return factory;
 
 				factory = DbProviderFactories.GetFactory(setting.ProviderName);
+				Logger.Debug(Messages.DiscoveredConnectionProvider, setting.Name, factory.GetType());
 				return CachedFactories[setting.Name] = factory;
 			}
 		}
 		private static ConnectionStringSettings GetConnectionStringSettings(string connectionName)
 		{
+			Logger.Debug(Messages.DiscoveringConnectionSettings, connectionName);
+
 			var settings = ConfigurationManager.ConnectionStrings
 				.Cast<ConnectionStringSettings>()
 				.FirstOrDefault(x => x.Name == connectionName);
@@ -117,12 +129,12 @@ namespace EventStore.Persistence.SqlPersistence
 			return settings;
 		}
 
-		protected virtual string BuildConnectionString(
-			Guid streamId, ConnectionStringSettings setting)
+		protected virtual string BuildConnectionString(Guid streamId, ConnectionStringSettings setting)
 		{
 			if (this.shards == 0)
 				return setting.ConnectionString;
 
+			Logger.Verbose(Messages.EmbeddingShardKey, setting.Name);
 			return setting.ConnectionString.FormatWith(this.ComputeHashKey(streamId));
 		}
 		protected virtual string ComputeHashKey(Guid streamId)

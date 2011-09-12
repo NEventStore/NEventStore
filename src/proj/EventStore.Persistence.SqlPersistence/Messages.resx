@@ -126,7 +126,31 @@
   <data name="MissingProviderName" xml:space="preserve">
     <value>Could not find the required attribute 'providerName' on the connection name '{0}' in the configuration file.</value>
   </data>
-	<data name="BadConnectionName">
-		<value xml:space="preserve">A connection could not be created for the specified named connection.</value>
-	</data>
+  <data name="BadConnectionName" xml:space="preserve">
+    <value>A connection could not be created for the specified named connection.</value>
+  </data>
+  <data name="ConfiguringConnections" xml:space="preserve">
+    <value>Configuring connections: master '{0}'; replica '{1}', shards: {2}.</value>
+  </data>
+  <data name="OpeningMasterConnection" xml:space="preserve">
+    <value>Opening master connection '{0}'</value>
+  </data>
+  <data name="OpeningReplicaConnection" xml:space="preserve">
+    <value>Opening replica connection '{0}'.</value>
+  </data>
+  <data name="OpeningConnection" xml:space="preserve">
+    <value>Opening connection '{0}'.</value>
+  </data>
+  <data name="OpenFailed" xml:space="preserve">
+    <value>Unable to open connection '{0}'.</value>
+  </data>
+  <data name="DiscoveredConnectionProvider" xml:space="preserve">
+    <value>Discovered DB provider factory settings for '{0}', using '{1}'.</value>
+  </data>
+  <data name="DiscoveringConnectionSettings" xml:space="preserve">
+    <value>Discovering connection settings for '{0}'.</value>
+  </data>
+  <data name="EmbeddingShardKey" xml:space="preserve">
+    <value>Embedding sharding key into connection string for '{0}'.</value>
+  </data>
 </root>
