@@ -4,9 +4,11 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Data;
+	using Logging;
 
 	public class PagedEnumeration<T> : IEnumerable<T>, IEnumerator<T>
 	{
+		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(PagedEnumeration<T>));
 		private readonly IDbCommand command;
 		private readonly Func<IDataRecord, T> select;
 		private readonly NextPageDelegate<T> onNextPage;
@@ -62,6 +64,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			if (!this.PageCompletelyEnumerated())
 				return false;
 
+			Logger.Verbose(Messages.EnumeratedRowCount, this.position);
 			this.reader.Dispose();
 			this.reader = this.OpenNextPage();
 
@@ -95,6 +98,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			}
 			catch (Exception e)
 			{
+				Logger.Debug(Messages.EnumerationThrewException, e.GetType());
 				throw new StorageUnavailableException(e.Message, e);
 			}
 		}

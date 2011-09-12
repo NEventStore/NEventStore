@@ -61,11 +61,92 @@ namespace EventStore.Persistence.SqlPersistence {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Adding parameter named &apos;{0}&apos; to statement..
+        /// </summary>
+        internal static string AddingParameter {
+            get {
+                return ResourceManager.GetString("AddingParameter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Adding snapshot to stream &apos;{0}&apos; at position {1}..
+        /// </summary>
+        internal static string AddingSnapshot {
+            get {
+                return ResourceManager.GetString("AddingSnapshot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attempting to commit {0} events on stream &apos;{1}&apos; at sequence {2}..
+        /// </summary>
+        internal static string AttemptingToCommit {
+            get {
+                return ResourceManager.GetString("AttemptingToCommit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A connection could not be created for the specified named connection..
         /// </summary>
         internal static string BadConnectionName {
             get {
                 return ResourceManager.GetString("BadConnectionName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Binding parameter &apos;{0}&apos; with value: {1}.
+        /// </summary>
+        internal static string BindingParameter {
+            get {
+                return ResourceManager.GetString("BindingParameter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Command has client-controlled transaction: {0}..
+        /// </summary>
+        internal static string ClientControlledTransaction {
+            get {
+                return ResourceManager.GetString("ClientControlledTransaction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Command executed, {0} rows affected..
+        /// </summary>
+        internal static string CommandExecuted {
+            get {
+                return ResourceManager.GetString("CommandExecuted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Command text to be executed: {0}.
+        /// </summary>
+        internal static string CommandTextToExecute {
+            get {
+                return ResourceManager.GetString("CommandTextToExecute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Non-query statement threw an exception of type &apos;{0}&apos;..
+        /// </summary>
+        internal static string CommandThrewException {
+            get {
+                return ResourceManager.GetString("CommandThrewException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Commit persisted, {0} rows affected..
+        /// </summary>
+        internal static string CommitPersisted {
+            get {
+                return ResourceManager.GetString("CommitPersisted", resourceCulture);
             }
         }
         
@@ -88,6 +169,33 @@ namespace EventStore.Persistence.SqlPersistence {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Creating command..
+        /// </summary>
+        internal static string CreatingCommand {
+            get {
+                return ResourceManager.GetString("CreatingCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deserializing commit from record using serializer of type &apos;{0}&apos;..
+        /// </summary>
+        internal static string DeserializingCommit {
+            get {
+                return ResourceManager.GetString("DeserializingCommit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deserializing snapshot from data record..
+        /// </summary>
+        internal static string DeserializingSnapshot {
+            get {
+                return ResourceManager.GetString("DeserializingSnapshot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Discovered DB provider factory settings for &apos;{0}&apos;, using &apos;{1}&apos;..
         /// </summary>
         internal static string DiscoveredConnectionProvider {
@@ -106,11 +214,146 @@ namespace EventStore.Persistence.SqlPersistence {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Disposing SQL statement resources, including any transactions and connections..
+        /// </summary>
+        internal static string DisposingStatement {
+            get {
+                return ResourceManager.GetString("DisposingStatement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duplicate commit detected; throwing..
+        /// </summary>
+        internal static string DuplicateCommit {
+            get {
+                return ResourceManager.GetString("DuplicateCommit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Embedding sharding key into connection string for &apos;{0}&apos;..
         /// </summary>
         internal static string EmbeddingShardKey {
             get {
                 return ResourceManager.GetString("EmbeddingShardKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enumerated {0} rows, requerying for next page..
+        /// </summary>
+        internal static string EnumeratedRowCount {
+            get {
+                return ResourceManager.GetString("EnumeratedRowCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enumeration of paged results threw exception of type &apos;{0}&apos;..
+        /// </summary>
+        internal static string EnumerationThrewException {
+            get {
+                return ResourceManager.GetString("EnumerationThrewException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Executed statement threw an exception, but the exception was suppressed..
+        /// </summary>
+        internal static string ExceptionSuppressed {
+            get {
+                return ResourceManager.GetString("ExceptionSuppressed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Executing command..
+        /// </summary>
+        internal static string ExecutingCommand {
+            get {
+                return ResourceManager.GetString("ExecutingCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Executing query..
+        /// </summary>
+        internal static string ExecutingQuery {
+            get {
+                return ResourceManager.GetString("ExecutingQuery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Getting all commits for stream &apos;{0}&apos; between revisions &apos;{1}&apos; and &apos;{2}&apos;..
+        /// </summary>
+        internal static string GettingAllCommitsBetween {
+            get {
+                return ResourceManager.GetString("GettingAllCommitsBetween", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Getting all commits from &apos;{0}&apos; forward..
+        /// </summary>
+        internal static string GettingAllCommitsFrom {
+            get {
+                return ResourceManager.GetString("GettingAllCommitsFrom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Getting snapshot for stream &apos;{0}&apos; on or before revision {1}..
+        /// </summary>
+        internal static string GettingRevision {
+            get {
+                return ResourceManager.GetString("GettingRevision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Getting a list of streams to snapshot..
+        /// </summary>
+        internal static string GettingStreamsToSnapshot {
+            get {
+                return ResourceManager.GetString("GettingStreamsToSnapshot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Getting the list of all undispatched commits..
+        /// </summary>
+        internal static string GettingUndispatchedCommits {
+            get {
+                return ResourceManager.GetString("GettingUndispatchedCommits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Initializing storage engine..
+        /// </summary>
+        internal static string InitializingStorage {
+            get {
+                return ResourceManager.GetString("InitializingStorage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Marking commit &apos;{0}&apos; as dispatched..
+        /// </summary>
+        internal static string MarkingCommitAsDispatched {
+            get {
+                return ResourceManager.GetString("MarkingCommitAsDispatched", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Executing query with max page size of {0}..
+        /// </summary>
+        internal static string MaxPageSize {
+            get {
+                return ResourceManager.GetString("MaxPageSize", resourceCulture);
             }
         }
         
@@ -165,6 +408,42 @@ namespace EventStore.Persistence.SqlPersistence {
         internal static string OpeningReplicaConnection {
             get {
                 return ResourceManager.GetString("OpeningReplicaConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Purging all stored data..
+        /// </summary>
+        internal static string PurgingStorage {
+            get {
+                return ResourceManager.GetString("PurgingStorage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Query completed successfully, completing and disposing ambient scope..
+        /// </summary>
+        internal static string QueryCompleted {
+            get {
+                return ResourceManager.GetString("QueryCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Storage threw exception of type &apos;{0}&apos;, wrapping and rethrowing..
+        /// </summary>
+        internal static string StorageThrewException {
+            get {
+                return ResourceManager.GetString("StorageThrewException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Participating in connection with ambient transaction scope of .
+        /// </summary>
+        internal static string UsingScope {
+            get {
+                return ResourceManager.GetString("UsingScope", resourceCulture);
             }
         }
     }

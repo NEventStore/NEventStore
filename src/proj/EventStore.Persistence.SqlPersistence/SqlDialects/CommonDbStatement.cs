@@ -4,15 +4,18 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	using System.Collections.Generic;
 	using System.Data;
 	using System.Linq;
+	using Logging;
 
 	public class CommonDbStatement : IDbStatement
 	{
 		private const int InfinitePageSize = 0;
-		protected IDictionary<string, object> Parameters { get; private set; }
+		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(CommonDbStatement));
 		private readonly ISqlDialect dialect;
 		private readonly IDbTransaction transaction;
 		private readonly IDbConnection connection;
 		private readonly IDisposable[] resources;
+
+		protected IDictionary<string, object> Parameters { get; private set; }
 
 		public CommonDbStatement(
 			ISqlDialect dialect,
@@ -35,6 +38,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		protected virtual void Dispose(bool disposing)
 		{
+			Logger.Verbose(Messages.DisposingStatement);
+
 			if (this.transaction != null)
 				this.transaction.Dispose();
 
@@ -47,6 +52,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 		public virtual void AddParameter(string name, object value)
 		{
+			Logger.Debug(Messages.AddingParameter, name);
 			this.Parameters[name] = this.dialect.CoalesceParameterValue(value);
 		}
 
@@ -58,6 +64,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			}
 			catch (Exception)
 			{
+				Logger.Debug(Messages.ExceptionSuppressed);
 				return 0;
 			}
 		}
@@ -74,10 +81,12 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			}
 			catch (Exception e)
 			{
-				if (this.dialect.IsDuplicate(e))
-					throw new DuplicateCommitException(e.Message, e);
+				Logger.Debug(Messages.CommandThrewException, e.GetType());
+				if (!this.dialect.IsDuplicate(e))
+					throw;
 
-				throw;
+				Logger.Debug(Messages.DuplicateCommit);
+				throw new DuplicateCommitException(e.Message, e);
 			}
 		}
 
@@ -90,7 +99,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			pageSize = this.dialect.CanPage ? pageSize : InfinitePageSize;
 			if (pageSize > 0)
+			{
+				Logger.Verbose(Messages.MaxPageSize, pageSize);
 				this.Parameters.Add(this.dialect.Limit, pageSize);
+			}
 
 			var command = this.BuildCommand(queryText);
 
@@ -107,9 +119,13 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		protected virtual IDbCommand BuildCommand(string statement)
 		{
+			Logger.Verbose(Messages.CreatingCommand);
 			var command = this.connection.CreateCommand();
 			command.Transaction = this.transaction;
 			command.CommandText = statement;
+
+			Logger.Verbose(Messages.ClientControlledTransaction, this.transaction != null);
+			Logger.Verbose(Messages.CommandTextToExecute, statement);
 
 			this.BuildParameters(command);
 
@@ -125,6 +141,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			var parameter = command.CreateParameter();
 			parameter.ParameterName = name;
 			this.SetParameterValue(parameter, value, null);
+
+			Logger.Verbose(Messages.BindingParameter, name, parameter.Value);
 			command.Parameters.Add(parameter);
 		}
 		protected virtual void SetParameterValue(IDataParameter param, object value, DbType? type)
