@@ -50,7 +50,7 @@
     <Compile Include="Indexes\RavenCommitByDate.cs" />
     <Compile Include="Indexes\RavenSnapshotByStreamIdAndRevision.cs" />
     <Compile Include="Indexes\RavenStreamHeadBySnapshotAge.cs" />
-    <Compile Include="PagedEnumeration.cs" />
+    <Compile Include="PagedEnumerationCollection.cs" />
     <Compile Include="RavenConfiguration.cs" />
     <Compile Include="RavenStreamHead.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -91,7 +91,7 @@
     <Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v3.5'">
       <HintPath>..\..\..\bin\RavenDB.1.0.0.465\lib\net35\Raven.Client.Lightweight-3.5.dll</HintPath>
     </Reference>
-	<Reference Include="NLog" Condition="$(TargetFrameworkVersion)=='v4.0'">
+    <Reference Include="NLog" Condition="$(TargetFrameworkVersion)=='v4.0'">
       <HintPath>..\..\..\bin\NLog.2.0.0.2000\lib\net40\NLog.dll</HintPath>
     </Reference>
     <Reference Include="NLog" Condition="$(TargetFrameworkVersion)=='v3.5'">

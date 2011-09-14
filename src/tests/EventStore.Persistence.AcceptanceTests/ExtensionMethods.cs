@@ -48,6 +48,11 @@ namespace EventStore.Persistence.AcceptanceTests
 		public class SomeDomainEvent
 		{
 			public string SomeProperty { get; set; }
+
+			public override string ToString()
+			{
+				return this.SomeProperty;
+			}
 		}
 	}
 }

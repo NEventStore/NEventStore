@@ -28,6 +28,7 @@
 			<Word>nonpositive</Word>
 			<Word>sysobjects</Word>
 			<Word>gzip</Word>
+			<Word>precommit</Word>
 		</Recognized>
 	</Words>
 </Dictionary>

@@ -1,5 +1,6 @@
 namespace EventStore
 {
+	using System;
 	using System.Transactions;
 	using Logging;
 	using Persistence.RavenPersistence;
@@ -14,7 +15,7 @@ namespace EventStore
 		private int maxServerPageSize = 1024;
 		private bool consistentQueries; // stale queries perform better
 		private IDocumentSerializer serializer = new DocumentObjectSerializer();
-		private string url;
+		private Uri url;
 		private string defaultDatabase;
 
 		public RavenPersistenceWireup(Wireup inner)
@@ -49,11 +50,11 @@ namespace EventStore
 			this.defaultDatabase = database;
 			return this;
 		}
-		public virtual RavenPersistenceWireup Url(string explicitUrl)
+		public virtual RavenPersistenceWireup Url(string address)
 		{
-			Logger.Debug("Using database at '{0}'.", explicitUrl);
+			Logger.Debug("Using database at '{0}'.", address);
 
-			this.url = explicitUrl;
+			this.url = new Uri(address, UriKind.Absolute);
 			return this;
 		}
 

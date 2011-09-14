@@ -24,8 +24,8 @@
 			if (!string.IsNullOrEmpty(this.config.ConnectionName))
 				store.ConnectionStringName = this.config.ConnectionName;
 
-			if (!string.IsNullOrEmpty(this.config.Url))
-				store.Url = this.config.Url;
+			if (this.config.Url != null)
+				store.Url = this.config.Url.ToString();
 
 			if (!string.IsNullOrEmpty(this.config.DefaultDatabase))
 				store.DefaultDatabase = this.config.DefaultDatabase;

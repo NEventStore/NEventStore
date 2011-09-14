@@ -5,12 +5,12 @@ namespace EventStore.Persistence.RavenPersistence
 	using System.Collections.Generic;
 	using System.Linq;
 
-	public sealed class PagedEnumeration<T> : IEnumerable<T>
+	public sealed class PagedEnumerationCollection<T> : IEnumerable<T>
 	{
 		private readonly IQueryable<T> source;
 		private readonly int take;
 
-		public PagedEnumeration(IQueryable<T> source, int take)
+		public PagedEnumerationCollection(IQueryable<T> source, int take)
 		{
 			this.source = source;
 			this.take = take;

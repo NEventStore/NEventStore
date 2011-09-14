@@ -103,11 +103,11 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			}
 		}
 
-		void IEnumerator.Reset()
+		public virtual void Reset()
 		{
 			throw new NotSupportedException("Forward-only readers.");
 		}
-		T IEnumerator<T>.Current
+		public virtual T Current
 		{
 			get { return this.latest = this.select(this.reader); }
 		}

@@ -56,7 +56,7 @@ namespace EventStore
 			return new OptimisticEventStream(snapshot, this, maxRevision);
 		}
 
-		IEnumerable<Commit> ICommitEvents.GetFrom(Guid streamId, int minRevision, int maxRevision)
+		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
 		{
 			foreach (var commit in this.persistence.GetFrom(streamId, minRevision, maxRevision))
 			{
@@ -73,7 +73,7 @@ namespace EventStore
 					yield return filtered;
 			}
 		}
-		void ICommitEvents.Commit(Commit attempt)
+		public virtual void Commit(Commit attempt)
 		{
 			if (!attempt.IsValid() || attempt.IsEmpty())
 			{

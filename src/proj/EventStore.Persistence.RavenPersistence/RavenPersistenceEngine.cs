@@ -34,7 +34,7 @@
 				throw new ArgumentNullException("store");
 
 			if (config == null)
-				throw new ArgumentNullException();
+				throw new ArgumentNullException("config");
 
 			if (config.Serializer == null)
 				throw new ArgumentException("Serializer cannot be null.", "config");

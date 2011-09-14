@@ -99,7 +99,7 @@ namespace EventStore.Persistence.RavenPersistence
 
 		public static IEnumerable<T> Page<T>(this IQueryable<T> query, int pageSize)
 		{
-			return new PagedEnumeration<T>(query, pageSize);
+			return new PagedEnumerationCollection<T>(query, pageSize);
 		}
 	}
 }

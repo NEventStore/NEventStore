@@ -1,12 +1,13 @@
 namespace EventStore.Persistence.RavenPersistence
 {
+	using System;
 	using System.Transactions;
 	using Serialization;
 
 	public class RavenConfiguration
 	{
 		public string ConnectionName { get; set; }
-		public string Url { get; set; }
+		public Uri Url { get; set; }
 		public string DefaultDatabase { get; set; }
 
 		public IDocumentSerializer Serializer { get; set; }
