@@ -139,7 +139,7 @@ namespace EventStore
 			if (this.events.Count > 0)
 				return true;
 
-			Logger.Debug(Resources.NoChangesToCommit, this.StreamId);
+			Logger.Warn(Resources.NoChangesToCommit, this.StreamId);
 			return false;
 		}
 		protected virtual void PersistChanges(Guid commitId)
