@@ -116,10 +116,7 @@ namespace EventStore
 				throw new DuplicateCommitException();
 
 			if (!this.HasChanges())
-			{
-				Logger.Debug(Resources.NoChangesToCommit, this.StreamId);
 				return;
-			}
 
 			try
 			{
@@ -139,7 +136,11 @@ namespace EventStore
 			if (this.disposed)
 				throw new ObjectDisposedException(Resources.AlreadyDisposed);
 
-			return this.events.Count > 0;
+			if (this.events.Count > 0)
+				return true;
+
+			Logger.Debug(Resources.NoChangesToCommit, this.StreamId);
+			return false;
 		}
 		protected virtual void PersistChanges(Guid commitId)
 		{
