@@ -12,8 +12,8 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 	using Persistence;
 	using It = Machine.Specifications.It;
 
-	[Subject("AsynchronousDispatcher")]
-	public class when_instantiating_the_asynchronous_dispatcher
+	[Subject("AsynchronousDispatchScheduler")]
+	public class when_instantiating_the_asynchronous_dispatch_scheduler
 	{
 		static readonly Guid streamId = Guid.NewGuid();
 		private static readonly Commit[] commits =
@@ -21,19 +21,19 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 			new Commit(streamId, 0, Guid.NewGuid(), 0, SystemTime.UtcNow(), null, null),
 			new Commit(streamId, 0, Guid.NewGuid(), 0, SystemTime.UtcNow(), null, null)
 		};
-		static readonly Mock<IPublishMessages> bus = new Mock<IPublishMessages>();
+		static readonly Mock<IDispatchCommits> dispatcher = new Mock<IDispatchCommits>();
 		static readonly Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
 
 		Establish context = () =>
 		{
 			persistence.Setup(x => x.Initialize());
 			persistence.Setup(x => x.GetUndispatchedCommits()).Returns(commits);
-			bus.Setup(x => x.Publish(commits.First()));
-			bus.Setup(x => x.Publish(commits.Last()));
+			dispatcher.Setup(x => x.Dispatch(commits.First()));
+			dispatcher.Setup(x => x.Dispatch(commits.Last()));
 		};
 
 		Because of = () =>
-			new AsynchronousDispatcher(bus.Object, persistence.Object);
+			new AsynchronousDispatchScheduler(dispatcher.Object, persistence.Object);
 
 		It should_take_a_few_milliseconds_for_the_other_thread_to_execute = () =>
 			Thread.Sleep(25); // just a precaution because we're doing async tests
@@ -44,64 +44,64 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 		It should_get_the_set_of_undispatched_commits = () =>
 			persistence.Verify(x => x.GetUndispatchedCommits(), Times.Once());
 
-		It should_provide_the_commits_to_the_publisher = () =>
-			bus.VerifyAll();
+		It should_provide_the_commits_to_the_dispatcher = () =>
+			dispatcher.VerifyAll();
 	}
 
-	[Subject("AsynchronousDispatcher")]
-	public class when_asynchronously_dispatching_a_commit
+	[Subject("AsynchronousDispatchScheduler")]
+	public class when_asynchronously_scheduling_a_commit_for_dispatch
 	{
 		static readonly Commit commit = new Commit(Guid.NewGuid(), 0, Guid.NewGuid(), 0, SystemTime.UtcNow(), null, null);
-		static readonly Mock<IPublishMessages> bus = new Mock<IPublishMessages>();
+		static readonly Mock<IDispatchCommits> dispatcher = new Mock<IDispatchCommits>();
 		static readonly Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
-		static AsynchronousDispatcher dispatcher;
+		static AsynchronousDispatchScheduler dispatchScheduler;
 
 		Establish context = () =>
 		{
-			bus.Setup(x => x.Publish(commit));
+			dispatcher.Setup(x => x.Dispatch(commit));
 			persistence.Setup(x => x.MarkCommitAsDispatched(commit));
 
-			dispatcher = new AsynchronousDispatcher(bus.Object, persistence.Object);
+			dispatchScheduler = new AsynchronousDispatchScheduler(dispatcher.Object, persistence.Object);
 		};
 
 		Because of = () =>
-			dispatcher.Dispatch(commit);
+			dispatchScheduler.ScheduleDispatch(commit);
 
 		It should_take_a_few_milliseconds_for_the_other_thread_to_execute = () =>
 			Thread.Sleep(25); // just a precaution because we're doing async tests
 
-		It should_provide_the_commit_to_the_message_bus = () =>
-			bus.Verify(x => x.Publish(commit), Times.Once());
+		It should_provide_the_commit_to_the_dispatcher = () =>
+			dispatcher.Verify(x => x.Dispatch(commit), Times.Once());
 
 		It should_mark_the_commit_as_dispatched = () =>
 			persistence.Verify(x => x.MarkCommitAsDispatched(commit), Times.Once());
 	}
 
-	[Subject("AsynchronousDispatcher")]
-	public class when_disposing_the_async_dispatcher
+	[Subject("AsynchronousDispatchScheduler")]
+	public class when_disposing_the_async_dispatch_scheduler
 	{
-		static readonly Mock<IPublishMessages> bus = new Mock<IPublishMessages>();
+		static readonly Mock<IDispatchCommits> dispatcher = new Mock<IDispatchCommits>();
 		static readonly Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
-		static AsynchronousDispatcher dispatcher;
+		static AsynchronousDispatchScheduler dispatchScheduler;
 
 		Establish context = () =>
 		{
-			bus.Setup(x => x.Dispose());
+			dispatcher.Setup(x => x.Dispose());
 			persistence.Setup(x => x.Dispose());
-			dispatcher = new AsynchronousDispatcher(bus.Object, persistence.Object);
+			dispatchScheduler = new AsynchronousDispatchScheduler(dispatcher.Object, persistence.Object);
 		};
 
 		Because of = () =>
 		{
-			dispatcher.Dispose();
-			dispatcher.Dispose();
+			dispatchScheduler.Dispose();
+			dispatchScheduler.Dispose();
 		};
 
-		It should_dispose_the_underlying_message_bus_exactly_once = () =>
-			bus.Verify(x => x.Dispose(), Times.Once());
+		It should_dispose_the_underlying_dispatcher_exactly_once = () =>
+			dispatcher.Verify(x => x.Dispose(), Times.Once());
 
 		It should_dispose_the_underlying_persistence_infrastructure_exactly_once = () =>
-			bus.Verify(x => x.Dispose(), Times.Once());
+			dispatcher.Verify(x => x.Dispose(), Times.Once());
 	}
 }
 

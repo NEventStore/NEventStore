@@ -65,11 +65,11 @@ namespace EventStore
 		private static IStoreEvents BuildEventStore(NanoContainer context)
 		{
 			var scopeOption = context.Resolve<TransactionScopeOption>();
-			var concurrentHook = scopeOption == TransactionScopeOption.Suppress ? new OptimisticPipelineHook() : null;
-			var dispatcherHook = new DispatchPipelineHook(context.Resolve<IDispatchCommits>());
+			var concurrencyHook = scopeOption == TransactionScopeOption.Suppress ? new OptimisticPipelineHook() : null;
+			var dispatchSchedulerHook = new DispatchSchedulerPipelinkHook(context.Resolve<IScheduleDispatches>());
 
 			var pipelineHooks = context.Resolve<ICollection<IPipelineHook>>() ?? new IPipelineHook[0];
-			pipelineHooks = new IPipelineHook[] { concurrentHook, dispatcherHook }
+			pipelineHooks = new IPipelineHook[] { concurrencyHook, dispatchSchedulerHook }
 				.Concat(pipelineHooks)
 				.Where(x => x != null)
 				.ToArray();

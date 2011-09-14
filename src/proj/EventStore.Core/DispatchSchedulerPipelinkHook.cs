@@ -3,17 +3,17 @@ namespace EventStore
 	using System;
 	using Dispatcher;
 
-	public class DispatchPipelineHook : IPipelineHook
+	public class DispatchSchedulerPipelinkHook : IPipelineHook
 	{
-		private readonly IDispatchCommits dispatcher;
+		private readonly IScheduleDispatches scheduler;
 
-		public DispatchPipelineHook()
+		public DispatchSchedulerPipelinkHook()
 			: this(null)
 		{
 		}
-		public DispatchPipelineHook(IDispatchCommits dispatcher)
+		public DispatchSchedulerPipelinkHook(IScheduleDispatches scheduler)
 		{
-			this.dispatcher = dispatcher ?? new NullPublisher();
+			this.scheduler = scheduler ?? new NullDispatcher(); // serves as a scheduler also
 		}
 		public void Dispose()
 		{
@@ -22,7 +22,7 @@ namespace EventStore
 		}
 		protected virtual void Dispose(bool disposing)
 		{
-			this.dispatcher.Dispose();
+			this.scheduler.Dispose();
 		}
 
 		public Commit Select(Commit committed)
@@ -36,7 +36,7 @@ namespace EventStore
 		public void PostCommit(Commit committed)
 		{
 			if (committed != null)
-				this.dispatcher.Dispatch(committed);
+				this.scheduler.ScheduleDispatch(committed);
 		}
 	}
 }

@@ -61,20 +61,11 @@ namespace EventStore.Example {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Exception while publishing message.
+        ///   Looks up a localized string similar to Messages from commit have been dispatched: .
         /// </summary>
-        internal static string ErrorWhilePublishing {
+        internal static string MessagesDispatched {
             get {
-                return ResourceManager.GetString("ErrorWhilePublishing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Messages from commit have been published: .
-        /// </summary>
-        internal static string MessagesPublished {
-            get {
-                return ResourceManager.GetString("MessagesPublished", resourceCulture);
+                return ResourceManager.GetString("MessagesDispatched", resourceCulture);
             }
         }
         
@@ -88,11 +79,11 @@ namespace EventStore.Example {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to If for some reason we are unable to publish, we&apos;d just handle it here..
+        ///   Looks up a localized string similar to If for some reason we are unable to dispatch, we&apos;d just handle it here..
         /// </summary>
-        internal static string UnableToPublish {
+        internal static string UnableToDispatch {
             get {
-                return ResourceManager.GetString("UnableToPublish", resourceCulture);
+                return ResourceManager.GetString("UnableToDispatch", resourceCulture);
             }
         }
     }

@@ -79,11 +79,11 @@ namespace EventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Configuring store to dispatch messages asynchronously..
+        ///   Looks up a localized string similar to Configuring the store to dispatch messages asynchronously..
         /// </summary>
-        internal static string AsyncDispatcherRegistered {
+        internal static string AsyncDispatchSchedulerRegistered {
             get {
-                return ResourceManager.GetString("AsyncDispatcherRegistered", resourceCulture);
+                return ResourceManager.GetString("AsyncDispatchSchedulerRegistered", resourceCulture);
             }
         }
         
@@ -196,6 +196,15 @@ namespace EventStore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Registering dispatcher of type &apos;{0}&apos;..
+        /// </summary>
+        internal static string DispatcherRegistered {
+            get {
+                return ResourceManager.GetString("DispatcherRegistered", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Initializing the configured persistence engine..
         /// </summary>
         internal static string InitializingEngine {
@@ -210,15 +219,6 @@ namespace EventStore {
         internal static string InstanceCannotBeNull {
             get {
                 return ResourceManager.GetString("InstanceCannotBeNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Registering message publisher of type &apos;{0}&apos;..
-        /// </summary>
-        internal static string MessagePublisherRegistered {
-            get {
-                return ResourceManager.GetString("MessagePublisherRegistered", resourceCulture);
             }
         }
         
@@ -277,11 +277,11 @@ namespace EventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Configuring store to dispatch messages synchronously..
+        ///   Looks up a localized string similar to Configuring the store to dispatch messages synchronously..
         /// </summary>
-        internal static string SyncDispatcherRegistered {
+        internal static string SyncDispatchSchedulerRegistered {
             get {
-                return ResourceManager.GetString("SyncDispatcherRegistered", resourceCulture);
+                return ResourceManager.GetString("SyncDispatchSchedulerRegistered", resourceCulture);
             }
         }
         

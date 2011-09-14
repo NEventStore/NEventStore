@@ -152,8 +152,8 @@ Once built, the files will be placed in the "publish-net40" or "publish-net35" s
 				.Compress()
 				.EncryptWith(EncryptionKey)
 		.HookIntoPipelineUsing(new[] { new AuthorizationPipelineHook() })
-		.UsingAsynchronousDispatcher()
-			.PublishTo(new My_NServiceBus_Or_MassTransit_Publisher())
+		.UsingAsynchronousDispatchScheduler()
+			.DispatchTo(new My_NServiceBus_Or_MassTransit_OrEven_WCF_Adapter_Code())
 		.Build();		
 
 	/* NOTE: This following is merely *example* code. */

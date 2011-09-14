@@ -4,19 +4,19 @@ namespace EventStore.Dispatcher
 	using Logging;
 	using Persistence;
 
-	public class SynchronousDispatcher : IDispatchCommits
+	public class SynchronousDispatchScheduler : IScheduleDispatches
 	{
-		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(SynchronousDispatcher));
-		private readonly IPublishMessages bus;
+		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(SynchronousDispatchScheduler));
+		private readonly IDispatchCommits dispatcher;
 		private readonly IPersistStreams persistence;
 		private bool disposed;
 
-		public SynchronousDispatcher(IPublishMessages bus, IPersistStreams persistence)
+		public SynchronousDispatchScheduler(IDispatchCommits dispatcher, IPersistStreams persistence)
 		{
-			this.bus = bus;
+			this.dispatcher = dispatcher;
 			this.persistence = persistence;
 
-			Logger.Info(Resources.StartingDispatcher);
+			Logger.Info(Resources.StartingDispatchScheduler);
 			this.Start();
 		}
 
@@ -30,9 +30,9 @@ namespace EventStore.Dispatcher
 			if (!disposing || this.disposed)
 				return;
 
-			Logger.Debug(Resources.ShuttingDownDispatcher);
+			Logger.Debug(Resources.ShuttingDownDispatchScheduler);
 			this.disposed = true;
-			this.bus.Dispose();
+			this.dispatcher.Dispose();
 			this.persistence.Dispose();
 		}
 
@@ -43,19 +43,19 @@ namespace EventStore.Dispatcher
 
 			Logger.Debug(Resources.GettingUndispatchedCommits);
 			foreach (var commit in this.persistence.GetUndispatchedCommits())
-				this.Dispatch(commit);
+				this.ScheduleDispatch(commit);
 		}
 
-		public virtual void Dispatch(Commit commit)
+		public virtual void ScheduleDispatch(Commit commit)
 		{
 			try
 			{
-				Logger.Info(Resources.PublishingCommit, commit.CommitId);
-				this.bus.Publish(commit);
+				Logger.Info(Resources.SchedulingDispatch, commit.CommitId);
+				this.dispatcher.Dispatch(commit);
 			}
 			catch
 			{
-				Logger.Error(Resources.UnableToPublish, this.bus.GetType(), commit.CommitId);
+				Logger.Error(Resources.UnableToDispatch, this.dispatcher.GetType(), commit.CommitId);
 				throw;
 			}
 

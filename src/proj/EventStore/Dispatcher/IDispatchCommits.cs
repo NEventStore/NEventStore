@@ -3,7 +3,7 @@ namespace EventStore.Dispatcher
 	using System;
 
 	/// <summary>
-	/// Indicates the ability to dispatch or publish all messages associated with a particular commit.
+	/// Indicates the ability to dispatch the specified commit to some kind of communications infrastructure.
 	/// </summary>
 	/// <remarks>
 	/// Instances of this class must be designed to be multi-thread safe such that they can be shared between threads.
@@ -11,9 +11,9 @@ namespace EventStore.Dispatcher
 	public interface IDispatchCommits : IDisposable
 	{
 		/// <summary>
-		/// Dispatches the series of messages contained within the commit provided to all interested parties.
+		/// Dispatches the commit specified to the messaging infrastructure.
 		/// </summary>
-		/// <param name="commit">The commit representing the series of messages to dispatch.</param>
+		/// <param name="commit">The commmit to be dispatched.</param>
 		void Dispatch(Commit commit);
 	}
 }

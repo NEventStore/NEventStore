@@ -37,22 +37,23 @@ namespace EventStore.Example
 						.Compress()
 						.EncryptWith(EncryptionKey)
 				.HookIntoPipelineUsing(new[] { new AuthorizationPipelineHook() })
-				.UsingAsynchronousDispatcher()
-					.PublishTo(new DelegateMessagePublisher(DispatchCommit))
+				.UsingAsynchronousDispatchScheduler()
+					.DispatchTo(new DelegateMessageDispatcher(DispatchCommit))
 				.Build();
 		}
 		private static void DispatchCommit(Commit commit)
 		{
-			// this is where we'd hook into our messaging infrastructure, e.g. NServiceBus.
-			// this can be a class as well--just implement IPublishMessages
+			// This is where we'd hook into our messaging infrastructure, such as NServiceBus,
+			// MassTransit, WCF, or some other communications infrastructure.
+			// This can be a class as well--just implement IDispatchCommits.
 			try
 			{
 				foreach (var @event in commit.Events)
-					Console.WriteLine(Resources.MessagesPublished + ((SomeDomainEvent)@event.Body).Value);
+					Console.WriteLine(Resources.MessagesDispatched + ((SomeDomainEvent)@event.Body).Value);
 			}
 			catch (Exception)
 			{
-				Console.WriteLine(Resources.UnableToPublish);
+				Console.WriteLine(Resources.UnableToDispatch);
 			}
 		}
 

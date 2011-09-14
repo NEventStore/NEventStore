@@ -178,6 +178,15 @@ namespace EventStore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Dispatching message to /dev/null..
+        /// </summary>
+        internal static string DispatchingToDevNull {
+            get {
+                return ResourceManager.GetString("DispatchingToDevNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Disposing engine..
         /// </summary>
         internal static string DisposingEngine {
@@ -403,24 +412,6 @@ namespace EventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Pushing commit &apos;{0}&apos; to message publisher..
-        /// </summary>
-        internal static string PublishingCommit {
-            get {
-                return ResourceManager.GetString("PublishingCommit", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Publishing message to /dev/null..
-        /// </summary>
-        internal static string PublishingToDevNull {
-            get {
-                return ResourceManager.GetString("PublishingToDevNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Purging all data from storage..
         /// </summary>
         internal static string PurgingStore {
@@ -466,6 +457,15 @@ namespace EventStore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Scheduling commit &apos;{0}&apos; to be dispatched..
+        /// </summary>
+        internal static string SchedulingDispatch {
+            get {
+                return ResourceManager.GetString("SchedulingDispatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Shutting down dispatcher..
         /// </summary>
         internal static string ShuttingDownDispatcher {
@@ -475,11 +475,11 @@ namespace EventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Shutting down publisher..
+        ///   Looks up a localized string similar to Shutting down dispatch scheduler..
         /// </summary>
-        internal static string ShuttingDownPublisher {
+        internal static string ShuttingDownDispatchScheduler {
             get {
-                return ResourceManager.GetString("ShuttingDownPublisher", resourceCulture);
+                return ResourceManager.GetString("ShuttingDownDispatchScheduler", resourceCulture);
             }
         }
         
@@ -493,20 +493,11 @@ namespace EventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Starting dispatcher.
+        ///   Looks up a localized string similar to Starting dispatch scheduler..
         /// </summary>
-        internal static string StartingDispatcher {
+        internal static string StartingDispatchScheduler {
             get {
-                return ResourceManager.GetString("StartingDispatcher", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Stopping dispatcher.
-        /// </summary>
-        internal static string StoppingDispatcher {
-            get {
-                return ResourceManager.GetString("StoppingDispatcher", resourceCulture);
+                return ResourceManager.GetString("StartingDispatchScheduler", resourceCulture);
             }
         }
         
@@ -529,11 +520,11 @@ namespace EventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Configured publisher of type &apos;{0}&apos; was unable to publish commit &apos;{1}&apos;..
+        ///   Looks up a localized string similar to Configured dispatcher of type &apos;{0}&apos; was unable to dispatch commit &apos;{1}&apos;..
         /// </summary>
-        internal static string UnableToPublish {
+        internal static string UnableToDispatch {
             get {
-                return ResourceManager.GetString("UnableToPublish", resourceCulture);
+                return ResourceManager.GetString("UnableToDispatch", resourceCulture);
             }
         }
         

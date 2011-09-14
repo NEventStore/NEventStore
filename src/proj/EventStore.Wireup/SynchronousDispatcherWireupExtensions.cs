@@ -4,14 +4,15 @@ namespace EventStore
 
 	public static class SynchronousDispatcherWireupExtensions
 	{
-		public static SynchronousDispatcherWireup UsingSynchronousDispatcher(this Wireup wireup)
+		public static SynchronousDispatchSchedulerWireup UsingSynchronousDispatchScheduler(this Wireup wireup)
 		{
-			return wireup.UsingSynchronousDispatcher(null);
+			return wireup.UsingSynchronousDispatchScheduler(null);
 		}
 
-		public static SynchronousDispatcherWireup UsingSynchronousDispatcher(this Wireup wireup, IPublishMessages publisher)
+		public static SynchronousDispatchSchedulerWireup UsingSynchronousDispatchScheduler(
+			this Wireup wireup, IDispatchCommits dispatcher)
 		{
-			return new SynchronousDispatcherWireup(wireup, publisher);
+			return new SynchronousDispatchSchedulerWireup(wireup, dispatcher);
 		}
 	}
 }

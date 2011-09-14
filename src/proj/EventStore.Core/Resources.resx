@@ -135,11 +135,8 @@
   <data name="RevisionTooSmall" xml:space="preserve">
     <value>The stream revision must always be greater than or equal to the commit sequence.</value>
   </data>
-  <data name="StoppingDispatcher" xml:space="preserve">
-    <value>Stopping dispatcher</value>
-  </data>
-  <data name="StartingDispatcher" xml:space="preserve">
-    <value>Starting dispatcher</value>
+  <data name="StartingDispatchScheduler" xml:space="preserve">
+    <value>Starting dispatch scheduler.</value>
   </data>
   <data name="InitializingPersistence" xml:space="preserve">
     <value>Initializing persistence engine.</value>
@@ -150,8 +147,8 @@
   <data name="SchedulingDelivery" xml:space="preserve">
     <value>Scheduling commit '{0}' for delivery.</value>
   </data>
-  <data name="PublishingCommit" xml:space="preserve">
-    <value>Pushing commit '{0}' to message publisher.</value>
+  <data name="SchedulingDispatch" xml:space="preserve">
+    <value>Scheduling commit '{0}' to be dispatched.</value>
   </data>
   <data name="MarkingCommitAsDispatched" xml:space="preserve">
     <value>Marking commit '{0}' as dispatched.</value>
@@ -270,16 +267,16 @@
   <data name="ShuttingDownStore" xml:space="preserve">
     <value>Shutting down event store.</value>
   </data>
+  <data name="ShuttingDownDispatchScheduler" xml:space="preserve">
+    <value>Shutting down dispatch scheduler.</value>
+  </data>
   <data name="ShuttingDownDispatcher" xml:space="preserve">
     <value>Shutting down dispatcher.</value>
   </data>
-  <data name="ShuttingDownPublisher" xml:space="preserve">
-    <value>Shutting down publisher.</value>
+  <data name="DispatchingToDevNull" xml:space="preserve">
+    <value>Dispatching message to /dev/null.</value>
   </data>
-  <data name="PublishingToDevNull" xml:space="preserve">
-    <value>Publishing message to /dev/null.</value>
+  <data name="UnableToDispatch" xml:space="preserve">
+    <value>Configured dispatcher of type '{0}' was unable to dispatch commit '{1}'.</value>
   </data>
-	<data name="UnableToPublish">
-		<value><![CDATA[Configured publisher of type '{0}' was unable to publish commit '{1}'.]]></value>
-	</data>
 </root>

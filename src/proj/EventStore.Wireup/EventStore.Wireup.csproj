@@ -44,8 +44,8 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AsynchronousDispatcherWireup.cs" />
-    <Compile Include="AsynchronousDispatcherWireupExtensions.cs" />
+    <Compile Include="AsynchronousDispatchSchedulerWireup.cs" />
+    <Compile Include="AsynchronousDispatchSchedulerWireupExtensions.cs" />
     <Compile Include="LoggingWireupExtensions.cs" />
     <Compile Include="Messages.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -60,7 +60,7 @@
     <Compile Include="SerializationWireupExtensions.cs" />
     <Compile Include="SqlPersistenceWireup.cs" />
     <Compile Include="SqlPersistenceWireupExtensions.cs" />
-    <Compile Include="SynchronousDispatcherWireup.cs" />
+    <Compile Include="SynchronousDispatchSchedulerWireup.cs" />
     <Compile Include="SynchronousDispatcherWireupExtensions.cs" />
     <Compile Include="Wireup.cs" />
   </ItemGroup>

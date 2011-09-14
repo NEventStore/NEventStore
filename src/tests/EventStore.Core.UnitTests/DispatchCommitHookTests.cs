@@ -9,49 +9,52 @@ namespace EventStore.Core.UnitTests
 	using Moq;
 	using It = Machine.Specifications.It;
 
-	[Subject("DispatchCommitHook")]
+	[Subject("DispatchSchedulerPipelinkHook")]
 	public class when_a_commit_has_been_persisted
 	{
-		static readonly Commit commit = new Commit(Guid.NewGuid(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
-		static readonly Mock<IDispatchCommits> dispatcher = new Mock<IDispatchCommits>();
-		static readonly DispatchPipelineHook PipelineHook = new DispatchPipelineHook(dispatcher.Object);
+		static readonly Commit commit = new Commit(
+			Guid.NewGuid(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
+		static readonly Mock<IScheduleDispatches> dispatcher = new Mock<IScheduleDispatches>();
+		static readonly DispatchSchedulerPipelinkHook DispatchSchedulerHook = new DispatchSchedulerPipelinkHook(dispatcher.Object);
 
 		Establish context = () =>
-			dispatcher.Setup(x => x.Dispatch(null));
+			dispatcher.Setup(x => x.ScheduleDispatch(null));
 
 		Because of = () =>
-			PipelineHook.PostCommit(commit);
+			DispatchSchedulerHook.PostCommit(commit);
 
 		It should_invoke_the_configured_dispatcher = () =>
-			dispatcher.Verify(x => x.Dispatch(commit), Times.Once());
+			dispatcher.Verify(x => x.ScheduleDispatch(commit), Times.Once());
 	}
 
-	[Subject("DispatchCommitHook")]
+	[Subject("DispatchSchedulerPipelinkHook")]
 	public class when_the_hook_has_no_dispatcher_configured
 	{
-		static readonly Commit commit = new Commit(Guid.NewGuid(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
-		static readonly DispatchPipelineHook PipelineHook = new DispatchPipelineHook();
+		static readonly Commit commit = new Commit(
+			Guid.NewGuid(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
+		static readonly DispatchSchedulerPipelinkHook DispatchSchedulerHook = new DispatchSchedulerPipelinkHook();
 		static Exception thrown;
 
 		Because of = () =>
-			thrown = Catch.Exception(() => PipelineHook.PostCommit(commit));
+			thrown = Catch.Exception(() => DispatchSchedulerHook.PostCommit(commit));
 
 		It should_not_throw_an_exception = () =>
 			thrown.ShouldBeNull();
 	}
 
-	[Subject("DispatchCommitHook")]
+	[Subject("DispatchSchedulerPipelinkHook")]
 	public class when_a_commit_is_selected
 	{
-		static readonly Commit commit = new Commit(Guid.NewGuid(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
-		static readonly DispatchPipelineHook PipelineHook = new DispatchPipelineHook();
+		static readonly Commit commit = new Commit(
+			Guid.NewGuid(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
+		static readonly DispatchSchedulerPipelinkHook DispatchSchedulerHook = new DispatchSchedulerPipelinkHook();
 		static Commit selected;
 
 		Because of = () =>
-			selected = PipelineHook.Select(commit);
+			selected = DispatchSchedulerHook.Select(commit);
 
 		It should_always_return_the_exact_same_commit = () =>
-			object.ReferenceEquals(selected, commit).ShouldBeTrue();
+			ReferenceEquals(selected, commit).ShouldBeTrue();
 	}
 }
 
