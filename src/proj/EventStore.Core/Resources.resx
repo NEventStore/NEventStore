@@ -232,7 +232,7 @@
     <value>Pipeline hook of type '{0}' rejected attempt '{1}'.</value>
   </data>
   <data name="CommittingAttempt" xml:space="preserve">
-    <value>Committing attempt '{0}' to the underlying persistence engine.</value>
+    <value>Committing attempt '{0}' which contains {1} events to the underlying persistence engine.</value>
   </data>
   <data name="InvokingPostCommitPipelineHooks" xml:space="preserve">
     <value>Pushing commit '{0}' to post-commit hook of type '{1}'.</value>
@@ -270,13 +270,16 @@
   <data name="ShuttingDownStore" xml:space="preserve">
     <value>Shutting down event store.</value>
   </data>
-	<data name="ShuttingDownDispatcher">
-		<value xml:space="preserve">Shutting down dispatcher.</value>
-	</data>
-	<data name="ShuttingDownPublisher">
-		<value xml:space="preserve">Shutting down publisher.</value>
-	</data>
-	<data name="PublishingToDevNull">
-		<value xml:space="preserve">Publishing message to /dev/null.</value>
+  <data name="ShuttingDownDispatcher" xml:space="preserve">
+    <value>Shutting down dispatcher.</value>
+  </data>
+  <data name="ShuttingDownPublisher" xml:space="preserve">
+    <value>Shutting down publisher.</value>
+  </data>
+  <data name="PublishingToDevNull" xml:space="preserve">
+    <value>Publishing message to /dev/null.</value>
+  </data>
+	<data name="UnableToPublish">
+		<value><![CDATA[Configured publisher of type '{0}' was unable to publish commit '{1}'.]]></value>
 	</data>
 </root>

@@ -91,7 +91,7 @@ namespace EventStore
 				return;
 			}
 
-			Logger.Info(Resources.CommittingAttempt, attempt.CommitId);
+			Logger.Info(Resources.CommittingAttempt, attempt.CommitId, attempt.Events.Count);
 			this.persistence.Commit(attempt);
 
 			foreach (var hook in this.pipelineHooks)

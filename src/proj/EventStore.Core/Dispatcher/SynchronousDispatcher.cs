@@ -48,8 +48,16 @@ namespace EventStore.Dispatcher
 
 		public virtual void Dispatch(Commit commit)
 		{
-			Logger.Info(Resources.PublishingCommit, commit.CommitId);
-			this.bus.Publish(commit);
+			try
+			{
+				Logger.Info(Resources.PublishingCommit, commit.CommitId);
+				this.bus.Publish(commit);
+			}
+			catch
+			{
+				Logger.Error(Resources.UnableToPublish, this.bus.GetType(), commit.CommitId);
+				throw;
+			}
 
 			Logger.Info(Resources.MarkingCommitAsDispatched, commit.CommitId);
 			this.persistence.MarkCommitAsDispatched(commit);

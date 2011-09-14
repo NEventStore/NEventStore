@@ -160,7 +160,7 @@ namespace EventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Committing attempt &apos;{0}&apos; to the underlying persistence engine..
+        ///   Looks up a localized string similar to Committing attempt &apos;{0}&apos; which contains {1} events to the underlying persistence engine..
         /// </summary>
         internal static string CommittingAttempt {
             get {
@@ -525,6 +525,15 @@ namespace EventStore {
         internal static string TrackingStreams {
             get {
                 return ResourceManager.GetString("TrackingStreams", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configured publisher of type &apos;{0}&apos; was unable to publish commit &apos;{1}&apos;..
+        /// </summary>
+        internal static string UnableToPublish {
+            get {
+                return ResourceManager.GetString("UnableToPublish", resourceCulture);
             }
         }
         
