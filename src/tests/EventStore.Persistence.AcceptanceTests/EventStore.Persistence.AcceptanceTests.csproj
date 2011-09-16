@@ -136,7 +136,7 @@
       <HintPath>..\..\..\bin\Npgsql.2.0.11\lib\net40\Npgsql.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.SQLite">
-      <HintPath>..\..\..\bin\System.Data.SQLite.1.0.66.1\lib\System.Data.SQLite.DLL</HintPath>
+      <HintPath>..\..\..\bin\System.Data.SQLite.1.0.75.0\lib\System.Data.SQLite.DLL</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
