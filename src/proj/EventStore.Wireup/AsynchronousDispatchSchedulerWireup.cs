@@ -13,7 +13,7 @@ namespace EventStore
 			: base(wireup)
 		{
 			var option = this.Container.Resolve<TransactionScopeOption>();
-			if (option == TransactionScopeOption.Required)
+			if (option != TransactionScopeOption.Suppress)
 				Logger.Warn(Messages.SynchronousDispatcherTwoPhaseCommits);
 
 			Logger.Debug(Messages.AsyncDispatchSchedulerRegistered);

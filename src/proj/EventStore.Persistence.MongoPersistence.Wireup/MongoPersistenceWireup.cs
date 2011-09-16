@@ -15,7 +15,7 @@ namespace EventStore
 			Logger.Debug("Configuring Mongo persistence engine.");
 
 			var options = this.Container.Resolve<TransactionScopeOption>();
-			if (options == TransactionScopeOption.Required)
+			if (options != TransactionScopeOption.Suppress)
 				Logger.Warn("MongoDB does not participate in transactions using TransactionScope.");
 
 			this.Container.Register(c => new MongoPersistenceFactory(
