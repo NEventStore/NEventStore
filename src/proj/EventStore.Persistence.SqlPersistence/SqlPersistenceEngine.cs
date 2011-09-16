@@ -207,13 +207,12 @@ namespace EventStore.Persistence.SqlPersistence
 			{
 				connection = this.connectionFactory.OpenReplica(streamId);
 				transaction = this.dialect.OpenTransaction(connection);
-				statement = this.dialect.BuildStatement(connection, transaction);
+				statement = this.dialect.BuildStatement(connection, transaction); // exceptions on enumeration should invoke scope.Dispose()
 
 				Logger.Verbose(Messages.ExecutingQuery);
 				return query(statement).Yield(() =>
 				{
 					Logger.Verbose(Messages.QueryCompleted);
-					Logger.Warn("Disposing scope");
 					scope.Complete();
 					scope.Dispose();
 				});
@@ -229,7 +228,6 @@ namespace EventStore.Persistence.SqlPersistence
 				if (scope != null)
 					scope.Dispose();
 
-				Logger.Warn("Disposing scope");
 				Logger.Debug(Messages.StorageThrewException, e.GetType());
 				if (e is StorageUnavailableException)
 					throw;
@@ -258,7 +256,6 @@ namespace EventStore.Persistence.SqlPersistence
 					if (transaction != null)
 						transaction.Commit();
 
-					Logger.Warn("Disposing scope");
 					if (scope != null)
 						scope.Complete();
 
@@ -280,7 +277,6 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		protected virtual TransactionScope OpenCommandScope()
 		{
-			Logger.Warn("Opening scope");
 			return new TransactionScope(this.scopeOption);
 		}
 		private static bool RecoverableException(Exception e)
