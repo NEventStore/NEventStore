@@ -2,13 +2,18 @@ namespace EventStore.Persistence.AcceptanceTests.Engines
 {
 	using System;
 	using System.Configuration;
+	using System.Transactions;
 	using Serialization;
 	using SqlPersistence;
 
 	public abstract class AcceptanceTestSqlPersistenceFactory : SqlPersistenceFactory
 	{
 		protected AcceptanceTestSqlPersistenceFactory(string connectionName)
-			: base(new TransformConfigConnectionFactory(connectionName), new BinarySerializer())
+			: this(new TransformConfigConnectionFactory(connectionName), new BinarySerializer())
+		{
+		}
+		private AcceptanceTestSqlPersistenceFactory(IConnectionFactory factory, ISerialize serializer)
+			: base(factory, serializer, null, TransactionScopeOption.Required, 0)
 		{
 			var pageSize = "pageSize".GetSetting();
 			if (!string.IsNullOrEmpty(pageSize))
