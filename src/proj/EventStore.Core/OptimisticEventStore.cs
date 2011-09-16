@@ -51,6 +51,9 @@ namespace EventStore
 		}
 		public virtual IEventStream OpenStream(Snapshot snapshot, int maxRevision)
 		{
+			if (snapshot == null)
+				throw new ArgumentNullException("snapshot");
+
 			Logger.Debug(Resources.OpeningStreamWithSnapshot, snapshot.StreamId, snapshot.StreamRevision, maxRevision);
 			maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
 			return new OptimisticEventStream(snapshot, this, maxRevision);

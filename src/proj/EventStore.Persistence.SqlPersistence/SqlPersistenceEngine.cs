@@ -213,6 +213,7 @@ namespace EventStore.Persistence.SqlPersistence
 				return query(statement).Yield(() =>
 				{
 					Logger.Verbose(Messages.QueryCompleted);
+					Logger.Warn("Disposing scope");
 					scope.Complete();
 					scope.Dispose();
 				});
@@ -225,10 +226,11 @@ namespace EventStore.Persistence.SqlPersistence
 					transaction.Dispose();
 				if (connection != null)
 					connection.Dispose();
-				scope.Dispose();
+				if (scope != null)
+					scope.Dispose();
 
+				Logger.Warn("Disposing scope");
 				Logger.Debug(Messages.StorageThrewException, e.GetType());
-
 				if (e is StorageUnavailableException)
 					throw;
 
@@ -256,6 +258,7 @@ namespace EventStore.Persistence.SqlPersistence
 					if (transaction != null)
 						transaction.Commit();
 
+					Logger.Warn("Disposing scope");
 					if (scope != null)
 						scope.Complete();
 
@@ -273,6 +276,7 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		protected virtual TransactionScope OpenCommandScope()
 		{
+			Logger.Warn("Opening scope");
 			return new TransactionScope(this.scopeOption);
 		}
 	}

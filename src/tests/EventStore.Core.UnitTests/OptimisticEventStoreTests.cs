@@ -200,6 +200,18 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStore")]
+	public class when_reading_from_a_null_snapshot : using_persistence
+	{
+		static Exception thrown;
+
+		Because of = () =>
+			thrown = Catch.Exception(() => store.OpenStream(null, int.MaxValue));
+
+		It should_throw_an_ArgumentNullException = () =>
+			thrown.ShouldBeOfType<ArgumentNullException>();
+	}
+
+	[Subject("OptimisticEventStore")]
 	public class when_reading_from_a_snapshot_up_to_revision_revision_zero : using_persistence
 	{
 		static readonly Snapshot snapshot = new Snapshot(streamId, 1, "snapshot");
