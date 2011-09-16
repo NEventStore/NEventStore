@@ -175,7 +175,7 @@ namespace EventStore.Persistence.SqlPersistence
 				query.AddParameter(this.dialect.StreamId, streamId);
 				query.AddParameter(this.dialect.StreamRevision, maxRevision);
 				return query.ExecuteWithQuery(statement, x => x.GetSnapshot(this.serializer));
-			}).FirstOrDefault();
+			}).ToArray().FirstOrDefault(); // array ensures enumeration and thus scope compeletion and disposal.
 		}
 		public virtual bool AddSnapshot(Snapshot snapshot)
 		{
