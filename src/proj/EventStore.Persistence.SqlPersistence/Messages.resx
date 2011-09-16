@@ -252,4 +252,7 @@
   <data name="RecoverableExceptionCompletesScope" xml:space="preserve">
     <value>Exception is recoverable, completing scope.</value>
   </data>
+  <data name="ObjectAlreadyDisposed" xml:space="preserve">
+    <value>The object has been disposed and cannot be used.</value>
+  </data>
 </root>

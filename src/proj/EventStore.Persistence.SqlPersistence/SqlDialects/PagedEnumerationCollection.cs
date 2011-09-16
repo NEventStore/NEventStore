@@ -10,6 +10,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	public class PagedEnumerationCollection<T> : IEnumerable<T>, IEnumerator<T>
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(PagedEnumerationCollection<T>));
+		private readonly IEnumerable<IDisposable> disposable = new IDisposable[] { };
 		private readonly IDbCommand command;
 		private readonly Func<IDataRecord, T> select;
 		private readonly NextPageDelegate<T> onNextPage;
@@ -18,20 +19,22 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		private IDataReader reader;
 		private int position;
 		private T latest;
+		private bool disposed;
 
 		public PagedEnumerationCollection(
 			IDbCommand command,
 			Func<IDataRecord, T> select,
 			NextPageDelegate<T> onNextPage,
 			int pageSize,
-			TransactionScope scope)
+			TransactionScope scope,
+			params IDisposable[] disposable)
 		{
 			this.command = command;
 			this.select = select;
 			this.onNextPage = onNextPage;
 			this.pageSize = pageSize;
 			this.scope = scope;
-			this.latest = default(T);
+			this.disposable = disposable ?? this.disposable;
 		}
 
 		public void Dispose()
@@ -41,32 +44,51 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		protected virtual void Dispose(bool disposing)
 		{
-			if (disposing && this.reader != null)
-				this.reader.Dispose();
+			if (!disposing || this.disposed)
+				return;
 
-			this.reader = null;
+			this.disposed = true;
 			this.position = 0;
 			this.latest = default(T);
+
+			if (this.reader != null)
+				this.reader.Dispose();
+			
+			this.reader = null;
+
+			if (this.command != null)
+				this.command.Dispose();
+
+			// queries do not modify state and thus calling Complete() on a so-called 'failed' query only
+			// allows any outer transaction scope to decide the fate of the transaction
+			if (this.scope != null)
+				this.scope.Complete(); // caller will dispose scope.
+
+			foreach (var dispose in this.disposable)
+				dispose.Dispose();
 		}
 
 		public virtual IEnumerator<T> GetEnumerator()
 		{
+			if (this.disposed)
+				throw new ObjectDisposedException(Messages.ObjectAlreadyDisposed);
+
 			return this;
 		}
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return this;
+			return this.GetEnumerator();
 		}
 
 		bool IEnumerator.MoveNext()
 		{
+			if (this.disposed)
+				throw new ObjectDisposedException(Messages.ObjectAlreadyDisposed);
+
 			if (this.MoveToNextRecord())
 				return true;
 
 			Logger.Verbose(Messages.QueryCompleted);
-			if (this.scope != null)
-				this.scope.Complete();
-
 			return false;
 		}
 		private bool MoveToNextRecord()
@@ -128,7 +150,16 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		public virtual T Current
 		{
-			get { return this.latest = this.select(this.reader); }
+			get
+			{
+				if (this.disposed)
+					throw new ObjectDisposedException(Messages.ObjectAlreadyDisposed);
+
+				if (this.reader == null)
+					return default(T);
+
+				return this.latest = this.select(this.reader);
+			}
 		}
 		object IEnumerator.Current
 		{

@@ -22,7 +22,7 @@ namespace EventStore.Persistence.AcceptanceTests
 			persistence.Commit(attempt);
 
 		Because of = () =>
-			persisted = persistence.GetFrom(streamId, 0, int.MaxValue).ToArray().First();
+			persisted = persistence.GetFrom(streamId, 0, int.MaxValue).First();
 
 		It should_correctly_persist_the_stream_identifier = () =>
 			persisted.StreamId.ShouldEqual(attempt.StreamId);
@@ -47,11 +47,11 @@ namespace EventStore.Persistence.AcceptanceTests
 			persisted.Events.Count.ShouldEqual(attempt.Events.Count);
 
 		It should_add_the_commit_to_the_set_of_undispatched_commits = () =>
-			persistence.GetUndispatchedCommits().ToArray()
+			persistence.GetUndispatchedCommits()
 				.FirstOrDefault(x => x.CommitId == attempt.CommitId).ShouldNotBeNull();
 
 		It should_cause_the_stream_to_be_found_in_the_list_of_streams_to_snapshot = () =>
-			persistence.GetStreamsToSnapshot(1).ToArray()
+			persistence.GetStreamsToSnapshot(1)
 				.FirstOrDefault(x => x.StreamId == streamId).ShouldNotBeNull();
 	}
 
@@ -179,7 +179,7 @@ namespace EventStore.Persistence.AcceptanceTests
 			persistence.MarkCommitAsDispatched(attempt);
 
 		It should_no_longer_be_found_in_the_set_of_undispatched_commits = () =>
-			persistence.GetUndispatchedCommits().ToArray()
+			persistence.GetUndispatchedCommits()
 				.FirstOrDefault(x => x.CommitId == attempt.CommitId).ShouldBeNull();
 	}
 
@@ -283,8 +283,7 @@ namespace EventStore.Persistence.AcceptanceTests
 			persistence.AddSnapshot(new Snapshot(streamId, newest.StreamRevision, SnapshotData));
 
 		It should_no_longer_find_the_stream_in_the_set_of_streams_to_be_snapshot = () =>
-			persistence.GetStreamsToSnapshot(1).ToArray()
-				.Any(x => x.StreamId == streamId).ShouldBeFalse();
+			persistence.GetStreamsToSnapshot(1).Any(x => x.StreamId == streamId).ShouldBeFalse();
 	}
 
 	[Subject("Persistence")]
@@ -309,11 +308,11 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		// Because Raven and Mongo update the stream head asynchronously, occasionally will fail this test
 		It should_find_the_stream_in_the_set_of_streams_to_be_snapshot_when_within_the_threshold = () =>
-			persistence.GetStreamsToSnapshot(WithinThreshold).ToArray()
+			persistence.GetStreamsToSnapshot(WithinThreshold)
 				.FirstOrDefault(x => x.StreamId == streamId).ShouldNotBeNull();
 
 		It should_not_find_the_stream_in_the_set_of_streams_to_be_snapshot_when_over_the_threshold = () =>
-			persistence.GetStreamsToSnapshot(OverThreshold).ToArray()
+			persistence.GetStreamsToSnapshot(OverThreshold)
 				.Any(x => x.StreamId == streamId).ShouldBeFalse();
 	}
 
@@ -348,7 +347,7 @@ namespace EventStore.Persistence.AcceptanceTests
 		static Exception thrown;
 
 		Because of = () =>
-			thrown = Catch.Exception(() => persistence.GetFrom(DateTime.MinValue).ToArray().FirstOrDefault());
+			thrown = Catch.Exception(() => persistence.GetFrom(DateTime.MinValue).FirstOrDefault());
 
 		It should_NOT_throw_an_exception = () =>
 			thrown.ShouldBeNull();

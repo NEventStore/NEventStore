@@ -108,8 +108,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 			try
 			{
-				var rows = new PagedEnumerationCollection<T>(command, select, onNextPage, pageSize, this.scope);
-				return new DisposableEnumerationCollection<T>(rows, command, this);
+				return new PagedEnumerationCollection<T>(
+					command, select, onNextPage, pageSize, this.scope, this);
 			}
 			catch (Exception)
 			{
