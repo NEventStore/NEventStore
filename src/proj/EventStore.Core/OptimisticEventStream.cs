@@ -144,12 +144,12 @@ namespace EventStore
 		}
 		protected virtual void PersistChanges(Guid commitId)
 		{
-			var commit = this.BuildCommitAttempt(commitId);
+			var attempt = this.BuildCommitAttempt(commitId);
 
 			Logger.Debug(Resources.PersistingCommit, commitId, this.StreamId);
-			this.persistence.Commit(commit);
+			this.persistence.Commit(attempt);
 
-			this.PopulateStream(this.StreamRevision + 1, commit.StreamRevision, new[] { commit });
+			this.PopulateStream(this.StreamRevision + 1, attempt.StreamRevision, new[] { attempt });
 			this.ClearChanges();
 		}
 		protected virtual Commit BuildCommitAttempt(Guid commitId)
