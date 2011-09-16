@@ -207,15 +207,10 @@ namespace EventStore.Persistence.SqlPersistence
 			{
 				connection = this.connectionFactory.OpenReplica(streamId);
 				transaction = this.dialect.OpenTransaction(connection);
-				statement = this.dialect.BuildStatement(connection, transaction); // exceptions on enumeration should invoke scope.Dispose()
+				statement = this.dialect.BuildStatement(connection, transaction, scope);
 
 				Logger.Verbose(Messages.ExecutingQuery);
-				return query(statement).Yield(() =>
-				{
-					Logger.Verbose(Messages.QueryCompleted);
-					scope.Complete();
-					scope.Dispose();
-				});
+				return query(statement);
 			}
 			catch (Exception e)
 			{

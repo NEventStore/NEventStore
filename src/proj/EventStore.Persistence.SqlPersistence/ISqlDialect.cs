@@ -2,6 +2,7 @@ namespace EventStore.Persistence.SqlPersistence
 {
 	using System;
 	using System.Data;
+	using System.Transactions;
 
 	public interface ISqlDialect
 	{
@@ -37,7 +38,8 @@ namespace EventStore.Persistence.SqlPersistence
 		object CoalesceParameterValue(object value);
 
 		IDbTransaction OpenTransaction(IDbConnection connection);
-		IDbStatement BuildStatement(IDbConnection connection, IDbTransaction transaction, params IDisposable[] resources);
+		IDbStatement BuildStatement(
+			IDbConnection connection, IDbTransaction transaction, TransactionScope scope);
 
 		bool IsDuplicate(Exception exception);
 	}

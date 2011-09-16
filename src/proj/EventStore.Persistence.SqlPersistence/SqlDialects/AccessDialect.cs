@@ -5,6 +5,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	using System.Data;
 	using System.Linq;
 	using System.Text.RegularExpressions;
+	using System.Transactions;
 
 	public class AccessDialect : CommonSqlDialect
 	{
@@ -63,9 +64,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		public override IDbStatement BuildStatement(
 			IDbConnection connection,
 			IDbTransaction transaction,
-			params IDisposable[] resources)
+			TransactionScope scope)
 		{
-			return new AccessDbStatement(this, connection, transaction, resources);
+			return new AccessDbStatement(this, connection, transaction, scope);
 		}
 
 		private class AccessDbStatement : DelimitedDbStatement
@@ -74,8 +75,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 				ISqlDialect dialect,
 				IDbConnection connection,
 				IDbTransaction transaction,
-				params IDisposable[] resources)
-				: base(dialect, connection, transaction, resources)
+				TransactionScope scope)
+				: base(dialect, connection, transaction, scope)
 			{
 			}
 

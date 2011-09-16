@@ -421,7 +421,7 @@ namespace EventStore.Persistence.SqlPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Query completed successfully, completing and disposing ambient scope..
+        ///   Looks up a localized string similar to Enumeration of result set completed, completing associated transaction scope..
         /// </summary>
         internal static string QueryCompleted {
             get {
