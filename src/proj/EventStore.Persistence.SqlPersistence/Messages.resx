@@ -249,4 +249,7 @@
   <data name="ShuttingDownPersistence" xml:space="preserve">
     <value>Shutting down persistence.</value>
   </data>
+	<data name="RecoverableExceptionCompletesScope">
+		<value xml:space="preserve">Exception is recoverable, completing scope.</value>
+	</data>
 </root>

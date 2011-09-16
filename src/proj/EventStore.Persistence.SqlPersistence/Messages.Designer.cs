@@ -430,6 +430,15 @@ namespace EventStore.Persistence.SqlPersistence {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Exception is recoverable, completing scope..
+        /// </summary>
+        internal static string RecoverableExceptionCompletesScope {
+            get {
+                return ResourceManager.GetString("RecoverableExceptionCompletesScope", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Shutting down persistence..
         /// </summary>
         internal static string ShuttingDownPersistence {

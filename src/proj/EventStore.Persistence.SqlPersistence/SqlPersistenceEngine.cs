@@ -267,10 +267,14 @@ namespace EventStore.Persistence.SqlPersistence
 				catch (Exception e)
 				{
 					Logger.Debug(Messages.StorageThrewException, e.GetType());
-					if (e is ConcurrencyException || e is DuplicateCommitException || e is StorageUnavailableException)
-						throw;
+					if (!RecoverableException(e))
+						throw new StorageException(e.Message, e);
 
-					throw new StorageException(e.Message, e);
+					Logger.Info(Messages.RecoverableExceptionCompletesScope);
+					if (scope != null)
+						scope.Complete();
+
+					throw;
 				}
 			}
 		}
@@ -278,6 +282,10 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			Logger.Warn("Opening scope");
 			return new TransactionScope(this.scopeOption);
+		}
+		private static bool RecoverableException(Exception e)
+		{
+			return e is ConcurrencyException || e is DuplicateCommitException || e is StorageUnavailableException;
 		}
 	}
 }
