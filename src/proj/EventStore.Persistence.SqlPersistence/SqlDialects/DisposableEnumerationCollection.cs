@@ -28,6 +28,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 			this.disposed = true;
 
+			if (this.enumerator != null)
+				this.enumerator.Dispose();
+
 			foreach (var resource in this.resources)
 				resource.Dispose();
 		}
@@ -43,10 +46,15 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 		public virtual bool MoveNext()
 		{
+			if (this.disposed)
+				return false;
+
+			if (this.enumerator == null)
+				return false;
+
 			if (this.enumerator.MoveNext())
 				return true;
 
-			this.Dispose();
 			return false;
 		}
 		public virtual void Reset()
@@ -55,11 +63,17 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 		public virtual T Current
 		{
-			get { return this.enumerator.Current; }
+			get
+			{
+				if (this.disposed || this.enumerator == null)
+					return default(T);
+
+				return this.enumerator.Current;
+			}
 		}
 		object IEnumerator.Current
 		{
-			get { return this.enumerator.Current; }
+			get { return this.Current; }
 		}
 	}
 }
