@@ -1,6 +1,7 @@
 namespace EventStore.Example
 {
 	using System;
+	using System.Transactions;
 	using Dispatcher;
 
 	internal static class MainProgram
@@ -14,13 +15,14 @@ namespace EventStore.Example
 
 		private static void Main()
 		{
-			store = WireupEventStore();
-			using (store)
+			using (var scope = new TransactionScope())
+			using (store = WireupEventStore())
 			{
 				OpenOrCreateStream();
 				AppendToStream();
 				TakeSnapshot();
 				LoadFromSnapshotForwardAndAppend();
+				scope.Complete();
 			}
 
 			Console.WriteLine(Resources.PressAnyKey);
@@ -30,8 +32,9 @@ namespace EventStore.Example
 		private static IStoreEvents WireupEventStore()
 		{
 			 return Wireup.Init()
-				.LogToConsoleWindow()
+				.LogToOutputWindow()
 				.UsingSqlPersistence("EventStore")
+					.EnlistInAmbientTransaction() // two-phase commit
 					.InitializeStorageEngine()
 					.UsingJsonSerialization()
 						.Compress()
