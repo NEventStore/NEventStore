@@ -3,7 +3,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	using System;
 	using System.Collections.Generic;
 	using System.Data;
-	using System.Linq;
+	using System.Transactions;
 	using Logging;
 
 	public class CommonDbStatement : IDbStatement
@@ -13,7 +13,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		private readonly ISqlDialect dialect;
 		private readonly IDbTransaction transaction;
 		private readonly IDbConnection connection;
-		private readonly IDisposable[] resources;
+		private readonly TransactionScope scope;
 
 		protected IDictionary<string, object> Parameters { get; private set; }
 
@@ -21,14 +21,14 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			ISqlDialect dialect,
 			IDbTransaction transaction,
 			IDbConnection connection,
-			params IDisposable[] resources)
+			TransactionScope scope)
 		{
 			this.Parameters = new Dictionary<string, object>();
 
 			this.dialect = dialect;
 			this.connection = connection;
+			this.scope = scope;
 			this.transaction = transaction;
-			this.resources = resources ?? new IDisposable[0];
 		}
 
 		public void Dispose()
@@ -46,8 +46,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			if (this.connection != null)
 				this.connection.Dispose();
 
-			foreach (var resource in this.resources.Reverse().Where(resource => resource != null))
-				resource.Dispose(); // dispose from the inside out
+			if (this.scope != null)
+				this.scope.Dispose();
 		}
 
 		public virtual void AddParameter(string name, object value)
@@ -108,7 +108,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 			try
 			{
-				var rows = new PagedEnumerationCollection<T>(command, select, onNextPage, pageSize);
+				var rows = new PagedEnumerationCollection<T>(command, select, onNextPage, pageSize, this.scope);
 				return new DisposableEnumerationCollection<T>(rows, command, this);
 			}
 			catch (Exception)

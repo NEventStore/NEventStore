@@ -4,6 +4,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Data;
+	using System.Transactions;
 	using Logging;
 
 	public class PagedEnumerationCollection<T> : IEnumerable<T>, IEnumerator<T>
@@ -13,17 +14,23 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		private readonly Func<IDataRecord, T> select;
 		private readonly NextPageDelegate<T> onNextPage;
 		private readonly int pageSize;
+		private readonly TransactionScope scope;
 		private IDataReader reader;
 		private int position;
 		private T latest;
 
 		public PagedEnumerationCollection(
-			IDbCommand command, Func<IDataRecord, T> select, NextPageDelegate<T> onNextPage, int pageSize)
+			IDbCommand command,
+			Func<IDataRecord, T> select,
+			NextPageDelegate<T> onNextPage,
+			int pageSize,
+			TransactionScope scope)
 		{
 			this.command = command;
 			this.select = select;
 			this.onNextPage = onNextPage;
 			this.pageSize = pageSize;
+			this.scope = scope;
 			this.latest = default(T);
 		}
 
@@ -53,6 +60,17 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 		bool IEnumerator.MoveNext()
 		{
+			if (this.MoveToNextRecord())
+				return true;
+
+			Logger.Verbose(Messages.QueryCompleted);
+			if (this.scope != null)
+				this.scope.Complete();
+
+			return false;
+		}
+		private bool MoveToNextRecord()
+		{
 			this.reader = this.reader ?? this.OpenNextPage();
 
 			if (this.reader.Read())
@@ -73,6 +91,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 			return false;
 		}
+
 		private bool IncrementPosition()
 		{
 			this.position++;

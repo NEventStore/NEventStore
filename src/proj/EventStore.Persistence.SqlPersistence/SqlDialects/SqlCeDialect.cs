@@ -2,6 +2,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
 	using System;
 	using System.Data;
+	using System.Transactions;
 
 	public class SqlCeDialect : CommonSqlDialect
 	{
@@ -46,9 +47,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		public override IDbStatement BuildStatement(
 			IDbConnection connection,
 			IDbTransaction transaction,
-			params IDisposable[] resources)
+			TransactionScope scope)
 		{
-			return new SqlCeDbStatement(this, connection, transaction, resources);
+			return new SqlCeDbStatement(this, connection, transaction, scope);
 		}
 
 		private class SqlCeDbStatement : DelimitedDbStatement
@@ -57,8 +58,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 				ISqlDialect dialect,
 				IDbConnection connection,
 				IDbTransaction transaction,
-				params IDisposable[] resources)
-				: base(dialect, connection, transaction, resources)
+				TransactionScope scope)
+				: base(dialect, connection, transaction, scope)
 			{
 			}
 		}

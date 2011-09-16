@@ -2,6 +2,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
 	using System;
 	using System.Data;
+	using System.Transactions;
 
 	public abstract class CommonSqlDialect : ISqlDialect
 	{
@@ -114,9 +115,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		public virtual IDbStatement BuildStatement(
 			IDbConnection connection,
 			IDbTransaction transaction,
-			params IDisposable[] resources)
+			TransactionScope scope)
 		{
-			return new CommonDbStatement(this, transaction, connection, resources);
+			return new CommonDbStatement(this, transaction, connection, scope);
 		}
 	}
 }

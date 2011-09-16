@@ -157,7 +157,7 @@
     <value>Storage threw exception of type '{0}', wrapping and re-throwing.</value>
   </data>
   <data name="QueryCompleted" xml:space="preserve">
-    <value>Query completed successfully, completing and disposing ambient scope.</value>
+    <value>Enumeration of result set completed, completing associated transaction scope.</value>
   </data>
   <data name="UsingScope" xml:space="preserve">
     <value>Participating in connection with ambient transaction scope of </value>
@@ -249,7 +249,7 @@
   <data name="ShuttingDownPersistence" xml:space="preserve">
     <value>Shutting down persistence.</value>
   </data>
-	<data name="RecoverableExceptionCompletesScope">
-		<value xml:space="preserve">Exception is recoverable, completing scope.</value>
-	</data>
+  <data name="RecoverableExceptionCompletesScope" xml:space="preserve">
+    <value>Exception is recoverable, completing scope.</value>
+  </data>
 </root>

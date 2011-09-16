@@ -4,6 +4,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	using System.Collections.Generic;
 	using System.Data;
 	using System.Linq;
+	using System.Transactions;
 
 	public class DelimitedDbStatement : CommonDbStatement
 	{
@@ -13,8 +14,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			ISqlDialect dialect,
 			IDbConnection connection,
 			IDbTransaction transaction,
-			params IDisposable[] resources)
-			: base(dialect, transaction, connection, resources)
+			TransactionScope scope)
+			: base(dialect, transaction, connection, scope)
 		{
 		}
 
