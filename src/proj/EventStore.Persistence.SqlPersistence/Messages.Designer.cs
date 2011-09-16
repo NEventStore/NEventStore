@@ -376,6 +376,15 @@ namespace EventStore.Persistence.SqlPersistence {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The object has been disposed and cannot be used..
+        /// </summary>
+        internal static string ObjectAlreadyDisposed {
+            get {
+                return ResourceManager.GetString("ObjectAlreadyDisposed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to open connection &apos;{0}&apos;..
         /// </summary>
         internal static string OpenFailed {
