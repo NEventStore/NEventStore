@@ -10,8 +10,16 @@ namespace EventStore
 	public static class SystemTime
 	{
 		/// <summary>
-		/// Returns the current moment in time via <see cref="DateTime" />.
+		/// The callback to be used to resolve the current moment in time.
 		/// </summary>
-		public static Func<DateTime> UtcNow = () => DateTime.UtcNow;
+		public static Func<DateTime> Resolver;
+
+		/// <summary>
+		/// Gets the current moment in time.
+		/// </summary>
+		public static DateTime UtcNow
+		{
+			get { return Resolver == null ? DateTime.UtcNow : Resolver(); }
+		}
 	}
 }

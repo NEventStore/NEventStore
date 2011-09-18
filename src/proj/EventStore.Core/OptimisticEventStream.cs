@@ -160,7 +160,7 @@ namespace EventStore
 				this.StreamRevision + this.events.Count,
 				commitId,
 				this.CommitSequence + 1,
-				SystemTime.UtcNow(),
+				SystemTime.UtcNow,
 				this.headers.ToDictionary(x => x.Key, x => x.Value),
 				this.events.ToList());
 		}

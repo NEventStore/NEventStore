@@ -193,7 +193,7 @@ namespace EventStore.Core.UnitTests
 			constructed.CommitSequence.ShouldEqual(DefaultCommitSequence);
 
 		It should_build_the_commit_with_the_correct_commit_stamp = () =>
-			SystemTime.UtcNow().Subtract(constructed.CommitStamp).ShouldBeLessThan(TimeSpan.FromMilliseconds(150));
+			SystemTime.UtcNow.Subtract(constructed.CommitStamp).ShouldBeLessThan(TimeSpan.FromMilliseconds(150));
 
 		It should_build_the_commit_with_the_headers_provided = () =>
 			constructed.Headers[headers.First().Key].ShouldEqual(headers.First().Value);
@@ -353,7 +353,7 @@ namespace EventStore.Core.UnitTests
 			for (var i = 0; i < eventCount; i++)
 				events.Add(new EventMessage());
 
-			return new Commit(streamId, revision, Guid.NewGuid(), sequence, SystemTime.UtcNow(), null, events);
+			return new Commit(streamId, revision, Guid.NewGuid(), sequence, SystemTime.UtcNow, null, events);
 		}
 	}
 }

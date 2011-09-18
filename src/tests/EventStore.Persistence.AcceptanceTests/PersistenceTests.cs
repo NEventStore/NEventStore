@@ -14,7 +14,7 @@ namespace EventStore.Persistence.AcceptanceTests
 	[Subject("Persistence")]
 	public class when_a_commit_is_successfully_persisted : using_the_persistence_engine
 	{
-		static readonly DateTime now = SystemTime.UtcNow().AddYears(1);
+		static readonly DateTime now = SystemTime.UtcNow.AddYears(1);
 		static readonly Commit attempt = streamId.BuildAttempt(now);
 		static Commit persisted;
 
@@ -319,7 +319,7 @@ namespace EventStore.Persistence.AcceptanceTests
 	[Subject("Persistence")]
 	public class when_reading_all_commits_from_a_particular_point_in_time : using_the_persistence_engine
 	{
-		static readonly DateTime now = SystemTime.UtcNow().AddYears(1);
+		static readonly DateTime now = SystemTime.UtcNow.AddYears(1);
 		static readonly Commit first = streamId.BuildAttempt(now.AddSeconds(1));
 		static readonly Commit second = first.BuildNextAttempt();
 		static readonly Commit third = second.BuildNextAttempt();
