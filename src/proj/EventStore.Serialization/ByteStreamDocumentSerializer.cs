@@ -6,7 +6,6 @@ namespace EventStore.Serialization
 	public class ByteStreamDocumentSerializer : IDocumentSerializer
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(ByteStreamDocumentSerializer));
-		private const string Base64Prefix = "AAEAAAD/////";
 		private readonly ISerialize serializer;
 
 		public ByteStreamDocumentSerializer(ISerialize serializer)
@@ -31,11 +30,15 @@ namespace EventStore.Serialization
 				return null;
 
 			Logger.Verbose(Messages.InspectingTextStream);
-			if (!value.StartsWith(Base64Prefix))
-				return null;
 
-			Logger.Verbose(Messages.StreamContainsBase64Text);
-			return Convert.FromBase64String(value);
+			try
+			{
+				return Convert.FromBase64String(value);
+			}
+			catch (FormatException)
+			{
+				return null;
+			}
 		}
 	}
 }

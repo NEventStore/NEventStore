@@ -4,20 +4,23 @@ namespace EventStore.Persistence.RavenPersistence
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Transactions;
 
 	public sealed class PagedEnumerationCollection<T> : IEnumerable<T>
 	{
 		private readonly IQueryable<T> source;
 		private readonly int take;
+		private readonly TransactionScope scope;
 
-		public PagedEnumerationCollection(IQueryable<T> source, int take)
+		public PagedEnumerationCollection(IQueryable<T> source, int take, TransactionScope scope)
 		{
 			this.source = source;
+			this.scope = scope;
 			this.take = take;
 		}
 		public IEnumerator<T> GetEnumerator()
 		{
-			return new PagedEnumerator(this.source, this.take);
+			return new PagedEnumerator(this.source, this.take, this.scope);
 		}
 		IEnumerator IEnumerable.GetEnumerator()
 		{
@@ -28,17 +31,26 @@ namespace EventStore.Persistence.RavenPersistence
 		{
 			private readonly IQueryable<T> source;
 			private readonly int take;
+			private readonly TransactionScope scope;
 			private int skip;
 			private IEnumerator<T> current;
 
-			public PagedEnumerator(IQueryable<T> source, int take)
+			public PagedEnumerator(IQueryable<T> source, int take, TransactionScope scope)
 			{
 				this.source = source;
+				this.scope = scope;
 				this.take = take;
 			}
 			public void Dispose()
 			{
 				this.Reset();
+
+				if (this.scope != null)
+				{
+					this.scope.Complete();
+					this.scope.Dispose();
+				}
+				
 				GC.SuppressFinalize(this);
 			}
 
