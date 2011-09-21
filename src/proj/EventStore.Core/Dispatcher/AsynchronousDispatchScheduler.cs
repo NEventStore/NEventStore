@@ -21,13 +21,7 @@ namespace EventStore.Dispatcher
 		}
 		private void Callback(Commit commit)
 		{
-			try
-			{
-				base.ScheduleDispatch(commit);
-			}
-			catch (ObjectDisposedException)
-			{
-			}
+			base.ScheduleDispatch(commit);
 		}
 	}
 }

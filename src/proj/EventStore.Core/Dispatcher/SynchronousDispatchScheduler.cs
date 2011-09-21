@@ -48,6 +48,11 @@ namespace EventStore.Dispatcher
 
 		public virtual void ScheduleDispatch(Commit commit)
 		{
+			this.DispatchImmediately(commit);
+			this.MarkAsDispatched(commit);
+		}
+		private void DispatchImmediately(Commit commit)
+		{
 			try
 			{
 				Logger.Info(Resources.SchedulingDispatch, commit.CommitId);
@@ -58,9 +63,18 @@ namespace EventStore.Dispatcher
 				Logger.Error(Resources.UnableToDispatch, this.dispatcher.GetType(), commit.CommitId);
 				throw;
 			}
-
-			Logger.Info(Resources.MarkingCommitAsDispatched, commit.CommitId);
-			this.persistence.MarkCommitAsDispatched(commit);
+		}
+		private void MarkAsDispatched(Commit commit)
+		{
+			try
+			{
+				Logger.Info(Resources.MarkingCommitAsDispatched, commit.CommitId);
+				this.persistence.MarkCommitAsDispatched(commit);
+			}
+			catch (ObjectDisposedException)
+			{
+				Logger.Warn(Resources.UnableToMarkDispatched, commit.CommitId);
+			}
 		}
 	}
 }

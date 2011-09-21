@@ -279,4 +279,7 @@
   <data name="UnableToDispatch" xml:space="preserve">
     <value>Configured dispatcher of type '{0}' was unable to dispatch commit '{1}'.</value>
   </data>
+	<data name="UnableToMarkDispatched">
+		<value><![CDATA[Unable to mark commit '{0}' as dispatched, the underlying storage has already been disposed]]></value>
+	</data>
 </root>

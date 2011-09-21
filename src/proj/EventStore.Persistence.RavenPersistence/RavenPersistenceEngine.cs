@@ -25,7 +25,6 @@
 		private readonly TransactionScopeOption scopeOption;
 		private readonly bool consistentQueries;
 		private readonly int pageSize;
-		private bool disposed;
 		private int initialized;
 
 		public RavenPersistenceEngine(IDocumentStore store, RavenConfiguration config)
@@ -56,11 +55,8 @@
 		}
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!disposing || this.disposed)
-				return;
-
-			this.disposed = true;
-			this.store.Dispose();
+			if (disposing)
+				this.store.Dispose();
 		}
 
 		public virtual void Initialize()
@@ -319,6 +315,10 @@
 				throw new DuplicateCommitException(e.Message, e);
 			}
 			catch (Raven.Abstractions.Exceptions.ConcurrencyException)
+			{
+				throw;
+			}
+			catch (ObjectDisposedException)
 			{
 				throw;
 			}

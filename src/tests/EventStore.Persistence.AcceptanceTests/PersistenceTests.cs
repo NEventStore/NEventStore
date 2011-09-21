@@ -359,7 +359,7 @@ namespace EventStore.Persistence.AcceptanceTests
 		Establish context = () =>
 			persistence.Commit(streamId.BuildAttempt());
 
-		private Because of = () =>
+		Because of = () =>
 		{
 			Thread.Sleep(50); // 50 ms = enough time for Raven to become consistent
 			persistence.Purge();
@@ -373,6 +373,18 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		It should_not_find_any_undispatched_commits = () =>
 			persistence.GetUndispatchedCommits().Count().ShouldEqual(0);
+	}
+
+	[Subject("Persistence")]
+	public class when_invoking_after_disposal : using_the_persistence_engine
+	{
+		static Exception thrown;
+
+		Establish context = () =>
+			persistence.Dispose();
+
+		It should_throw_an_ObjectDisposedException = () =>
+			Catch.Exception(() => persistence.Commit(streamId.BuildAttempt())).ShouldBeOfType<ObjectDisposedException>();
 	}
 
 	public abstract class using_the_persistence_engine

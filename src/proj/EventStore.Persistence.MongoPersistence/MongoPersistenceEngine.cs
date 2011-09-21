@@ -244,6 +244,9 @@
 		}
 		protected virtual void TryMongo(Action callback)
 		{
+			if (this.disposed)
+				throw new ObjectDisposedException("Attempt to use storage after it has been disposed.");
+
 			try
 			{
 				callback();

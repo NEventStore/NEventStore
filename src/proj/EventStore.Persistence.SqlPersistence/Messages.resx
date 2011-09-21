@@ -255,4 +255,7 @@
   <data name="ObjectAlreadyDisposed" xml:space="preserve">
     <value>The object has been disposed and cannot be used.</value>
   </data>
+	<data name="AlreadyDisposed">
+		<value xml:space="preserve">Attempt to use storage after it has been disposed.</value>
+	</data>
 </root>

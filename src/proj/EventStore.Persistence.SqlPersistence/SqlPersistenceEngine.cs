@@ -20,6 +20,7 @@ namespace EventStore.Persistence.SqlPersistence
 		private readonly TransactionScopeOption scopeOption;
 		private readonly int pageSize;
 		private int initialized;
+		private bool disposed;
 
 		public SqlPersistenceEngine(
 			IConnectionFactory connectionFactory,
@@ -56,11 +57,11 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!disposing)
+			if (!disposing || this.disposed)
 				return;
 
-			// no op: we want to be sure any async operations (if any) are able to complete successfully.
 			Logger.Debug(Messages.ShuttingDownPersistence);
+			this.disposed = true;
 		}
 
 		public virtual void Initialize()
@@ -198,6 +199,8 @@ namespace EventStore.Persistence.SqlPersistence
 
 		protected virtual IEnumerable<T> ExecuteQuery<T>(Guid streamId, Func<IDbStatement, IEnumerable<T>> query)
 		{
+			this.ThrowWhenDisposed();
+
 			var scope = this.OpenQueryScope();
 			IDbConnection connection = null;
 			IDbTransaction transaction = null;
@@ -234,9 +237,19 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			return this.OpenCommandScope() ?? new TransactionScope(TransactionScopeOption.Suppress);
 		}
+		private void ThrowWhenDisposed()
+		{
+			if (!this.disposed)
+				return;
+
+			Logger.Warn(Messages.AlreadyDisposed);
+			throw new ObjectDisposedException(Messages.AlreadyDisposed);
+		}
 
 		protected virtual int ExecuteCommand(Guid streamId, Func<IDbStatement, int> command)
 		{
+			this.ThrowWhenDisposed();
+
 			using (var scope = this.OpenCommandScope())
 			using (var connection = this.connectionFactory.OpenMaster(streamId))
 			using (var transaction = this.dialect.OpenTransaction(connection))
