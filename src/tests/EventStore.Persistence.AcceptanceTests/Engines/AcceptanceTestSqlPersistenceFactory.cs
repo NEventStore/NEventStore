@@ -13,7 +13,7 @@ namespace EventStore.Persistence.AcceptanceTests.Engines
 		{
 		}
 		private AcceptanceTestSqlPersistenceFactory(IConnectionFactory factory, ISerialize serializer)
-			: base(factory, serializer, null, TransactionScopeOption.Required, 0)
+			: base(factory, serializer, null, TransactionScopeOption.Suppress, 0)
 		{
 			var pageSize = "pageSize".GetSetting();
 			if (!string.IsNullOrEmpty(pageSize))

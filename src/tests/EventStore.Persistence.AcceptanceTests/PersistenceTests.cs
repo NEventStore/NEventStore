@@ -7,7 +7,6 @@ namespace EventStore.Persistence.AcceptanceTests
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading;
-	using System.Transactions;
 	using Machine.Specifications;
 	using Persistence;
 
@@ -393,11 +392,9 @@ namespace EventStore.Persistence.AcceptanceTests
 		protected static readonly IPersistenceFactory Factory = FactoryScanner.GetFactory();
 		protected static Guid streamId = Guid.NewGuid();
 		protected static IPersistStreams persistence;
-		private static TransactionScope scope;
 
 		Establish context = () =>
 		{
-			scope = new TransactionScope();
 			persistence = Factory.Build();
 			persistence.Initialize();
 		};
@@ -406,10 +403,6 @@ namespace EventStore.Persistence.AcceptanceTests
 		{
 			persistence.Dispose();
 			persistence = null;
-
-			scope.Complete();
-			scope.Dispose();
-
 			streamId = Guid.NewGuid();
 		};
 	}
