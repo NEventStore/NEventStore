@@ -254,12 +254,7 @@
 						return session.Query<T, TIndex>()
 							.Customize(x => { if (this.consistentQueries) x.WaitForNonStaleResults(); })
 							.Where(query)
-							.Page(this.pageSize)
-							.Yield(() =>
-							{
-								scope.Complete();
-								scope.Dispose();
-							});
+							.Page(this.pageSize, scope);
 				}
 				catch (Exception)
 				{
