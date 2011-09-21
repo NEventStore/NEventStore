@@ -30,7 +30,7 @@ namespace EventStore.Serialization
 				return null;
 
 			Logger.Verbose(Messages.InspectingTextStream);
-			Logger.Verbose(Messages.StreamContainsBase64Text);
+
 			try
 			{
 				return Convert.FromBase64String(value);

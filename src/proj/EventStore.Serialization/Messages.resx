@@ -126,10 +126,7 @@
   <data name="InvalidKeyLength" xml:space="preserve">
     <value>The encryption key must be exactly 16 bytes.</value>
   </data>
-	<data name="InspectingTextStream">
-		<value xml:space="preserve">Inspecting text-based stream contents.</value>
-	</data>
-	<data name="StreamContainsBase64Text">
-		<value xml:space="preserve">Stream contains base64-encoded content.</value>
-	</data>
+  <data name="InspectingTextStream" xml:space="preserve">
+    <value>Inspecting text-based stream contents.</value>
+  </data>
 </root>
