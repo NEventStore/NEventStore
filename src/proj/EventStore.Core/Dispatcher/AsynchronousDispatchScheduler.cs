@@ -1,5 +1,6 @@
 namespace EventStore.Dispatcher
 {
+	using System;
 	using System.Threading;
 	using Logging;
 	using Persistence;
@@ -20,7 +21,13 @@ namespace EventStore.Dispatcher
 		}
 		private void Callback(Commit commit)
 		{
-			base.ScheduleDispatch(commit);
+			try
+			{
+				base.ScheduleDispatch(commit);
+			}
+			catch (ObjectDisposedException)
+			{
+			}
 		}
 	}
 }
