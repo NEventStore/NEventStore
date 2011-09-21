@@ -13,7 +13,7 @@ namespace EventStore.Persistence.AcceptanceTests.Engines
 			ConsistentQueries = true, // helps tests pass consistently
 			RequestedPageSize = int.Parse("pageSize".GetSetting() ?? "10"), // smaller values help bring out bugs
 			MaxServerPageSize = int.Parse("serverPageSize".GetSetting() ?? "1024"), // raven default
-            ConnectionName = "Raven"
+			ConnectionName = "Raven"
 		};
 
 		public AcceptanceTestRavenPersistenceFactory()

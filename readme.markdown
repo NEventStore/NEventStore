@@ -101,7 +101,7 @@ TransactionScopeOption of 'Required'.  Simply indicate this using the following 
 [TBA] OrientDB  
 
 ### File System
-[Planned] .NET Managed System.IO APIs    
+[Planned] .NET Managed System.IO APIs  
 
 ### Dynamo Clones
 [Planned] Cassandra  
