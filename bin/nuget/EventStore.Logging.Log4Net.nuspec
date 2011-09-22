@@ -3,7 +3,6 @@
   <metadata>
     <id>EventStore.Logging.Log4Net</id>
     <version>3.0</version>
-    <prerelease>true</prerelease>
     <title>EventStore Log4Net Logging Plugin</title>
     <authors>Jonathan Oliver</authors>
     <owners>Jonathan Oliver</owners>

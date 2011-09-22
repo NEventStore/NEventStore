@@ -3,7 +3,6 @@
   <metadata>
     <id>EventStore.Logging.NLog</id>
     <version>3.0</version>
-    <prerelease>true</prerelease>
     <title>EventStore NLog Logging Plugin</title>
     <authors>Jonathan Oliver</authors>
     <owners>Jonathan Oliver</owners>

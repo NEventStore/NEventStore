@@ -3,7 +3,6 @@
   <metadata>
     <id>EventStore.Serialization.Json</id>
     <version>3.0</version>
-    <prerelease>true</prerelease>
     <title>EventStore Newtonsoft JSON Serialization Plugin</title>
     <authors>Simon Green, Jonathan Oliver</authors>
     <owners>Jonathan Oliver</owners>
