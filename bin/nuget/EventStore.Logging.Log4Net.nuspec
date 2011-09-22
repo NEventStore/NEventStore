@@ -3,11 +3,12 @@
   <metadata>
     <id>EventStore.Logging.Log4Net</id>
     <version>3.0</version>
+    <prerelease>true</prerelease>
     <title>EventStore Log4Net Logging Plugin</title>
     <authors>Jonathan Oliver</authors>
     <owners>Jonathan Oliver</owners>
     <projectUrl>https://github.com/joliver/EventStore</projectUrl>
-	<licenseUrl>https://github.com/joliver/EventStore/blob/master/doc/license.txt</licenseUrl>
+    <licenseUrl>https://github.com/joliver/EventStore/blob/master/doc/license.txt</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Additional logging provider for EventStore using Log4Net.</description>
     <summary>Log4Net logging provider for EventStore.</summary>
@@ -20,8 +21,8 @@
   </metadata>
   <files>
     <file src="publish-net35\plugins\logging\log4net\EventStore.Logging.Log4Net.dll" target="lib\net35"/>
-	<file src="publish-net35\plugins\logging\log4net\EventStore.Logging.Log4Net.pdb" target="lib\net35"/>
-	<file src="publish-net40\plugins\logging\log4net\EventStore.Logging.Log4Net.dll" target="lib\net40"/>
-	<file src="publish-net40\plugins\logging\log4net\EventStore.Logging.Log4Net.pdb" target="lib\net40"/>
+    <file src="publish-net35\plugins\logging\log4net\EventStore.Logging.Log4Net.pdb" target="lib\net35"/>
+    <file src="publish-net40\plugins\logging\log4net\EventStore.Logging.Log4Net.dll" target="lib\net40"/>
+    <file src="publish-net40\plugins\logging\log4net\EventStore.Logging.Log4Net.pdb" target="lib\net40"/>
   </files>
 </package>

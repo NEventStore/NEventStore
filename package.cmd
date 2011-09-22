@@ -5,6 +5,8 @@ set /p VERSION=Enter version (e.g. 2.0):
 :: YYdayOfYear.BuildNumber
 set /p BUILD=Enter a build (e.g. 11234.17): 
 set /p MATURITY=Enter maturity (e.g. Alpha, Beta, RC, Release, etc.): 
+set PRERELEASE=false
+if /i not "%MATURITY%"=="Release" set PRERELEASE=true
 
 echo using System.Reflection; > "src/proj/VersionAssemblyInfo.cs"
 echo. >> "src/proj/VersionAssemblyInfo.cs"
@@ -29,13 +31,13 @@ cd ..
 move "publish-net40" "bin\nuget"
 move "publish-net35" "bin\nuget"
 
-"bin/nuget/nuget.exe" Pack "bin/nuget/EventStore.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
-"bin/nuget/nuget.exe" Pack "bin/nuget/EventStore.Serialization.Json.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
-"bin/nuget/nuget.exe" Pack "bin/nuget/EventStore.Serialization.ServiceStack.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
-"bin/nuget/nuget.exe" Pack "bin/nuget/EventStore.Persistence.RavenPersistence.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
-"bin/nuget/nuget.exe" Pack "bin/nuget/EventStore.Persistence.MongoPersistence.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
-"bin/nuget/nuget.exe" Pack "bin/nuget/EventStore.Logging.Log4Net.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
-"bin/nuget/nuget.exe" Pack "bin/nuget/EventStore.Logging.NLog.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
+"bin/nuget/nuget.exe" Pack "bin/nuget/EventStore.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages -Prop prerelease="%PRERELEASE%";
+"bin/nuget/nuget.exe" Pack "bin/nuget/EventStore.Serialization.Json.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages -Prop prerelease="%PRERELEASE%";
+"bin/nuget/nuget.exe" Pack "bin/nuget/EventStore.Serialization.ServiceStack.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages -Prop prerelease="%PRERELEASE%";
+"bin/nuget/nuget.exe" Pack "bin/nuget/EventStore.Persistence.RavenPersistence.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages -Prop prerelease="%PRERELEASE%";
+"bin/nuget/nuget.exe" Pack "bin/nuget/EventStore.Persistence.MongoPersistence.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages -Prop prerelease="%PRERELEASE%";
+"bin/nuget/nuget.exe" Pack "bin/nuget/EventStore.Logging.Log4Net.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages -Prop prerelease="%PRERELEASE%";
+"bin/nuget/nuget.exe" Pack "bin/nuget/EventStore.Logging.NLog.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages -Prop prerelease="%PRERELEASE%";
 
 rmdir /s /q bin\nuget\publish-net40
 rmdir /s /q bin\nuget\publish-net35
