@@ -2,7 +2,6 @@ namespace EventStore.Persistence.AcceptanceTests
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Globalization;
 	using System.IO;
 	using System.Linq;
 	using System.Reflection;
@@ -74,11 +73,7 @@ namespace EventStore.Persistence.AcceptanceTests
 			}
 			catch (KeyNotFoundException)
 			{
-				var message = string.Format(
-					CultureInfo.InvariantCulture,
-					"The key '{0}' was not a configured persistence engine.",
-					persistenceEngine);
-
+				var message = "The key '{0}' was not a configured persistence engine.".FormatWith(persistenceEngine);
 				throw new StorageException(message);
 			}
 		}
