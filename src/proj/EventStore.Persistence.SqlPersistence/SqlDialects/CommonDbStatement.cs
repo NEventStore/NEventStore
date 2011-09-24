@@ -11,23 +11,23 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		private const int InfinitePageSize = 0;
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(CommonDbStatement));
 		private readonly ISqlDialect dialect;
+		private readonly TransactionScope transactionScope;
+		private readonly ConnectionScope connectionScope;
 		private readonly IDbTransaction transaction;
-		private readonly IDbConnection connection;
-		private readonly TransactionScope scope;
 
 		protected IDictionary<string, object> Parameters { get; private set; }
 
 		public CommonDbStatement(
 			ISqlDialect dialect,
-			IDbTransaction transaction,
-			IDbConnection connection,
-			TransactionScope scope)
+			TransactionScope transactionScope,
+			ConnectionScope connectionScope,
+			IDbTransaction transaction)
 		{
 			this.Parameters = new Dictionary<string, object>();
 
 			this.dialect = dialect;
-			this.connection = connection;
-			this.scope = scope;
+			this.transactionScope = transactionScope;
+			this.connectionScope = connectionScope;
 			this.transaction = transaction;
 		}
 
@@ -43,11 +43,11 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			if (this.transaction != null)
 				this.transaction.Dispose();
 
-			if (this.connection != null)
-				this.connection.Dispose();
+			if (this.connectionScope != null)
+				this.connectionScope.Dispose();
 
-			if (this.scope != null)
-				this.scope.Dispose();
+			if (this.transactionScope != null)
+				this.transactionScope.Dispose();
 		}
 
 		public virtual void AddParameter(string name, object value)
@@ -109,7 +109,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			try
 			{
 				return new PagedEnumerationCollection<T>(
-					command, select, onNextPage, pageSize, this.scope, this);
+					command, select, onNextPage, pageSize, this.transactionScope, this);
 			}
 			catch (Exception)
 			{
@@ -120,7 +120,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		protected virtual IDbCommand BuildCommand(string statement)
 		{
 			Logger.Verbose(Messages.CreatingCommand);
-			var command = this.connection.CreateCommand();
+			var command = this.connectionScope.Current.CreateCommand();
 			command.Transaction = this.transaction;
 			command.CommandText = statement;
 

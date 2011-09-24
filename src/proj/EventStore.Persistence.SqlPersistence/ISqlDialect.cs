@@ -39,7 +39,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 		IDbTransaction OpenTransaction(IDbConnection connection);
 		IDbStatement BuildStatement(
-			IDbConnection connection, IDbTransaction transaction, TransactionScope scope);
+			TransactionScope transactionScope, ConnectionScope connectionScope, IDbTransaction transaction);
 
 		bool IsDuplicate(Exception exception);
 	}

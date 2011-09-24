@@ -113,11 +113,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			return null;
 		}
 		public virtual IDbStatement BuildStatement(
-			IDbConnection connection,
-			IDbTransaction transaction,
-			TransactionScope scope)
+			TransactionScope transactionScope, ConnectionScope connectionScope, IDbTransaction transaction)
 		{
-			return new CommonDbStatement(this, transaction, connection, scope);
+			return new CommonDbStatement(this, transactionScope, connectionScope, transaction);
 		}
 	}
 }

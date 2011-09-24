@@ -45,21 +45,21 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 
 		public override IDbStatement BuildStatement(
-			IDbConnection connection,
-			IDbTransaction transaction,
-			TransactionScope scope)
+			TransactionScope transactionScope,
+			ConnectionScope connectionScope,
+			IDbTransaction transaction)
 		{
-			return new SqlCeDbStatement(this, connection, transaction, scope);
+			return new SqlCeDbStatement(this, transactionScope, connectionScope, transaction);
 		}
 
 		private class SqlCeDbStatement : DelimitedDbStatement
 		{
 			public SqlCeDbStatement(
 				ISqlDialect dialect,
-				IDbConnection connection,
-				IDbTransaction transaction,
-				TransactionScope scope)
-				: base(dialect, connection, transaction, scope)
+				TransactionScope transactionScope,
+				ConnectionScope connectionScope,
+				IDbTransaction transaction)
+				: base(dialect, transactionScope, connectionScope, transaction)
 			{
 			}
 		}

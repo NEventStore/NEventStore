@@ -46,6 +46,8 @@
     </Compile>
     <Compile Include="CommitExtensions.cs" />
     <Compile Include="ConfigurationConnectionFactory.cs" />
+    <Compile Include="ConnectionScope.cs" />
+    <Compile Include="ThreadScope.cs" />
     <Compile Include="Messages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -141,6 +143,7 @@
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Messages.resx">

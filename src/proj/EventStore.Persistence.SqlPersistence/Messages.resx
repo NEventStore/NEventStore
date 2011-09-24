@@ -258,4 +258,16 @@
 	<data name="AlreadyDisposed">
 		<value xml:space="preserve">Attempt to use storage after it has been disposed.</value>
 	</data>
+	<data name="OpeningThreadScope">
+		<value xml:space="preserve">Opening new threaded scope; scope is root: {0}</value>
+	</data>
+	<data name="DisposingThreadScope">
+		<value xml:space="preserve">Disposing threaded scope; scope is root: {0}</value>
+	</data>
+	<data name="CleaningRootThreadScope">
+		<value xml:space="preserve">Cleaning up root threaded scope</value>
+	</data>
+	<data name="DisposingRootThreadScopeResources">
+		<value xml:space="preserve">Disposing underlying thread-scoped resource.</value>
+	</data>
 </root>

@@ -115,6 +115,15 @@ namespace EventStore.Persistence.SqlPersistence {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cleaning up root threaded scope.
+        /// </summary>
+        internal static string CleaningRootThreadScope {
+            get {
+                return ResourceManager.GetString("CleaningRootThreadScope", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Command has client-controlled transaction: {0}..
         /// </summary>
         internal static string ClientControlledTransaction {
@@ -223,11 +232,29 @@ namespace EventStore.Persistence.SqlPersistence {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Disposing underlying thread-scoped resource..
+        /// </summary>
+        internal static string DisposingRootThreadScopeResources {
+            get {
+                return ResourceManager.GetString("DisposingRootThreadScopeResources", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Disposing SQL statement resources, including any transactions and connections..
         /// </summary>
         internal static string DisposingStatement {
             get {
                 return ResourceManager.GetString("DisposingStatement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disposing threaded scope; scope is root: {0}.
+        /// </summary>
+        internal static string DisposingThreadScope {
+            get {
+                return ResourceManager.GetString("DisposingThreadScope", resourceCulture);
             }
         }
         
@@ -426,6 +453,15 @@ namespace EventStore.Persistence.SqlPersistence {
         internal static string OpeningReplicaConnection {
             get {
                 return ResourceManager.GetString("OpeningReplicaConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Opening new threaded scope; scope is root: {0}.
+        /// </summary>
+        internal static string OpeningThreadScope {
+            get {
+                return ResourceManager.GetString("OpeningThreadScope", resourceCulture);
             }
         }
         

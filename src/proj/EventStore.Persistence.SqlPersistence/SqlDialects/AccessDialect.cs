@@ -62,21 +62,21 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 
 		public override IDbStatement BuildStatement(
-			IDbConnection connection,
-			IDbTransaction transaction,
-			TransactionScope scope)
+			TransactionScope transactionScope,
+			ConnectionScope connectionScope,
+			IDbTransaction transaction)
 		{
-			return new AccessDbStatement(this, connection, transaction, scope);
+			return new AccessDbStatement(this, transactionScope, connectionScope, transaction);
 		}
 
 		private class AccessDbStatement : DelimitedDbStatement
 		{
 			public AccessDbStatement(
 				ISqlDialect dialect,
-				IDbConnection connection,
-				IDbTransaction transaction,
-				TransactionScope scope)
-				: base(dialect, connection, transaction, scope)
+				TransactionScope transactionScope,
+				ConnectionScope connectionScope,
+				IDbTransaction transaction)
+				: base(dialect, transactionScope, connectionScope, transaction)
 			{
 			}
 

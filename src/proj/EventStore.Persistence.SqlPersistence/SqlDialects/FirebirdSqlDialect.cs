@@ -1,6 +1,5 @@
 namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
-	using System;
 	using System.Data;
 	using System.Transactions;
 
@@ -41,21 +40,21 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 
 		public override IDbStatement BuildStatement(
-			IDbConnection connection,
-			IDbTransaction transaction,
-			TransactionScope scope)
+			TransactionScope transactionScope,
+			ConnectionScope connectionScope,
+			IDbTransaction transaction)
 		{
-			return new FirebirdDbStatement(this, connection, transaction, scope);
+			return new FirebirdDbStatement(this, transactionScope, connectionScope, transaction);
 		}
 
 		private class FirebirdDbStatement : DelimitedDbStatement
 		{
 			public FirebirdDbStatement(
 				ISqlDialect dialect,
-				IDbConnection connection,
-				IDbTransaction transaction,
-				TransactionScope scope)
-				: base(dialect, connection, transaction, scope)
+				TransactionScope transactionScope,
+				ConnectionScope connectionScope,
+				IDbTransaction transaction)
+				: base(dialect, transactionScope, connectionScope, transaction)
 			{
 			}
 		}
