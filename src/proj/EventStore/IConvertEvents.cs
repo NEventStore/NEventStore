@@ -5,7 +5,7 @@ using System.Text;
 
 namespace EventStore
 {
-    interface IConvertEvents<in TSource, out TTarget>
+    public interface IConvertEvents<in TSource, out TTarget>
     {
         TTarget Convert(TSource sourceEvent);
     }
