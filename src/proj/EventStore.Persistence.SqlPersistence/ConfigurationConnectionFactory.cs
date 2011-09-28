@@ -60,16 +60,18 @@ namespace EventStore.Persistence.SqlPersistence
 		protected virtual IDbConnection Open(Guid streamId, string connectionName)
 		{
 			var setting = this.GetSetting(connectionName);
+			var connectionString = this.BuildConnectionString(streamId, setting);
+			return new ConnectionScope(connectionString, () => this.Open(connectionString, setting));
+		}
+		protected virtual IDbConnection Open(string connectionString, ConnectionStringSettings setting)
+		{
 			var factory = this.GetFactory(setting);
 			var connection = factory.CreateConnection();
 			if (connection == null)
 				throw new ConfigurationErrorsException(Messages.BadConnectionName);
 
-			connection.ConnectionString = this.BuildConnectionString(streamId, setting);
-			return new ConnectionScope(connection.ConnectionString, () => OpenConnection(connection, setting));
-		}
-		private static IDbConnection OpenConnection(IDbConnection connection, ConnectionStringSettings setting)
-		{
+			connection.ConnectionString = connectionString;
+
 			try
 			{
 				Logger.Verbose(Messages.OpeningConnection, setting.Name);
