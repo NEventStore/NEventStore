@@ -24,6 +24,10 @@ namespace EventStore.Persistence.SqlPersistence
 			Logger.Debug(Messages.OpeningThreadScope, key, this.rootScope);
 
 			this.current = parent ?? factory();
+
+			if (this.current == null)
+				throw new ArgumentException(Messages.BadFactoryResult, "factory");
+
 			if (this.rootScope)
 				this[this.threadKey] = this.current;
 		}

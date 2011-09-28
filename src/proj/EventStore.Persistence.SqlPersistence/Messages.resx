@@ -270,4 +270,10 @@
   <data name="DisposingRootThreadScopeResources" xml:space="preserve">
     <value>Disposing underlying thread-scoped resource.</value>
   </data>
+	<data name="BadFactoryResult">
+		<value xml:space="preserve">The factory provided was unable to create an object to store.</value>
+	</data>
+	<data name="NotConnectionsAvailable">
+		<value xml:space="preserve">No connections have been opened yet.</value>
+	</data>
 </root>

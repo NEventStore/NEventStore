@@ -38,6 +38,14 @@ namespace EventStore.Persistence.SqlPersistence
 				this.masterConnectionName, this.replicaConnectionName, this.shards);
 		}
 
+		public static IDisposable OpenScope()
+		{
+			var settings = CachedSettings.FirstOrDefault();
+			if (string.IsNullOrEmpty(settings.Key))
+				throw new ConfigurationErrorsException(Messages.NotConnectionsAvailable);
+
+			return OpenScope(Guid.Empty, settings.Key);
+		}
 		public static IDisposable OpenScope(string connectionName)
 		{
 			return OpenScope(Guid.Empty, connectionName);

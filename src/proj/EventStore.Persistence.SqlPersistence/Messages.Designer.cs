@@ -106,6 +106,15 @@ namespace EventStore.Persistence.SqlPersistence {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The factory provided was unable to create an object to store..
+        /// </summary>
+        internal static string BadFactoryResult {
+            get {
+                return ResourceManager.GetString("BadFactoryResult", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Binding parameter &apos;{0}&apos; with value: {1}.
         /// </summary>
         internal static string BindingParameter {
@@ -408,6 +417,15 @@ namespace EventStore.Persistence.SqlPersistence {
         internal static string MissingProviderName {
             get {
                 return ResourceManager.GetString("MissingProviderName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No connections have been opened yet..
+        /// </summary>
+        internal static string NotConnectionsAvailable {
+            get {
+                return ResourceManager.GetString("NotConnectionsAvailable", resourceCulture);
             }
         }
         
