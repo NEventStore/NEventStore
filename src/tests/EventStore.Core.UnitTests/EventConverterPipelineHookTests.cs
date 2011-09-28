@@ -53,10 +53,10 @@ namespace EventStore.Core.UnitTests
             converted = eventConverter.Select(commit);
 
         It should_be_of_the_converted_type = () =>
-            converted.Events.Single().Body.GetType().ShouldEqual(typeof(ConvertingEvent2));
+            converted.Events.Single().Body.GetType().ShouldEqual(typeof(ConvertingEvent3));
 
         It should_have_the_same_id_of_the_commited_event = () =>
-            ((ConvertingEvent2)converted.Events.Single().Body).Id.ShouldEqual(id);
+            ((ConvertingEvent3)converted.Events.Single().Body).Id.ShouldEqual(id);
     }
 
     [Subject("EventConverterPipelineHook")]

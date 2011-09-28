@@ -40,7 +40,7 @@ namespace EventStore
             object result = body;
             if (this.converters.TryGetValue(body.GetType(), out converter))
             {
-                result = converter(body);
+                result = Convert(converter(body));
                 Logger.Debug(Resources.ConvertingEvent, body.GetType(), result.GetType());
             }
             return result;
