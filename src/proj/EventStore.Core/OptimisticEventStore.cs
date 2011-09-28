@@ -75,7 +75,7 @@ namespace EventStore
 				if (filtered == null)
 					Logger.Info(Resources.PipelineHookFilteredCommit);
 				else
-                    yield return commitConverter.Convert(filtered);
+                    yield return (commitConverter != null) ? commitConverter.Convert(filtered) : filtered;
 			}
 		}
 		public virtual void Commit(Commit attempt)
