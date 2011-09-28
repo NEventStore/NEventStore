@@ -23,10 +23,6 @@ namespace EventStore.Persistence.SqlPersistence
 		private readonly string replicaConnectionName;
 		private readonly int shards;
 
-		public ConfigurationConnectionFactory()
-			: this(null, null, DefaultShards)
-		{
-		}
 		public ConfigurationConnectionFactory(string connectionName)
 			: this(connectionName, connectionName, DefaultShards)
 		{
@@ -40,6 +36,16 @@ namespace EventStore.Persistence.SqlPersistence
 
 			Logger.Debug(Messages.ConfiguringConnections,
 				this.masterConnectionName, this.replicaConnectionName, this.shards);
+		}
+
+		public static IDisposable OpenScope(string connectionName)
+		{
+			return OpenScope(Guid.Empty, connectionName);
+		}
+		public static IDisposable OpenScope(Guid streamId, string connectionName)
+		{
+			var factory = new ConfigurationConnectionFactory(connectionName);
+			return factory.Open(streamId, connectionName);
 		}
 
 		public virtual ConnectionStringSettings Settings
