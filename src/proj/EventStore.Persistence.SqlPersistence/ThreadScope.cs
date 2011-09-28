@@ -21,7 +21,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 			var parent = this[this.threadKey];
 			this.rootScope = parent == null;
-			Logger.Debug(Messages.OpeningThreadScope, key, this.rootScope);
+			Logger.Debug(Messages.OpeningThreadScope, this.threadKey, this.rootScope);
 
 			this.current = parent ?? factory();
 
