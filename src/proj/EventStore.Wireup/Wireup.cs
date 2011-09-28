@@ -74,7 +74,9 @@ namespace EventStore
 				.Where(x => x != null)
 				.ToArray();
 
-			return new OptimisticEventStore(context.Resolve<IPersistStreams>(), pipelineHooks);
+		    var commitConverter = context.Resolve<IConvertCommits>();
+
+			return new OptimisticEventStore(context.Resolve<IPersistStreams>(), commitConverter, pipelineHooks);
 		}
 	}
 }
