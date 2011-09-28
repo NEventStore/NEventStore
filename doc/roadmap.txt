@@ -1,26 +1,15 @@
-- Create a mechanism to allow the upconversion of events.
-
-- Add additional documentation using GitHub wikis and more complete quickstart examples
-- Create adapters for the storage engines listed in readme.
-- Website?
-- Master/slave replication "helper"
-  * When failing over from master to slave, ensure that the most recent commits are in the slave.
-  * If not, push the commits to the slave to help avoid a split brain condition.
-
-- Polling Dispatch Scheduler which polls the event store at the specified frequency and dispatches and new
-  commits which have been added.
-
-- Multi-format Deserializer which attempts a number of internal deserializers (JSON, BSON, PB, Binary, XML, etc)
-  before giving up.  This would allow people to change their serialization in production if necessary
-  for things like encryption, etc.  For example, we're changing the encryption on all commits and we need to
-  support several keys simultaenously for a period of time...
-
-- Create a PersistenceEngine implementation that can be exposed as an endpoint, e.g. REST or HTTP, etc. such that
-  the OptimisticEventStore could use that endpoint as the underlying storage. This would create a logical layering
-  point which could then be separated into physical layers more easily.
-
 3.0:
- - Add logging messages (90% complete)
+ - Logging messages
+ - Create a mechanism to allow the upconversion of events.
+ - Add additional documentation using GitHub wikis and more complete quickstart examples
+
+3.1
+ - .NET 4.0 only?
+ - Merge CommonDomain
+ - Amazon S3/Tables persistence
+ - CouchDB persistence
+ - Sybase ASE persistence
+ - Sybase SQL Anywhere persistence
  - Potentially split "Commits" table for SQL, e.g. Commits and Dispatch.  The Dispatch would hold the commit until it
    was dispatched and then it would be moved into the Commits table along with the Streams being updated.  We could
    use uNION ALL to make it feel like it's a single table for the EventStore on top.  This would eliminate the need
@@ -28,13 +17,12 @@
    that would occur when moving the data between commits and dispatch.  This could also potentially eliminate the need
    for the 'Dispatched' bit column.  Migration to the new schema wouldn't be particularly difficult and would require
    a small script.
- - Merge CommonDomain
-
-3.1
- - Amazon S3/Tables persistence
- - CouchDB persistence
- - Sybase ASE persistence
- - Sybase SQL Anywhere persistence
+ - Polling Dispatch Scheduler which polls the event store at the specified frequency and dispatches and new
+   commits which have been added.
+ - Multi-format Deserializer which attempts a number of internal deserializers (JSON, BSON, PB, Binary, XML, etc)
+   before giving up.  This would allow people to change their serialization in production if necessary
+   for things like encryption, etc.  For example, we're changing the encryption on all commits and we need to
+   support several keys simultaenously for a period of time...
 
 3.2:
  - FileSystem persistence
@@ -42,7 +30,12 @@
  - Azure Tables persistence
  - Oracle persistence
  - ProtocolBuffers serializer
+ - Official website
 
 4.0:
- - .NET 4.0 only?
- - Master/slave failover
+ - Master/slave replication "helper"
+   * When failing over from master to slave, ensure that the most recent commits are in the slave.
+   * If not, push the commits to the slave to help avoid a split brain condition.
+ - Create a PersistenceEngine implementation that can be exposed as an endpoint, e.g. REST or HTTP, etc. such that
+   the OptimisticEventStore could use that endpoint as the underlying storage. This would create a logical layering
+   point which could then be separated into physical layers more easily.
