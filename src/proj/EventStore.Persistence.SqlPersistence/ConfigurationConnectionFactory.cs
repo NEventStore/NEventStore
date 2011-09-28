@@ -66,7 +66,10 @@ namespace EventStore.Persistence.SqlPersistence
 				throw new ConfigurationErrorsException(Messages.BadConnectionName);
 
 			connection.ConnectionString = this.BuildConnectionString(streamId, setting);
-
+			return new ConnectionScope(connection.ConnectionString, () => OpenConnection(connection, setting));
+		}
+		private static IDbConnection OpenConnection(IDbConnection connection, ConnectionStringSettings setting)
+		{
 			try
 			{
 				Logger.Verbose(Messages.OpeningConnection, setting.Name);

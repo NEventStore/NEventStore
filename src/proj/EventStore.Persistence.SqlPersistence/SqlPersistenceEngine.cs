@@ -208,7 +208,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 			try
 			{
-				connection = new ConnectionScope(() => this.connectionFactory.OpenReplica(streamId));
+				connection = this.connectionFactory.OpenReplica(streamId);
 				transaction = this.dialect.OpenTransaction(connection);
 				statement = this.dialect.BuildStatement(scope, connection, transaction);
 
@@ -251,8 +251,8 @@ namespace EventStore.Persistence.SqlPersistence
 			this.ThrowWhenDisposed();
 
 			using (var scope = this.OpenCommandScope())
-			using (var connection = new ConnectionScope(() => this.connectionFactory.OpenMaster(streamId)))
-			using (var transaction = this.dialect.OpenTransaction(connection.Current))
+			using (var connection = this.connectionFactory.OpenMaster(streamId))
+			using (var transaction = this.dialect.OpenTransaction(connection))
 			using (var statement = this.dialect.BuildStatement(scope, connection, transaction))
 			{
 				try

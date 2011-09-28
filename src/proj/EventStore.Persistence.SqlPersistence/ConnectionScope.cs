@@ -5,8 +5,8 @@
 
 	public class ConnectionScope : ThreadScope<IDbConnection>, IDbConnection
 	{
-		public ConnectionScope(Func<IDbConnection> factory)
-			: base(string.Empty, factory)
+		public ConnectionScope(string connectionName, Func<IDbConnection> factory)
+			: base(connectionName, factory)
 		{
 		}
 		public IDbTransaction BeginTransaction()
