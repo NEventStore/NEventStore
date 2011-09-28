@@ -457,7 +457,7 @@ namespace EventStore.Persistence.SqlPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Opening new threaded scope; scope is root: {0}.
+        ///   Looks up a localized string similar to Opening new threaded scope for key &apos;{0}&apos;; scope is root: {1}.
         /// </summary>
         internal static string OpeningThreadScope {
             get {

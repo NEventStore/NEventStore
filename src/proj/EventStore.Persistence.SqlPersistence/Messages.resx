@@ -255,19 +255,19 @@
   <data name="ObjectAlreadyDisposed" xml:space="preserve">
     <value>The object has been disposed and cannot be used.</value>
   </data>
-	<data name="AlreadyDisposed">
-		<value xml:space="preserve">Attempt to use storage after it has been disposed.</value>
-	</data>
-	<data name="OpeningThreadScope">
-		<value xml:space="preserve">Opening new threaded scope; scope is root: {0}</value>
-	</data>
-	<data name="DisposingThreadScope">
-		<value xml:space="preserve">Disposing threaded scope; scope is root: {0}</value>
-	</data>
-	<data name="CleaningRootThreadScope">
-		<value xml:space="preserve">Cleaning up root threaded scope</value>
-	</data>
-	<data name="DisposingRootThreadScopeResources">
-		<value xml:space="preserve">Disposing underlying thread-scoped resource.</value>
-	</data>
+  <data name="AlreadyDisposed" xml:space="preserve">
+    <value>Attempt to use storage after it has been disposed.</value>
+  </data>
+  <data name="OpeningThreadScope" xml:space="preserve">
+    <value>Opening new threaded scope for key '{0}'; scope is root: {1}</value>
+  </data>
+  <data name="DisposingThreadScope" xml:space="preserve">
+    <value>Disposing threaded scope; scope is root: {0}</value>
+  </data>
+  <data name="CleaningRootThreadScope" xml:space="preserve">
+    <value>Cleaning up root threaded scope</value>
+  </data>
+  <data name="DisposingRootThreadScopeResources" xml:space="preserve">
+    <value>Disposing underlying thread-scoped resource.</value>
+  </data>
 </root>

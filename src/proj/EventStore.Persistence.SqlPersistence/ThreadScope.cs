@@ -8,21 +8,24 @@ namespace EventStore.Persistence.SqlPersistence
 	public class ThreadScope<T> : IDisposable where T : class
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(ThreadScope<T>));
-		private static readonly string ThreadKey = typeof(ThreadScope<T>).Name;
+		private static readonly string KeyPrefix = typeof(ThreadScope<T>).Name + ":[{0}]";
 		private static readonly bool WebApplication = HttpRuntime.AppDomainId != null;
+		private readonly string threadKey;
 		private readonly T current;
 		private readonly bool rootScope;
 		private bool disposed;
 
-		public ThreadScope(Func<T> factory)
+		public ThreadScope(string key, Func<T> factory)
 		{
-			var parent = this[ThreadKey];
+			this.threadKey = KeyPrefix.FormatWith(key ?? string.Empty);
+
+			var parent = this[this.threadKey];
 			this.rootScope = parent == null;
-			Logger.Debug(Messages.OpeningThreadScope, this.rootScope);
+			Logger.Debug(Messages.OpeningThreadScope, key, this.rootScope);
 
 			this.current = parent ?? factory();
 			if (this.rootScope)
-				this[ThreadKey] = this.current;
+				this[this.threadKey] = this.current;
 		}
 
 		public void Dispose()
@@ -41,7 +44,7 @@ namespace EventStore.Persistence.SqlPersistence
 				return;
 
 			Logger.Verbose(Messages.CleaningRootThreadScope);
-			this[ThreadKey] = null;
+			this[this.threadKey] = null;
 
 			var resource = this.current as IDisposable;
 			if (resource == null)
