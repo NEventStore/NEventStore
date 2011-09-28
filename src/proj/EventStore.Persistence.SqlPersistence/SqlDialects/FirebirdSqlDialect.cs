@@ -40,21 +40,19 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 
 		public override IDbStatement BuildStatement(
-			TransactionScope transactionScope,
-			ConnectionScope connectionScope,
-			IDbTransaction transaction)
+			TransactionScope scope, IDbConnection connection, IDbTransaction transaction)
 		{
-			return new FirebirdDbStatement(this, transactionScope, connectionScope, transaction);
+			return new FirebirdDbStatement(this, scope, connection, transaction);
 		}
 
 		private class FirebirdDbStatement : DelimitedDbStatement
 		{
 			public FirebirdDbStatement(
 				ISqlDialect dialect,
-				TransactionScope transactionScope,
-				ConnectionScope connectionScope,
+				TransactionScope scope,
+				IDbConnection connection,
 				IDbTransaction transaction)
-				: base(dialect, transactionScope, connectionScope, transaction)
+				: base(dialect, scope, connection, transaction)
 			{
 			}
 		}

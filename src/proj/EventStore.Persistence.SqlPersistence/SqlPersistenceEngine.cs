@@ -201,16 +201,16 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			this.ThrowWhenDisposed();
 
-			var transactionScope = this.OpenQueryScope();
-			ConnectionScope connectionScope = null;
+			var scope = this.OpenQueryScope();
+			IDbConnection connection = null;
 			IDbTransaction transaction = null;
 			IDbStatement statement = null;
 
 			try
 			{
-				connectionScope = new ConnectionScope(() => this.connectionFactory.OpenReplica(streamId));
-				transaction = this.dialect.OpenTransaction(connectionScope.Current);
-				statement = this.dialect.BuildStatement(transactionScope, connectionScope, transaction);
+				connection = new ConnectionScope(() => this.connectionFactory.OpenReplica(streamId));
+				transaction = this.dialect.OpenTransaction(connection);
+				statement = this.dialect.BuildStatement(scope, connection, transaction);
 
 				Logger.Verbose(Messages.ExecutingQuery);
 				return query(statement);
@@ -221,10 +221,10 @@ namespace EventStore.Persistence.SqlPersistence
 					statement.Dispose();
 				if (transaction != null)
 					transaction.Dispose();
-				if (connectionScope != null)
-					connectionScope.Dispose();
-				if (transactionScope != null)
-					transactionScope.Dispose();
+				if (connection != null)
+					connection.Dispose();
+				if (scope != null)
+					scope.Dispose();
 
 				Logger.Debug(Messages.StorageThrewException, e.GetType());
 				if (e is StorageUnavailableException)
@@ -250,10 +250,10 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			this.ThrowWhenDisposed();
 
-			using (var transactionScope = this.OpenCommandScope())
-			using (var connectionScope = new ConnectionScope(() => this.connectionFactory.OpenMaster(streamId)))
-			using (var transaction = this.dialect.OpenTransaction(connectionScope.Current))
-			using (var statement = this.dialect.BuildStatement(transactionScope, connectionScope, transaction))
+			using (var scope = this.OpenCommandScope())
+			using (var connection = new ConnectionScope(() => this.connectionFactory.OpenMaster(streamId)))
+			using (var transaction = this.dialect.OpenTransaction(connection.Current))
+			using (var statement = this.dialect.BuildStatement(scope, connection, transaction))
 			{
 				try
 				{
@@ -264,8 +264,8 @@ namespace EventStore.Persistence.SqlPersistence
 					if (transaction != null)
 						transaction.Commit();
 
-					if (transactionScope != null)
-						transactionScope.Complete();
+					if (scope != null)
+						scope.Complete();
 
 					return rowsAffected;
 				}
@@ -276,8 +276,8 @@ namespace EventStore.Persistence.SqlPersistence
 						throw new StorageException(e.Message, e);
 
 					Logger.Info(Messages.RecoverableExceptionCompletesScope);
-					if (transactionScope != null)
-						transactionScope.Complete();
+					if (scope != null)
+						scope.Complete();
 
 					throw;
 				}

@@ -11,23 +11,23 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		private const int InfinitePageSize = 0;
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(CommonDbStatement));
 		private readonly ISqlDialect dialect;
-		private readonly TransactionScope transactionScope;
-		private readonly ConnectionScope connectionScope;
+		private readonly TransactionScope scope;
+		private readonly IDbConnection connection;
 		private readonly IDbTransaction transaction;
 
 		protected IDictionary<string, object> Parameters { get; private set; }
 
 		public CommonDbStatement(
 			ISqlDialect dialect,
-			TransactionScope transactionScope,
-			ConnectionScope connectionScope,
+			TransactionScope scope,
+			IDbConnection connection,
 			IDbTransaction transaction)
 		{
 			this.Parameters = new Dictionary<string, object>();
 
 			this.dialect = dialect;
-			this.transactionScope = transactionScope;
-			this.connectionScope = connectionScope;
+			this.scope = scope;
+			this.connection = connection;
 			this.transaction = transaction;
 		}
 
@@ -43,11 +43,11 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			if (this.transaction != null)
 				this.transaction.Dispose();
 
-			if (this.connectionScope != null)
-				this.connectionScope.Dispose();
+			if (this.connection != null)
+				this.connection.Dispose();
 
-			if (this.transactionScope != null)
-				this.transactionScope.Dispose();
+			if (this.scope != null)
+				this.scope.Dispose();
 		}
 
 		public virtual void AddParameter(string name, object value)
@@ -109,7 +109,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			try
 			{
 				return new PagedEnumerationCollection<T>(
-					command, select, onNextPage, pageSize, this.transactionScope, this);
+					command, select, onNextPage, pageSize, this.scope, this);
 			}
 			catch (Exception)
 			{
@@ -120,7 +120,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		protected virtual IDbCommand BuildCommand(string statement)
 		{
 			Logger.Verbose(Messages.CreatingCommand);
-			var command = this.connectionScope.Current.CreateCommand();
+			var command = this.connection.CreateCommand();
 			command.Transaction = this.transaction;
 			command.CommandText = statement;
 

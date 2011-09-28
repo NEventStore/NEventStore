@@ -12,10 +12,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 		public DelimitedDbStatement(
 			ISqlDialect dialect,
-			TransactionScope transactionScope,
-			ConnectionScope connectionScope,
+			TransactionScope scope,
+			IDbConnection connection,
 			IDbTransaction transaction)
-			: base(dialect, transactionScope, connectionScope, transaction)
+			: base(dialect, scope, connection, transaction)
 		{
 		}
 
