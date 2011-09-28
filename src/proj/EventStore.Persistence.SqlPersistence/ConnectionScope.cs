@@ -9,43 +9,44 @@
 			: base(connectionName, factory)
 		{
 		}
-		public IDbTransaction BeginTransaction()
+		IDbTransaction IDbConnection.BeginTransaction()
 		{
 			return this.Current.BeginTransaction();
 		}
-		public IDbTransaction BeginTransaction(IsolationLevel il)
+		IDbTransaction IDbConnection.BeginTransaction(IsolationLevel il)
 		{
 			return this.Current.BeginTransaction(il);
 		}
-		public void Close()
+		void IDbConnection.Close()
 		{
+			// no-op--let Dispose do the real work.
 		}
-		public void ChangeDatabase(string databaseName)
+		void IDbConnection.ChangeDatabase(string databaseName)
 		{
 			this.Current.ChangeDatabase(databaseName);
 		}
-		public IDbCommand CreateCommand()
+		IDbCommand IDbConnection.CreateCommand()
 		{
 			return this.Current.CreateCommand();
 		}
-		public void Open()
+		void IDbConnection.Open()
 		{
 			this.Current.Open();
 		}
-		public string ConnectionString
+		string IDbConnection.ConnectionString
 		{
 			get { return this.Current.ConnectionString; }
 			set { this.Current.ConnectionString = value; }
 		}
-		public int ConnectionTimeout
+		int IDbConnection.ConnectionTimeout
 		{
 			get { return this.Current.ConnectionTimeout; }
 		}
-		public string Database
+		string IDbConnection.Database
 		{
 			get { return this.Current.Database; }
 		}
-		public ConnectionState State
+		ConnectionState IDbConnection.State
 		{
 			get { return this.Current.State; }
 		}
