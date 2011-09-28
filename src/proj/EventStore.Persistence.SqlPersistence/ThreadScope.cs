@@ -19,7 +19,7 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			this.threadKey = KeyPrefix.FormatWith(key ?? string.Empty);
 
-			var parent = this[this.threadKey];
+			var parent = this.Load();
 			this.rootScope = parent == null;
 			Logger.Debug(Messages.OpeningThreadScope, this.threadKey, this.rootScope);
 
@@ -29,7 +29,7 @@ namespace EventStore.Persistence.SqlPersistence
 				throw new ArgumentException(Messages.BadFactoryResult, "factory");
 
 			if (this.rootScope)
-				this[this.threadKey] = this.current;
+				this.Store(this.current);
 		}
 
 		public void Dispose()
@@ -48,7 +48,7 @@ namespace EventStore.Persistence.SqlPersistence
 				return;
 
 			Logger.Verbose(Messages.CleaningRootThreadScope);
-			this[this.threadKey] = null;
+			this.Store(null);
 
 			var resource = this.current as IDisposable;
 			if (resource == null)
@@ -58,24 +58,20 @@ namespace EventStore.Persistence.SqlPersistence
 			resource.Dispose();
 		}
 
-		private T this[string key]
+		private T Load()
 		{
-			get
-			{
-				if (WebApplication)
-					return HttpContext.Current.Items[key] as T;
+			if (WebApplication)
+				return HttpContext.Current.Items[this.threadKey] as T;
 
-				return Thread.GetData(Thread.GetNamedDataSlot(key)) as T;
-			}
-			set
-			{
-				if (WebApplication)
-					HttpContext.Current.Items[key] = value;
-
-				Thread.SetData(Thread.GetNamedDataSlot(key), value);
-			}
+			return Thread.GetData(Thread.GetNamedDataSlot(this.threadKey)) as T;
 		}
+		private void Store(T value)
+		{
+			if (WebApplication)
+				HttpContext.Current.Items[this.threadKey] = value;
 
+			Thread.SetData(Thread.GetNamedDataSlot(this.threadKey), value);
+		}
 		public T Current
 		{
 			get { return this.current; }
