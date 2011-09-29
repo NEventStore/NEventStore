@@ -107,7 +107,14 @@ namespace EventStore.Core.UnitTests
                         sourceType,
                         e => convertMethod.Invoke(instance, new[] { e as object })
                     );
-            return c.ToDictionary(x => x.Key, x => x.Value);
+            try
+            {
+                return c.ToDictionary(x => x.Key, x => x.Value);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new MultipleConvertersFoundException(ex.Message, ex);
+            }
         }
 
         private static IEnumerable<Assembly> getAllAssemblies()
@@ -134,15 +141,7 @@ namespace EventStore.Core.UnitTests
             return new ConvertingEvent3(sourceEvent.Id, "Temp", true);
         }
     }
-
-    class SneakyEventConverter : IConvertEvents<ConvertingEvent, ConvertingEvent3>
-    {
-        public ConvertingEvent3 Convert(ConvertingEvent sourceEvent)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
+    
     class NonConvertingEvent {}
     class ConvertingEvent
     {
