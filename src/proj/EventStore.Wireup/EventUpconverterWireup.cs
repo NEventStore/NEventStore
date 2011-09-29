@@ -37,7 +37,14 @@ namespace EventStore
                         sourceType,
                         e => convertMethod.Invoke(instance, new[] {e as object})
                     );
-            return c.ToDictionary(x => x.Key, x => x.Value);
+            try
+            {
+                return c.ToDictionary(x => x.Key, x => x.Value);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new MultipleConvertersFoundException(ex.Message, ex);
+            }
         }
 
         private IEnumerable<Assembly> getAllAssemblies()

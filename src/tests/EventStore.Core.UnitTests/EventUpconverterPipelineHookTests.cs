@@ -135,6 +135,14 @@ namespace EventStore.Core.UnitTests
         }
     }
 
+    class SneakyEventConverter : IConvertEvents<ConvertingEvent, ConvertingEvent3>
+    {
+        public ConvertingEvent3 Convert(ConvertingEvent sourceEvent)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     class NonConvertingEvent {}
     class ConvertingEvent
     {
