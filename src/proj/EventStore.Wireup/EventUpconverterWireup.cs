@@ -15,12 +15,29 @@ namespace EventStore
         {
             Logger.Debug(Messages.EventUpconverterRegistered);
 
-            this.Container.Register<IConvertCommits>(c =>
+            this.Container.Register(c =>
             {
-                if (!assembliesToScan.Any())
-                    assembliesToScan.AddRange(getAllAssemblies());
-                return new EventUpconverterEngine(assembliesToScan);
+                if (!this.assembliesToScan.Any())
+                    this.assembliesToScan.AddRange(getAllAssemblies());
+                var converters = GetConverters(this.assembliesToScan);
+                return new EventUpconverterPipelineHook(converters);
             });
+        }
+
+        private Dictionary<Type, Func<object, object>> GetConverters(IEnumerable<Assembly> toScan)
+        {
+            var c = from a in toScan
+                    from t in a.GetTypes()
+                    let i = t.GetInterface(typeof (IConvertEvents<,>).FullName)
+                    where i != null
+                    let sourceType = i.GetGenericArguments().First()
+                    let convertMethod = i.GetMethod("Convert", BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic)
+                    let instance = Activator.CreateInstance(t)
+                    select new KeyValuePair<Type, Func<object, object>>(
+                        sourceType,
+                        e => convertMethod.Invoke(instance, new[] {e as object})
+                    );
+            return c.ToDictionary(x => x.Key, x => x.Value);
         }
 
         private IEnumerable<Assembly> getAllAssemblies()
@@ -31,17 +48,16 @@ namespace EventStore
                 .Concat(new[] {Assembly.GetCallingAssembly()});
         }
 
-        public virtual EventUpconverterWireup UsingConvertersFrom(params Assembly[] assemblies)
+        public virtual EventUpconverterWireup WithConvertersFrom(params Assembly[] assemblies)
         {
             Logger.Debug(Messages.EventUpconvertersLoadedFrom, string.Concat(", ", assemblies));
             this.assembliesToScan.AddRange(assemblies);
             return this;
         }
 
-        public virtual EventUpconverterWireup UsingConvertersFromAssemblyContaining(params Type[] converters)
+        public virtual EventUpconverterWireup WithConvertersFromAssemblyContaining(params Type[] converters)
         {
-            var assemblies = converters.Select(c => c.Assembly)
-                .Distinct();
+            var assemblies = converters.Select(c => c.Assembly).Distinct();
             Logger.Debug(Messages.EventUpconvertersLoadedFrom, string.Concat(", ", assemblies));
             this.assembliesToScan.AddRange(assemblies);
             return this;

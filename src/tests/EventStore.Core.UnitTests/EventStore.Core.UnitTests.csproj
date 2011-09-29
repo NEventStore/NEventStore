@@ -46,7 +46,7 @@
     </Compile>
     <Compile Include="DispatchCommitHookTests.cs" />
     <Compile Include="DispatcherTests\AsynchronousDispatcherTests.cs" />
-    <Compile Include="EventUpconverterEngineTests.cs" />
+    <Compile Include="EventUpconverterPipelineHookTests.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="OptimisticCommitHookTests.cs" />
     <Compile Include="OptimisticEventStoreTests.cs" />

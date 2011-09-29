@@ -383,17 +383,15 @@ namespace EventStore.Core.UnitTests
 	{
 		protected static Guid streamId = Guid.NewGuid();
 	    protected static Mock<IPersistStreams> persistence;
-	    protected static Mock<IConvertCommits> commitConverter;
 	    protected static OptimisticEventStore store;
 	    protected static List<Mock<IPipelineHook>> pipelineHooks;
 
 	    Establish context = () =>
 		{
 			persistence = new Mock<IPersistStreams>();
-		    commitConverter = new Mock<IConvertCommits>();
 			pipelineHooks = new List<Mock<IPipelineHook>>();
 
-            store = new OptimisticEventStore(persistence.Object, commitConverter.Object, pipelineHooks.Select(x => x.Object));
+            store = new OptimisticEventStore(persistence.Object, pipelineHooks.Select(x => x.Object));
 		};
 
 	    Cleanup everything = () =>

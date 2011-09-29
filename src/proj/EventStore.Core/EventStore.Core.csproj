@@ -44,7 +44,7 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="EventUpconverterEngine.cs" />
+    <Compile Include="EventUpconverterPipelineHook.cs" />
     <Compile Include="DispatchSchedulerPipelinkHook.cs" />
     <Compile Include="Logging\ConsoleWindowLogger.cs" />
     <Compile Include="Logging\ExtensionMethods.cs" />

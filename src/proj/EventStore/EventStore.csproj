@@ -51,7 +51,6 @@
     </Compile>
     <Compile Include="Dispatcher\IDispatchCommits.cs" />
     <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="IConvertCommits.cs" />
     <Compile Include="IConvertEvents.cs" />
     <Compile Include="Logging\ILog.cs" />
     <Compile Include="IPipelineHook.cs" />

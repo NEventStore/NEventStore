@@ -10,7 +10,7 @@ namespace EventStore.Core.UnitTests
     using System.Reflection;
     using It = Machine.Specifications.It;
 
-    [Subject("EventUpconverterEngine")]
+    [Subject("EventUpconverterPipelineHook")]
     public class when_opening_a_commit_that_does_not_have_convertible_events : using_event_converter
     {
         static readonly Commit commit = new Commit(
@@ -22,7 +22,7 @@ namespace EventStore.Core.UnitTests
             commit.Events.Add(new EventMessage { Body = new NonConvertingEvent() });
 
         Because of = () => 
-            converted = EventUpconverter.Convert(commit);
+            converted = EventUpconverter.Select(commit);
 
         It should_not_be_converted = () =>
             converted.ShouldBeTheSameAs(commit);
@@ -31,7 +31,7 @@ namespace EventStore.Core.UnitTests
             converted.Events.Single().ShouldEqual(commit.Events.Single());
     }
 
-    [Subject("EventUpconverterEngine")]
+    [Subject("EventUpconverterPipelineHook")]
     public class when_opening_a_commit_that_has_convertible_events : using_event_converter
     {
         static readonly Commit commit = new Commit(
@@ -47,7 +47,7 @@ namespace EventStore.Core.UnitTests
             commit.Events.Add(eventMessage);
 
         Because of = () =>
-            converted = EventUpconverter.Convert(commit);
+            converted = EventUpconverter.Select(commit);
 
         It should_be_of_the_converted_type = () =>
             converted.Events.Single().Body.GetType().ShouldEqual(typeof(ConvertingEvent3));
@@ -56,7 +56,7 @@ namespace EventStore.Core.UnitTests
             ((ConvertingEvent3)converted.Events.Single().Body).Id.ShouldEqual(id);
     }
 
-    [Subject("EventUpconverterEngine")]
+    [Subject("EventUpconverterPipelineHook")]
     public class when_an_event_converter_implements_the_IConvertEvents_interface_explicitly : using_event_converter
     {
         static readonly Commit commit = new Commit(
@@ -73,7 +73,7 @@ namespace EventStore.Core.UnitTests
             commit.Events.Add(eventMessage);
 
         Because of = () =>
-            converted = EventUpconverter.Convert(commit);
+            converted = EventUpconverter.Select(commit);
 
         It should_be_of_the_converted_type = () =>
             converted.Events.Single().Body.GetType().ShouldEqual(typeof(ConvertingEvent3));
@@ -85,12 +85,30 @@ namespace EventStore.Core.UnitTests
     public class using_event_converter
     {
         protected static IEnumerable<Assembly> assemblies;
-        protected static EventUpconverterEngine EventUpconverter;
+        protected static Dictionary<Type, Func<object, object>> converters;
+        protected static EventUpconverterPipelineHook EventUpconverter;
 
         Establish context = () => {
             assemblies = getAllAssemblies();
-            EventUpconverter = new EventUpconverterEngine(assemblies);
+            converters = GetConverters(assemblies);
+            EventUpconverter = new EventUpconverterPipelineHook(converters);
         };
+
+        private static Dictionary<Type, Func<object, object>> GetConverters(IEnumerable<Assembly> toScan)
+        {
+            var c = from a in toScan
+                    from t in a.GetTypes()
+                    let i = t.GetInterface(typeof(IConvertEvents<,>).FullName)
+                    where i != null
+                    let sourceType = i.GetGenericArguments().First()
+                    let convertMethod = i.GetMethod("Convert", BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic)
+                    let instance = Activator.CreateInstance(t)
+                    select new KeyValuePair<Type, Func<object, object>>(
+                        sourceType,
+                        e => convertMethod.Invoke(instance, new[] { e as object })
+                    );
+            return c.ToDictionary(x => x.Key, x => x.Value);
+        }
 
         private static IEnumerable<Assembly> getAllAssemblies()
         {
