@@ -390,6 +390,7 @@ namespace EventStore.Core.UnitTests
 		{
 			persistence = new Mock<IPersistStreams>();
 			pipelineHooks = new List<Mock<IPipelineHook>>();
+
 			store = new OptimisticEventStore(persistence.Object, pipelineHooks.Select(x => x.Object));
 		};
 

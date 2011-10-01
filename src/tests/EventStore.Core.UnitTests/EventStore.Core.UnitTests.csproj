@@ -46,6 +46,7 @@
     </Compile>
     <Compile Include="DispatchCommitHookTests.cs" />
     <Compile Include="DispatcherTests\AsynchronousDispatcherTests.cs" />
+    <Compile Include="ConversionTests\EventUpconverterPipelineHookTests.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="OptimisticCommitHookTests.cs" />
     <Compile Include="OptimisticEventStoreTests.cs" />
@@ -65,6 +66,7 @@
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
       <HintPath>..\..\..\bin\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\proj\CustomDictionary.xml">
@@ -84,6 +86,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\..\bin\nuget\NuGet.targets" />
 </Project>

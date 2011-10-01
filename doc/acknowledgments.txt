@@ -10,3 +10,4 @@ Daniel Hoelbling    @tigraine           https://github.com/Tigraine          htt
 Damian Hickey       @randompunter       https://github.com/damianh           http://dhickey.ie/
 John Downey         @jtdowney           https://github.com/jtdowney          http://jtdowney.com
 Jimit Ndiaye        @jimitndiaye        https://github.com/jimitndiaye
+Mikael Östberg      @MikaelOstberg      https://github.com/MikeEast          http://www.inloop.se/

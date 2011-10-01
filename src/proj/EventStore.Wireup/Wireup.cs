@@ -3,6 +3,7 @@ namespace EventStore
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Transactions;
+	using Conversion;
 	using Dispatcher;
 	using Persistence;
 	using Persistence.InMemoryPersistence;
@@ -65,16 +66,17 @@ namespace EventStore
 		private static IStoreEvents BuildEventStore(NanoContainer context)
 		{
 			var scopeOption = context.Resolve<TransactionScopeOption>();
-			var concurrencyHook = scopeOption == TransactionScopeOption.Suppress ? new OptimisticPipelineHook() : null;
-			var dispatchSchedulerHook = new DispatchSchedulerPipelinkHook(context.Resolve<IScheduleDispatches>());
+			var concurrency = scopeOption == TransactionScopeOption.Suppress ? new OptimisticPipelineHook() : null;
+			var scheduler = new DispatchSchedulerPipelinkHook(context.Resolve<IScheduleDispatches>());
+			var upconverter = context.Resolve<EventUpconverterPipelineHook>();
 
-			var pipelineHooks = context.Resolve<ICollection<IPipelineHook>>() ?? new IPipelineHook[0];
-			pipelineHooks = new IPipelineHook[] { concurrencyHook, dispatchSchedulerHook }
-				.Concat(pipelineHooks)
+			var hooks = context.Resolve<ICollection<IPipelineHook>>() ?? new IPipelineHook[0];
+			hooks = new IPipelineHook[] { concurrency, scheduler, upconverter }
+				.Concat(hooks)
 				.Where(x => x != null)
 				.ToArray();
 
-			return new OptimisticEventStore(context.Resolve<IPersistStreams>(), pipelineHooks);
+			return new OptimisticEventStore(context.Resolve<IPersistStreams>(), hooks);
 		}
 	}
 }
