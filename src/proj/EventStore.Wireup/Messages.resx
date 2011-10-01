@@ -207,4 +207,10 @@
   <data name="SynchronousDispatcherTwoPhaseCommits" xml:space="preserve">
     <value>Only the synchronous dispatcher can enlist in two-phase commits.</value>
   </data>
+  <data name="EventUpconverterRegistered" xml:space="preserve">
+    <value>Configuring the store to upconvert events when fetched.</value>
+  </data>
+  <data name="EventUpconvertersLoadedFrom" xml:space="preserve">
+    <value>Will scan for event upconverters from the following assemblies: '{0}'</value>
+  </data>
 </root>

@@ -46,6 +46,8 @@
     </Compile>
     <Compile Include="AsynchronousDispatchSchedulerWireup.cs" />
     <Compile Include="AsynchronousDispatchSchedulerWireupExtensions.cs" />
+    <Compile Include="EventUpconverterWireup.cs" />
+    <Compile Include="EventUpconverterWireupExtensions.cs" />
     <Compile Include="LoggingWireupExtensions.cs" />
     <Compile Include="Messages.Designer.cs">
       <AutoGen>True</AutoGen>
