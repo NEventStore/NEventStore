@@ -1,4 +1,4 @@
-﻿namespace EventStore
+﻿namespace EventStore.Conversion
 {
 	using System;
 	using System.Collections.Generic;
@@ -13,40 +13,40 @@
 		{
 			this.converters = converters;
 		}
+		public void Dispose()
+		{
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		protected virtual void Dispose(bool disposing)
+		{
+			this.converters.Clear();
+		}
 
 		public virtual Commit Select(Commit committed)
 		{
 			foreach (var eventMessage in committed.Events)
-			{
 				eventMessage.Body = this.Convert(eventMessage.Body);
-			}
+
 			return committed;
 		}
-		private object Convert(object body)
+		private object Convert(object source)
 		{
 			Func<object, object> converter;
-			var result = body;
-			if (this.converters.TryGetValue(body.GetType(), out converter))
-			{
-				result = this.Convert(converter(body));
-				Logger.Debug(Resources.ConvertingEvent, body.GetType(), result.GetType());
-			}
-			return result;
+			if (!this.converters.TryGetValue(source.GetType(), out converter))
+				return source;
+
+			var target = this.Convert(converter(source));
+			Logger.Debug(Resources.ConvertingEvent, source.GetType(), target.GetType());
+			return target;
 		}
 
 		public virtual bool PreCommit(Commit attempt)
 		{
 			return true;
 		}
-
 		public virtual void PostCommit(Commit committed)
 		{
-		}
-
-		public void Dispose()
-		{
-			this.converters.Clear();
-			GC.SuppressFinalize(this);
 		}
 	}
 }

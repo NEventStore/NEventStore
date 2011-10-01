@@ -4,6 +4,7 @@
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Reflection;
+	using Conversion;
 	using Logging;
 
 	public class EventUpconverterWireup : Wireup
@@ -34,15 +35,14 @@
 					let convertMethod = i.GetMethod("Convert", BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic)
 					let instance = Activator.CreateInstance(t)
 					select new KeyValuePair<Type, Func<object, object>>(
-						sourceType,
-						e => convertMethod.Invoke(instance, new[] { e }));
+						sourceType, e => convertMethod.Invoke(instance, new[] { e }));
 			try
 			{
 				return c.ToDictionary(x => x.Key, x => x.Value);
 			}
-			catch (ArgumentException ex)
+			catch (ArgumentException e)
 			{
-				throw new MultipleConvertersFoundException(ex.Message, ex);
+				throw new MultipleConvertersFoundException(e.Message, e);
 			}
 		}
 
@@ -60,7 +60,6 @@
 			this.assembliesToScan.AddRange(assemblies);
 			return this;
 		}
-
 		public virtual EventUpconverterWireup WithConvertersFromAssemblyContaining(params Type[] converters)
 		{
 			var assemblies = converters.Select(c => c.Assembly).Distinct();

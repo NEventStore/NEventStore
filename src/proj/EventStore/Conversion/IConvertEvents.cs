@@ -1,4 +1,4 @@
-﻿namespace EventStore
+﻿namespace EventStore.Conversion
 {
 	/// <summary>
 	/// Provides the ability to upconvert an event from one type to another.

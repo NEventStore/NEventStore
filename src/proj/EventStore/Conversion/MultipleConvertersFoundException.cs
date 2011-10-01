@@ -1,4 +1,4 @@
-﻿namespace EventStore
+﻿namespace EventStore.Conversion
 {
 	using System;
 	using System.Runtime.Serialization;

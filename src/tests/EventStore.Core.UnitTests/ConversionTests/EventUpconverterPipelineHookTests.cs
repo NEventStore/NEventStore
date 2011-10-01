@@ -1,12 +1,13 @@
 ﻿#pragma warning disable 169
 // ReSharper disable InconsistentNaming
 
-namespace EventStore.Core.UnitTests
+namespace EventStore.Core.UnitTests.ConversionTests
 {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Reflection;
+	using Conversion;
 	using Machine.Specifications;
 	using It = Machine.Specifications.It;
 
@@ -88,7 +89,7 @@ namespace EventStore.Core.UnitTests
 
 		Establish context = () =>
 		{
-			assemblies = getAllAssemblies();
+			assemblies = GetAllAssemblies();
 			converters = GetConverters(assemblies);
 			eventUpconverter = new EventUpconverterPipelineHook(converters);
 		};
@@ -115,7 +116,7 @@ namespace EventStore.Core.UnitTests
 			}
 		}
 
-		private static IEnumerable<Assembly> getAllAssemblies()
+		private static IEnumerable<Assembly> GetAllAssemblies()
 		{
 			return Assembly.GetCallingAssembly()
 				.GetReferencedAssemblies()
