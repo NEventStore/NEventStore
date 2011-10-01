@@ -382,22 +382,22 @@ namespace EventStore.Core.UnitTests
 	public abstract class using_persistence
 	{
 		protected static Guid streamId = Guid.NewGuid();
-	    protected static Mock<IPersistStreams> persistence;
-	    protected static OptimisticEventStore store;
-	    protected static List<Mock<IPipelineHook>> pipelineHooks;
+		protected static Mock<IPersistStreams> persistence;
+		protected static OptimisticEventStore store;
+		protected static List<Mock<IPipelineHook>> pipelineHooks;
 
-	    Establish context = () =>
+		Establish context = () =>
 		{
 			persistence = new Mock<IPersistStreams>();
 			pipelineHooks = new List<Mock<IPipelineHook>>();
 
-            store = new OptimisticEventStore(persistence.Object, pipelineHooks.Select(x => x.Object));
+			store = new OptimisticEventStore(persistence.Object, pipelineHooks.Select(x => x.Object));
 		};
 
-	    Cleanup everything = () =>
+		Cleanup everything = () =>
 			streamId = Guid.NewGuid();
 
-	    protected static Commit BuildCommitStub(Guid commitId)
+		protected static Commit BuildCommitStub(Guid commitId)
 		{
 			return new Commit(streamId, 1, commitId, 1, SystemTime.UtcNow, null, null);
 		}

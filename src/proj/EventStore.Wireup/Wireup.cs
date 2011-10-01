@@ -67,17 +67,16 @@ namespace EventStore
 			var scopeOption = context.Resolve<TransactionScopeOption>();
 			var concurrencyHook = scopeOption == TransactionScopeOption.Suppress ? new OptimisticPipelineHook() : null;
 			var dispatchSchedulerHook = new DispatchSchedulerPipelinkHook(context.Resolve<IScheduleDispatches>());
-            var eventUpconverterPipelineHook = context.Resolve<EventUpconverterPipelineHook>();
+			var eventUpconverterPipelineHook = context.Resolve<EventUpconverterPipelineHook>();
 
 			var pipelineHooks = context.Resolve<ICollection<IPipelineHook>>() ?? new IPipelineHook[0];
-            pipelineHooks = new IPipelineHook[] {
-                    eventUpconverterPipelineHook, 
-                    concurrencyHook, 
-                    dispatchSchedulerHook
-                }
-                .Concat(pipelineHooks)
-                .Where(x => x != null)
-                .ToArray();
+			pipelineHooks = new IPipelineHook[]
+			{
+				eventUpconverterPipelineHook, concurrencyHook, dispatchSchedulerHook
+			}
+			.Concat(pipelineHooks)
+			.Where(x => x != null)
+			.ToArray();
 
 			return new OptimisticEventStore(context.Resolve<IPersistStreams>(), pipelineHooks);
 		}

@@ -10,7 +10,7 @@ namespace EventStore
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(OptimisticEventStore));
 		private readonly IPersistStreams persistence;
-	    private readonly IEnumerable<IPipelineHook> pipelineHooks;
+		private readonly IEnumerable<IPipelineHook> pipelineHooks;
 
 		public OptimisticEventStore(IPersistStreams persistence, IEnumerable<IPipelineHook> pipelineHooks)
 		{
@@ -18,7 +18,7 @@ namespace EventStore
 				throw new ArgumentNullException("persistence");
 
 			this.persistence = persistence;
-		    this.pipelineHooks = pipelineHooks ?? new IPipelineHook[0];
+			this.pipelineHooks = pipelineHooks ?? new IPipelineHook[0];
 		}
 
 		public void Dispose()
@@ -73,7 +73,7 @@ namespace EventStore
 				if (filtered == null)
 					Logger.Info(Resources.PipelineHookFilteredCommit);
 				else
-                    yield return filtered;
+					yield return filtered;
 			}
 		}
 		public virtual void Commit(Commit attempt)
