@@ -169,6 +169,15 @@ namespace EventStore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Converting an Event from &apos;{0}&apos; to &apos;{1}&apos;..
+        /// </summary>
+        internal static string ConvertingEvent {
+            get {
+                return ResourceManager.GetString("ConvertingEvent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Creating stream &apos;{0}&apos;..
         /// </summary>
         internal static string CreatingStream {
