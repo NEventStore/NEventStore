@@ -7,7 +7,6 @@
     <authors>Simon Green, Jonathan Oliver</authors>
     <owners>Jonathan Oliver</owners>
     <projectUrl>https://github.com/joliver/EventStore</projectUrl>
-    <licenseUrl>https://github.com/joliver/EventStore/blob/master/doc/license.txt</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Additional persistence provider for EventStore using RavenDB.</description>
     <summary>MongoDB persistence provider for EventStore.</summary>
