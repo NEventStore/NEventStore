@@ -112,11 +112,11 @@
     </Reference>
     <Reference Include="MySql.Data">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
-      <HintPath>..\..\..\bin\MySql.Data.6.3.7\lib\net20\MySql.Data.dll</HintPath>
+      <HintPath>..\..\..\bin\MySql.Data.6.4.4\lib\net20\MySql.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MySql.Data" Condition="$(TargetFrameworkVersion)=='v4.0'">
-      <HintPath>..\..\..\bin\MySql.Data.6.3.7\lib\net40\MySql.Data.dll</HintPath>
+      <HintPath>..\..\..\bin\MySql.Data.6.4.4\lib\net40\MySql.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Mono.Security">
@@ -136,7 +136,7 @@
       <HintPath>..\..\..\bin\Npgsql.2.0.11\lib\net40\Npgsql.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.SQLite">
-      <HintPath>..\..\..\bin\System.Data.SQLite.1.0.75.0\lib\System.Data.SQLite.DLL</HintPath>
+      <HintPath>..\..\..\bin\System.Data.SQLite.1.0.76.0\lib\System.Data.SQLite.DLL</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />

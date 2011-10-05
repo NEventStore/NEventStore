@@ -68,28 +68,28 @@
       <Name>EventStore</Name>
     </ProjectReference>
     <Reference Include="Newtonsoft.Json" Condition="$(TargetFrameworkVersion)=='v3.5'">
-      <HintPath>..\..\..\bin\Newtonsoft.Json.4.0.2\lib\net35\Newtonsoft.Json.Net35.dll</HintPath>
+      <HintPath>..\..\..\bin\Newtonsoft.Json.4.0.3\lib\net35\Newtonsoft.Json.Net35.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json" Condition="$(TargetFrameworkVersion)=='v4.0'">
-      <HintPath>..\..\..\bin\Newtonsoft.Json.4.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\bin\Newtonsoft.Json.4.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Raven.Json" Condition="$(TargetFrameworkVersion)=='v4.0'">
-      <HintPath>..\..\..\bin\RavenDB.1.0.0.472\lib\net40\Raven.Json.dll</HintPath>
+      <HintPath>..\..\..\bin\RavenDB.1.0.0.482\lib\net40\Raven.Json.dll</HintPath>
     </Reference>
     <Reference Include="Raven.Json" Condition="$(TargetFrameworkVersion)=='v3.5'">
-      <HintPath>..\..\..\bin\RavenDB.1.0.0.472\lib\net35\Raven.Json-3.5.dll</HintPath>
+      <HintPath>..\..\..\bin\RavenDB.1.0.0.482\lib\net35\Raven.Json-3.5.dll</HintPath>
     </Reference>
     <Reference Include="Raven.Abstractions" Condition="$(TargetFrameworkVersion)=='v4.0'">
-      <HintPath>..\..\..\bin\RavenDB.1.0.0.472\lib\net40\Raven.Abstractions.dll</HintPath>
+      <HintPath>..\..\..\bin\RavenDB.1.0.0.482\lib\net40\Raven.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Raven.Abstractions" Condition="$(TargetFrameworkVersion)=='v3.5'">
-      <HintPath>..\..\..\bin\RavenDB.1.0.0.472\lib\net35\Raven.Abstractions-3.5.dll</HintPath>
+      <HintPath>..\..\..\bin\RavenDB.1.0.0.482\lib\net35\Raven.Abstractions-3.5.dll</HintPath>
     </Reference>
     <Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v4.0'">
-      <HintPath>..\..\..\bin\RavenDB.1.0.0.472\lib\net40\Raven.Client.Lightweight.dll</HintPath>
+      <HintPath>..\..\..\bin\RavenDB.1.0.0.482\lib\net40\Raven.Client.Lightweight.dll</HintPath>
     </Reference>
     <Reference Include="Raven.Client.Lightweight" Condition="$(TargetFrameworkVersion)=='v3.5'">
-      <HintPath>..\..\..\bin\RavenDB.1.0.0.472\lib\net35\Raven.Client.Lightweight-3.5.dll</HintPath>
+      <HintPath>..\..\..\bin\RavenDB.1.0.0.482\lib\net35\Raven.Client.Lightweight-3.5.dll</HintPath>
     </Reference>
     <Reference Include="NLog" Condition="$(TargetFrameworkVersion)=='v4.0'">
       <HintPath>..\..\..\bin\NLog.2.0.0.2000\lib\net40\NLog.dll</HintPath>
@@ -107,7 +107,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\..\bin\nuget\NuGet.targets" />
