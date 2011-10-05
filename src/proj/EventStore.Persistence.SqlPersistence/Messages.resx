@@ -175,7 +175,7 @@
     <value>Deserializing commit from record using serializer of type '{0}'.</value>
   </data>
   <data name="CommitPersisted" xml:space="preserve">
-    <value>Commit persisted, {0} rows affected.</value>
+    <value>Commit '{0}' persisted, {1} rows affected.</value>
   </data>
   <data name="AttemptingToCommit" xml:space="preserve">
     <value>Attempting to commit {0} events on stream '{1}' at sequence {2}.</value>
@@ -270,10 +270,13 @@
   <data name="DisposingRootThreadScopeResources" xml:space="preserve">
     <value>Disposing underlying thread-scoped resource.</value>
   </data>
-	<data name="BadFactoryResult">
-		<value xml:space="preserve">The factory provided was unable to create an object to store.</value>
-	</data>
-	<data name="NotConnectionsAvailable">
-		<value xml:space="preserve">No connections have been opened yet.</value>
+  <data name="BadFactoryResult" xml:space="preserve">
+    <value>The factory provided was unable to create an object to store.</value>
+  </data>
+  <data name="NotConnectionsAvailable" xml:space="preserve">
+    <value>No connections have been opened yet.</value>
+  </data>
+	<data name="ConcurrentWriteDetected">
+		<value xml:space="preserve">Concurrent write detected.</value>
 	</data>
 </root>

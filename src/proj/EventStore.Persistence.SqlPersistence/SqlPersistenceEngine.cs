@@ -126,11 +126,12 @@ namespace EventStore.Persistence.SqlPersistence
 				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(attempt.Events));
 
 				var rowsAffected = cmd.Execute(this.dialect.PersistCommit);
-				Logger.Debug(Messages.CommitPersisted, rowsAffected);
+				Logger.Debug(Messages.CommitPersisted, attempt.CommitId, rowsAffected);
 
 				if (rowsAffected > 0)
 					return rowsAffected;
 
+				Logger.Debug(Messages.ConcurrentWriteDetected);
 				throw new ConcurrencyException();
 			});
 		}

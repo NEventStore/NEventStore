@@ -169,11 +169,20 @@ namespace EventStore.Persistence.SqlPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Commit persisted, {0} rows affected..
+        ///   Looks up a localized string similar to Commit &apos;{0}&apos; persisted, {1} rows affected..
         /// </summary>
         internal static string CommitPersisted {
             get {
                 return ResourceManager.GetString("CommitPersisted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Concurrent write detected..
+        /// </summary>
+        internal static string ConcurrentWriteDetected {
+            get {
+                return ResourceManager.GetString("ConcurrentWriteDetected", resourceCulture);
             }
         }
         
