@@ -4,6 +4,7 @@
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading;
+	using Logging;
 	using MongoDB.Bson;
 	using MongoDB.Driver;
 	using MongoDB.Driver.Builders;
@@ -12,6 +13,7 @@
 	public class MongoPersistenceEngine : IPersistStreams
 	{
 		private const string ConcurrencyException = "E1100";
+		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(MongoPersistenceEngine));
 		private readonly MongoCollectionSettings<BsonDocument> commitSettings;
 		private readonly MongoCollectionSettings<BsonDocument> snapshotSettings;
 		private readonly MongoCollectionSettings<BsonDocument> streamSettings;
@@ -54,6 +56,7 @@
 			if (!disposing || this.disposed)
 				return;
 
+			Logger.Debug(Messages.ShuttingDownPersistence);
 			this.disposed = true;
 		}
 
@@ -61,6 +64,8 @@
 		{
 			if (Interlocked.Increment(ref this.initialized) > 1)
 				return;
+
+			Logger.Debug(Messages.InitializingStorage);
 
 			this.TryMongo(() =>
 			{
@@ -84,6 +89,8 @@
 
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
 		{
+			Logger.Debug(Messages.GettingAllCommitsBetween, streamId, minRevision, maxRevision);
+
 			return this.TryMongo(() =>
 			{
 				var query = Query.And(
@@ -99,6 +106,8 @@
 		}
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
 		{
+			Logger.Debug(Messages.GettingAllCommitsFrom, start);
+
 			return this.TryMongo(() => this.PersistedCommits
 				.Find(Query.GTE("CommitStamp", start))
 				.SetSortOrder("CommitStamp")
@@ -106,6 +115,9 @@
 		}
 		public virtual void Commit(Commit attempt)
 		{
+			Logger.Debug(Messages.AttemptingToCommit,
+				attempt.Events.Count, attempt.StreamId, attempt.CommitSequence);
+
 			this.TryMongo(() =>
 			{
 				var commit = attempt.ToMongoCommit(this.serializer);
@@ -115,6 +127,7 @@
 					// for concurrency / duplicate commit detection safe mode is required
 					this.PersistedCommits.Insert(commit, SafeMode.True);
 					this.UpdateStreamHeadAsync(attempt.StreamId, attempt.StreamRevision, attempt.Events.Count);
+					Logger.Debug(Messages.CommitPersisted, attempt.CommitId);
 				}
 				catch (MongoException e)
 				{
@@ -125,6 +138,7 @@
 					if (savedCommit.CommitId == attempt.CommitId)
 						throw new DuplicateCommitException();
 
+					Logger.Debug(Messages.ConcurrentWriteDetected);
 					throw new ConcurrencyException();
 				}
 			});
@@ -132,6 +146,8 @@
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
+			Logger.Debug(Messages.GettingUndispatchedCommits);
+
 			return this.TryMongo(() => this.PersistedCommits
 				.Find(Query.EQ("Dispatched", false))
 				.SetSortOrder("CommitStamp")
@@ -139,6 +155,8 @@
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
+			Logger.Debug(Messages.MarkingCommitAsDispatched, commit.CommitId);
+
 			this.TryMongo(() =>
 			{
 				var query = commit.ToMongoCommitIdQuery();
@@ -149,6 +167,8 @@
 
 		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
 		{
+			Logger.Debug(Messages.GettingStreamsToSnapshot);
+
 			return this.TryMongo(() =>
 			{
 				var query = Query.GTE("Unsnapshotted", maxThreshold);
@@ -161,6 +181,8 @@
 		}
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
+			Logger.Debug(Messages.GettingRevision, streamId, maxRevision);
+
 			return this.TryMongo(() => this.PersistedSnapshots
 				.Find(streamId.ToSnapshotQuery(maxRevision))
 				.SetSortOrder(SortBy.Descending("_id"))
@@ -172,6 +194,8 @@
 		{
 			if (snapshot == null)
 				return false;
+
+			Logger.Debug(Messages.AddingSnapshot, snapshot.StreamId, snapshot.StreamRevision);
 
 			try
 			{
@@ -202,6 +226,8 @@
 
 		public virtual void Purge()
 		{
+			Logger.Warn(Messages.PurgingStorage);
+
 			this.PersistedCommits.Drop();
 			this.PersistedStreamHeads.Drop();
 			this.PersistedSnapshots.Drop();
@@ -253,10 +279,12 @@
 			}
 			catch (MongoConnectionException e)
 			{
+				Logger.Warn(Messages.StorageUnavailable);
 				throw new StorageUnavailableException(e.Message, e);
 			}
 			catch (MongoException e)
 			{
+				Logger.Error(Messages.StorageThrewException, e.GetType());
 				throw new StorageException(e.Message, e);
 			}
 		}

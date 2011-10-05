@@ -5,6 +5,7 @@ namespace EventStore.Persistence.RavenPersistence
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Transactions;
+	using Logging;
 
 	public sealed class PagedEnumerationCollection<T> : IEnumerable<T>
 	{
@@ -29,6 +30,7 @@ namespace EventStore.Persistence.RavenPersistence
 
 		private sealed class PagedEnumerator : IEnumerator<T>
 		{
+			private static readonly ILog Logger = LogFactory.BuildLogger(typeof(PagedEnumerator));
 			private readonly IQueryable<T> source;
 			private readonly int take;
 			private readonly TransactionScope scope;
@@ -47,6 +49,7 @@ namespace EventStore.Persistence.RavenPersistence
 
 				if (this.scope != null)
 				{
+					Logger.Verbose(Messages.ScopeCompleted);
 					this.scope.Complete();
 					this.scope.Dispose();
 				}
@@ -71,6 +74,8 @@ namespace EventStore.Persistence.RavenPersistence
 
 				if (!this.PageCompletelyEnumerated())
 					return false; // ISSUE: if our page size doesn't agree with Raven, this won't evaluate properly...
+
+				Logger.Verbose(Messages.EnumeratedRowCount, this.skip);
 
 				this.current.Dispose();
 				this.current = this.source.Skip(this.skip).Take(this.take).GetEnumerator();

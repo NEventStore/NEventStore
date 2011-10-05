@@ -8,6 +8,7 @@
 	using System.Threading;
 	using System.Transactions;
 	using Indexes;
+	using Logging;
 	using Raven.Abstractions.Commands;
 	using Raven.Abstractions.Data;
 	using Raven.Client;
@@ -20,6 +21,7 @@
 	public class RavenPersistenceEngine : IPersistStreams
 	{
 		private const int MinPageSize = 10;
+		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(RavenPersistenceEngine));
 		private readonly IDocumentStore store;
 		private readonly IDocumentSerializer serializer;
 		private readonly TransactionScopeOption scopeOption;
@@ -36,10 +38,10 @@
 				throw new ArgumentNullException("config");
 
 			if (config.Serializer == null)
-				throw new ArgumentException("Serializer cannot be null.", "config");
+				throw new ArgumentException(Messages.SerializerCannotBeNull, "config");
 
 			if (config.PageSize < MinPageSize)
-				throw new ArgumentException("Configured paging size is too small.", "config");
+				throw new ArgumentException(Messages.PagingSizeTooSmall, "config");
 
 			this.store = store;
 			this.serializer = config.Serializer;
@@ -55,14 +57,19 @@
 		}
 		protected virtual void Dispose(bool disposing)
 		{
-			if (disposing)
-				this.store.Dispose();
+			if (!disposing)
+				return;
+
+			Logger.Debug(Messages.ShuttingDownPersistence);
+			this.store.Dispose();
 		}
 
 		public virtual void Initialize()
 		{
 			if (Interlocked.Increment(ref this.initialized) > 1)
 				return;
+
+			Logger.Debug(Messages.InitializingStorage);
 
 			this.TryRaven(() =>
 			{
@@ -75,23 +82,31 @@
 					new RavenStreamHeadBySnapshotAge().Execute(this.store);
 					scope.Complete();
 				}
+
 				return true;
 			});
 		}
 
 		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
 		{
+			Logger.Debug(Messages.GettingAllCommitsBetween, streamId, minRevision, maxRevision);
+
 			return this.QueryCommits<RavenCommitByRevisionRange>(x =>
 					x.StreamId == streamId && x.StreamRevision >= minRevision && x.StartingStreamRevision <= maxRevision)
 				.OrderBy(x => x.CommitSequence);
 		}
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
 		{
+			Logger.Debug(Messages.GettingAllCommitsFrom, start);
+
 			return this.QueryCommits<RavenCommitByDate>(x => x.CommitStamp >= start)
 				.OrderBy(x => x.CommitStamp);
 		}
 		public virtual void Commit(Commit attempt)
 		{
+			Logger.Debug(Messages.AttemptingToCommit,
+				attempt.Events.Count, attempt.StreamId, attempt.CommitSequence);
+
 			try
 			{
 				this.TryRaven(() =>
@@ -105,6 +120,7 @@
 						scope.Complete();
 					}
 
+					Logger.Debug(Messages.CommitPersisted, attempt.CommitId);
 					this.SaveStreamHead(attempt.ToRavenStreamHead());
 					return true;
 				});
@@ -115,11 +131,14 @@
 				if (savedCommit.CommitId == attempt.CommitId)
 					throw new DuplicateCommitException();
 
+				Logger.Debug(Messages.ConcurrentWriteDetected);
 				throw new ConcurrencyException();
 			}
 		}
 		private RavenCommit LoadSavedCommit(Commit attempt)
 		{
+			Logger.Debug(Messages.DetectingConcurrency);
+
 			return this.TryRaven(() =>
 			{
 				using (var scope = this.OpenQueryScope())
@@ -134,6 +153,7 @@
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
+			Logger.Debug(Messages.GettingUndispatchedCommits);
 			return this.QueryCommits<RavenCommitsByDispatched>(c => c.Dispatched == false)
 				.OrderBy(x => x.CommitStamp);
 		}
@@ -154,6 +174,8 @@
 				Patches = new[] { patch }
 			};
 
+			Logger.Debug(Messages.MarkingCommitAsDispatched, commit.CommitId);
+
 			this.TryRaven(() =>
 			{
 				using (var scope = this.OpenCommandScope())
@@ -169,11 +191,15 @@
 
 		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
 		{
+			Logger.Debug(Messages.GettingStreamsToSnapshot);
+
 			return this.Query<RavenStreamHead, RavenStreamHeadBySnapshotAge>(s => s.SnapshotAge >= maxThreshold)
 				.Select(s => s.ToStreamHead());
 		}
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
 		{
+			Logger.Debug(Messages.GettingRevision, streamId, maxRevision);
+
 			return this.Query<RavenSnapshot, RavenSnapshotByStreamIdAndRevision>(
 				x => x.StreamId == streamId && x.StreamRevision <= maxRevision)
 				.OrderByDescending(x => x.StreamRevision)
@@ -184,6 +210,8 @@
 		{
 			if (snapshot == null)
 				return false;
+
+			Logger.Debug(Messages.AddingSnapshot, snapshot.StreamId, snapshot.StreamRevision);
 
 			try
 			{
@@ -211,6 +239,8 @@
 
 		public virtual void Purge()
 		{
+			Logger.Warn(Messages.PurgingStorage);
+
 			this.TryRaven(() =>
 			{
 				using (var scope = this.OpenCommandScope())
@@ -308,22 +338,27 @@
 			}
 			catch (WebException e)
 			{
+				Logger.Warn(Messages.StorageUnavailable);
 				throw new StorageUnavailableException(e.Message, e);
 			}
 			catch (NonUniqueObjectException e)
 			{
+				Logger.Warn(Messages.DuplicateCommitDetected);
 				throw new DuplicateCommitException(e.Message, e);
 			}
 			catch (Raven.Abstractions.Exceptions.ConcurrencyException)
 			{
+				Logger.Warn(Messages.ConcurrentWriteDetected);
 				throw;
 			}
 			catch (ObjectDisposedException)
 			{
+				Logger.Warn(Messages.StorageAlreadyDisposed);
 				throw;
 			}
 			catch (Exception e)
 			{
+				Logger.Error(Messages.StorageThrewException, e.GetType());
 				throw new StorageException(e.Message, e);
 			}
 		}
