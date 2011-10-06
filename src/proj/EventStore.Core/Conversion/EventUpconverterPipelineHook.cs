@@ -7,10 +7,13 @@
 	public class EventUpconverterPipelineHook : IPipelineHook
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(EventUpconverterPipelineHook));
-		private readonly Dictionary<Type, Func<object, object>> converters;
+		private readonly IDictionary<Type, Func<object, object>> converters;
 
-		public EventUpconverterPipelineHook(Dictionary<Type, Func<object, object>> converters)
+		public EventUpconverterPipelineHook(IDictionary<Type, Func<object, object>> converters)
 		{
+			if (converters == null)
+				throw new ArgumentNullException("converters");
+
 			this.converters = converters;
 		}
 		public void Dispose()
@@ -36,9 +39,10 @@
 			if (!this.converters.TryGetValue(source.GetType(), out converter))
 				return source;
 
-			var target = this.Convert(converter(source));
+			var target = converter(source);
 			Logger.Debug(Resources.ConvertingEvent, source.GetType(), target.GetType());
-			return target;
+
+			return this.Convert(target);
 		}
 
 		public virtual bool PreCommit(Commit attempt)

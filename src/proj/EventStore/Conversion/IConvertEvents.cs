@@ -6,6 +6,8 @@
 	/// <typeparam name="TSource">The source event type from which to convert.</typeparam>
 	/// <typeparam name="TTarget">The target event type.</typeparam>
 	public interface IConvertEvents<TSource, TTarget>
+		where TSource : class
+		where TTarget : class
 	{
 		/// <summary>
 		/// Converts an event from one type to another.
