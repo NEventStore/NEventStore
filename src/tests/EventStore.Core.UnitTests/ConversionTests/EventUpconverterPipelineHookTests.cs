@@ -101,7 +101,7 @@ namespace EventStore.Core.UnitTests.ConversionTests
 					let i = t.GetInterface(typeof(IUpconvertEvents<,>).FullName)
 					where i != null
 					let sourceType = i.GetGenericArguments().First()
-					let convertMethod = i.GetMethod("Convert", BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic)
+					let convertMethod = i.GetMethods(BindingFlags.Public | BindingFlags.Instance).First()
 					let instance = Activator.CreateInstance(t)
 					select new KeyValuePair<Type, Func<object, object>>(
 						sourceType,

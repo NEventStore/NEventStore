@@ -24,9 +24,17 @@
 
 				if (!this.assembliesToScan.Any())
 					this.assembliesToScan.AddRange(GetAllAssemblies());
+
 				var converters = GetConverters(this.assembliesToScan);
 				return new EventUpconverterPipelineHook(converters);
 			});
+		}
+		private static IEnumerable<Assembly> GetAllAssemblies()
+		{
+			return Assembly.GetCallingAssembly()
+				.GetReferencedAssemblies()
+				.Select(Assembly.Load)
+				.Concat(new[] { Assembly.GetCallingAssembly() });
 		}
 		private static IDictionary<Type, Func<object, object>> GetConverters(IEnumerable<Assembly> toScan)
 		{
@@ -35,7 +43,7 @@
 					let i = t.GetInterface(typeof(IUpconvertEvents<,>).FullName)
 					where i != null
 					let sourceType = i.GetGenericArguments().First()
-					let convertMethod = i.GetMethod("Convert", BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic)
+					let convertMethod = i.GetMethods(BindingFlags.Public | BindingFlags.Instance).First()
 					let instance = Activator.CreateInstance(t)
 					select new KeyValuePair<Type, Func<object, object>>(
 						sourceType, e => convertMethod.Invoke(instance, new[] { e }));
@@ -47,13 +55,6 @@
 			{
 				throw new MultipleConvertersFoundException(e.Message, e);
 			}
-		}
-		private static IEnumerable<Assembly> GetAllAssemblies()
-		{
-			return Assembly.GetCallingAssembly()
-				.GetReferencedAssemblies()
-				.Select(Assembly.Load)
-				.Concat(new[] { Assembly.GetCallingAssembly() });
 		}
 
 		public virtual EventUpconverterWireup WithConvertersFrom(params Assembly[] assemblies)
