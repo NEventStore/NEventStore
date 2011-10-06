@@ -98,7 +98,7 @@ namespace EventStore.Core.UnitTests.ConversionTests
 		{
 			var c = from a in toScan
 					from t in a.GetTypes()
-					let i = t.GetInterface(typeof(IConvertEvents<,>).FullName)
+					let i = t.GetInterface(typeof(IUpconvertEvents<,>).FullName)
 					where i != null
 					let sourceType = i.GetGenericArguments().First()
 					let convertMethod = i.GetMethod("Convert", BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic)
@@ -125,16 +125,16 @@ namespace EventStore.Core.UnitTests.ConversionTests
 		}
 	}
 
-	public class ConvertingEventConverter : IConvertEvents<ConvertingEvent, ConvertingEvent2>
+	public class ConvertingEventConverter : IUpconvertEvents<ConvertingEvent, ConvertingEvent2>
 	{
 		public ConvertingEvent2 Convert(ConvertingEvent sourceEvent)
 		{
 			return new ConvertingEvent2(sourceEvent.Id, "Temp");
 		}
 	}
-	public class ExplicitConvertingEventConverter : IConvertEvents<ConvertingEvent2, ConvertingEvent3>
+	public class ExplicitConvertingEventConverter : IUpconvertEvents<ConvertingEvent2, ConvertingEvent3>
 	{
-		ConvertingEvent3 IConvertEvents<ConvertingEvent2, ConvertingEvent3>.Convert(ConvertingEvent2 sourceEvent)
+		ConvertingEvent3 IUpconvertEvents<ConvertingEvent2, ConvertingEvent3>.Convert(ConvertingEvent2 sourceEvent)
 		{
 			return new ConvertingEvent3(sourceEvent.Id, "Temp", true);
 		}
