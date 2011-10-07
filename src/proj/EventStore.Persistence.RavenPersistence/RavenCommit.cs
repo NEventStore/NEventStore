@@ -3,6 +3,7 @@ namespace EventStore.Persistence.RavenPersistence
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
+	using Newtonsoft.Json;
 
 	public class RavenCommit
 	{
@@ -20,6 +21,8 @@ namespace EventStore.Persistence.RavenPersistence
 		[SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly",
 			Justification = "This is a simple DTO and is only used internally by Raven.")]
 		public Dictionary<string, object> Headers { get; set; }
+
+		[JsonProperty(TypeNameHandling = TypeNameHandling.All)]
 		public object Payload { get; set; }
 
 		public bool Dispatched { get; set; }
