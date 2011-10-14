@@ -6,6 +6,7 @@ bin
 output
 publish-*
 packages
+src/packages
 _ReSharper.*
 *.Resharper
 *.Cache
