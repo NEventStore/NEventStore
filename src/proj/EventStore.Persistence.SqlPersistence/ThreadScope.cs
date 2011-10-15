@@ -69,8 +69,8 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			if (WebApplication)
 				HttpContext.Current.Items[this.threadKey] = value;
-
-			Thread.SetData(Thread.GetNamedDataSlot(this.threadKey), value);
+			else
+				Thread.SetData(Thread.GetNamedDataSlot(this.threadKey), value);
 		}
 		public T Current
 		{
