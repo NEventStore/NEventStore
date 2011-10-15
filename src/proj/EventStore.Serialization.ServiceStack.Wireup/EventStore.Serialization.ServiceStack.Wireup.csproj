@@ -70,5 +70,5 @@
       <Name>EventStore.Wireup</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(SolutionDir)\..\bin\nuget\NuGet.targets" />
+    <Import Project="$(SolutionDir)\.nuget\NuGet.targets" />
 </Project>
