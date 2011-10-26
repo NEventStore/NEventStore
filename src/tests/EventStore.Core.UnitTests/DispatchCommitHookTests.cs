@@ -15,7 +15,7 @@ namespace EventStore.Core.UnitTests
 		static readonly Commit commit = new Commit(
 			Guid.NewGuid(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
 		static readonly Mock<IScheduleDispatches> dispatcher = new Mock<IScheduleDispatches>();
-		static readonly DispatchSchedulerPipelinkHook DispatchSchedulerHook = new DispatchSchedulerPipelinkHook(dispatcher.Object);
+		static readonly DispatchSchedulerPipelineHook DispatchSchedulerHook = new DispatchSchedulerPipelineHook(dispatcher.Object);
 
 		Establish context = () =>
 			dispatcher.Setup(x => x.ScheduleDispatch(null));
@@ -32,7 +32,7 @@ namespace EventStore.Core.UnitTests
 	{
 		static readonly Commit commit = new Commit(
 			Guid.NewGuid(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
-		static readonly DispatchSchedulerPipelinkHook DispatchSchedulerHook = new DispatchSchedulerPipelinkHook();
+		static readonly DispatchSchedulerPipelineHook DispatchSchedulerHook = new DispatchSchedulerPipelineHook();
 		static Exception thrown;
 
 		Because of = () =>
@@ -47,7 +47,7 @@ namespace EventStore.Core.UnitTests
 	{
 		static readonly Commit commit = new Commit(
 			Guid.NewGuid(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
-		static readonly DispatchSchedulerPipelinkHook DispatchSchedulerHook = new DispatchSchedulerPipelinkHook();
+		static readonly DispatchSchedulerPipelineHook DispatchSchedulerHook = new DispatchSchedulerPipelineHook();
 		static Commit selected;
 
 		Because of = () =>

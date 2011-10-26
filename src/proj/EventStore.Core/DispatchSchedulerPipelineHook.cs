@@ -3,15 +3,15 @@ namespace EventStore
 	using System;
 	using Dispatcher;
 
-	public class DispatchSchedulerPipelinkHook : IPipelineHook
+	public class DispatchSchedulerPipelineHook : IPipelineHook
 	{
 		private readonly IScheduleDispatches scheduler;
 
-		public DispatchSchedulerPipelinkHook()
+		public DispatchSchedulerPipelineHook()
 			: this(null)
 		{
 		}
-		public DispatchSchedulerPipelinkHook(IScheduleDispatches scheduler)
+		public DispatchSchedulerPipelineHook(IScheduleDispatches scheduler)
 		{
 			this.scheduler = scheduler ?? new NullDispatcher(); // serves as a scheduler also
 		}

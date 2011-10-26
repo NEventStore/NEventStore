@@ -67,7 +67,7 @@ namespace EventStore
 		{
 			var scopeOption = context.Resolve<TransactionScopeOption>();
 			var concurrency = scopeOption == TransactionScopeOption.Suppress ? new OptimisticPipelineHook() : null;
-			var scheduler = new DispatchSchedulerPipelinkHook(context.Resolve<IScheduleDispatches>());
+			var scheduler = new DispatchSchedulerPipelineHook(context.Resolve<IScheduleDispatches>());
 			var upconverter = context.Resolve<EventUpconverterPipelineHook>();
 
 			var hooks = context.Resolve<ICollection<IPipelineHook>>() ?? new IPipelineHook[0];
