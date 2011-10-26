@@ -15,10 +15,16 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return base.GetSnapshot.Replace("SELECT *", "SELECT TOP 1 *").Replace("LIMIT 1", string.Empty); }
 		}
-		public override bool IsDuplicate(Exception exception)
+
+        public override bool IsDuplicate(Exception exception)
 		{
-			var dbException = exception as SqlException;
-			return dbException != null && dbException.Number == UniqueKeyViolation;
+            return exception.Message.Contains("IX_Commits");
 		}
-	}
+
+        public override bool IsConcurrencyException(Exception exception)
+        {
+            var dbException = exception as SqlException;
+            return dbException != null && dbException.Number == UniqueKeyViolation;
+        }
+    }
 }

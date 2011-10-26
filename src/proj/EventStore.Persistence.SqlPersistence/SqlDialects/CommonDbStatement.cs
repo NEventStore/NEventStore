@@ -76,6 +76,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 				if (this.dialect.IsDuplicate(e))
 					throw new DuplicateCommitException(e.Message, e);
 
+                if (this.dialect.IsConcurrencyException(e))
+                    throw new ConcurrencyException(e.Message, e);
+
 				throw;
 			}
 		}

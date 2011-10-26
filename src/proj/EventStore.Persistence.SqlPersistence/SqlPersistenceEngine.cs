@@ -103,10 +103,8 @@ namespace EventStore.Persistence.SqlPersistence
 				cmd.AddParameter(this.Dialect.Headers, this.Serializer.Serialize(attempt.Headers));
 				cmd.AddParameter(this.Dialect.Payload, this.Serializer.Serialize(attempt.Events));
 
-				var rowsAffected = cmd.Execute(this.Dialect.PersistCommit);
-				if (rowsAffected <= 0)
-					throw new ConcurrencyException();
-			});
+                cmd.Execute(this.Dialect.PersistCommit);
+            });
 		}
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()

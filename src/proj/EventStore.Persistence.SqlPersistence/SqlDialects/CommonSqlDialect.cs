@@ -35,7 +35,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			get { return CommonSqlStatements.AppendSnapshotToCommit; }
 		}
 
-		public virtual string GetUndispatchedCommits
+	    public virtual string GetUndispatchedCommits
 		{
 			get { return CommonSqlStatements.GetUndispatchedCommits; }
 		}
@@ -91,7 +91,12 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			return message.Contains("DUPLICATE") || message.Contains("UNIQUE") || message.Contains("CONSTRAINT");
 		}
 
-		public virtual IDbTransaction OpenTransaction(IDbConnection connection)
+	    public virtual bool IsConcurrencyException(Exception exception)
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    public virtual IDbTransaction OpenTransaction(IDbConnection connection)
 		{
 			return null;
 		}

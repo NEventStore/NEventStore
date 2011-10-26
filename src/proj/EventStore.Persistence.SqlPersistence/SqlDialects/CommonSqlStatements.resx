@@ -180,13 +180,6 @@ HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Thresho
     <value>INSERT
   INTO Commits
      ( StreamId, CommitId, CommitSequence, StreamRevision, Items, CommitStamp, Headers, Payload )
-SELECT @StreamId, @CommitId, @CommitSequence, @StreamRevision, @Items, @CommitStamp, @Headers, @Payload
-/*FROM DUAL*/
- WHERE NOT EXISTS
-     ( SELECT *
-         FROM Commits
-        WHERE StreamId = @StreamId
-          AND CommitId &lt;&gt; @CommitId
-          AND CommitSequence &gt;= @CommitSequence );</value>
+VALUES (@StreamId, @CommitId, @CommitSequence, @StreamRevision, @Items, @CommitStamp, @Headers, @Payload);</value>
   </data>
 </root>
