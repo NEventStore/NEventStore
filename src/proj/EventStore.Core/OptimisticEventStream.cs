@@ -13,7 +13,7 @@ namespace EventStore
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(OptimisticEventStream));
 		private readonly ICollection<EventMessage> committed = new LinkedList<EventMessage>();
 		private readonly ICollection<EventMessage> events = new LinkedList<EventMessage>();
-		private readonly IDictionary<string, object> headers = new Dictionary<string, object>();
+		private readonly IDictionary<string, object> uncommittedHeaders = new Dictionary<string, object>();
 		private readonly ICollection<Guid> identifiers = new HashSet<Guid>();
 		private readonly ICommitEvents persistence;
 		private bool disposed;
@@ -96,7 +96,7 @@ namespace EventStore
 		}
 		public virtual IDictionary<string, object> UncommittedHeaders
 		{
-			get { return this.headers; }
+			get { return this.uncommittedHeaders; }
 		}
 
 		public virtual void Add(EventMessage uncommittedEvent)
@@ -161,7 +161,7 @@ namespace EventStore
 				commitId,
 				this.CommitSequence + 1,
 				SystemTime.UtcNow,
-				this.headers.ToDictionary(x => x.Key, x => x.Value),
+				this.uncommittedHeaders.ToDictionary(x => x.Key, x => x.Value),
 				this.events.ToList());
 		}
 
@@ -169,7 +169,7 @@ namespace EventStore
 		{
 			Logger.Debug(Resources.ClearingUncommittedChanges, this.StreamId);
 			this.events.Clear();
-			this.headers.Clear();
+			this.uncommittedHeaders.Clear();
 		}
 	}
 }
