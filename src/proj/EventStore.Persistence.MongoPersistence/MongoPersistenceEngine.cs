@@ -70,20 +70,24 @@
 			this.TryMongo(() =>
 			{
 				this.PersistedCommits.EnsureIndex(
-					IndexKeys.Ascending("Dispatched").Ascending("CommitStamp"),
-					IndexOptions.SetName("Dispatched_Index").SetUnique(false));
+					IndexKeys.Ascending("q"),
+					IndexOptions.SetName("Dispatch").SetSparse(true));
 
 				this.PersistedCommits.EnsureIndex(
-					IndexKeys.Ascending("_id.StreamId", "Events.StreamRevision"),
-					IndexOptions.SetName("GetFrom_Index").SetUnique(true));
+					IndexKeys.Ascending("i", "n"),
+					IndexOptions.SetName("UniqueCommit").SetUnique(true));
 
 				this.PersistedCommits.EnsureIndex(
-					IndexKeys.Ascending("CommitStamp"),
-					IndexOptions.SetName("CommitStamp_Index").SetUnique(false));
+					IndexKeys.Ascending("i", "e.r"),
+					IndexOptions.SetName("GetFromRevision"));
+
+				this.PersistedCommits.EnsureIndex(
+					IndexKeys.Ascending("s"),
+					IndexOptions.SetName("GetFromDate"));
 
 				this.PersistedStreamHeads.EnsureIndex(
-					IndexKeys.Ascending("Unsnapshotted"),
-					IndexOptions.SetName("Unsnapshotted_Index").SetUnique(false));
+					IndexKeys.Ascending("u"),
+					IndexOptions.SetName("Unsnapshotted"));
 			});
 		}
 
@@ -94,13 +98,13 @@
 			return this.TryMongo(() =>
 			{
 				var query = Query.And(
-					Query.EQ("_id.StreamId", streamId),
-					Query.GTE("Events.StreamRevision", minRevision),
-					Query.LTE("Events.StreamRevision", maxRevision));
+					Query.EQ("i", streamId),
+					Query.GTE("e.r", minRevision),
+					Query.LTE("e.r", maxRevision));
 
 				return this.PersistedCommits
 					.Find(query)
-					.SetSortOrder("Events.StreamRevision")
+					.SetSortOrder("e.r")
 					.Select(mc => mc.ToCommit(this.serializer));
 			});
 		}
@@ -109,8 +113,8 @@
 			Logger.Debug(Messages.GettingAllCommitsFrom, start);
 
 			return this.TryMongo(() => this.PersistedCommits
-				.Find(Query.GTE("CommitStamp", start))
-				.SetSortOrder("CommitStamp")
+				.Find(Query.GTE("s", start))
+				.SetSortOrder("s")
 				.Select(x => x.ToCommit(this.serializer)));
 		}
 		public virtual void Commit(Commit attempt)
@@ -149,8 +153,8 @@
 			Logger.Debug(Messages.GettingUndispatchedCommits);
 
 			return this.TryMongo(() => this.PersistedCommits
-				.Find(Query.EQ("Dispatched", false))
-				.SetSortOrder("CommitStamp")
+				.FindAll()
+				.SetSortOrder("q")
 				.Select(mc => mc.ToCommit(this.serializer)));
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
@@ -160,7 +164,7 @@
 			this.TryMongo(() =>
 			{
 				var query = commit.ToMongoCommitIdQuery();
-				var update = Update.Set("Dispatched", true);
+				var update = Update.Unset("q");
 				this.PersistedCommits.Update(query, update);
 			});
 		}
@@ -171,11 +175,11 @@
 
 			return this.TryMongo(() =>
 			{
-				var query = Query.GTE("Unsnapshotted", maxThreshold);
+				var query = Query.GTE("u", maxThreshold);
 
 				return this.PersistedStreamHeads
 					.Find(query)
-					.SetSortOrder(SortBy.Descending("Unsnapshotted"))
+					.SetSortOrder(SortBy.Descending("u"))
 					.Select(x => x.ToStreamHead());
 			});
 		}
@@ -201,7 +205,7 @@
 			{
 				var mongoSnapshot = snapshot.ToMongoSnapshot(this.serializer);
 				var query = Query.EQ("_id", mongoSnapshot["_id"]);
-				var update = Update.Set("Payload", mongoSnapshot["Payload"]);
+				var update = Update.Set("p", mongoSnapshot["p"]);
 
 				// Doing an upsert instead of an insert allows us to overwrite an existing snapshot and not get stuck with a
 				// stream that needs to be snapshotted because the insert fails and the SnapshotRevision isn't being updated.
@@ -214,7 +218,7 @@
 				var unsnapshotted = streamHead.HeadRevision - snapshot.StreamRevision;
 				this.PersistedStreamHeads.Update(
 					Query.EQ("_id", snapshot.StreamId),
-					Update.Set("SnapshotRevision", snapshot.StreamRevision).Set("Unsnapshotted", unsnapshotted));
+					Update.Set("s", snapshot.StreamRevision).Set("u", unsnapshotted));
 
 				return true;
 			}
@@ -239,7 +243,7 @@
 			{
 				this.PersistedStreamHeads.Update(
 					Query.EQ("_id", streamId),
-					Update.Set("HeadRevision", streamRevision).Inc("SnapshotRevision", 0).Inc("Unsnapshotted", eventsCount),
+					Update.Set("h", streamRevision).Inc("s", 0).Inc("u", eventsCount),
 					UpdateFlags.Upsert);
 			}), null);
 		}
