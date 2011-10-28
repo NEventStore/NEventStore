@@ -19,9 +19,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 		}
 
-		public override int Execute(string commandText)
+		public override int ExecuteNonQuery(string commandText)
 		{
-			return SplitCommandText(commandText).Sum(x => this.ExecuteNonQuery(x));
+			return SplitCommandText(commandText).Sum(x => base.ExecuteNonQuery(x));
 		}
 		private static IEnumerable<string> SplitCommandText(string delimited)
 		{

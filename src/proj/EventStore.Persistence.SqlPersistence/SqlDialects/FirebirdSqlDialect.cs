@@ -9,10 +9,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return FirebirdSqlStatements.InitializeStorage; }
 		}
-		public override string PersistCommit
-		{
-			get { return base.PersistCommit.Replace("/*FROM DUAL*/", "FROM rdb$database"); }
-		}
 		public override string AppendSnapshotToCommit
 		{
 			get { return base.AppendSnapshotToCommit.Replace("/*FROM DUAL*/", "FROM rdb$database"); }

@@ -111,8 +111,30 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		public virtual void Commit(Commit attempt)
 		{
-			Logger.Debug(Messages.AttemptingToCommit, 
-				attempt.Events.Count, attempt.StreamId, attempt.CommitSequence);
+			try
+			{
+				this.PersistCommit(attempt);
+				Logger.Debug(Messages.CommitPersisted, attempt.CommitId);
+			}
+			catch (Exception e)
+			{
+				if (!(e is UniqueKeyViolationException))
+					throw;
+
+				if (this.DetectDuplicate(attempt))
+				{
+					Logger.Info(Messages.DuplicateCommit);
+					throw new DuplicateCommitException(e.Message, e);
+				}
+
+				Logger.Info(Messages.ConcurrentWriteDetected);
+				throw new ConcurrencyException(e.Message, e);
+			}
+		}
+		private void PersistCommit(Commit attempt)
+		{
+			Logger.Debug(Messages.AttemptingToCommit,
+			   attempt.Events.Count, attempt.StreamId, attempt.CommitSequence);
 
 			this.ExecuteCommand(attempt.StreamId, cmd =>
 			{
@@ -124,15 +146,17 @@ namespace EventStore.Persistence.SqlPersistence
 				cmd.AddParameter(this.dialect.CommitStamp, attempt.CommitStamp);
 				cmd.AddParameter(this.dialect.Headers, this.serializer.Serialize(attempt.Headers));
 				cmd.AddParameter(this.dialect.Payload, this.serializer.Serialize(attempt.Events));
-
-				var rowsAffected = cmd.Execute(this.dialect.PersistCommit);
-				Logger.Debug(Messages.CommitPersisted, attempt.CommitId, rowsAffected);
-
-				if (rowsAffected > 0)
-					return rowsAffected;
-
-				Logger.Debug(Messages.ConcurrentWriteDetected);
-				throw new ConcurrencyException();
+				return cmd.ExecuteNonQuery(this.dialect.PersistCommit);
+			});
+		}
+		private bool DetectDuplicate(Commit attempt)
+		{
+			return this.ExecuteCommand(attempt.StreamId, cmd =>
+			{
+				cmd.AddParameter(this.dialect.StreamId, attempt.StreamId);
+				cmd.AddParameter(this.dialect.CommitId, attempt.CommitId);
+				cmd.AddParameter(this.dialect.CommitSequence, attempt.CommitSequence);
+				return ((int)cmd.ExecuteScalar(this.dialect.DuplicateCommit)) > 0;
 			});
 		}
 
@@ -195,7 +219,7 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			Logger.Warn(Messages.PurgingStorage);
 			this.ExecuteCommand(Guid.Empty, cmd =>
-				cmd.Execute(this.dialect.PurgeStorage));
+				cmd.ExecuteNonQuery(this.dialect.PurgeStorage));
 		}
 
 		protected virtual IEnumerable<T> ExecuteQuery<T>(Guid streamId, Func<IDbStatement, IEnumerable<T>> query)
@@ -247,7 +271,7 @@ namespace EventStore.Persistence.SqlPersistence
 			throw new ObjectDisposedException(Messages.AlreadyDisposed);
 		}
 
-		protected virtual int ExecuteCommand(Guid streamId, Func<IDbStatement, int> command)
+		protected virtual T ExecuteCommand<T>(Guid streamId, Func<IDbStatement, T> command)
 		{
 			this.ThrowWhenDisposed();
 
@@ -290,7 +314,7 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		private static bool RecoverableException(Exception e)
 		{
-			return e is ConcurrencyException || e is DuplicateCommitException || e is StorageUnavailableException;
+			return e is UniqueKeyViolationException || e is StorageUnavailableException;
 		}
 	}
 }

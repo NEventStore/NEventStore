@@ -175,7 +175,7 @@
     <value>Deserializing commit from record using serializer of type '{0}'.</value>
   </data>
   <data name="CommitPersisted" xml:space="preserve">
-    <value>Commit '{0}' persisted, {1} rows affected.</value>
+    <value>Commit '{0}' persisted successfully.</value>
   </data>
   <data name="AttemptingToCommit" xml:space="preserve">
     <value>Attempting to commit {0} events on stream '{1}' at sequence {2}.</value>
@@ -276,7 +276,7 @@
   <data name="NotConnectionsAvailable" xml:space="preserve">
     <value>No connections have been opened yet.</value>
   </data>
-	<data name="ConcurrentWriteDetected">
-		<value xml:space="preserve">Concurrent write detected.</value>
-	</data>
+  <data name="ConcurrentWriteDetected" xml:space="preserve">
+    <value>Concurrent write detected.</value>
+  </data>
 </root>

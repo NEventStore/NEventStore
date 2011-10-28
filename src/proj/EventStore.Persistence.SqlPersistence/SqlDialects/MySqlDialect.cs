@@ -10,10 +10,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return MySqlStatements.InitializeStorage; }
 		}
-		public override string PersistCommit
-		{
-			get { return CommonSqlStatements.PersistCommit.Replace("/*FROM DUAL*/", "FROM DUAL"); }
-		}
 		public override string AppendSnapshotToCommit
 		{
 			get { return base.AppendSnapshotToCommit.Replace("/*FROM DUAL*/", "FROM DUAL"); }
