@@ -15,10 +15,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return AccessStatements.InitializeStorage; }
 		}
-		public override string PersistCommit
-		{
-			get { return base.PersistCommit.Replace("/*FROM DUAL*/", "FROM DUAL"); }
-		}
 		public override string AppendSnapshotToCommit
 		{
 			get { return base.AppendSnapshotToCommit.Replace("/*FROM DUAL*/", "FROM DUAL"); }

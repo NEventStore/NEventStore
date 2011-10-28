@@ -24,6 +24,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return CommonSqlStatements.PersistCommit; }
 		}
+		public virtual string DuplicateCommit
+		{
+			get { return CommonSqlStatements.DuplicateCommit; }
+		}
 
 		public virtual string GetStreamsRequiringSnapshots
 		{

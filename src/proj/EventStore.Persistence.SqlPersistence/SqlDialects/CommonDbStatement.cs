@@ -60,7 +60,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			try
 			{
-				return this.Execute(commandText);
+				return this.ExecuteNonQuery(commandText);
 			}
 			catch (Exception)
 			{
@@ -68,11 +68,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 				return 0;
 			}
 		}
-		public virtual int Execute(string commandText)
-		{
-			return this.ExecuteNonQuery(commandText);
-		}
-		protected virtual int ExecuteNonQuery(string commandText)
+		public virtual int ExecuteNonQuery(string commandText)
 		{
 			try
 			{
@@ -81,13 +77,17 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			}
 			catch (Exception e)
 			{
-				Logger.Debug(Messages.CommandThrewException, e.GetType());
-				if (!this.dialect.IsDuplicate(e))
-					throw;
+				if (this.dialect.IsDuplicate(e))
+					throw new UniqueKeyViolationException(e.Message, e);
 
-				Logger.Debug(Messages.DuplicateCommit);
-				throw new DuplicateCommitException(e.Message, e);
+				throw;
 			}
+		}
+
+		public virtual object ExecuteScalar(string commandText)
+		{
+			using (var command = this.BuildCommand(commandText))
+				return command.ExecuteScalar();
 		}
 
 		public virtual IEnumerable<T> ExecuteWithQuery<T>(string queryText, Func<IDataRecord, T> select)

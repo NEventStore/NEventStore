@@ -9,8 +9,10 @@ namespace EventStore.Persistence.SqlPersistence
 	{
 		void AddParameter(string name, object value);
 
-		int Execute(string commandText);
+		int ExecuteNonQuery(string commandText);
 		int ExecuteWithoutExceptions(string commandText);
+
+		object ExecuteScalar(string commandText);
 
 		IEnumerable<T> ExecuteWithQuery<T>(string queryText, Func<IDataRecord, T> select);
 		IEnumerable<T> ExecutePagedQuery<T>(

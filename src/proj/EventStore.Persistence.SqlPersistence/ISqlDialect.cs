@@ -13,6 +13,7 @@ namespace EventStore.Persistence.SqlPersistence
 		string GetCommitsFromInstant { get; }
 
 		string PersistCommit { get; }
+		string DuplicateCommit { get; }
 
 		string GetStreamsRequiringSnapshots { get; }
 		string GetSnapshot { get; }
