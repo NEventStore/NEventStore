@@ -9,7 +9,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 	public class PagedEnumerationCollection<T> : IEnumerable<T>, IEnumerator<T>
 	{
-		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(PagedEnumerationCollection<T>));
+		private readonly ILog logger = LogFactory.BuildLogger(typeof(PagedEnumerationCollection<T>));
 		private readonly IEnumerable<IDisposable> disposable = new IDisposable[] { };
 		private readonly IDbCommand command;
 		private readonly Func<IDataRecord, T> select;
@@ -88,7 +88,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			if (this.MoveToNextRecord())
 				return true;
 
-			Logger.Verbose(Messages.QueryCompleted);
+			this.logger.Verbose(Messages.QueryCompleted);
 			return false;
 		}
 		private bool MoveToNextRecord()
@@ -104,7 +104,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			if (!this.PageCompletelyEnumerated())
 				return false;
 
-			Logger.Verbose(Messages.EnumeratedRowCount, this.position);
+			this.logger.Verbose(Messages.EnumeratedRowCount, this.position);
 			this.reader.Dispose();
 			this.reader = this.OpenNextPage();
 
@@ -139,7 +139,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			}
 			catch (Exception e)
 			{
-				Logger.Debug(Messages.EnumerationThrewException, e.GetType());
+				this.logger.Debug(Messages.EnumerationThrewException, e.GetType());
 				throw new StorageUnavailableException(e.Message, e);
 			}
 		}
