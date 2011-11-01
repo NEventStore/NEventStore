@@ -90,6 +90,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		private bool MoveToNextRecord()
 		{
+			if (this.pageSize > 0 && this.position >= this.pageSize)
+				this.nextpage(this.command, this.current);
+
 			this.reader = this.reader ?? this.OpenNextPage();
 
 			if (this.reader.Read())
@@ -102,6 +105,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 				return false;
 
 			Logger.Verbose(Messages.EnumeratedRowCount, this.position);
+			this.reader.Dispose();
 			this.reader = this.OpenNextPage();
 
 			if (this.reader.Read())
@@ -126,12 +130,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		private IDataReader OpenNextPage()
 		{
-			if (this.pageSize > 0 && this.position >= this.pageSize)
-				this.nextpage(this.command, this.current);
-
-			if (this.reader != null)
-				this.reader.Dispose();
-
 			try
 			{
 				return this.command.ExecuteReader();
