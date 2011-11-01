@@ -14,6 +14,7 @@ namespace EventStore
 		private readonly ICollection<EventMessage> committed = new LinkedList<EventMessage>();
 		private readonly ICollection<EventMessage> events = new LinkedList<EventMessage>();
 		private readonly IDictionary<string, object> uncommittedHeaders = new Dictionary<string, object>();
+		private readonly IDictionary<string, object> committedHeaders = new Dictionary<string, object>();
 		private readonly ICollection<Guid> identifiers = new HashSet<Guid>();
 		private readonly ICommitEvents persistence;
 		private bool disposed;
@@ -52,23 +53,33 @@ namespace EventStore
 				if (currentRevision > maxRevision)
 					return;
 
-				foreach (var @event in commit.Events)
+				this.CopyToCommittedHeaders(commit);
+				this.CopyToEvents(minRevision, maxRevision, currentRevision, commit);
+			}
+		}
+		private void CopyToCommittedHeaders(Commit commit)
+		{
+			foreach (var key in commit.Headers.Keys)
+				this.committedHeaders[key] = commit.Headers[key];
+		}
+		private void CopyToEvents(int minRevision, int maxRevision, int currentRevision, Commit commit)
+		{
+			foreach (var @event in commit.Events)
+			{
+				if (currentRevision > maxRevision)
 				{
-					if (currentRevision > maxRevision)
-					{
-						Logger.Debug(Resources.IgnoringBeyondRevision, commit.CommitId, this.StreamId, maxRevision);
-						break;
-					}
-
-					if (currentRevision++ < minRevision)
-					{
-						Logger.Debug(Resources.IgnoringBeforeRevision, commit.CommitId, this.StreamId, maxRevision);
-						continue;
-					}
-
-					this.committed.Add(@event);
-					this.StreamRevision = currentRevision - 1;
+					Logger.Debug(Resources.IgnoringBeyondRevision, commit.CommitId, this.StreamId, maxRevision);
+					break;
 				}
+
+				if (currentRevision++ < minRevision)
+				{
+					Logger.Debug(Resources.IgnoringBeforeRevision, commit.CommitId, this.StreamId, maxRevision);
+					continue;
+				}
+
+				this.committed.Add(@event);
+				this.StreamRevision = currentRevision - 1;
 			}
 		}
 
@@ -90,6 +101,11 @@ namespace EventStore
 		{
 			get { return new ImmutableCollection<EventMessage>(this.committed); }
 		}
+		public virtual IDictionary<string, object> CommittedHeaders
+		{
+			get { return this.committedHeaders; }
+		}
+
 		public virtual ICollection<EventMessage> UncommittedEvents
 		{
 			get { return new ImmutableCollection<EventMessage>(this.events); }

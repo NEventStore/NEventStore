@@ -11,7 +11,7 @@ namespace EventStore.Core.UnitTests
 	using It = Machine.Specifications.It;
 
 	[Subject("OptimisticEventStream")]
-	public class when_constructing_a_new_stream : on_the_event_stream
+	public class when_building_a_stream : on_the_event_stream
 	{
 		const int MinRevision = 2;
 		const int MaxRevision = 7;
@@ -21,11 +21,19 @@ namespace EventStore.Core.UnitTests
 			BuildCommitStub(2, 1, EachCommitHas), // 1-2
 			BuildCommitStub(4, 2, EachCommitHas), // 3-4
 			BuildCommitStub(6, 3, EachCommitHas), // 5-6
-			BuildCommitStub(8, 3, EachCommitHas), // 7-8
+			BuildCommitStub(8, 3, EachCommitHas) // 7-8
 		};
 
 		Establish context = () =>
+		{
+			Committed[0].Headers["Common"] = string.Empty;
+			Committed[1].Headers["Common"] = string.Empty;
+			Committed[2].Headers["Common"] = string.Empty;
+			Committed[3].Headers["Common"] = string.Empty;
+			Committed[0].Headers["Unique"] = string.Empty;
+
 			persistence.Setup(x => x.GetFrom(streamId, MinRevision, MaxRevision)).Returns(Committed);
+		};
 
 		Because of = () =>
 			stream = new OptimisticEventStream(streamId, persistence.Object, MinRevision, MaxRevision);
@@ -47,10 +55,13 @@ namespace EventStore.Core.UnitTests
 
 		It should_have_all_of_the_committed_events_up_to_the_stream_revision_specified = () =>
 			stream.CommittedEvents.Count.ShouldEqual(MaxRevision - MinRevision + 1);
+
+		It should_contain_the_headers_from_the_underlying_commits = () =>
+			stream.CommittedHeaders.Count.ShouldEqual(2);
 	}
 
 	[Subject("OptimisticEventStream")]
-	public class when_constructing_the_head_event_revision_is_less_than_the_max_desired_revision : on_the_event_stream
+	public class when_the_head_event_revision_is_less_than_the_max_desired_revision : on_the_event_stream
 	{
 		static readonly int EventsPerCommit = 2.Events();
 		static readonly Commit[] Committed = new[]
@@ -58,7 +69,7 @@ namespace EventStore.Core.UnitTests
 			BuildCommitStub(2, 1, EventsPerCommit), // 1-2
 			BuildCommitStub(4, 2, EventsPerCommit), // 3-4
 			BuildCommitStub(6, 3, EventsPerCommit), // 5-6
-			BuildCommitStub(8, 3, EventsPerCommit), // 7-8
+			BuildCommitStub(8, 3, EventsPerCommit) // 7-8
 		};
 
 		Establish context = () =>
@@ -221,6 +232,9 @@ namespace EventStore.Core.UnitTests
 
 		It should_clear_the_uncommitted_headers_on_the_stream = () =>
 			stream.UncommittedHeaders.ShouldBeEmpty();
+
+		It should_copy_the_uncommitted_headers_to_the_committed_stream_headers = () =>
+			stream.CommittedHeaders.Count.ShouldEqual(headers.Count);
 	}
 
 	/// <summary>
@@ -312,7 +326,7 @@ namespace EventStore.Core.UnitTests
 	}
 
 	[Subject("OptimisticEventStream")]
-	public class when_attempting_to_modify_the_collection_event_collections : on_the_event_stream
+	public class when_attempting_to_modify_the_event_collections : on_the_event_stream
 	{
 		It should_throw_an_exception_when_adding_to_the_committed_collection = () =>
 			Catch.Exception(() => stream.CommittedEvents.Add(null)).ShouldBeOfType<NotSupportedException>();
