@@ -33,6 +33,19 @@ namespace EventStore.Persistence.SqlPersistence
 				events);
 		}
 
+		public static Guid StreamId(this IDataRecord record)
+		{
+			return record[StreamIdIndex].ToGuid();
+		}
+		public static int StreamRevision(this IDataRecord record)
+		{
+			return record[StreamRevisionIndex].ToInt();
+		}
+		public static int CommitSequence(this IDataRecord record)
+		{
+			return record[CommitSequenceIndex].ToInt();
+		}
+
 		public static T Deserialize<T>(this ISerialize serializer, IDataRecord record, int index)
 		{
 			if (index >= record.FieldCount)

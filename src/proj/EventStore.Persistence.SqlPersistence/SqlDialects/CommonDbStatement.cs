@@ -50,6 +50,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 				this.scope.Dispose();
 		}
 
+		public virtual int PageSize { get; set; }
+
 		public virtual void AddParameter(string name, object value)
 		{
 			Logger.Debug(Messages.AddingParameter, name);
@@ -90,26 +92,28 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 				return command.ExecuteScalar();
 		}
 
-		public virtual IEnumerable<T> ExecuteWithQuery<T>(string queryText, Func<IDataRecord, T> select)
+		public virtual IEnumerable<IDataRecord> ExecuteWithQuery(string queryText)
 		{
-			return this.ExecutePagedQuery(queryText, select, (query, latest) => { }, InfinitePageSize);
+			return this.ExecuteQuery(queryText, (query, latest) => { }, InfinitePageSize);
 		}
-		public virtual IEnumerable<T> ExecutePagedQuery<T>(
-			string queryText, Func<IDataRecord, T> select, NextPageDelegate<T> onNextPage, int pageSize)
+		public virtual IEnumerable<IDataRecord> ExecutePagedQuery(string queryText, NextPageDelegate nextpage)
 		{
-			pageSize = this.dialect.CanPage ? pageSize : InfinitePageSize;
+			var pageSize = this.dialect.CanPage ? this.PageSize : InfinitePageSize;
 			if (pageSize > 0)
 			{
 				Logger.Verbose(Messages.MaxPageSize, pageSize);
 				this.Parameters.Add(this.dialect.Limit, pageSize);
 			}
 
+			return this.ExecuteQuery(queryText, nextpage, pageSize);
+		}
+		protected virtual IEnumerable<IDataRecord> ExecuteQuery(string queryText, NextPageDelegate nextpage, int pageSize)
+		{
 			var command = this.BuildCommand(queryText);
 
 			try
 			{
-				return new PagedEnumerationCollection<T>(
-					command, select, onNextPage, pageSize, this.scope, this);
+				return new PagedEnumerationCollection(command, nextpage, pageSize, this.scope, this);
 			}
 			catch (Exception)
 			{

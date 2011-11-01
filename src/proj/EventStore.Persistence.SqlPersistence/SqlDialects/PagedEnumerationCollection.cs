@@ -7,31 +7,28 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	using System.Transactions;
 	using Logging;
 
-	public class PagedEnumerationCollection<T> : IEnumerable<T>, IEnumerator<T>
+	public class PagedEnumerationCollection : IEnumerable<IDataRecord>, IEnumerator<IDataRecord>
 	{
-		private readonly ILog logger = LogFactory.BuildLogger(typeof(PagedEnumerationCollection<T>));
+		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(PagedEnumerationCollection));
 		private readonly IEnumerable<IDisposable> disposable = new IDisposable[] { };
 		private readonly IDbCommand command;
-		private readonly Func<IDataRecord, T> select;
-		private readonly NextPageDelegate<T> onNextPage;
+		private readonly NextPageDelegate nextpage;
 		private readonly int pageSize;
 		private readonly TransactionScope scope;
 		private IDataReader reader;
 		private int position;
-		private T latest;
+		private IDataRecord current;
 		private bool disposed;
 
 		public PagedEnumerationCollection(
 			IDbCommand command,
-			Func<IDataRecord, T> select,
-			NextPageDelegate<T> onNextPage,
+			NextPageDelegate nextpage,
 			int pageSize,
 			TransactionScope scope,
 			params IDisposable[] disposable)
 		{
 			this.command = command;
-			this.select = select;
-			this.onNextPage = onNextPage;
+			this.nextpage = nextpage;
 			this.pageSize = pageSize;
 			this.scope = scope;
 			this.disposable = disposable ?? this.disposable;
@@ -49,7 +46,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 			this.disposed = true;
 			this.position = 0;
-			this.latest = default(T);
+			this.current = null;
 
 			if (this.reader != null)
 				this.reader.Dispose();
@@ -68,7 +65,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 				dispose.Dispose();
 		}
 
-		public virtual IEnumerator<T> GetEnumerator()
+		public virtual IEnumerator<IDataRecord> GetEnumerator()
 		{
 			if (this.disposed)
 				throw new ObjectDisposedException(Messages.ObjectAlreadyDisposed);
@@ -88,7 +85,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			if (this.MoveToNextRecord())
 				return true;
 
-			this.logger.Verbose(Messages.QueryCompleted);
+			Logger.Verbose(Messages.QueryCompleted);
 			return false;
 		}
 		private bool MoveToNextRecord()
@@ -104,7 +101,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			if (!this.PageCompletelyEnumerated())
 				return false;
 
-			this.logger.Verbose(Messages.EnumeratedRowCount, this.position);
+			Logger.Verbose(Messages.EnumeratedRowCount, this.position);
 			this.reader.Dispose();
 			this.reader = this.OpenNextPage();
 
@@ -131,7 +128,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		private IDataReader OpenNextPage()
 		{
 			if (this.pageSize > 0 && this.position >= this.pageSize)
-				this.onNextPage(this.command, this.latest);
+				this.nextpage(this.command, this.current);
 
 			try
 			{
@@ -139,7 +136,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			}
 			catch (Exception e)
 			{
-				this.logger.Debug(Messages.EnumerationThrewException, e.GetType());
+				Logger.Debug(Messages.EnumerationThrewException, e.GetType());
 				throw new StorageUnavailableException(e.Message, e);
 			}
 		}
@@ -148,17 +145,14 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			throw new NotSupportedException("Forward-only readers.");
 		}
-		public virtual T Current
+		public virtual IDataRecord Current
 		{
 			get
 			{
 				if (this.disposed)
 					throw new ObjectDisposedException(Messages.ObjectAlreadyDisposed);
 
-				if (this.reader == null)
-					return default(T);
-
-				return this.latest = this.select(this.reader);
+				return this.current = this.reader;
 			}
 		}
 		object IEnumerator.Current
