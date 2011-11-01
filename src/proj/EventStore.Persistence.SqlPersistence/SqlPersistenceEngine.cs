@@ -149,7 +149,8 @@ namespace EventStore.Persistence.SqlPersistence
 				cmd.AddParameter(this.dialect.StreamId, attempt.StreamId);
 				cmd.AddParameter(this.dialect.CommitId, attempt.CommitId);
 				cmd.AddParameter(this.dialect.CommitSequence, attempt.CommitSequence);
-				return ((int)cmd.ExecuteScalar(this.dialect.DuplicateCommit)) > 0;
+				var value = cmd.ExecuteScalar(this.dialect.DuplicateCommit);
+				return (value is long ? (long)value : (int)value) > 0;
 			});
 		}
 
