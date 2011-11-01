@@ -103,6 +103,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			{
 				Logger.Verbose(Messages.MaxPageSize, pageSize);
 				this.Parameters.Add(this.dialect.Limit, pageSize);
+				this.Parameters.Add(this.dialect.Skip, 0);
 			}
 
 			return this.ExecuteQuery(queryText, nextpage, pageSize);
@@ -113,7 +114,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 			try
 			{
-				return new PagedEnumerationCollection(command, nextpage, pageSize, this.scope, this);
+				return new PagedEnumerationCollection(this.scope, this.dialect, command, nextpage, pageSize, this);
 			}
 			catch (Exception)
 			{

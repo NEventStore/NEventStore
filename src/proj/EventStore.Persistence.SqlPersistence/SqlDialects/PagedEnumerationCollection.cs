@@ -11,26 +11,30 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(PagedEnumerationCollection));
 		private readonly IEnumerable<IDisposable> disposable = new IDisposable[] { };
+		private readonly ISqlDialect dialect;
 		private readonly IDbCommand command;
 		private readonly NextPageDelegate nextpage;
 		private readonly int pageSize;
 		private readonly TransactionScope scope;
+
 		private IDataReader reader;
 		private int position;
 		private IDataRecord current;
 		private bool disposed;
 
 		public PagedEnumerationCollection(
+			TransactionScope scope,
+			ISqlDialect dialect,
 			IDbCommand command,
 			NextPageDelegate nextpage,
 			int pageSize,
-			TransactionScope scope,
 			params IDisposable[] disposable)
 		{
+			this.scope = scope;
+			this.dialect = dialect;
 			this.command = command;
 			this.nextpage = nextpage;
 			this.pageSize = pageSize;
-			this.scope = scope;
 			this.disposable = disposable ?? this.disposable;
 		}
 
@@ -91,7 +95,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		private bool MoveToNextRecord()
 		{
 			if (this.pageSize > 0 && this.position >= this.pageSize)
+			{
+				this.command.SetParameter(this.dialect.Skip, this.position);
 				this.nextpage(this.command, this.current);
+			}
 
 			this.reader = this.reader ?? this.OpenNextPage();
 

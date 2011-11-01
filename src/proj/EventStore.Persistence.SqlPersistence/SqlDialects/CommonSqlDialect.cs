@@ -96,6 +96,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return "@Limit"; }
 		}
+		public virtual string Skip
+		{
+			get { return "@Skip"; }
+		}
 		public virtual bool CanPage
 		{
 			get { return true; }
