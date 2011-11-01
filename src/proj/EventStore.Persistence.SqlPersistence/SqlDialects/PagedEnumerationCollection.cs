@@ -102,7 +102,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 				return false;
 
 			Logger.Verbose(Messages.EnumeratedRowCount, this.position);
-			this.reader.Dispose();
 			this.reader = this.OpenNextPage();
 
 			if (this.reader.Read())
@@ -129,6 +128,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			if (this.pageSize > 0 && this.position >= this.pageSize)
 				this.nextpage(this.command, this.current);
+
+			if (this.reader != null)
+				this.reader.Dispose();
 
 			try
 			{
