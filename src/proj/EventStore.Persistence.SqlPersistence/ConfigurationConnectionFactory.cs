@@ -58,7 +58,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public virtual ConnectionStringSettings Settings
 		{
-			get { return GetConnectionStringSettings(this.masterConnectionName); }
+			get { return this.GetConnectionStringSettings(this.masterConnectionName); }
 		}
 
 		public virtual IDbConnection OpenMaster(Guid streamId)
@@ -108,7 +108,7 @@ namespace EventStore.Persistence.SqlPersistence
 				if (CachedSettings.TryGetValue(connectionName, out setting))
 					return setting;
 
-				setting = GetConnectionStringSettings(connectionName);
+				setting = this.GetConnectionStringSettings(connectionName);
 				return CachedSettings[connectionName] = setting;
 			}
 		}
@@ -125,7 +125,7 @@ namespace EventStore.Persistence.SqlPersistence
 				return CachedFactories[setting.Name] = factory;
 			}
 		}
-		private static ConnectionStringSettings GetConnectionStringSettings(string connectionName)
+		protected virtual ConnectionStringSettings GetConnectionStringSettings(string connectionName)
 		{
 			Logger.Debug(Messages.DiscoveringConnectionSettings, connectionName);
 
