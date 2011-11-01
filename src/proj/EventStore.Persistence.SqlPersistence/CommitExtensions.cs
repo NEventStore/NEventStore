@@ -37,10 +37,6 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			return record[StreamIdIndex].ToGuid();
 		}
-		public static int StreamRevision(this IDataRecord record)
-		{
-			return record[StreamRevisionIndex].ToInt();
-		}
 		public static int CommitSequence(this IDataRecord record)
 		{
 			return record[CommitSequenceIndex].ToInt();

@@ -41,7 +41,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		private static string RemovePaging(string query)
 		{
-			return query.Replace("LIMIT @Limit;", ";");
+			return query
+				.Replace("\n LIMIT @Limit OFFSET @Skip;", ";")
+				.Replace("\n LIMIT @Limit;", ";");
 		}
 
 		public override bool CanPage

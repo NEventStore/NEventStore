@@ -20,19 +20,27 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 		public override string GetCommitsFromStartingRevision
 		{
-			get { return Paged(base.GetCommitsFromStartingRevision); }
+			get { return this.Paged(base.GetCommitsFromStartingRevision); }
 		}
 		public override string GetCommitsFromInstant
 		{
-			get { return Paged(base.GetCommitsFromInstant); }
+			get { return this.Paged(base.GetCommitsFromInstant); }
 		}
 		public override string GetStreamsRequiringSnapshots
 		{
-			get { return Paged(base.GetStreamsRequiringSnapshots); }
+			get { return this.Paged(base.GetStreamsRequiringSnapshots); }
 		}
-		private static string Paged(string query)
+		public override string GetUndispatchedCommits
 		{
-			return query.Replace("SELECT ", "SELECT FIRST @Limit ").Replace("LIMIT @Limit;", ";");
+			get { return this.Paged(base.GetUndispatchedCommits); }
+		}
+
+		private string Paged(string query)
+		{
+			if (query.Contains(this.Skip))
+				return query.Replace("SELECT ", "SELECT FIRST @Limit SKIP @Skip ").Replace("\n LIMIT @Limit OFFSET @Skip;", ";");
+
+			return query.Replace("SELECT ", "SELECT FIRST @Limit ").Replace("\n LIMIT @Limit;", ";");
 		}
 
 		public override IDbStatement BuildStatement(

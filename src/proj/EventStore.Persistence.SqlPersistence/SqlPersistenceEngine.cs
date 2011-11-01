@@ -98,11 +98,7 @@ namespace EventStore.Persistence.SqlPersistence
 			{
 				var statement = this.dialect.GetCommitsFromInstant;
 				query.AddParameter(this.dialect.CommitStamp, start);
-				query.AddParameter(this.dialect.StreamId, Guid.Empty);
-				query.AddParameter(this.dialect.StreamRevision, 0);
-				return query.ExecutePagedQuery(statement,
-						(q, r) => q.SetParameter(this.dialect.StreamId, this.dialect.CoalesceParameterValue(r.StreamId()))
-						.SetParameter(this.dialect.StreamRevision, r.StreamRevision()))
+				return query.ExecutePagedQuery(statement, (q, r) => { })
 					.Select(x => x.GetCommit(this.serializer));
 			});
 		}
@@ -161,7 +157,7 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			Logger.Debug(Messages.GettingUndispatchedCommits);
 			return this.ExecuteQuery(Guid.Empty, query =>
-				query.ExecuteWithQuery(this.dialect.GetUndispatchedCommits))
+				query.ExecutePagedQuery(this.dialect.GetUndispatchedCommits, (q, r) => { }))
 					.Select(x => x.GetCommit(this.serializer));
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)

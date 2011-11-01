@@ -109,11 +109,12 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		protected virtual IEnumerable<IDataRecord> ExecuteQuery(string queryText, NextPageDelegate nextpage, int pageSize)
 		{
+			this.Parameters.Add(this.dialect.Skip, 0);
 			var command = this.BuildCommand(queryText);
 
 			try
 			{
-				return new PagedEnumerationCollection(command, nextpage, pageSize, this.scope, this);
+				return new PagedEnumerationCollection(this.scope, this.dialect, command, nextpage, pageSize, this);
 			}
 			catch (Exception)
 			{

@@ -18,19 +18,44 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 		public override string GetCommitsFromStartingRevision
 		{
-			get { return Paged(base.GetCommitsFromStartingRevision); }
+			get { return NaturalPaging(base.GetCommitsFromStartingRevision); }
 		}
 		public override string GetCommitsFromInstant
 		{
-			get { return Paged(base.GetCommitsFromInstant); }
+			get { return CommonTableExpressionPaging(base.GetCommitsFromInstant); }
+		}
+		public override string GetUndispatchedCommits
+		{
+			get { return CommonTableExpressionPaging(base.GetUndispatchedCommits); }
 		}
 		public override string GetStreamsRequiringSnapshots
 		{
-			get { return Paged(base.GetStreamsRequiringSnapshots); }
+			get { return NaturalPaging(base.GetStreamsRequiringSnapshots); }
 		}
-		private static string Paged(string query)
+
+		private static string NaturalPaging(string query)
 		{
-			return "SET ROWCOUNT @Limit;\n" + query.Replace("LIMIT @Limit;", ";");
+			return "SET ROWCOUNT @Limit;\n" + RemovePaging(query);
+		}
+		private static string CommonTableExpressionPaging(string query)
+		{
+			query = RemovePaging(query);
+			var orderByIndex = query.IndexOf("ORDER BY");
+			var orderBy = query.Substring(orderByIndex).Replace(";", string.Empty);
+			query = query.Substring(0, orderByIndex);
+
+			var fromIndex = query.IndexOf("FROM ");
+			var from = query.Substring(fromIndex);
+			var select = query.Substring(0, fromIndex);
+
+			var value = MsSqlStatements.PagedQueryFormat.FormatWith(select, orderBy, from);
+			return value;
+		}
+		private static string RemovePaging(string query)
+		{
+			return query
+				.Replace("\n LIMIT @Limit OFFSET @Skip;", ";")
+				.Replace("\n LIMIT @Limit;", ";");
 		}
 
 		public override bool IsDuplicate(Exception exception)
