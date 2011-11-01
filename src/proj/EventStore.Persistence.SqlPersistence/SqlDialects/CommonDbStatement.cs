@@ -103,13 +103,13 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 			{
 				Logger.Verbose(Messages.MaxPageSize, pageSize);
 				this.Parameters.Add(this.dialect.Limit, pageSize);
-				this.Parameters.Add(this.dialect.Skip, 0);
 			}
 
 			return this.ExecuteQuery(queryText, nextpage, pageSize);
 		}
 		protected virtual IEnumerable<IDataRecord> ExecuteQuery(string queryText, NextPageDelegate nextpage, int pageSize)
 		{
+			this.Parameters.Add(this.dialect.Skip, 0);
 			var command = this.BuildCommand(queryText);
 
 			try

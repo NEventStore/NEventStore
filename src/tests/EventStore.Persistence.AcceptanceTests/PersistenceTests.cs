@@ -371,7 +371,6 @@ namespace EventStore.Persistence.AcceptanceTests
 			committed.All(x => loaded.Contains(x)).ShouldBeTrue(); // all commits should be found in loaded collection
 	}
 
-
 	[Subject("Persistence")]
 	public class when_reading_all_commits_from_the_year_1_AD : using_the_persistence_engine
 	{
