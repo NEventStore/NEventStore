@@ -22,7 +22,20 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		public override string GetCommitsFromInstant
 		{
-			get { return Paged(base.GetCommitsFromInstant); }
+			get
+			{
+				var statement = base.GetCommitsFromInstant.Replace("LIMIT @Limit;", ";");
+				var orderByIndex = statement.IndexOf("ORDER BY");
+				var orderBy = statement.Substring(orderByIndex).Replace(";", string.Empty);
+				statement = statement.Substring(0, orderByIndex);
+
+				var fromIndex = statement.IndexOf("FROM ");
+				var from = statement.Substring(fromIndex);
+				var select = statement.Substring(0, fromIndex);
+
+				var query = MsSqlStatements.PagedQueryFormat.FormatWith(select, orderBy, from);
+				return query;
+			}
 		}
 		public override string GetStreamsRequiringSnapshots
 		{
