@@ -17,12 +17,13 @@ namespace EventStore.Serialization
 
 		public override void Serialize<T>(Stream output, T graph)
 		{
-			this.Serialize(new BsonWriter(output), graph);
+			var writer = new BsonWriter(output) { DateTimeKindHandling = DateTimeKind.Utc };
+			this.Serialize(writer, graph);
 		}
 		public override T Deserialize<T>(Stream input)
 		{
-			return this.Deserialize<T>(new BsonReader(
-				input, IsArray(typeof(T)), DateTimeKind.Unspecified));
+			var reader = new BsonReader(input, IsArray(typeof(T)), DateTimeKind.Utc);
+			return this.Deserialize<T>(reader);
 		}
 		private static bool IsArray(Type type)
 		{
