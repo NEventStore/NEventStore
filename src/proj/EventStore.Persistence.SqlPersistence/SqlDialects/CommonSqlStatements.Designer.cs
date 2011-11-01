@@ -100,8 +100,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///   Looks up a localized string similar to SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
         ///  FROM Commits
         /// WHERE CommitStamp &gt;= @CommitStamp
-        ///   AND StreamId &gt;= @StreamId
-        ///   AND StreamRevision &gt; @StreamRevision
         /// ORDER BY CommitStamp, StreamId, StreamRevision
         /// LIMIT @Limit;.
         /// </summary>
