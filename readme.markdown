@@ -1,4 +1,4 @@
-EventStore v3.0 Beta
+EventStore v3.0
 ======================================================================
 For the current official release, please refer to [v2.0](https://github.com/joliver/EventStore/tree/2.0).
 
