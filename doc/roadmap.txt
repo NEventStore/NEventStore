@@ -1,9 +1,5 @@
-3.0:
- - Logging messages
- - Create a mechanism to allow the upconversion of events.
- - Add additional documentation using GitHub wikis and more complete quickstart examples
-
 3.1
+ - Add additional documentation using GitHub wikis and more complete quickstart examples
  - .NET 4.0 only?
  - Merge CommonDomain
  - Amazon S3/Tables persistence
