@@ -1,6 +1,5 @@
 EventStore v3.0
 ======================================================================
-For the current official release, please refer to [v2.0](https://github.com/joliver/EventStore/tree/2.0).
 
 ## Overview
 The EventStore is a persistence library used to abstract different storage implementations
@@ -153,6 +152,7 @@ Once built, the files will be placed in the "publish-net40" or "publish-net35" s
 				.EncryptWith(EncryptionKey)
 		.HookIntoPipelineUsing(new[] { new AuthorizationPipelineHook() })
 		.UsingAsynchronousDispatchScheduler()
+			// Example of NServiceBus dispatcher: https://gist.github.com/1311195
 			.DispatchTo(new My_NServiceBus_Or_MassTransit_OrEven_WCF_Adapter_Code())
 		.Build();		
 
