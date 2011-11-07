@@ -1,1 +1,0 @@
-@CALL build.cmd Release v3.5 v2

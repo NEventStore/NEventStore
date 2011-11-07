@@ -13,10 +13,6 @@ set TARGET_CONFIG=%1
 set FRAMEWORK_VERSION=v4.0
 set ILMERGE_VERSION=v4,%FRAMEWORK_PATH%
 set publish=publish-net40
-if x==%2x goto build
-set FRAMEWORK_VERSION=%2
-set ILMERGE_VERSION=%3
-set publish=publish-net35
 
 :build
 if exist output ( rmdir /s /q output )

@@ -14,10 +14,6 @@
     <tags>events, event sourcing, cqrs, storage, persistence, database</tags>
   </metadata>
   <files>
-    <file src="publish-net40\doc\license.txt" target="content\App_Readme\EventStore.license.txt"/>
-    <file src="publish-net40\doc\EventStore - Architectural Overview.docx" target="content\App_Readme\EventStore - Architectural Overview.docx"/>
-    <file src="publish-net40\doc\EventStore - Transactional Integrity.docx" target="content\App_Readme\EventStore - Transactional Integrity.docx"/>
-    <file src="publish-net35\bin\**" target="lib\net35"/>
     <file src="publish-net40\bin\**" target="lib\net40"/>
   </files>  
 </package>

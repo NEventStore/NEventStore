@@ -63,10 +63,7 @@
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
       <Name>EventStore</Name>
     </ProjectReference>
-    <Reference Include="NLog" Condition="$(TargetFrameworkVersion)=='v3.5'">
-      <HintPath>..\..\..\bin\NLog.2.0.0.2000\lib\net35\NLog.dll</HintPath>
-    </Reference>
-    <Reference Include="NLog" Condition="$(TargetFrameworkVersion)=='v4.0'">
+    <Reference Include="NLog">
       <HintPath>..\..\..\bin\NLog.2.0.0.2000\lib\net40\NLog.dll</HintPath>
     </Reference>
   </ItemGroup>
