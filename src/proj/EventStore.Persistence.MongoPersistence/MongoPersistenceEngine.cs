@@ -97,15 +97,38 @@
 
 			return this.TryMongo(() =>
 			{
-				var query = Query.And(
-					Query.EQ("i", streamId),
-					Query.GTE("e.r", minRevision),
-					Query.LTE("e.r", maxRevision));
+				IMongoQuery query;
+				MongoCursor<BsonDocument> cursor;
 
-				return this.PersistedCommits
-					.Find(query)
-					.SetSortOrder("e.r")
-					.Select(mc => mc.ToCommit(this.serializer));
+				if (minRevision == maxRevision)
+				{
+					// getting a specific revision (no range query, no sort required)
+					query = Query.And(Query.EQ("i", streamId), Query.EQ("e.r", minRevision));
+					cursor = this.PersistedCommits.Find(query);
+				}
+				else if (maxRevision == int.MaxValue)
+				{
+					// getting everying from the minimum revision - no upper limit needed but sort required
+					query = Query.And(Query.EQ("i", streamId), Query.GTE("e.r", minRevision));
+					cursor = this.PersistedCommits.Find(query).SetSortOrder("e.r");
+				}
+				else if (minRevision <= 1)
+				{
+					// getting everying up to the maximum revision - no lower limit needed but sort required
+					query = Query.And(Query.EQ("i", streamId), Query.LTE("e.r", maxRevision));
+					cursor = this.PersistedCommits.Find(query).SetSortOrder("e.r");
+				}
+				else
+				{
+					// getting a range - use min and max functions instead of LTE / GTE (more consistently optimal)
+					cursor = this.PersistedCommits
+						.FindAll()
+						.SetMin(Query.And(Query.EQ("i", streamId), Query.EQ("e.r", minRevision)).ToBsonDocument())
+						.SetMax(Query.And(Query.EQ("i", streamId), Query.EQ("e.r", maxRevision + 1)).ToBsonDocument())
+						.SetSortOrder("e.r");
+				}
+
+				return cursor.Select(mc => mc.ToCommit(this.serializer));
 			});
 		}
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
