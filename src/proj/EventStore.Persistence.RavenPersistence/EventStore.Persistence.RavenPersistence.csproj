@@ -76,10 +76,10 @@
       <HintPath>..\..\..\bin\Newtonsoft.Json.4.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Raven.Abstractions">
-      <HintPath>..\..\..\bin\RavenDB.1.0.499\lib\net40\Raven.Abstractions.dll</HintPath>
+      <HintPath>..\..\..\bin\RavenDB.1.0.531\lib\net40\Raven.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Raven.Client.Lightweight">
-      <HintPath>..\..\..\bin\RavenDB.1.0.499\lib\net40\Raven.Client.Lightweight.dll</HintPath>
+      <HintPath>..\..\..\bin\RavenDB.1.0.531\lib\net40\Raven.Client.Lightweight.dll</HintPath>
     </Reference>
     <Reference Include="NLog">
       <HintPath>..\..\..\bin\NLog.2.0.0.2000\lib\net40\NLog.dll</HintPath>
