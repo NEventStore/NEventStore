@@ -158,9 +158,9 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			Logger.Debug(Messages.GettingUndispatchedCommits);
 			return this.ExecuteQuery(Guid.Empty, query =>
-				query.ExecuteWithQuery(this.dialect.GetUndispatchedCommits))
+				query.ExecutePagedQuery(this.dialect.GetUndispatchedCommits, (q, r) => { }))
 					.Select(x => x.GetCommit(this.serializer))
-					.ToArray();
+					.ToArray(); // avoid paging
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
