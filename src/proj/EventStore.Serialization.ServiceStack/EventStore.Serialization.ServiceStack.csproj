@@ -66,7 +66,7 @@
       <Name>EventStore</Name>
     </ProjectReference>
     <Reference Include="ServiceStack.Text">
-      <HintPath>..\..\..\bin\ServiceStack.Text.3.0.0\lib\net35\ServiceStack.Text.dll</HintPath>
+      <HintPath>..\..\..\bin\ServiceStack.Text.3.0.6\lib\net35\ServiceStack.Text.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
