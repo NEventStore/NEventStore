@@ -65,6 +65,9 @@
     <Compile Include="RavenSnapshot.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="AsyncCtpLibrary, Version=1.0.4107.18181, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\RavenDB.1.0.541\lib\net40\AsyncCtpLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="EventStore (ILMerged)" Condition="'$(ILMerged)' == 'true'">
       <HintPath>..\..\..\output\bin\EventStore.dll</HintPath>
     </Reference>
@@ -75,14 +78,17 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\bin\Newtonsoft.Json.4.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Raven.Abstractions">
-      <HintPath>..\..\..\bin\RavenDB.1.0.531\lib\net40\Raven.Abstractions.dll</HintPath>
+    <Reference Include="Raven.Abstractions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=37f41c7f99471593, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\RavenDB.1.0.541\lib\net40\Raven.Abstractions.dll</HintPath>
     </Reference>
-    <Reference Include="Raven.Client.Lightweight">
-      <HintPath>..\..\..\bin\RavenDB.1.0.531\lib\net40\Raven.Client.Lightweight.dll</HintPath>
+    <Reference Include="Raven.Client.Debug">
+      <HintPath>..\..\packages\RavenDB.1.0.541\lib\net40\Raven.Client.Debug.dll</HintPath>
     </Reference>
     <Reference Include="NLog">
       <HintPath>..\..\..\bin\NLog.2.0.0.2000\lib\net40\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="Raven.Client.Lightweight, Version=1.0.0.0, Culture=neutral, PublicKeyToken=37f41c7f99471593, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\RavenDB.1.0.541\lib\net40\Raven.Client.Lightweight.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
