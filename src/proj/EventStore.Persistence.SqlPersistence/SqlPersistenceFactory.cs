@@ -17,7 +17,7 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 		}
 		public SqlPersistenceFactory(string connectionName, ISerialize serializer, ISqlDialect dialect)
-			: this(new ConfigurationConnectionFactory(connectionName), serializer, dialect)
+			: this(new ConfigurationConnectionFactory(connectionName), serializer, dialect, TransactionScopeOption.Suppress, DefaultPageSize)
 		{
 		}
 		public SqlPersistenceFactory(IConnectionFactory factory, ISerialize serializer, ISqlDialect dialect)
