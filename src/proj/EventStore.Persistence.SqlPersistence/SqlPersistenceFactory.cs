@@ -75,7 +75,7 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		protected virtual ISqlDialect GetDialect()
 		{
-				return this.Dialect;
+			return this.Dialect;
 		}
 
 		private static ISqlDialect ResolveDialect(ConnectionStringSettings settings)
