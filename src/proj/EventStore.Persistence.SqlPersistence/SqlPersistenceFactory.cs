@@ -30,10 +30,17 @@ namespace EventStore.Persistence.SqlPersistence
 			ISqlDialect dialect,
 			TransactionScopeOption scopeOption,
 			int pageSize)
+			: this(serializer, scopeOption, pageSize)
 		{
 			this.connectionFactory = factory;
-			this.serializer = serializer;
 			this.dialect = dialect;
+		}
+		private SqlPersistenceFactory(
+			ISerialize serializer,
+			TransactionScopeOption scopeOption,
+			int pageSize)
+		{
+			this.serializer = serializer;
 			this.scopeOption = scopeOption;
 
 			this.PageSize = pageSize;
