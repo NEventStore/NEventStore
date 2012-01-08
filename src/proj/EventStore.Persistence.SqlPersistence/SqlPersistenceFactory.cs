@@ -22,7 +22,7 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			var configurationConnectionFactory = new ConfigurationConnectionFactory(connectionName);
 			this.connectionFactory = configurationConnectionFactory;
-			this.dialect = dialect;
+			this.dialect = dialect ?? ResolveDialect(configurationConnectionFactory.Settings);
 		}
 		public SqlPersistenceFactory(IConnectionFactory factory, ISerialize serializer, ISqlDialect dialect)
 			: this(factory, serializer, dialect, TransactionScopeOption.Suppress, DefaultPageSize)
