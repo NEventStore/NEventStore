@@ -1,5 +1,6 @@
 namespace EventStore.Persistence.SqlPersistence
 {
+	using System.Configuration;
 	using System.Transactions;
 	using Serialization;
 	using SqlDialects;
@@ -72,7 +73,11 @@ namespace EventStore.Persistence.SqlPersistence
 			if (this.Dialect != null)
 				return this.Dialect;
 
-			var settings = this.ConnectionFactory.Settings;
+			return ResolveDialect(this.ConnectionFactory.Settings);
+		}
+
+		private static ISqlDialect ResolveDialect(ConnectionStringSettings settings)
+		{
 			var connectionString = settings.ConnectionString.ToUpperInvariant();
 			var providerName = settings.ProviderName.ToUpperInvariant();
 
