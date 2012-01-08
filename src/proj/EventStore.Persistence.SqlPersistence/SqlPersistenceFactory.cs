@@ -71,11 +71,7 @@ namespace EventStore.Persistence.SqlPersistence
 		public virtual IPersistStreams Build()
 		{
 			return new SqlPersistenceEngine(
-				this.ConnectionFactory, this.GetDialect(), this.Serializer, this.scopeOption, this.PageSize);
-		}
-		protected virtual ISqlDialect GetDialect()
-		{
-			return this.Dialect;
+				this.ConnectionFactory, this.Dialect, this.Serializer, this.scopeOption, this.PageSize);
 		}
 
 		private static ISqlDialect ResolveDialect(ConnectionStringSettings settings)
