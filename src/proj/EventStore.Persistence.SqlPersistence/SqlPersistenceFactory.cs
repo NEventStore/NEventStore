@@ -1,5 +1,6 @@
 namespace EventStore.Persistence.SqlPersistence
 {
+	using System;
 	using System.Configuration;
 	using System.Transactions;
 	using Serialization;
@@ -36,6 +37,9 @@ namespace EventStore.Persistence.SqlPersistence
 			int pageSize)
 			: this(serializer, scopeOption, pageSize)
 		{
+			if (dialect == null)
+				throw new ArgumentNullException("dialect");
+
 			this.connectionFactory = factory;
 			this.dialect = dialect;
 		}
