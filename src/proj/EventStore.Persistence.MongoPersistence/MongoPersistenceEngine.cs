@@ -70,8 +70,8 @@
 			this.TryMongo(() =>
 			{
 				this.PersistedCommits.EnsureIndex(
-					IndexKeys.Ascending("q"),
-					IndexOptions.SetName("Dispatch").SetSparse(true));
+					IndexKeys.Ascending("d"),
+					IndexOptions.SetName("Dispatch"));
 
 				this.PersistedCommits.EnsureIndex(
 					IndexKeys.Ascending("i", "n"),
@@ -176,8 +176,8 @@
 			Logger.Debug(Messages.GettingUndispatchedCommits);
 
 			return this.TryMongo(() => this.PersistedCommits
-				.FindAll()
-				.SetSortOrder("q")
+				.Find(Query.EQ("d", false))
+				.SetSortOrder("s")
 				.Select(mc => mc.ToCommit(this.serializer)));
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
@@ -187,8 +187,8 @@
 			this.TryMongo(() =>
 			{
 				var query = commit.ToMongoCommitIdQuery();
-				var update = Update.Unset("q");
-				this.PersistedCommits.Update(query, update);
+				var update = Update.Set("d", true);
+				this.PersistedCommits.Update(query, update, SafeMode.False);
 			});
 		}
 

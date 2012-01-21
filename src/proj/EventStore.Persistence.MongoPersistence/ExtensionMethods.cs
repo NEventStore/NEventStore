@@ -22,7 +22,7 @@
 				{ "n", commit.CommitSequence },
 				{ "h", BsonDocumentWrapper.Create(commit.Headers) },
 				{ "e", BsonArray.Create(events) },
-				{ "q", commit.CommitStamp }
+				{ "d", false }
 			};
 		}
 		public static Commit ToCommit(this BsonDocument doc, IDocumentSerializer serializer)

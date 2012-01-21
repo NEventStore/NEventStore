@@ -47,7 +47,8 @@ db.CommitsTemp.find().forEach(function(c) {
 	c.n = NumberInt(c._id.CommitSequence); 
 	c.h = c.Headers; 
 	c.s = c.CommitStamp; 
-	c.e = c.Events; 
+	c.e = c.Events;
+	c.d = c.Dispatched; 
 	c._id = c.CommitId; 
 
 	delete c.CommitStamp; 
@@ -61,7 +62,7 @@ db.CommitsTemp.find().forEach(function(c) {
 });
 db.CommitsTemp.drop();
 print('Rebuilding Commits Collection Indexes');
-db.Commits.ensureIndex({ q:1 }, { name:'Dispatch', sparse:true });
+db.Commits.ensureIndex({ d:1 }, { name:'Dispatch' });
 db.Commits.ensureIndex({ i:1, n:1 }, { name:'UniqueCommit', unique:true });
 db.Commits.ensureIndex({ i:1, 'e.r':1 }, { name:'GetFromRevision' });
 db.Commits.ensureIndex({ s:1 }, { name:'GetFromDate' });
