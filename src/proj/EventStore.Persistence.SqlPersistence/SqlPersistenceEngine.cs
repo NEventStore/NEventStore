@@ -104,6 +104,22 @@ namespace EventStore.Persistence.SqlPersistence
 			});
 		}
 
+		public virtual IEnumerable<Commit> GetFromTo(DateTime start, DateTime end)
+		{
+			start = start < EpochTime ? EpochTime : start;
+			end = end < EpochTime ? EpochTime : end;
+
+			Logger.Debug(Messages.GettingAllCommitsFromTo, start, end);
+			return this.ExecuteQuery(Guid.Empty, query =>
+			{
+				var statement = this.dialect.GetCommitsFromToInstant;
+				query.AddParameter(this.dialect.CommitStampStart, start);
+				query.AddParameter(this.dialect.CommitStampEnd, end);
+				return query.ExecutePagedQuery(statement, (q, r) => { })
+					.Select(x => x.GetCommit(this.serializer));
+			});
+		}
+
 		public virtual void Commit(Commit attempt)
 		{
 			try
