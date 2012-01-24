@@ -104,6 +104,14 @@
 				.OrderBy(x => x.CommitStamp);
 		}
 
+		public virtual IEnumerable<Commit> GetFromTo(DateTime start, DateTime end)
+		{
+			Logger.Debug(Messages.GettingAllCommitsFromTo, start, end);
+
+			return this.QueryCommits<RavenCommitByDate>(x => x.CommitStamp >= start && x.CommitStamp < end)
+				.OrderBy(x => x.CommitStamp);
+		}
+
 		public virtual void Commit(Commit attempt)
 		{
 			Logger.Debug(Messages.AttemptingToCommit,
