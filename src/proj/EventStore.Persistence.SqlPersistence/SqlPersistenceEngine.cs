@@ -89,6 +89,7 @@ namespace EventStore.Persistence.SqlPersistence
 					.Select(x => x.GetCommit(this.serializer));
 			});
 		}
+
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
 		{
 			start = start < EpochTime ? EpochTime : start;
@@ -102,6 +103,7 @@ namespace EventStore.Persistence.SqlPersistence
 					.Select(x => x.GetCommit(this.serializer));
 			});
 		}
+
 		public virtual void Commit(Commit attempt)
 		{
 			try
