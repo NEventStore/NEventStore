@@ -104,6 +104,7 @@
 					.Select(mc => mc.ToCommit(this.serializer));
 			});
 		}
+
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
 		{
 			Logger.Debug(Messages.GettingAllCommitsFrom, start);
@@ -113,6 +114,7 @@
 				.SetSortOrder("CommitStamp")
 				.Select(x => x.ToCommit(this.serializer)));
 		}
+
 		public virtual void Commit(Commit attempt)
 		{
 			Logger.Debug(Messages.AttemptingToCommit,
