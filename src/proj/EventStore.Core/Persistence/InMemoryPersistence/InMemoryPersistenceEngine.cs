@@ -47,6 +47,7 @@ namespace EventStore.Persistence.InMemoryPersistence
 			lock (Commits)
 				return Commits.Where(x => x.StreamId == streamId && x.StreamRevision >= minRevision && (x.StreamRevision - x.Events.Count + 1) <= maxRevision).ToArray();
 		}
+
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
 		{
 			this.ThrowWhenDisposed();
@@ -59,6 +60,7 @@ namespace EventStore.Persistence.InMemoryPersistence
 			var startingCommit = Commits.Where(x => x.CommitId == commitId).FirstOrDefault();
 			return Commits.Skip(Commits.IndexOf(startingCommit));
 		}
+
 		public virtual void Commit(Commit attempt)
 		{
 			this.ThrowWhenDisposed();
