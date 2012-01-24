@@ -61,6 +61,19 @@ namespace EventStore.Persistence.InMemoryPersistence
 			return Commits.Skip(Commits.IndexOf(startingCommit));
 		}
 
+		public virtual IEnumerable<Commit> GetFromTo(DateTime start, DateTime end)
+		{
+			this.ThrowWhenDisposed();
+			Logger.Debug(Resources.GettingAllCommitsFromToTime, start, end);
+
+			var commitId = Stamps.Where(x => x.Value >= start && x.Value < end).Select(x => x.Key).FirstOrDefault();
+			if (commitId == Guid.Empty)
+				return new Commit[] { };
+
+			var startingCommit = Commits.Where(x => x.CommitId == commitId).FirstOrDefault();
+			return Commits.Skip(Commits.IndexOf(startingCommit));
+		}
+
 		public virtual void Commit(Commit attempt)
 		{
 			this.ThrowWhenDisposed();
