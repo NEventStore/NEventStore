@@ -28,6 +28,16 @@ namespace EventStore.Persistence
 		IEnumerable<Commit> GetFrom(DateTime start);
 
 		/// <summary>
+		/// Gets all commits on or after from the specified starting time and after the specified end time.
+		/// </summary>
+		/// <param name="start">The point in time at which to start.</param>
+		/// <param name="end">The point in time at which to end.</param>
+		/// <returns>All commits that have occurred on or after the specified starting time and before the end time.</returns>
+		/// <exception cref="StorageException" />
+		/// <exception cref="StorageUnavailableException" />
+		IEnumerable<Commit> GetFromTo(DateTime start, DateTime end);
+
+		/// <summary>
 		/// Gets a set of commits that has not yet been dispatched.
 		/// </summary>
 		/// <returns>The set of commits to be dispatched.</returns>
