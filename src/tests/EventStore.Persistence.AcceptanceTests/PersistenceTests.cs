@@ -372,6 +372,19 @@ namespace EventStore.Persistence.AcceptanceTests
 	}
 
 	[Subject("Persistence")]
+	public class when_reading_all_commits_from_and_to_a_particular_point_in_time : using_the_persistence_engine
+	{
+		static readonly DateTime now = SystemTime.UtcNow.AddYears(1);
+		static Commit[] committed;
+
+		Because of = () =>
+			committed = persistence.GetFromTo(now, now.AddSeconds(2)).ToArray();
+
+		It should_return_all_commits_on_or_after_and_up_until_the_point_in_time_specified = () =>
+			committed.Length.ShouldEqual(2);
+	}
+
+	[Subject("Persistence")]
 	public class when_reading_all_commits_from_the_year_1_AD : using_the_persistence_engine
 	{
 		static Exception thrown;
