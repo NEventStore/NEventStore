@@ -40,7 +40,7 @@ namespace EventStore.Example
 						.Compress()
 						.EncryptWith(EncryptionKey)
 				.HookIntoPipelineUsing(new[] { new AuthorizationPipelineHook() })
-				.UsingAsynchronousDispatchScheduler()
+				.UsingSynchronousDispatchScheduler()
 					.DispatchTo(new DelegateMessageDispatcher(DispatchCommit))
 				.Build();
 		}
