@@ -26,21 +26,21 @@ namespace EventStore.Example
 			}
 
 			Console.WriteLine(Resources.PressAnyKey);
-			Console.ReadLine();
+			Console.ReadKey();
 		}
 
 		private static IStoreEvents WireupEventStore()
 		{
 			 return Wireup.Init()
 				.LogToOutputWindow()
-				.UsingSqlPersistence("EventStore")
+				.UsingSqlPersistence("EventStore") // Connection string is in app.config
 					.EnlistInAmbientTransaction() // two-phase commit
 					.InitializeStorageEngine()
 					.UsingJsonSerialization()
 						.Compress()
 						.EncryptWith(EncryptionKey)
 				.HookIntoPipelineUsing(new[] { new AuthorizationPipelineHook() })
-				.UsingAsynchronousDispatchScheduler()
+				.UsingSynchronousDispatchScheduler()
 					.DispatchTo(new DelegateMessageDispatcher(DispatchCommit))
 				.Build();
 		}
