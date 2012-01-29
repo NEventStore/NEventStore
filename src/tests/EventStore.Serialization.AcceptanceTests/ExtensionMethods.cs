@@ -14,7 +14,7 @@ namespace EventStore.Serialization.AcceptanceTests
 			{
 				Id = Guid.NewGuid(),
 				Count = 1234,
-				Created = new DateTime(2000, 2, 3, 4, 5, 6, 7),
+				Created = new DateTime(2000, 2, 3, 4, 5, 6, 7).ToUniversalTime(),
 				Value = message.Value + "Hello, World!",
 				Contents = { "a", null, string.Empty, "d" }
 			};

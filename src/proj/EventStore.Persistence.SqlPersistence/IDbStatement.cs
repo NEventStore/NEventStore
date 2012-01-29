@@ -14,8 +14,9 @@ namespace EventStore.Persistence.SqlPersistence
 
 		object ExecuteScalar(string commandText);
 
-		IEnumerable<T> ExecuteWithQuery<T>(string queryText, Func<IDataRecord, T> select);
-		IEnumerable<T> ExecutePagedQuery<T>(
-			string queryText, Func<IDataRecord, T> select, NextPageDelegate<T> onNextPage, int pageSize);
+		int PageSize { get; set; }
+
+		IEnumerable<IDataRecord> ExecuteWithQuery(string queryText);
+		IEnumerable<IDataRecord> ExecutePagedQuery(string queryText, NextPageDelegate nextpage);
 	}
 }

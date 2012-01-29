@@ -85,9 +85,8 @@ namespace EventStore.Persistence.SqlPersistence
 				query.AddParameter(this.dialect.MaxStreamRevision, maxRevision);
 				query.AddParameter(this.dialect.CommitSequence, 0);
 				return query.ExecutePagedQuery(statement,
-					x => x.GetCommit(this.serializer),
-					(q, c) => q.SetParameter(this.dialect.CommitSequence, c.CommitSequence),
-					this.pageSize);
+						(q, r) => q.SetParameter(this.dialect.CommitSequence, r.CommitSequence()))
+					.Select(x => x.GetCommit(this.serializer));
 			});
 		}
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
@@ -99,14 +98,8 @@ namespace EventStore.Persistence.SqlPersistence
 			{
 				var statement = this.dialect.GetCommitsFromInstant;
 				query.AddParameter(this.dialect.CommitStamp, start);
-				query.AddParameter(this.dialect.StreamId, Guid.Empty);
-				query.AddParameter(this.dialect.StreamRevision, 0);
-				return query.ExecutePagedQuery(
-					statement,
-					x => x.GetCommit(this.serializer),
-					(q, c) => q.SetParameter(this.dialect.StreamId, this.dialect.CoalesceParameterValue(c.StreamId))
-						.SetParameter(this.dialect.StreamRevision, c.StreamRevision),
-					this.pageSize);
+				return query.ExecutePagedQuery(statement, (q, r) => { })
+					.Select(x => x.GetCommit(this.serializer));
 			});
 		}
 		public virtual void Commit(Commit attempt)
@@ -156,7 +149,8 @@ namespace EventStore.Persistence.SqlPersistence
 				cmd.AddParameter(this.dialect.StreamId, attempt.StreamId);
 				cmd.AddParameter(this.dialect.CommitId, attempt.CommitId);
 				cmd.AddParameter(this.dialect.CommitSequence, attempt.CommitSequence);
-				return ((int)cmd.ExecuteScalar(this.dialect.DuplicateCommit)) > 0;
+				var value = cmd.ExecuteScalar(this.dialect.DuplicateCommit);
+				return (value is long ? (long)value : (int)value) > 0;
 			});
 		}
 
@@ -164,7 +158,9 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			Logger.Debug(Messages.GettingUndispatchedCommits);
 			return this.ExecuteQuery(Guid.Empty, query =>
-				query.ExecuteWithQuery(this.dialect.GetUndispatchedCommits, x => x.GetCommit(this.serializer)));
+				query.ExecutePagedQuery(this.dialect.GetUndispatchedCommits, (q, r) => { }))
+					.Select(x => x.GetCommit(this.serializer))
+					.ToArray(); // avoid paging
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
@@ -185,11 +181,9 @@ namespace EventStore.Persistence.SqlPersistence
 				var statement = this.dialect.GetStreamsRequiringSnapshots;
 				query.AddParameter(this.dialect.StreamId, Guid.Empty);
 				query.AddParameter(this.dialect.Threshold, maxThreshold);
-				return query.ExecutePagedQuery(
-					statement,
-					x => x.GetStreamToSnapshot(),
-					(q, s) => q.SetParameter(this.dialect.StreamId, this.dialect.CoalesceParameterValue(s.StreamId)),
-					this.pageSize);
+				return query.ExecutePagedQuery(statement,
+						(q, s) => q.SetParameter(this.dialect.StreamId, this.dialect.CoalesceParameterValue(s.StreamId())))
+					.Select(x => x.GetStreamToSnapshot());
 			});
 		}
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
@@ -200,7 +194,7 @@ namespace EventStore.Persistence.SqlPersistence
 				var statement = this.dialect.GetSnapshot;
 				query.AddParameter(this.dialect.StreamId, streamId);
 				query.AddParameter(this.dialect.StreamRevision, maxRevision);
-				return query.ExecuteWithQuery(statement, x => x.GetSnapshot(this.serializer));
+				return query.ExecuteWithQuery(statement).Select(x => x.GetSnapshot(this.serializer));
 			}).FirstOrDefault();
 		}
 		public virtual bool AddSnapshot(Snapshot snapshot)
@@ -236,6 +230,7 @@ namespace EventStore.Persistence.SqlPersistence
 				connection = this.connectionFactory.OpenReplica(streamId);
 				transaction = this.dialect.OpenTransaction(connection);
 				statement = this.dialect.BuildStatement(scope, connection, transaction);
+				statement.PageSize = this.pageSize;
 
 				Logger.Verbose(Messages.ExecutingQuery);
 				return query(statement);

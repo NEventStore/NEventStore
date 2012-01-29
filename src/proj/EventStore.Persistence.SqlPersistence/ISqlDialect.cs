@@ -34,6 +34,7 @@ namespace EventStore.Persistence.SqlPersistence
 		string Threshold { get; }
 
 		string Limit { get; }
+		string Skip { get; }
 		bool CanPage { get; }
 
 		object CoalesceParameterValue(object value);

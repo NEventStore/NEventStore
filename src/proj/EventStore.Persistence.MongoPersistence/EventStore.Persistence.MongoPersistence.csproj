@@ -43,10 +43,10 @@
       <Name>EventStore</Name>
     </ProjectReference>
     <Reference Include="MongoDB.Bson">
-      <HintPath>..\..\..\bin\mongocsharpdriver.1.2\lib\net35\MongoDB.Bson.dll</HintPath>
+      <HintPath>..\..\..\bin\mongocsharpdriver.1.3\lib\net35\MongoDB.Bson.dll</HintPath>
     </Reference>
     <Reference Include="MongoDB.Driver">
-      <HintPath>..\..\..\bin\mongocsharpdriver.1.2\lib\net35\MongoDB.Driver.dll</HintPath>
+      <HintPath>..\..\..\bin\mongocsharpdriver.1.3\lib\net35\MongoDB.Driver.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />

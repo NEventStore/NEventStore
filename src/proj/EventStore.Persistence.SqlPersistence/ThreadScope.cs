@@ -7,9 +7,8 @@ namespace EventStore.Persistence.SqlPersistence
 
 	public class ThreadScope<T> : IDisposable where T : class
 	{
-		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(ThreadScope<T>));
-		private static readonly string KeyPrefix = typeof(ThreadScope<T>).Name + ":[{0}]";
-		private static readonly bool WebApplication = HttpRuntime.AppDomainId != null;
+		private readonly ILog logger = LogFactory.BuildLogger(typeof(ThreadScope<T>));
+		private readonly HttpContext context = HttpContext.Current;
 		private readonly string threadKey;
 		private readonly T current;
 		private readonly bool rootScope;
@@ -17,11 +16,11 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public ThreadScope(string key, Func<T> factory)
 		{
-			this.threadKey = KeyPrefix.FormatWith(key ?? string.Empty);
+			this.threadKey = typeof(ThreadScope<T>).Name + ":[{0}]".FormatWith(key ?? string.Empty);
 
 			var parent = this.Load();
 			this.rootScope = parent == null;
-			Logger.Debug(Messages.OpeningThreadScope, this.threadKey, this.rootScope);
+			this.logger.Debug(Messages.OpeningThreadScope, this.threadKey, this.rootScope);
 
 			this.current = parent ?? factory();
 
@@ -42,33 +41,33 @@ namespace EventStore.Persistence.SqlPersistence
 			if (!disposing || this.disposed)
 				return;
 
-			Logger.Debug(Messages.DisposingThreadScope, this.rootScope);
+			this.logger.Debug(Messages.DisposingThreadScope, this.rootScope);
 			this.disposed = true;
 			if (!this.rootScope)
 				return;
 
-			Logger.Verbose(Messages.CleaningRootThreadScope);
+			this.logger.Verbose(Messages.CleaningRootThreadScope);
 			this.Store(null);
 
 			var resource = this.current as IDisposable;
 			if (resource == null)
 				return;
 
-			Logger.Verbose(Messages.DisposingRootThreadScopeResources);
+			this.logger.Verbose(Messages.DisposingRootThreadScopeResources);
 			resource.Dispose();
 		}
 
 		private T Load()
 		{
-			if (WebApplication)
-				return HttpContext.Current.Items[this.threadKey] as T;
+			if (this.context != null)
+				return this.context.Items[this.threadKey] as T;
 
 			return Thread.GetData(Thread.GetNamedDataSlot(this.threadKey)) as T;
 		}
 		private void Store(T value)
 		{
-			if (WebApplication)
-				HttpContext.Current.Items[this.threadKey] = value;
+			if (this.context != null)
+				this.context.Items[this.threadKey] = value;
 			else
 				Thread.SetData(Thread.GetNamedDataSlot(this.threadKey), value);
 		}

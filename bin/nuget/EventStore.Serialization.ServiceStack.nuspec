@@ -17,8 +17,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="publish-net35\plugins\serialization\servicestack\EventStore.Serialization.ServiceStack.dll" target="lib\net35"/>
-    <file src="publish-net35\plugins\serialization\servicestack\EventStore.Serialization.ServiceStack.pdb" target="lib\net35"/>
     <file src="publish-net40\plugins\serialization\servicestack\EventStore.Serialization.ServiceStack.dll" target="lib\net40"/>
     <file src="publish-net40\plugins\serialization\servicestack\EventStore.Serialization.ServiceStack.pdb" target="lib\net40"/>
   </files>

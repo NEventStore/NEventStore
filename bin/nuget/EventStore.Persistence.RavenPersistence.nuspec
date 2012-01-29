@@ -14,12 +14,10 @@
     <tags>events, event sourcing, cqrs, storage, persistence, database, ravendb</tags>
     <dependencies>
       <dependency id="EventStore" version="3.0" />
-      <dependency id="RavenDB" version="1.0.499" />
+      <dependency id="RavenDB" version="1.0.531" />
     </dependencies>
   </metadata>
   <files>
-    <file src="publish-net35\plugins\persistence\raven\EventStore.Persistence.RavenPersistence.dll" target="lib\net35"/>
-    <file src="publish-net35\plugins\persistence\raven\EventStore.Persistence.RavenPersistence.pdb" target="lib\net35"/>
     <file src="publish-net40\plugins\persistence\raven\EventStore.Persistence.RavenPersistence.dll" target="lib\net40"/>
     <file src="publish-net40\plugins\persistence\raven\EventStore.Persistence.RavenPersistence.pdb" target="lib\net40"/>
   </files>

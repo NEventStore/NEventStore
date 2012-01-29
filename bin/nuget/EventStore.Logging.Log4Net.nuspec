@@ -18,8 +18,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="publish-net35\plugins\logging\log4net\EventStore.Logging.Log4Net.dll" target="lib\net35"/>
-    <file src="publish-net35\plugins\logging\log4net\EventStore.Logging.Log4Net.pdb" target="lib\net35"/>
     <file src="publish-net40\plugins\logging\log4net\EventStore.Logging.Log4Net.dll" target="lib\net40"/>
     <file src="publish-net40\plugins\logging\log4net\EventStore.Logging.Log4Net.pdb" target="lib\net40"/>
   </files>

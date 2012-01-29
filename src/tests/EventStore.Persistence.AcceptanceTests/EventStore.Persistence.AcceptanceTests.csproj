@@ -92,47 +92,23 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FirebirdSql.Data.FirebirdClient" Condition="$(TargetFrameworkVersion)=='v3.5'">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-      <HintPath>..\..\..\bin\firebird-bin\FirebirdSql.Data.FirebirdClient.dll</HintPath>
-    </Reference>
-    <Reference Include="FirebirdSql.Data.FirebirdClient" Condition="$(TargetFrameworkVersion)=='v4.0'">
+    <Reference Include="FirebirdSql.Data.FirebirdClient">
       <HintPath>..\..\..\bin\FirebirdSql.Data.FirebirdClient.2.6.5\lib\net40\FirebirdSql.Data.FirebirdClient.dll</HintPath>
     </Reference>
     <Reference Include="Machine.Specifications">
       <HintPath>..\..\..\bin\Machine.Specifications.0.4.24.0\lib\Machine.Specifications.dll</HintPath>
     </Reference>
     <Reference Include="Moq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-      <HintPath>..\..\..\bin\Moq.4.0.10827\lib\NET35\Moq.dll</HintPath>
-    </Reference>
-    <Reference Include="Moq" Condition="$(TargetFrameworkVersion)=='v4.0'">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
       <HintPath>..\..\..\bin\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-      <HintPath>..\..\..\bin\MySql.Data.6.4.4\lib\net20\MySql.Data.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="MySql.Data" Condition="$(TargetFrameworkVersion)=='v4.0'">
       <HintPath>..\..\..\bin\MySql.Data.6.4.4\lib\net40\MySql.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Mono.Security">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-      <HintPath>..\..\..\bin\Npgsql.2.0.11\lib\Net35\Mono.Security.dll</HintPath>
-    </Reference>
-    <Reference Include="Npgsql">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-      <HintPath>..\..\..\bin\Npgsql.2.0.11\lib\Net35\Npgsql.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Security" Condition="$(TargetFrameworkVersion)=='v4.0'">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
       <HintPath>..\..\..\bin\Npgsql.2.0.11\lib\Net40\Mono.Security.dll</HintPath>
     </Reference>
-    <Reference Include="Npgsql" Condition="$(TargetFrameworkVersion)=='v4.0'">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    <Reference Include="Npgsql">
       <HintPath>..\..\..\bin\Npgsql.2.0.11\lib\net40\Npgsql.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.SQLite">

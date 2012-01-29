@@ -7,33 +7,34 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	using System.Transactions;
 	using Logging;
 
-	public class PagedEnumerationCollection<T> : IEnumerable<T>, IEnumerator<T>
+	public class PagedEnumerationCollection : IEnumerable<IDataRecord>, IEnumerator<IDataRecord>
 	{
-		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(PagedEnumerationCollection<T>));
+		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(PagedEnumerationCollection));
 		private readonly IEnumerable<IDisposable> disposable = new IDisposable[] { };
+		private readonly ISqlDialect dialect;
 		private readonly IDbCommand command;
-		private readonly Func<IDataRecord, T> select;
-		private readonly NextPageDelegate<T> onNextPage;
+		private readonly NextPageDelegate nextpage;
 		private readonly int pageSize;
 		private readonly TransactionScope scope;
+
 		private IDataReader reader;
 		private int position;
-		private T latest;
+		private IDataRecord current;
 		private bool disposed;
 
 		public PagedEnumerationCollection(
-			IDbCommand command,
-			Func<IDataRecord, T> select,
-			NextPageDelegate<T> onNextPage,
-			int pageSize,
 			TransactionScope scope,
+			ISqlDialect dialect,
+			IDbCommand command,
+			NextPageDelegate nextpage,
+			int pageSize,
 			params IDisposable[] disposable)
 		{
-			this.command = command;
-			this.select = select;
-			this.onNextPage = onNextPage;
-			this.pageSize = pageSize;
 			this.scope = scope;
+			this.dialect = dialect;
+			this.command = command;
+			this.nextpage = nextpage;
+			this.pageSize = pageSize;
 			this.disposable = disposable ?? this.disposable;
 		}
 
@@ -49,7 +50,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 			this.disposed = true;
 			this.position = 0;
-			this.latest = default(T);
+			this.current = null;
 
 			if (this.reader != null)
 				this.reader.Dispose();
@@ -68,7 +69,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 				dispose.Dispose();
 		}
 
-		public virtual IEnumerator<T> GetEnumerator()
+		public virtual IEnumerator<IDataRecord> GetEnumerator()
 		{
 			if (this.disposed)
 				throw new ObjectDisposedException(Messages.ObjectAlreadyDisposed);
@@ -93,6 +94,12 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		private bool MoveToNextRecord()
 		{
+			if (this.pageSize > 0 && this.position >= this.pageSize)
+			{
+				this.command.SetParameter(this.dialect.Skip, this.position);
+				this.nextpage(this.command, this.current);
+			}
+
 			this.reader = this.reader ?? this.OpenNextPage();
 
 			if (this.reader.Read())
@@ -130,9 +137,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		}
 		private IDataReader OpenNextPage()
 		{
-			if (this.pageSize > 0 && this.position >= this.pageSize)
-				this.onNextPage(this.command, this.latest);
-
 			try
 			{
 				return this.command.ExecuteReader();
@@ -148,17 +152,14 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			throw new NotSupportedException("Forward-only readers.");
 		}
-		public virtual T Current
+		public virtual IDataRecord Current
 		{
 			get
 			{
 				if (this.disposed)
 					throw new ObjectDisposedException(Messages.ObjectAlreadyDisposed);
 
-				if (this.reader == null)
-					return default(T);
-
-				return this.latest = this.select(this.reader);
+				return this.current = this.reader;
 			}
 		}
 		object IEnumerator.Current

@@ -27,9 +27,15 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return RemovePaging(base.GetStreamsRequiringSnapshots); }
 		}
+		public override string GetUndispatchedCommits
+		{
+			get { return RemovePaging(base.GetUndispatchedCommits); }
+		}
 		private static string RemovePaging(string query)
 		{
-			return query.Replace("LIMIT @Limit;", ";");
+			return query
+				.Replace("\n LIMIT @Limit OFFSET @Skip;", ";")
+				.Replace("\n LIMIT @Limit;", ";");
 		}
 
 		public override bool CanPage

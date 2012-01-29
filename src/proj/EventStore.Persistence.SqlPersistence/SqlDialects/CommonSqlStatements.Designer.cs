@@ -100,10 +100,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///   Looks up a localized string similar to SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
         ///  FROM Commits
         /// WHERE CommitStamp &gt;= @CommitStamp
-        ///   AND StreamId &gt;= @StreamId
-        ///   AND StreamRevision &gt; @StreamRevision
         /// ORDER BY CommitStamp, StreamId, StreamRevision
-        /// LIMIT @Limit;.
+        /// LIMIT @Limit OFFSET @Skip;.
         /// </summary>
         internal static string GetCommitsFromInstant {
             get {
@@ -163,7 +161,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///   Looks up a localized string similar to SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
         ///  FROM Commits
         /// WHERE Dispatched = 0
-        /// ORDER BY CommitStamp;.
+        /// ORDER BY CommitStamp
+        /// LIMIT @Limit OFFSET @Skip;.
         /// </summary>
         internal static string GetUndispatchedCommits {
             get {
