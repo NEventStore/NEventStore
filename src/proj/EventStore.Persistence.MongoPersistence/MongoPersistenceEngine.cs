@@ -186,7 +186,7 @@
 
 			this.TryMongo(() =>
 			{
-				var query = commit.ToMongoCommitIdQuery();
+				var query = Query.EQ("_id", commit.CommitId);
 				var update = Update.Set("d", true);
 				this.PersistedCommits.Update(query, update, SafeMode.False);
 			});
