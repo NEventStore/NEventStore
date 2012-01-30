@@ -1,4 +1,7 @@
-﻿namespace EventStore.Persistence.MongoPersistence
+﻿using System.Collections.Concurrent;
+using System.Threading.Tasks;
+
+namespace EventStore.Persistence.MongoPersistence
 {
 	using System;
 	using System.Collections.Generic;
@@ -19,6 +22,10 @@
 		private readonly MongoCollectionSettings<BsonDocument> streamSettings;
 		private readonly MongoDatabase store;
 		private readonly IDocumentSerializer serializer;
+		private readonly BlockingCollection<StreamHeadUpdateInfo> streamHeadUpdateQueue;
+		private readonly BlockingCollection<Guid> updateDispatchedQueue;
+		private readonly Task streamHeadUpdateTask;
+		private readonly Task updateDispatchedTask;
 		private bool disposed;
 		private int initialized;
 
@@ -44,6 +51,11 @@
 			this.streamSettings = this.store.CreateCollectionSettings<BsonDocument>("Streams");
 			this.streamSettings.AssignIdOnInsert = false;
 			this.streamSettings.SafeMode = SafeMode.False;
+
+			this.updateDispatchedQueue = new BlockingCollection<Guid>();
+			this.updateDispatchedTask = Task.Factory.StartNew(UpdateDispatchedFlag);
+			this.streamHeadUpdateQueue = new BlockingCollection<StreamHeadUpdateInfo>();
+			this.streamHeadUpdateTask = Task.Factory.StartNew(UpdateStreamHead, TaskCreationOptions.LongRunning);
 		}
 
 		public void Dispose()
@@ -57,6 +69,21 @@
 				return;
 
 			Logger.Debug(Messages.ShuttingDownPersistence);
+			
+			// the update tasks will complete when the queue is emptied
+			this.streamHeadUpdateQueue.CompleteAdding();
+			this.updateDispatchedQueue.CompleteAdding();
+			
+			// wait for completion
+			this.streamHeadUpdateTask.Wait();
+			this.updateDispatchedTask.Wait();
+
+			// now dispose of queues and worker tasks
+			this.streamHeadUpdateTask.Dispose();
+			this.updateDispatchedTask.Dispose();
+			this.streamHeadUpdateQueue.Dispose();
+			this.updateDispatchedQueue.Dispose();
+
 			this.disposed = true;
 		}
 
@@ -153,7 +180,7 @@
 				{
 					// for concurrency / duplicate commit detection safe mode is required
 					this.PersistedCommits.Insert(commit, SafeMode.True);
-					this.UpdateStreamHeadAsync(attempt.StreamId, attempt.StreamRevision, attempt.Events.Count);
+					this.streamHeadUpdateQueue.Add(new StreamHeadUpdateInfo(attempt.StreamId, attempt.Events.Count));
 					Logger.Debug(Messages.CommitPersisted, attempt.CommitId);
 				}
 				catch (MongoException e)
@@ -182,14 +209,7 @@
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
-			Logger.Debug(Messages.MarkingCommitAsDispatched, commit.CommitId);
-
-			this.TryMongo(() =>
-			{
-				var query = Query.EQ("_id", commit.CommitId);
-				var update = Update.Set("d", true);
-				this.PersistedCommits.Update(query, update, SafeMode.False);
-			});
+			this.updateDispatchedQueue.Add(commit.CommitId);
 		}
 
 		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
@@ -260,15 +280,43 @@
 			this.PersistedSnapshots.Drop();
 		}
 
-		private void UpdateStreamHeadAsync(Guid streamId, int streamRevision, int eventsCount)
+		private void UpdateStreamHead()
 		{
-			ThreadPool.QueueUserWorkItem(x => this.TryMongo(() =>
+			// pin a database connection for use on this thread to prevent stream updates slowing down commits
+			using (this.PersistedStreamHeads.Database.RequestStart(false))
 			{
-				this.PersistedStreamHeads.Update(
-					Query.EQ("_id", streamId),
-					Update.Set("h", streamRevision).Inc("s", 0).Inc("u", eventsCount),
-					UpdateFlags.Upsert);
-			}), null);
+				foreach (var streamHeadUpdateInfo in this.streamHeadUpdateQueue.GetConsumingEnumerable())
+				{
+					var info = streamHeadUpdateInfo;
+					this.TryMongo(() =>
+					{
+						this.PersistedStreamHeads.Update(
+							Query.EQ("_id", info.StreamId),
+							Update.Inc("h", 1).Inc("s", 0).Inc("u", info.EventCount),
+							UpdateFlags.Upsert,
+							SafeMode.False);
+					});
+				}
+			}
+		}
+		private void UpdateDispatchedFlag()
+		{
+			// pin a database connection for use on this thread to prevent dispatched updates slowing down commits
+			using (this.PersistedCommits.Database.RequestStart(false))
+			{
+				foreach (var commitId in this.updateDispatchedQueue.GetConsumingEnumerable())
+				{
+					var id = commitId;
+					Logger.Debug(Messages.MarkingCommitAsDispatched, id);
+
+					this.TryMongo(() =>
+					{
+						var query = Query.EQ("_id", id);
+						var update = Update.Set("d", true);
+						this.PersistedCommits.Update(query, update, SafeMode.False);
+					});
+				}
+			}
 		}
 
 		protected virtual MongoCollection<BsonDocument> PersistedCommits

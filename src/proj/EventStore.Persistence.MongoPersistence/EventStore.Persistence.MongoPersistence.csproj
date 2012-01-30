@@ -71,6 +71,7 @@
     <Compile Include="MongoPersistenceEngine.cs" />
     <Compile Include="MongoPersistenceFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StreamHeadUpdateInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\CustomDictionary.xml">
