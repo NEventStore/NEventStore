@@ -53,7 +53,7 @@ namespace EventStore.Persistence.MongoPersistence
 			this.streamSettings.SafeMode = SafeMode.False;
 
 			this.updateDispatchedQueue = new BlockingCollection<Guid>();
-			this.updateDispatchedTask = Task.Factory.StartNew(UpdateDispatchedFlag);
+			this.updateDispatchedTask = Task.Factory.StartNew(UpdateDispatchedFlag, TaskCreationOptions.LongRunning);
 			this.streamHeadUpdateQueue = new BlockingCollection<StreamHeadUpdateInfo>();
 			this.streamHeadUpdateTask = Task.Factory.StartNew(UpdateStreamHead, TaskCreationOptions.LongRunning);
 		}
