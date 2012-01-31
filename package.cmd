@@ -24,17 +24,17 @@ cd publish-net40
 cd ..
 
 :: for some reason nuget doesn't like adding files located in directories underneath it.
-move "publish-net40" "bin\nuget"
+move "publish-net40" "src\.nuget"
 
-%NUGET% Pack "bin/nuget/EventStore.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
-%NUGET% Pack "bin/nuget/EventStore.Serialization.Json.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
-%NUGET% Pack "bin/nuget/EventStore.Serialization.ServiceStack.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
-%NUGET% Pack "bin/nuget/EventStore.Persistence.RavenPersistence.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
-%NUGET% Pack "bin/nuget/EventStore.Persistence.MongoPersistence.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
-%NUGET% Pack "bin/nuget/EventStore.Logging.Log4Net.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
-%NUGET% Pack "bin/nuget/EventStore.Logging.NLog.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
+%NUGET% Pack "src/.nuget/EventStore.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
+%NUGET% Pack "src/.nuget/EventStore.Serialization.Json.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
+%NUGET% Pack "src/.nuget/EventStore.Serialization.ServiceStack.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
+%NUGET% Pack "src/.nuget/EventStore.Persistence.RavenPersistence.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
+%NUGET% Pack "src/.nuget/EventStore.Persistence.MongoPersistence.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
+%NUGET% Pack "src/.nuget/EventStore.Logging.Log4Net.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
+%NUGET% Pack "src/.nuget/EventStore.Logging.NLog.nuspec" -Version "%VERSION%.%BUILD%" -OutputDirectory packages
 
-rmdir /s /q bin\nuget\publish-net40
+rmdir /s /q "src\.nuget\publish-net40"
 
 CALL git checkout "src/proj/VersionAssemblyInfo.cs"
 CALL git tag -afm %VERSION%.%BUILD% "%VERSION%.%BUILD%"
