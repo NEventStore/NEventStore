@@ -73,7 +73,7 @@
       <Name>EventStore</Name>
     </ProjectReference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\bin\Newtonsoft.Json.4.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\bin\Newtonsoft.Json.4.0.4\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Raven.Abstractions">
       <HintPath>..\..\..\bin\RavenDB.1.0.531\lib\net40\Raven.Abstractions.dll</HintPath>
