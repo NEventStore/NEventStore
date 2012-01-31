@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>EventStore.Logging.Log4Net</id>
-    <version>3.0</version>
+    <version>3.1</version>
     <title>EventStore Log4Net Logging Plugin</title>
     <authors>Jonathan Oliver</authors>
     <owners>Jonathan Oliver</owners>
@@ -13,8 +13,8 @@
     <language>es-US</language>
     <tags>events, event sourcing, cqrs, storage, persistence, database, logging, log4net</tags>
     <dependencies>
-      <dependency id="EventStore" version="3.0" />
-      <dependency id="log4net" version="1.2.10" />
+      <dependency id="EventStore" version="3.1" />
+      <dependency id="log4net" version="1.2.11" />
     </dependencies>
   </metadata>
   <files>

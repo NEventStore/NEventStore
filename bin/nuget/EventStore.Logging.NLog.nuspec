@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>EventStore.Logging.NLog</id>
-    <version>3.0</version>
+    <version>3.1</version>
     <title>EventStore NLog Logging Plugin</title>
     <authors>Jonathan Oliver</authors>
     <owners>Jonathan Oliver</owners>
@@ -13,7 +13,7 @@
     <language>es-US</language>
     <tags>events, event sourcing, cqrs, storage, persistence, database, logging, nlog</tags>
     <dependencies>
-      <dependency id="EventStore" version="3.0" />
+      <dependency id="EventStore" version="3.1" />
       <dependency id="NLog" version="2.0.0.2000" />
     </dependencies>
   </metadata>

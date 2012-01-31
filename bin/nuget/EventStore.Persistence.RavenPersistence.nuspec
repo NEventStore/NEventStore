@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>EventStore.Persistence.RavenPersistence</id>
-    <version>3.0</version>
+    <version>3.1</version>
     <title>EventStore RavenDB Persistence Plugin</title>
     <authors>Simon Green, Jonathan Oliver</authors>
     <owners>Jonathan Oliver</owners>
@@ -13,8 +13,8 @@
     <language>es-US</language>
     <tags>events, event sourcing, cqrs, storage, persistence, database, ravendb</tags>
     <dependencies>
-      <dependency id="EventStore" version="3.0" />
-      <dependency id="RavenDB" version="1.0.531" />
+      <dependency id="EventStore" version="3.1" />
+      <dependency id="RavenDB" version="1.0.616" />
     </dependencies>
   </metadata>
   <files>

@@ -1,6 +1,8 @@
 @ECHO OFF
 SETLOCAL
 
+set MSPEC_RUNNER="src/packages/Machine.Specifications-Signed.0.5.3.0/tools/mspec-clr4.exe"
+
 ECHO === Building ===
 "C:/WINDOWS/Microsoft.NET/Framework/v4.0.30319/msbuild.exe" /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=Debug
 
@@ -35,7 +37,7 @@ SET password=%~6
 
 ECHO ===============
 ECHO TESTING: %~1
-"bin/Machine.Specifications.0.4.24.0/tools/mspec-x86-clr4.exe" src/tests/EventStore.Persistence.AcceptanceTests/bin/Debug/EventStore.Persistence.AcceptanceTests.dll
+%MSPEC_RUNNER% "src/tests/EventStore.Persistence.AcceptanceTests/bin/Debug/EventStore.Persistence.AcceptanceTests.dll"
 ECHO.
 
 ENDLOCAL
