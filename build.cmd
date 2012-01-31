@@ -3,6 +3,7 @@ set FRAMEWORK_PATH=C:/WINDOWS/Microsoft.NET/Framework/v4.0.30319
 set PATH=%PATH%;%FRAMEWORK_PATH%;
 set ILMERGE="bin/ilmerge-bin/ILMerge.exe"
 set MSPEC_RUNNER="src/packages/Machine.Specifications-Signed.0.5.3.0/tools/mspec-clr4.exe"
+set MSPEC_RUNNER_X86="src/packages/Machine.Specifications-Signed.0.5.3.0/tools/mspec-x86-clr4.exe"
 
 :target_config
 set TARGET_CONFIG=Release
@@ -34,7 +35,7 @@ echo Unit Tests
 %MSPEC_RUNNER% "src/tests/EventStore.Core.UnitTests/bin/%TARGET_CONFIG%/EventStore.Core.UnitTests.dll"
 
 echo Acceptance Tests: Persistence Tests
-%MSPEC_RUNNER% "src/tests/EventStore.Persistence.AcceptanceTests/bin/%TARGET_CONFIG%/EventStore.Persistence.AcceptanceTests.dll"
+%MSPEC_RUNNER_X86% "src/tests/EventStore.Persistence.AcceptanceTests/bin/%TARGET_CONFIG%/EventStore.Persistence.AcceptanceTests.dll"
 
 echo Acceptance Tests: Serialization Tests
 call acceptance-serialization.cmd
