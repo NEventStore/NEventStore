@@ -139,8 +139,7 @@ TransactionScopeOption of 'Required'.  Simply indicate this using the following 
 * Fluent builder
 
 ## Building
-For .NET v4.0, simply run **build.cmd** from the command line.  Users requiring a .NET v3.5 build may run **build-net35.cmd**.  
-Once built, the files will be placed in the "publish-net40" or "publish-net35" subdirectory.
+Simply run **build.cmd** from the command line.  Once built, the files will be placed in the "publish-net40" subdirectory.
 
 ## Using the EventStore
 
