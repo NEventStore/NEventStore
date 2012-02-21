@@ -70,8 +70,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /*AppendSnapshotToCommit*/
-        ///INSERT INTO Snapshots   
+        ///   Looks up a localized string similar to INSERT INTO Snapshots   
         ///  (StreamId, StreamRevision, Payload)  
         ///SELECT :StreamId, :StreamRevision, :Payload FROM SYS.DUAL 
         ///WHERE	EXISTS
@@ -94,8 +93,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /*DuplicateCommit*/
-        ///SELECT COUNT(*)
+        ///   Looks up a localized string similar to SELECT COUNT(*)
         ///FROM Commits 
         ///WHERE	(
         ///      StreamId = :StreamId
@@ -110,8 +108,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /*GetCommitsFromInstant*/
-        ///SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
+        ///   Looks up a localized string similar to SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
         ///FROM Commits 
         ///WHERE	CommitStamp &gt;= :CommitStamp
         ///ORDER BY CommitStamp, StreamId, StreamRevision.
@@ -123,13 +120,11 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /*GetCommitsFromStartingRevision*/
-        ///SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
+        ///   Looks up a localized string similar to SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
         ///FROM Commits
         ///WHERE StreamId = :StreamId
         ///   AND StreamRevision &gt;= :StreamRevision
         ///   AND (StreamRevision - Items) &lt;= :MaxStreamRevision
-        ///   --AND CommitSequence &gt; (:CommitSequence - :CommitSequence)
         ///ORDER BY CommitSequence.
         /// </summary>
         internal static string GetCommitsFromStartingRevision {
@@ -139,8 +134,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /*GetSnapshot*/
-        ///SELECT *
+        ///   Looks up a localized string similar to SELECT *
         ///FROM  Snapshots 
         ///WHERE StreamId = :StreamId
         /// AND	StreamRevision  &lt;= :StreamRevision
@@ -154,8 +148,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /*GetStreamsRequiringSnapshots*/
-        ///SELECT StreamId, StreamRevision, SnapshotRevision
+        ///   Looks up a localized string similar to SELECT StreamId, StreamRevision, SnapshotRevision
         ///FROM (
         ///  SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(COALESCE(S.StreamRevision, 0)) AS SnapshotRevision
         ///  FROM  Commits C LEFT OUTER JOIN Snapshots S
@@ -164,7 +157,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///  GROUP BY C.StreamId
         ///  HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + :Threshold
         ///  ORDER BY C.StreamId
-        /// [rest of string was truncated]&quot;;.
+        ///)
+        ///WHERE ROWNUM &lt;= :Limit;.
         /// </summary>
         internal static string GetStreamsRequiringSnapshots {
             get {
@@ -173,10 +167,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /*InitializeStorage*/
-        ///DECLARE  
-        ///  table_count INTEGER;
-        ///
+        ///   Looks up a localized string similar to DECLARE
+        ///table_count NUMBER(10) := 0;
         ///BEGIN
         ///  SELECT COUNT(OBJECT_ID) INTO table_count
         ///  FROM USER_OBJECTS
@@ -184,14 +176,13 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///    SELECT OBJECT_NAME 
         ///    FROM USER_OBJECTS 
         ///    WHERE (OBJECT_NAME = &apos;COMMITS&apos; AND OBJECT_TYPE = &apos;TABLE&apos;)
-        ///  );
-        ///  
+        ///  );  
         ///  IF table_count = 0 THEN
         ///    DBMS_OUTPUT.PUT_LINE(&apos;Creating the Commits table&apos;);    
         ///    EXECUTE IMMEDIATE (&apos;CREATE TABLE Commits  
         ///                        (
         ///                          StreamId raw(16) NOT NULL, 
-        ///                        [rest of string was truncated]&quot;;.
+        ///                          StreamRevision int C [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {
@@ -200,8 +191,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /*LimitedQueryFormat*/
-        ///SELECT OuterQuery.* FROM (
+        ///   Looks up a localized string similar to SELECT OuterQuery.* FROM (
         ///  SELECT InnerQuery.*, ROWNUM AS ROW_NUMBER_VAL FROM (
         ///    {0}    
         ///  ) InnerQuery
@@ -215,8 +205,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /*MarkCommitAsDispatched*/
-        ///UPDATE  Commits   
+        ///   Looks up a localized string similar to UPDATE  Commits   
         ///SET Dispatched = 1 
         ///WHERE StreamId  = :StreamId
         /// AND CommitSequence  = :CommitSequence.
@@ -228,8 +217,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /*PagedQueryFormat*/
-        ///SELECT *
+        ///   Looks up a localized string similar to SELECT *
         ///FROM ( {0},
         ///       ROW_NUMBER() OVER({1}) AS ROW_NUMBER_VAL
         ///       {2}
@@ -243,8 +231,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /*PersistCommit*/
-        ///INSERT INTO Commits (  
+        ///   Looks up a localized string similar to INSERT INTO Commits (  
         ///	StreamId, 
         ///	CommitId, 
         ///	CommitSequence, 
@@ -272,10 +259,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /*PurgeStorage*/
-        ///DECLARE  
-        ///  row_count INTEGER;
-        ///
+        ///   Looks up a localized string similar to DECLARE
+        ///row_count INTEGER;
         ///BEGIN
         ///  SELECT COUNT(1) INTO row_count
         ///  FROM Snapshots;
@@ -293,7 +278,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects {
         ///    EXECUTE IMMEDIATE (&apos;TRUNCATE TABLE Commits&apos;);
         ///  ELSE
         ///    DBMS_OUTPUT.PUT_LINE(&apos;The Commits table has already been purged.&apos;);
-        ///  [rest of string was truncated]&quot;;.
+        ///  END IF;
+        ///  
+        ///EXCEPTION        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string PurgeStorage {
             get {

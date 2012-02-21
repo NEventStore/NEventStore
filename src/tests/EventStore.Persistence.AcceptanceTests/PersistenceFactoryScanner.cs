@@ -1,3 +1,5 @@
+using EventStore.Persistence.AcceptanceTests.Engines;
+
 namespace EventStore.Persistence.AcceptanceTests
 {
 	using System;
@@ -20,6 +22,8 @@ namespace EventStore.Persistence.AcceptanceTests
 
 			foreach (var type in typeResults)
 				AddFactory(type);
+
+            AddFactory(typeof(AcceptanceTestOracleSqlPersistenceFactory));
 		}
 
 		private static IEnumerable<string> GetAssemblyFiles()

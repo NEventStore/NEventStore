@@ -1,14 +1,9 @@
-using System.Data.OracleClient;
-
 namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
 	using System;
-	using System.Data.SqlClient;
 
 	public class OracleSqlDialect : CommonSqlDialect
 	{
-		private const int UniqueKeyViolation =  -2146232008;
-        
         public override string AppendSnapshotToCommit
         {
             get { return OracleSqlStatements.AppendSnapshotToCommit; }
@@ -84,7 +79,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
         
         private string AddOuterTrailingCommitSequence(string query)
         {
-            return (query.TrimEnd(new char[] { ';' }) + "\r\n" + OracleSqlStatements.AddCommitSequence);
+            return (query.TrimEnd(new[] { ';' }) + "\r\n" + OracleSqlStatements.AddCommitSequence);
         }
         public override IDbStatement BuildStatement(System.Transactions.TransactionScope scope, System.Data.IDbConnection connection, System.Data.IDbTransaction transaction)
         {
@@ -109,9 +104,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
         }
         public override bool IsDuplicate(Exception exception)
         {
-            var dbException = exception as OracleException;
-            return dbException != null && dbException.ErrorCode == UniqueKeyViolation;
+            return exception.Message.StartsWith("ORA-00001: unique constraint (") &&
+                   exception.Message.EndsWith("PK_COMMITS) violated");
         }
+
         private static string LimitedQuery(string query)
         {
             query = RemovePaging(query);
@@ -122,7 +118,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
         }
         private static string MakeOracleParameter(string parameterName)
         {
-            return parameterName.Replace('@', ':');
+            return parameterName.Replace("@", "");
         }
         private static string OraclePaging(string query)
         {
