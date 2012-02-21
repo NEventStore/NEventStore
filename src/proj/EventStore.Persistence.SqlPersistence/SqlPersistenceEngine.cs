@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace EventStore.Persistence.SqlPersistence
 {
 	using System;
@@ -146,11 +148,13 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 			return this.ExecuteCommand(attempt.StreamId, cmd =>
 			{
-				cmd.AddParameter(this.dialect.StreamId, attempt.StreamId);
+                cmd.AddParameter(this.dialect.StreamId, attempt.StreamId);
 				cmd.AddParameter(this.dialect.CommitId, attempt.CommitId);
 				cmd.AddParameter(this.dialect.CommitSequence, attempt.CommitSequence);
-				var value = cmd.ExecuteScalar(this.dialect.DuplicateCommit);
-				return (value is long ? (long)value : (int)value) > 0;
+				
+                var value = cmd.ExecuteScalar(this.dialect.DuplicateCommit);
+
+			    return ((decimal)Convert.ChangeType(value, typeof (decimal)) > 0);
 			});
 		}
 

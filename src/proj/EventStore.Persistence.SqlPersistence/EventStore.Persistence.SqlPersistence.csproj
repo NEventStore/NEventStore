@@ -14,7 +14,7 @@
     <FileAlignment>512</FileAlignment>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\EventStore.snk</AssemblyOriginatorKeyFile>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\src\</SolutionDir>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -47,6 +47,13 @@
     <Compile Include="CommitExtensions.cs" />
     <Compile Include="ConfigurationConnectionFactory.cs" />
     <Compile Include="ConnectionScope.cs" />
+    <Compile Include="SqlDialects\OracleDbStatement.cs" />
+    <Compile Include="SqlDialects\OracleSqlDialect.cs" />
+    <Compile Include="SqlDialects\OracleSqlStatements.Designer.cs">
+      <DependentUpon>OracleSqlStatements.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="UniqueKeyViolationException.cs" />
     <Compile Include="ThreadScope.cs" />
     <Compile Include="Messages.Designer.cs">
@@ -143,6 +150,7 @@
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.OracleClient" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
   </ItemGroup>
@@ -160,6 +168,11 @@
       <SubType>Designer</SubType>
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CommonSqlStatements.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SqlDialects\OracleSqlStatements.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>OracleSqlStatements.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="SqlDialects\FirebirdSqlStatements.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -192,5 +205,5 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+  <Import Project="$(SolutionDir)\..\bin\nuget\NuGet.targets" />
 </Project>

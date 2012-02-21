@@ -16,7 +16,9 @@ namespace EventStore.Persistence.AcceptanceTests
 			if (Factories.Count > 0)
 				return;
 
-			foreach (var type in GetAssemblyFiles().SelectMany(GetTypes))
+		    var typeResults = GetAssemblyFiles().SelectMany(GetTypes);
+
+			foreach (var type in typeResults)
 				AddFactory(type);
 		}
 
