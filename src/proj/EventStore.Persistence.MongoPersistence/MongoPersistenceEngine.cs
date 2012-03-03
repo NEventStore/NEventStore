@@ -255,13 +255,13 @@ namespace EventStore.Persistence.MongoPersistence
 				this.PersistedSnapshots.Update(query, update, UpdateFlags.Upsert);
 
 				// More commits could have been made between us deciding that a snapshot is required and writing it so just 
-				// resetting the Unsnapshotted count may be a little off. Adding snapshots should be a separate process so 
-				// this is a good chance to make sure the numbers are still in-sync - it only adds a 'read' after all ...
+				// resetting the Unsnapshotted count may be a little off - we need to adjust based on the previous streamhead
+				// snapshot value.
 				var streamHead = this.PersistedStreamHeads.FindOneById(snapshot.StreamId).ToStreamHead();
-				var unsnapshotted = streamHead.HeadRevision - snapshot.StreamRevision;
+				var adjustment = streamHead.SnapshotRevision - snapshot.StreamRevision;
 				this.PersistedStreamHeads.Update(
 					Query.EQ("_id", snapshot.StreamId),
-					Update.Set("s", snapshot.StreamRevision).Set("u", unsnapshotted));
+					Update.Set("s", snapshot.StreamRevision).Inc("u", adjustment));
 
 				return true;
 			}
@@ -292,7 +292,7 @@ namespace EventStore.Persistence.MongoPersistence
 					{
 						this.PersistedStreamHeads.Update(
 							Query.EQ("_id", info.StreamId),
-							Update.Inc("h", 1).Inc("s", 0).Inc("u", info.EventCount),
+							Update.Inc("h", info.EventCount).Inc("s", 0).Inc("u", info.EventCount),
 							UpdateFlags.Upsert,
 							SafeMode.False);
 					});
