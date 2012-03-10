@@ -120,12 +120,19 @@ namespace EventStore.Persistence.SqlPersistence
 				if (CachedFactories.TryGetValue(setting.Name, out factory))
 					return factory;
 
-				factory = DbProviderFactories.GetFactory(setting.ProviderName);
+				factory = GetClientFactory(setting);
 				Logger.Debug(Messages.DiscoveredConnectionProvider, setting.Name, factory.GetType());
 				return CachedFactories[setting.Name] = factory;
 			}
 		}
-		protected virtual ConnectionStringSettings GetConnectionStringSettings(string connectionName)
+
+	    protected virtual DbProviderFactory GetClientFactory(ConnectionStringSettings setting)
+	    {
+	        var factory = DbProviderFactories.GetFactory(setting.ProviderName);
+	        return factory;
+	    }
+
+	    protected virtual ConnectionStringSettings GetConnectionStringSettings(string connectionName)
 		{
 			Logger.Debug(Messages.DiscoveringConnectionSettings, connectionName);
 

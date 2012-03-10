@@ -9,13 +9,16 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 	public class CommonDbStatement : IDbStatement
 	{
 		private const int InfinitePageSize = 0;
-		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(CommonDbStatement));
-		private readonly ISqlDialect dialect;
-		private readonly TransactionScope scope;
 		private readonly IDbConnection connection;
 		private readonly IDbTransaction transaction;
+        private readonly ISqlDialect dialect;
+        private readonly TransactionScope scope;
 
-		protected IDictionary<string, object> Parameters { get; private set; }
+        protected static readonly ILog Logger = LogFactory.BuildLogger(typeof(CommonDbStatement)); 
+        
+        protected IDictionary<string, object> Parameters { get; private set; }
+        protected ISqlDialect Dialect { get { return dialect; } }
+        protected TransactionScope Scope { get { return scope; } }
 
 		public CommonDbStatement(
 			ISqlDialect dialect,

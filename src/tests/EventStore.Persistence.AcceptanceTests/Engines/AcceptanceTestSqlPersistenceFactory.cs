@@ -21,7 +21,7 @@ namespace EventStore.Persistence.AcceptanceTests.Engines
 		}
 	}
 
-	public class TransformConfigConnectionFactory : ConfigurationConnectionFactory
+	public class TransformConfigConnectionFactory : OracleAwareConfigurationConnectionFactory // ConfigurationConnectionFactory
 	{
 		public TransformConfigConnectionFactory(string connectionName)
 			: base(connectionName)
@@ -75,4 +75,8 @@ namespace EventStore.Persistence.AcceptanceTests.Engines
 	{
 		public AcceptanceTestSqlitePersistenceFactory() : base("SQLite") { }
 	}
+    public class AcceptanceTestOracleSqlPersistenceFactory : AcceptanceTestSqlPersistenceFactory
+    {
+        public AcceptanceTestOracleSqlPersistenceFactory() : base("Oracle") { }
+    }
 }
