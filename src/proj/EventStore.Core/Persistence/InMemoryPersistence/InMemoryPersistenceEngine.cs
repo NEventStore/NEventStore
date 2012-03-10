@@ -7,15 +7,27 @@ namespace EventStore.Persistence.InMemoryPersistence
 
 	public class InMemoryPersistenceEngine : IPersistStreams
 	{
-		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(InMemoryPersistenceEngine));
-		private static readonly IList<Commit> Commits = new List<Commit>();
-		private static readonly ICollection<StreamHead> Heads = new LinkedList<StreamHead>();
-		private static readonly ICollection<Commit> Undispatched = new LinkedList<Commit>();
-		private static readonly ICollection<Snapshot> Snapshots = new LinkedList<Snapshot>();
-		private static readonly IDictionary<Guid, DateTime> Stamps = new Dictionary<Guid, DateTime>();
+        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(InMemoryPersistenceEngine));
+
+        private readonly IList<Commit> commits;
+        private readonly ICollection<StreamHead> heads;
+        private readonly ICollection<Commit> undispatched;
+        private readonly ICollection<Snapshot> snapshots;
+        private readonly IDictionary<Guid, DateTime> stamps;
 		private bool disposed;
 
-		public void Dispose()
+        public InMemoryPersistenceEngine()
+        {
+            LogFactory.BuildLogger(typeof(InMemoryPersistenceEngine));
+            commits = new List<Commit>();
+            heads = new LinkedList<StreamHead>();
+            undispatched = new LinkedList<Commit>();
+            snapshots = new LinkedList<Snapshot>();
+            stamps = new Dictionary<Guid, DateTime>();
+        }
+
+
+        public void Dispose()
 		{
 			this.Dispose(true);
 			GC.SuppressFinalize(this);
@@ -44,54 +56,54 @@ namespace EventStore.Persistence.InMemoryPersistence
 			this.ThrowWhenDisposed();
 			Logger.Debug(Resources.GettingAllCommitsFromRevision, streamId, minRevision, maxRevision);
 
-			lock (Commits)
-				return Commits.Where(x => x.StreamId == streamId && x.StreamRevision >= minRevision && (x.StreamRevision - x.Events.Count + 1) <= maxRevision).ToArray();
+			lock (commits)
+				return commits.Where(x => x.StreamId == streamId && x.StreamRevision >= minRevision && (x.StreamRevision - x.Events.Count + 1) <= maxRevision).ToArray();
 		}
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
 		{
 			this.ThrowWhenDisposed();
 			Logger.Debug(Resources.GettingAllCommitsFromTime, start);
 
-			var commitId = Stamps.Where(x => x.Value >= start).Select(x => x.Key).FirstOrDefault();
+			var commitId = stamps.Where(x => x.Value >= start).Select(x => x.Key).FirstOrDefault();
 			if (commitId == Guid.Empty)
 				return new Commit[] { };
 
-			var startingCommit = Commits.Where(x => x.CommitId == commitId).FirstOrDefault();
-			return Commits.Skip(Commits.IndexOf(startingCommit));
+			var startingCommit = commits.Where(x => x.CommitId == commitId).FirstOrDefault();
+			return commits.Skip(commits.IndexOf(startingCommit));
 		}
 		public virtual void Commit(Commit attempt)
 		{
 			this.ThrowWhenDisposed();
 			Logger.Debug(Resources.AttemptingToCommit, attempt.CommitId, attempt.StreamId, attempt.CommitSequence);
 
-			lock (Commits)
+			lock (commits)
 			{
-				if (Commits.Contains(attempt))
+				if (commits.Contains(attempt))
 					throw new DuplicateCommitException();
-				if (Commits.Any(c => c.StreamId == attempt.StreamId && c.StreamRevision == attempt.StreamRevision))
+				if (commits.Any(c => c.StreamId == attempt.StreamId && c.StreamRevision == attempt.StreamRevision))
 					throw new ConcurrencyException();
 
-				Stamps[attempt.CommitId] = attempt.CommitStamp;
-				Commits.Add(attempt);
+				stamps[attempt.CommitId] = attempt.CommitStamp;
+				commits.Add(attempt);
 
-				Undispatched.Add(attempt);
+				undispatched.Add(attempt);
 
-				var head = Heads.FirstOrDefault(x => x.StreamId == attempt.StreamId);
-				Heads.Remove(head);
+				var head = heads.FirstOrDefault(x => x.StreamId == attempt.StreamId);
+				heads.Remove(head);
 
 				Logger.Debug(Resources.UpdatingStreamHead, attempt.StreamId);
 				var snapshotRevision = head == null ? 0 : head.SnapshotRevision;
-				Heads.Add(new StreamHead(attempt.StreamId, attempt.StreamRevision, snapshotRevision));
+				heads.Add(new StreamHead(attempt.StreamId, attempt.StreamRevision, snapshotRevision));
 			}
 		}
 
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
-			lock (Commits)
+			lock (commits)
 			{
 				this.ThrowWhenDisposed();
-				Logger.Debug(Resources.RetrievingUndispatchedCommits, Commits.Count);
-				return Commits.Where(c => Undispatched.Contains(c));
+				Logger.Debug(Resources.RetrievingUndispatchedCommits, commits.Count);
+				return commits.Where(c => undispatched.Contains(c));
 			}
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
@@ -99,8 +111,8 @@ namespace EventStore.Persistence.InMemoryPersistence
 			this.ThrowWhenDisposed();
 			Logger.Debug(Resources.MarkingAsDispatched, commit.CommitId);
 
-			lock (Commits)
-				Undispatched.Remove(commit);
+			lock (commits)
+				undispatched.Remove(commit);
 		}
 
 		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
@@ -108,8 +120,8 @@ namespace EventStore.Persistence.InMemoryPersistence
 			this.ThrowWhenDisposed();
 			Logger.Debug(Resources.GettingStreamsToSnapshot, maxThreshold);
 
-			lock (Commits)
-				return Heads.Where(x => x.HeadRevision >= x.SnapshotRevision + maxThreshold)
+			lock (commits)
+				return heads.Where(x => x.HeadRevision >= x.SnapshotRevision + maxThreshold)
 					.Select(stream => new StreamHead(stream.StreamId, stream.HeadRevision, stream.SnapshotRevision));
 		}
 		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
@@ -117,8 +129,8 @@ namespace EventStore.Persistence.InMemoryPersistence
 			this.ThrowWhenDisposed();
 			Logger.Debug(Resources.GettingSnapshotForStream, streamId, maxRevision);
 
-			lock (Commits)
-				return Snapshots
+			lock (commits)
+				return snapshots
 					.Where(x => x.StreamId == streamId && x.StreamRevision <= maxRevision)
 					.OrderByDescending(x => x.StreamRevision)
 					.FirstOrDefault();
@@ -128,15 +140,15 @@ namespace EventStore.Persistence.InMemoryPersistence
 			this.ThrowWhenDisposed();
 			Logger.Debug(Resources.AddingSnapshot, snapshot.StreamId, snapshot.StreamRevision);
 
-			lock (Commits)
+			lock (commits)
 			{
-				var currentHead = Heads.FirstOrDefault(h => h.StreamId == snapshot.StreamId);
+				var currentHead = heads.FirstOrDefault(h => h.StreamId == snapshot.StreamId);
 				if (currentHead == null)
 					return false;
 
-				Snapshots.Add(snapshot);
-				Heads.Remove(currentHead);
-				Heads.Add(new StreamHead(currentHead.StreamId, currentHead.HeadRevision, snapshot.StreamRevision));
+				snapshots.Add(snapshot);
+				heads.Remove(currentHead);
+				heads.Add(new StreamHead(currentHead.StreamId, currentHead.HeadRevision, snapshot.StreamRevision));
 			}
 
 			return true;
@@ -147,11 +159,11 @@ namespace EventStore.Persistence.InMemoryPersistence
 			this.ThrowWhenDisposed();
 			Logger.Warn(Resources.PurgingStore);
 
-			lock (Commits)
+			lock (commits)
 			{
-				Commits.Clear();
-				Snapshots.Clear();
-				Heads.Clear();
+				commits.Clear();
+				snapshots.Clear();
+				heads.Clear();
 			}
 		}
 	}
