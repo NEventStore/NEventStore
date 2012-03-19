@@ -1,3 +1,6 @@
+using System;
+using EventStore.Diagnostics;
+
 namespace EventStore
 {
 	using System.Transactions;
@@ -9,6 +12,8 @@ namespace EventStore
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(PersistenceWireup));
 		private bool initialize;
+		private bool tracking;
+		private string trackingInstanceName;
 
 		public PersistenceWireup(Wireup inner)
 			: base(inner)
@@ -35,6 +40,17 @@ namespace EventStore
 			return this;
 		}
 
+		public virtual PersistenceWireup TrackPerformanceInstance(string instanceName)
+		{
+			if (instanceName == null)
+				throw new ArgumentNullException("instanceName", Messages.InstanceCannotBeNull);
+
+			Logger.Debug(Messages.ConfiguringEnginePerformanceTracking);
+			this.tracking = true;
+			this.trackingInstanceName = instanceName;
+			return this;
+		}
+
 		public virtual PersistenceWireup EnlistInAmbientTransaction()
 		{
 			Logger.Debug(Messages.ConfiguringEngineEnlistment);
@@ -51,6 +67,11 @@ namespace EventStore
 			{
 				Logger.Debug(Messages.InitializingEngine);
 				engine.Initialize();
+			}
+
+			if (this.tracking)
+			{
+				this.Container.Register<IPersistStreams>(new PerformanceTrackingPersistenceDecorator(engine, this.trackingInstanceName));
 			}
 
 			return base.Build();
