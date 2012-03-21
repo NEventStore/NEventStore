@@ -21,9 +21,8 @@ namespace EventStore.Persistence.SqlPersistence
 		public SqlPersistenceFactory(string connectionName, ISerialize serializer, ISqlDialect dialect)
 			: this(serializer, TransactionScopeOption.Suppress, DefaultPageSize)
 		{
-			var configurationConnectionFactory = new ConfigurationConnectionFactory(connectionName);
-			this.connectionFactory = configurationConnectionFactory;
-			this.dialect = dialect ?? ResolveDialect(configurationConnectionFactory.Settings);
+			this.connectionFactory = new ConfigurationConnectionFactory(connectionName);
+			this.dialect = dialect ?? ResolveDialect(new ConfigurationConnectionFactory(connectionName).Settings);
 		}
 		public SqlPersistenceFactory(IConnectionFactory factory, ISerialize serializer, ISqlDialect dialect)
 			: this(factory, serializer, dialect, TransactionScopeOption.Suppress, DefaultPageSize)
@@ -43,10 +42,7 @@ namespace EventStore.Persistence.SqlPersistence
 			this.connectionFactory = factory;
 			this.dialect = dialect;
 		}
-		private SqlPersistenceFactory(
-			ISerialize serializer,
-			TransactionScopeOption scopeOption,
-			int pageSize)
+		private SqlPersistenceFactory(ISerialize serializer, TransactionScopeOption scopeOption, int pageSize)
 		{
 			this.serializer = serializer;
 			this.scopeOption = scopeOption;
