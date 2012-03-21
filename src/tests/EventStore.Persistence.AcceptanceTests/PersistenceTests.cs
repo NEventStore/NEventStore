@@ -5,6 +5,7 @@ namespace EventStore.Persistence.AcceptanceTests
 {
 	using System;
 	using System.Collections.Generic;
+	using EventStore.Diagnostics;
 	using System.Linq;
 	using System.Threading;
 	using Machine.Specifications;
@@ -418,8 +419,9 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		Establish context = () =>
 		{
-			persistence = Factory.Build();
+			persistence = new PerformanceTrackingPersistenceDecorator(Factory.Build(), "tests");
 			persistence.Initialize();
+
 		};
 
 		Cleanup everything = () =>
