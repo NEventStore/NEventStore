@@ -223,6 +223,15 @@ namespace EventStore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Getting all commits from &apos;{0}&apos; to &apos;{1}&apos;..
+        /// </summary>
+        internal static string GettingAllCommitsFromToTime {
+            get {
+                return ResourceManager.GetString("GettingAllCommitsFromToTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Getting the most recent snapshot for stream &apos;{0}&apos; on/since revision &apos;{1}&apos;..
         /// </summary>
         internal static string GettingSnapshotForStream {

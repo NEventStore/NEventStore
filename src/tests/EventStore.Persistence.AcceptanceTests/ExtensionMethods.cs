@@ -39,7 +39,7 @@ namespace EventStore.Persistence.AcceptanceTests
 				commit.StreamRevision + 2,
 				Guid.NewGuid(),
 				commit.CommitSequence + 1,
-				commit.CommitStamp,
+				commit.CommitStamp.AddSeconds(1),
 				new Dictionary<string, object>(),
 				messages);
 		}

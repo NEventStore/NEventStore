@@ -95,6 +95,7 @@
 					x.StreamId == streamId && x.StreamRevision >= minRevision && x.StartingStreamRevision <= maxRevision)
 				.OrderBy(x => x.CommitSequence);
 		}
+
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
 		{
 			Logger.Debug(Messages.GettingAllCommitsFrom, start);
@@ -102,6 +103,15 @@
 			return this.QueryCommits<RavenCommitByDate>(x => x.CommitStamp >= start)
 				.OrderBy(x => x.CommitStamp);
 		}
+
+		public virtual IEnumerable<Commit> GetFromTo(DateTime start, DateTime end)
+		{
+			Logger.Debug(Messages.GettingAllCommitsFromTo, start, end);
+
+			return this.QueryCommits<RavenCommitByDate>(x => x.CommitStamp >= start && x.CommitStamp < end)
+				.OrderBy(x => x.CommitStamp);
+		}
+
 		public virtual void Commit(Commit attempt)
 		{
 			Logger.Debug(Messages.AttemptingToCommit,
