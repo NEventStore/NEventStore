@@ -9,7 +9,7 @@
     <projectUrl>https://github.com/joliver/EventStore</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Additional persistence provider for EventStore using RavenDB.</description>
-    <summary>MongoDB persistence provider for EventStore.</summary>
+    <summary>RavenDB persistence provider for EventStore.</summary>
     <language>es-US</language>
     <tags>events, event sourcing, cqrs, storage, persistence, database, ravendb</tags>
     <dependencies>
