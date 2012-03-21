@@ -7,15 +7,15 @@ namespace EventStore.Persistence.InMemoryPersistence
 
 	public class InMemoryPersistenceEngine : IPersistStreams
 	{
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(InMemoryPersistenceEngine));
-        private readonly IList<Commit> commits = new List<Commit>();
-        private readonly ICollection<StreamHead> heads = new LinkedList<StreamHead>();
-        private readonly ICollection<Commit> undispatched = new LinkedList<Commit>();
-        private readonly ICollection<Snapshot> snapshots = new LinkedList<Snapshot>();
-        private readonly IDictionary<Guid, DateTime> stamps = new Dictionary<Guid, DateTime>();
+		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(InMemoryPersistenceEngine));
+		private readonly IList<Commit> commits = new List<Commit>();
+		private readonly ICollection<StreamHead> heads = new LinkedList<StreamHead>();
+		private readonly ICollection<Commit> undispatched = new LinkedList<Commit>();
+		private readonly ICollection<Snapshot> snapshots = new LinkedList<Snapshot>();
+		private readonly IDictionary<Guid, DateTime> stamps = new Dictionary<Guid, DateTime>();
 		private bool disposed;
 
-        public void Dispose()
+		public void Dispose()
 		{
 			this.Dispose(true);
 			GC.SuppressFinalize(this);
