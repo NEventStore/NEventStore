@@ -213,4 +213,7 @@
   <data name="EventUpconvertersLoadedFrom" xml:space="preserve">
     <value>Will scan for event upconverters from the following assemblies: '{0}'</value>
   </data>
+  <data name="ConfiguringEnginePerformanceTracking" xml:space="preserve">
+    <value>Configuring persistence engine to track performance</value>
+  </data>
 </root>
