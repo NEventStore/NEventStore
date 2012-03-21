@@ -36,6 +36,7 @@ namespace EventStore.Example
 				.UsingSqlPersistence("EventStore")
 					.EnlistInAmbientTransaction() // two-phase commit
 					.InitializeStorageEngine()
+					.TrackPerformanceInstance("example")
 					.UsingJsonSerialization()
 						.Compress()
 						.EncryptWith(EncryptionKey)

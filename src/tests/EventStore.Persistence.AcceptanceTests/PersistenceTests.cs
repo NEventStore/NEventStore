@@ -1,3 +1,5 @@
+using EventStore.Diagnostics;
+
 #pragma warning disable 169
 // ReSharper disable InconsistentNaming
 
@@ -426,8 +428,9 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		Establish context = () =>
 		{
-			persistence = Factory.Build();
+			persistence = new PerformanceTrackingPersistenceDecorator(Factory.Build(), "tests");
 			persistence.Initialize();
+
 		};
 
 		Cleanup everything = () =>
