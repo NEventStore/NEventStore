@@ -95,7 +95,7 @@ TransactionScopeOption of 'Required'.  Simply indicate this using the following 
 
 ### Document Databases
 [Complete] RavenDB r322 (or later)  
-[Complete] MongoDB 1.6 (or later)  
+[Complete] MongoDB 1.8 (or later)  
 [Planned] CouchDB 1.0 (or later)  
 [TBA] OrientDB  
 
