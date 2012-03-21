@@ -71,6 +71,9 @@ namespace EventStore.Persistence.SqlPersistence
 			var connectionString = settings.ConnectionString.ToUpperInvariant();
 			var providerName = settings.ProviderName.ToUpperInvariant();
 
+            if (providerName.Contains("ORACLE"))
+                return new OracleSqlDialect();
+
 			if (providerName.Contains("MYSQL"))
 				return new MySqlDialect();
 

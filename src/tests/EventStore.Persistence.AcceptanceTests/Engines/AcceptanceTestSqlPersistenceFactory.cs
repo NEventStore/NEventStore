@@ -75,4 +75,8 @@ namespace EventStore.Persistence.AcceptanceTests.Engines
 	{
 		public AcceptanceTestSqlitePersistenceFactory() : base("SQLite") { }
 	}
+    public class AcceptanceTestOracleSqlPersistenceFactory : AcceptanceTestSqlPersistenceFactory
+    {
+        public AcceptanceTestOracleSqlPersistenceFactory() : base("Oracle") { }
+    }
 }

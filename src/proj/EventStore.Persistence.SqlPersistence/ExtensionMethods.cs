@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace EventStore.Persistence.SqlPersistence
 {
 	using System;
@@ -18,7 +20,8 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		public static int ToInt(this object value)
 		{
-			return value is long ? (int)(long)value : (int)value;
+		    return (int) Convert.ChangeType(value, typeof (int));
+		    //value is long ? (int)(long)value : (int)value;
 		}
 		public static DateTime ToDateTime(this object value)
 		{

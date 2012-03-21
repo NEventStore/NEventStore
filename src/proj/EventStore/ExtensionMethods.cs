@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace EventStore
 {
 	using System.Globalization;
@@ -17,5 +19,18 @@ namespace EventStore
 		{
 			return string.Format(CultureInfo.InvariantCulture, format ?? string.Empty, values);
 		}
+
+        /// <summary>
+        /// Returns a string representation of the byte array
+        /// </summary>
+        /// <param name="ba">This byte array</param>
+        /// <returns>The string value</returns>
+        public static string ByteArrayToString(this byte[] ba)
+        {
+            var hex = new StringBuilder(ba.Length * 2);
+            foreach (var b in ba)
+                hex.AppendFormat("{0:x2}", b);
+            return hex.ToString();
+        }
 	}
 }
