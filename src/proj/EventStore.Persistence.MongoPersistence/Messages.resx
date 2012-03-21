@@ -159,10 +159,13 @@
   <data name="ShuttingDownPersistence" xml:space="preserve">
     <value>Shutting down persistence.</value>
   </data>
-	<data name="StorageUnavailable">
-		<value xml:space="preserve">Storage is unavailabe.</value>
-	</data>
-	<data name="StorageThrewException">
-		<value><![CDATA[Storage threw exception of type '{0}'.]]></value>
-	</data>
+  <data name="StorageUnavailable" xml:space="preserve">
+    <value>Storage is unavailabe.</value>
+  </data>
+  <data name="StorageThrewException" xml:space="preserve">
+    <value>Storage threw exception of type '{0}'.</value>
+  </data>
+  <data name="SnapshotPolicyDisabled" xml:space="preserve">
+    <value>Snapshot policy is disabled, cannot get list of streams to snapshot</value>
+  </data>
 </root>

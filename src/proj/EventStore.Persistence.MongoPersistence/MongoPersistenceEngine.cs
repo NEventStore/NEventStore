@@ -26,10 +26,11 @@ namespace EventStore.Persistence.MongoPersistence
 		private readonly BlockingCollection<Guid> updateDispatchedQueue;
 		private readonly Task streamHeadUpdateTask;
 		private readonly Task updateDispatchedTask;
+		private readonly SnapshotTracking snapshotTracking; 
 		private bool disposed;
 		private int initialized;
 
-		public MongoPersistenceEngine(MongoDatabase store, IDocumentSerializer serializer)
+		public MongoPersistenceEngine(MongoDatabase store, IDocumentSerializer serializer, SnapshotTracking snapshotTracking)
 		{
 			if (store == null)
 				throw new ArgumentNullException("store");
@@ -39,6 +40,7 @@ namespace EventStore.Persistence.MongoPersistence
 
 			this.store = store;
 			this.serializer = serializer;
+			this.snapshotTracking = snapshotTracking;
 
 			this.commitSettings = this.store.CreateCollectionSettings<BsonDocument>("Commits");
 			this.commitSettings.AssignIdOnInsert = false;
@@ -48,14 +50,18 @@ namespace EventStore.Persistence.MongoPersistence
 			this.snapshotSettings.AssignIdOnInsert = false;
 			this.snapshotSettings.SafeMode = SafeMode.False;
 
-			this.streamSettings = this.store.CreateCollectionSettings<BsonDocument>("Streams");
-			this.streamSettings.AssignIdOnInsert = false;
-			this.streamSettings.SafeMode = SafeMode.False;
-
 			this.updateDispatchedQueue = new BlockingCollection<Guid>();
 			this.updateDispatchedTask = Task.Factory.StartNew(UpdateDispatchedFlag, TaskCreationOptions.LongRunning);
-			this.streamHeadUpdateQueue = new BlockingCollection<StreamHeadUpdateInfo>();
-			this.streamHeadUpdateTask = Task.Factory.StartNew(UpdateStreamHead, TaskCreationOptions.LongRunning);
+
+			if (snapshotTracking == SnapshotTracking.Enabled)
+			{
+				this.streamSettings = this.store.CreateCollectionSettings<BsonDocument>("Streams");
+				this.streamSettings.AssignIdOnInsert = false;
+				this.streamSettings.SafeMode = SafeMode.False;
+
+				this.streamHeadUpdateQueue = new BlockingCollection<StreamHeadUpdateInfo>();
+				this.streamHeadUpdateTask = Task.Factory.StartNew(UpdateStreamHead, TaskCreationOptions.LongRunning);
+			}
 		}
 
 		public void Dispose()
@@ -70,19 +76,19 @@ namespace EventStore.Persistence.MongoPersistence
 
 			Logger.Debug(Messages.ShuttingDownPersistence);
 			
-			// the update tasks will complete when the queue is emptied
-			this.streamHeadUpdateQueue.CompleteAdding();
+			// the update tasks will complete when the queues are emptied
 			this.updateDispatchedQueue.CompleteAdding();
-			
-			// wait for completion
-			this.streamHeadUpdateTask.Wait();
 			this.updateDispatchedTask.Wait();
-
-			// now dispose of queues and worker tasks
-			this.streamHeadUpdateTask.Dispose();
 			this.updateDispatchedTask.Dispose();
-			this.streamHeadUpdateQueue.Dispose();
 			this.updateDispatchedQueue.Dispose();
+
+			if (snapshotTracking == SnapshotTracking.Enabled)
+			{
+				this.streamHeadUpdateQueue.CompleteAdding();
+				this.streamHeadUpdateTask.Wait();
+				this.streamHeadUpdateTask.Dispose();
+				this.streamHeadUpdateQueue.Dispose();
+			}
 
 			this.disposed = true;
 		}
@@ -112,9 +118,12 @@ namespace EventStore.Persistence.MongoPersistence
 					IndexKeys.Ascending("s"),
 					IndexOptions.SetName("GetFromDate"));
 
-				this.PersistedStreamHeads.EnsureIndex(
+				if (snapshotTracking == SnapshotTracking.Enabled)
+				{
+					this.PersistedStreamHeads.EnsureIndex(
 					IndexKeys.Ascending("u"),
 					IndexOptions.SetName("Unsnapshotted"));
+				}
 			});
 		}
 
@@ -180,7 +189,10 @@ namespace EventStore.Persistence.MongoPersistence
 				{
 					// for concurrency / duplicate commit detection safe mode is required
 					this.PersistedCommits.Insert(commit, SafeMode.True);
-					this.streamHeadUpdateQueue.Add(new StreamHeadUpdateInfo(attempt.StreamId, attempt.Events.Count));
+					if (snapshotTracking == SnapshotTracking.Enabled)
+					{
+						this.streamHeadUpdateQueue.Add(new StreamHeadUpdateInfo(attempt.StreamId, attempt.Events.Count));
+					}
 					Logger.Debug(Messages.CommitPersisted, attempt.CommitId);
 				}
 				catch (MongoException e)
@@ -215,6 +227,11 @@ namespace EventStore.Persistence.MongoPersistence
 		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
 		{
 			Logger.Debug(Messages.GettingStreamsToSnapshot);
+
+			if (snapshotTracking == SnapshotTracking.Disabled)
+			{
+				throw new NotSupportedException(Messages.SnapshotPolicyDisabled);
+			}
 
 			return this.TryMongo(() =>
 			{
@@ -254,15 +271,17 @@ namespace EventStore.Persistence.MongoPersistence
 				// stream that needs to be snapshotted because the insert fails and the SnapshotRevision isn't being updated.
 				this.PersistedSnapshots.Update(query, update, UpdateFlags.Upsert);
 
-				// More commits could have been made between us deciding that a snapshot is required and writing it so just 
-				// resetting the Unsnapshotted count may be a little off - we need to adjust based on the previous streamhead
-				// snapshot value.
-				var streamHead = this.PersistedStreamHeads.FindOneById(snapshot.StreamId).ToStreamHead();
-				var adjustment = streamHead.SnapshotRevision - snapshot.StreamRevision;
-				this.PersistedStreamHeads.Update(
-					Query.EQ("_id", snapshot.StreamId),
-					Update.Set("s", snapshot.StreamRevision).Inc("u", adjustment));
-
+				if (snapshotTracking == SnapshotTracking.Enabled)
+				{
+					// More commits could have been made between us deciding that a snapshot is required and writing it so just 
+					// resetting the Unsnapshotted count may be a little off - we need to adjust based on the previous streamhead
+					// snapshot value.
+					var streamHead = this.PersistedStreamHeads.FindOneById(snapshot.StreamId).ToStreamHead();
+					var adjustment = streamHead.SnapshotRevision - snapshot.StreamRevision;
+					this.PersistedStreamHeads.Update(
+						Query.EQ("_id", snapshot.StreamId),
+						Update.Set("s", snapshot.StreamRevision).Inc("u", adjustment));
+				}
 				return true;
 			}
 			catch (Exception)
@@ -276,8 +295,11 @@ namespace EventStore.Persistence.MongoPersistence
 			Logger.Warn(Messages.PurgingStorage);
 
 			this.PersistedCommits.Drop();
-			this.PersistedStreamHeads.Drop();
 			this.PersistedSnapshots.Drop();
+			if (snapshotTracking == SnapshotTracking.Enabled)
+			{
+				this.PersistedStreamHeads.Drop();
+			}
 		}
 
 		private void UpdateStreamHead()
