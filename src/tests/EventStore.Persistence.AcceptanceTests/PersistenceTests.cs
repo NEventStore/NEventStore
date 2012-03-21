@@ -5,9 +5,9 @@ namespace EventStore.Persistence.AcceptanceTests
 {
 	using System;
 	using System.Collections.Generic;
-	using EventStore.Diagnostics;
 	using System.Linq;
 	using System.Threading;
+	using Diagnostics;
 	using Machine.Specifications;
 	using Persistence;
 
@@ -419,9 +419,8 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		Establish context = () =>
 		{
-			persistence = new PerformanceTrackingPersistenceDecorator(Factory.Build(), "tests");
+			persistence = new PerformanceCounterPersistenceEngine(Factory.Build(), "tests");
 			persistence.Initialize();
-
 		};
 
 		Cleanup everything = () =>

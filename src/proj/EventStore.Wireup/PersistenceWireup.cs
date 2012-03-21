@@ -1,9 +1,8 @@
-using System;
-using EventStore.Diagnostics;
-
 namespace EventStore
 {
+	using System;
 	using System.Transactions;
+	using Diagnostics;
 	using Logging;
 	using Persistence;
 	using Serialization;
@@ -27,19 +26,16 @@ namespace EventStore
 			this.With(instance);
 			return this;
 		}
-
 		protected virtual SerializationWireup WithSerializer(ISerialize serializer)
 		{
 			return new SerializationWireup(this, serializer);
 		}
-
 		public virtual PersistenceWireup InitializeStorageEngine()
 		{
 			Logger.Debug(Messages.ConfiguringEngineInitialization);
 			this.initialize = true;
 			return this;
 		}
-
 		public virtual PersistenceWireup TrackPerformanceInstance(string instanceName)
 		{
 			if (instanceName == null)
@@ -50,7 +46,6 @@ namespace EventStore
 			this.trackingInstanceName = instanceName;
 			return this;
 		}
-
 		public virtual PersistenceWireup EnlistInAmbientTransaction()
 		{
 			Logger.Debug(Messages.ConfiguringEngineEnlistment);
@@ -70,9 +65,7 @@ namespace EventStore
 			}
 
 			if (this.tracking)
-			{
-				this.Container.Register<IPersistStreams>(new PerformanceTrackingPersistenceDecorator(engine, this.trackingInstanceName));
-			}
+				this.Container.Register<IPersistStreams>(new PerformanceCounterPersistenceEngine(engine, this.trackingInstanceName));
 
 			return base.Build();
 		}
