@@ -1,5 +1,7 @@
 namespace EventStore.Persistence.SqlPersistence
 {
+	using System;
+	using System.Configuration;
 	using System.Transactions;
 	using Serialization;
 	using SqlDialects;
@@ -17,12 +19,11 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 		}
 		public SqlPersistenceFactory(string connectionName, ISerialize serializer, ISqlDialect dialect)
-			: this(new ConfigurationConnectionFactory(connectionName), serializer, dialect)
+			: this(serializer, TransactionScopeOption.Suppress, DefaultPageSize)
 		{
-		}
-		public SqlPersistenceFactory(IConnectionFactory factory, ISerialize serializer)
-			: this(factory, serializer, null)
-		{
+			var configurationConnectionFactory = new ConfigurationConnectionFactory(connectionName);
+			this.connectionFactory = configurationConnectionFactory;
+			this.dialect = dialect ?? ResolveDialect(configurationConnectionFactory.Settings);
 		}
 		public SqlPersistenceFactory(IConnectionFactory factory, ISerialize serializer, ISqlDialect dialect)
 			: this(factory, serializer, dialect, TransactionScopeOption.Suppress, DefaultPageSize)
@@ -34,10 +35,20 @@ namespace EventStore.Persistence.SqlPersistence
 			ISqlDialect dialect,
 			TransactionScopeOption scopeOption,
 			int pageSize)
+			: this(serializer, scopeOption, pageSize)
 		{
+			if (dialect == null)
+				throw new ArgumentNullException("dialect");
+
 			this.connectionFactory = factory;
-			this.serializer = serializer;
 			this.dialect = dialect;
+		}
+		private SqlPersistenceFactory(
+			ISerialize serializer,
+			TransactionScopeOption scopeOption,
+			int pageSize)
+		{
+			this.serializer = serializer;
 			this.scopeOption = scopeOption;
 
 			this.PageSize = pageSize;
@@ -60,14 +71,11 @@ namespace EventStore.Persistence.SqlPersistence
 		public virtual IPersistStreams Build()
 		{
 			return new SqlPersistenceEngine(
-				this.ConnectionFactory, this.GetDialect(), this.Serializer, this.scopeOption, this.PageSize);
+				this.ConnectionFactory, this.Dialect, this.Serializer, this.scopeOption, this.PageSize);
 		}
-		protected virtual ISqlDialect GetDialect()
-		{
-			if (this.Dialect != null)
-				return this.Dialect;
 
-			var settings = this.ConnectionFactory.Settings;
+		private static ISqlDialect ResolveDialect(ConnectionStringSettings settings)
+		{
 			var connectionString = settings.ConnectionString.ToUpperInvariant();
 			var providerName = settings.ProviderName.ToUpperInvariant();
 
