@@ -176,3 +176,8 @@ Simply run **build.cmd** from the command line.  Once built, the files will be p
 	}
 
 For a more complete example, please see [EventStore.Example](https://github.com/joliver/EventStore/blob/master/doc/EventStore.Example/MainProgram.cs) project in the doc subdirectory.
+
+## Running the Example
+The EventStore.Example project is configured by default to use a SQL event store. To run the example 
+program, either change the SQL connection string in the app.config file to connect to a existing SQL database 
+or change WireupEventStore() to call UsingInMemoryPersistence() rather than UsingSqlPersistence().
