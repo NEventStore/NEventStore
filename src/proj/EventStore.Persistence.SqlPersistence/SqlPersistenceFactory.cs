@@ -70,7 +70,7 @@ namespace EventStore.Persistence.SqlPersistence
 				this.ConnectionFactory, this.Dialect, this.Serializer, this.scopeOption, this.PageSize);
 		}
 
-		private static ISqlDialect ResolveDialect(ConnectionStringSettings settings)
+		protected static ISqlDialect ResolveDialect(ConnectionStringSettings settings)
 		{
 			var connectionString = settings.ConnectionString.ToUpperInvariant();
 			var providerName = settings.ProviderName.ToUpperInvariant();
