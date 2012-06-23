@@ -10,15 +10,17 @@
 		private readonly string connectionName;
 		private readonly IDocumentSerializer serializer;
 		private readonly SnapshotTracking snapshotTracking;
+		private readonly DispatchedTracking dispatchedTracking;
 
-		public MongoPersistenceFactory(string connectionName, IDocumentSerializer serializer, SnapshotTracking snapshotTracking)
+		public MongoPersistenceFactory(string connectionName, IDocumentSerializer serializer, SnapshotTracking snapshotTracking, DispatchedTracking dispatchedTracking)
 		{
 			this.connectionName = connectionName;
 			this.serializer = serializer;
 			this.snapshotTracking = snapshotTracking;
+			this.dispatchedTracking = dispatchedTracking;
 		}
 
-		public MongoPersistenceFactory(string connectionName, IDocumentSerializer serializer) : this(connectionName, serializer, SnapshotTracking.Enabled)
+		public MongoPersistenceFactory(string connectionName, IDocumentSerializer serializer) : this(connectionName, serializer, SnapshotTracking.Enabled, DispatchedTracking.Enabled)
 		{ }
 
 		public virtual IPersistStreams Build()
@@ -33,7 +35,7 @@
 			}
 			var connectionString = this.TransformConnectionString(this.GetConnectionString());
 			var database = MongoDatabase.Create(connectionString);
-			return new MongoPersistenceEngine(database, this.serializer, this.snapshotTracking);
+			return new MongoPersistenceEngine(database, this.serializer, this.snapshotTracking, this.dispatchedTracking);
 		}
 
 		protected virtual string GetConnectionString()

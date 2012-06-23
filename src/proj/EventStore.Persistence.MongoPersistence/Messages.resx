@@ -168,4 +168,7 @@
   <data name="SnapshotPolicyDisabled" xml:space="preserve">
     <value>Snapshot policy is disabled, cannot get list of streams to snapshot</value>
   </data>
+  <data name="DispatchedPolicyDisabled" xml:space="preserve">
+    <value>Dispatched policy is disabled, cannot get list of undispatched commits</value>
+  </data>
 </root>

@@ -26,11 +26,12 @@ namespace EventStore.Persistence.MongoPersistence
 		private readonly BlockingCollection<Guid> updateDispatchedQueue;
 		private readonly Task streamHeadUpdateTask;
 		private readonly Task updateDispatchedTask;
-		private readonly SnapshotTracking snapshotTracking; 
+		private readonly SnapshotTracking snapshotTracking;
+		private readonly DispatchedTracking dispatchedTracking;
 		private bool disposed;
 		private int initialized;
 
-		public MongoPersistenceEngine(MongoDatabase store, IDocumentSerializer serializer, SnapshotTracking snapshotTracking)
+		public MongoPersistenceEngine(MongoDatabase store, IDocumentSerializer serializer, SnapshotTracking snapshotTracking, DispatchedTracking dispatchedTracking)
 		{
 			if (store == null)
 				throw new ArgumentNullException("store");
@@ -41,6 +42,7 @@ namespace EventStore.Persistence.MongoPersistence
 			this.store = store;
 			this.serializer = serializer;
 			this.snapshotTracking = snapshotTracking;
+			this.dispatchedTracking = dispatchedTracking;
 
 			this.commitSettings = this.store.CreateCollectionSettings<BsonDocument>("Commits");
 			this.commitSettings.AssignIdOnInsert = false;
@@ -50,8 +52,11 @@ namespace EventStore.Persistence.MongoPersistence
 			this.snapshotSettings.AssignIdOnInsert = false;
 			this.snapshotSettings.SafeMode = SafeMode.False;
 
-			this.updateDispatchedQueue = new BlockingCollection<Guid>();
-			this.updateDispatchedTask = Task.Factory.StartNew(UpdateDispatchedFlag, TaskCreationOptions.LongRunning);
+			if (this.dispatchedTracking == DispatchedTracking.Enabled)
+			{
+				this.updateDispatchedQueue = new BlockingCollection<Guid>();
+				this.updateDispatchedTask = Task.Factory.StartNew(UpdateDispatchedFlag, TaskCreationOptions.LongRunning);
+			}
 
 			if (snapshotTracking == SnapshotTracking.Enabled)
 			{
@@ -77,10 +82,13 @@ namespace EventStore.Persistence.MongoPersistence
 			Logger.Debug(Messages.ShuttingDownPersistence);
 			
 			// the update tasks will complete when the queues are emptied
-			this.updateDispatchedQueue.CompleteAdding();
-			this.updateDispatchedTask.Wait();
-			this.updateDispatchedTask.Dispose();
-			this.updateDispatchedQueue.Dispose();
+			if (this.dispatchedTracking == DispatchedTracking.Enabled)
+			{
+				this.updateDispatchedQueue.CompleteAdding();
+				this.updateDispatchedTask.Wait();
+				this.updateDispatchedTask.Dispose();
+				this.updateDispatchedQueue.Dispose();
+			}
 
 			if (snapshotTracking == SnapshotTracking.Enabled)
 			{
@@ -102,9 +110,12 @@ namespace EventStore.Persistence.MongoPersistence
 
 			this.TryMongo(() =>
 			{
-				this.PersistedCommits.EnsureIndex(
-					IndexKeys.Ascending("d"),
-					IndexOptions.SetName("Dispatch"));
+				if (this.dispatchedTracking == DispatchedTracking.Enabled)
+				{
+					this.PersistedCommits.EnsureIndex(
+						IndexKeys.Ascending("d"),
+						IndexOptions.SetName("Dispatch"));
+				}
 
 				this.PersistedCommits.EnsureIndex(
 					IndexKeys.Ascending("i", "n"),
@@ -183,7 +194,7 @@ namespace EventStore.Persistence.MongoPersistence
 
 			this.TryMongo(() =>
 			{
-				var commit = attempt.ToMongoCommit(this.serializer);
+				var commit = attempt.ToMongoCommit(this.serializer, this.dispatchedTracking);
 
 				try
 				{
@@ -214,6 +225,11 @@ namespace EventStore.Persistence.MongoPersistence
 		{
 			Logger.Debug(Messages.GettingUndispatchedCommits);
 
+			if (dispatchedTracking == DispatchedTracking.Disabled)
+			{
+				return Enumerable.Empty<Commit>();
+			}
+
 			return this.TryMongo(() => this.PersistedCommits
 				.Find(Query.EQ("d", false))
 				.SetSortOrder("s")
@@ -221,7 +237,10 @@ namespace EventStore.Persistence.MongoPersistence
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
 		{
-			this.updateDispatchedQueue.Add(commit.CommitId);
+			if (dispatchedTracking == DispatchedTracking.Enabled)
+			{
+				this.updateDispatchedQueue.Add(commit.CommitId);
+			}
 		}
 
 		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)

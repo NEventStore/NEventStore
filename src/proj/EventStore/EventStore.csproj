@@ -56,7 +56,8 @@
     <Compile Include="IPipelineHook.cs" />
     <Compile Include="Logging\LogFactory.cs" />
     <Compile Include="Conversion\MultipleConvertersFoundException.cs" />
-    <Compile Include="Persistence\SnapshotPolicy.cs" />
+    <Compile Include="Persistence\DispatchedTracking.cs" />
+    <Compile Include="Persistence\SnapshotTracking.cs" />
     <Compile Include="Persistence\StorageUnavailableException.cs" />
     <Compile Include="Serialization\IDocumentSerializer.cs" />
     <Compile Include="StreamNotFoundException.cs" />

@@ -10,20 +10,24 @@
 
 	public static class ExtensionMethods
 	{
-		public static BsonDocument ToMongoCommit(this Commit commit, IDocumentSerializer serializer)
+		public static BsonDocument ToMongoCommit(this Commit commit, IDocumentSerializer serializer, DispatchedTracking dispatchedTracking)
 		{
 			var streamRevision = commit.StreamRevision - (commit.Events.Count - 1);
 			var events = commit.Events.Select(e => new BsonDocument { { "r", streamRevision++ }, { "p", new BsonDocumentWrapper(typeof(EventMessage), serializer.Serialize(e)) } });
-			return new BsonDocument
+			var result = new BsonDocument
 			{
 				{ "_id", commit.CommitId },
 				{ "s", commit.CommitStamp },
 				{ "i", commit.StreamId },
 				{ "n", commit.CommitSequence },
 				{ "h", BsonDocumentWrapper.Create(commit.Headers) },
-				{ "e", BsonArray.Create(events) },
-				{ "d", false }
+				{ "e", BsonArray.Create(events) }
 			};
+			if (dispatchedTracking == DispatchedTracking.Enabled)
+			{
+				result.Add("d", false);
+			}
+			return result;
 		}
 		public static Commit ToCommit(this BsonDocument doc, IDocumentSerializer serializer)
 		{
