@@ -1,4 +1,6 @@
-﻿namespace EventStore.Persistence.MongoPersistence
+﻿using MongoDB.Driver;
+
+namespace EventStore.Persistence.MongoPersistence
 {
 	using System;
 	using System.Collections.Generic;
@@ -93,14 +95,17 @@
 				doc["s"].AsInt32);
 		}
 
-		public static QueryComplete ToMongoCommitIdQuery(this Commit commit)
+		public static IMongoQuery ToMongoCommitIdQuery(this Commit commit)
 		{
 			return Query.And(Query.EQ("i", commit.StreamId), Query.EQ("n", commit.CommitSequence));
 		}
 
-		public static QueryConditionList ToSnapshotQuery(this Guid streamId, int maxRevision)
+		public static IMongoQuery ToSnapshotQuery(this Guid streamId, int maxRevision)
 		{
-			return Query.GT("_id", Query.And(Query.EQ("i", streamId), Query.EQ("r", BsonNull.Value)).ToBsonDocument()).LTE(Query.And(Query.EQ("i", streamId), Query.EQ("r", maxRevision)).ToBsonDocument());
+			return Query.And(
+				Query.GT("_id", Query.And(Query.EQ("i", streamId), Query.EQ("r", BsonNull.Value)).ToBsonDocument()),
+				Query.LTE("_id", Query.And(Query.EQ("i", streamId), Query.EQ("r", maxRevision)).ToBsonDocument())
+			);
 		}
 	}
 }
