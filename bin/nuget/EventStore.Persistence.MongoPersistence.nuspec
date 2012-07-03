@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>EventStore.Persistence.MongoPersistence</id>
-    <version>3.0</version>
+    <version>3.0.1</version>
     <title>EventStore MongoDB Persistence Plugin</title>
     <authors>Simon Green, Jonathan Oliver</authors>
     <owners>Jonathan Oliver</owners>
@@ -14,7 +14,7 @@
     <tags>events, event sourcing, cqrs, storage, persistence, database, mongodb</tags>
     <dependencies>
       <dependency id="EventStore" version="3.0" />
-      <dependency id="mongocsharpdriver" version="1.3" />
+      <dependency id="mongocsharpdriver" version="1.5" />
     </dependencies>
   </metadata>
   <files>
