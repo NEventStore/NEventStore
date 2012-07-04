@@ -6,12 +6,12 @@
 
 	public class MongoPersistenceFactory : IPersistenceFactory
 	{
-		private readonly string connectionName;
+		private readonly string connection;
 		private readonly IDocumentSerializer serializer;
 
-		public MongoPersistenceFactory(string connectionName, IDocumentSerializer serializer)
+		public MongoPersistenceFactory(string connection, IDocumentSerializer serializer)
 		{
-			this.connectionName = connectionName;
+			this.connection = connection;
 			this.serializer = serializer;
 		}
 
@@ -24,10 +24,11 @@
 
 		protected virtual string GetConnectionString()
 		{
-			return ConfigurationManager.ConnectionStrings[this.connectionName].ConnectionString;
+		    return connection.ToLower().StartsWith("mongodb://") ? connection :
+                ConfigurationManager.ConnectionStrings[this.connection].ConnectionString;
 		}
 
-		protected virtual string TransformConnectionString(string connectionString)
+	    protected virtual string TransformConnectionString(string connectionString)
 		{
 			return connectionString;
 		}

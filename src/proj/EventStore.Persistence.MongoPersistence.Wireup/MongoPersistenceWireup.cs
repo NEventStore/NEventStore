@@ -9,7 +9,7 @@ namespace EventStore
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(MongoPersistenceWireup));
 
-		public MongoPersistenceWireup(Wireup inner, string connectionName, IDocumentSerializer serializer)
+		public MongoPersistenceWireup(Wireup inner, string connection, IDocumentSerializer serializer)
 			: base(inner)
 		{
 			Logger.Debug("Configuring Mongo persistence engine.");
@@ -19,7 +19,7 @@ namespace EventStore
 				Logger.Warn("MongoDB does not participate in transactions using TransactionScope.");
 
 			this.Container.Register(c => new MongoPersistenceFactory(
-				connectionName,
+				connection,
 				serializer).Build());
 		}
 	}
