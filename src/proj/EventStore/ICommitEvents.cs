@@ -24,6 +24,14 @@ namespace EventStore
 		/// <exception cref="StorageUnavailableException" />
 		IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision);
 
+        /// <summary>
+        /// Gets all commits on or after from the specified starting time.
+        /// IPipelineHooks will be applied for each commit readed from underlaying persistance engine.
+        /// </summary>
+        /// <param name="start">The point in time at which to start.</param>
+        /// <returns>All commits that have occurred on or after the specified starting time and passed set of pipeline hooks.</returns>
+        IEnumerable<Commit> GetFrom(DateTime start);
+
 		/// <summary>
 		/// Writes the to-be-commited events provided to the underlying persistence mechanism.
 		/// </summary>

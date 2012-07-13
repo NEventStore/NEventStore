@@ -76,7 +76,26 @@ namespace EventStore
 					yield return filtered;
 			}
 		}
-		public virtual void Commit(Commit attempt)
+
+	    public IEnumerable<Commit> GetFrom(DateTime start)
+	    {
+            foreach (var commit in this.persistence.GetFrom(start))
+            {
+                var filtered = commit;
+                foreach (var hook in this.pipelineHooks.Where(x => (filtered = x.Select(filtered)) == null))
+                {
+                    Logger.Info(Resources.PipelineHookSkippedCommit, hook.GetType(), commit.CommitId);
+                    break;
+                }
+
+                if (filtered == null)
+                    Logger.Info(Resources.PipelineHookFilteredCommit);
+                else
+                    yield return filtered;
+            }
+	    }
+
+	    public virtual void Commit(Commit attempt)
 		{
 			if (!attempt.IsValid() || attempt.IsEmpty())
 			{
