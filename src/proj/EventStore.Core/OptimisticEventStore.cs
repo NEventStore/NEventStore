@@ -18,7 +18,7 @@ namespace EventStore
 				throw new ArgumentNullException("persistence");
 
 			this.pipelineHooks = pipelineHooks ?? new IPipelineHook[0];
-            this.persistence = new UpconversionAwarePersistanceDecorator(persistence, pipelineHooks);
+            this.persistence = new PipelineHooksAwarePersistanceDecorator(persistence, pipelineHooks);
 		}
 
 		public void Dispose()

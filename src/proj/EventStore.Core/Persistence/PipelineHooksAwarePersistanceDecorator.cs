@@ -6,13 +6,13 @@ using EventStore.Logging;
 
 namespace EventStore.Persistence
 {
-    class UpconversionAwarePersistanceDecorator : IPersistStreams
+    class PipelineHooksAwarePersistanceDecorator : IPersistStreams
     {
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(UpconversionAwarePersistanceDecorator));
+        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(PipelineHooksAwarePersistanceDecorator));
         private readonly IPersistStreams original;
         private readonly IEnumerable<IPipelineHook> pipelineHooks;
 
-        public UpconversionAwarePersistanceDecorator(IPersistStreams original, IEnumerable<IPipelineHook> pipelineHooks)
+        public PipelineHooksAwarePersistanceDecorator(IPersistStreams original, IEnumerable<IPipelineHook> pipelineHooks)
         {
             if (original == null) throw new ArgumentNullException("original");
             if (pipelineHooks == null) throw new ArgumentNullException("pipelineHooks");
