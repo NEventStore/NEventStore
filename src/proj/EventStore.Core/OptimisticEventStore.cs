@@ -17,8 +17,8 @@ namespace EventStore
 			if (persistence == null)
 				throw new ArgumentNullException("persistence");
 
-			this.persistence = persistence;
 			this.pipelineHooks = pipelineHooks ?? new IPipelineHook[0];
+            this.persistence = new UpconversionAwarePersistanceDecorator(persistence, pipelineHooks);
 		}
 
 		public void Dispose()
@@ -76,24 +76,6 @@ namespace EventStore
 					yield return filtered;
 			}
 		}
-
-	    public IEnumerable<Commit> GetFrom(DateTime start)
-	    {
-            foreach (var commit in this.persistence.GetFrom(start))
-            {
-                var filtered = commit;
-                foreach (var hook in this.pipelineHooks.Where(x => (filtered = x.Select(filtered)) == null))
-                {
-                    Logger.Info(Resources.PipelineHookSkippedCommit, hook.GetType(), commit.CommitId);
-                    break;
-                }
-
-                if (filtered == null)
-                    Logger.Info(Resources.PipelineHookFilteredCommit);
-                else
-                    yield return filtered;
-            }
-	    }
 
 	    public virtual void Commit(Commit attempt)
 		{
