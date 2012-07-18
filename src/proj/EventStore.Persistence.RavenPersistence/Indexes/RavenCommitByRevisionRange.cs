@@ -8,7 +8,7 @@ namespace EventStore.Persistence.RavenPersistence.Indexes
 		public RavenCommitByRevisionRange()
 		{
 			this.Map = commits => from c in commits
-								  select new { c.StreamId, c.StartingStreamRevision, c.StreamRevision };
+                                  select new { c.StreamId, c.StartingStreamRevision, c.StreamRevision, c.Partition };
 		}
 	}
 }

@@ -9,6 +9,7 @@ namespace EventStore.Persistence.RavenPersistence
 		public string ConnectionName { get; set; }
 		public Uri Url { get; set; }
 		public string DefaultDatabase { get; set; }
+        public string Partition { get; set; }
 
 		public IDocumentSerializer Serializer { get; set; }
 		public TransactionScopeOption ScopeOption { get; set; }

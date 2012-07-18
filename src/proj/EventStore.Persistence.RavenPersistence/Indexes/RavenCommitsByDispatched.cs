@@ -7,7 +7,7 @@ namespace EventStore.Persistence.RavenPersistence.Indexes
 	{
 		public RavenCommitsByDispatched()
 		{
-			this.Map = commits => from c in commits select new { c.Dispatched };
+            this.Map = commits => from c in commits select new { c.Dispatched, c.Partition };
 		}
 	}
 }

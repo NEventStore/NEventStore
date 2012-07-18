@@ -7,7 +7,7 @@ namespace EventStore.Persistence.RavenPersistence.Indexes
 	{
 		public RavenSnapshotByStreamIdAndRevision()
 		{
-			Map = snapshots => from s in snapshots select new { s.StreamId, s.StreamRevision };
+            Map = snapshots => from s in snapshots select new { s.StreamId, s.StreamRevision, s.Partition };
 		}
 	}
 }

@@ -45,6 +45,7 @@
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="Indexes\EventStoreDocumentsByEntityName.cs" />
     <Compile Include="Indexes\RavenCommitsByDispatched.cs" />
     <Compile Include="Indexes\RavenCommitByRevisionRange.cs" />
     <Compile Include="Indexes\RavenCommitByDate.cs" />

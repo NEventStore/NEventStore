@@ -7,7 +7,7 @@ namespace EventStore.Persistence.RavenPersistence.Indexes
 	{
 		public RavenCommitByDate()
 		{
-			this.Map = commits => from c in commits select new { c.CommitStamp };
+			this.Map = commits => from c in commits select new { c.CommitStamp, c.Partition };
 		}
 	}
 }

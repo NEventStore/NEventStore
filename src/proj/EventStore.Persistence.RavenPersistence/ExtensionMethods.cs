@@ -9,16 +9,22 @@ namespace EventStore.Persistence.RavenPersistence
 
 	public static class ExtensionMethods
 	{
-		public static string ToRavenCommitId(this Commit commit)
+		public static string ToRavenCommitId(this Commit commit, string partition)
 		{
-			return string.Format(CultureInfo.InvariantCulture, "{0}/{1}", commit.StreamId, commit.CommitSequence);
+			var id = string.Format(CultureInfo.InvariantCulture, "{0}/{1}", commit.StreamId, commit.CommitSequence);
+
+            if (!string.IsNullOrEmpty(partition))
+                id = string.Format("{0}/{1}", partition, id);
+
+		    return id;
 		}
 
-		public static RavenCommit ToRavenCommit(this Commit commit, IDocumentSerializer serializer)
+		public static RavenCommit ToRavenCommit(this Commit commit, string partition, IDocumentSerializer serializer)
 		{
 			return new RavenCommit
 			{
-				Id = ToRavenCommitId(commit),
+				Id = ToRavenCommitId(commit, partition),
+                Partition = partition,
 				StreamId = commit.StreamId,
 				CommitSequence = commit.CommitSequence,
 				StartingStreamRevision = commit.StreamRevision - (commit.Events.Count - 1),
@@ -42,17 +48,24 @@ namespace EventStore.Persistence.RavenPersistence
 				serializer.Deserialize<List<EventMessage>>(commit.Payload));
 		}
 
-		public static RavenSnapshot ToRavenSnapshot(this Snapshot snapshot, IDocumentSerializer serializer)
+        public static string ToRavenSnapshotId(Snapshot snapshot, string partition)
+        {
+            return string.Format("Snapshots/{0}/{1}", snapshot.StreamId, snapshot.StreamRevision);
+        }
+
+		public static RavenSnapshot ToRavenSnapshot(this Snapshot snapshot, string partition, IDocumentSerializer serializer)
 		{
-			return new RavenSnapshot
+		    return new RavenSnapshot
 			{
+                Id = ToRavenSnapshotId(snapshot, partition),
+                Partition = partition,
 				StreamId = snapshot.StreamId,
 				StreamRevision = snapshot.StreamRevision,
 				Payload = serializer.Serialize(snapshot.Payload)
 			};
 		}
-
-		public static Snapshot ToSnapshot(this RavenSnapshot snapshot, IDocumentSerializer serializer)
+        
+	    public static Snapshot ToSnapshot(this RavenSnapshot snapshot, IDocumentSerializer serializer)
 		{
 			if (snapshot == null)
 				return null;
@@ -63,27 +76,34 @@ namespace EventStore.Persistence.RavenPersistence
 				serializer.Deserialize<object>(snapshot.Payload));
 		}
 
-		public static string ToRavenStreamId(this Guid streamId)
+		public static string ToRavenStreamId(this Guid streamId, string partition)
 		{
-			return string.Format("StreamHeads/{0}", streamId);
+			var id = string.Format("StreamHeads/{0}", streamId);
+
+            if (!string.IsNullOrEmpty(partition))
+                id = string.Format("{0}/{1}", partition, id);
+
+            return id;
 		}
 
-		public static RavenStreamHead ToRavenStreamHead(this Commit commit)
+		public static RavenStreamHead ToRavenStreamHead(this Commit commit, string partition)
 		{
 			return new RavenStreamHead
 			{
-				Id = commit.StreamId.ToRavenStreamId(),
+				Id = commit.StreamId.ToRavenStreamId(partition),
+                Partition = partition,
 				StreamId = commit.StreamId,
 				HeadRevision = commit.StreamRevision,
 				SnapshotRevision = 0
 			};
 		}
 
-		public static RavenStreamHead ToRavenStreamHead(this Snapshot snapshot)
+		public static RavenStreamHead ToRavenStreamHead(this Snapshot snapshot, string partition)
 		{
 			return new RavenStreamHead
 			{
-				Id = snapshot.StreamId.ToRavenStreamId(),
+				Id = snapshot.StreamId.ToRavenStreamId(partition),
+                Partition = partition,
 				StreamId = snapshot.StreamId,
 				HeadRevision = snapshot.StreamRevision,
 				SnapshotRevision = snapshot.StreamRevision
