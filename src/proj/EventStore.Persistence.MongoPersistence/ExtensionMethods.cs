@@ -100,8 +100,9 @@
 
 		public static IMongoQuery ToSnapshotQuery(this Guid streamId, int maxRevision)
 		{
-			throw new NotImplementedException("Query needs to be fixed");
-			//return Query.GT("_id", Query.And(Query.EQ("StreamId", streamId), Query.EQ("StreamRevision", BsonNull.Value)).ToBsonDocument()).LTE(Query.And(Query.EQ("StreamId", streamId), Query.EQ("StreamRevision", maxRevision)).ToBsonDocument());
+			return Query.And(
+				Query.GT("_id", Query.And(Query.EQ("StreamId", streamId), Query.EQ("StreamRevision", BsonNull.Value)).ToBsonDocument()),
+				Query.LTE("_id", Query.And(Query.EQ("StreamId", streamId), Query.EQ("StreamRevision", maxRevision)).ToBsonDocument()));
 		}
 	}
 }
