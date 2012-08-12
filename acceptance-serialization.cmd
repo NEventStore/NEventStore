@@ -1,7 +1,7 @@
 @ECHO OFF
 SETLOCAL
 
-set MSPEC_RUNNER="src/packages/Machine.Specifications-Signed.0.5.3.0/tools/mspec-clr4.exe"
+set MSPEC_RUNNER="src/packages/Machine.Specifications.0.5.8/tools/mspec-clr4.exe"
 
 ECHO === Building ===
 "C:/WINDOWS/Microsoft.NET/Framework/v4.0.30319/msbuild.exe" /nologo /verbosity:quiet src/EventStore.sln /p:Configuration=Debug
