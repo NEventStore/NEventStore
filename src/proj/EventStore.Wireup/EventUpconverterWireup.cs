@@ -40,6 +40,7 @@
 		{
 			var c = from a in toScan
 					from t in a.GetTypes()
+					where !t.IsAbstract
 					let i = t.GetInterface(typeof(IUpconvertEvents<,>).FullName)
 					where i != null
 					let sourceType = i.GetGenericArguments().First()
