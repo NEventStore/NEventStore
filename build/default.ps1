@@ -11,7 +11,7 @@ properties {
 	$target_config = "Release"
 	$framework_version = "v4.0"
 
-	$mspec_path = "$packages_directory\Machine.Specifications.0.5.7\tools\mspec-x86-clr4.exe"
+	$mspec_path = "$packages_directory\Machine.Specifications.0.5.8\tools\mspec-x86-clr4.exe"
 	$ilMergeModule.ilMergePath = "$base_directory\bin\ilmerge-bin\ILMerge.exe"
 
 	if($runPersistenceTests -eq $null) {
