@@ -2,8 +2,8 @@
 set FRAMEWORK_PATH=C:/WINDOWS/Microsoft.NET/Framework/v4.0.30319
 set PATH=%PATH%;%FRAMEWORK_PATH%;
 set ILMERGE="bin/ilmerge-bin/ILMerge.exe"
-set MSPEC_RUNNER="src/packages/Machine.Specifications-Signed.0.5.3.0/tools/mspec-clr4.exe"
-set MSPEC_RUNNER_X86="src/packages/Machine.Specifications-Signed.0.5.3.0/tools/mspec-x86-clr4.exe"
+set MSPEC_RUNNER="src/packages/Machine.Specifications.0.5.8/tools/mspec-clr4.exe"
+set MSPEC_RUNNER_X86="src/packages/Machine.Specifications.0.5.8/tools/mspec-x86-clr4.exe"
 
 :target_config
 set TARGET_CONFIG=Release
