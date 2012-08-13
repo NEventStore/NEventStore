@@ -204,7 +204,7 @@ namespace EventStore.Core.UnitTests
 			constructed.CommitSequence.ShouldEqual(DefaultCommitSequence);
 
 		It should_build_the_commit_with_the_correct_commit_stamp = () =>
-			SystemTime.UtcNow.Subtract(constructed.CommitStamp).ShouldBeLessThan(TimeSpan.FromMilliseconds(150));
+			SystemTime.UtcNow.ShouldEqual(constructed.CommitStamp);
 
 		It should_build_the_commit_with_the_headers_provided = () =>
 			constructed.Headers[headers.First().Key].ShouldEqual(headers.First().Value);
@@ -356,6 +356,7 @@ namespace EventStore.Core.UnitTests
 		{
 			persistence = new Mock<ICommitEvents>();
 			stream = new OptimisticEventStream(streamId, persistence.Object);
+			SystemTime.Resolver = () => new DateTime(2012, 1, 1, 13, 0, 0);
 		};
 
 		Cleanup cleanup = () =>
