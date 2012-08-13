@@ -2,16 +2,16 @@ properties {
     $base_directory = Resolve-Path .. 
 	$publish_directory = "$base_directory\publish"
 	$build_directory = "$base_directory\build"
-	$src_directory = "$base_directory\Src"
+	$src_directory = "$base_directory\src"
 	$output_directory = "$base_directory\output"
 	$packages_directory = "$src_directory\packages"
 
-	$sln_file = "$base_directory\src\EventStore.sln"
+	$sln_file = "$src_directory\EventStore.sln"
 	$keyfile = "$src_directory/EventStore.snk"
 	$target_config = "Release"
 	$framework_version = "v4.0"
 
-	$mspec_path = "$packages_directory\Machine.Specifications.0.5.8\tools\mspec-x86-clr4.exe"
+	$mspec_path = @(gci -r -i mspec-x86-clr4.exe $base_directory)[0].FullName
 	$ilMergeModule.ilMergePath = "$base_directory\bin\ilmerge-bin\ILMerge.exe"
 
 	if($runPersistenceTests -eq $null) {
