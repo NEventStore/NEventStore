@@ -1,6 +1,6 @@
 properties {
     $base_directory = Resolve-Path .. 
-	$publish_directory = "$base_directory\publish"
+	$publish_directory = "$base_directory\publish-net40"
 	$build_directory = "$base_directory\build"
 	$src_directory = "$base_directory\src"
 	$output_directory = "$base_directory\output"
@@ -13,6 +13,7 @@ properties {
 
 	$mspec_path = @(gci -r -i mspec-x86-clr4.exe $base_directory)[0].FullName
 	$ilMergeModule.ilMergePath = "$base_directory\bin\ilmerge-bin\ILMerge.exe"
+	$nuget_dir = "$src_directory\.nuget"
 
 	if($runPersistenceTests -eq $null) {
 		$runPersistenceTests = $false
@@ -78,7 +79,7 @@ task PackageMongoPersistence -depends Clean, Compile,PackageEventStore {
 	copy "$src_directory\proj\EventStore.Persistence.MongoPersistence\bin\$target_config\MongoDB*.dll" "$output_directory\plugins\persistence\mongo"
 }
 
-task PackageRavenPersistence -depends Clean, Compile,PackageEventStore {
+task PackageRavenPersistence -depends Clean, Compile, PackageEventStore {
 	mkdir $output_directory\plugins\persistence\raven | out-null
 	
 	Merge-Assemblies -outputFile "$output_directory/plugins/persistence/raven/EventStore.Persistence.RavenPersistence.dll" -exclude "Raven.*" -keyfile $keyFile -files @(
@@ -89,7 +90,7 @@ task PackageRavenPersistence -depends Clean, Compile,PackageEventStore {
 	copy "$src_directory\proj\EventStore.Persistence.RavenPersistence\bin\$target_config\Raven*.dll" "$output_directory\plugins\persistence\raven"
 }
 
-task PackageJsonSerialization -depends Clean, Compile,PackageEventStore {
+task PackageJsonSerialization -depends Clean, Compile, PackageEventStore {
 	mkdir $output_directory\plugins\serialization\json-net | out-null
 
 	Merge-Assemblies -outputFile "$output_directory/plugins/serialization/json-net/EventStore.Serialization.Json.dll" -exclude "EventStore.*" -keyfile $keyFile -files @(
@@ -109,14 +110,14 @@ task PackageServiceStackSerialization -depends Clean, Compile, PackageEventStore
 	)
 }
 
-task PackageNLogLogging -depends Clean, Compile,PackageEventStore {
+task PackageNLogLogging -depends Clean, Compile, PackageEventStore {
 	mkdir $output_directory\plugins\logging\nlog | out-null
 	copy "$src_directory\proj\EventStore.Logging.NLog\bin\$target_config\EventStore.Logging.NLog.*" "$output_directory\plugins\logging\nlog"
 
 	copy "$src_directory\proj\EventStore.Logging.NLog\bin\$target_config\NLog.dll" "$output_directory\plugins\logging\nlog"
 }
 
-task PackageLog4NetLogging -depends Clean, Compile,PackageEventStore {
+task PackageLog4NetLogging -depends Clean, Compile, PackageEventStore {
 	mkdir $output_directory\plugins\logging\log4net | out-null
 
 	copy "$src_directory\proj\EventStore.Logging.Log4Net\bin\$target_config\EventStore.Logging.Log4Net.*" "$output_directory\plugins\logging\log4net"
@@ -132,4 +133,8 @@ task PackageDocs {
 task Clean {
 	Clean-Item $publish_directory -ea SilentlyContinue
     Clean-Item $output_directory -ea SilentlyContinue
+}
+
+task NuGetPack -depends Package {
+	gci -r -i *.nuspec "$nuget_dir" |% { .$nuget_dir\nuget.exe pack $_ -basepath $base_directory -o $publish_directory }
 }
