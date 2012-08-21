@@ -11,7 +11,7 @@ properties {
 	$target_config = "Release"
 	$framework_version = "v4.0"
 
-	$mspec_path = @(gci -r -i mspec-x86-clr4.exe $base_directory)[0].FullName
+	$mspec_path = "$src_directory\packages\Machine.Specifications.0.5.8\tools\mspec-x86-clr4.exe"
 	$ilMergeModule.ilMergePath = "$base_directory\bin\ilmerge-bin\ILMerge.exe"
 	$nuget_dir = "$src_directory\.nuget"
 
