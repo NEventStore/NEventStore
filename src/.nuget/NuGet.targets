@@ -18,7 +18,7 @@
     
     <ItemGroup Condition=" '$(PackageSources)' == '' ">
         <!-- Package sources used to restore packages. By default will used the registered sources under %APPDATA%\NuGet\NuGet.Config -->
-            <PackageSource Include="https://nuget.org/api/v1/" />
+            <PackageSource Include="https://nuget.org/api/v1/" /> <!-- This a workaround for package restore failur that-->
         <!--
             <PackageSource Include="https://my-nuget-source/nuget/" />
         -->

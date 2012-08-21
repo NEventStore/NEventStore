@@ -57,6 +57,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Logging.Log4Net"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{08A28C69-B04C-4622-8BF7-C9C4C410E64C}"
 	ProjectSection(SolutionItems) = preProject
+		.nuget\EventStore.Logging.Log4Net.nuspec = .nuget\EventStore.Logging.Log4Net.nuspec
+		.nuget\EventStore.Logging.NLog.nuspec = .nuget\EventStore.Logging.NLog.nuspec
+		.nuget\EventStore.nuspec = .nuget\EventStore.nuspec
+		.nuget\EventStore.Persistence.MongoPersistence.nuspec = .nuget\EventStore.Persistence.MongoPersistence.nuspec
+		.nuget\EventStore.Persistence.RavenPersistence.nuspec = .nuget\EventStore.Persistence.RavenPersistence.nuspec
+		.nuget\EventStore.Serialization.Json.nuspec = .nuget\EventStore.Serialization.Json.nuspec
+		.nuget\EventStore.Serialization.ServiceStack.nuspec = .nuget\EventStore.Serialization.ServiceStack.nuspec
+		.nuget\NuGet.Config = .nuget\NuGet.Config
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
