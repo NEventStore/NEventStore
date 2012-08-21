@@ -10,6 +10,7 @@ properties {
 	$keyfile = "$src_directory/EventStore.snk"
 	$target_config = "Release"
 	$framework_version = "v4.0"
+	$version = "0.0.0.0"
 
 	$mspec_path = "$src_directory\packages\Machine.Specifications.0.5.8\tools\mspec-x86-clr4.exe"
 	$ilMergeModule.ilMergePath = "$base_directory\bin\ilmerge-bin\ILMerge.exe"
@@ -22,7 +23,15 @@ properties {
 
 task default -depends Build
 
-task Build -depends Clean, Compile, Test
+task Build -depends Clean, UpdateVersion, Compile, Test
+
+task UpdateVersion {
+	$versionAssemblyInfoFile = "$src_directory/proj/VersionAssemblyInfo.cs"
+	"using System.Reflection;" > $versionAssemblyInfoFile
+	"" >> $versionAssemblyInfoFile
+	"[assembly: AssemblyVersion(""$version"")]" >> $versionAssemblyInfoFile
+	"[assembly: AssemblyFileVersion(""$version"")]" >> $versionAssemblyInfoFile
+}
 
 task Compile {
 	exec { msbuild /nologo /verbosity:quiet $sln_file /p:Configuration=$target_config /t:Clean }
@@ -136,5 +145,5 @@ task Clean {
 }
 
 task NuGetPack -depends Package {
-	gci -r -i *.nuspec "$nuget_dir" |% { .$nuget_dir\nuget.exe pack $_ -basepath $base_directory -o $publish_directory }
+	gci -r -i *.nuspec "$nuget_dir" |% { .$nuget_dir\nuget.exe pack $_ -basepath $base_directory -o $publish_directory -version $version }
 }
