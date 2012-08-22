@@ -20,9 +20,12 @@
 		protected virtual IDocumentStore GetStore()
 		{
 			var store = new DocumentStore();
-
+            
 			if (!string.IsNullOrEmpty(this.config.ConnectionName))
 				store.ConnectionStringName = this.config.ConnectionName;
+
+            if (!string.IsNullOrEmpty(this.config.ConnectionString))
+                store.ParseConnectionString(config.ConnectionString);
 
 			if (this.config.Url != null)
 				store.Url = this.config.Url.ToString();

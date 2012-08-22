@@ -7,6 +7,7 @@ namespace EventStore.Persistence.RavenPersistence
 	public class RavenConfiguration
 	{
 		public string ConnectionName { get; set; }
+        public string ConnectionString { get; set; }
 		public Uri Url { get; set; }
 		public string DefaultDatabase { get; set; }
         public string Partition { get; set; }
