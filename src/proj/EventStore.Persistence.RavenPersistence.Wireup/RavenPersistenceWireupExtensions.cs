@@ -7,5 +7,11 @@ namespace EventStore
 		{
 			return new RavenPersistenceWireup(wireup, connectionName);
 		}
+
+        public static RavenPersistenceWireup UsingRavenPersistence(
+            this Wireup wireup)
+        {
+            return new RavenPersistenceWireup(wireup);
+        }
 	}
 }
