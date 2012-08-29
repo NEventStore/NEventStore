@@ -37,7 +37,9 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
         protected override IDbCommand BuildCommand(string statement)
         {
             var command = base.BuildCommand(statement);
-            command.GetType().GetProperty("BindByName").SetValue(command, true, null);
+            var pi = command.GetType().GetProperty("BindByName");
+            if(pi!= null) 
+                pi.SetValue(command, true, null);
             return command;
         }
     }

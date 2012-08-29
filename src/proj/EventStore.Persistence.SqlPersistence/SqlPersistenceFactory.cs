@@ -99,6 +99,9 @@ namespace EventStore.Persistence.SqlPersistence
             if (providerName.Contains("ORACLE") && providerName.Contains("DATAACCESS"))
                 return new OracleNativeDialect();
 
+            if (providerName == "SYSTEM.DATA.ORACLECLIENT")
+                return new OracleNativeDialect();
+
 			return new MsSqlDialect();
 		}
 	}
