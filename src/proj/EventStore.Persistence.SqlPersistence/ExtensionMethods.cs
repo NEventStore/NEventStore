@@ -18,7 +18,9 @@ namespace EventStore.Persistence.SqlPersistence
 		}
 		public static int ToInt(this object value)
 		{
-			return value is long ? (int)(long)value : (int)value;
+            return  value is int ? (int)value : 
+                    value is long ? (int)(long)value :
+                    value is decimal ? (int)(decimal)value : Convert.ToInt32(value);
 		}
 		public static DateTime ToDateTime(this object value)
 		{
