@@ -108,11 +108,6 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
         public override bool IsDuplicate(Exception exception)
         {
             return exception.Message.Contains("ORA-00001");
-            var pi = exception.GetType().GetProperty("ErrorCode");
-            if (pi == null)
-                return false;
-            int errorCode = (int)pi.GetValue(exception, null);
-            return errorCode == UniqueKeyViolation;
         }
         private static string LimitedQuery(string query)
         {
