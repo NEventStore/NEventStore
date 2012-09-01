@@ -16,6 +16,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		private readonly IDbTransaction transaction;
 
 		protected IDictionary<string, object> Parameters { get; private set; }
+        protected ISqlDialect Dialect { get { return dialect; } }
 
 		public CommonDbStatement(
 			ISqlDialect dialect,

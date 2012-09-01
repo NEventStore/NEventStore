@@ -47,6 +47,13 @@
     <Compile Include="CommitExtensions.cs" />
     <Compile Include="ConfigurationConnectionFactory.cs" />
     <Compile Include="ConnectionScope.cs" />
+    <Compile Include="SqlDialects\OracleDbStatement.cs" />
+    <Compile Include="SqlDialects\OracleNativeDialect.cs" />
+    <Compile Include="SqlDialects\OracleNativeStatements.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>OracleNativeStatements.resx</DependentUpon>
+    </Compile>
     <Compile Include="UniqueKeyViolationException.cs" />
     <Compile Include="ThreadScope.cs" />
     <Compile Include="Messages.Designer.cs">
@@ -174,6 +181,11 @@
     <EmbeddedResource Include="SqlDialects\MySqlStatements.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>MySqlStatements.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SqlDialects\OracleNativeStatements.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>OracleNativeStatements.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="SqlDialects\PostgreSqlStatements.resx">
       <SubType>Designer</SubType>
