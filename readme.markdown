@@ -1,7 +1,13 @@
-EventStore v3.0
+EventStore
 ======================================================================
 
-## Overview
+ - The most recent stable release is avaiable on [NuGet.org](https://nuget.org/packages/EventStore)
+ - CI builds can be viewed on [Codebetter's TeamCity server](http://teamcity.codebetter.com/project.html?projectId=project247&tab=projectOverview).
+ - CI package are availble on [myget.org](http://www.myget.org/gallery/eventstore).
+ 
+ CI builds and packages are to be considered unstable.
+
+## Ove rview
 The EventStore is a persistence library used to abstract different storage implementations
 when using event sourcing as storage mechanism.  Event sourcing is most closely associated
 with a concept known as [CQRS](http://cqrsinfo.com).
