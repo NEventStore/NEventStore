@@ -7,7 +7,8 @@ namespace EventStore.Persistence.RavenPersistence.Indexes
 	{
 		public RavenCommitsByDispatched()
 		{
-            this.Map = commits => from c in commits select new { c.Dispatched, c.Partition };
+            //Redundant ?? null needed for compatibility with older models. Please do not remove.
+            this.Map = commits => from c in commits select new { c.Dispatched, Partition = c.Partition ?? null };
 		}
 	}
 }
