@@ -29,7 +29,12 @@
         private readonly int pageSize;
         private int initialized;
         private readonly string partition;
-        
+
+        public IDocumentStore Store
+        {
+            get { return store; }
+        }
+
         public RavenPersistenceEngine(IDocumentStore store, RavenConfiguration config)
         {
             if (store == null)
