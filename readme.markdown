@@ -7,7 +7,7 @@ EventStore
  
  CI builds and packages are to be considered unstable.
 
-## Ove rview
+## Overview
 The EventStore is a persistence library used to abstract different storage implementations
 when using event sourcing as storage mechanism.  Event sourcing is most closely associated
 with a concept known as [CQRS](http://cqrsinfo.com).
