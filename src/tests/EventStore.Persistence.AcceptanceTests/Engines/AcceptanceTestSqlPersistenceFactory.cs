@@ -2,20 +2,20 @@ namespace EventStore.Persistence.AcceptanceTests.Engines
 {
 	using System;
 	using System.Configuration;
-	using System.Transactions;
 	using Serialization;
 	using SqlPersistence;
 
 	public abstract class AcceptanceTestSqlPersistenceFactory : SqlPersistenceFactory
 	{
 		protected AcceptanceTestSqlPersistenceFactory(string connectionName)
-			: this(new TransformConfigConnectionFactory(connectionName), new BinarySerializer())
+			: this(new TransformConfigConnectionFactory(connectionName), new BinarySerializer(), connectionName)
 		{
 		}
-		private AcceptanceTestSqlPersistenceFactory(IConnectionFactory factory, ISerialize serializer)
-			: base(factory, serializer, null, TransactionScopeOption.Suppress, 0)
+		private AcceptanceTestSqlPersistenceFactory(IConnectionFactory factory, ISerialize serializer, string connectionName)
+			: base(factory, serializer, ResolveDialect(new ConfigurationConnectionFactory(connectionName).Settings))
 		{
 			var pageSize = "pageSize".GetSetting();
+
 			if (!string.IsNullOrEmpty(pageSize))
 				this.PageSize = int.Parse(pageSize);
 		}
@@ -57,7 +57,7 @@ namespace EventStore.Persistence.AcceptanceTests.Engines
 	}
 	public class AcceptanceTestMsSqlPersistenceFactory : AcceptanceTestSqlPersistenceFactory
 	{
-		public AcceptanceTestMsSqlPersistenceFactory() : base("MSSQL") { }
+		public AcceptanceTestMsSqlPersistenceFactory() : base("MsSql") { }
 	}
 	public class AcceptanceTestMySqlPersistenceFactory : AcceptanceTestSqlPersistenceFactory
 	{
