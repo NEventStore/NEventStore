@@ -113,6 +113,17 @@
 				.SetSortOrder("CommitStamp")
 				.Select(x => x.ToCommit(this.serializer)));
 		}
+
+		public virtual IEnumerable<Commit> GetFromTo(DateTime start, DateTime end)
+		{
+			Logger.Debug(Messages.GettingAllCommitsFromTo, start, end);
+
+			return this.TryMongo(() => this.PersistedCommits
+				.Find(Query.And(Query.GTE("CommitStamp", start), Query.LT("CommitStamp", end)))
+				.SetSortOrder("CommitStamp")
+				.Select(x => x.ToCommit(this.serializer)));
+		}
+
 		public virtual void Commit(Commit attempt)
 		{
 			Logger.Debug(Messages.AttemptingToCommit,

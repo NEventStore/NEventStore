@@ -31,6 +31,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return RemovePaging(base.GetCommitsFromInstant); }
 		}
+		public override string GetCommitsFromToInstant
+		{
+			get { return RemovePaging(base.GetCommitsFromToInstant); }
+		}
 		public override string GetCommitsFromStartingRevision
 		{
 			get { return RemovePaging(base.GetCommitsFromStartingRevision); }

@@ -431,6 +431,3 @@ namespace EventStore.Persistence.AcceptanceTests
 		};
 	}
 }
-
-// ReSharper enable InconsistentNaming
-#pragma warning restore 169

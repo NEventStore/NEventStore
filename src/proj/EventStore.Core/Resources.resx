@@ -165,6 +165,9 @@
   <data name="GettingAllCommitsFromTime" xml:space="preserve">
     <value>Getting all commits from '{0}' forward.</value>
   </data>
+  <data name="GettingAllCommitsFromToTime" xml:space="preserve">
+    <value>Getting all commits from '{0}' to '{1}'.</value>
+  </data>
   <data name="AttemptingToCommit" xml:space="preserve">
     <value>Attempting to append commit '{0}' to stream '{1}' at position '{2}'.</value>
   </data>

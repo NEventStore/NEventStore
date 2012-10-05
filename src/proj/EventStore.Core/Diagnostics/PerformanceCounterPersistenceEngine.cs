@@ -25,6 +25,12 @@
 			this.persistence.MarkCommitAsDispatched(commit);
 			this.counters.CountCommitDispatched();
 		}
+
+		public IEnumerable<Commit> GetFromTo(DateTime start, DateTime end)
+		{
+			return this.persistence.GetFromTo(start, end);
+		}
+
 		public virtual IEnumerable<Commit> GetUndispatchedCommits()
 		{
 			return this.persistence.GetUndispatchedCommits();
