@@ -1,3 +1,5 @@
+using EventStore.Persistence.SqlPersistence.SqlDialects;
+
 namespace EventStore.Example
 {
 	using System;
@@ -33,7 +35,9 @@ namespace EventStore.Example
 		{
 			 return Wireup.Init()
 				.LogToOutputWindow()
+				.UsingInMemoryPersistence()
 				.UsingSqlPersistence("EventStore") // Connection string is in app.config
+					.WithDialect(new MsSqlDialect())
 					.EnlistInAmbientTransaction() // two-phase commit
 					.InitializeStorageEngine()
 					.TrackPerformanceInstance("example")
