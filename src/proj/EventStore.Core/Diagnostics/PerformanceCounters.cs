@@ -67,7 +67,7 @@
 			this.eventsRate = new PerformanceCounter(CategoryName, EventsRateName, instanceName, false);
 			this.totalSnapshots = new PerformanceCounter(CategoryName, TotalSnapshotsName, instanceName, false);
 			this.snapshotsRate = new PerformanceCounter(CategoryName, SnapshotsRateName, instanceName, false);
-			this.undispatchedCommits = new PerformanceCounter(UndispatchedQueue, SnapshotsRateName, instanceName, false);
+			this.undispatchedCommits = new PerformanceCounter(CategoryName, UndispatchedQueue, instanceName, false);
 		}
 		~PerformanceCounters()
 		{
