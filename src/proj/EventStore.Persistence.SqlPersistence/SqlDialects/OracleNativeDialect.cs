@@ -82,7 +82,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
         private string AddOuterTrailingCommitSequence(string query)
         {
-            return (query.TrimEnd(new char[] { ';' }) + "\r\n" + OracleNativeStatements.AddCommitSequence);
+            return (query.TrimEnd(new[] { ';' }) + "\r\n" + OracleNativeStatements.AddCommitSequence);
         }
         public override IDbStatement BuildStatement(System.Transactions.TransactionScope scope, System.Data.IDbConnection connection, System.Data.IDbTransaction transaction)
         {
@@ -97,10 +97,8 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
         }
         private static string ExtractOrderBy(ref string query)
         {
-            var result = String.Empty;
-
-            var orderByIndex = query.IndexOf("ORDER BY");
-            result = query.Substring(orderByIndex).Replace(";", String.Empty);
+	        var orderByIndex = query.IndexOf("ORDER BY", StringComparison.Ordinal);
+            string result = query.Substring(orderByIndex).Replace(";", String.Empty);
             query = query.Substring(0, orderByIndex);
 
             return result;
@@ -113,7 +111,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
         {
             query = RemovePaging(query);
             if (query.EndsWith(";"))
-                query = query.TrimEnd(new char[] { ';' });
+                query = query.TrimEnd(new[] { ';' });
             var value = OracleNativeStatements.LimitedQueryFormat.FormatWith(query);
             return value;
         }
@@ -127,7 +125,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
             var orderBy = ExtractOrderBy(ref query);
 
-            var fromIndex = query.IndexOf("FROM ");
+            var fromIndex = query.IndexOf("FROM ", StringComparison.Ordinal);
             var from = query.Substring(fromIndex);
 
             var select = query.Substring(0, fromIndex);
