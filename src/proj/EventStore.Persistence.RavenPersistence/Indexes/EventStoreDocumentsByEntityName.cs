@@ -16,10 +16,11 @@ namespace EventStore.Persistence.RavenPersistence.Indexes
         {
             return new IndexDefinition
             {
+                //Redundant ?? null needed for compatibility with older models. Please do not remove.
                 Map = @"from doc in docs 
                         let Tag = doc[""@metadata""][""Raven-Entity-Name""]
                         where  Tag != null 
-                        select new { Tag, LastModified = (DateTime)doc[""@metadata""][""Last-Modified""], Partition = doc.Partition };",
+                        select new { Tag, LastModified = (DateTime)doc[""@metadata""][""Last-Modified""], Partition = doc.Partition ?? null };",
                 Indexes =
 					{
 						{"Tag", FieldIndexing.NotAnalyzed},

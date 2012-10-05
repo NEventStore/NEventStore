@@ -7,8 +7,9 @@ namespace EventStore.Persistence.RavenPersistence.Indexes
 	{
 		public RavenCommitByRevisionRange()
 		{
+            //Redundant ?? null needed for compatibility with older models. Please do not remove.
 			this.Map = commits => from c in commits
-                                  select new { c.StreamId, c.StartingStreamRevision, c.StreamRevision, c.Partition };
+                                  select new { c.StreamId, c.StartingStreamRevision, c.StreamRevision, Partition = c.Partition ?? null };
 		}
 	}
 }
