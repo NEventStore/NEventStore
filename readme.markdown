@@ -67,6 +67,7 @@ TransactionScopeOption of 'Required'.  Simply indicate this using the following 
 ### Relational Databases
 [Complete] Microsoft SQL Server 2005 (or later)  
 [Complete] MySQL 5.0 (or later)  
+
 * [Complete] InnoDB  
 * [Complete] NDB/MySQL Cluster  
 * [Complete] Drizzle  
@@ -79,6 +80,7 @@ TransactionScopeOption of 'Required'.  Simply indicate this using the following 
 * [Complete] OurDelta  
 * [Untested] MyISAM  
 * [Untested] BerkleyDB  
+
 [Complete] PostgreSQL 8.0 (or later)  
 [Complete] Firebird 2.0 (or later)  
 [In progress] Sybase (ASE)  
