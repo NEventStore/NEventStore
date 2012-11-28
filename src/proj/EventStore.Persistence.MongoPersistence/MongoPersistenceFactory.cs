@@ -18,7 +18,9 @@
 		public virtual IPersistStreams Build()
 		{
 			var connectionString = this.TransformConnectionString(this.GetConnectionString());
-			var database = MongoDatabase.Create(connectionString);
+            // var database = MongoDatabase.Create(connectionString);
+			MongoConnectionStringBuilder builder = new MongoConnectionStringBuilder(connectionString);
+            var database = (new MongoClient(connectionString)).GetServer().GetDatabase(builder.DatabaseName);
 			return new MongoPersistenceEngine(database, this.serializer);
 		}
 

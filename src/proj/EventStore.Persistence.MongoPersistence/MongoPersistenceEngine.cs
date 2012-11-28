@@ -35,15 +35,15 @@
 
 			this.commitSettings = this.store.CreateCollectionSettings<BsonDocument>("Commits");
 			this.commitSettings.AssignIdOnInsert = false;
-			this.commitSettings.SafeMode = SafeMode.True;
+			this.commitSettings.WriteConcern = WriteConcern.Acknowledged;
 
 			this.snapshotSettings = this.store.CreateCollectionSettings<BsonDocument>("Snapshots");
 			this.snapshotSettings.AssignIdOnInsert = false;
-			this.snapshotSettings.SafeMode = SafeMode.False;
+            this.snapshotSettings.WriteConcern = WriteConcern.Unacknowledged;
 
 			this.streamSettings = this.store.CreateCollectionSettings<BsonDocument>("Streams");
 			this.streamSettings.AssignIdOnInsert = false;
-			this.streamSettings.SafeMode = SafeMode.False;
+            this.streamSettings.WriteConcern = WriteConcern.Unacknowledged;
 		}
 
 		public void Dispose()
@@ -136,7 +136,7 @@
 				try
 				{
 					// for concurrency / duplicate commit detection safe mode is required
-					this.PersistedCommits.Insert(commit, SafeMode.True);
+					this.PersistedCommits.Insert(commit, WriteConcern.Acknowledged);
 					this.UpdateStreamHeadAsync(attempt.StreamId, attempt.StreamRevision, attempt.Events.Count);
 					Logger.Debug(Messages.CommitPersisted, attempt.CommitId);
 				}
