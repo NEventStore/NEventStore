@@ -26,7 +26,7 @@ namespace EventStore.Persistence.AzureTablesPersistence.Extensions
             var headers = serializer.Serialize(commit.Headers);
             var payload = serializer.Serialize(commit.Events);
 
-            if (headers.Length > (64 * 1000) || payload.Length >= (64 * 1000))
+            if (headers.Length >= (64 * 1000) || payload.Length >= (64 * 1000))
             {
                 //TODO: Handle this more gracefully, but note that table entities are limited to 1 MB.
                 throw new InvalidOperationException("Events / Headers too big to serialize (>= 64k).");

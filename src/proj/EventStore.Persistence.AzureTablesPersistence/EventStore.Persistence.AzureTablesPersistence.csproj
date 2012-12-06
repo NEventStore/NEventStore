@@ -87,7 +87,6 @@
     <Compile Include="Extensions\StreamHeadExtensions.cs" />
     <Compile Include="Extensions\CommitExtensions.cs" />
     <Compile Include="Extensions\PointQueryExtensions.cs" />
-    <Compile Include="Helpers\PointQueryHelpers.cs" />
     <Compile Include="Messages.Designer.cs">
       <DependentUpon>Messages.resx</DependentUpon>
       <AutoGen>True</AutoGen>
