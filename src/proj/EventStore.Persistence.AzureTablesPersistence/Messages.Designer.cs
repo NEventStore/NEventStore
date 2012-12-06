@@ -133,7 +133,7 @@ namespace EventStore.Persistence.AzureTablesPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Getting a list of streams to snapshot..
+        ///   Looks up a localized string similar to Getting a list of streams to snapshot using a FULL TABLE scan..
         /// </summary>
         internal static string GettingStreamsToSnapshot {
             get {

@@ -49,6 +49,11 @@ namespace EventStore.Persistence.AzureTablesPersistence
             get { return _tableClient.GetTableReference(StreamHeadsTableName); }
         }
 
+        private CloudTable SnapShotsTable
+        {
+            get { return _tableClient.GetTableReference(SnapshotsTableName); }
+        }
+
         public IEnumerable<Commit> GetFrom(DateTime start)
         {
             Logger.Debug(Messages.GettingAllCommitsFrom, start);
@@ -242,17 +247,78 @@ namespace EventStore.Persistence.AzureTablesPersistence
 
         public bool AddSnapshot(Snapshot snapshot)
         {
-            throw new NotImplementedException();
+            if (snapshot == null)
+                return false;
+
+            Logger.Debug(Messages.AddingSnapshot, snapshot.StreamId, snapshot.StreamRevision);
+
+            try
+            {
+                var azureSnapshot = snapshot.ToAzureTablesSnapshot(_serializer);
+
+                var upsert = TableOperation.InsertOrReplace(azureSnapshot);
+
+                SnapShotsTable.Execute(upsert);
+
+                var streamHead = new StreamHead(snapshot.StreamId, -1, -1);
+
+                var pointQuery = TableOperation.Retrieve<AzureTablesStreamHead>(StreamHeadExtensions.GetPartitionKey(streamHead),
+                                                                                StreamHeadExtensions.GetRowKey(streamHead));
+
+                var azureStreamHead = (AzureTablesStreamHead)StreamHeadsTable.Execute(pointQuery).Result;
+
+                var unsnapshotted = streamHead.HeadRevision - snapshot.StreamRevision;
+
+                azureStreamHead.Unsnapshotted = unsnapshotted;
+                azureStreamHead.SnapshotRevision = snapshot.StreamRevision;
+
+                StreamHeadsTable.Execute(TableOperation.Replace(azureStreamHead));
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public Snapshot GetSnapshot(Guid streamId, int maxRevision)
         {
-            throw new NotImplementedException();
+            Logger.Debug(Messages.GettingRevision, streamId, maxRevision);
+
+            var partitionFilter = TableQuery.GenerateFilterCondition("PartitionKey",
+                                                                     QueryComparisons.Equal,
+                                                                     streamId.ToString());
+
+            var rowFilter = TableQuery.GenerateFilterCondition("RowKey",
+                                                               QueryComparisons.LessThanOrEqual,
+                                                               maxRevision.ToString(CultureInfo.InvariantCulture));
+
+            var filter = TableQuery.CombineFilters(partitionFilter, TableOperators.And, rowFilter);
+
+            var query = new TableQuery<AzureTablesSnapshot>();
+            query.Where(filter);
+
+            var snapshot = SnapShotsTable.ExecuteQuery(query)
+                              .Select(x => x.ToSnapshot(_serializer))
+                              .OrderByDescending(x => x.StreamRevision)
+                              .FirstOrDefault();
+
+            return snapshot;
         }
 
         public IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
         {
-            throw new NotImplementedException();
+            Logger.Debug(Messages.GettingStreamsToSnapshot);
+
+            var query = new TableQuery<AzureTablesStreamHead>();
+            query = query.Where(TableQuery.GenerateFilterConditionForInt("Unsnapshotted",
+                                                                         QueryComparisons.GreaterThanOrEqual,
+                                                                         maxThreshold));
+
+            var streamHeads = StreamHeadsTable.ExecuteQuery(query).OrderByDescending(x => x.Unsnapshotted).Select(x => x.ToStreamHead());
+
+            return streamHeads;
         }
 
 

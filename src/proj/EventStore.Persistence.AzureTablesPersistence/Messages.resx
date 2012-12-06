@@ -142,7 +142,7 @@
     <value>Getting snapshot for stream '{0}' on or before revision {1} using a FULL TABLE scan.</value>
   </data>
   <data name="GettingStreamsToSnapshot" xml:space="preserve">
-    <value>Getting a list of streams to snapshot.</value>
+    <value>Getting a list of streams to snapshot using a FULL TABLE scan.</value>
   </data>
   <data name="GettingUndispatchedCommits" xml:space="preserve">
     <value>Getting the list of all undispatched commits using a FULL TABLE scan.</value>
