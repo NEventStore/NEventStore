@@ -34,7 +34,7 @@ namespace EventStore.Persistence.AzureTablesPersistence
 
             if (headers.Length > (64 * 1000) || payload.Length >= (64 * 1000))
             {
-                // Handle this more gracefully, but note table entities are limited to 1 MB.
+                //TODO: Handle this more gracefully, but note table entities are limited to 1 MB.
                 throw new InvalidOperationException("Events / Headers too big to serialize (>= 64k).");
             }
 
