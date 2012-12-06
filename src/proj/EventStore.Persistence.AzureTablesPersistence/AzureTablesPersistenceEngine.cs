@@ -3,26 +3,20 @@ using System.Collections.Generic;
 using System.Data.Services.Client;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using EventStore.Logging;
+using EventStore.Persistence.AzureTablesPersistence.Datastructures;
+using EventStore.Persistence.AzureTablesPersistence.Extensions;
 using EventStore.Serialization;
 using Microsoft.WindowsAzure.Storage.Table;
-using Microsoft.WindowsAzure.Storage.Table.DataServices;
 
 namespace EventStore.Persistence.AzureTablesPersistence
 {
     public class AzureTablesPersistenceEngine : IPersistStreams
     {
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof(AzureTablesPersistenceEngine));
-
-        private const string CommitsTableName = "Commits";
-        private const string SnapshotsTableName = "Snapshots";
-        private const string StreamHeadsTableName = "StreamHeads";
-
-
-        private readonly CloudTableClient _tableClient;
-        private readonly ISerialize _serializer;
+        private readonly CloudTableClient tableClient;
+        private readonly ISerialize serializer;
 
         private int initialized;
         private bool disposed;
@@ -35,118 +29,34 @@ namespace EventStore.Persistence.AzureTablesPersistence
             if (serializer == null)
                 throw new ArgumentNullException("serializer");
 
-            _tableClient = tableClient;
-            _serializer = serializer;
+            this.tableClient = tableClient;
+            this.serializer = serializer;
         }
 
-        private CloudTable CommitsTable
+        public void Dispose()
         {
-            get { return _tableClient.GetTableReference(CommitsTableName); }
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
-
-        private CloudTable StreamHeadsTable
+        protected virtual void Dispose(bool disposing)
         {
-            get { return _tableClient.GetTableReference(StreamHeadsTableName); }
+            if (!disposing || this.disposed)
+                return;
+
+            Logger.Debug(Messages.ShuttingDownPersistence);
+            this.disposed = true;
         }
 
-        private CloudTable SnapShotsTable
+        public void Initialize()
         {
-            get { return _tableClient.GetTableReference(SnapshotsTableName); }
+            if (Interlocked.Increment(ref initialized) > 1)
+                return; // Initialization already done.
+
+            PersistedCommits.CreateIfNotExists();
+            PersistedSnapshots.CreateIfNotExists();
+            PersistedStreamHeads.CreateIfNotExists();
         }
-
-        public IEnumerable<Commit> GetFrom(DateTime start)
-        {
-            Logger.Debug(Messages.GettingAllCommitsFrom, start);
-
-            var query = new TableQuery<AzureTablesCommit>();
-            query = query.Where(TableQuery.GenerateFilterConditionForDate("CommitStamp", QueryComparisons.GreaterThanOrEqual, start));
-
-            var commits = CommitsTable.ExecuteQuery(query)
-                                      .OrderBy(x => x.CommitStamp)
-                                      .Select(x => x.ToCommit(_serializer));
-
-            return commits;
-        }
-
-        public IEnumerable<Commit> GetFromTo(DateTime start, DateTime end)
-        {
-            Logger.Debug(Messages.GettingAllCommitsBetween, start, end);
-
-            var query = new TableQuery<AzureTablesCommit>();
-
-            var commitsAfterFilter = TableQuery.GenerateFilterConditionForDate("CommitStamp",
-                                                                               QueryComparisons.GreaterThanOrEqual,
-                                                                               start);
-
-            var commitsBeforeFilter = TableQuery.GenerateFilterConditionForDate("CommitStamp",
-                                                                                QueryComparisons.LessThanOrEqual,
-                                                                                end);
-
-            query = query.Where(TableQuery.CombineFilters(commitsAfterFilter, TableOperators.And, commitsBeforeFilter));
-
-            var commits = CommitsTable.ExecuteQuery(query)
-                                      .OrderBy(x => x.CommitStamp)
-                                      .Select(x => x.ToCommit(_serializer));
-
-            return commits;
-        }
-
-        public IEnumerable<Commit> GetUndispatchedCommits()
-        {
-            Logger.Debug(Messages.GettingUndispatchedCommits);
-
-            var query = new TableQuery<AzureTablesCommit>();
-
-            var notDispatchedFilter = TableQuery.GenerateFilterConditionForBool("Dispatched",
-                                                                                QueryComparisons.Equal,
-                                                                                false);
-
-            query.Where(notDispatchedFilter);
-
-            var commits = CommitsTable.ExecuteQuery(query)
-                                      .Select(x => x.ToCommit(_serializer));
-
-            return commits;
-
-        }
-
-        public void MarkCommitAsDispatched(Commit commit)
-        {
-            Logger.Debug(Messages.MarkingCommitAsDispatched, commit.CommitId);
-
-            var pointQuery = commit.ToPointQuery();
-
-            bool committed = false;
-            while (!committed)
-            {
-                var storedCommit = (AzureTablesCommit)CommitsTable.Execute(pointQuery).Result;
-
-                if (storedCommit != null)
-                {
-                    try
-                    {
-                        storedCommit.Dispatched = true;
-
-                        var updateOperation = TableOperation.Replace(storedCommit);
-
-                        CommitsTable.Execute(updateOperation);
-
-                        committed = true;
-                    }
-                    catch (DataServiceRequestException)
-                    {
-                        Logger.Debug(Messages.RetryMarkingCommitAsDispatched, commit.CommitId);
-                        // Retry. Not volatile since this is an idempotent operation.
-                    }
-                }
-                else
-                {
-                    // Does not happen???
-                    committed = true;
-                }
-            }
-        }
-
+        
         public IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
         {
             Logger.Debug(Messages.GettingAllCommitsBetween, streamId, minRevision, maxRevision);
@@ -161,20 +71,59 @@ namespace EventStore.Persistence.AzureTablesPersistence
             var rowKeyFilter = TableQuery.CombineFilters(minRowKeyFilter, TableOperators.And, maxRowKeyFilter);
 
             var filter = TableQuery.CombineFilters(partitionKeyFilter, TableOperators.And, rowKeyFilter);
-            var commits = CommitsTable.ExecuteQuery(new TableQuery<AzureTablesCommit>() { FilterString = filter }).Select(x => x.ToCommit(_serializer));
+            var query = new TableQuery<AzureCommit>();
+            query = query.Where(filter);
+
+            var commits = ExecuteQuery(query).Select(x => x.ToCommit(serializer));
+
+            return commits;
+        }
+        public IEnumerable<Commit> GetFrom(DateTime start)
+        {
+            Logger.Debug(Messages.GettingAllCommitsFrom, start);
+
+            var query = new TableQuery<AzureCommit>();
+            query = query.Where(TableQuery.GenerateFilterConditionForDate("CommitStamp", QueryComparisons.GreaterThanOrEqual, start));
+
+            var commits = ExecuteQuery(query)
+                                      .OrderBy(x => x.CommitStamp)
+                                      .Select(x => x.ToCommit(serializer));
+
+            return commits;
+        }
+        public IEnumerable<Commit> GetFromTo(DateTime start, DateTime end)
+        {
+            Logger.Debug(Messages.GettingAllCommitsBetween, start, end);
+
+            var query = new TableQuery<AzureCommit>();
+
+            var commitsAfterFilter = TableQuery.GenerateFilterConditionForDate("CommitStamp",
+                                                                               QueryComparisons.GreaterThanOrEqual,
+                                                                               start);
+
+            var commitsBeforeFilter = TableQuery.GenerateFilterConditionForDate("CommitStamp",
+                                                                                QueryComparisons.LessThanOrEqual,
+                                                                                end);
+
+            query = query.Where(TableQuery.CombineFilters(commitsAfterFilter, TableOperators.And, commitsBeforeFilter));
+
+            var commits = ExecuteQuery(query)
+                                      .OrderBy(x => x.CommitStamp)
+                                      .Select(x => x.ToCommit(serializer));
 
             return commits;
         }
 
+        
         public void Commit(Commit attempt)
         {
             Logger.Debug(Messages.AttemptingToCommit, attempt.Events.Count, attempt.StreamId, attempt.CommitSequence);
 
-            var commit = attempt.ToAzureTablesCommit(_serializer);
+            var commit = attempt.ToAzureTablesCommit(serializer);
 
             try
             {
-                CommitsTable.Execute(TableOperation.Insert(commit));
+                ExecuteTableOperation<AzureCommit>(TableOperation.Insert(commit));
                 UpdateStreamHead(attempt.StreamId, attempt.StreamRevision, attempt.Events.Count);
 
                 Logger.Debug(Messages.CommitPersisted, attempt.CommitId);
@@ -184,8 +133,7 @@ namespace EventStore.Persistence.AzureTablesPersistence
                 if (e.RequestInformation.HttpStatusCode == 409) // 409 == Conflict
                 {
                     // Commit already exists!
-
-                    var commitAlreadyStored = (AzureTablesCommit)CommitsTable.Execute(attempt.ToPointQuery()).Result;
+                    var commitAlreadyStored = ExecutePointQuery<AzureCommit>(attempt.ToPointQuery());
 
                     if (commitAlreadyStored.CommitId == attempt.CommitId)
                         throw new DuplicateCommitException();
@@ -197,91 +145,67 @@ namespace EventStore.Persistence.AzureTablesPersistence
                 throw;
             }
         }
-
-        private void UpdateStreamHead(Guid streamId, int streamRevision, int eventCount)
+        
+        public IEnumerable<Commit> GetUndispatchedCommits()
         {
-            var streamHead = new StreamHead(streamId, streamRevision, 0);
+            Logger.Debug(Messages.GettingUndispatchedCommits);
 
-            var pointQuery = streamHead.ToPointQuery();
+            var query = new TableQuery<AzureCommit>();
 
-            var storedStreamHead = (AzureTablesStreamHead)StreamHeadsTable.Execute(pointQuery).Result;
+            var notDispatchedFilter = TableQuery.GenerateFilterConditionForBool("Dispatched",
+                                                                                QueryComparisons.Equal,
+                                                                                false);
 
+            query = query.Where(notDispatchedFilter);
 
-            if (storedStreamHead == null)
+            var commits = ExecuteQuery(query).Select(x => x.ToCommit(serializer));
+
+            return commits;
+
+        }
+        public void MarkCommitAsDispatched(Commit commit)
+        {
+            Logger.Debug(Messages.MarkingCommitAsDispatched, commit.CommitId);
+
+            var pointQuery = commit.ToPointQuery();
+
+            bool committed = false;
+            while (!committed)
             {
-                var result = StreamHeadsTable.Execute(TableOperation.Insert(new AzureTablesStreamHead()
-                                                                   {
-                                                                       PartitionKey =
-                                                                           StreamHeadExtensions.GetPartitionKey(
-                                                                               streamHead),
-                                                                       RowKey =
-                                                                           StreamHeadExtensions.GetRowKey(streamHead),
-                                                                       HeadRevision = streamRevision,
-                                                                       SnapshotRevision = 0,
-                                                                       Unsnapshotted = eventCount
-                                                                   }));
-            }
-            else
-            {
-                bool committed = false;
-                while (!committed)
+                var storedCommit = ExecutePointQuery<AzureCommit>(pointQuery);
+
+                try
                 {
-                    try
-                    {
-                        storedStreamHead.HeadRevision = streamRevision;
-                        storedStreamHead.Unsnapshotted += eventCount;
+                    storedCommit.Dispatched = true;
 
-                        StreamHeadsTable.Execute(TableOperation.Replace(storedStreamHead));
+                    ExecuteTableOperation<AzureCommit>(TableOperation.Replace(storedCommit));
 
-                        committed = true;
-                    }
-                    catch (Microsoft.WindowsAzure.Storage.StorageException)
-                    {
-                        storedStreamHead = (AzureTablesStreamHead)StreamHeadsTable.Execute(pointQuery).Result;
-                    }
+                    committed = true;
+                }
+                catch (DataServiceRequestException)
+                {
+                    Logger.Debug(Messages.RetryMarkingCommitAsDispatched, commit.CommitId);
+                    // Retry. Not volatile since this is an idempotent operation.
                 }
             }
-
-
         }
 
-        public bool AddSnapshot(Snapshot snapshot)
+
+        public IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
         {
-            if (snapshot == null)
-                return false;
+            Logger.Debug(Messages.GettingStreamsToSnapshot);
 
-            Logger.Debug(Messages.AddingSnapshot, snapshot.StreamId, snapshot.StreamRevision);
+            var query = new TableQuery<AzureStreamHead>();
+            query = query.Where(TableQuery.GenerateFilterConditionForInt("Unsnapshotted",
+                                                                         QueryComparisons.GreaterThanOrEqual,
+                                                                         maxThreshold));
 
-            try
-            {
-                var azureSnapshot = snapshot.ToAzureTablesSnapshot(_serializer);
+            var streamHeads = ExecuteQuery(query)
+                .OrderByDescending(x => x.Unsnapshotted)
+                .Select(x => x.ToStreamHead());
 
-                var upsert = TableOperation.InsertOrReplace(azureSnapshot);
-
-                SnapShotsTable.Execute(upsert);
-
-                var streamHead = new StreamHead(snapshot.StreamId, -1, -1);
-
-                var pointQuery = TableOperation.Retrieve<AzureTablesStreamHead>(StreamHeadExtensions.GetPartitionKey(streamHead),
-                                                                                StreamHeadExtensions.GetRowKey(streamHead));
-
-                var azureStreamHead = (AzureTablesStreamHead)StreamHeadsTable.Execute(pointQuery).Result;
-
-                var unsnapshotted = streamHead.HeadRevision - snapshot.StreamRevision;
-
-                azureStreamHead.Unsnapshotted = unsnapshotted;
-                azureStreamHead.SnapshotRevision = snapshot.StreamRevision;
-
-                StreamHeadsTable.Execute(TableOperation.Replace(azureStreamHead));
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return streamHeads;
         }
-
         public Snapshot GetSnapshot(Guid streamId, int maxRevision)
         {
             Logger.Debug(Messages.GettingRevision, streamId, maxRevision);
@@ -296,71 +220,157 @@ namespace EventStore.Persistence.AzureTablesPersistence
 
             var filter = TableQuery.CombineFilters(partitionFilter, TableOperators.And, rowFilter);
 
-            var query = new TableQuery<AzureTablesSnapshot>();
+            var query = new TableQuery<AzureSnapshot>();
             query.Where(filter);
 
-            var snapshot = SnapShotsTable.ExecuteQuery(query)
-                              .Select(x => x.ToSnapshot(_serializer))
-                              .OrderByDescending(x => x.StreamRevision)
+            var snapshot = ExecuteQuery(query)
+                              .OrderByDescending(x => x.GetStreamRevision())
+                              .Select(x => x.ToSnapshot(serializer))
                               .FirstOrDefault();
 
             return snapshot;
         }
-
-        public IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
+        public bool AddSnapshot(Snapshot snapshot)
         {
-            Logger.Debug(Messages.GettingStreamsToSnapshot);
+            if (snapshot == null)
+                return false;
 
-            var query = new TableQuery<AzureTablesStreamHead>();
-            query = query.Where(TableQuery.GenerateFilterConditionForInt("Unsnapshotted",
-                                                                         QueryComparisons.GreaterThanOrEqual,
-                                                                         maxThreshold));
+            Logger.Debug(Messages.AddingSnapshot, snapshot.StreamId, snapshot.StreamRevision);
 
-            var streamHeads = StreamHeadsTable.ExecuteQuery(query).OrderByDescending(x => x.Unsnapshotted).Select(x => x.ToStreamHead());
+            try
+            {
+                var azureSnapshot = snapshot.ToAzureSnapshot(serializer);
+                var upsert = TableOperation.InsertOrReplace(azureSnapshot);
+                ExecuteTableOperation<AzureSnapshot>(upsert);
 
-            return streamHeads;
-        }
+                var query = snapshot.StreamId.ToStreamHeadPointQuery();
+                var azureStreamHead = ExecutePointQuery<AzureStreamHead>(query);
+                var unsnapshotted = azureStreamHead.HeadRevision - snapshot.StreamRevision;
 
+                azureStreamHead.Unsnapshotted = unsnapshotted;
+                azureStreamHead.SnapshotRevision = snapshot.StreamRevision;
+                ExecuteTableOperation<AzureStreamHead>(TableOperation.Replace(azureStreamHead));
 
-        #region Initialization / Cleanup
-        public void Initialize()
-        {
-            if (Interlocked.Increment(ref initialized) > 1)
-                return; // Initialization already done.
-
-            _tableClient.GetTableReference(CommitsTableName).CreateIfNotExists();
-            _tableClient.GetTableReference(SnapshotsTableName).CreateIfNotExists();
-            _tableClient.GetTableReference(StreamHeadsTableName).CreateIfNotExists();
-        }
-
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposing || this.disposed)
-                return;
-
-            Logger.Debug(Messages.ShuttingDownPersistence);
-            this.disposed = true;
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public void Purge()
         {
             Logger.Warn(Messages.PurgingStorage);
 
-            _tableClient.GetTableReference(CommitsTableName).DeleteIfExists();
-            _tableClient.GetTableReference(SnapshotsTableName).DeleteIfExists();
-            _tableClient.GetTableReference(StreamHeadsTableName).DeleteIfExists();
+            PersistedCommits.DeleteIfExists();
+            PersistedSnapshots.DeleteIfExists();
+            PersistedStreamHeads.DeleteIfExists();
         }
-        #endregion
 
-        private IQueryable<AzureTablesCommit> GetAzureTablesCommitsQuery(TableServiceContext context)
+        private void UpdateStreamHead(Guid streamId, int streamRevision, int eventCount)
         {
-            return context.CreateQuery<AzureTablesCommit>(CommitsTableName).AsTableServiceQuery(context);
+            var streamHead = new StreamHead(streamId, streamRevision, 0);
+
+            var pointQuery = streamHead.ToPointQuery();
+            var storedStreamHead = ExecutePointQuery<AzureStreamHead>(pointQuery);
+
+            if (storedStreamHead == null)
+            {
+                storedStreamHead = streamHead.ToAzureTablesStreamHead();
+                storedStreamHead.Unsnapshotted = eventCount;
+                ExecuteTableOperation<AzureStreamHead>(TableOperation.Insert(storedStreamHead));
+            }
+            else
+            {
+                //TODO: Not sure if retrying like this should be done.
+                bool committed = false;
+                while (!committed)
+                {
+                    try
+                    {
+                        storedStreamHead.HeadRevision = streamRevision;
+                        storedStreamHead.Unsnapshotted += eventCount;
+
+                        ExecuteTableOperation<AzureStreamHead>(TableOperation.Replace(storedStreamHead));
+                        committed = true;
+                    }
+                    catch (Microsoft.WindowsAzure.Storage.StorageException)
+                    {
+                        storedStreamHead = ExecutePointQuery<AzureStreamHead>(pointQuery);
+                    }
+                }
+            }
         }
+
+        private void ExecuteTableOperation<T>(TableOperation operation)
+            where T : ITableEntity, new()
+        {
+            ThrowWhenDisposed();
+
+            var table = GetTableForType(typeof(T));
+
+            table.Execute(operation);
+        }
+
+        private IEnumerable<T> ExecuteQuery<T>(TableQuery<T> query)
+            where T : ITableEntity, new()
+        {
+            ThrowWhenDisposed();
+
+            var table = GetTableForType(typeof(T));
+
+            return table.ExecuteQuery(query);
+        }
+
+        private T ExecutePointQuery<T>(TableOperation pointQuery)
+            where T : ITableEntity, new()
+        {
+            ThrowWhenDisposed();
+
+            var table = GetTableForType(typeof(T));
+
+            return (T)table.Execute(pointQuery).Result;
+        }
+
+        private CloudTable GetTableForType(Type type)
+        {
+            if (type == typeof(AzureCommit))
+                return PersistedCommits;
+
+            if (type == typeof(AzureStreamHead))
+                return PersistedStreamHeads;
+
+            if (type == typeof(AzureSnapshot))
+                return PersistedSnapshots;
+
+            throw new ArgumentOutOfRangeException("type");
+        }
+
+        private void ThrowWhenDisposed()
+        {
+            if (disposed)
+                throw new ObjectDisposedException("Object already disposed.");
+        }
+
+        private const string CommitsTableName = "Commits";
+        private const string SnapshotsTableName = "Snapshots";
+        private const string StreamHeadsTableName = "StreamHeads";
+
+        protected CloudTable PersistedCommits
+        {
+            get { return tableClient.GetTableReference(CommitsTableName); }
+        }
+
+        protected CloudTable PersistedStreamHeads
+        {
+            get { return tableClient.GetTableReference(StreamHeadsTableName); }
+        }
+
+        protected CloudTable PersistedSnapshots
+        {
+            get { return tableClient.GetTableReference(SnapshotsTableName); }
+        }
+
     }
 }

@@ -133,13 +133,13 @@
     <value>Concurrency issue; determining whether attempt was duplicate.</value>
   </data>
   <data name="GettingAllCommitsBetween" xml:space="preserve">
-    <value>Getting all commits for stream '{0}' between revisions '{1}' and '{2}' using a FULL TABLE scan.</value>
+    <value>Getting all commits for stream '{0}' between revisions '{1}' and '{2}'.</value>
   </data>
   <data name="GettingAllCommitsFrom" xml:space="preserve">
     <value>Getting all commits from '{0}' forward using a FULL TABLE scan.</value>
   </data>
   <data name="GettingRevision" xml:space="preserve">
-    <value>Getting snapshot for stream '{0}' on or before revision {1} using a FULL TABLE scan.</value>
+    <value>Getting snapshot for stream '{0}' on or before revision {1}.</value>
   </data>
   <data name="GettingStreamsToSnapshot" xml:space="preserve">
     <value>Getting a list of streams to snapshot using a FULL TABLE scan.</value>

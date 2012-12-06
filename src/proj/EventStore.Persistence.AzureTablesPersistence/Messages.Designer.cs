@@ -106,7 +106,7 @@ namespace EventStore.Persistence.AzureTablesPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Getting all commits for stream &apos;{0}&apos; between revisions &apos;{1}&apos; and &apos;{2}&apos; using a FULL TABLE scan..
+        ///   Looks up a localized string similar to Getting all commits for stream &apos;{0}&apos; between revisions &apos;{1}&apos; and &apos;{2}&apos;..
         /// </summary>
         internal static string GettingAllCommitsBetween {
             get {
@@ -124,7 +124,7 @@ namespace EventStore.Persistence.AzureTablesPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Getting snapshot for stream &apos;{0}&apos; on or before revision {1} using a FULL TABLE scan..
+        ///   Looks up a localized string similar to Getting snapshot for stream &apos;{0}&apos; on or before revision {1}..
         /// </summary>
         internal static string GettingRevision {
             get {
