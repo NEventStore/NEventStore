@@ -9,7 +9,6 @@ using EventStore.Persistence.AzureTablesPersistence.Datastructures;
 using EventStore.Persistence.AzureTablesPersistence.Extensions;
 using EventStore.Serialization;
 using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.RetryPolicies;
 using Microsoft.WindowsAzure.Storage.Table;
 
 namespace EventStore.Persistence.AzureTablesPersistence
@@ -311,11 +310,8 @@ namespace EventStore.Persistence.AzureTablesPersistence
             ThrowWhenDisposed();
 
             var table = GetTableForType(typeof(T));
-            var options = new TableRequestOptions()
-                              {
-                                  RetryPolicy = new ExponentialRetry(TimeSpan.FromMilliseconds(50), 10),
-                              };
-            table.Execute(operation, options);
+ 
+            table.Execute(operation);
         }
 
         private IEnumerable<T> ExecuteQuery<T>(TableQuery<T> query)
@@ -325,11 +321,7 @@ namespace EventStore.Persistence.AzureTablesPersistence
 
             var table = GetTableForType(typeof(T));
 
-            var result = table.ExecuteQuery(query);
-
-            var result2 = table.ExecuteQuerySegmented(query, new TableContinuationToken());
-
-            return result;
+            return table.ExecuteQuery(query);
         }
 
         private T ExecutePointQuery<T>(TableOperation pointQuery)
