@@ -2,6 +2,8 @@
 {
     internal static class IntegralRowKeyHelpers
     {
+        // Credits to Jon Skeet for this!
+        // http://stackoverflow.com/questions/6807111/whats-the-best-way-to-represent-system-double-as-a-sortable-string
         public static string EncodeDouble(double d)
         {
             long ieee = System.BitConverter.DoubleToInt64Bits(d);
