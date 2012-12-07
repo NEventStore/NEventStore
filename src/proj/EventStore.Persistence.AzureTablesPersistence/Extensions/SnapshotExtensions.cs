@@ -50,7 +50,7 @@ namespace EventStore.Persistence.AzureTablesPersistence.Extensions
 
         public static int GetStreamRevision(this AzureSnapshot azureSnapshot)
         {
-            return int.Parse(azureSnapshot.RowKey, CultureInfo.InvariantCulture);
+            return (int)IntegralRowKeyHelpers.DecodeDouble(azureSnapshot.RowKey);
         }
     }
 }
