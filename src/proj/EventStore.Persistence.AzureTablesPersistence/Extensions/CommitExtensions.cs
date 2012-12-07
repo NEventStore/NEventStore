@@ -8,14 +8,14 @@ namespace EventStore.Persistence.AzureTablesPersistence.Extensions
 {
     public static class CommitExtensions
     {
-         public static string GetPartitionKey(this Commit commit)
-         {
-             return commit.StreamId.ToString();
-         }
+        public static string GetPartitionKey(this Commit commit)
+        {
+            return commit.StreamId.ToString();
+        }
 
         public static string GetRowKey(this Commit commit)
         {
-            return commit.CommitSequence.ToString(CultureInfo.InvariantCulture);
+            return IntegralRowKeyHelpers.EncodeDouble(commit.CommitSequence);
         }
     }
 
@@ -63,7 +63,7 @@ namespace EventStore.Persistence.AzureTablesPersistence.Extensions
 
         public static int GetCommitSequence(this AzureCommit commit)
         {
-            return int.Parse(commit.RowKey, CultureInfo.InvariantCulture);
+            return (int) IntegralRowKeyHelpers.DecodeDouble(commit.RowKey);
         }
     }
 }

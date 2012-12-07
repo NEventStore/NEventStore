@@ -83,6 +83,7 @@
     <Compile Include="AzureTablesPersistenceFactory.cs" />
     <Compile Include="Datastructures\AzureSnapshot.cs" />
     <Compile Include="Datastructures\AzureStreamHead.cs" />
+    <Compile Include="Extensions\IntegralRowKeyHelpers.cs" />
     <Compile Include="Extensions\SnapshotExtensions.cs" />
     <Compile Include="Extensions\StreamHeadExtensions.cs" />
     <Compile Include="Extensions\CommitExtensions.cs" />

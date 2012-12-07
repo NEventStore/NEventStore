@@ -33,7 +33,7 @@ namespace EventStore.Persistence.AzureTablesPersistence.Extensions
         internal static string GetPartitionKey(this StreamHead streamHead)
         {
             var streamIdBytes = streamHead.StreamId.ToByteArray();
-            var partitionKey = BitConverter.ToInt64(streamIdBytes, 0).ToString(CultureInfo.InvariantCulture);
+            var partitionKey = IntegralRowKeyHelpers.EncodeDouble(BitConverter.ToInt64(streamIdBytes, 0));
 
             return partitionKey;
         }
@@ -41,7 +41,7 @@ namespace EventStore.Persistence.AzureTablesPersistence.Extensions
         internal static string GetRowKey(this StreamHead streamHead)
         {
             var streamIdBytes = streamHead.StreamId.ToByteArray();
-            var rowKey = BitConverter.ToInt64(streamIdBytes, 8).ToString(CultureInfo.InvariantCulture);
+            var rowKey = IntegralRowKeyHelpers.EncodeDouble(BitConverter.ToInt64(streamIdBytes, 8));
 
             return rowKey;
         }
@@ -51,8 +51,8 @@ namespace EventStore.Persistence.AzureTablesPersistence.Extensions
     {
         public static StreamHead ToStreamHead(this AzureStreamHead azureHead)
         {
-            var firstPartOfStreamId = BitConverter.GetBytes(long.Parse(azureHead.PartitionKey, CultureInfo.InvariantCulture));
-            var secondPartOfStreamId = BitConverter.GetBytes(long.Parse(azureHead.RowKey, CultureInfo.InvariantCulture));
+            var firstPartOfStreamId = BitConverter.GetBytes((long)IntegralRowKeyHelpers.DecodeDouble(azureHead.PartitionKey));
+            var secondPartOfStreamId = BitConverter.GetBytes((long)IntegralRowKeyHelpers.DecodeDouble(azureHead.RowKey));
 
             var streamId = new Guid(firstPartOfStreamId.Concat(secondPartOfStreamId).ToArray());
 

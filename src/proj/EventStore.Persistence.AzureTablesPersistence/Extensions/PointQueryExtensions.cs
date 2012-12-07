@@ -10,8 +10,8 @@ namespace EventStore.Persistence.AzureTablesPersistence.Extensions
         public static TableOperation ToStreamHeadPointQuery(this Guid streamId)
         {
             var streamIdBytes = streamId.ToByteArray();
-            var partitionKey = BitConverter.ToInt64(streamIdBytes, 0).ToString(CultureInfo.InvariantCulture);
-            var rowKey = BitConverter.ToInt64(streamIdBytes, 8).ToString(CultureInfo.InvariantCulture);
+            var partitionKey = IntegralRowKeyHelpers.EncodeDouble(BitConverter.ToInt64(streamIdBytes, 0));
+            var rowKey = IntegralRowKeyHelpers.EncodeDouble(BitConverter.ToInt64(streamIdBytes, 8));
 
             return TableOperation.Retrieve<AzureStreamHead>(partitionKey, rowKey);
         }

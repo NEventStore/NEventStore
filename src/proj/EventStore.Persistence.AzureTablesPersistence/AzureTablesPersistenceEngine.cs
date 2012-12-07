@@ -8,6 +8,8 @@ using EventStore.Logging;
 using EventStore.Persistence.AzureTablesPersistence.Datastructures;
 using EventStore.Persistence.AzureTablesPersistence.Extensions;
 using EventStore.Serialization;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.RetryPolicies;
 using Microsoft.WindowsAzure.Storage.Table;
 
 namespace EventStore.Persistence.AzureTablesPersistence
@@ -56,14 +58,14 @@ namespace EventStore.Persistence.AzureTablesPersistence
             PersistedSnapshots.CreateIfNotExists();
             PersistedStreamHeads.CreateIfNotExists();
         }
-        
+
         public IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
         {
             Logger.Debug(Messages.GettingAllCommitsBetween, streamId, minRevision, maxRevision);
 
             var stringStreamId = streamId.ToString();
-            var minRowKey = minRevision.ToString(CultureInfo.InvariantCulture);
-            var maxRowKey = maxRevision.ToString(CultureInfo.InvariantCulture);
+            var minRowKey = IntegralRowKeyHelpers.EncodeDouble(minRevision);
+            var maxRowKey = IntegralRowKeyHelpers.EncodeDouble(maxRevision);
 
             var partitionKeyFilter = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, stringStreamId);
             var minRowKeyFilter = TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.GreaterThanOrEqual, minRowKey);
@@ -74,9 +76,9 @@ namespace EventStore.Persistence.AzureTablesPersistence
             var query = new TableQuery<AzureCommit>();
             query = query.Where(filter);
 
-            var commits = ExecuteQuery(query).Select(x => x.ToCommit(serializer));
+            var commits = ExecuteQuery(query);
 
-            return commits;
+            return commits.Select(x => x.ToCommit(serializer));
         }
         public IEnumerable<Commit> GetFrom(DateTime start)
         {
@@ -114,7 +116,7 @@ namespace EventStore.Persistence.AzureTablesPersistence
             return commits;
         }
 
-        
+
         public void Commit(Commit attempt)
         {
             Logger.Debug(Messages.AttemptingToCommit, attempt.Events.Count, attempt.StreamId, attempt.CommitSequence);
@@ -145,7 +147,7 @@ namespace EventStore.Persistence.AzureTablesPersistence
                 throw;
             }
         }
-        
+
         public IEnumerable<Commit> GetUndispatchedCommits()
         {
             Logger.Debug(Messages.GettingUndispatchedCommits);
@@ -216,7 +218,7 @@ namespace EventStore.Persistence.AzureTablesPersistence
 
             var rowFilter = TableQuery.GenerateFilterCondition("RowKey",
                                                                QueryComparisons.LessThanOrEqual,
-                                                               maxRevision.ToString(CultureInfo.InvariantCulture));
+                                                               IntegralRowKeyHelpers.EncodeDouble(maxRevision));
 
             var filter = TableQuery.CombineFilters(partitionFilter, TableOperators.And, rowFilter);
 
@@ -309,8 +311,11 @@ namespace EventStore.Persistence.AzureTablesPersistence
             ThrowWhenDisposed();
 
             var table = GetTableForType(typeof(T));
-
-            table.Execute(operation);
+            var options = new TableRequestOptions()
+                              {
+                                  RetryPolicy = new ExponentialRetry(TimeSpan.FromMilliseconds(50), 10),
+                              };
+            table.Execute(operation, options);
         }
 
         private IEnumerable<T> ExecuteQuery<T>(TableQuery<T> query)
@@ -320,7 +325,11 @@ namespace EventStore.Persistence.AzureTablesPersistence
 
             var table = GetTableForType(typeof(T));
 
-            return table.ExecuteQuery(query);
+            var result = table.ExecuteQuery(query);
+
+            var result2 = table.ExecuteQuerySegmented(query, new TableContinuationToken());
+
+            return result;
         }
 
         private T ExecutePointQuery<T>(TableOperation pointQuery)

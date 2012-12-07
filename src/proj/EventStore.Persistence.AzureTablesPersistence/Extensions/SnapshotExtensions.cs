@@ -28,7 +28,7 @@ namespace EventStore.Persistence.AzureTablesPersistence.Extensions
 
         private static string GetRowKey(this Snapshot snapshot)
         {
-            return snapshot.StreamRevision.ToString(CultureInfo.InvariantCulture);
+            return IntegralRowKeyHelpers.EncodeDouble(snapshot.StreamRevision);
         }
     }
 
