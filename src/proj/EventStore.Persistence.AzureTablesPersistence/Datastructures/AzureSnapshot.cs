@@ -4,6 +4,6 @@ namespace EventStore.Persistence.AzureTablesPersistence.Datastructures
 {
     public class AzureSnapshot : TableEntity
     {
-        public byte[] Payload;
+        public byte[] Payload { get; set; }
     }
 }
