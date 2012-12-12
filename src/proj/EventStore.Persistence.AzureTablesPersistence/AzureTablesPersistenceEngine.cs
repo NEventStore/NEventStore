@@ -125,7 +125,7 @@ namespace EventStore.Persistence.AzureTablesPersistence
             try
             {
                 ExecuteTableOperation<AzureCommit>(TableOperation.Insert(commit));
-                UpdateStreamHead(attempt.StreamId, attempt.StreamRevision, attempt.Events.Count);
+                UpdateStreamHeadAsync(attempt.StreamId, attempt.StreamRevision, attempt.Events.Count);
 
                 Logger.Debug(Messages.CommitPersisted, attempt.CommitId);
             }
@@ -269,39 +269,34 @@ namespace EventStore.Persistence.AzureTablesPersistence
             PersistedStreamHeads.DeleteIfExists();
         }
 
-        private void UpdateStreamHead(Guid streamId, int streamRevision, int eventCount)
+        private void UpdateStreamHeadAsync(Guid streamId, int streamRevision, int eventCount)
         {
-            var streamHead = new StreamHead(streamId, streamRevision, 0);
+            ThreadPool.QueueUserWorkItem(x =>
+                                             {
+                                                 var streamHead = new StreamHead(streamId, streamRevision, 0);
+                                                 var pointQuery = streamHead.ToPointQuery();
+                                                 var storedStreamHead = ExecutePointQuery<AzureStreamHead>(pointQuery);
 
-            var pointQuery = streamHead.ToPointQuery();
-            var storedStreamHead = ExecutePointQuery<AzureStreamHead>(pointQuery);
-
-            if (storedStreamHead == null)
-            {
-                storedStreamHead = streamHead.ToAzureTablesStreamHead();
-                storedStreamHead.Unsnapshotted = eventCount;
-                ExecuteTableOperation<AzureStreamHead>(TableOperation.Insert(storedStreamHead));
-            }
-            else
-            {
-                //TODO: Not sure if retrying like this should be done.
-                bool committed = false;
-                while (!committed)
-                {
-                    try
-                    {
-                        storedStreamHead.HeadRevision = streamRevision;
-                        storedStreamHead.Unsnapshotted += eventCount;
-
-                        ExecuteTableOperation<AzureStreamHead>(TableOperation.Replace(storedStreamHead));
-                        committed = true;
-                    }
-                    catch (Microsoft.WindowsAzure.Storage.StorageException)
-                    {
-                        storedStreamHead = ExecutePointQuery<AzureStreamHead>(pointQuery);
-                    }
-                }
-            }
+                                                 if (storedStreamHead == null)
+                                                 {
+                                                     storedStreamHead = streamHead.ToAzureTablesStreamHead();
+                                                     storedStreamHead.Unsnapshotted = eventCount;
+                                                     ExecuteTableOperation<AzureStreamHead>(TableOperation.Insert(storedStreamHead));
+                                                 }
+                                                 else
+                                                 {
+                                                     try
+                                                     {
+                                                         storedStreamHead.HeadRevision = streamRevision;
+                                                         storedStreamHead.Unsnapshotted += eventCount;
+                                                         ExecuteTableOperation<AzureStreamHead>(TableOperation.Replace(storedStreamHead));
+                                                     }
+                                                     catch (Microsoft.WindowsAzure.Storage.StorageException)
+                                                     {
+                                                         // Ignore, should update later
+                                                     }
+                                                 }
+                                             });
         }
 
         private void ExecuteTableOperation<T>(TableOperation operation)
@@ -310,7 +305,7 @@ namespace EventStore.Persistence.AzureTablesPersistence
             ThrowWhenDisposed();
 
             var table = GetTableForType(typeof(T));
- 
+
             table.Execute(operation);
         }
 
