@@ -57,7 +57,7 @@ task RunSerializationTests {
 	exec { &$mspec_path "$src_directory\tests\EventStore.Serialization.AcceptanceTests\bin\$target_config\EventStore.Serialization.AcceptanceTests.dll" }
 }
 
-task Package -depends Build, PackageEventStore, PackageMongoPersistence, PackageRavenPersistence, PackageJsonSerialization, PackageServiceStackSerialization, PackageNLogLogging, PackageLog4NetLogging {
+task Package -depends Build, PackageEventStore, PackageMongoPersistence, PackageRavenPersistence, PackageAzureTablesPersistence, PackageJsonSerialization, PackageServiceStackSerialization, PackageNLogLogging, PackageLog4NetLogging {
 	move $output_directory $publish_directory
 }
 
@@ -97,6 +97,18 @@ task PackageRavenPersistence -depends Clean, Compile, PackageEventStore {
 	)
 
 	copy "$src_directory\proj\EventStore.Persistence.RavenPersistence\bin\$target_config\Raven*.dll" "$output_directory\plugins\persistence\raven"
+}
+
+task PackageAzureTablesPersistence -depends Clean, Compile, PackageEventStore {
+	mkdir $output_directory\plugins\persistence\azure-tables | out-null
+
+	Merge-Assemblies -outputFile "$output_directory/plugins/persistence/azure-tables/EventStore.Persistence.AzureTablesPersistence.dll" -exclude "Microsoft.*,System.*" -keyfile $keyFile -files @(
+		"$src_directory/proj/EventStore.Persistence.AzureTablesPersistence/bin/$target_config/EventStore.Persistence.AzureTablesPersistence.dll",
+		"$src_directory/proj/EventStore.Persistence.AzureTablesPersistence.Wireup/bin/$target_config/EventStore.Persistence.AzureTablesPersistence.Wireup.dll"
+	)
+
+	copy "$src_directory\proj\EventStore.Persistence.AzureTablesPersistence\bin\$target_config\Microsoft*.dll" "$output_directory\plugins\persistence\azure-tables"
+	copy "$src_directory\proj\EventStore.Persistence.AzureTablesPersistence\bin\$target_config\System*.dll" "$output_directory\plugins\persistence\azure-tables"
 }
 
 task PackageJsonSerialization -depends Clean, Compile, PackageEventStore {
