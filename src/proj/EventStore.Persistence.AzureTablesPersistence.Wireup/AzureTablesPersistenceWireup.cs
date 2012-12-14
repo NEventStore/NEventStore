@@ -1,10 +1,10 @@
-﻿using System.Transactions;
-using EventStore.Logging;
-using EventStore.Persistence.AzureTablesPersistence;
-using EventStore.Serialization;
-
-namespace EventStore
+﻿namespace EventStore
 {
+    using System.Transactions;
+    using Logging;
+    using Persistence.AzureTablesPersistence;
+    using Serialization;
+
     public class AzureTablesPersistenceWireup : PersistenceWireup
     {
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof(AzureTablesPersistenceWireup));
