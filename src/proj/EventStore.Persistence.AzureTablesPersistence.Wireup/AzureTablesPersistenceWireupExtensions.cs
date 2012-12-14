@@ -1,11 +1,9 @@
-﻿using EventStore.Serialization;
-
-namespace EventStore.Persistence.AzureTablesPersistence.Wireup
+﻿namespace EventStore
 {
     public static class AzureTablesPersistenceWireupExtensions
     {
         public static PersistenceWireup UsingAzureTablesPersistence(
-            this EventStore.Wireup wireup, string connectionName)
+            this Wireup wireup, string connectionName)
         {
             return new AzureTablesPersistenceWireup(wireup, connectionName);
         }

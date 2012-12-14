@@ -1,14 +1,15 @@
 ﻿using System.Transactions;
 using EventStore.Logging;
+using EventStore.Persistence.AzureTablesPersistence;
 using EventStore.Serialization;
 
-namespace EventStore.Persistence.AzureTablesPersistence.Wireup
+namespace EventStore
 {
     public class AzureTablesPersistenceWireup : PersistenceWireup
     {
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof(AzureTablesPersistenceWireup));
 
-        public AzureTablesPersistenceWireup(EventStore.Wireup inner, string connectionStringName)
+        public AzureTablesPersistenceWireup(Wireup inner, string connectionStringName)
             : base(inner)
         {
             Logger.Debug("Configuring Windows Azure Tables persistence engine");

@@ -33,13 +33,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>EventStore.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EventStore (ILMerged)" Condition="'$(ILMerged)' == 'true'">
+      <HintPath>..\..\..\output\bin\EventStore.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Data.Edm, Version=5.0.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Microsoft.Data.Edm.5.0.2\lib\net40\Microsoft.Data.Edm.dll</HintPath>
@@ -96,7 +93,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EventStore\EventStore.csproj">
+    <ProjectReference Include="..\EventStore\EventStore.csproj" Condition="'$(ILMerged)' != 'true'">
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
       <Name>EventStore</Name>
     </ProjectReference>
