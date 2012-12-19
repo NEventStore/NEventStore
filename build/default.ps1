@@ -102,7 +102,7 @@ task PackageRavenPersistence -depends Clean, Compile, PackageEventStore {
 task PackageAzureTablesPersistence -depends Clean, Compile, PackageEventStore {
 	mkdir $output_directory\plugins\persistence\azure-tables | out-null
 
-	Merge-Assemblies -outputFile "$output_directory/plugins/persistence/azure-tables/EventStore.Persistence.AzureTablesPersistence.dll" -exclude "Microsoft.*,System.*" -keyfile $keyFile -files @(
+	Merge-Assemblies -outputFile "$output_directory/plugins/persistence/azure-tables/EventStore.Persistence.AzureTablesPersistence.dll" -exclude "Microsoft.*,System.Spatial.*,AzureTables.*" -keyfile $keyFile -files @(
 		"$src_directory/proj/EventStore.Persistence.AzureTablesPersistence/bin/$target_config/EventStore.Persistence.AzureTablesPersistence.dll",
 		"$src_directory/proj/EventStore.Persistence.AzureTablesPersistence.Wireup/bin/$target_config/EventStore.Persistence.AzureTablesPersistence.Wireup.dll"
 	)
