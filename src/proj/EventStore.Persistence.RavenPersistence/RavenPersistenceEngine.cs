@@ -202,7 +202,7 @@
 				using (var scope = this.OpenCommandScope())
 				using (var session = this.store.OpenSession())
 				{
-					session.Advanced.DatabaseCommands.Batch(new[] { data });
+					session.Advanced.DocumentStore.DatabaseCommands.Batch(new[] { data });
 					session.SaveChanges();
 					scope.Complete();
 					return true;
@@ -287,7 +287,7 @@
 
 			var query = new IndexQuery { Query = queryText };
 
-			session.Advanced.DatabaseCommands
+			session.Advanced.DocumentStore.DatabaseCommands
 				.DeleteByIndex("EventStoreDocumentsByEntityName", query, true);
 		}
 
