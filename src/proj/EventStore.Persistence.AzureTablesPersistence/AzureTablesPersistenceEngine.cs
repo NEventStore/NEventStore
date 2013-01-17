@@ -276,25 +276,25 @@ namespace EventStore.Persistence.AzureTablesPersistence
                                                  var streamHead = new StreamHead(streamId, streamRevision, 0);
                                                  var pointQuery = streamHead.ToPointQuery();
                                                  var storedStreamHead = ExecutePointQuery<AzureStreamHead>(pointQuery);
-
-                                                 if (storedStreamHead == null)
+                                                 try
                                                  {
-                                                     storedStreamHead = streamHead.ToAzureTablesStreamHead();
-                                                     storedStreamHead.Unsnapshotted = eventCount;
-                                                     ExecuteTableOperation<AzureStreamHead>(TableOperation.Insert(storedStreamHead));
-                                                 }
-                                                 else
-                                                 {
-                                                     try
+                                                     if (storedStreamHead == null)
                                                      {
+                                                         storedStreamHead = streamHead.ToAzureTablesStreamHead();
+                                                         storedStreamHead.Unsnapshotted = eventCount;
+                                                         ExecuteTableOperation<AzureStreamHead>(TableOperation.Insert(storedStreamHead));
+                                                     }
+                                                     else
+                                                     {
+
                                                          storedStreamHead.HeadRevision = streamRevision;
                                                          storedStreamHead.Unsnapshotted += eventCount;
                                                          ExecuteTableOperation<AzureStreamHead>(TableOperation.Replace(storedStreamHead));
                                                      }
-                                                     catch (Microsoft.WindowsAzure.Storage.StorageException)
-                                                     {
-                                                         // Ignore, should update later
-                                                     }
+                                                 }
+                                                 catch (Microsoft.WindowsAzure.Storage.StorageException)
+                                                 {
+                                                     // Ignore, should update later
                                                  }
                                              });
         }
