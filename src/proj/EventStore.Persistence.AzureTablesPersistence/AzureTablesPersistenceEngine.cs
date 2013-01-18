@@ -134,7 +134,7 @@ namespace EventStore.Persistence.AzureTablesPersistence
                 if (e.RequestInformation.HttpStatusCode == 409) // 409 == Conflict
                 {
                     // Commit already exists!
-                    var commitAlreadyStored = ExecutePointQuery<AzureCommit>(attempt.ToPointQuery());
+                    var commitAlreadyStored = ExecuteTableOperationWithResult<AzureCommit>(attempt.ToPointQuery());
 
                     if (commitAlreadyStored.CommitId == attempt.CommitId)
                         throw new DuplicateCommitException();
@@ -173,7 +173,7 @@ namespace EventStore.Persistence.AzureTablesPersistence
             bool committed = false;
             while (!committed)
             {
-                var storedCommit = ExecutePointQuery<AzureCommit>(pointQuery);
+                var storedCommit = ExecuteTableOperationWithResult<AzureCommit>(pointQuery);
 
                 try
                 {
@@ -245,7 +245,7 @@ namespace EventStore.Persistence.AzureTablesPersistence
                 ExecuteTableOperation<AzureSnapshot>(upsert);
 
                 var query = snapshot.StreamId.ToStreamHeadPointQuery();
-                var azureStreamHead = ExecutePointQuery<AzureStreamHead>(query);
+                var azureStreamHead = ExecuteTableOperationWithResult<AzureStreamHead>(query);
                 var unsnapshotted = azureStreamHead.HeadRevision - snapshot.StreamRevision;
 
                 azureStreamHead.Unsnapshotted = unsnapshotted;
@@ -275,7 +275,7 @@ namespace EventStore.Persistence.AzureTablesPersistence
                                              {
                                                  var streamHead = new StreamHead(streamId, streamRevision, 0);
                                                  var pointQuery = streamHead.ToPointQuery();
-                                                 var storedStreamHead = ExecutePointQuery<AzureStreamHead>(pointQuery);
+                                                 var storedStreamHead = ExecuteTableOperationWithResult<AzureStreamHead>(pointQuery);
                                                  try
                                                  {
                                                      if (storedStreamHead == null)
@@ -302,11 +302,17 @@ namespace EventStore.Persistence.AzureTablesPersistence
         private void ExecuteTableOperation<T>(TableOperation operation)
             where T : ITableEntity, new()
         {
+            ExecuteTableOperationWithResult<T>(operation);
+        }
+
+        private T ExecuteTableOperationWithResult<T>(TableOperation pointQuery)
+    where T : ITableEntity, new()
+        {
             ThrowWhenDisposed();
 
             var table = GetTableForType(typeof(T));
 
-            table.Execute(operation);
+            return (T)table.Execute(pointQuery).Result;
         }
 
         private IEnumerable<T> ExecuteQuery<T>(TableQuery<T> query)
@@ -317,16 +323,6 @@ namespace EventStore.Persistence.AzureTablesPersistence
             var table = GetTableForType(typeof(T));
 
             return table.ExecuteQuery(query);
-        }
-
-        private T ExecutePointQuery<T>(TableOperation pointQuery)
-            where T : ITableEntity, new()
-        {
-            ThrowWhenDisposed();
-
-            var table = GetTableForType(typeof(T));
-
-            return (T)table.Execute(pointQuery).Result;
         }
 
         private CloudTable GetTableForType(Type type)
