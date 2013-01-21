@@ -1,4 +1,8 @@
-﻿namespace EventStore.Persistence.MongoPersistence
+﻿using MongoDB.Bson.IO;
+using MongoDB.Bson.Serialization.Options;
+using MongoDB.Bson.Serialization.Serializers;
+
+namespace EventStore.Persistence.MongoPersistence
 {
 	using System;
 	using System.Collections.Generic;
@@ -19,8 +23,8 @@
 			{
 				{ "_id", new BsonDocument { { "StreamId", commit.StreamId }, { "CommitSequence", commit.CommitSequence } } },
 				{ "CommitId", commit.CommitId },
-				{ "CommitStamp", commit.CommitStamp },
-				{ "Headers", BsonDocumentWrapper.Create(commit.Headers) },
+				{ "CommitStamp", SerializeDateTime(commit.CommitStamp) },
+                { "Headers", BsonDocumentWrapper.Create(commit.Headers) },
 				{ "Events", BsonArray.Create(events) },
 				{ "Dispatched", false }
 			};
@@ -41,7 +45,7 @@
 				streamRevision,
 				doc["CommitId"].AsGuid,
 				commitSequence,
-				doc["CommitStamp"].AsDateTime,
+				DeserializeDateTime(doc["CommitStamp"].AsBsonDocument),
 				BsonSerializer.Deserialize<Dictionary<string, object>>(doc["Headers"].AsBsonDocument),
 				events);
 		}
@@ -104,5 +108,30 @@
 				Query.GT("_id", Query.And(Query.EQ("StreamId", streamId), Query.EQ("StreamRevision", BsonNull.Value)).ToBsonDocument()),
 				Query.LTE("_id", Query.And(Query.EQ("StreamId", streamId), Query.EQ("StreamRevision", maxRevision)).ToBsonDocument()));
 		}
+
+        private static BsonDocument SerializeDateTime(DateTime data)
+        {
+            var document = new BsonDocument();
+            using (var writer = new BsonDocumentWriter(document, new BsonDocumentWriterSettings()))
+            {
+                var dateTimeSerializer = new DateTimeSerializer();
+                dateTimeSerializer.Serialize(writer, typeof(DateTime), data,
+                                             new DateTimeSerializationOptions(DateTimeKind.Utc, BsonType.Document));
+
+            }
+            return document;
+        }
+
+        private static DateTime DeserializeDateTime(BsonDocument document)
+        {
+            using (var reader = new BsonDocumentReader(document, new BsonDocumentReaderSettings()))
+            {
+                var dateTimeSerializer = new DateTimeSerializer();
+                var result = dateTimeSerializer.Deserialize(reader, typeof(DateTime),
+                                                            new DateTimeSerializationOptions(DateTimeKind.Utc,
+                                                                                             BsonType.Document));
+                return (DateTime)result;
+            }
+        }
 	}
 }

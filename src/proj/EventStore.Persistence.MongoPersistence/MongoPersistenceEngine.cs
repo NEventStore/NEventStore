@@ -78,7 +78,7 @@
 					IndexOptions.SetName("GetFrom_Index").SetUnique(true));
 
 				this.PersistedCommits.EnsureIndex(
-					IndexKeys.Ascending("CommitStamp"),
+					IndexKeys.Ascending("CommitStamp.Ticks"),
 					IndexOptions.SetName("CommitStamp_Index").SetUnique(false));
 
 				this.PersistedStreamHeads.EnsureIndex(
@@ -109,8 +109,8 @@
 			Logger.Debug(Messages.GettingAllCommitsFrom, start);
 
 			return this.TryMongo(() => this.PersistedCommits
-				.Find(Query.GTE("CommitStamp", start))
-				.SetSortOrder("CommitStamp")
+				.Find(Query.GTE("CommitStamp.Ticks", start.Ticks))
+				.SetSortOrder("CommitStamp.Ticks")
 				.Select(x => x.ToCommit(this.serializer)));
 		}
 
@@ -119,8 +119,8 @@
 			Logger.Debug(Messages.GettingAllCommitsFromTo, start, end);
 
 			return this.TryMongo(() => this.PersistedCommits
-				.Find(Query.And(Query.GTE("CommitStamp", start), Query.LT("CommitStamp", end)))
-				.SetSortOrder("CommitStamp")
+				.Find(Query.And(Query.GTE("CommitStamp.Ticks", start.Ticks), Query.LT("CommitStamp.Ticks", end.Ticks)))
+				.SetSortOrder("CommitStamp.Ticks")
 				.Select(x => x.ToCommit(this.serializer)));
 		}
 
