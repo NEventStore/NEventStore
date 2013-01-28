@@ -12,7 +12,7 @@ properties {
 	$framework_version = "v4.0"
 	$version = "0.0.0.0"
 
-	$mspec_path = "$src_directory\packages\Machine.Specifications.0.5.8\tools\mspec-x86-clr4.exe"
+	$mspec_path = "$src_directory\packages\Machine.Specifications.0.5.10\tools\mspec-x86-clr4.exe"
 	$ilMergeModule.ilMergePath = "$base_directory\bin\ilmerge-bin\ILMerge.exe"
 	$nuget_dir = "$src_directory\.nuget"
 
