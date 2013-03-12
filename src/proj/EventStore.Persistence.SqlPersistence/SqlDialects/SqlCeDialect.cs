@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace EventStore.Persistence.SqlPersistence.SqlDialects
 {
 	using System;
@@ -70,6 +72,20 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 				: base(dialect, scope, connection, transaction)
 			{
 			}
+            
+            protected override void SetParameterValue(IDataParameter param, object value, DbType? type)
+            {
+                base.SetParameterValue(param, value, null);
+
+                // SQL CE Binary has a size limit of 8000. We have to explicitely set the type of the parameter to SqlDbType.Image 
+                // to be able to support a larger payload.
+                if (param.DbType == DbType.Binary)
+                {
+                    param.GetType().InvokeMember("SqlDbType",
+                                                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty,
+                                                 Type.DefaultBinder, param, new object[] { SqlDbType.Image });
+                }
+            }
 		}
 	}
 }
