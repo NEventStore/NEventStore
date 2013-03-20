@@ -14,7 +14,7 @@
     <tags>events, event sourcing, cqrs, storage, persistence, database, ravendb</tags>
     <dependencies>
       <dependency id="EventStore" version="3.1" />
-      <dependency id="RavenDB.Client" version="1.0.972" />
+      <dependency id="RavenDB.Client" version="2.0.2230" />
     </dependencies>
   </metadata>
   <files>

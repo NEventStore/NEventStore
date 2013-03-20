@@ -12,7 +12,7 @@ properties {
 	$framework_version = "v4.0"
 	$version = "0.0.0.0"
 
-	$mspec_path = "$src_directory\packages\Machine.Specifications.0.5.8\tools\mspec-x86-clr4.exe"
+	$mspec_path = "$src_directory\packages\Machine.Specifications.0.5.10\tools\mspec-x86-clr4.exe"
 	$ilMergeModule.ilMergePath = "$base_directory\bin\ilmerge-bin\ILMerge.exe"
 	$nuget_dir = "$src_directory\.nuget"
 
@@ -80,7 +80,7 @@ task PackageEventStore -depends Clean, Compile {
 task PackageMongoPersistence -depends Clean, Compile,PackageEventStore {
 	mkdir $output_directory\plugins\persistence\mongo | out-null
 
-	Merge-Assemblies -outputFile "$output_directory/plugins/persistence/mongo/EventStore.Persistence.MongoPersistence.dll" -exclude "EventStore.*" -keyfile $keyFile -files @(
+	Merge-Assemblies -outputFile "$output_directory/plugins/persistence/mongo/EventStore.Persistence.MongoPersistence.dll" -exclude "MongoDB.*" -keyfile $keyFile -files @(
 		"$src_directory/proj/EventStore.Persistence.MongoPersistence/bin/$target_config/EventStore.Persistence.MongoPersistence.dll",
 		"$src_directory/proj/EventStore.Persistence.MongoPersistence.Wireup/bin/$target_config/EventStore.Persistence.MongoPersistence.Wireup.dll"
 	)

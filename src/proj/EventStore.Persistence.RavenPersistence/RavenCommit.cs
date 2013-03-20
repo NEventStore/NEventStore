@@ -3,7 +3,7 @@ namespace EventStore.Persistence.RavenPersistence
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using Newtonsoft.Json;
+	using Raven.Imports.Newtonsoft.Json;
 
 	public class RavenCommit
 	{

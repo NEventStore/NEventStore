@@ -33,6 +33,9 @@
 			if (!string.IsNullOrEmpty(this.config.DefaultDatabase))
 				store.DefaultDatabase = this.config.DefaultDatabase;
 
+		    if (config.CustomizeConventions != null)
+		        config.CustomizeConventions(store.Conventions);
+
 			store.Initialize();
 
 			return store;
