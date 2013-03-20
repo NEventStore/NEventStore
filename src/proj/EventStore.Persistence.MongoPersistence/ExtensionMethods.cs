@@ -25,7 +25,7 @@ namespace EventStore.Persistence.MongoPersistence
 				{ "CommitId", commit.CommitId },
 				{ "CommitStamp", SerializeDateTime(commit.CommitStamp) },
                 { "Headers", BsonDocumentWrapper.Create(commit.Headers) },
-				{ "Events", BsonArray.Create(events) },
+				{ "Events", new BsonArray(events) },
 				{ "Dispatched", false }
 			};
 		}
@@ -79,7 +79,7 @@ namespace EventStore.Persistence.MongoPersistence
 					payload = BsonSerializer.Deserialize<object>(bsonPayload.AsBsonDocument);
 					break;
 				default:
-					payload = bsonPayload.RawValue;
+					payload = BsonTypeMapper.MapToDotNetValue(bsonPayload); //bsonPayload.RawValue;
 					break;
 			}
 
