@@ -6,7 +6,7 @@ using EventStore.Logging;
 
 namespace EventStore.Persistence
 {
-    class PipelineHooksAwarePersistanceDecorator : IPersistStreams
+    public class PipelineHooksAwarePersistanceDecorator : IPersistStreams
     {
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof(PipelineHooksAwarePersistanceDecorator));
         private readonly IPersistStreams original;
@@ -71,20 +71,12 @@ namespace EventStore.Persistence
 
         public IEnumerable<Commit> GetFrom(DateTime start)
         {
-            foreach (var commit in this.original.GetFrom(start))
-            {
-                var filtered = commit;
-                foreach (var hook in this.pipelineHooks.Where(x => (filtered = x.Select(filtered)) == null))
-                {
-                    Logger.Info(Resources.PipelineHookSkippedCommit, hook.GetType(), commit.CommitId);
-                    break;
-                }
+            return ExecuteHooks(this.original.GetFrom(start));
+        }
 
-                if (filtered == null)
-                    Logger.Info(Resources.PipelineHookFilteredCommit);
-                else
-                    yield return filtered;
-            }
+        public IEnumerable<Commit> GetFromTo(DateTime start, DateTime end)
+        {
+            return ExecuteHooks(this.original.GetFromTo(start, end));
         }
 
         public IEnumerable<Commit> GetUndispatchedCommits()
@@ -103,5 +95,23 @@ namespace EventStore.Persistence
         }
 
         #endregion
+
+        private IEnumerable<Commit> ExecuteHooks(IEnumerable<Commit> commits)
+        {
+            foreach (var commit in commits)
+            {
+                var filtered = commit;
+                foreach (var hook in this.pipelineHooks.Where(x => (filtered = x.Select(filtered)) == null))
+                {
+                    Logger.Info(Resources.PipelineHookSkippedCommit, hook.GetType(), commit.CommitId);
+                    break;
+                }
+
+                if (filtered == null)
+                    Logger.Info(Resources.PipelineHookFilteredCommit);
+                else
+                    yield return filtered;
+            }
+        }
     }
 }
