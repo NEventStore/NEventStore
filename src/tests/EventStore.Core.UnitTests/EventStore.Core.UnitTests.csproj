@@ -51,6 +51,7 @@
     <Compile Include="OptimisticCommitHookTests.cs" />
     <Compile Include="OptimisticEventStoreTests.cs" />
     <Compile Include="OptimisticEventStreamTests.cs" />
+    <Compile Include="PipelineHooksAwarePersistanceDecoratorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DispatcherTests\SynchronousDispatcherTests.cs" />
   </ItemGroup>
