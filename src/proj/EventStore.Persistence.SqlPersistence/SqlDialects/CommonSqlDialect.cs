@@ -20,6 +20,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return CommonSqlStatements.GetCommitsFromInstant; }
 		}
+		public virtual string GetCommitsFromToInstant
+		{
+			get { return CommonSqlStatements.GetCommitsFromToInstant; }
+		}
 		public virtual string PersistCommit
 		{
 			get { return CommonSqlStatements.PersistCommit; }
@@ -78,6 +82,14 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		public virtual string CommitStamp
 		{
 			get { return "@CommitStamp"; }
+		}
+		public virtual string CommitStampStart
+		{
+			get { return "@CommitStampStart"; }
+		}
+		public virtual string CommitStampEnd
+		{
+			get { return "@CommitStampEnd"; }
 		}
 		public virtual string Headers
 		{

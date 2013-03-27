@@ -11,6 +11,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 		string GetCommitsFromStartingRevision { get; }
 		string GetCommitsFromInstant { get; }
+		string GetCommitsFromToInstant { get; }
 
 		string PersistCommit { get; }
 		string DuplicateCommit { get; }
@@ -29,6 +30,8 @@ namespace EventStore.Persistence.SqlPersistence
 		string CommitId { get; }
 		string CommitSequence { get; }
 		string CommitStamp { get; }
+		string CommitStampStart { get; }
+		string CommitStampEnd { get; }
 		string Headers { get; }
 		string Payload { get; }
 		string Threshold { get; }

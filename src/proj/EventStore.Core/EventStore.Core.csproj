@@ -45,6 +45,8 @@
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Conversion\EventUpconverterPipelineHook.cs" />
+    <Compile Include="Diagnostics\PerformanceCounters.cs" />
+    <Compile Include="Diagnostics\PerformanceCounterPersistenceEngine.cs" />
     <Compile Include="DispatchSchedulerPipelineHook.cs" />
     <Compile Include="Logging\ConsoleWindowLogger.cs" />
     <Compile Include="Logging\ExtensionMethods.cs" />

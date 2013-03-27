@@ -1,5 +1,11 @@
-EventStore v3.0
+EventStore
 ======================================================================
+
+ - The most recent stable release is avaiable on [NuGet.org](https://nuget.org/packages/EventStore)
+ - CI builds can be viewed on [Codebetter's TeamCity server](http://teamcity.codebetter.com/project.html?projectId=project247&tab=projectOverview).
+ - CI package are availble on [myget.org](http://www.myget.org/gallery/eventstore).
+ 
+ CI builds and packages are to be considered unstable.
 
 ## Overview
 The EventStore is a persistence library used to abstract different storage implementations
@@ -61,6 +67,7 @@ TransactionScopeOption of 'Required'.  Simply indicate this using the following 
 ### Relational Databases
 [Complete] Microsoft SQL Server 2005 (or later)  
 [Complete] MySQL 5.0 (or later)  
+
 * [Complete] InnoDB  
 * [Complete] NDB/MySQL Cluster  
 * [Complete] Drizzle  
@@ -73,6 +80,7 @@ TransactionScopeOption of 'Required'.  Simply indicate this using the following 
 * [Complete] OurDelta  
 * [Untested] MyISAM  
 * [Untested] BerkleyDB  
+
 [Complete] PostgreSQL 8.0 (or later)  
 [Complete] Firebird 2.0 (or later)  
 [In progress] Sybase (ASE)  
@@ -139,8 +147,7 @@ TransactionScopeOption of 'Required'.  Simply indicate this using the following 
 * Fluent builder
 
 ## Building
-For .NET v4.0, simply run **build.cmd** from the command line.  Users requiring a .NET v3.5 build may run **build-net35.cmd**.  
-Once built, the files will be placed in the "publish-net40" or "publish-net35" subdirectory.
+Simply run **build.cmd** from the command line.  Once built, the files will be placed in the "publish-net40" subdirectory.
 
 ## Using the EventStore
 
@@ -177,3 +184,8 @@ Once built, the files will be placed in the "publish-net40" or "publish-net35" s
 	}
 
 For a more complete example, please see [EventStore.Example](https://github.com/joliver/EventStore/blob/master/doc/EventStore.Example/MainProgram.cs) project in the doc subdirectory.
+
+## Running the Example
+The EventStore.Example project is configured by default to use a SQL event store. To run the example 
+program, either change the SQL connection string in the app.config file to connect to a existing SQL database 
+or change WireupEventStore() to call UsingInMemoryPersistence() rather than UsingSqlPersistence().

@@ -53,7 +53,7 @@ namespace EventStore.Persistence.RavenPersistence
 					this.scope.Complete();
 					this.scope.Dispose();
 				}
-				
+
 				GC.SuppressFinalize(this);
 			}
 
@@ -94,7 +94,7 @@ namespace EventStore.Persistence.RavenPersistence
 			{
 				return this.skip > 0 && 0 == this.skip % this.take;
 			}
-			
+
 			public T Current
 			{
 				get { return this.current == null ? default(T) : this.current.Current; }

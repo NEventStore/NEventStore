@@ -54,7 +54,7 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 
 			if (this.reader != null)
 				this.reader.Dispose();
-			
+
 			this.reader = null;
 
 			if (this.command != null)

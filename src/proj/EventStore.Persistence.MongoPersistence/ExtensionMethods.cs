@@ -5,6 +5,7 @@
 	using System.Linq;
 	using MongoDB.Bson;
 	using MongoDB.Bson.Serialization;
+	using MongoDB.Driver;
 	using MongoDB.Driver.Builders;
 	using Serialization;
 
@@ -92,14 +93,16 @@
 				doc["SnapshotRevision"].AsInt32);
 		}
 
-		public static QueryComplete ToMongoCommitIdQuery(this Commit commit)
+		public static IMongoQuery ToMongoCommitIdQuery(this Commit commit)
 		{
 			return Query.EQ("_id", Query.And(Query.EQ("StreamId", commit.StreamId), Query.EQ("CommitSequence", commit.CommitSequence)).ToBsonDocument());
 		}
 
-		public static QueryConditionList ToSnapshotQuery(this Guid streamId, int maxRevision)
+		public static IMongoQuery ToSnapshotQuery(this Guid streamId, int maxRevision)
 		{
-			return Query.GT("_id", Query.And(Query.EQ("StreamId", streamId), Query.EQ("StreamRevision", BsonNull.Value)).ToBsonDocument()).LTE(Query.And(Query.EQ("StreamId", streamId), Query.EQ("StreamRevision", maxRevision)).ToBsonDocument());
+			return Query.And(
+				Query.GT("_id", Query.And(Query.EQ("StreamId", streamId), Query.EQ("StreamRevision", BsonNull.Value)).ToBsonDocument()),
+				Query.LTE("_id", Query.And(Query.EQ("StreamId", streamId), Query.EQ("StreamRevision", maxRevision)).ToBsonDocument()));
 		}
 	}
 }
