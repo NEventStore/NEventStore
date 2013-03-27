@@ -7,6 +7,7 @@ namespace EventStore.Persistence.AcceptanceTests
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading;
+	using Diagnostics;
 	using Machine.Specifications;
 	using Persistence;
 
@@ -87,7 +88,6 @@ namespace EventStore.Persistence.AcceptanceTests
 	public class when_committing_a_stream_with_the_same_revision : using_the_persistence_engine
 	{
 		static readonly IPersistStreams persistence1 = Factory.Build();
-		static readonly IPersistStreams persistence2 = Factory.Build();
 		static readonly Commit attempt1 = streamId.BuildAttempt();
 		static readonly Commit attempt2 = streamId.BuildAttempt();
 		static Exception thrown;
@@ -96,23 +96,19 @@ namespace EventStore.Persistence.AcceptanceTests
 			persistence1.Commit(attempt1);
 
 		Because of = () =>
-			thrown = Catch.Exception(() => persistence2.Commit(attempt2));
+			thrown = Catch.Exception(() => persistence1.Commit(attempt2));
 
 		It should_throw_a_ConcurrencyException = () =>
 			thrown.ShouldBeOfType<ConcurrencyException>();
 
-		Cleanup cleanup = () =>
-		{
+		Cleanup cleanup = () => 
 			persistence1.Dispose();
-			persistence2.Dispose();
-		};
 	}
 
 	[Subject("Persistence")]
 	public class when_committing_a_stream_with_the_same_sequence : using_the_persistence_engine
 	{
 		static readonly IPersistStreams persistence1 = Factory.Build();
-		static readonly IPersistStreams persistence2 = Factory.Build();
 		static readonly Commit attempt1 = streamId.BuildAttempt();
 		static readonly Commit attempt2 = streamId.BuildAttempt();
 		static Exception thrown;
@@ -121,16 +117,13 @@ namespace EventStore.Persistence.AcceptanceTests
 			persistence1.Commit(attempt1);
 
 		Because of = () =>
-			thrown = Catch.Exception(() => persistence2.Commit(attempt2));
+			thrown = Catch.Exception(() => persistence1.Commit(attempt2));
 
 		It should_throw_a_ConcurrencyException = () =>
 			thrown.ShouldBeOfType<ConcurrencyException>();
 
 		Cleanup cleanup = () =>
-		{
 			persistence1.Dispose();
-			persistence2.Dispose();
-		};
 	}
 
 	[Subject("Persistence")]
@@ -426,7 +419,7 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		Establish context = () =>
 		{
-			persistence = Factory.Build();
+			persistence = new PerformanceCounterPersistenceEngine(Factory.Build(), "tests");
 			persistence.Initialize();
 		};
 
@@ -438,6 +431,3 @@ namespace EventStore.Persistence.AcceptanceTests
 		};
 	}
 }
-
-// ReSharper enable InconsistentNaming
-#pragma warning restore 169

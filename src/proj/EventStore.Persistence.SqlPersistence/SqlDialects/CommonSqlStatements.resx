@@ -148,6 +148,14 @@ SELECT @StreamId, @StreamRevision, @Payload
  ORDER BY CommitStamp, StreamId, StreamRevision
  LIMIT @Limit OFFSET @Skip;</value>
   </data>
+  <data name="GetCommitsFromToInstant" xml:space="preserve">
+    <value>SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
+  FROM Commits
+ WHERE CommitStamp &gt;= @CommitStampStart
+   AND CommitStamp &lt; @CommitStampEnd
+ ORDER BY CommitStamp, StreamId, StreamRevision
+ LIMIT @Limit OFFSET @Skip;</value>
+  </data>
   <data name="GetCommitsFromStartingRevision" xml:space="preserve">
     <value>SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
   FROM Commits

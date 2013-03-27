@@ -113,6 +113,17 @@
 				.SetSortOrder("CommitStamp")
 				.Select(x => x.ToCommit(this.serializer)));
 		}
+
+		public virtual IEnumerable<Commit> GetFromTo(DateTime start, DateTime end)
+		{
+			Logger.Debug(Messages.GettingAllCommitsFromTo, start, end);
+
+			return this.TryMongo(() => this.PersistedCommits
+				.Find(Query.And(Query.GTE("CommitStamp", start), Query.LT("CommitStamp", end)))
+				.SetSortOrder("CommitStamp")
+				.Select(x => x.ToCommit(this.serializer)));
+		}
+
 		public virtual void Commit(Commit attempt)
 		{
 			Logger.Debug(Messages.AttemptingToCommit,
@@ -207,8 +218,8 @@
 				// stream that needs to be snapshotted because the insert fails and the SnapshotRevision isn't being updated.
 				this.PersistedSnapshots.Update(query, update, UpdateFlags.Upsert);
 
-				// More commits could have been made between us deciding that a snapshot is required and writing it so just 
-				// resetting the Unsnapshotted count may be a little off. Adding snapshots should be a separate process so 
+				// More commits could have been made between us deciding that a snapshot is required and writing it so just
+				// resetting the Unsnapshotted count may be a little off. Adding snapshots should be a separate process so
 				// this is a good chance to make sure the numbers are still in-sync - it only adds a 'read' after all ...
 				var streamHead = this.PersistedStreamHeads.FindOneById(snapshot.StreamId).ToStreamHead();
 				var unsnapshotted = streamHead.HeadRevision - snapshot.StreamRevision;

@@ -26,6 +26,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return this.Paged(base.GetCommitsFromInstant); }
 		}
+		public override string GetCommitsFromToInstant
+		{
+			get { return this.Paged(base.GetCommitsFromToInstant); }
+		}
 		public override string GetStreamsRequiringSnapshots
 		{
 			get { return this.Paged(base.GetStreamsRequiringSnapshots); }

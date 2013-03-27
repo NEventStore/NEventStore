@@ -1,5 +1,7 @@
 namespace EventStore.Persistence.SqlPersistence
 {
+	using System;
+	using System.Configuration;
 	using System.Transactions;
 	using Serialization;
 	using SqlDialects;
@@ -17,12 +19,10 @@ namespace EventStore.Persistence.SqlPersistence
 		{
 		}
 		public SqlPersistenceFactory(string connectionName, ISerialize serializer, ISqlDialect dialect)
-			: this(new ConfigurationConnectionFactory(connectionName), serializer, dialect)
+			: this(serializer, TransactionScopeOption.Suppress, DefaultPageSize)
 		{
-		}
-		public SqlPersistenceFactory(IConnectionFactory factory, ISerialize serializer)
-			: this(factory, serializer, null)
-		{
+			this.connectionFactory = new ConfigurationConnectionFactory(connectionName);
+			this.dialect = dialect ?? ResolveDialect(new ConfigurationConnectionFactory(connectionName).Settings);
 		}
 		public SqlPersistenceFactory(IConnectionFactory factory, ISerialize serializer, ISqlDialect dialect)
 			: this(factory, serializer, dialect, TransactionScopeOption.Suppress, DefaultPageSize)
@@ -34,10 +34,17 @@ namespace EventStore.Persistence.SqlPersistence
 			ISqlDialect dialect,
 			TransactionScopeOption scopeOption,
 			int pageSize)
+			: this(serializer, scopeOption, pageSize)
 		{
+			if (dialect == null)
+				throw new ArgumentNullException("dialect");
+
 			this.connectionFactory = factory;
-			this.serializer = serializer;
 			this.dialect = dialect;
+		}
+		private SqlPersistenceFactory(ISerialize serializer, TransactionScopeOption scopeOption, int pageSize)
+		{
+			this.serializer = serializer;
 			this.scopeOption = scopeOption;
 
 			this.PageSize = pageSize;
@@ -60,14 +67,11 @@ namespace EventStore.Persistence.SqlPersistence
 		public virtual IPersistStreams Build()
 		{
 			return new SqlPersistenceEngine(
-				this.ConnectionFactory, this.GetDialect(), this.Serializer, this.scopeOption, this.PageSize);
+				this.ConnectionFactory, this.Dialect, this.Serializer, this.scopeOption, this.PageSize);
 		}
-		protected virtual ISqlDialect GetDialect()
-		{
-			if (this.Dialect != null)
-				return this.Dialect;
 
-			var settings = this.ConnectionFactory.Settings;
+		protected static ISqlDialect ResolveDialect(ConnectionStringSettings settings)
+		{
 			var connectionString = settings.ConnectionString.ToUpperInvariant();
 			var providerName = settings.ProviderName.ToUpperInvariant();
 
@@ -91,6 +95,12 @@ namespace EventStore.Persistence.SqlPersistence
 
 			if (providerName.Contains("OLEDB") && connectionString.Contains("MICROSOFT.JET"))
 				return new AccessDialect();
+
+            if (providerName.Contains("ORACLE") && providerName.Contains("DATAACCESS"))
+                return new OracleNativeDialect();
+
+            if (providerName == "SYSTEM.DATA.ORACLECLIENT")
+                return new OracleNativeDialect();
 
 			return new MsSqlDialect();
 		}

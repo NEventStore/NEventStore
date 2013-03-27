@@ -1,3 +1,5 @@
+using EventStore.Persistence.SqlPersistence.SqlDialects;
+
 namespace EventStore.Example
 {
 	using System;
@@ -26,21 +28,24 @@ namespace EventStore.Example
 			}
 
 			Console.WriteLine(Resources.PressAnyKey);
-			Console.ReadLine();
+			Console.ReadKey();
 		}
 
 		private static IStoreEvents WireupEventStore()
 		{
 			 return Wireup.Init()
 				.LogToOutputWindow()
-				.UsingSqlPersistence("EventStore")
+				.UsingInMemoryPersistence()
+				.UsingSqlPersistence("EventStore") // Connection string is in app.config
+					.WithDialect(new MsSqlDialect())
 					.EnlistInAmbientTransaction() // two-phase commit
 					.InitializeStorageEngine()
+					.TrackPerformanceInstance("example")
 					.UsingJsonSerialization()
 						.Compress()
 						.EncryptWith(EncryptionKey)
 				.HookIntoPipelineUsing(new[] { new AuthorizationPipelineHook() })
-				.UsingAsynchronousDispatchScheduler()
+				.UsingSynchronousDispatchScheduler()
 					.DispatchTo(new DelegateMessageDispatcher(DispatchCommit))
 				.Build();
 		}

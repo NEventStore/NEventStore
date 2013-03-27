@@ -1,3 +1,5 @@
+using Raven.Client.Document;
+
 namespace EventStore.Persistence.RavenPersistence
 {
 	using System;
@@ -7,14 +9,18 @@ namespace EventStore.Persistence.RavenPersistence
 	public class RavenConfiguration
 	{
 		public string ConnectionName { get; set; }
+        public string ConnectionString { get; set; }
 		public Uri Url { get; set; }
 		public string DefaultDatabase { get; set; }
+        public string Partition { get; set; }
 
 		public IDocumentSerializer Serializer { get; set; }
 		public TransactionScopeOption ScopeOption { get; set; }
 		public bool ConsistentQueries { get; set; }
 		public int RequestedPageSize { get; set; }
 		public int MaxServerPageSize { get; set; }
+        public Action<DocumentConvention> CustomizeConventions { get; set; }
+
 		public int PageSize
 		{
 			get

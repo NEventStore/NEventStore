@@ -1,3 +1,5 @@
+using Raven.Client.Document;
+
 namespace EventStore
 {
 	using System;
@@ -17,8 +19,12 @@ namespace EventStore
 		private IDocumentSerializer serializer = new DocumentObjectSerializer();
 		private Uri url;
 		private string defaultDatabase;
+	    private string partition = null;
+	    private string connectionName;
+	    private string connectionString;
+        Action<DocumentConvention> customizeConventions;
 
-		public RavenPersistenceWireup(Wireup inner)
+	    public RavenPersistenceWireup(Wireup inner)
 			: this(inner, string.Empty)
 		{
 		}
@@ -28,20 +34,41 @@ namespace EventStore
 		{
 			Logger.Debug("Configuring Raven persistence engine.");
 
-			this.Container.Register(c => new RavenConfiguration
+		    this.connectionName = connectionName;
+
+		    this.Container.Register(c => new RavenConfiguration
 			{
 				Serializer = this.ResolveSerializer(c),
 				ScopeOption = c.Resolve<TransactionScopeOption>(),
 				ConsistentQueries = this.consistentQueries,
 				MaxServerPageSize = this.maxServerPageSize,
 				RequestedPageSize = this.pageSize,
-				ConnectionName = connectionName,
+				ConnectionName = this.connectionName,
+                ConnectionString = this.connectionString,
 				DefaultDatabase = this.defaultDatabase,
-				Url = this.url
+				Url = this.url,
+                Partition = this.partition,
+                CustomizeConventions = this.customizeConventions
 			});
 
 			this.Container.Register(c => new RavenPersistenceFactory(c.Resolve<RavenConfiguration>()).Build());
 		}
+
+        public virtual RavenPersistenceWireup ConnectionStringName(string connectionStringName)
+        {
+            Logger.Debug("Using connection string named '{0}'.", connectionStringName);
+
+            this.connectionName = connectionStringName;
+            return this;
+        }
+
+        public virtual RavenPersistenceWireup ConnectionString(string connectionStringValue)
+        {
+            Logger.Debug("Using connection string value '{0}'.", connectionStringValue);
+
+            this.connectionString = connectionStringValue;
+            return this;
+        }
 
 		public virtual RavenPersistenceWireup DefaultDatabase(string database)
 		{
@@ -50,6 +77,7 @@ namespace EventStore
 			this.defaultDatabase = database;
 			return this;
 		}
+
 		public virtual RavenPersistenceWireup Url(string address)
 		{
 			Logger.Debug("Using database at '{0}'.", address);
@@ -58,6 +86,13 @@ namespace EventStore
 			return this;
 		}
 
+        public virtual RavenPersistenceWireup Partition(string name)
+        {
+            this.partition = name;
+
+            return this;
+        }
+
 		public virtual RavenPersistenceWireup PageEvery(int records)
 		{
 			Logger.Debug("Page result set every {0} records.", records);
@@ -65,6 +100,7 @@ namespace EventStore
 			this.pageSize = records;
 			return this;
 		}
+
 		public virtual RavenPersistenceWireup MaxServerPageSizeConfiguration(int records)
 		{
 			Logger.Debug("The maximum allowed page size as configured on the Raven server is {0} records.", records);
@@ -80,14 +116,23 @@ namespace EventStore
 			this.consistentQueries = fullyConsistent;
 			return this;
 		}
+
 		public virtual RavenPersistenceWireup ConsistentQueries()
 		{
 			return this.ConsistentQueries(true);
 		}
+
 		public virtual RavenPersistenceWireup StaleQueries()
 		{
 			return this.ConsistentQueries(false);
 		}
+
+        public virtual RavenPersistenceWireup WithCustomConventions(Action<DocumentConvention> conventionsAction)
+        {
+            this.customizeConventions = conventionsAction;
+
+            return this;
+        }
 
 		public virtual RavenPersistenceWireup WithSerializer(IDocumentSerializer instance)
 		{
@@ -96,6 +141,7 @@ namespace EventStore
 			this.serializer = instance;
 			return this;
 		}
+        
 		private IDocumentSerializer ResolveSerializer(NanoContainer container)
 		{
 			var registered = container.Resolve<ISerialize>();

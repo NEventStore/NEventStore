@@ -21,7 +21,7 @@ namespace EventStore.Core.UnitTests.ConversionTests
 		Establish context = () =>
 			commit.Events.Add(new EventMessage { Body = new NonConvertingEvent() });
 
-		Because of = () => 
+		Because of = () =>
 			converted = eventUpconverter.Select(commit);
 
 		It should_not_be_converted = () =>

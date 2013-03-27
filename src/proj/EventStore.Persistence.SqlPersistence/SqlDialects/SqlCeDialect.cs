@@ -23,6 +23,10 @@ namespace EventStore.Persistence.SqlPersistence.SqlDialects
 		{
 			get { return RemovePaging(base.GetCommitsFromInstant); }
 		}
+		public override string GetCommitsFromToInstant
+		{
+			get { return RemovePaging(base.GetCommitsFromToInstant); }
+		}
 		public override string GetStreamsRequiringSnapshots
 		{
 			get { return RemovePaging(base.GetStreamsRequiringSnapshots); }

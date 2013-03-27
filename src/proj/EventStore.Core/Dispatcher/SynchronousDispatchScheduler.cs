@@ -36,7 +36,7 @@ namespace EventStore.Dispatcher
 			this.persistence.Dispose();
 		}
 
-		private void Start()
+		protected virtual void Start()
 		{
 			Logger.Debug(Resources.InitializingPersistence);
 			this.persistence.Initialize();
