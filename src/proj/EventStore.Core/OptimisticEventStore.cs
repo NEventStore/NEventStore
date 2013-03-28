@@ -17,8 +17,8 @@ namespace EventStore
 			if (persistence == null)
 				throw new ArgumentNullException("persistence");
 
-			this.persistence = persistence;
 			this.pipelineHooks = pipelineHooks ?? new IPipelineHook[0];
+            this.persistence = new PipelineHooksAwarePersistanceDecorator(persistence, pipelineHooks);
 		}
 
 		public void Dispose()
@@ -76,7 +76,8 @@ namespace EventStore
 					yield return filtered;
 			}
 		}
-		public virtual void Commit(Commit attempt)
+
+	    public virtual void Commit(Commit attempt)
 		{
 			if (!attempt.IsValid() || attempt.IsEmpty())
 			{
