@@ -18,11 +18,78 @@
     }
 
     [Subject("PipelineHooksAwarePersistanceDecorator")]
-    public class when_reading_the_stream : using_underlying_persistence
+    public class when_reading_the_all_events_from_date : using_underlying_persistence
     {
-        Because of = () => decorator.GetFrom(streamId, 1, 2);
+        private static Mock<IPipelineHook> hook1;
+        private static Mock<IPipelineHook> hook2;
+        private static Commit commit;
+        private static DateTime date;
+        
 
-        It should_call_the_underlying_persistence = () => persistence.Verify(x => x.GetFrom(streamId, 1, 2), Times.Once());
+        private Establish context = () =>
+        {
+            date = DateTime.Now;
+            commit = new Commit(streamId, 1, Guid.NewGuid(), 1, DateTime.Now, null, null);
+
+            hook1 = new Mock<IPipelineHook>();
+            hook1.Setup(h => h.Select(commit)).Returns(commit);
+            pipelineHooks.Add(hook1);
+
+            hook2 = new Mock<IPipelineHook>();
+            hook2.Setup(h => h.Select(commit)).Returns(commit);
+            pipelineHooks.Add(hook2);
+
+            persistence.Setup(p => p.GetFrom(date)).Returns(new List<Commit> { commit });
+        };
+
+        Because of = () => decorator.GetFrom(date).ToList();
+
+        private It should_call_the_underlying_persistence_to_get_events = () => persistence.Verify(x => x.GetFrom(date), Times.Once());
+
+        private It should_pass_all_events_through_the_pipeline_hooks = () =>
+        {
+            hook1.Verify(h => h.Select(commit), Times.Once());
+            hook2.Verify(h => h.Select(commit), Times.Once());
+        };
+    }
+
+    [Subject("PipelineHooksAwarePersistanceDecorator")]
+    public class when_reading_the_all_events_to_date : using_underlying_persistence
+    {
+        private static Mock<IPipelineHook> hook1;
+        private static Mock<IPipelineHook> hook2;
+        private static Commit commit;
+
+        private static DateTime start;
+        private static DateTime end;
+
+
+        private Establish context = () =>
+        {
+            start = DateTime.Now;
+            end = DateTime.Now;
+            commit = new Commit(streamId, 1, Guid.NewGuid(), 1, DateTime.Now, null, null);
+
+            hook1 = new Mock<IPipelineHook>();
+            hook1.Setup(h => h.Select(commit)).Returns(commit);
+            pipelineHooks.Add(hook1);
+
+            hook2 = new Mock<IPipelineHook>();
+            hook2.Setup(h => h.Select(commit)).Returns(commit);
+            pipelineHooks.Add(hook2);
+
+            persistence.Setup(p => p.GetFromTo(start, end)).Returns(new List<Commit> { commit });
+        };
+
+        Because of = () => decorator.GetFromTo(start, end).ToList();
+
+        private It should_call_the_underlying_persistence_to_get_events = () => persistence.Verify(x => x.GetFromTo(start, end), Times.Once());
+
+        private It should_pass_all_events_through_the_pipeline_hooks = () =>
+        {
+            hook1.Verify(h => h.Select(commit), Times.Once());
+            hook2.Verify(h => h.Select(commit), Times.Once());
+        };
     }
 
     [Subject("PipelineHooksAwarePersistanceDecorator")]
