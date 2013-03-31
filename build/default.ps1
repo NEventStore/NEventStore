@@ -12,7 +12,7 @@ properties {
 	$framework_version = "v4.0"
 	$version = "0.0.0.0"
 
-	$mspec_path = "$src_directory\packages\Machine.Specifications.0.5.8\tools\mspec-x86-clr4.exe"
+	$mspec_path = "$src_directory\packages\Machine.Specifications.0.5.10\tools\mspec-x86-clr4.exe"
 	$ilMergeModule.ilMergePath = "$base_directory\bin\ilmerge-bin\ILMerge.exe"
 	$nuget_dir = "$src_directory\.nuget"
 
@@ -26,11 +26,25 @@ task default -depends Build
 task Build -depends Clean, UpdateVersion, Compile, Test
 
 task UpdateVersion {
+	
+	$vSplit = $version.Split('.')
+	
+	if($vSplit.Length -ne 4)
+	{
+		throw "Version number is invalid. Must be in the form of 0.0.0.0"
+	}
+
+	$major = $vSplit[0]
+	$minor = $vSplit[1]
+
+	$assemblyFileVersion = $version
+	$assemblyVersion = "$major.$minor.0.0"
+
 	$versionAssemblyInfoFile = "$src_directory/proj/VersionAssemblyInfo.cs"
 	"using System.Reflection;" > $versionAssemblyInfoFile
 	"" >> $versionAssemblyInfoFile
-	"[assembly: AssemblyVersion(""$version"")]" >> $versionAssemblyInfoFile
-	"[assembly: AssemblyFileVersion(""$version"")]" >> $versionAssemblyInfoFile
+	"[assembly: AssemblyVersion(""$assemblyVersion"")]" >> $versionAssemblyInfoFile
+	"[assembly: AssemblyFileVersion(""$assemblyFileVersion"")]" >> $versionAssemblyInfoFile
 }
 
 task Compile {

@@ -1,3 +1,5 @@
+using Raven.Client.Document;
+
 namespace EventStore
 {
 	using System;
@@ -20,6 +22,7 @@ namespace EventStore
 	    private string partition = null;
 	    private string connectionName;
 	    private string connectionString;
+        Action<DocumentConvention> customizeConventions;
 
 	    public RavenPersistenceWireup(Wireup inner)
 			: this(inner, string.Empty)
@@ -44,7 +47,8 @@ namespace EventStore
                 ConnectionString = this.connectionString,
 				DefaultDatabase = this.defaultDatabase,
 				Url = this.url,
-                Partition = this.partition
+                Partition = this.partition,
+                CustomizeConventions = this.customizeConventions
 			});
 
 			this.Container.Register(c => new RavenPersistenceFactory(c.Resolve<RavenConfiguration>()).Build());
@@ -122,6 +126,13 @@ namespace EventStore
 		{
 			return this.ConsistentQueries(false);
 		}
+
+        public virtual RavenPersistenceWireup WithCustomConventions(Action<DocumentConvention> conventionsAction)
+        {
+            this.customizeConventions = conventionsAction;
+
+            return this;
+        }
 
 		public virtual RavenPersistenceWireup WithSerializer(IDocumentSerializer instance)
 		{
