@@ -365,8 +365,8 @@ namespace EventStore.Core.UnitTests
 	[Subject("OptimisticEventStore")]
 	public class when_accessing_the_underlying_persistence : using_persistence
 	{
-		It should_return_a_reference_to_the_underlying_persistence_infrastructure = () =>
-			store.Advanced.ShouldBeTheSameAs(persistence.Object);
+		It should_return_a_reference_to_the_underlying_persistence_infrastructure_decorator = () =>
+            store.Advanced.ShouldBeOfType<PipelineHooksAwarePersistanceDecorator>();
 	}
 
 	[Subject("OptimisticEventStore")]

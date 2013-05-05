@@ -18,14 +18,14 @@ namespace EventStore.Persistence
 		/// <exception cref="StorageUnavailableException" />
 		void Initialize();
 
-		/// <summary>
-		/// Gets all commits on or after from the specified starting time.
-		/// </summary>
-		/// <param name="start">The point in time at which to start.</param>
-		/// <returns>All commits that have occurred on or after the specified starting time.</returns>
-		/// <exception cref="StorageException" />
-		/// <exception cref="StorageUnavailableException" />
-		IEnumerable<Commit> GetFrom(DateTime start);
+        /// <summary>        	
+        /// Gets all commits on or after from the specified starting time.
+        /// </summary>
+        /// <param name="start">The point in time at which to start.</param>
+        /// <returns>All commits that have occurred on or after the specified starting time.</returns>
+        /// <exception cref="StorageException" />
+        /// <exception cref="StorageUnavailableException" />
+        IEnumerable<Commit> GetFrom(DateTime start);
 
 		/// <summary>
 		/// Gets all commits on or after from the specified starting time and after the specified end time.
