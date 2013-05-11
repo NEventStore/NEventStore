@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using EventStore.Logging;
-
-namespace EventStore.Persistence
+﻿namespace EventStore.Persistence
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Logging;
+
     public class PipelineHooksAwarePersistanceDecorator : IPersistStreams
     {
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(PipelineHooksAwarePersistanceDecorator));
+        private static readonly ILog Logger = LogFactory.BuildLogger(typeof (PipelineHooksAwarePersistanceDecorator));
         private readonly IPersistStreams original;
         private readonly IEnumerable<IPipelineHook> pipelineHooks;
 
@@ -20,17 +19,11 @@ namespace EventStore.Persistence
             this.pipelineHooks = pipelineHooks;
         }
 
-        #region Implementation of IDisposable
-
         public void Dispose()
         {
             original.Dispose();
         }
-
-        #endregion
-
-        #region Implementation of ICommitEvents
-
+ 
         public IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
         {
             return original.GetFrom(streamId, minRevision, maxRevision);
@@ -40,10 +33,6 @@ namespace EventStore.Persistence
         {
             original.Commit(attempt);
         }
-
-        #endregion
-
-        #region Implementation of IAccessSnapshots
 
         public Snapshot GetSnapshot(Guid streamId, int maxRevision)
         {
@@ -60,10 +49,6 @@ namespace EventStore.Persistence
             return original.GetStreamsToSnapshot(maxThreshold);
         }
 
-        #endregion
-
-        #region Implementation of IPersistStreams
-
         public void Initialize()
         {
             original.Initialize();
@@ -71,12 +56,12 @@ namespace EventStore.Persistence
 
         public IEnumerable<Commit> GetFrom(DateTime start)
         {
-            return ExecuteHooks(this.original.GetFrom(start));
+            return ExecuteHooks(original.GetFrom(start));
         }
 
         public IEnumerable<Commit> GetFromTo(DateTime start, DateTime end)
         {
-            return ExecuteHooks(this.original.GetFromTo(start, end));
+            return ExecuteHooks(original.GetFromTo(start, end));
         }
 
         public IEnumerable<Commit> GetUndispatchedCommits()
@@ -94,14 +79,12 @@ namespace EventStore.Persistence
             original.Purge();
         }
 
-        #endregion
-
         private IEnumerable<Commit> ExecuteHooks(IEnumerable<Commit> commits)
         {
-            foreach (var commit in commits)
+            foreach (Commit commit in commits)
             {
-                var filtered = commit;
-                foreach (var hook in this.pipelineHooks.Where(x => (filtered = x.Select(filtered)) == null))
+                Commit filtered = commit;
+                foreach (IPipelineHook hook in pipelineHooks.Where(x => (filtered = x.Select(filtered)) == null))
                 {
                     Logger.Info(Resources.PipelineHookSkippedCommit, hook.GetType(), commit.CommitId);
                     break;
