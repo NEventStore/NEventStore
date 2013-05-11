@@ -9,7 +9,7 @@ namespace EventStore.Core.UnitTests.DispatcherTests
 	using Dispatcher;
 	using Machine.Specifications;
 	using Moq;
-	using Persistence;
+	using EventStore.Persistence;
 	using It = Machine.Specifications.It;
 
 	[Subject("AsynchronousDispatchScheduler")]

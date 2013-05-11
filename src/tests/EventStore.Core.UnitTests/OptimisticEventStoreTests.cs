@@ -8,7 +8,7 @@ namespace EventStore.Core.UnitTests
 	using System.Linq;
 	using Machine.Specifications;
 	using Moq;
-	using Persistence;
+	using EventStore.Persistence;
 	using It = Machine.Specifications.It;
 
 	[Subject("OptimisticEventStore")]
@@ -381,7 +381,7 @@ namespace EventStore.Core.UnitTests
 
 	public abstract class using_persistence
 	{
-		protected static Guid streamId = Guid.NewGuid();
+		protected static Guid streamId = Guid.NewGuid(); 
 		protected static Mock<IPersistStreams> persistence;
 		protected static OptimisticEventStore store;
 		protected static List<Mock<IPipelineHook>> pipelineHooks;

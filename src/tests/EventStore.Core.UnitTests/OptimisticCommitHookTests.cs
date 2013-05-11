@@ -6,7 +6,7 @@ namespace EventStore.Core.UnitTests
 	using System;
 	using System.Linq;
 	using Machine.Specifications;
-	using Persistence;
+	using EventStore.Persistence;
 	using It = Machine.Specifications.It;
 
 	[Subject("OptimisticCommitHook")]
