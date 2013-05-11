@@ -21,11 +21,10 @@
                 Guid streamId = Guid.NewGuid();
                 engine.Commit(new Commit(streamId, 0, Guid.NewGuid(), 0, startDate, new Dictionary<string, object>(), new List<EventMessage>()));
                 engine.Commit(new Commit(streamId, 1, Guid.NewGuid(), 1, endDate, new Dictionary<string, object>(), new List<EventMessage>()));
-                engine.Commit(new Commit(streamId, 2, Guid.NewGuid(), 2, endDate.AddDays(1), new Dictionary<string, object>(), new List<EventMessage>()));
             };
 
         Because of = () => commits = engine.GetFromTo(startDate, endDate).ToArray();
 
-        It should_return_two_commits = () => commits.Length.ShouldEqual(2);
+        It should_return_two_commits = () => commits.Length.ShouldEqual(1);
     }
 }
