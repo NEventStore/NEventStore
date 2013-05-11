@@ -128,7 +128,7 @@
        CommitStamp bigint NOT NULL,
        Dispatched bit NOT NULL DEFAULT 0,
        Headers blob NULL,
-       Payload blob NOT NULL,
+       Payload mediumblob NOT NULL,
        CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)
 );
 CREATE UNIQUE INDEX IX_Commits_CommitId ON Commits (StreamId, CommitId);
