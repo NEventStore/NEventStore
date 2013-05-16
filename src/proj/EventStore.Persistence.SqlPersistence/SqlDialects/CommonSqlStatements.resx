@@ -145,7 +145,7 @@ SELECT @StreamId, @StreamRevision, @Payload
     <value>SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
   FROM Commits
  WHERE CommitStamp &gt;= @CommitStamp
- ORDER BY CommitStamp, StreamId, StreamRevision
+ ORDER BY CommitSequence, StreamId, StreamRevision
  LIMIT @Limit OFFSET @Skip;</value>
   </data>
   <data name="GetCommitsFromToInstant" xml:space="preserve">
@@ -153,7 +153,7 @@ SELECT @StreamId, @StreamRevision, @Payload
   FROM Commits
  WHERE CommitStamp &gt;= @CommitStampStart
    AND CommitStamp &lt; @CommitStampEnd
- ORDER BY CommitStamp, StreamId, StreamRevision
+ ORDER BY CommitSequence, StreamId, StreamRevision
  LIMIT @Limit OFFSET @Skip;</value>
   </data>
   <data name="GetCommitsFromStartingRevision" xml:space="preserve">
@@ -190,7 +190,7 @@ HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Thresho
     <value>SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
   FROM Commits
  WHERE Dispatched = 0
- ORDER BY CommitStamp
+ ORDER BY CommitSequence
  LIMIT @Limit OFFSET @Skip;</value>
   </data>
   <data name="MarkCommitAsDispatched" xml:space="preserve">
