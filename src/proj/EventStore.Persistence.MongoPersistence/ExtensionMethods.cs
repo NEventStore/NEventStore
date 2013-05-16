@@ -4,13 +4,27 @@
 	using System.Collections.Generic;
 	using System.Linq;
 	using MongoDB.Bson;
+	using MongoDB.Bson.IO;
 	using MongoDB.Bson.Serialization;
+	using MongoDB.Bson.Serialization.Options;
+	using MongoDB.Bson.Serialization.Serializers;
 	using MongoDB.Driver;
 	using MongoDB.Driver.Builders;
 	using Serialization;
 
 	public static class ExtensionMethods
 	{
+        public static Dictionary<Tkey,Tvalue> AsDictionary<Tkey,Tvalue>(this BsonValue bsonValue)
+        {
+            
+            using (var reader = BsonReader.Create(bsonValue.ToJson()))
+            {
+                var dictionarySerializer = new DictionarySerializer<Tkey, Tvalue>();
+                var result = dictionarySerializer.Deserialize(reader, typeof(Dictionary<Tkey, Tvalue>), new DictionarySerializationOptions());
+                return (Dictionary<Tkey, Tvalue>)result;
+            }
+        }
+
 		public static BsonDocument ToMongoCommit(this Commit commit, IDocumentSerializer serializer)
 		{
 			var streamRevision = commit.StreamRevision - (commit.Events.Count - 1);
@@ -21,7 +35,7 @@
 				{ "CommitId", commit.CommitId },
 				{ "CommitStamp", commit.CommitStamp },
 				{ "Headers", BsonDocumentWrapper.Create(commit.Headers) },
-				{ "Events", BsonArray.Create(events) },
+				{ "Events", new BsonArray(events) },
 				{ "Dispatched", false }
 			};
 		}
@@ -37,12 +51,12 @@
 			var events = doc["Events"].AsBsonArray.Select(e => e.AsBsonDocument["Payload"].IsBsonDocument ? BsonSerializer.Deserialize<EventMessage>(e.AsBsonDocument["Payload"].AsBsonDocument) : serializer.Deserialize<EventMessage>(e.AsBsonDocument["Payload"].AsByteArray)).ToList();
 			var streamRevision = doc["Events"].AsBsonArray.Last().AsBsonDocument["StreamRevision"].AsInt32;
 			return new Commit(
-				streamId,
-				streamRevision,
-				doc["CommitId"].AsGuid,
-				commitSequence,
-				doc["CommitStamp"].AsDateTime,
-				BsonSerializer.Deserialize<Dictionary<string, object>>(doc["Headers"].AsBsonDocument),
+		        streamId,
+		        streamRevision,
+		        doc["CommitId"].AsGuid,
+		        commitSequence,
+                doc["CommitStamp"].ToUniversalTime(),
+                doc["Headers"].AsDictionary<string,object>(),
 				events);
 		}
 
@@ -75,7 +89,7 @@
 					payload = BsonSerializer.Deserialize<object>(bsonPayload.AsBsonDocument);
 					break;
 				default:
-					payload = bsonPayload.RawValue;
+                    payload = BsonTypeMapper.MapToDotNetValue(bsonPayload);
 					break;
 			}
 

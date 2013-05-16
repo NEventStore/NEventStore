@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using EventStore.Persistence;
+using Raven.Client;
 using Raven.Client.Document;
 
 namespace EventStore
@@ -17,56 +20,54 @@ namespace EventStore
 		private int maxServerPageSize = 1024;
 		private bool consistentQueries; // stale queries perform better
 		private IDocumentSerializer serializer = new DocumentObjectSerializer();
-		private Uri url;
-		private string defaultDatabase;
 	    private string partition = null;
-	    private string connectionName;
-	    private string connectionString;
-        Action<DocumentConvention> customizeConventions;
+
+	    Func<IDocumentStore> getStoreAction;
+	    readonly List<Action<DocumentStore>> customizeStoreActions = new List<Action<DocumentStore>>(); 
 
 	    public RavenPersistenceWireup(Wireup inner)
-			: this(inner, string.Empty)
+			: base(inner)
 		{
+            Logger.Debug("Configuring Raven persistence engine.");
+
+            this.Container.Register(c => new RavenConfiguration
+            {
+                Serializer = this.ResolveSerializer(c),
+                ScopeOption = c.Resolve<TransactionScopeOption>(),
+                ConsistentQueries = this.consistentQueries,
+                MaxServerPageSize = this.maxServerPageSize,
+                RequestedPageSize = this.pageSize,
+                Partition = this.partition,
+            });
+
+            this.Container.Register<IPersistStreams>(c => new RavenPersistenceEngine(getStoreAction(), c.Resolve<RavenConfiguration>()));
 		}
 
 		public RavenPersistenceWireup(Wireup inner, string connectionName)
-			: base(inner)
+            : this(inner)
 		{
-			Logger.Debug("Configuring Raven persistence engine.");
-
-		    this.connectionName = connectionName;
-
-		    this.Container.Register(c => new RavenConfiguration
-			{
-				Serializer = this.ResolveSerializer(c),
-				ScopeOption = c.Resolve<TransactionScopeOption>(),
-				ConsistentQueries = this.consistentQueries,
-				MaxServerPageSize = this.maxServerPageSize,
-				RequestedPageSize = this.pageSize,
-				ConnectionName = this.connectionName,
-                ConnectionString = this.connectionString,
-				DefaultDatabase = this.defaultDatabase,
-				Url = this.url,
-                Partition = this.partition,
-                CustomizeConventions = this.customizeConventions
-			});
-
-			this.Container.Register(c => new RavenPersistenceFactory(c.Resolve<RavenConfiguration>()).Build());
+		    getStoreAction = CreateStore;
+		    CreateWithConnectionStringName(connectionName);
 		}
+
+        public RavenPersistenceWireup(Wireup inner, Func<IDocumentStore> getStore)
+            : this(inner)
+        {
+            getStoreAction = getStore;
+        }
 
         public virtual RavenPersistenceWireup ConnectionStringName(string connectionStringName)
         {
-            Logger.Debug("Using connection string named '{0}'.", connectionStringName);
-
-            this.connectionName = connectionStringName;
+            CreateWithConnectionStringName(connectionStringName);
             return this;
         }
-
-        public virtual RavenPersistenceWireup ConnectionString(string connectionStringValue)
+        
+	    public virtual RavenPersistenceWireup ConnectionString(string connectionStringValue)
         {
             Logger.Debug("Using connection string value '{0}'.", connectionStringValue);
 
-            this.connectionString = connectionStringValue;
+            customizeStoreActions.Add(s => s.ParseConnectionString(connectionStringValue));
+            
             return this;
         }
 
@@ -74,7 +75,8 @@ namespace EventStore
 		{
 			Logger.Debug("Using database named '{0}'.", database);
 
-			this.defaultDatabase = database;
+			customizeStoreActions.Add(s => s.DefaultDatabase = database);
+
 			return this;
 		}
 
@@ -82,7 +84,8 @@ namespace EventStore
 		{
 			Logger.Debug("Using database at '{0}'.", address);
 
-			this.url = new Uri(address, UriKind.Absolute);
+            customizeStoreActions.Add(s => s.Url = address);
+
 			return this;
 		}
 
@@ -129,7 +132,7 @@ namespace EventStore
 
         public virtual RavenPersistenceWireup WithCustomConventions(Action<DocumentConvention> conventionsAction)
         {
-            this.customizeConventions = conventionsAction;
+            customizeStoreActions.Add(s => conventionsAction(s.Conventions));
 
             return this;
         }
@@ -151,5 +154,24 @@ namespace EventStore
 			Logger.Debug("Wrapping registered serializer of type '{0}' inside of a ByteStreamDocumentSerializer", registered.GetType());
 			return new ByteStreamDocumentSerializer(registered);
 		}
+
+        private void CreateWithConnectionStringName(string connectionStringName)
+        {
+            Logger.Debug("Using connection string named '{0}'.", connectionStringName);
+
+            customizeStoreActions.Add(s => s.ConnectionStringName = connectionStringName);
+        }
+
+        private IDocumentStore CreateStore()
+        {
+            var store = new DocumentStore();
+            
+            foreach (var action in customizeStoreActions)
+            {
+                action(store);
+            }
+
+            return store.Initialize();
+        }
 	}
 }

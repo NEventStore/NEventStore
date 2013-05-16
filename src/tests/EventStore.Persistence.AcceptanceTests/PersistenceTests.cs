@@ -11,6 +11,23 @@ namespace EventStore.Persistence.AcceptanceTests
 	using Machine.Specifications;
 	using Persistence;
 
+    [Subject("Persistence")]
+    public class when_a_commit_header_has_a_name_that_contains_a_period : using_the_persistence_engine
+    {
+        static readonly Commit commit = new Commit(streamId, 2, Guid.NewGuid(), 1, DateTime.Now, new Dictionary<string, object> {{"key.1", "value"}},
+                                                  new List<EventMessage> {new EventMessage {Body = new ExtensionMethods.SomeDomainEvent {SomeProperty = "Test"}}});
+        static Commit persisted;
+
+        Establish context = () =>
+            persistence.Commit(commit);
+
+        private Because of = () =>
+                             persisted = persistence.GetFrom(streamId, 0, int.MaxValue).First();
+
+        private It should_correctly_deserialize_headers = () =>
+                                                          persisted.Headers.Keys.ShouldContain("key.1");
+    }
+
 	[Subject("Persistence")]
 	public class when_a_commit_is_successfully_persisted : using_the_persistence_engine
 	{

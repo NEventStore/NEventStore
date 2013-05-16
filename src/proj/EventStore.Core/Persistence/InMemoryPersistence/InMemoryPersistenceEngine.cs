@@ -66,12 +66,21 @@ namespace EventStore.Persistence.InMemoryPersistence
 			this.ThrowWhenDisposed();
 			Logger.Debug(Resources.GettingAllCommitsFromToTime, start, end);
 
-			var commitId = this.stamps.Where(x => x.Value >= start && x.Value < end).Select(x => x.Key).FirstOrDefault();
-			if (commitId == Guid.Empty)
+			var selectedCommitIds = this.stamps.Where(x => x.Value >= start && x.Value < end).Select(x => x.Key);
+			var firstCommitId = selectedCommitIds.FirstOrDefault();
+			var lastCommitId = selectedCommitIds.LastOrDefault();
+
+			if (lastCommitId == Guid.Empty && lastCommitId == Guid.Empty)
 				return new Commit[] { };
 
-			var startingCommit = this.commits.FirstOrDefault(x => x.CommitId == commitId);
-			return this.commits.Skip(this.commits.IndexOf(startingCommit));
+			var startingCommit = this.commits.FirstOrDefault(x => x.CommitId == firstCommitId);
+			var endingCommit = this.commits.FirstOrDefault(x => x.CommitId == lastCommitId);
+
+			var startingCommitIndex = (startingCommit == null) ? 0 : this.commits.IndexOf(startingCommit);
+			var endingCommitIndex = (endingCommit == null) ? this.commits.Count - 1 : this.commits.IndexOf(endingCommit);
+			var numberToTake = endingCommitIndex - startingCommitIndex + 1;
+
+			return this.commits.Skip(this.commits.IndexOf(startingCommit)).Take(numberToTake);
 		}
 
 		public virtual void Commit(Commit attempt)
