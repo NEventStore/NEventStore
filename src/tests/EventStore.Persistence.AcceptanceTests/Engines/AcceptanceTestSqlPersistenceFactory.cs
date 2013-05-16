@@ -3,7 +3,7 @@ namespace EventStore.Persistence.AcceptanceTests.Engines
 	using System;
 	using System.Configuration;
 	using Serialization;
-	using SqlPersistence;
+	using EventStore.Persistence.SqlPersistence;
 
 	public abstract class AcceptanceTestSqlPersistenceFactory : SqlPersistenceFactory
 	{
