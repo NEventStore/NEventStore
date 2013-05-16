@@ -14,16 +14,16 @@
                                         var dateTime = new DateTime(2013, 1, 1);
                                         SystemTime.Resolver = () => dateTime;
                                         // deliberately out of order
+                                        persistence.Commit(new Commit(streamId, 0, Guid.NewGuid(), 0, SystemTime.UtcNow, null, null));
+                                        persistence.Commit(new Commit(streamId, 2, Guid.NewGuid(), 2, SystemTime.UtcNow, null, null)); 
                                         persistence.Commit(new Commit(streamId, 1, Guid.NewGuid(), 1, SystemTime.UtcNow, null, null));
-                                        persistence.Commit(new Commit(streamId, 3, Guid.NewGuid(), 3, SystemTime.UtcNow, null, null)); 
-                                        persistence.Commit(new Commit(streamId, 2, Guid.NewGuid(), 2, SystemTime.UtcNow, null, null));
                                     };
 
         private Because of = () => undispatched = persistence.GetUndispatchedCommits().ToArray();
 
         private It should_have_commits_in_correct_order = () =>
                                                           {
-                                                              for (var i = 1; i <= undispatched.Length; i++)
+                                                              for (var i = 0; i < undispatched.Length; i++)
                                                               {
                                                                   undispatched[i].CommitSequence.ShouldEqual(i);
                                                               }
