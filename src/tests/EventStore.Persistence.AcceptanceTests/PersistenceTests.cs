@@ -401,7 +401,6 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		Because of = () =>
 		{
-			Thread.Sleep(50); // 50 ms = enough time for Raven to become consistent
 			persistence.Purge();
 		};
 
