@@ -8,7 +8,7 @@ namespace EventStore.Core.UnitTests
 	using System.Linq;
 	using Machine.Specifications;
 	using Moq;
-	using Persistence;
+	using EventStore.Persistence;
 	using It = Machine.Specifications.It;
 
 	[Subject("OptimisticEventStore")]
@@ -365,8 +365,8 @@ namespace EventStore.Core.UnitTests
 	[Subject("OptimisticEventStore")]
 	public class when_accessing_the_underlying_persistence : using_persistence
 	{
-		It should_return_a_reference_to_the_underlying_persistence_infrastructure = () =>
-			store.Advanced.ShouldBeTheSameAs(persistence.Object);
+		It should_return_a_reference_to_the_underlying_persistence_infrastructure_decorator = () =>
+            store.Advanced.ShouldBeOfType<PipelineHooksAwarePersistanceDecorator>();
 	}
 
 	[Subject("OptimisticEventStore")]
@@ -381,7 +381,7 @@ namespace EventStore.Core.UnitTests
 
 	public abstract class using_persistence
 	{
-		protected static Guid streamId = Guid.NewGuid();
+		protected static Guid streamId = Guid.NewGuid(); 
 		protected static Mock<IPersistStreams> persistence;
 		protected static OptimisticEventStore store;
 		protected static List<Mock<IPipelineHook>> pipelineHooks;

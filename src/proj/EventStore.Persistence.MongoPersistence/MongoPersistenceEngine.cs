@@ -14,9 +14,9 @@
 	{
 		private const string ConcurrencyException = "E1100";
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(MongoPersistenceEngine));
-		private readonly MongoCollectionSettings<BsonDocument> commitSettings;
-		private readonly MongoCollectionSettings<BsonDocument> snapshotSettings;
-		private readonly MongoCollectionSettings<BsonDocument> streamSettings;
+		private readonly MongoCollectionSettings commitSettings;
+		private readonly MongoCollectionSettings snapshotSettings;
+		private readonly MongoCollectionSettings streamSettings;
 		private readonly MongoDatabase store;
 		private readonly IDocumentSerializer serializer;
 		private bool disposed;
@@ -33,17 +33,23 @@
 			this.store = store;
 			this.serializer = serializer;
 
-			this.commitSettings = this.store.CreateCollectionSettings<BsonDocument>("Commits");
-			this.commitSettings.AssignIdOnInsert = false;
-			this.commitSettings.SafeMode = SafeMode.True;
+			this.commitSettings = new MongoCollectionSettings
+			                          {
+			                              AssignIdOnInsert = false, 
+                                          WriteConcern = WriteConcern.Acknowledged
+			                          };
 
-			this.snapshotSettings = this.store.CreateCollectionSettings<BsonDocument>("Snapshots");
-			this.snapshotSettings.AssignIdOnInsert = false;
-			this.snapshotSettings.SafeMode = SafeMode.False;
+		    this.snapshotSettings = new MongoCollectionSettings
+		                                {
+		                                    AssignIdOnInsert = false, 
+                                            WriteConcern = WriteConcern.Unacknowledged
+		                                };
 
-			this.streamSettings = this.store.CreateCollectionSettings<BsonDocument>("Streams");
-			this.streamSettings.AssignIdOnInsert = false;
-			this.streamSettings.SafeMode = SafeMode.False;
+		    this.streamSettings = new MongoCollectionSettings
+		                              {
+                                          AssignIdOnInsert = false,
+                                          WriteConcern = WriteConcern.Unacknowledged
+		                              };
 		}
 
 		public void Dispose()
@@ -136,7 +142,7 @@
 				try
 				{
 					// for concurrency / duplicate commit detection safe mode is required
-					this.PersistedCommits.Insert(commit, SafeMode.True);
+					this.PersistedCommits.Insert(commit, WriteConcern.Acknowledged);
 					this.UpdateStreamHeadAsync(attempt.StreamId, attempt.StreamRevision, attempt.Events.Count);
 					Logger.Debug(Messages.CommitPersisted, attempt.CommitId);
 				}
@@ -257,15 +263,15 @@
 
 		protected virtual MongoCollection<BsonDocument> PersistedCommits
 		{
-			get { return this.store.GetCollection(this.commitSettings); }
+			get { return this.store.GetCollection("Commits", this.commitSettings); }
 		}
-		protected virtual MongoCollection<BsonDocument> PersistedStreamHeads
+        protected virtual MongoCollection<BsonDocument> PersistedStreamHeads
 		{
-			get { return this.store.GetCollection(this.streamSettings); }
+			get { return this.store.GetCollection("Streams", this.streamSettings); }
 		}
-		protected virtual MongoCollection<BsonDocument> PersistedSnapshots
+        protected virtual MongoCollection<BsonDocument> PersistedSnapshots
 		{
-			get { return this.store.GetCollection(this.snapshotSettings); }
+			get { return this.store.GetCollection("Snapshots", this.snapshotSettings); }
 		}
 
 		protected virtual T TryMongo<T>(Func<T> callback)
