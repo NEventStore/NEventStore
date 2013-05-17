@@ -58,6 +58,8 @@
     <Compile Include="RavenPersistence\RavenPersistencePartitionTests.cs" />
     <Compile Include="RavenPersistence\TestRavenConfig.cs" />
     <Compile Include="SqlPersistence\Bugs\Issue159OrderingByCommitStampIsNotReliable.cs" />
+    <Compile Include="RavenPersistence\RavenPersistencePartitionTests.cs" />
+    <Compile Include="SqlPersistence\Bugs\Issue159OrderingByCommitStampIsNotReliable.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\proj\CustomDictionary.xml">
