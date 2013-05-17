@@ -5,6 +5,17 @@ namespace EventStore.Persistence.AcceptanceTests
 
 	internal static class ExtensionMethods
 	{
+        public static void CommitMany(this IPersistStreams persistence, int numberOfCommits, Guid? streamId = null)
+        {
+            Commit attempt = null;
+
+            for (int i = 0; i < numberOfCommits; i++)
+            {
+                attempt = attempt == null ? (streamId ?? Guid.NewGuid()).BuildAttempt() : attempt.BuildNextAttempt();
+                persistence.Commit(attempt);
+            }
+        }
+
 		public static Commit BuildAttempt(this Guid streamId, DateTime now)
 		{
 			var messages = new List<EventMessage>

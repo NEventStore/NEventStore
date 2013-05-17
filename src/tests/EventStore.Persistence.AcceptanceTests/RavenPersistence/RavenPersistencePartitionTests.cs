@@ -181,7 +181,7 @@ namespace EventStore.Persistence.AcceptanceTests.RavenPersistence
 
         protected static IPersistStreams NewEventStoreWithPartition(string partition)
         {
-            var config = AcceptanceTestRavenPersistenceFactory.GetDefaultConfig();
+            var config = TestRavenConfig.GetDefaultConfig();
             config.Partition = partition;
 
             var persistence = new AcceptanceTestRavenPersistenceFactory(config).Build();

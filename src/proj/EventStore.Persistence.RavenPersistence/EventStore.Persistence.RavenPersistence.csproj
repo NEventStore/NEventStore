@@ -56,7 +56,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Messages.resx</DependentUpon>
     </Compile>
-    <Compile Include="PagedEnumerationCollection.cs" />
+    <Compile Include="ResetableEnumerable.cs" />
     <Compile Include="RavenConfiguration.cs" />
     <Compile Include="RavenStreamHead.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

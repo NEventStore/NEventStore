@@ -299,43 +299,79 @@
 			return commits.Select(x => x.ToCommit(this.serializer));
 		}
 
-		private IEnumerable<T> Query<T, TIndex>(params Expression<Func<T, bool>>[] conditions)
-			where TIndex : AbstractIndexCreationTask, new()
-		{
-			return this.TryRaven(() =>
-			{
-				var scope = this.OpenQueryScope();
+        private IEnumerable<T> Query<T, TIndex>(params Expression<Func<T, bool>>[] conditions)
+            where TIndex : AbstractIndexCreationTask, new()
+        {
+            return new ResetableEnumerable<T>(() => PagedQuery<T, TIndex>(conditions));
+        }
 
-				try
-				{
-					using (var session = this.OpenQuerySession())
-					{
-						IQueryable<T> query = session.Query<T, TIndex>()
-							.Customize(x => { if (this.consistentQueries) x.WaitForNonStaleResults(); });
+        IEnumerable<T> PagedQuery<T, TIndex>(Expression<Func<T, bool>>[] conditions)
+            where TIndex : AbstractIndexCreationTask, new()
+        {
+            var total = 0;
+            RavenQueryStatistics stats;
 
-						query = conditions.Aggregate(query, (current, condition) => current.Where(condition));
+            do
+            {
+                using (var session = this.store.OpenSession())
+                {
+                    int requestsForSession = 0;
 
-						return query.Page(this.pageSize, scope);
-					}
-				}
-				catch (Exception)
-				{
-					scope.Dispose();
-					throw;
-				}
-			});
-		}
-		private IDocumentSession OpenQuerySession()
-		{
-			var session = this.store.OpenSession();
+                    do
+                    {
+                        var docs = PerformQuery<T, TIndex>(session, conditions, total, pageSize, out stats);
+                        total += docs.Length;
+                        requestsForSession++;
 
-			// defaults to 30 total requests per session (not good for paging over large data sets)
-			// which may be encountered when calling GetFrom() and enumerating over the entire store.
-			// see http://ravendb.net/documentation/safe-by-default for more information.
-			session.Advanced.MaxNumberOfRequestsPerSession = int.MaxValue;
+                        foreach (var d in docs)
+                        {
+                            yield return d;
+                        }
+                    } while (total < stats.TotalResults && requestsForSession < session.Advanced.MaxNumberOfRequestsPerSession);
+                }
+            } while (total < stats.TotalResults);
+        }
 
-			return session;
-		}
+        private T[] PerformQuery<T, TIndex>(IDocumentSession session, Expression<Func<T, bool>>[] conditions, int skip, int take, out RavenQueryStatistics stats)
+            where TIndex : AbstractIndexCreationTask, new()
+        {
+            TransactionScope scope = null;
+
+            try
+            {
+                scope = this.OpenQueryScope();
+
+                IQueryable<T> query = session.Query<T, TIndex>()
+                    .Customize(x => { if (this.consistentQueries) x.WaitForNonStaleResults(); })
+                    .Statistics(out stats);
+
+                query = conditions.Aggregate(query, (current, condition) => current.Where(condition));
+
+                return query
+                    .Skip(skip).Take(take)
+                    .ToArray();
+            }
+            catch (WebException e)
+            {
+                Logger.Warn(Messages.StorageUnavailable);
+                throw new StorageUnavailableException(e.Message, e);
+            }
+            catch (ObjectDisposedException)
+            {
+                Logger.Warn(Messages.StorageAlreadyDisposed);
+                throw;
+            }
+            catch (Exception e)
+            {
+                Logger.Error(Messages.StorageThrewException, e.GetType());
+                throw new StorageException(e.Message, e);
+            }
+            finally
+            {
+                if (scope != null)
+                    scope.Dispose();
+            }
+        }
 
 		private void SaveStreamHead(RavenStreamHead streamHead)
 		{
