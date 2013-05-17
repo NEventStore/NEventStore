@@ -13,7 +13,7 @@ namespace EventStore.Logging
 			return string.Format(
 				CultureInfo.InvariantCulture,
 				MessageFormat,
-				DateTime.UtcNow,
+				SystemTime.UtcNow,
 				Thread.CurrentThread.GetName(),
 				typeToLog.FullName,
 				string.Format(CultureInfo.InvariantCulture, message, values));
