@@ -6,7 +6,6 @@ namespace EventStore.Persistence.AcceptanceTests
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using System.Threading;
 	using Diagnostics;
 	using Machine.Specifications;
 	using Persistence;
@@ -444,6 +443,7 @@ namespace EventStore.Persistence.AcceptanceTests
 			persistence.Dispose();
 			persistence = null;
 			streamId = Guid.NewGuid();
+		    SystemTime.Resolver = null;
 		};
 	}
 }
