@@ -12,9 +12,6 @@ namespace EventStore.Persistence.RavenPersistence
 		public string ConnectionName { get; set; }
 
         [Obsolete("This will be removed after 3.2")]
-        public string ConnectionString { get; set; }
-
-        [Obsolete("This will be removed after 3.2")]
 		public Uri Url { get; set; }
 
         [Obsolete("This will be removed after 3.2")]
@@ -27,9 +24,6 @@ namespace EventStore.Persistence.RavenPersistence
 		public bool ConsistentQueries { get; set; }
 		public int RequestedPageSize { get; set; }
 		public int MaxServerPageSize { get; set; }
-
-        [Obsolete("This will be removed after 3.2")]
-        public Action<DocumentConvention> CustomizeConventions { get; set; }
 
 		public int PageSize
 		{

@@ -130,9 +130,9 @@ namespace EventStore
 			return this.ConsistentQueries(false);
 		}
 
-        public virtual RavenPersistenceWireup WithCustomConventions(Action<DocumentConvention> conventionsAction)
+        public virtual RavenPersistenceWireup CustomizeDocumentStore(Action<IDocumentStore> customizationAction)
         {
-            customizeStoreActions.Add(s => conventionsAction(s.Conventions));
+            customizeStoreActions.Add(customizationAction);
 
             return this;
         }
