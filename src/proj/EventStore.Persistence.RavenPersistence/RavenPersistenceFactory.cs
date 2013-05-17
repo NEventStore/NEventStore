@@ -17,15 +17,14 @@
 			var store = this.GetStore();
 			return new RavenPersistenceEngine(store, this.config);
 		}
-		protected virtual IDocumentStore GetStore()
+
+#pragma warning disable 612,618
+        protected virtual IDocumentStore GetStore()
 		{
 			var store = new DocumentStore();
             
 			if (!string.IsNullOrEmpty(this.config.ConnectionName))
 				store.ConnectionStringName = this.config.ConnectionName;
-
-            if (!string.IsNullOrEmpty(this.config.ConnectionString))
-                store.ParseConnectionString(config.ConnectionString);
 
 			if (this.config.Url != null)
 				store.Url = this.config.Url.ToString();
@@ -33,12 +32,11 @@
 			if (!string.IsNullOrEmpty(this.config.DefaultDatabase))
 				store.DefaultDatabase = this.config.DefaultDatabase;
 
-		    if (config.CustomizeConventions != null)
-		        config.CustomizeConventions(store.Conventions);
-
 			store.Initialize();
 
 			return store;
-		}
-	}
+        }
+#pragma warning restore 612,618
+
+    }
 }
