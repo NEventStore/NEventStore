@@ -117,10 +117,5 @@ namespace EventStore.Persistence.RavenPersistence
 				streamHead.HeadRevision,
 				streamHead.SnapshotRevision);
 		}
-
-		public static IEnumerable<T> Page<T>(this IQueryable<T> query, int pageSize, TransactionScope scope)
-		{
-			return new PagedEnumerationCollection<T>(query, pageSize, scope);
-		}
 	}
 }
