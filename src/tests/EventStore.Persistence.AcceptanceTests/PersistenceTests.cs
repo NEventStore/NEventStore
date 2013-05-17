@@ -6,7 +6,6 @@ namespace EventStore.Persistence.AcceptanceTests
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using System.Threading;
 	using Diagnostics;
 	using Machine.Specifications;
 	using Persistence;
@@ -401,7 +400,6 @@ namespace EventStore.Persistence.AcceptanceTests
 
 		Because of = () =>
 		{
-			Thread.Sleep(50); // 50 ms = enough time for Raven to become consistent
 			persistence.Purge();
 		};
 
@@ -445,6 +443,7 @@ namespace EventStore.Persistence.AcceptanceTests
 			persistence.Dispose();
 			persistence = null;
 			streamId = Guid.NewGuid();
+		    SystemTime.Resolver = null;
 		};
 	}
 }
