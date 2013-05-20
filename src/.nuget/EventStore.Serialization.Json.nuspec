@@ -13,7 +13,7 @@
     <language>es-US</language>
     <tags>events, event sourcing, cqrs, storage, persistence, database, newtonsoft, json, serialization</tags>
     <dependencies>
-      <dependency id="EventStore" version="3.1" />
+      <dependency id="EventStore" version="3.2" />
     </dependencies>
   </metadata>
   <files>

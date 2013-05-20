@@ -64,7 +64,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{08A28C
 		.nuget\EventStore.Persistence.RavenPersistence.nuspec = .nuget\EventStore.Persistence.RavenPersistence.nuspec
 		.nuget\EventStore.Serialization.Json.nuspec = .nuget\EventStore.Serialization.Json.nuspec
 		.nuget\EventStore.Serialization.ServiceStack.nuspec = .nuget\EventStore.Serialization.ServiceStack.nuspec
-		.nuget\NuGet.Config = .nuget\NuGet.Config
 	EndProjectSection
 EndProject
 Global
