@@ -71,7 +71,7 @@ task RunSerializationTests {
 	exec { &$mspec_path "$src_directory\tests\EventStore.Serialization.AcceptanceTests\bin\$target_config\EventStore.Serialization.AcceptanceTests.dll" }
 }
 
-task Package -depends Build, PackageEventStore, PackageMongoPersistence, PackageRavenPersistence, PackageJsonSerialization, PackageServiceStackSerialization, PackageNLogLogging, PackageLog4NetLogging {
+task Package -depends Build, PackageEventStore, PackageMongoPersistence, PackageRavenPersistence, PackageJsonSerialization, PackageServiceStackSerialization {
 	move $output_directory $publish_directory
 }
 
@@ -131,21 +131,6 @@ task PackageServiceStackSerialization -depends Clean, Compile, PackageEventStore
 		"$src_directory/proj/EventStore.Serialization.ServiceStack/bin/$target_config/ServiceStack.Text.dll", 
 		"$src_directory/proj/EventStore.Serialization.ServiceStack.Wireup/bin/$target_config/EventStore.Serialization.ServiceStack.Wireup.dll"
 	)
-}
-
-task PackageNLogLogging -depends Clean, Compile, PackageEventStore {
-	mkdir $output_directory\plugins\logging\nlog | out-null
-	copy "$src_directory\proj\EventStore.Logging.NLog\bin\$target_config\EventStore.Logging.NLog.*" "$output_directory\plugins\logging\nlog"
-
-	copy "$src_directory\proj\EventStore.Logging.NLog\bin\$target_config\NLog.dll" "$output_directory\plugins\logging\nlog"
-}
-
-task PackageLog4NetLogging -depends Clean, Compile, PackageEventStore {
-	mkdir $output_directory\plugins\logging\log4net | out-null
-
-	copy "$src_directory\proj\EventStore.Logging.Log4Net\bin\$target_config\EventStore.Logging.Log4Net.*" "$output_directory\plugins\logging\log4net"
-	
-	copy "$src_directory\proj\EventStore.Logging.Log4Net\bin\$target_config\log4net.dll" "$output_directory\plugins\logging\log4net"
 }
 
 task PackageDocs {

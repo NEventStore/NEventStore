@@ -51,14 +51,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Serialization.Se
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Serialization.ServiceStack.Wireup", "proj\EventStore.Serialization.ServiceStack.Wireup\EventStore.Serialization.ServiceStack.Wireup.csproj", "{33B78974-7867-4C10-90AD-F31352BF0EEC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Logging.NLog", "proj\EventStore.Logging.NLog\EventStore.Logging.NLog.csproj", "{4A336666-825A-49BA-B6F7-2156E3877A34}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Logging.Log4Net", "proj\EventStore.Logging.Log4Net\EventStore.Logging.Log4Net.csproj", "{EBCACF9E-7FE2-4C39-917E-2DD60EEE8C80}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{08A28C69-B04C-4622-8BF7-C9C4C410E64C}"
 	ProjectSection(SolutionItems) = preProject
-		.nuget\EventStore.Logging.Log4Net.nuspec = .nuget\EventStore.Logging.Log4Net.nuspec
-		.nuget\EventStore.Logging.NLog.nuspec = .nuget\EventStore.Logging.NLog.nuspec
 		.nuget\EventStore.nuspec = .nuget\EventStore.nuspec
 		.nuget\EventStore.Persistence.MongoPersistence.nuspec = .nuget\EventStore.Persistence.MongoPersistence.nuspec
 		.nuget\EventStore.Persistence.RavenPersistence.nuspec = .nuget\EventStore.Persistence.RavenPersistence.nuspec
@@ -140,14 +134,6 @@ Global
 		{33B78974-7867-4C10-90AD-F31352BF0EEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33B78974-7867-4C10-90AD-F31352BF0EEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33B78974-7867-4C10-90AD-F31352BF0EEC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4A336666-825A-49BA-B6F7-2156E3877A34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4A336666-825A-49BA-B6F7-2156E3877A34}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4A336666-825A-49BA-B6F7-2156E3877A34}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4A336666-825A-49BA-B6F7-2156E3877A34}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EBCACF9E-7FE2-4C39-917E-2DD60EEE8C80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EBCACF9E-7FE2-4C39-917E-2DD60EEE8C80}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EBCACF9E-7FE2-4C39-917E-2DD60EEE8C80}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EBCACF9E-7FE2-4C39-917E-2DD60EEE8C80}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -161,8 +147,6 @@ Global
 		{32ADD8CE-0F3F-41D8-BFA1-6E5D685E64DD} = {9DE51CC0-6902-49F5-9B69-B29454DE7164}
 		{F9E7FD69-0818-48CA-9249-5387739E1B6A} = {9DE51CC0-6902-49F5-9B69-B29454DE7164}
 		{2BA8B905-65D5-4BBA-A76B-58EC49F26018} = {9DE51CC0-6902-49F5-9B69-B29454DE7164}
-		{4A336666-825A-49BA-B6F7-2156E3877A34} = {9DE51CC0-6902-49F5-9B69-B29454DE7164}
-		{EBCACF9E-7FE2-4C39-917E-2DD60EEE8C80} = {9DE51CC0-6902-49F5-9B69-B29454DE7164}
 		{3B5F8277-F29E-4114-AE81-4A4FBF2D7FA5} = {D3C17830-A461-4BA5-A672-461B19B33936}
 		{FCCBA30F-738D-4C82-BAE4-906B88399AA2} = {D3C17830-A461-4BA5-A672-461B19B33936}
 		{B56FDCEA-086F-40A2-92E1-867CE506CBE3} = {D3C17830-A461-4BA5-A672-461B19B33936}
