@@ -1,9 +1,9 @@
-﻿namespace EventStore.Persistence.AcceptanceTests.Engines
-{
-	using MongoPersistence;
-	using Serialization;
+﻿using EventStore.Persistence.AcceptanceTests;
+using EventStore.Serialization;
 
-	public class AcceptanceTestMongoPersistenceFactory : MongoPersistenceFactory
+namespace EventStore.Persistence.MongoPersistence.Tests
+{
+    public class AcceptanceTestMongoPersistenceFactory : MongoPersistenceFactory
 	{
 		public AcceptanceTestMongoPersistenceFactory()
 			: base("Mongo", new DocumentObjectSerializer())

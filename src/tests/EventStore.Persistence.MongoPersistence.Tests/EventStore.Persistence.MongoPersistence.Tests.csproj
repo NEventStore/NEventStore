@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3FE594FE-16FF-4405-97D5-5A58FB12520B}</ProjectGuid>
+    <ProjectGuid>{49C544AF-02FB-4BE9-BDDF-79EB087E00C3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EventStore.Persistence.AcceptanceTests</RootNamespace>
-    <AssemblyName>EventStore.Persistence.AcceptanceTests</AssemblyName>
+    <RootNamespace>EventStore.Persistence.MongoPersistence.Tests</RootNamespace>
+    <AssemblyName>EventStore.Persistence.MongoPersistence.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -34,7 +34,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -44,22 +43,44 @@
     <Reference Include="xunit">
       <HintPath>..\..\packages\xunit.1.9.1\lib\net20\xunit.dll</HintPath>
     </Reference>
+    <Reference Include="xunit.should">
+      <HintPath>..\..\packages\xunit.should.1.1\lib\net35\xunit.should.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BDD\SpecificationBase.cs" />
-    <Compile Include="BDD\SpecificationBaseRunner.cs" />
-    <Compile Include="Catch.cs" />
-    <Compile Include="ConfigurationExtensions.cs" />
-    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="..\eventstore.persistence.acceptancetests\PersistenceTests.cs">
+      <Link>AcceptanceTests\PersistenceTests.cs</Link>
+    </Compile>
+    <Compile Include="AcceptanceTestMongoPersistenceFactory.cs" />
+    <Compile Include="AcceptanceTests\PersistenceEngineFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\proj\EventStore.Core\EventStore.Core.csproj">
+      <Project>{D6413244-42F5-4233-B347-D0A804B09CC9}</Project>
+      <Name>EventStore.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\proj\EventStore.Persistence.MongoPersistence\EventStore.Persistence.MongoPersistence.csproj">
+      <Project>{32ADD8CE-0F3F-41D8-BFA1-6E5D685E64DD}</Project>
+      <Name>EventStore.Persistence.MongoPersistence</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\proj\EventStore.Serialization\EventStore.Serialization.csproj">
+      <Project>{A5BF4B86-26F6-418D-BE35-C6CC3A623D27}</Project>
+      <Name>EventStore.Serialization</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\proj\EventStore\EventStore.csproj">
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
       <Name>EventStore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\EventStore.Persistence.AcceptanceTests\EventStore.Persistence.AcceptanceTests.csproj">
+      <Project>{3FE594FE-16FF-4405-97D5-5A58FB12520B}</Project>
+      <Name>EventStore.Persistence.AcceptanceTests</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
