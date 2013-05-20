@@ -13,8 +13,8 @@
     <language>es-US</language>
     <tags>events, event sourcing, cqrs, storage, persistence, database, mongodb</tags>
     <dependencies>
-      <dependency id="EventStore" version="3.1" />
-      <dependency id="mongocsharpdriver" version="1.8" />
+      <dependency id="EventStore" version="3.2" />
+      <dependency id="mongocsharpdriver" version="[1.8, 1.9)" />
     </dependencies>
   </metadata>
   <files>
