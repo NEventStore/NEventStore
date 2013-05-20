@@ -1,8 +1,7 @@
-using EventStore.Persistence.RavenPersistence;
 using Raven.Client;
 using Raven.Client.Embedded;
 
-namespace EventStore.Persistence.AcceptanceTests.RavenPersistence
+namespace EventStore.Persistence.RavenPersistence.Tests
 {
     public class InMemoryRavenPersistenceFactory : RavenPersistenceFactory
     {

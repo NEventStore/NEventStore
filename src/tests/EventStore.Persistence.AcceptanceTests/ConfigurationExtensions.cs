@@ -4,7 +4,7 @@ namespace EventStore.Persistence.AcceptanceTests
 	using System.Configuration;
 	using System.Linq;
 
-	internal static class ConfigurationExtensions
+	public static class ConfigurationExtensions
 	{
 		public static string GetSetting(this string settingName)
 		{

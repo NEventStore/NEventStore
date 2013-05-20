@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "proj", "proj", "{9DE51CC0-6902-49F5-9B69-B29454DE7164}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{D3C17830-A461-4BA5-A672-461B19B33936}"
+	ProjectSection(SolutionItems) = preProject
+		tests\EventStore.Persistence.AcceptanceTests\PersistenceTests.cs = tests\EventStore.Persistence.AcceptanceTests\PersistenceTests.cs
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore", "proj\EventStore\EventStore.csproj", "{03946843-F343-419C-88EF-3E446D08DFA6}"
 EndProject
@@ -28,8 +31,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Serialization.AcceptanceTests", "tests\EventStore.Serialization.AcceptanceTests\EventStore.Serialization.AcceptanceTests.csproj", "{FCCBA30F-738D-4C82-BAE4-906B88399AA2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.SqlPersistence", "proj\EventStore.Persistence.SqlPersistence\EventStore.Persistence.SqlPersistence.csproj", "{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.AcceptanceTests", "tests\EventStore.Persistence.AcceptanceTests\EventStore.Persistence.AcceptanceTests.csproj", "{B56FDCEA-086F-40A2-92E1-867CE506CBE3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.MongoPersistence", "proj\EventStore.Persistence.MongoPersistence\EventStore.Persistence.MongoPersistence.csproj", "{32ADD8CE-0F3F-41D8-BFA1-6E5D685E64DD}"
 EndProject
@@ -59,6 +60,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{08A28C
 		.nuget\EventStore.Serialization.Json.nuspec = .nuget\EventStore.Serialization.Json.nuspec
 		.nuget\EventStore.Serialization.ServiceStack.nuspec = .nuget\EventStore.Serialization.ServiceStack.nuspec
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.RavenPersistence.Tests", "tests\EventStore.Persistence.RavenPersistence.Tests\EventStore.Persistence.RavenPersistence.Tests.csproj", "{B358D0B5-6FF9-4621-8DDD-2F7E4A6E91EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.AcceptanceTests", "tests\EventStore.Persistence.AcceptanceTests\EventStore.Persistence.AcceptanceTests.csproj", "{3FE594FE-16FF-4405-97D5-5A58FB12520B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.MongoPersistence.Tests", "tests\EventStore.Persistence.MongoPersistence.Tests\EventStore.Persistence.MongoPersistence.Tests.csproj", "{49C544AF-02FB-4BE9-BDDF-79EB087E00C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.SqlPersistence.Tests", "tests\EventStore.Persistence.SqlPersistence.Tests\EventStore.Persistence.SqlPersistence.Tests.csproj", "{340A11F6-B18E-4508-A5FB-6920F79B0CB9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -94,10 +103,6 @@ Global
 		{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B56FDCEA-086F-40A2-92E1-867CE506CBE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B56FDCEA-086F-40A2-92E1-867CE506CBE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B56FDCEA-086F-40A2-92E1-867CE506CBE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B56FDCEA-086F-40A2-92E1-867CE506CBE3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{32ADD8CE-0F3F-41D8-BFA1-6E5D685E64DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{32ADD8CE-0F3F-41D8-BFA1-6E5D685E64DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32ADD8CE-0F3F-41D8-BFA1-6E5D685E64DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -134,6 +139,22 @@ Global
 		{33B78974-7867-4C10-90AD-F31352BF0EEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33B78974-7867-4C10-90AD-F31352BF0EEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33B78974-7867-4C10-90AD-F31352BF0EEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B358D0B5-6FF9-4621-8DDD-2F7E4A6E91EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B358D0B5-6FF9-4621-8DDD-2F7E4A6E91EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B358D0B5-6FF9-4621-8DDD-2F7E4A6E91EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B358D0B5-6FF9-4621-8DDD-2F7E4A6E91EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FE594FE-16FF-4405-97D5-5A58FB12520B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FE594FE-16FF-4405-97D5-5A58FB12520B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FE594FE-16FF-4405-97D5-5A58FB12520B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FE594FE-16FF-4405-97D5-5A58FB12520B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49C544AF-02FB-4BE9-BDDF-79EB087E00C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49C544AF-02FB-4BE9-BDDF-79EB087E00C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49C544AF-02FB-4BE9-BDDF-79EB087E00C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49C544AF-02FB-4BE9-BDDF-79EB087E00C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{340A11F6-B18E-4508-A5FB-6920F79B0CB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{340A11F6-B18E-4508-A5FB-6920F79B0CB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{340A11F6-B18E-4508-A5FB-6920F79B0CB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{340A11F6-B18E-4508-A5FB-6920F79B0CB9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -149,7 +170,10 @@ Global
 		{2BA8B905-65D5-4BBA-A76B-58EC49F26018} = {9DE51CC0-6902-49F5-9B69-B29454DE7164}
 		{3B5F8277-F29E-4114-AE81-4A4FBF2D7FA5} = {D3C17830-A461-4BA5-A672-461B19B33936}
 		{FCCBA30F-738D-4C82-BAE4-906B88399AA2} = {D3C17830-A461-4BA5-A672-461B19B33936}
-		{B56FDCEA-086F-40A2-92E1-867CE506CBE3} = {D3C17830-A461-4BA5-A672-461B19B33936}
+		{B358D0B5-6FF9-4621-8DDD-2F7E4A6E91EA} = {D3C17830-A461-4BA5-A672-461B19B33936}
+		{3FE594FE-16FF-4405-97D5-5A58FB12520B} = {D3C17830-A461-4BA5-A672-461B19B33936}
+		{49C544AF-02FB-4BE9-BDDF-79EB087E00C3} = {D3C17830-A461-4BA5-A672-461B19B33936}
+		{340A11F6-B18E-4508-A5FB-6920F79B0CB9} = {D3C17830-A461-4BA5-A672-461B19B33936}
 		{0143B48E-25AF-4CE0-BD49-A52267D359D3} = {CD37080A-F48D-4E5D-B7C6-B9F86BB05A38}
 		{421664DB-C18D-4499-ABC1-C9086D525F80} = {52F7988F-452D-46C2-A144-D85E0CF371C6}
 		{DEFFE0C3-2988-4C58-9E36-1302842FFDBD} = {52F7988F-452D-46C2-A144-D85E0CF371C6}
