@@ -19,6 +19,7 @@ properties {
 	if($runPersistenceTests -eq $null) {
 		$runPersistenceTests = $false
 	}
+	$prerelease = $null
 }
 
 task default -depends Build
@@ -144,5 +145,9 @@ task Clean {
 }
 
 task NuGetPack -depends Package {
-	gci -r -i *.nuspec "$nuget_dir" |% { .$nuget_dir\nuget.exe pack $_ -basepath $base_directory -o $publish_directory -version $version }
+	$nugetVersion = $version.Trim(".0")
+	if($prerelease) {
+		$nugetVersion = "$nugetVersion-$prerelease"
+	}
+	gci -r -i *.nuspec "$nuget_dir" |% { .$nuget_dir\nuget.exe pack $_ -basepath $base_directory -o $publish_directory -version $nugetVersion }
 }
