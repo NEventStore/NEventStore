@@ -265,30 +265,43 @@
 
 			this.TryRaven(() =>
 			{
-				using (var scope = this.OpenCommandScope())
-				using (var session = this.store.OpenSession())
-				{
-					PurgeDocuments(session);
-
-					session.SaveChanges();
-					scope.Complete();
-					return true;
-				}
+                PurgeDocuments();
+			    return true;
 			});
 		}
 
-		private void PurgeDocuments(IDocumentSession session)
+		private void PurgeDocuments()
 		{
-			Func<Type, string> getTagCondition = t => "Tag:" + session.Advanced.DocumentStore.Conventions.GetTypeTagName(t);
+			Func<Type, string> getTagCondition = t => "Tag:" + store.Conventions.GetTypeTagName(t);
+			string typeQuery = "(" + getTagCondition(typeof (RavenCommit)) + " OR " + getTagCondition(typeof (RavenSnapshot)) + " OR " +
+			                   getTagCondition(typeof (RavenStreamHead)) + ")";
+			string partitionQuery = "Partition:" + (partition ?? "[[NULL_VALUE]]");
+			string queryText = partitionQuery + " AND " + typeQuery;
+			var query = new IndexQuery {Query = queryText};
 
-			var typeQuery = "(" + getTagCondition(typeof(RavenCommit)) + " OR " + getTagCondition(typeof(RavenSnapshot)) + " OR " + getTagCondition(typeof(RavenStreamHead)) + ")";
-			var partitionQuery = "Partition:" + (this.partition ?? "[[NULL_VALUE]]");
-			var queryText = partitionQuery + " AND " + typeQuery;
+			int attemptCount = 0;
+			const int maxAttempts = 10;
 
-			var query = new IndexQuery { Query = queryText };
-
-			session.Advanced.DocumentStore.DatabaseCommands
-				.DeleteByIndex("EventStoreDocumentsByEntityName", query, true);
+			while (attemptCount < maxAttempts)
+			{
+				try
+				{
+					store.DatabaseCommands
+					     .DeleteByIndex("EventStoreDocumentsByEntityName", query, allowStale: false);
+				}
+				catch (InvalidOperationException invalidOperationException)
+				{
+					//Noop
+					attemptCount++;
+					Thread.Sleep(50);
+					continue;
+				}
+				break;
+			}
+			if (attemptCount == maxAttempts)
+			{
+				throw new InvalidOperationException("Failed to Purge. Tried {0} times".FormatWith(attemptCount));
+			}
 		}
 
 		private IEnumerable<Commit> QueryCommits<TIndex>(Expression<Func<RavenCommit, bool>> query)
