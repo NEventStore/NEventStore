@@ -287,10 +287,26 @@
 
 			var query = new IndexQuery { Query = queryText };
 
-			session.Advanced.DocumentStore.DatabaseCommands
-				.DeleteByIndex("EventStoreDocumentsByEntityName", query, true);
+		    const string index = "EventStoreDocumentsByEntityName";
+
+		    while(HasDocs(index, query))
+			{
+                session.Advanced.DocumentStore.DatabaseCommands
+                    .DeleteByIndex(index, query, true);
+            }
 		}
 
+        bool HasDocs(string index, IndexQuery query)
+        {
+            while (store.DatabaseCommands.GetStatistics().StaleIndexes.Contains(index))
+            {
+                Thread.Sleep(50);
+            }
+
+            return store.DatabaseCommands
+                .Query(index, query, null, true).TotalResults != 0;
+        }
+        
 		private IEnumerable<Commit> QueryCommits<TIndex>(Expression<Func<RavenCommit, bool>> query)
 			where TIndex : AbstractIndexCreationTask, new()
 		{
