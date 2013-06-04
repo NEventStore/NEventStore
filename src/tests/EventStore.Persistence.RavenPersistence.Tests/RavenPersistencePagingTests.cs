@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using EventStore.Persistence.AcceptanceTests;
+using EventStore.Persistence.AcceptanceTests.BDD;
 using Xunit;
 using Xunit.Should;
 
@@ -66,24 +67,30 @@ namespace EventStore.Persistence.RavenPersistence.Tests
         }
     }
 
-    public class when_getting_paged_commits_and_a_subsequent_page_throws_an_error : PersistenceEngineConcern
+    public class when_getting_paged_commits_and_a_subsequent_page_throws_an_error : SpecificationBase, IUseFixture<RavenPersistenceEngineFixture>
     {
         DateTime start;
         Commit[] firstPage;
         const int NumberOfCommits = 30;
         Exception exception;
+        RavenPersistenceEngine persistence;
+
+        public void SetFixture(RavenPersistenceEngineFixture data)
+        {
+            persistence = data.Persistence;
+        }
 
         protected override void Context()
         {
             start = DateTime.UtcNow;
-            Persistence.CommitMany(NumberOfCommits);
+            persistence.CommitMany(NumberOfCommits);
         }
 
         protected override void Because()
         {
-            var enumerable = Persistence.GetFrom(start);
+            var enumerable = persistence.GetFrom(start);
             firstPage = enumerable.Take(10).ToArray();
-            (Persistence as RavenPersistenceEngine).Store.Dispose();
+            persistence.Store.Dispose();
             
             //TODO:Use a on-demand raven server and shut down to create a web exception
             exception = Catch.Exception(() => enumerable.Take(10).ToArray());
