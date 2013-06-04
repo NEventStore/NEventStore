@@ -1,6 +1,5 @@
 ﻿namespace EventStore.Persistence.AcceptanceTests
 {
-    using System.Transactions;
     using Serialization;
     using SqlPersistence;
     using SqlPersistence.SqlDialects;
@@ -11,11 +10,9 @@
         {
             this.CreatePersistence = () => 
                 new SqlPersistenceFactory(
-                    new ConfigurationConnectionFactory("name"),
+                    new ConfigurationConnectionFactory("EventStore.Persistence.AcceptanceTests.Properties.Settings.SQLCE"),
                     new BinarySerializer(),
-                    new SqlCeDialect(),
-                    TransactionScopeOption.Suppress,
-                    10).Build();
+                    new SqlCeDialect()).Build();
         }
     }
 }
