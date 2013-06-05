@@ -13,7 +13,7 @@ namespace EventStore.Persistence.AcceptanceTests
 
         public EnviromentConnectionFactory(string envDatabaseName, string providerInvariantName)
         {
-            this.envVarKey = "NEventStore:{0}".FormatWith(envDatabaseName);
+            this.envVarKey = "NEventStore.{0}".FormatWith(envDatabaseName);
             this.providerInvariantName = providerInvariantName;
         }
 
