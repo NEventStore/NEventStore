@@ -79,9 +79,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="EventStore.mdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

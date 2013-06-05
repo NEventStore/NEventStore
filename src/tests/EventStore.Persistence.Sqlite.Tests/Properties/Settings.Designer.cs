@@ -26,7 +26,7 @@ namespace EventStore.Persistence.AcceptanceTests.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=EventStore.db;Version=3;New=True;")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=NEventStore.db;Version=3;New=True;")]
         public string SQLite {
             get {
                 return ((string)(this["SQLite"]));
