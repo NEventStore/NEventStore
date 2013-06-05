@@ -7,7 +7,7 @@
     <ProjectGuid>{770FE444-6CC3-44D0-950E-EAF6B7CF7382}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EventStore.Persistence.PostgreSql.Tests</RootNamespace>
+    <RootNamespace>EventStore.Persistence.AcceptanceTests</RootNamespace>
     <AssemblyName>EventStore.Persistence.PostgreSql.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -32,6 +32,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Mono.Security">
+      <HintPath>..\..\packages\Npgsql.2.0.12.1\lib\net40\Mono.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Npgsql">
+      <HintPath>..\..\packages\Npgsql.2.0.12.1\lib\net40\Npgsql.dll</HintPath>
+    </Reference>
+    <Reference Include="policy.2.0.Npgsql">
+      <HintPath>..\..\packages\Npgsql.2.0.12.1\lib\net40\policy.2.0.Npgsql.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
@@ -53,12 +62,21 @@
     <Compile Include="..\EventStore.Persistence.AcceptanceTests\PersistenceTests.cs">
       <Link>PersistenceTests.cs</Link>
     </Compile>
+    <Compile Include="PersistenceEngineFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\proj\EventStore.Core\EventStore.Core.csproj">
       <Project>{d6413244-42f5-4233-b347-d0a804b09cc9}</Project>
       <Name>EventStore.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\proj\EventStore.Persistence.SqlPersistence\EventStore.Persistence.SqlPersistence.csproj">
+      <Project>{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}</Project>
+      <Name>EventStore.Persistence.SqlPersistence</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\proj\EventStore.Serialization\EventStore.Serialization.csproj">
+      <Project>{A5BF4B86-26F6-418D-BE35-C6CC3A623D27}</Project>
+      <Name>EventStore.Serialization</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\proj\EventStore\EventStore.csproj">
       <Project>{03946843-f343-419c-88ef-3e446d08dfa6}</Project>
@@ -70,6 +88,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
