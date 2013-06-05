@@ -26,7 +26,7 @@ namespace EventStore.Persistence.AcceptanceTests.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=EventStore.sdf;Persist Security Info=False;")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=NEventStore.sdf;Persist Security Info=False;")]
         public string SQLCE {
             get {
                 return ((string)(this["SQLCE"]));

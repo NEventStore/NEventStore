@@ -93,8 +93,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="EventStore.sdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="NEventStore.sdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
