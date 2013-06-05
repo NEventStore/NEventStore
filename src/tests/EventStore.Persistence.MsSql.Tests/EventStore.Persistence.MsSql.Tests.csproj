@@ -7,7 +7,7 @@
     <ProjectGuid>{79D255F6-B001-425E-B3BF-CBF1E9A884B9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EventStore.Persistence.MsSql.Tests</RootNamespace>
+    <RootNamespace>EventStore.Persistence.AcceptanceTests</RootNamespace>
     <AssemblyName>EventStore.Persistence.MsSql.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -53,12 +53,21 @@
     <Compile Include="..\EventStore.Persistence.AcceptanceTests\PersistenceTests.cs">
       <Link>PersistenceTests.cs</Link>
     </Compile>
+    <Compile Include="PersistenceEngineFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\proj\EventStore.Core\EventStore.Core.csproj">
       <Project>{d6413244-42f5-4233-b347-d0a804b09cc9}</Project>
       <Name>EventStore.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\proj\EventStore.Persistence.SqlPersistence\EventStore.Persistence.SqlPersistence.csproj">
+      <Project>{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}</Project>
+      <Name>EventStore.Persistence.SqlPersistence</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\proj\EventStore.Serialization\EventStore.Serialization.csproj">
+      <Project>{A5BF4B86-26F6-418D-BE35-C6CC3A623D27}</Project>
+      <Name>EventStore.Serialization</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\proj\EventStore\EventStore.csproj">
       <Project>{03946843-f343-419c-88ef-3e446d08dfa6}</Project>

@@ -8,24 +8,31 @@ namespace EventStore.Persistence.AcceptanceTests
 
     public class EnviromentConnectionFactory : IConnectionFactory
     {
+        private readonly string providerInvariantName;
+        private readonly string envVarKey;
+
+        public EnviromentConnectionFactory(string envDatabaseName, string providerInvariantName)
+        {
+            this.envVarKey = "NEventStore:{0}".FormatWith(envDatabaseName);
+            this.providerInvariantName = providerInvariantName;
+        }
+
         public IDbConnection OpenMaster(Guid streamId)
         {
-            DbProviderFactory dbProviderFactory = DbProviderFactories.GetFactory("MySql.Data.MySqlClient");
-            return new ConnectionScope("master", () => Open("MySQL", dbProviderFactory));
+            return new ConnectionScope("master", Open);
         }
 
         public IDbConnection OpenReplica(Guid streamId)
         {
-            DbProviderFactory dbProviderFactory = DbProviderFactories.GetFactory("MySql.Data.MySqlClient");
-            return new ConnectionScope("master", () => Open("MySQL", dbProviderFactory));
+            return new ConnectionScope("master", Open);
         }
 
-        private IDbConnection Open(string envVar, DbProviderFactory factory)
+        private IDbConnection Open()
         {
-            string envVarKey = "NEventStore:{0}".FormatWith(envVar);
+            DbProviderFactory dbProviderFactory = DbProviderFactories.GetFactory(providerInvariantName);
             string connectionString = Environment.GetEnvironmentVariable(envVarKey, EnvironmentVariableTarget.Process);
             connectionString = connectionString.TrimStart('"').TrimEnd('"');
-            DbConnection connection = factory.CreateConnection();
+            DbConnection connection = dbProviderFactory.CreateConnection();
             Debug.Assert(connection != null, "connection != null");
             connection.ConnectionString = connectionString;
             try

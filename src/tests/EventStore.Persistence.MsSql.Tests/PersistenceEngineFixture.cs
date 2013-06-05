@@ -10,9 +10,9 @@
         {
             this.CreatePersistence = () =>
                 new SqlPersistenceFactory(
-                    new EnviromentConnectionFactory("MySql", "MySql.Data.MySqlClient"),
+                    new EnviromentConnectionFactory("MsSql", "System.Data.SqlClient"),
                     new BinarySerializer(),
-                    new MySqlDialect()).Build();
+                    new MsSqlDialect()).Build();
         }
     }
 }
