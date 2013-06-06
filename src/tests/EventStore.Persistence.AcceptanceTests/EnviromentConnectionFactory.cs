@@ -31,6 +31,13 @@ namespace EventStore.Persistence.AcceptanceTests
         {
             DbProviderFactory dbProviderFactory = DbProviderFactories.GetFactory(providerInvariantName);
             string connectionString = Environment.GetEnvironmentVariable(envVarKey, EnvironmentVariableTarget.Process);
+            if (connectionString == null)
+            {
+                string message = string.Format("Failed to get '{0}' environment variable. Please ensure " +
+                    "you have correctly setup the connection string environment variables. Refer to the " +
+                    "NEventStore wiki for details.", envVarKey);
+                throw new InvalidOperationException(message);
+            }
             connectionString = connectionString.TrimStart('"').TrimEnd('"');
             DbConnection connection = dbProviderFactory.CreateConnection();
             Debug.Assert(connection != null, "connection != null");
