@@ -591,6 +591,42 @@ namespace EventStore.Persistence.AcceptanceTests
         }
 	}
 
+    public class when_persisting_commits_out_of_order : PersistenceEngineConcern
+    {
+        // Issue 159 OrderingByCommitStampIsNotReliable
+        Commit[] undispatched;
+
+        protected override void Context()
+        {
+            Persistence.Purge();
+            var streamId = Guid.NewGuid();
+            var dateTime = new DateTime(2013, 1, 1);
+            SystemTime.Resolver = () => dateTime;
+            Persistence.Commit(new Commit(streamId, 1, Guid.NewGuid(), 1, SystemTime.UtcNow, null, new List<EventMessage> { new EventMessage{ Body = "M1" } }));
+            Persistence.Commit(new Commit(streamId, 3, Guid.NewGuid(), 3, SystemTime.UtcNow, null, new List<EventMessage> { new EventMessage { Body = "M3" } }));
+            Persistence.Commit(new Commit(streamId, 2, Guid.NewGuid(), 2, SystemTime.UtcNow, null, new List<EventMessage> { new EventMessage { Body = "M2" } }));
+        }
+
+        protected override void Because()
+        {
+            undispatched = Persistence.GetUndispatchedCommits().ToArray();
+        }
+
+        protected override void Cleanup()
+        {
+            SystemTime.Resolver = null;
+        }
+
+        [Fact]
+        public void should_have_commits_in_correct_order()
+        {
+            for (var i = 1; i <= undispatched.Length; i++)
+            {
+                undispatched[i-1].CommitSequence.ShouldBe(i);
+            }
+        }
+    }
+
     public partial class PersistenceEngineConcern : SpecificationBase, IUseFixture<PersistenceEngineFixture>
     {
         PersistenceEngineFixture data;
