@@ -94,7 +94,7 @@ task PackageEventStore -depends Clean, Compile {
 task PackageMongoPersistence -depends Clean, Compile,PackageEventStore {
 	mkdir $output_directory\plugins\persistence\mongo | out-null
 
-	Merge-Assemblies -outputFile "$output_directory/plugins/persistence/mongo/EventStore.Persistence.MongoPersistence.dll" -exclude "MongoDB.*" -keyfile $keyFile -files @(
+	Merge-Assemblies -outputFile "$output_directory/plugins/persistence/mongo/EventStore.Persistence.MongoPersistence.dll" -exclude "EventStore.*" -keyfile $keyFile -files @(
 		"$src_directory/proj/EventStore.Persistence.MongoPersistence/bin/$target_config/EventStore.Persistence.MongoPersistence.dll",
 		"$src_directory/proj/EventStore.Persistence.MongoPersistence.Wireup/bin/$target_config/EventStore.Persistence.MongoPersistence.Wireup.dll"
 	)
@@ -105,7 +105,7 @@ task PackageMongoPersistence -depends Clean, Compile,PackageEventStore {
 task PackageRavenPersistence -depends Clean, Compile, PackageEventStore {
 	mkdir $output_directory\plugins\persistence\raven | out-null
 	
-	Merge-Assemblies -outputFile "$output_directory/plugins/persistence/raven/EventStore.Persistence.RavenPersistence.dll" -exclude "Raven.*" -keyfile $keyFile -files @(
+	Merge-Assemblies -outputFile "$output_directory/plugins/persistence/raven/EventStore.Persistence.RavenPersistence.dll" -exclude "EventStore.*" -keyfile $keyFile -files @(
 		"$src_directory/proj/EventStore.Persistence.RavenPersistence/bin/$target_config/EventStore.Persistence.RavenPersistence.dll",
 		"$src_directory/proj/EventStore.Persistence.RavenPersistence.Wireup/bin/$target_config/EventStore.Persistence.RavenPersistence.Wireup.dll"
 	)
