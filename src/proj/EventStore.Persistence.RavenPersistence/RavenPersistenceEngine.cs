@@ -175,7 +175,7 @@
 		{
 			Logger.Debug(Messages.GettingUndispatchedCommits);
 			return this.QueryCommits<RavenCommitsByDispatched>(c => c.Dispatched == false)
-				.OrderBy(x => x.CommitStamp);
+				.OrderBy(x => x.CommitSequence);
 		}
 
 		public virtual void MarkCommitAsDispatched(Commit commit)
