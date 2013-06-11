@@ -162,7 +162,7 @@ FROM Commits
 WHERE StreamId = :StreamId
    AND StreamRevision &gt;= :StreamRevision
    AND (StreamRevision - Items) &lt;= :MaxStreamRevision
-   --AND CommitSequence &gt; (:CommitSequence - :CommitSequence)
+   AND CommitSequence &gt; :CommitSequence
 ORDER BY CommitSequence</value>
   </data>
   <data name="GetSnapshot" xml:space="preserve">
