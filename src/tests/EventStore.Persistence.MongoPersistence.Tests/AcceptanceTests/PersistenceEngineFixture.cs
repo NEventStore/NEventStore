@@ -8,8 +8,6 @@ namespace EventStore.Persistence.AcceptanceTests
         {
             this.createPersistence = () => 
                 new AcceptanceTestMongoPersistenceFactory().Build();
-
-            this.purgeOnDispose = true;
         }
     }
 }
