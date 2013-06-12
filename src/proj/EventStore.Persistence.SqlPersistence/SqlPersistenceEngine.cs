@@ -92,6 +92,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
 		{
+            start = start.AddTicks(-(start.Ticks % TimeSpan.TicksPerSecond)); // Rounds down to the nearest second.
 			start = start < EpochTime ? EpochTime : start;
 
 			Logger.Debug(Messages.GettingAllCommitsFrom, start);
@@ -106,6 +107,7 @@ namespace EventStore.Persistence.SqlPersistence
 
 		public virtual IEnumerable<Commit> GetFromTo(DateTime start, DateTime end)
 		{
+            start = start.AddTicks(-(start.Ticks % TimeSpan.TicksPerSecond)); // Rounds down to the nearest second.
 			start = start < EpochTime ? EpochTime : start;
 			end = end < EpochTime ? EpochTime : end;
 
