@@ -178,5 +178,10 @@ namespace EventStore.Persistence.InMemoryPersistence
 				this.heads.Clear();
 			}
 		}
+
+	    public bool IsDisposed
+	    {
+            get { return this.disposed; }
+	    }
 	}
 }

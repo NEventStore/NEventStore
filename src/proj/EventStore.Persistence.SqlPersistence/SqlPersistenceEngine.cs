@@ -234,7 +234,9 @@ namespace EventStore.Persistence.SqlPersistence
 				cmd.ExecuteNonQuery(this.dialect.PurgeStorage));
 		}
 
-		protected virtual IEnumerable<T> ExecuteQuery<T>(Guid streamId, Func<IDbStatement, IEnumerable<T>> query)
+        public bool IsDisposed { get { return this.disposed; } }
+
+	    protected virtual IEnumerable<T> ExecuteQuery<T>(Guid streamId, Func<IDbStatement, IEnumerable<T>> query)
 		{
 			this.ThrowWhenDisposed();
 

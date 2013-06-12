@@ -1,5 +1,4 @@
-﻿using System;
-using EventStore.Persistence.RavenPersistence.Tests;
+﻿using EventStore.Persistence.RavenPersistence.Tests;
 
 namespace EventStore.Persistence.AcceptanceTests
 {
@@ -7,7 +6,7 @@ namespace EventStore.Persistence.AcceptanceTests
     {
         public PersistenceEngineFixture()
         {
-            this.CreatePersistence = () => 
+            this.createPersistence = () => 
                 new InMemoryRavenPersistenceFactory(TestRavenConfig.GetDefaultConfig()).Build();
         }
     }

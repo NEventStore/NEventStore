@@ -8,7 +8,7 @@
     {
         public PersistenceEngineFixture()
         {
-            this.CreatePersistence = () =>
+            this.createPersistence = () =>
                 new SqlPersistenceFactory(
                     new EnviromentConnectionFactory("MySql", "MySql.Data.MySqlClient"),
                     new BinarySerializer(),

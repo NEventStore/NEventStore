@@ -627,7 +627,7 @@ namespace EventStore.Persistence.AcceptanceTests
         }
     }
 
-    public partial class PersistenceEngineConcern : SpecificationBase, IUseFixture<PersistenceEngineFixture>
+    public class PersistenceEngineConcern : SpecificationBase, IUseFixture<PersistenceEngineFixture>
     {
         PersistenceEngineFixture data;
 
@@ -647,7 +647,7 @@ namespace EventStore.Persistence.AcceptanceTests
     public partial class PersistenceEngineFixture : IDisposable
     {
         IPersistStreams persistence;
-        public Func<IPersistStreams> CreatePersistence { get; set; }
+        Func<IPersistStreams> createPersistence;
 
         public IPersistStreams Persistence
         {
@@ -655,7 +655,7 @@ namespace EventStore.Persistence.AcceptanceTests
             {
                 if (persistence == null)
                 {
-                    persistence = new PerformanceCounterPersistenceEngine(CreatePersistence(), "tests");
+                    persistence = new PerformanceCounterPersistenceEngine(createPersistence(), "tests");
                     persistence.Initialize();
                 }
 
@@ -663,12 +663,13 @@ namespace EventStore.Persistence.AcceptanceTests
             }
         }
 
-        protected bool PurgeOnDispose { get; set; }
 
         public void Dispose()
         {
-            if(persistence != null && PurgeOnDispose)
+            if (persistence != null && !persistence.IsDisposed)
+            {
                 persistence.Purge();
+            }
 
             Persistence.Dispose();
         }

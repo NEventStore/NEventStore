@@ -1,5 +1,4 @@
-﻿using System;
-using EventStore.Persistence.MongoPersistence.Tests;
+﻿using EventStore.Persistence.MongoPersistence.Tests;
 
 namespace EventStore.Persistence.AcceptanceTests
 {
@@ -7,10 +6,10 @@ namespace EventStore.Persistence.AcceptanceTests
     {
         public PersistenceEngineFixture()
         {
-            this.CreatePersistence = () => 
+            this.createPersistence = () => 
                 new AcceptanceTestMongoPersistenceFactory().Build();
 
-            PurgeOnDispose = true;
+            this.purgeOnDispose = true;
         }
     }
 }

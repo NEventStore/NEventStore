@@ -12,7 +12,6 @@
 	using Raven.Abstractions.Commands;
 	using Raven.Abstractions.Data;
 	using Raven.Client;
-	using Raven.Client.Connection;
 	using Raven.Client.Exceptions;
 	using Raven.Client.Indexes;
 	using Raven.Json.Linq;
@@ -30,7 +29,7 @@
 		private int initialized;
 		private readonly string partition;
 
-		public IDocumentStore Store
+	    public IDocumentStore Store
 		{
 			get { return store; }
 		}
@@ -277,7 +276,12 @@
 			});
 		}
 
-		private void PurgeDocuments(IDocumentSession session)
+	    public bool IsDisposed
+        { 
+            get { return this.store.WasDisposed; }
+        }
+
+	    private void PurgeDocuments(IDocumentSession session)
 		{
 			Func<Type, string> getTagCondition = t => "Tag:" + session.Advanced.DocumentStore.Conventions.GetTypeTagName(t);
 

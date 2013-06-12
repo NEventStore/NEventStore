@@ -8,7 +8,7 @@
     {
         public PersistenceEngineFixture()
         {
-            this.CreatePersistence = () => 
+            this.createPersistence = () => 
                 new SqlPersistenceFactory(
                     new ConfigurationConnectionFactory("EventStore.Persistence.AcceptanceTests.Properties.Settings.SQLCE"),
                     new BinarySerializer(),

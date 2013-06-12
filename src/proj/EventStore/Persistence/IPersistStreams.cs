@@ -57,5 +57,10 @@ namespace EventStore.Persistence
 		/// Completely DESTROYS the contents of ANY and ALL streams that have been successfully persisted.  Use with caution.
 		/// </summary>
 		void Purge();
+
+        /// <summary>
+        /// Gets a value indicating whether this instance has been disposed of.
+        /// </summary>
+        bool IsDisposed { get; }
 	}
 }

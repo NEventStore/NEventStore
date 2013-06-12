@@ -67,7 +67,12 @@
 			this.persistence.Purge();
 		}
 
-		public PerformanceCounterPersistenceEngine(IPersistStreams persistence, string instanceName)
+	    public bool IsDisposed
+	    {
+	        get { return this.persistence.IsDisposed; }
+	    }
+
+	    public PerformanceCounterPersistenceEngine(IPersistStreams persistence, string instanceName)
 		{
 			this.persistence = persistence;
 			this.counters = new PerformanceCounters(instanceName);

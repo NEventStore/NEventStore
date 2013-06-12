@@ -79,6 +79,11 @@
             original.Purge();
         }
 
+        public bool IsDisposed
+        {
+            get { return original.IsDisposed; }
+        }
+
         private IEnumerable<Commit> ExecuteHooks(IEnumerable<Commit> commits)
         {
             foreach (Commit commit in commits)

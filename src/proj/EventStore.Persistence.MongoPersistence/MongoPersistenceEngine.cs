@@ -250,7 +250,12 @@
 			this.PersistedSnapshots.Drop();
 		}
 
-		private void UpdateStreamHeadAsync(Guid streamId, int streamRevision, int eventsCount)
+	    public bool IsDisposed
+	    {
+	        get { return this.disposed; }
+	    }
+
+	    private void UpdateStreamHeadAsync(Guid streamId, int streamRevision, int eventsCount)
 		{
 			ThreadPool.QueueUserWorkItem(x => this.TryMongo(() =>
 			{

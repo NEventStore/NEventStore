@@ -8,7 +8,7 @@
     {
         public PersistenceEngineFixture()
         {
-            this.CreatePersistence = () =>
+            this.createPersistence = () =>
                 new SqlPersistenceFactory(
                     new EnviromentConnectionFactory("Firebird", "FirebirdSql.Data.FirebirdClient"),
                     new BinarySerializer(),
