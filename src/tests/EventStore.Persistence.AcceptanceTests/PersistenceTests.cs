@@ -511,7 +511,7 @@ namespace EventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_load_the_same_number_of_commits_which_have_been_persisted()
 	    {
-	        loaded.Count.ShouldBeGreaterThanOrEqualTo(committed.Count); // >= because items may be loaded from other tests.
+	        loaded.Count.ShouldBeGreaterThanOrEqualTo(committed.Count);
 	    }
 
         [Fact]
