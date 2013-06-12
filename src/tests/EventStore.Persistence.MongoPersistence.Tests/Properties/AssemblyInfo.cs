@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("EventStore.Persistence.AcceptanceTests")]
+[assembly: AssemblyTitle("EventStore.Persistence.MongoPersistence.Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("EventStore.Persistence.AcceptanceTests")]
+[assembly: AssemblyProduct("EventStore.Persistence.MongoPersistence.Tests")]
 [assembly: AssemblyCopyright("Copyright ©  2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("f85a343a-1aae-4a01-a91d-efd76322d9d8")]
+[assembly: Guid("dd2cf09b-c391-4f93-b60b-2d8522ad73bf")]
 
 // Version information for an assembly consists of the following four values:
 //
