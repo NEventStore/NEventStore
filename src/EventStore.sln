@@ -16,12 +16,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Core.UnitTests",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{CD37080A-F48D-4E5D-B7C6-B9F86BB05A38}"
 	ProjectSection(SolutionItems) = preProject
-		..\doc\acknowledgments.txt = ..\doc\acknowledgments.txt
-		..\doc\EventStore - Architectural Overview.docx = ..\doc\EventStore - Architectural Overview.docx
-		..\doc\EventStore - Transactional Integrity.docx = ..\doc\EventStore - Transactional Integrity.docx
-		..\doc\license.txt = ..\doc\license.txt
 		..\readme.markdown = ..\readme.markdown
-		..\doc\roadmap.txt = ..\doc\roadmap.txt
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Serialization", "proj\EventStore.Serialization\EventStore.Serialization.csproj", "{A5BF4B86-26F6-418D-BE35-C6CC3A623D27}"
