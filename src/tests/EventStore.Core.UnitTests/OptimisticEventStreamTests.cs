@@ -360,7 +360,10 @@ namespace EventStore.Core.UnitTests
 		};
 
 		Cleanup cleanup = () =>
+		{
 			streamId = Guid.NewGuid();
+			SystemTime.Resolver = null;
+		};
 
 		protected static Commit BuildCommitStub(int revision, int sequence, int eventCount)
 		{
