@@ -4,16 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3FE594FE-16FF-4405-97D5-5A58FB12520B}</ProjectGuid>
+    <ProjectGuid>{41BD8E8F-F530-48CB-A07B-92E65C8C742E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EventStore.Persistence.AcceptanceTests</RootNamespace>
-    <AssemblyName>EventStore.Persistence.AcceptanceTests</AssemblyName>
+    <RootNamespace>EventStore.Serialization.Binary.Tests</RootNamespace>
+    <AssemblyName>EventStore.Serialization.Binary.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,10 +34,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="xunit">
@@ -48,23 +48,24 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BDD\SpecificationBase.cs" />
-    <Compile Include="BDD\SpecificationBaseRunner.cs" />
-    <Compile Include="Catch.cs" />
-    <Compile Include="ConfigurationExtensions.cs" />
-    <Compile Include="EnviromentConnectionFactory.cs" />
-    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="..\EventStore.Persistence.AcceptanceTests\SerializationTests.cs">
+      <Link>SerializationTests.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SimpleMessage.cs" />
+    <Compile Include="SerializerFixture.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\proj\EventStore.Persistence.SqlPersistence\EventStore.Persistence.SqlPersistence.csproj">
-      <Project>{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}</Project>
-      <Name>EventStore.Persistence.SqlPersistence</Name>
+    <ProjectReference Include="..\..\proj\EventStore.Serialization\EventStore.Serialization.csproj">
+      <Project>{A5BF4B86-26F6-418D-BE35-C6CC3A623D27}</Project>
+      <Name>EventStore.Serialization</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\proj\EventStore\EventStore.csproj">
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
       <Name>EventStore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EventStore.Persistence.AcceptanceTests\EventStore.Persistence.AcceptanceTests.csproj">
+      <Project>{3FE594FE-16FF-4405-97D5-5A58FB12520B}</Project>
+      <Name>EventStore.Persistence.AcceptanceTests</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
