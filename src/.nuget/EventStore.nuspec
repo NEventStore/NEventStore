@@ -4,9 +4,9 @@
     <id>EventStore</id>
     <version>3.1</version>
     <title>EventStore</title>
-    <authors>Simon Green, Jonathan Oliver</authors>
-    <owners>Jonathan Oliver</owners>
-    <projectUrl>https://github.com/joliver/EventStore</projectUrl>
+    <authors>NEventStore Dev Team</authors>
+    <owners>NEventStore Dev Team</owners>
+    <projectUrl>http://neventstore.org</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>The purpose of the EventStore is to represent a series of events as a stream. Furthermore, it provides hooks whereby any events committed to the stream can be dispatched to interested parties.</description>
     <summary>The EventStore is a persistence library used to abstract different storage implementations when using event sourcing as storage mechanism. The primary use is most often associated with CQRS.</summary>

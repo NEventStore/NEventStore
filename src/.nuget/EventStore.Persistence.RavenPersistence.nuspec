@@ -4,9 +4,9 @@
     <id>EventStore.Persistence.RavenPersistence</id>
     <version>3.1</version>
     <title>EventStore RavenDB Persistence Plugin</title>
-    <authors>Simon Green, Jonathan Oliver</authors>
-    <owners>Jonathan Oliver</owners>
-    <projectUrl>https://github.com/joliver/EventStore</projectUrl>
+    <authors>NEventStore Dev Team</authors>
+    <owners>NEventStore Dev Team</owners>
+    <projectUrl>http://neventstore.org</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Additional persistence provider for EventStore using RavenDB.</description>
     <summary>RavenDB persistence provider for EventStore.</summary>

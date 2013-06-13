@@ -4,9 +4,9 @@
     <id>EventStore.Serialization.Json</id>
     <version>3.1</version>
     <title>EventStore Newtonsoft JSON Serialization Plugin</title>
-    <authors>Simon Green, Jonathan Oliver</authors>
-    <owners>Jonathan Oliver</owners>
-    <projectUrl>https://github.com/joliver/EventStore</projectUrl>
+    <authors>NEventStore Dev Team</authors>
+    <owners>NEventStore Dev Team</owners>
+    <projectUrl>http://neventstore.org</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Additional serialization provider for EventStore based on the Newtonsoft JSON.NET library.</description>
     <summary>Newtonsoft JSON.NET Serializer for EventStore.</summary>
