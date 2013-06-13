@@ -1,22 +1,30 @@
-﻿using EventStore.Persistence.AcceptanceTests;
+﻿using System;
 using EventStore.Serialization;
 
 namespace EventStore.Persistence.MongoPersistence.Tests
 {
     public class AcceptanceTestMongoPersistenceFactory : MongoPersistenceFactory
 	{
+        const string EnvVarKey = "NEventStore.MongoDB";
+
 		public AcceptanceTestMongoPersistenceFactory()
-			: base("Mongo", new DocumentObjectSerializer())
-		{
-		}
-		protected override string TransformConnectionString(string connectionString)
-		{
-			return connectionString
-				.Replace("[HOST]", "host".GetSetting() ?? "localhost")
-				.Replace("[PORT]", "port".GetSetting() ?? string.Empty)
-				.Replace("[DATABASE]", "database".GetSetting() ?? "EventStore")
-				.Replace("[USER]", "user".GetSetting() ?? string.Empty)
-				.Replace("[PASSWORD]", "password".GetSetting() ?? string.Empty);
-		}
+			: base("", new DocumentObjectSerializer()) { }
+
+        protected override string GetConnectionString()
+        {
+            var connectionString = Environment.GetEnvironmentVariable(EnvVarKey, EnvironmentVariableTarget.User);
+
+            if (connectionString == null)
+            {
+                var message = string.Format("Cannot initialize acceptance tests for Mongo. Cannot find the '{0}' environment variable. Please ensure " +
+                    "you have correctly setup the connection string environment variables. Refer to the " +
+                    "NEventStore wiki for details.", EnvVarKey);
+                throw new InvalidOperationException(message);
+            }
+
+            connectionString = connectionString.TrimStart('"').TrimEnd('"');
+
+            return connectionString;
+        }
 	}
 }
