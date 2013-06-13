@@ -1,9 +1,9 @@
-namespace EventStore.Core.UnitTests
+namespace EventStore.Core.Tests
 {
-	using System.Collections;
-	using System.Collections.Generic;
+    using System.Collections;
+    using System.Collections.Generic;
 
-	internal static class ExtensionMethods
+    internal static class ExtensionMethods
 	{
 		public static int Events(this int events)
 		{

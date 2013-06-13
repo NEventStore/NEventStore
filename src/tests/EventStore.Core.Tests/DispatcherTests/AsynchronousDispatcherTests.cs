@@ -1,17 +1,17 @@
-using EventStore.Persistence.AcceptanceTests.BDD;
-using Xunit;
 
 #pragma warning disable 169
 // ReSharper disable InconsistentNaming
 
-namespace EventStore.Core.UnitTests.DispatcherTests
+namespace EventStore.Core.Tests.DispatcherTests
 {
+    using EventStore.Persistence.AcceptanceTests.BDD;
+    using Xunit;
     using System;
     using System.Linq;
     using System.Threading;
-    using Dispatcher;
+    using EventStore.Dispatcher;
     using Moq;
-    using Persistence;
+    using EventStore.Persistence;
 
     public class when_instantiating_the_asynchronous_dispatch_scheduler : SpecificationBase
     {

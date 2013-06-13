@@ -1,12 +1,12 @@
-﻿using EventStore.Persistence.AcceptanceTests.BDD;
-using Xunit;
-using Xunit.Should;
-
+﻿
 #pragma warning disable 169
 // ReSharper disable InconsistentNaming
 
-namespace EventStore.Core.UnitTests.Persistence.InMemoryPersistence
+namespace EventStore.Persistence.InMemoryPersistence.Tests
 {
+    using EventStore.Persistence.AcceptanceTests.BDD;
+    using Xunit;
+    using Xunit.Should;
     using System;
     using System.Collections.Generic;
     using System.Linq;

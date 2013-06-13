@@ -1,16 +1,16 @@
-using EventStore.Persistence.AcceptanceTests;
-using EventStore.Persistence.AcceptanceTests.BDD;
-using Xunit;
-using Xunit.Should;
 
 #pragma warning disable 169
 // ReSharper disable InconsistentNaming
 
-namespace EventStore.Core.UnitTests
+namespace EventStore.Core.Tests
 {
-	using System;
-	using Dispatcher;
-	using Moq;
+    using EventStore.Persistence.AcceptanceTests;
+    using EventStore.Persistence.AcceptanceTests.BDD;
+    using Xunit;
+    using Xunit.Should;
+    using System;
+    using EventStore.Dispatcher;
+    using Moq;
 
     public class when_a_commit_has_been_persisted : SpecificationBase
 	{

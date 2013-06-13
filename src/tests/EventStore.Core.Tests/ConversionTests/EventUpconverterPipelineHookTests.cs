@@ -1,19 +1,19 @@
-﻿using EventStore.Persistence.AcceptanceTests.BDD;
-using Xunit;
-using Xunit.Should;
-
+﻿
 #pragma warning disable 169
 // ReSharper disable InconsistentNaming
 
-namespace EventStore.Core.UnitTests.ConversionTests
+namespace EventStore.Core.Tests.ConversionTests
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Reflection;
-	using Conversion;
+    using EventStore.Persistence.AcceptanceTests.BDD;
+    using Xunit;
+    using Xunit.Should;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using EventStore.Conversion;
 
-	public class when_opening_a_commit_that_does_not_have_convertible_events : using_event_converter
+    public class when_opening_a_commit_that_does_not_have_convertible_events : using_event_converter
 	{
 		readonly Commit commit = new Commit(
 			Guid.NewGuid(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);

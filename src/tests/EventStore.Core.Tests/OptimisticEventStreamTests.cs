@@ -1,19 +1,19 @@
-using EventStore.Persistence.AcceptanceTests;
-using EventStore.Persistence.AcceptanceTests.BDD;
-using Xunit;
-using Xunit.Should;
 
 #pragma warning disable 169
 // ReSharper disable InconsistentNaming
 
-namespace EventStore.Core.UnitTests
+namespace EventStore.Core.Tests
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using Moq;
-	
-	public class when_building_a_stream : on_the_event_stream
+    using EventStore.Persistence.AcceptanceTests;
+    using EventStore.Persistence.AcceptanceTests.BDD;
+    using Xunit;
+    using Xunit.Should;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Moq;
+
+    public class when_building_a_stream : on_the_event_stream
 	{
 		const int MinRevision = 2;
 		const int MaxRevision = 7;

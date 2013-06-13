@@ -1,15 +1,15 @@
-﻿using EventStore.Persistence.AcceptanceTests.BDD;
-using Xunit;
-
+﻿
 #pragma warning disable 169
 // ReSharper disable InconsistentNaming
 
-namespace EventStore.Core.UnitTests
+namespace EventStore.Core.Tests
 {
+    using EventStore.Persistence.AcceptanceTests.BDD;
+    using Xunit;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Persistence;
+    using EventStore.Persistence;
     using Moq;
 
     public class when_disposing_the_decorator : using_underlying_persistence
