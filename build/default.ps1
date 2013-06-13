@@ -71,7 +71,7 @@ task RunSerializationTests {
 	exec { &$mspec_path "$src_directory\tests\EventStore.Serialization.AcceptanceTests\bin\$target_config\EventStore.Serialization.AcceptanceTests.dll" }
 }
 
-task Package -depends Build, PackageEventStore, PackageMongoPersistence, PackageRavenPersistence, PackageJsonSerialization, PackageServiceStackSerialization {
+task Package -depends Build, PackageEventStore, PackageMongoPersistence, PackageRavenPersistence, PackageJsonSerialization {
 	move $output_directory $publish_directory
 }
 
@@ -120,16 +120,6 @@ task PackageJsonSerialization -depends Clean, Compile, PackageEventStore {
 		"$src_directory/proj/EventStore.Serialization.Json/bin/$target_config/EventStore.Serialization.Json.dll", 
 		"$src_directory/proj/EventStore.Serialization.Json/bin/$target_config/Newtonsoft.Json*.dll",
 		"$src_directory/proj/EventStore.Serialization.Json.Wireup/bin/$target_config/EventStore.Serialization.Json.Wireup.dll"
-	)
-}
-
-task PackageServiceStackSerialization -depends Clean, Compile, PackageEventStore {
-	mkdir $output_directory\plugins\serialization\servicestack | out-null
-
-	Merge-Assemblies -outputFile "$output_directory/plugins/serialization/servicestack/EventStore.Serialization.ServiceStack.dll" -exclude "EventStore.*" -keyfile $keyFile -files @(
-		"$src_directory/proj/EventStore.Serialization.ServiceStack/bin/$target_config/EventStore.Serialization.ServiceStack.dll",
-		"$src_directory/proj/EventStore.Serialization.ServiceStack/bin/$target_config/ServiceStack.Text.dll", 
-		"$src_directory/proj/EventStore.Serialization.ServiceStack.Wireup/bin/$target_config/EventStore.Serialization.ServiceStack.Wireup.dll"
 	)
 }
 
