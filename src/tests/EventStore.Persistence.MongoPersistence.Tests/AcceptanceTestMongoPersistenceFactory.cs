@@ -12,7 +12,7 @@ namespace EventStore.Persistence.MongoPersistence.Tests
 
         protected override string GetConnectionString()
         {
-            var connectionString = Environment.GetEnvironmentVariable(EnvVarKey, EnvironmentVariableTarget.User);
+            var connectionString = Environment.GetEnvironmentVariable(EnvVarKey, EnvironmentVariableTarget.Process);
 
             if (connectionString == null)
             {
