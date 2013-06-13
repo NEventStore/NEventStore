@@ -45,7 +45,7 @@ namespace EventStore.Persistence.InMemoryPersistence
 			Logger.Debug(Resources.GettingAllCommitsFromRevision, streamId, minRevision, maxRevision);
 
 			lock (this.commits)
-				return this.commits.Where(x => x.StreamId == streamId && x.StreamRevision >= minRevision && (x.StreamRevision - x.Events.Count + 1) <= maxRevision).ToArray();
+				return this.commits.Where(x => x.StreamId == streamId && x.StreamRevision >= minRevision && (x.StreamRevision - x.Events.Count + 1) <= maxRevision).OrderBy(c => c.CommitSequence).ToArray();
 		}
 
 		public virtual IEnumerable<Commit> GetFrom(DateTime start)
@@ -115,7 +115,7 @@ namespace EventStore.Persistence.InMemoryPersistence
 			{
 				this.ThrowWhenDisposed();
 				Logger.Debug(Resources.RetrievingUndispatchedCommits, this.commits.Count);
-				return this.commits.Where(c => this.undispatched.Contains(c));
+                return this.commits.Where(c => this.undispatched.Contains(c)).OrderBy(c => c.CommitSequence);
 			}
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)
