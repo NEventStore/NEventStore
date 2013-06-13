@@ -1,10 +1,10 @@
-﻿namespace EventStore.Serialization.AcceptanceTests
-{
-	using System;
-	using System.Collections.Generic;
-	using System.Diagnostics.CodeAnalysis;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
-	[Serializable]
+namespace EventStore.Persistence.AcceptanceTests
+{
+    [Serializable]
 	public class SimpleMessage
 	{
 		public SimpleMessage()
