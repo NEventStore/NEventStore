@@ -12,12 +12,12 @@ properties {
 	$framework_version = "v4.0"
 	$version = "0.0.0.0"
 
-	$mspec_path = "$src_directory\packages\Machine.Specifications.0.5.10\tools\mspec-x86-clr4.exe"
+	$xunit_path = "$src_directory\packages\xunit.runners.1.9.1\tools\xunit.console.clr4.exe"
 	$ilMergeModule.ilMergePath = "$base_directory\bin\ilmerge-bin\ILMerge.exe"
 	$nuget_dir = "$src_directory\.nuget"
 
 	if($runPersistenceTests -eq $null) {
-		$runPersistenceTests = $false
+		$runPersistenceTests = $true
 	}
 }
 
@@ -58,17 +58,31 @@ task Test -depends RunUnitTests, RunPersistenceTests, RunSerializationTests
 task RunUnitTests {
 	write-host "Unit Tests"
 
-	exec { &$mspec_path "$src_directory/tests/EventStore.Core.UnitTests/bin/$target_config/EventStore.Core.UnitTests.dll" }
+	EnsureDirectory $output_directory
+
+	Invoke-XUnit -Path $src_directory\tests -TestSpec '*EventStore.Core.Tests.dll' `
+    -SummaryPath $output_directory\unit_tests.xml `
+    -XUnitPath $xunit_path
 }
 
 task RunPersistenceTests -precondition { $runPersistenceTests } {
-	write-host "Acceptance Tests: Persistence Tests"
+	write-host "Persistence Tests"
 
-	exec { &$mspec_path "$src_directory/tests/EventStore.Persistence.AcceptanceTests/bin/$target_config/EventStore.Persistence.AcceptanceTests.dll" }
+	EnsureDirectory $output_directory
+
+	Invoke-XUnit -Path $src_directory\tests -TestSpec '*Persistence.*.Tests.dll' `
+    -SummaryPath $output_directory\persistence_tests.xml `
+    -XUnitPath $xunit_path
 }
 
 task RunSerializationTests {
-	exec { &$mspec_path "$src_directory\tests\EventStore.Serialization.AcceptanceTests\bin\$target_config\EventStore.Serialization.AcceptanceTests.dll" }
+	write-host "Serialization Tests"
+
+	EnsureDirectory $output_directory
+
+	Invoke-XUnit -Path $src_directory\tests -TestSpec '*Serialization.*.Tests.dll' `
+    -SummaryPath $output_directory\serialization_tests.xml `
+    -XUnitPath $xunit_path
 }
 
 task Package -depends Build, PackageEventStore, PackageMongoPersistence, PackageRavenPersistence, PackageJsonSerialization {
@@ -135,4 +149,13 @@ task Clean {
 
 task NuGetPack -depends Package {
 	gci -r -i *.nuspec "$nuget_dir" |% { .$nuget_dir\nuget.exe pack $_ -basepath $base_directory -o $publish_directory -version $version }
+}
+
+function EnsureDirectory {
+	param($directory)
+
+	if(!(test-path $directory))
+	{
+		mkdir $directory
+	}
 }
