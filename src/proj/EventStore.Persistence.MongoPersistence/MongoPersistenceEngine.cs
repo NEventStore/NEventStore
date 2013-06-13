@@ -116,7 +116,7 @@
 
 			return this.TryMongo(() => this.PersistedCommits
 				.Find(Query.GTE("CommitStamp", start))
-				.SetSortOrder("CommitStamp")
+                .SetSortOrder("_id")
 				.Select(x => x.ToCommit(this.serializer)));
 		}
 
@@ -126,7 +126,7 @@
 
 			return this.TryMongo(() => this.PersistedCommits
 				.Find(Query.And(Query.GTE("CommitStamp", start), Query.LT("CommitStamp", end)))
-				.SetSortOrder("CommitStamp")
+                .SetSortOrder("_id")
 				.Select(x => x.ToCommit(this.serializer)));
 		}
 
@@ -167,7 +167,7 @@
 
 			return this.TryMongo(() => this.PersistedCommits
 				.Find(Query.EQ("Dispatched", false))
-				.SetSortOrder("CommitStamp")
+                .SetSortOrder("_id")
 				.Select(mc => mc.ToCommit(this.serializer)));
 		}
 		public virtual void MarkCommitAsDispatched(Commit commit)

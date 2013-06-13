@@ -6,7 +6,7 @@ namespace EventStore.Persistence.AcceptanceTests
     {
         public PersistenceEngineFixture()
         {
-            this.createPersistence = () => 
+            this.createPersistence = () =>
                 new AcceptanceTestMongoPersistenceFactory().Build();
         }
     }
