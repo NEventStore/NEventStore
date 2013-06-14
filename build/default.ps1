@@ -12,7 +12,7 @@ properties {
 	$framework_version = "v4.0"
 	$version = "0.0.0.0"
 
-	$xunit_path = "$src_directory\packages\xunit.runners.1.9.1\tools\xunit.console.clr4.exe"
+	$xunit_path = "$base_directory\bin\xunit.runners.1.9.1\tools\xunit.console.clr4.exe"
 	$ilMergeModule.ilMergePath = "$base_directory\bin\ilmerge-bin\ILMerge.exe"
 	$nuget_dir = "$src_directory\.nuget"
 
