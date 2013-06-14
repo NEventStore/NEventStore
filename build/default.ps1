@@ -17,7 +17,7 @@ properties {
 	$nuget_dir = "$src_directory\.nuget"
 
 	if($runPersistenceTests -eq $null) {
-		$runPersistenceTests = $true
+		$runPersistenceTests = $false
 	}
 }
 
