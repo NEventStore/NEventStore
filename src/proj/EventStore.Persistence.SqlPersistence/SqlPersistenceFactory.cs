@@ -93,9 +93,6 @@ namespace EventStore.Persistence.SqlPersistence
 			if (providerName.Contains("FIREBIRD"))
 				return new FirebirdSqlDialect();
 
-			if (providerName.Contains("OLEDB") && connectionString.Contains("MICROSOFT.JET"))
-				return new AccessDialect();
-
             if (providerName.Contains("ORACLE") && providerName.Contains("DATAACCESS"))
                 return new OracleNativeDialect();
 
