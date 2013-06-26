@@ -67,14 +67,6 @@
     <Compile Include="IDbStatement.cs" />
     <Compile Include="ISqlDialect.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SqlDialects\AccessDialect.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="SqlDialects\AccessStatements.Designer.cs">
-      <DependentUpon>AccessStatements.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
     <Compile Include="SqlDialects\CommonDbStatement.cs" />
     <Compile Include="SqlDialects\CommonSqlDialect.cs" />
     <Compile Include="SqlDialects\CommonSqlStatements.Designer.cs">
@@ -158,10 +150,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SqlDialects\AccessStatements.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>AccessStatements.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="SqlDialects\CommonSqlStatements.resx">
       <SubType>Designer</SubType>
