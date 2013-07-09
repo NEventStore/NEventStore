@@ -1,10 +1,10 @@
-﻿namespace EventStore.Persistence.RavenPersistence
+﻿namespace NEventStore.Persistence.RavenPersistence
 {
     using NEventStore.Persistence;
     using Raven.Client;
-	using Raven.Client.Document;
+    using Raven.Client.Document;
 
-	public class RavenPersistenceFactory : IPersistenceFactory
+    public class RavenPersistenceFactory : IPersistenceFactory
 	{
 		private readonly RavenConfiguration config;
 

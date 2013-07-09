@@ -1,9 +1,9 @@
-﻿namespace EventStore.Persistence.MongoPersistence
+﻿namespace NEventStore.Persistence.MongoPersistence
 {
-	using System.Configuration;
-	using MongoDB.Driver;
-	using NEventStore.Persistence;
-	using NEventStore.Serialization;
+    using System.Configuration;
+    using MongoDB.Driver;
+    using NEventStore.Persistence;
+    using NEventStore.Serialization;
 
     public class MongoPersistenceFactory : IPersistenceFactory
 	{

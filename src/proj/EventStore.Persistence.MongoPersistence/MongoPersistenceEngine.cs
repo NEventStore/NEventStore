@@ -1,16 +1,16 @@
-﻿namespace EventStore.Persistence.MongoPersistence
+﻿namespace NEventStore.Persistence.MongoPersistence
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Threading;
-	using MongoDB.Bson;
-	using MongoDB.Driver;
-	using MongoDB.Driver.Builders;
-	using NEventStore;
-	using NEventStore.Logging;
-	using NEventStore.Persistence;
-	using NEventStore.Serialization;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
+    using MongoDB.Bson;
+    using MongoDB.Driver;
+    using MongoDB.Driver.Builders;
+    using NEventStore;
+    using NEventStore.Logging;
+    using NEventStore.Persistence;
+    using NEventStore.Serialization;
 
     public class MongoPersistenceEngine : IPersistStreams
 	{

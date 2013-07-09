@@ -1,13 +1,11 @@
-namespace EventStore.Persistence.RavenPersistence
+namespace NEventStore.Persistence.RavenPersistence
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Globalization;
-	using System.Linq;
-	using System.Transactions;
-	using NEventStore;
-	using NEventStore.Persistence;
-	using NEventStore.Serialization;
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using NEventStore;
+    using NEventStore.Persistence;
+    using NEventStore.Serialization;
 
     public static class ExtensionMethods
 	{

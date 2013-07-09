@@ -2,6 +2,7 @@
 
 namespace EventStore.Persistence.MongoPersistence.Tests
 {
+    using NEventStore.Persistence.MongoPersistence;
     using NEventStore.Serialization;
 
     public class AcceptanceTestMongoPersistenceFactory : MongoPersistenceFactory

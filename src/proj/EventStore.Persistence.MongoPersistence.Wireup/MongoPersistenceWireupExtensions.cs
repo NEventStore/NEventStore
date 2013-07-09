@@ -1,4 +1,4 @@
-namespace EventStore
+namespace NEventStore
 {
     using NEventStore;
     using NEventStore.Serialization;

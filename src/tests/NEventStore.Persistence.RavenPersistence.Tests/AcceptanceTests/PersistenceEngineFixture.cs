@@ -1,7 +1,7 @@
-﻿using EventStore.Persistence.RavenPersistence.Tests;
-
-namespace NEventStore.Persistence.AcceptanceTests
+﻿namespace NEventStore.Persistence.AcceptanceTests
 {
+    using RavenPersistence.Tests;
+
     public partial class PersistenceEngineFixture
     {
         public PersistenceEngineFixture()

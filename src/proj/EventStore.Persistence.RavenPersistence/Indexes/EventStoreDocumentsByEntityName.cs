@@ -1,10 +1,8 @@
-using System;
-using System.Linq;
-using Raven.Abstractions.Indexing;
-using Raven.Client.Indexes;
-
-namespace EventStore.Persistence.RavenPersistence.Indexes
+namespace NEventStore.Persistence.RavenPersistence.Indexes
 {
+    using Raven.Abstractions.Indexing;
+    using Raven.Client.Indexes;
+
     public class EventStoreDocumentsByEntityName : AbstractIndexCreationTask
     {
         public override string IndexName

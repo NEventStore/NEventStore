@@ -1,9 +1,9 @@
-namespace EventStore.Persistence.RavenPersistence.Indexes
+namespace NEventStore.Persistence.RavenPersistence.Indexes
 {
-	using System.Linq;
-	using Raven.Client.Indexes;
+    using System.Linq;
+    using Raven.Client.Indexes;
 
-	public class RavenCommitsByDispatched : AbstractIndexCreationTask<RavenCommit>
+    public class RavenCommitsByDispatched : AbstractIndexCreationTask<RavenCommit>
 	{
 		public RavenCommitsByDispatched()
 		{

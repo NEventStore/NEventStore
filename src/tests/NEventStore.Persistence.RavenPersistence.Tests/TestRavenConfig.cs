@@ -1,9 +1,9 @@
-using System;
-using System.Transactions;
-
-namespace EventStore.Persistence.RavenPersistence.Tests
+namespace NEventStore.Persistence.RavenPersistence.Tests
 {
+    using System;
+    using System.Transactions;
     using NEventStore.Persistence.AcceptanceTests;
+    using NEventStore.Persistence.RavenPersistence;
     using NEventStore.Serialization;
 
     public static class TestRavenConfig

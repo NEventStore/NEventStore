@@ -180,7 +180,10 @@
   <data name="EnumeratedRowCount" xml:space="preserve">
     <value>Enumerated {0} rows, re-querying for next page.</value>
   </data>
-	<data name="ScopeCompleted">
-		<value xml:space="preserve">Scope is complete.</value>
-	</data>
+  <data name="ScopeCompleted" xml:space="preserve">
+    <value>Scope is complete.</value>
+  </data>
+  <data name="GettingAllCommitsFromTo" xml:space="preserve">
+    <value>Getting all commits from '{0}' to '{1}'.</value>
+  </data>
 </root>

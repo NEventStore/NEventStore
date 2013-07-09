@@ -1,8 +1,8 @@
-﻿namespace EventStore.Persistence.RavenPersistence
+﻿namespace NEventStore.Persistence.RavenPersistence
 {
-	using System;
+    using System;
 
-	public class RavenSnapshot
+    public class RavenSnapshot
 	{
         public string Id { get; set; }
         public string Partition { get; set; }

@@ -1,23 +1,23 @@
-﻿namespace EventStore.Persistence.RavenPersistence
+﻿namespace NEventStore.Persistence.RavenPersistence
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Linq.Expressions;
-	using System.Net;
-	using System.Threading;
-	using System.Transactions;
-	using Indexes;
-	using NEventStore;
-	using NEventStore.Logging;
-	using NEventStore.Persistence;
-	using NEventStore.Serialization;
-	using Raven.Abstractions.Commands;
-	using Raven.Abstractions.Data;
-	using Raven.Client;
-	using Raven.Client.Exceptions;
-	using Raven.Client.Indexes;
-	using Raven.Json.Linq;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using System.Net;
+    using System.Threading;
+    using System.Transactions;
+    using Indexes;
+    using NEventStore;
+    using NEventStore.Logging;
+    using NEventStore.Persistence;
+    using NEventStore.Serialization;
+    using Raven.Abstractions.Commands;
+    using Raven.Abstractions.Data;
+    using Raven.Client;
+    using Raven.Client.Exceptions;
+    using Raven.Client.Indexes;
+    using Raven.Json.Linq;
 
     public class RavenPersistenceEngine : IPersistStreams
 	{

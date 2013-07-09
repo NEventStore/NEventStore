@@ -1,7 +1,8 @@
-using System;
-
-namespace EventStore.Persistence.RavenPersistence.Tests
+namespace NEventStore.Persistence.RavenPersistence.Tests
 {
+    using System;
+    using NEventStore.Persistence.RavenPersistence;
+
     public class RavenPersistenceEngineFixture : IDisposable
     {
         public RavenPersistenceEngineFixture()

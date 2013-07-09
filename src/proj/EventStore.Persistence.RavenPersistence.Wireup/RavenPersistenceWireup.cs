@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using EventStore.Persistence;
 using Raven.Client;
 using Raven.Client.Document;
 
@@ -10,8 +9,8 @@ namespace EventStore
 	using NEventStore;
 	using NEventStore.Logging;
 	using NEventStore.Persistence;
+	using NEventStore.Persistence.RavenPersistence;
 	using NEventStore.Serialization;
-	using Persistence.RavenPersistence;
 
     public class RavenPersistenceWireup : PersistenceWireup
 	{

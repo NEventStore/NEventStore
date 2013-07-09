@@ -1,11 +1,11 @@
-namespace EventStore.Persistence.RavenPersistence
+namespace NEventStore.Persistence.RavenPersistence
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Diagnostics.CodeAnalysis;
-	using Raven.Imports.Newtonsoft.Json;
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using Raven.Imports.Newtonsoft.Json;
 
-	public class RavenCommit
+    public class RavenCommit
 	{
 		public string Id { get; set; }
 

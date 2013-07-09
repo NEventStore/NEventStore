@@ -1,16 +1,17 @@
-using System;
-using System.Linq;
-using Xunit;
-using Xunit.Should;
 
 #pragma warning disable 169
 // ReSharper disable InconsistentNaming
 
-namespace EventStore.Persistence.RavenPersistence.Tests
+namespace NEventStore.Persistence.RavenPersistence.Tests
 {
+    using System;
+    using System.Linq;
+    using Xunit;
+    using Xunit.Should;
     using NEventStore;
     using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
+    using NEventStore.Persistence.RavenPersistence;
 
     public class when_getting_paged_commits : PersistenceEngineConcern
     {

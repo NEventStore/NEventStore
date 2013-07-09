@@ -1,9 +1,9 @@
-namespace EventStore.Persistence.RavenPersistence.Indexes
+namespace NEventStore.Persistence.RavenPersistence.Indexes
 {
-	using System.Linq;
-	using Raven.Client.Indexes;
+    using System.Linq;
+    using Raven.Client.Indexes;
 
-	public class RavenCommitByRevisionRange : AbstractIndexCreationTask<RavenCommit>
+    public class RavenCommitByRevisionRange : AbstractIndexCreationTask<RavenCommit>
 	{
 		public RavenCommitByRevisionRange()
 		{

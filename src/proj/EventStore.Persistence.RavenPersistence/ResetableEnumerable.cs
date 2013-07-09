@@ -1,4 +1,4 @@
-namespace EventStore.Persistence.RavenPersistence
+namespace NEventStore.Persistence.RavenPersistence
 {
     using System;
     using System.Collections;

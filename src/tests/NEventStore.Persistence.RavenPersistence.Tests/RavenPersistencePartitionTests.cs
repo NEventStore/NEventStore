@@ -1,15 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using Xunit;
-using Xunit.Should;
 
 #pragma warning disable 169
 // ReSharper disable InconsistentNaming
 
-namespace EventStore.Persistence.RavenPersistence.Tests
+namespace NEventStore.Persistence.RavenPersistence.Tests
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
+    using Xunit;
+    using Xunit.Should;
     using NEventStore;
     using NEventStore.Persistence;
     using NEventStore.Persistence.AcceptanceTests;

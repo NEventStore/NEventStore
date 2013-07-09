@@ -1,18 +1,18 @@
-﻿namespace EventStore.Persistence.MongoPersistence
+﻿namespace NEventStore.Persistence.MongoPersistence
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using MongoDB.Bson;
-	using MongoDB.Bson.IO;
-	using MongoDB.Bson.Serialization;
-	using MongoDB.Bson.Serialization.Options;
-	using MongoDB.Bson.Serialization.Serializers;
-	using MongoDB.Driver;
-	using MongoDB.Driver.Builders;
-	using NEventStore;
-	using NEventStore.Persistence;
-	using NEventStore.Serialization;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using MongoDB.Bson;
+    using MongoDB.Bson.IO;
+    using MongoDB.Bson.Serialization;
+    using MongoDB.Bson.Serialization.Options;
+    using MongoDB.Bson.Serialization.Serializers;
+    using MongoDB.Driver;
+    using MongoDB.Driver.Builders;
+    using NEventStore;
+    using NEventStore.Persistence;
+    using NEventStore.Serialization;
 
     public static class ExtensionMethods
 	{
