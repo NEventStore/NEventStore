@@ -2,11 +2,10 @@
 #pragma warning disable 169
 // ReSharper disable InconsistentNaming
 
-namespace EventStore.Core.Tests
+namespace NEventStore
 {
     using EventStore.Persistence.AcceptanceTests;
     using EventStore.Persistence.AcceptanceTests.BDD;
-    using NEventStore;
     using NEventStore.Persistence;
     using Xunit;
     using Xunit.Should;
@@ -14,7 +13,6 @@ namespace EventStore.Core.Tests
     using System.Collections.Generic;
     using System.Linq;
     using Moq;
-    using EventStore.Persistence;
 
     public class when_creating_a_new_stream : using_persistence
 	{

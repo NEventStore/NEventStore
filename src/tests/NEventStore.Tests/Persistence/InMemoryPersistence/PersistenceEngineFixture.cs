@@ -1,6 +1,4 @@
-﻿using EventStore.Persistence.InMemoryPersistence;
-
-namespace EventStore.Persistence.AcceptanceTests
+﻿namespace EventStore.Persistence.AcceptanceTests
 {
     using NEventStore.Persistence.InMemoryPersistence;
 

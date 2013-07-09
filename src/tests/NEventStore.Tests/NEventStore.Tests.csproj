@@ -57,7 +57,8 @@
     <Compile Include="DispatchCommitHookTests.cs" />
     <Compile Include="DispatcherTests\AsynchronousDispatcherTests.cs" />
     <Compile Include="DispatcherTests\SynchronousDispatcherTests.cs" />
-    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="EnumerableCounter.cs" />
+    <Compile Include="IntExtensions.cs" />
     <Compile Include="OptimisticCommitHookTests.cs" />
     <Compile Include="OptimisticEventStoreTests.cs" />
     <Compile Include="OptimisticEventStreamTests.cs" />

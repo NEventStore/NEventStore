@@ -2,17 +2,14 @@
 #pragma warning disable 169
 // ReSharper disable InconsistentNaming
 
-namespace EventStore.Persistence.InMemoryPersistence.Tests
+namespace NEventStore.Persistence.InMemoryPersistence
 {
     using EventStore.Persistence.AcceptanceTests.BDD;
-    using NEventStore;
-    using NEventStore.Persistence.InMemoryPersistence;
     using Xunit;
     using Xunit.Should;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using EventStore.Persistence.InMemoryPersistence;
 
     public class when_getting_from_to_then_should_not_get_later_commits : SpecificationBase
     {

@@ -2,17 +2,15 @@
 #pragma warning disable 169
 // ReSharper disable InconsistentNaming
 
-namespace EventStore.Core.Tests
+namespace NEventStore
 {
     using EventStore.Persistence.AcceptanceTests;
     using EventStore.Persistence.AcceptanceTests.BDD;
-    using NEventStore;
     using NEventStore.Persistence;
     using Xunit;
     using Xunit.Should;
     using System;
     using System.Linq;
-    using EventStore.Persistence;
 
     public class when_committing_with_a_sequence_beyond_the_known_end_of_a_stream : using_commit_hooks
 	{

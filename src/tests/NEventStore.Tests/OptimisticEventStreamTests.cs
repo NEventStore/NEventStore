@@ -2,11 +2,10 @@
 #pragma warning disable 169
 // ReSharper disable InconsistentNaming
 
-namespace EventStore.Core.Tests
+namespace NEventStore
 {
     using EventStore.Persistence.AcceptanceTests;
     using EventStore.Persistence.AcceptanceTests.BDD;
-    using NEventStore;
     using Xunit;
     using Xunit.Should;
     using System;
