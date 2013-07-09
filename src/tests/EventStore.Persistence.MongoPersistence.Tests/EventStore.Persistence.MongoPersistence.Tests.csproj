@@ -59,7 +59,7 @@
       <Project>{32ADD8CE-0F3F-41D8-BFA1-6E5D685E64DD}</Project>
       <Name>EventStore.Persistence.MongoPersistence</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\proj\EventStore\NEventStore.csproj">
+    <ProjectReference Include="..\..\proj\NEventStore\NEventStore.csproj">
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
       <Name>NEventStore</Name>
     </ProjectReference>
