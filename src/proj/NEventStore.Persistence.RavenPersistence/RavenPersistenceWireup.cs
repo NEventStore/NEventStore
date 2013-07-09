@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Raven.Client;
 using Raven.Client.Document;
 
-namespace NEventStore
+namespace EventStore
 {
 	using System;
 	using System.Transactions;

@@ -1,5 +1,7 @@
-namespace NEventStore
+namespace EventStore
 {
+    using NEventStore;
+
     public static class RavenPersistenceWireupExtensions
 	{
 		public static RavenPersistenceWireup UsingRavenPersistence(
