@@ -1,13 +1,13 @@
-﻿namespace EventStore
+namespace EventStore
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Reflection;
-	using Conversion;
-	using Logging;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using Conversion;
+    using Logging;
 
-	public class EventUpconverterWireup : Wireup
+    public class EventUpconverterWireup : Wireup
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(EventUpconverterWireup));
 		private readonly IDictionary<Type, Func<object, object>> registered = new Dictionary<Type, Func<object, object>>();

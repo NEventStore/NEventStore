@@ -1,11 +1,11 @@
 namespace EventStore
 {
-	using System.Transactions;
-	using Dispatcher;
-	using Logging;
-	using Persistence;
+    using System.Transactions;
+    using Dispatcher;
+    using Logging;
+    using Persistence;
 
-	public class AsynchronousDispatchSchedulerWireup : Wireup
+    public class AsynchronousDispatchSchedulerWireup : Wireup
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(AsynchronousDispatchSchedulerWireup));
 

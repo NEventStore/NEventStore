@@ -1,8 +1,8 @@
 namespace EventStore.Serialization
 {
-	using Logging;
+    using Logging;
 
-	public class DocumentObjectSerializer : IDocumentSerializer
+    public class DocumentObjectSerializer : IDocumentSerializer
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(DocumentObjectSerializer));
 

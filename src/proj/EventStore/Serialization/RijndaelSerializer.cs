@@ -1,12 +1,12 @@
 namespace EventStore.Serialization
 {
-	using System;
-	using System.Collections;
-	using System.IO;
-	using System.Security.Cryptography;
-	using Logging;
+    using System;
+    using System.Collections;
+    using System.IO;
+    using System.Security.Cryptography;
+    using Logging;
 
-	public class RijndaelSerializer : ISerialize
+    public class RijndaelSerializer : ISerialize
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(RijndaelSerializer));
 		private const int KeyLength = 16; // bytes

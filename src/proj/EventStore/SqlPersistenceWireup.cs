@@ -1,11 +1,11 @@
 namespace EventStore
 {
-	using System.Transactions;
-	using Logging;
-	using Persistence.SqlPersistence;
-	using Serialization;
+    using System.Transactions;
+    using Logging;
+    using Persistence.SqlPersistence;
+    using Serialization;
 
-	public class SqlPersistenceWireup : PersistenceWireup
+    public class SqlPersistenceWireup : PersistenceWireup
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(SqlPersistenceWireup));
 		private const int DefaultPageSize = 512;

@@ -1,8 +1,8 @@
 namespace EventStore
 {
-	using Serialization;
+    using Serialization;
 
-	public static class SerializationWireupExtensions
+    public static class SerializationWireupExtensions
 	{
 		public static SerializationWireup UsingBinarySerialization(this PersistenceWireup wireup)
 		{

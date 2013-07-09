@@ -1,9 +1,9 @@
 namespace EventStore
 {
-	using System;
-	using Logging;
+    using System;
+    using Logging;
 
-	public static class LoggingWireupExtensions
+    public static class LoggingWireupExtensions
 	{
 		public static Wireup LogToConsoleWindow(this Wireup wireup)
 		{

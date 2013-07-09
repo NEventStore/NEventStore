@@ -1,10 +1,10 @@
 namespace EventStore
 {
-	using Dispatcher;
-	using Logging;
-	using Persistence;
+    using Dispatcher;
+    using Logging;
+    using Persistence;
 
-	public class SynchronousDispatchSchedulerWireup : Wireup
+    public class SynchronousDispatchSchedulerWireup : Wireup
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(SynchronousDispatchSchedulerWireup));
 

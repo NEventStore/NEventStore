@@ -1,8 +1,8 @@
 namespace EventStore
 {
-	using Dispatcher;
+    using Dispatcher;
 
-	public static class SynchronousDispatcherWireupExtensions
+    public static class SynchronousDispatcherWireupExtensions
 	{
 		public static SynchronousDispatchSchedulerWireup UsingSynchronousDispatchScheduler(this Wireup wireup)
 		{

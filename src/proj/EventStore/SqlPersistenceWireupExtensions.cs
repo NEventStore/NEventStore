@@ -1,8 +1,8 @@
 namespace EventStore
 {
-	using Persistence.SqlPersistence;
+    using Persistence.SqlPersistence;
 
-	public static class SqlPersistenceWireupExtensions
+    public static class SqlPersistenceWireupExtensions
 	{
 		public static SqlPersistenceWireup UsingSqlPersistence(this Wireup wireup, string connectionName)
 		{

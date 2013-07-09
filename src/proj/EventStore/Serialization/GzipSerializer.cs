@@ -1,10 +1,10 @@
 namespace EventStore.Serialization
 {
-	using System.IO;
-	using System.IO.Compression;
-	using Logging;
+    using System.IO;
+    using System.IO.Compression;
+    using Logging;
 
-	public class GzipSerializer : ISerialize
+    public class GzipSerializer : ISerialize
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(GzipSerializer));
 		private readonly ISerialize inner;

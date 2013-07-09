@@ -46,6 +46,8 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AsynchronousDispatchSchedulerWireup.cs" />
+    <Compile Include="AsynchronousDispatchSchedulerWireupExtensions.cs" />
     <Compile Include="CommitExtensions.cs" />
     <Compile Include="ConcurrencyException.cs">
       <SubType>Code</SubType>
@@ -59,9 +61,12 @@
     <Compile Include="Dispatcher\NullDispatcher.cs" />
     <Compile Include="Dispatcher\SynchronousDispatchScheduler.cs" />
     <Compile Include="DispatchSchedulerPipelineHook.cs" />
+    <Compile Include="EventUpconverterWireup.cs" />
+    <Compile Include="EventUpconverterWireupExtensions.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Conversion\IUpconvertEvents.cs" />
     <Compile Include="ImmutableCollection.cs" />
+    <Compile Include="LoggingWireupExtensions.cs" />
     <Compile Include="Logging\ConsoleWindowLogger.cs" />
     <Compile Include="Logging\ExtensionMethods.cs" />
     <Compile Include="Logging\ILog.cs" />
@@ -69,9 +74,17 @@
     <Compile Include="Logging\LogFactory.cs" />
     <Compile Include="Conversion\MultipleConvertersFoundException.cs" />
     <Compile Include="Logging\OutputWindowLogger.cs" />
+    <Compile Include="Messages.Designer.cs">
+      <DependentUpon>Messages.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="NanoContainer.cs" />
     <Compile Include="OptimisticEventStore.cs" />
     <Compile Include="OptimisticEventStream.cs" />
     <Compile Include="OptimisticPipelineHook.cs" />
+    <Compile Include="PersistenceWireup.cs" />
+    <Compile Include="PersistenceWireupExtensions.cs" />
     <Compile Include="Persistence\InMemoryPersistence\InMemoryPersistenceEngine.cs" />
     <Compile Include="Persistence\InMemoryPersistence\InMemoryPersistenceFactory.cs" />
     <Compile Include="Persistence\PipelineHooksAwarePersistanceDecorator.cs" />
@@ -152,7 +165,22 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="SerializationWireup.cs" />
+    <Compile Include="SerializationWireupExtensions.cs" />
+    <Compile Include="Serialization\BinarySerializer.cs" />
+    <Compile Include="Serialization\ByteStreamDocumentSerializer.cs" />
+    <Compile Include="Serialization\DocumentObjectSerializer.cs" />
+    <Compile Include="Serialization\GzipSerializer.cs" />
     <Compile Include="Serialization\IDocumentSerializer.cs" />
+    <Compile Include="Serialization\IndisposableStream.cs" />
+    <Compile Include="Serialization\Messages.Designer.cs">
+      <DependentUpon>Messages.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Serialization\RijndaelSerializer.cs" />
+    <Compile Include="SqlPersistenceWireup.cs" />
+    <Compile Include="SqlPersistenceWireupExtensions.cs" />
     <Compile Include="StreamNotFoundException.cs" />
     <Compile Include="Dispatcher\IScheduleDispatches.cs" />
     <Compile Include="ICommitEvents.cs" />
@@ -170,7 +198,10 @@
     <Compile Include="Serialization\SerializationExtensions.cs" />
     <Compile Include="Persistence\StreamHead.cs" />
     <Compile Include="Snapshot.cs" />
+    <Compile Include="SynchronousDispatcherWireupExtensions.cs" />
+    <Compile Include="SynchronousDispatchSchedulerWireup.cs" />
     <Compile Include="SystemTime.cs" />
+    <Compile Include="Wireup.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\CustomDictionary.xml">
@@ -186,6 +217,11 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Messages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Persistence\SqlPersistence\Messages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
@@ -232,6 +268,11 @@
     <EmbeddedResource Include="Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Serialization\Messages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>

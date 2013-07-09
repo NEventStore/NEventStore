@@ -1,8 +1,8 @@
 namespace EventStore.Serialization
 {
-	using System.IO;
+    using System.IO;
 
-	internal class IndisposableStream : Stream
+    internal class IndisposableStream : Stream
 	{
 		private readonly Stream stream;
 

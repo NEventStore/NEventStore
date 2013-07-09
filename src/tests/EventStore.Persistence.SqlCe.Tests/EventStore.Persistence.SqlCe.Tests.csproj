@@ -62,14 +62,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\proj\EventStore.Persistence.SqlPersistence\EventStore.Persistence.SqlPersistence.csproj">
-      <Project>{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}</Project>
-      <Name>EventStore.Persistence.SqlPersistence</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\proj\EventStore.Serialization\EventStore.Serialization.csproj">
-      <Project>{A5BF4B86-26F6-418D-BE35-C6CC3A623D27}</Project>
-      <Name>EventStore.Serialization</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\proj\EventStore\EventStore.csproj">
       <Project>{03946843-f343-419c-88ef-3e446d08dfa6}</Project>
       <Name>EventStore</Name>

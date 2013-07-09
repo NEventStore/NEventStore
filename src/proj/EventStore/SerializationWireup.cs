@@ -1,9 +1,9 @@
 namespace EventStore
 {
-	using Logging;
-	using Serialization;
+    using Logging;
+    using Serialization;
 
-	public class SerializationWireup : Wireup
+    public class SerializationWireup : Wireup
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(SerializationWireup));
 

@@ -1,9 +1,9 @@
 namespace EventStore.Serialization
 {
-	using System;
-	using Logging;
+    using System;
+    using Logging;
 
-	public class ByteStreamDocumentSerializer : IDocumentSerializer
+    public class ByteStreamDocumentSerializer : IDocumentSerializer
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(ByteStreamDocumentSerializer));
 		private readonly ISerialize serializer;

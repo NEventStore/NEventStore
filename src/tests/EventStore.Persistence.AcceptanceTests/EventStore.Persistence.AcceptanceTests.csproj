@@ -58,10 +58,6 @@
     <Compile Include="SimpleMessage.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\proj\EventStore.Persistence.SqlPersistence\EventStore.Persistence.SqlPersistence.csproj">
-      <Project>{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}</Project>
-      <Name>EventStore.Persistence.SqlPersistence</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\proj\EventStore\EventStore.csproj">
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
       <Name>EventStore</Name>

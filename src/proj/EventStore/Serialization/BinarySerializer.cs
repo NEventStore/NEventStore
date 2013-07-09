@@ -1,11 +1,11 @@
 namespace EventStore.Serialization
 {
-	using System.IO;
-	using System.Runtime.Serialization;
-	using System.Runtime.Serialization.Formatters.Binary;
-	using Logging;
+    using System.IO;
+    using System.Runtime.Serialization;
+    using System.Runtime.Serialization.Formatters.Binary;
+    using Logging;
 
-	public class BinarySerializer : ISerialize
+    public class BinarySerializer : ISerialize
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(BinarySerializer));
 		private readonly IFormatter formatter = new BinaryFormatter();
