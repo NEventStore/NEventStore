@@ -58,9 +58,9 @@
     <Compile Include="SimpleMessage.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\proj\EventStore\EventStore.csproj">
+    <ProjectReference Include="..\..\proj\EventStore\NEventStore.csproj">
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
-      <Name>EventStore</Name>
+      <Name>NEventStore</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".test", ".test", "{D3C17830
 		tests\EventStore.Persistence.AcceptanceTests\SerializationTests.cs = tests\EventStore.Persistence.AcceptanceTests\SerializationTests.cs
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore", "proj\EventStore\EventStore.csproj", "{03946843-F343-419C-88EF-3E446D08DFA6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore", "proj\EventStore\NEventStore.csproj", "{03946843-F343-419C-88EF-3E446D08DFA6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".doc", ".doc", "{CD37080A-F48D-4E5D-B7C6-B9F86BB05A38}"
 	ProjectSection(SolutionItems) = preProject

@@ -61,9 +61,9 @@
     <Reference Include="EventStore (ILMerged)" Condition="'$(ILMerged)' == 'true'">
       <HintPath>..\..\..\output\bin\EventStore.dll</HintPath>
     </Reference>
-    <ProjectReference Include="..\EventStore\EventStore.csproj" Condition="'$(ILMerged)' != 'true'">
+    <ProjectReference Include="..\EventStore\NEventStore.csproj" Condition="'$(ILMerged)' != 'true'">
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
-      <Name>EventStore</Name>
+      <Name>NEventStore</Name>
     </ProjectReference>
     <Reference Include="System.Transactions" />
   </ItemGroup>

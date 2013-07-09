@@ -81,9 +81,9 @@
       <Project>{F9E7FD69-0818-48CA-9249-5387739E1B6A}</Project>
       <Name>EventStore.Persistence.RavenPersistence</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\proj\EventStore\EventStore.csproj">
+    <ProjectReference Include="..\..\proj\EventStore\NEventStore.csproj">
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
-      <Name>EventStore</Name>
+      <Name>NEventStore</Name>
     </ProjectReference>
     <ProjectReference Include="..\EventStore.Persistence.AcceptanceTests\EventStore.Persistence.AcceptanceTests.csproj">
       <Project>{3FE594FE-16FF-4405-97D5-5A58FB12520B}</Project>
