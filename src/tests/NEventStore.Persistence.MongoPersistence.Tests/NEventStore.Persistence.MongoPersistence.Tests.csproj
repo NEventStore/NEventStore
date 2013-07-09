@@ -55,7 +55,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\proj\EventStore.Persistence.MongoPersistence\NEventStore.Persistence.MongoPersistence.csproj">
+    <ProjectReference Include="..\..\proj\NEventStore.Persistence.MongoPersistence\NEventStore.Persistence.MongoPersistence.csproj">
       <Project>{32ADD8CE-0F3F-41D8-BFA1-6E5D685E64DD}</Project>
       <Name>NEventStore.Persistence.MongoPersistence</Name>
     </ProjectReference>

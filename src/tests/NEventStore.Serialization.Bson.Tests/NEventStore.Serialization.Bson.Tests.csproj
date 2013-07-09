@@ -55,7 +55,7 @@
     <Compile Include="SerializerFixture.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\proj\EventStore.Serialization.Json\NEventStore.Serialization.Json.csproj">
+    <ProjectReference Include="..\..\proj\NEventStore.Serialization.Json\NEventStore.Serialization.Json.csproj">
       <Project>{CFD895BD-7CB2-4811-A6FA-1851DF769B67}</Project>
       <Name>NEventStore.Serialization.Json</Name>
     </ProjectReference>
