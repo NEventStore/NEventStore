@@ -10,9 +10,11 @@
 	using MongoDB.Bson.Serialization.Serializers;
 	using MongoDB.Driver;
 	using MongoDB.Driver.Builders;
-	using Serialization;
+	using NEventStore;
+	using NEventStore.Persistence;
+	using NEventStore.Serialization;
 
-	public static class ExtensionMethods
+    public static class ExtensionMethods
 	{
         public static Dictionary<Tkey,Tvalue> AsDictionary<Tkey,Tvalue>(this BsonValue bsonValue)
         {

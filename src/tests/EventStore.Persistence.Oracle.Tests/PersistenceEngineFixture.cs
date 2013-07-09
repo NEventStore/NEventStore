@@ -1,8 +1,8 @@
 ﻿namespace EventStore.Persistence.AcceptanceTests
 {
-    using Serialization;
-    using SqlPersistence;
-    using SqlPersistence.SqlDialects;
+    using NEventStore.Persistence.SqlPersistence;
+    using NEventStore.Persistence.SqlPersistence.SqlDialects;
+    using NEventStore.Serialization;
 
     public partial class PersistenceEngineFixture
     {

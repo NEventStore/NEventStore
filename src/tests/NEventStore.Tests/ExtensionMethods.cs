@@ -2,6 +2,7 @@ namespace EventStore.Core.Tests
 {
     using System.Collections;
     using System.Collections.Generic;
+    using NEventStore;
 
     internal static class ExtensionMethods
 	{

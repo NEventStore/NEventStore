@@ -1,8 +1,8 @@
-namespace EventStore.Dispatcher
+namespace NEventStore.Dispatcher
 {
-	using System;
+    using System;
 
-	/// <summary>
+    /// <summary>
 	/// Indicates the ability to schedule the specified commit for delivery--either now or in the future.
 	/// </summary>
 	/// <remarks>

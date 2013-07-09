@@ -1,4 +1,4 @@
-namespace EventStore.Serialization
+namespace NEventStore.Serialization
 {
     using System.IO;
     using System.IO.Compression;

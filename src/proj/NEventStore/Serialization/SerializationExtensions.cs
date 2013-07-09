@@ -1,8 +1,8 @@
-namespace EventStore.Serialization
+namespace NEventStore.Serialization
 {
-	using System.IO;
+    using System.IO;
 
-	/// <summary>
+    /// <summary>
 	/// Implements extension methods that make call to the serialization infrastructure more simple.
 	/// </summary>
 	public static class SerializationExtensions

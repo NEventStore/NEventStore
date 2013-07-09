@@ -1,9 +1,9 @@
-﻿namespace EventStore.Conversion
+﻿namespace NEventStore.Conversion
 {
-	using System;
-	using System.Runtime.Serialization;
+    using System;
+    using System.Runtime.Serialization;
 
-	/// <summary>
+    /// <summary>
 	/// Represents the failure that occurs when there are two or more event converters created for the same source type.
 	/// </summary>
 	[Serializable]

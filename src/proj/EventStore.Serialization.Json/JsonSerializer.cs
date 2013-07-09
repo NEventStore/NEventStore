@@ -5,7 +5,9 @@ namespace EventStore.Serialization
 	using System.IO;
 	using System.Linq;
 	using System.Text;
-	using Logging;
+	using NEventStore;
+	using NEventStore.Logging;
+	using NEventStore.Serialization;
 	using Newtonsoft.Json;
 	using JsonNetSerializer = Newtonsoft.Json.JsonSerializer;
 

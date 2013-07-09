@@ -1,6 +1,7 @@
 namespace EventStore
 {
-	using Serialization;
+    using NEventStore;
+    using Serialization;
 
 	public static class WireupExtensions
 	{

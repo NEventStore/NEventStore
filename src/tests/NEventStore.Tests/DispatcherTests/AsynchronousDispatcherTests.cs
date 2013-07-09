@@ -5,11 +5,13 @@
 namespace EventStore.Core.Tests.DispatcherTests
 {
     using EventStore.Persistence.AcceptanceTests.BDD;
+    using NEventStore;
+    using NEventStore.Dispatcher;
+    using NEventStore.Persistence;
     using Xunit;
     using System;
     using System.Linq;
     using System.Threading;
-    using EventStore.Dispatcher;
     using Moq;
     using EventStore.Persistence;
 

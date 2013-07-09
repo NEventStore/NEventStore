@@ -4,7 +4,9 @@ namespace EventStore.Persistence.AcceptanceTests
     using System.Data;
     using System.Data.Common;
     using System.Diagnostics;
-    using SqlPersistence;
+    using NEventStore;
+    using NEventStore.Persistence;
+    using NEventStore.Persistence.SqlPersistence;
 
     public class EnviromentConnectionFactory : IConnectionFactory
     {

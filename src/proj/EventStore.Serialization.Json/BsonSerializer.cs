@@ -3,7 +3,7 @@ namespace EventStore.Serialization
 	using System;
 	using System.Collections;
 	using System.IO;
-	using Logging;
+	using NEventStore.Logging;
 	using Newtonsoft.Json.Bson;
 
 	public class BsonSerializer : JsonSerializer

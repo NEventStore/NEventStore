@@ -1,10 +1,10 @@
-namespace EventStore
+namespace NEventStore
 {
-	using System;
-	using System.Collections.Generic;
-	using Persistence;
+    using System;
+    using System.Collections.Generic;
+    using Persistence;
 
-	/// <summary>
+    /// <summary>
 	/// Indicates the ability to track a series of events and commit them to durable storage.
 	/// </summary>
 	/// <remarks>

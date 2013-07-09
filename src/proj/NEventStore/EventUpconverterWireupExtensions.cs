@@ -1,4 +1,4 @@
-namespace EventStore
+namespace NEventStore
 {
 	public static class EventUpconverterWireupExtensions
 	{

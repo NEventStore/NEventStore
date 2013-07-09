@@ -1,4 +1,4 @@
-namespace EventStore.Persistence.SqlPersistence.SqlDialects
+namespace NEventStore.Persistence.SqlPersistence.SqlDialects
 {
     using System.Data;
     using System.Transactions;

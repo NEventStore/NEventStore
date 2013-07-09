@@ -1,8 +1,8 @@
-namespace EventStore.Logging
+namespace NEventStore.Logging
 {
-	using System;
+    using System;
 
-	/// <summary>
+    /// <summary>
 	/// Provides the ability to get a new instance of the configured logger.
 	/// </summary>
 	public static class LogFactory

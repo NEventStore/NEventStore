@@ -8,6 +8,9 @@ using Xunit.Should;
 
 namespace EventStore.Serialization.AcceptanceTests
 {
+    using NEventStore;
+    using NEventStore.Serialization;
+
     public class when_serializing_a_simple_message : SerializationConcern
 	{
 		readonly SimpleMessage Message = new SimpleMessage().Populate();

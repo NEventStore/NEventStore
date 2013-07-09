@@ -1,8 +1,8 @@
-namespace EventStore
+namespace NEventStore
 {
-	using System;
+    using System;
 
-	/// <summary>
+    /// <summary>
 	/// Provides the ability to override the current moment in time to facilitate testing.
 	/// Original idea by Ayende Rahien:
 	/// http://ayende.com/Blog/archive/2008/07/07/Dealing-with-time-in-tests.aspx

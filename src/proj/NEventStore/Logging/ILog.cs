@@ -1,4 +1,4 @@
-namespace EventStore.Logging
+namespace NEventStore.Logging
 {
 	/// <summary>
 	/// Indicates the ability to log diagnostic information.

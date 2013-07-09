@@ -1,8 +1,9 @@
 namespace EventStore
 {
-	using Serialization;
+    using NEventStore;
+    using NEventStore.Serialization;
 
-	public static class MongoPersistenceWireupExtensions
+    public static class MongoPersistenceWireupExtensions
 	{
 		public static PersistenceWireup UsingMongoPersistence(
 			this Wireup wireup, string connectionName, IDocumentSerializer serializer)

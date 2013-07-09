@@ -1,8 +1,8 @@
-namespace EventStore.Serialization
+namespace NEventStore.Serialization
 {
-	using System.IO;
+    using System.IO;
 
-	/// <summary>
+    /// <summary>
 	/// Provides the ability to serialize and deserialize an object graph.
 	/// </summary>
 	/// <remarks>

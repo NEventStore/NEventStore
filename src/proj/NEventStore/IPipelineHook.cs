@@ -1,8 +1,8 @@
-namespace EventStore
+namespace NEventStore
 {
-	using System;
+    using System;
 
-	/// <summary>
+    /// <summary>
 	/// Provides the ability to hook into the pipeline of persisting a commit.
 	/// </summary>
 	/// <remarks>

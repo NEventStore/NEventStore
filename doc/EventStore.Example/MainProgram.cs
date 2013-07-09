@@ -1,12 +1,12 @@
-using EventStore.Persistence.SqlPersistence.SqlDialects;
-
 namespace EventStore.Example
 {
 	using System;
 	using System.Transactions;
-	using Dispatcher;
+	using NEventStore;
+	using NEventStore.Dispatcher;
+	using NEventStore.Persistence.SqlPersistence.SqlDialects;
 
-	internal static class MainProgram
+    internal static class MainProgram
 	{
 		private static readonly Guid StreamId = Guid.NewGuid(); // aggregate identifier
 		private static readonly byte[] EncryptionKey = new byte[]

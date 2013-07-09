@@ -1,4 +1,4 @@
-namespace EventStore.Persistence.SqlPersistence
+namespace NEventStore.Persistence.SqlPersistence
 {
     using System;
     using System.Configuration;

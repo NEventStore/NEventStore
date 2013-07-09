@@ -1,11 +1,12 @@
 namespace EventStore
 {
 	using System.Transactions;
-	using Logging;
+	using NEventStore;
+	using NEventStore.Logging;
+	using NEventStore.Serialization;
 	using Persistence.MongoPersistence;
-	using Serialization;
 
-	public class MongoPersistenceWireup : PersistenceWireup
+    public class MongoPersistenceWireup : PersistenceWireup
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(MongoPersistenceWireup));
 

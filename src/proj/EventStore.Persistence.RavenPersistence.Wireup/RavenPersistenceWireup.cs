@@ -7,11 +7,13 @@ namespace EventStore
 {
 	using System;
 	using System.Transactions;
-	using Logging;
+	using NEventStore;
+	using NEventStore.Logging;
+	using NEventStore.Persistence;
+	using NEventStore.Serialization;
 	using Persistence.RavenPersistence;
-	using Serialization;
 
-	public class RavenPersistenceWireup : PersistenceWireup
+    public class RavenPersistenceWireup : PersistenceWireup
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(RavenPersistenceWireup));
 

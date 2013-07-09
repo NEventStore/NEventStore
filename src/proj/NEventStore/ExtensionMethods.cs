@@ -1,8 +1,8 @@
-namespace EventStore
+namespace NEventStore
 {
-	using System.Globalization;
+    using System.Globalization;
 
-	/// <summary>
+    /// <summary>
 	/// A set of common methods used through the EventStore.
 	/// </summary>
 	public static class ExtensionMethods

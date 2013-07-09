@@ -5,9 +5,11 @@ namespace EventStore.Persistence.RavenPersistence
 	using System.Globalization;
 	using System.Linq;
 	using System.Transactions;
-	using Serialization;
+	using NEventStore;
+	using NEventStore.Persistence;
+	using NEventStore.Serialization;
 
-	public static class ExtensionMethods
+    public static class ExtensionMethods
 	{
 		public static string ToRavenCommitId(this Commit commit, string partition)
 		{

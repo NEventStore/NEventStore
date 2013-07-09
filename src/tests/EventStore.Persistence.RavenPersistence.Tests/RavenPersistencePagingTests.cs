@@ -10,6 +10,8 @@ using Xunit.Should;
 
 namespace EventStore.Persistence.RavenPersistence.Tests
 {
+    using NEventStore;
+
     public class when_getting_paged_commits : PersistenceEngineConcern
     {
         DateTime start;

@@ -2,9 +2,10 @@
 {
 	using System.Configuration;
 	using MongoDB.Driver;
-	using Serialization;
+	using NEventStore.Persistence;
+	using NEventStore.Serialization;
 
-	public class MongoPersistenceFactory : IPersistenceFactory
+    public class MongoPersistenceFactory : IPersistenceFactory
 	{
 		private readonly string connectionName;
 		private readonly IDocumentSerializer serializer;

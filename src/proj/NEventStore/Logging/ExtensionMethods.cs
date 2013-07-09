@@ -1,4 +1,4 @@
-namespace EventStore.Logging
+namespace NEventStore.Logging
 {
     using System;
     using System.Globalization;

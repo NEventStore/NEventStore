@@ -8,16 +8,18 @@
 	using System.Threading;
 	using System.Transactions;
 	using Indexes;
-	using Logging;
+	using NEventStore;
+	using NEventStore.Logging;
+	using NEventStore.Persistence;
+	using NEventStore.Serialization;
 	using Raven.Abstractions.Commands;
 	using Raven.Abstractions.Data;
 	using Raven.Client;
 	using Raven.Client.Exceptions;
 	using Raven.Client.Indexes;
 	using Raven.Json.Linq;
-	using Serialization;
 
-	public class RavenPersistenceEngine : IPersistStreams
+    public class RavenPersistenceEngine : IPersistStreams
 	{
 		private const int MinPageSize = 10;
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(RavenPersistenceEngine));

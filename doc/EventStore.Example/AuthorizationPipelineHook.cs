@@ -1,8 +1,9 @@
 namespace EventStore.Example
 {
 	using System;
+	using NEventStore;
 
-	public class AuthorizationPipelineHook : IPipelineHook
+    public class AuthorizationPipelineHook : IPipelineHook
 	{
 		public void Dispose()
 		{

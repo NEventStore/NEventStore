@@ -4,9 +4,9 @@ namespace EventStore.Persistence.RavenPersistence
 {
 	using System;
 	using System.Transactions;
-	using Serialization;
+	using NEventStore.Serialization;
 
-	public class RavenConfiguration
+    public class RavenConfiguration
 	{
         [Obsolete("This will be removed after 3.2")]
 		public string ConnectionName { get; set; }

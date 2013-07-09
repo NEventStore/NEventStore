@@ -10,7 +10,9 @@ using System.Linq;
 
 namespace EventStore.Persistence.AcceptanceTests
 {
-    using Diagnostics;
+    using NEventStore;
+    using NEventStore.Diagnostics;
+    using NEventStore.Persistence;
 
     public class when_a_commit_header_has_a_name_that_contains_a_period : PersistenceEngineConcern 
     {

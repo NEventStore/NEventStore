@@ -1,9 +1,9 @@
-namespace EventStore.Persistence
+namespace NEventStore.Persistence
 {
-	using System;
-	using System.Runtime.Serialization;
+    using System;
+    using System.Runtime.Serialization;
 
-	/// <summary>
+    /// <summary>
 	/// Represents a general failure of the storage engine or persistence infrastructure.
 	/// </summary>
 	[Serializable]

@@ -1,4 +1,4 @@
-namespace EventStore.Diagnostics
+namespace NEventStore.Diagnostics
 {
     using System;
     using System.Diagnostics;

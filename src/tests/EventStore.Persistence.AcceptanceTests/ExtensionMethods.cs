@@ -4,8 +4,10 @@ namespace EventStore.Persistence.AcceptanceTests
 {
 	using System;
 	using System.Collections.Generic;
+	using NEventStore;
+	using NEventStore.Persistence;
 
-	public static class ExtensionMethods
+    public static class ExtensionMethods
 	{
         public static HashSet<T> ToHashSet<T>(this IEnumerable<T> collection)
         {

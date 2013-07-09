@@ -1,4 +1,4 @@
-namespace EventStore.Persistence
+namespace NEventStore.Persistence
 {
     using System;
     using System.Collections.Generic;

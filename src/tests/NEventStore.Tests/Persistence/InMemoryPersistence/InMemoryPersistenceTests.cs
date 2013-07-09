@@ -5,6 +5,8 @@
 namespace EventStore.Persistence.InMemoryPersistence.Tests
 {
     using EventStore.Persistence.AcceptanceTests.BDD;
+    using NEventStore;
+    using NEventStore.Persistence.InMemoryPersistence;
     using Xunit;
     using Xunit.Should;
     using System;

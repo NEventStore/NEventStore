@@ -1,9 +1,9 @@
-namespace EventStore
+namespace NEventStore
 {
-	using System;
-	using Persistence;
+    using System;
+    using Persistence;
 
-	/// <summary>
+    /// <summary>
 	/// Indicates the ability to store and retreive a stream of events.
 	/// </summary>
 	/// <remarks>

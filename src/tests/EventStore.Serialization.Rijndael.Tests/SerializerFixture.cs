@@ -1,5 +1,7 @@
 ﻿namespace EventStore.Serialization.AcceptanceTests
 {
+    using NEventStore.Serialization;
+
     public partial class SerializerFixture
     {
         private static readonly byte[] EncryptionKey = new byte[]

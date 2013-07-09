@@ -1,4 +1,4 @@
-namespace EventStore.Persistence
+namespace NEventStore.Persistence
 {
 	/// <summary>
 	/// Indicates the ability to build a ready-to-use persistence engine.

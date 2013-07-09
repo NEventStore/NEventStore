@@ -1,8 +1,8 @@
-namespace EventStore.Dispatcher
+namespace NEventStore.Dispatcher
 {
-	using System;
+    using System;
 
-	/// <summary>
+    /// <summary>
 	/// Indicates the ability to dispatch the specified commit to some kind of communications infrastructure.
 	/// </summary>
 	/// <remarks>

@@ -1,10 +1,11 @@
 using System;
 using System.Transactions;
 using EventStore.Persistence.AcceptanceTests;
-using EventStore.Serialization;
 
 namespace EventStore.Persistence.RavenPersistence.Tests
 {
+    using NEventStore.Serialization;
+
     public static class TestRavenConfig
     {
         public static RavenConfiguration GetDefaultConfig()

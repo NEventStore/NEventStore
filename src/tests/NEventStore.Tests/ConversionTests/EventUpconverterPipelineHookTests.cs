@@ -5,13 +5,14 @@
 namespace EventStore.Core.Tests.ConversionTests
 {
     using EventStore.Persistence.AcceptanceTests.BDD;
+    using NEventStore;
+    using NEventStore.Conversion;
     using Xunit;
     using Xunit.Should;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
-    using EventStore.Conversion;
 
     public class when_opening_a_commit_that_does_not_have_convertible_events : using_event_converter
 	{

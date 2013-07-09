@@ -1,4 +1,4 @@
-namespace EventStore.Dispatcher
+namespace NEventStore.Dispatcher
 {
     using System;
     using Logging;

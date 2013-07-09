@@ -1,9 +1,9 @@
-namespace EventStore.Persistence
+namespace NEventStore.Persistence
 {
-	using System;
-	using System.Collections.Generic;
+    using System;
+    using System.Collections.Generic;
 
-	/// <summary>
+    /// <summary>
 	/// Indicates the ability to adapt the underlying persistence infrastructure to behave like a stream of events.
 	/// </summary>
 	/// <remarks>

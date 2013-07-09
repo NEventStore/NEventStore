@@ -1,4 +1,4 @@
-namespace EventStore.Conversion
+namespace NEventStore.Conversion
 {
     using System;
     using System.Collections.Generic;

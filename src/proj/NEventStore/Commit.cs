@@ -1,10 +1,10 @@
-namespace EventStore
+namespace NEventStore
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Runtime.Serialization;
+    using System;
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
 
-	/// <summary>
+    /// <summary>
 	/// Represents a series of events which have been fully committed as a single unit and which apply to the stream indicated.
 	/// </summary>
 	[DataContract, Serializable]

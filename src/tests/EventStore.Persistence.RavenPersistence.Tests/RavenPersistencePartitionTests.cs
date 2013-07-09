@@ -12,6 +12,9 @@ using Xunit.Should;
 
 namespace EventStore.Persistence.RavenPersistence.Tests
 {
+    using NEventStore;
+    using NEventStore.Persistence;
+
     public class when_committing_a_stream_with_the_same_id_as_a_stream_in_another_partition : using_raven_persistence_with_partitions
     {
         static IPersistStreams persistence1, persistence2;

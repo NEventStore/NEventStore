@@ -1,9 +1,9 @@
-namespace EventStore
+namespace NEventStore
 {
-	using System;
-	using System.Runtime.Serialization;
+    using System;
+    using System.Runtime.Serialization;
 
-	/// <summary>
+    /// <summary>
 	/// Represents a materialized view of a stream at specific revision.
 	/// </summary>
 	[DataContract, Serializable]

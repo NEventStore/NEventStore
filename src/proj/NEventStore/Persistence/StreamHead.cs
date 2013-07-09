@@ -1,8 +1,8 @@
-namespace EventStore.Persistence
+namespace NEventStore.Persistence
 {
-	using System;
+    using System;
 
-	/// <summary>
+    /// <summary>
 	/// Indicates the most recent information representing the head of a given stream.
 	/// </summary>
 	public class StreamHead

@@ -6,6 +6,7 @@ namespace EventStore.Core.Tests
 {
     using EventStore.Persistence.AcceptanceTests;
     using EventStore.Persistence.AcceptanceTests.BDD;
+    using NEventStore;
     using Xunit;
     using Xunit.Should;
     using System;

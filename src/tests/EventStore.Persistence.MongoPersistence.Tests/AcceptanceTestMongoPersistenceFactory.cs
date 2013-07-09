@@ -1,8 +1,9 @@
 ﻿using System;
-using EventStore.Serialization;
 
 namespace EventStore.Persistence.MongoPersistence.Tests
 {
+    using NEventStore.Serialization;
+
     public class AcceptanceTestMongoPersistenceFactory : MongoPersistenceFactory
 	{
         const string EnvVarKey = "NEventStore.MongoDB";

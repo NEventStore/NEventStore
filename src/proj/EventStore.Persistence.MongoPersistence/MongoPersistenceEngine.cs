@@ -4,13 +4,15 @@
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading;
-	using Logging;
 	using MongoDB.Bson;
 	using MongoDB.Driver;
 	using MongoDB.Driver.Builders;
-	using Serialization;
+	using NEventStore;
+	using NEventStore.Logging;
+	using NEventStore.Persistence;
+	using NEventStore.Serialization;
 
-	public class MongoPersistenceEngine : IPersistStreams
+    public class MongoPersistenceEngine : IPersistStreams
 	{
 		private const string ConcurrencyException = "E1100";
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(MongoPersistenceEngine));

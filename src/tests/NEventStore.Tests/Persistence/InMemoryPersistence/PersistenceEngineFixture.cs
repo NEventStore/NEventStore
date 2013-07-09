@@ -2,6 +2,8 @@
 
 namespace EventStore.Persistence.AcceptanceTests
 {
+    using NEventStore.Persistence.InMemoryPersistence;
+
     public partial class PersistenceEngineFixture
     {
         public PersistenceEngineFixture()

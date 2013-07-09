@@ -1,4 +1,4 @@
-namespace EventStore.Persistence.SqlPersistence.SqlDialects
+namespace NEventStore.Persistence.SqlPersistence.SqlDialects
 {
 	public class SqliteDialect : CommonSqlDialect
 	{

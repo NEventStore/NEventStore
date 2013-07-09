@@ -1,4 +1,4 @@
-namespace EventStore.Serialization
+namespace NEventStore.Serialization
 {
 	/// <summary>
 	/// Provides the ability to serialize an object graph to and from a document.

@@ -6,10 +6,11 @@ namespace EventStore.Core.Tests
 {
     using EventStore.Persistence.AcceptanceTests;
     using EventStore.Persistence.AcceptanceTests.BDD;
+    using NEventStore;
+    using NEventStore.Dispatcher;
     using Xunit;
     using Xunit.Should;
     using System;
-    using EventStore.Dispatcher;
     using Moq;
 
     public class when_a_commit_has_been_persisted : SpecificationBase

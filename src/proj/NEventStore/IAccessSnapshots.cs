@@ -1,10 +1,10 @@
-namespace EventStore
+namespace NEventStore
 {
-	using System;
-	using System.Collections.Generic;
-	using Persistence;
+    using System;
+    using System.Collections.Generic;
+    using Persistence;
 
-	/// <summary>
+    /// <summary>
 	/// Indicates the ability to get or retrieve a snapshot for a given stream.
 	/// </summary>
 	/// <remarks>

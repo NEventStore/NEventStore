@@ -1,6 +1,7 @@
 ﻿namespace EventStore.Persistence.RavenPersistence
 {
-	using Raven.Client;
+    using NEventStore.Persistence;
+    using Raven.Client;
 	using Raven.Client.Document;
 
 	public class RavenPersistenceFactory : IPersistenceFactory
