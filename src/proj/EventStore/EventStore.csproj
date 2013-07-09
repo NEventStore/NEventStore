@@ -75,6 +75,77 @@
     <Compile Include="Persistence\InMemoryPersistence\InMemoryPersistenceEngine.cs" />
     <Compile Include="Persistence\InMemoryPersistence\InMemoryPersistenceFactory.cs" />
     <Compile Include="Persistence\PipelineHooksAwarePersistanceDecorator.cs" />
+    <Compile Include="Persistence\SqlPersistence\CommitExtensions.cs" />
+    <Compile Include="Persistence\SqlPersistence\ConfigurationConnectionFactory.cs" />
+    <Compile Include="Persistence\SqlPersistence\ConnectionScope.cs" />
+    <Compile Include="Persistence\SqlPersistence\ExtensionMethods.cs" />
+    <Compile Include="Persistence\SqlPersistence\IConnectionFactory.cs" />
+    <Compile Include="Persistence\SqlPersistence\IDbStatement.cs" />
+    <Compile Include="Persistence\SqlPersistence\ISqlDialect.cs" />
+    <Compile Include="Persistence\SqlPersistence\Messages.Designer.cs">
+      <DependentUpon>Messages.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Persistence\SqlPersistence\SnapshotExtensions.cs" />
+    <Compile Include="Persistence\SqlPersistence\SqlDialects\CommonDbStatement.cs" />
+    <Compile Include="Persistence\SqlPersistence\SqlDialects\CommonSqlDialect.cs" />
+    <Compile Include="Persistence\SqlPersistence\SqlDialects\CommonSqlStatements.Designer.cs">
+      <DependentUpon>CommonSqlStatements.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Persistence\SqlPersistence\SqlDialects\DelimitedDbStatement.cs" />
+    <Compile Include="Persistence\SqlPersistence\SqlDialects\FirebirdSqlDialect.cs" />
+    <Compile Include="Persistence\SqlPersistence\SqlDialects\FirebirdSqlStatements.Designer.cs">
+      <DependentUpon>FirebirdSqlStatements.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Persistence\SqlPersistence\SqlDialects\MsSqlDialect.cs" />
+    <Compile Include="Persistence\SqlPersistence\SqlDialects\MsSqlStatements.Designer.cs">
+      <DependentUpon>MsSqlStatements.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Persistence\SqlPersistence\SqlDialects\MySqlDialect.cs" />
+    <Compile Include="Persistence\SqlPersistence\SqlDialects\MySqlStatements.Designer.cs">
+      <DependentUpon>MySqlStatements.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Persistence\SqlPersistence\SqlDialects\NextPageDelegate.cs" />
+    <Compile Include="Persistence\SqlPersistence\SqlDialects\OracleDbStatement.cs" />
+    <Compile Include="Persistence\SqlPersistence\SqlDialects\OracleNativeDialect.cs" />
+    <Compile Include="Persistence\SqlPersistence\SqlDialects\OracleNativeStatements.Designer.cs">
+      <DependentUpon>OracleNativeStatements.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Persistence\SqlPersistence\SqlDialects\PagedEnumerationCollection.cs" />
+    <Compile Include="Persistence\SqlPersistence\SqlDialects\PostgreSqlDialect.cs" />
+    <Compile Include="Persistence\SqlPersistence\SqlDialects\PostgreSqlStatements.Designer.cs">
+      <DependentUpon>PostgreSqlStatements.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Persistence\SqlPersistence\SqlDialects\SqlCeDialect.cs" />
+    <Compile Include="Persistence\SqlPersistence\SqlDialects\SqlCeStatements.Designer.cs">
+      <DependentUpon>SqlCeStatements.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Persistence\SqlPersistence\SqlDialects\SqliteDialect.cs" />
+    <Compile Include="Persistence\SqlPersistence\SqlDialects\SqliteStatements.Designer.cs">
+      <DependentUpon>SqliteStatements.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Persistence\SqlPersistence\SqlPersistenceEngine.cs" />
+    <Compile Include="Persistence\SqlPersistence\SqlPersistenceFactory.cs" />
+    <Compile Include="Persistence\SqlPersistence\StreamHeadExtensions.cs" />
+    <Compile Include="Persistence\SqlPersistence\ThreadScope.cs" />
+    <Compile Include="Persistence\SqlPersistence\UniqueKeyViolationException.cs" />
     <Compile Include="Persistence\StorageUnavailableException.cs" />
     <Compile Include="Resources.Designer.cs">
       <DependentUpon>Resources.resx</DependentUpon>
@@ -108,15 +179,63 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Persistence\SqlPersistence\Messages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Persistence\SqlPersistence\SqlDialects\CommonSqlStatements.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CommonSqlStatements.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Persistence\SqlPersistence\SqlDialects\FirebirdSqlStatements.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FirebirdSqlStatements.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Persistence\SqlPersistence\SqlDialects\MsSqlStatements.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MsSqlStatements.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Persistence\SqlPersistence\SqlDialects\MySqlStatements.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MySqlStatements.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Persistence\SqlPersistence\SqlDialects\OracleNativeStatements.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>OracleNativeStatements.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Persistence\SqlPersistence\SqlDialects\PostgreSqlStatements.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>PostgreSqlStatements.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Persistence\SqlPersistence\SqlDialects\SqlCeStatements.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SqlCeStatements.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Persistence\SqlPersistence\SqlDialects\SqliteStatements.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SqliteStatements.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>
