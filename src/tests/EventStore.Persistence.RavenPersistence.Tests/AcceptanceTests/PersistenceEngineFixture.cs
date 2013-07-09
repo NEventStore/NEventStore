@@ -1,6 +1,6 @@
 ﻿using EventStore.Persistence.RavenPersistence.Tests;
 
-namespace EventStore.Persistence.AcceptanceTests
+namespace NEventStore.Persistence.AcceptanceTests
 {
     public partial class PersistenceEngineFixture
     {

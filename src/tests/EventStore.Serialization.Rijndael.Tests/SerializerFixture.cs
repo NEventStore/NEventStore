@@ -1,4 +1,4 @@
-﻿namespace EventStore.Serialization.AcceptanceTests
+﻿namespace NEventStore.Serialization.AcceptanceTests
 {
     using NEventStore.Serialization;
 

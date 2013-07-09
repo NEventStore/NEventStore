@@ -1,5 +1,7 @@
-﻿namespace EventStore.Serialization.AcceptanceTests
+﻿namespace NEventStore.Serialization.AcceptanceTests
 {
+    using EventStore.Serialization;
+
     public partial class SerializerFixture
     {
         public SerializerFixture()

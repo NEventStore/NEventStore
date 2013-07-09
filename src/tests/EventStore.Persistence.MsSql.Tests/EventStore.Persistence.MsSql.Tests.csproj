@@ -49,7 +49,7 @@
     <Compile Include="..\..\proj\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="..\EventStore.Persistence.AcceptanceTests\PersistenceTests.cs">
+    <Compile Include="..\NEventStore.Persistence.AcceptanceTests\PersistenceTests.cs">
       <Link>PersistenceTests.cs</Link>
     </Compile>
     <Compile Include="PersistenceEngineFixture.cs" />

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using EventStore.Persistence.AcceptanceTests;
 using Xunit;
 using Xunit.Should;
 

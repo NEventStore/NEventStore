@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using EventStore.Persistence.AcceptanceTests;
 using Xunit;
 using Xunit.Should;
 

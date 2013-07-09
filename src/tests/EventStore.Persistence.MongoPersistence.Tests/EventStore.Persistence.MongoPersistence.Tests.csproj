@@ -47,7 +47,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\eventstore.persistence.acceptancetests\PersistenceTests.cs">
+    <Compile Include="..\NEventStore.Persistence.AcceptanceTests\PersistenceTests.cs">
       <Link>AcceptanceTests\PersistenceTests.cs</Link>
     </Compile>
     <Compile Include="AcceptanceTestMongoPersistenceFactory.cs" />

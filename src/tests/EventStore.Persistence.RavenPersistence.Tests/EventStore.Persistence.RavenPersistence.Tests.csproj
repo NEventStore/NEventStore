@@ -62,7 +62,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\EventStore.Persistence.AcceptanceTests\PersistenceTests.cs">
+    <Compile Include="..\NEventStore.Persistence.AcceptanceTests\PersistenceTests.cs">
       <Link>AcceptanceTests\PersistenceTests.cs</Link>
     </Compile>
     <Compile Include="AcceptanceTests\PersistenceEngineFixture.cs" />

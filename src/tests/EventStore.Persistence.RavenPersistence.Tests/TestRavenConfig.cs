@@ -1,6 +1,5 @@
 using System;
 using System.Transactions;
-using EventStore.Persistence.AcceptanceTests;
 
 namespace EventStore.Persistence.RavenPersistence.Tests
 {

@@ -48,7 +48,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\EventStore.Persistence.AcceptanceTests\SerializationTests.cs">
+    <Compile Include="..\NEventStore.Persistence.AcceptanceTests\SerializationTests.cs">
       <Link>SerializationTests.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

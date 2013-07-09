@@ -4,7 +4,6 @@
 
 namespace NEventStore
 {
-    using EventStore.Persistence.AcceptanceTests;
     using NEventStore.Dispatcher;
     using Persistence.AcceptanceTests;
     using Persistence.AcceptanceTests.BDD;

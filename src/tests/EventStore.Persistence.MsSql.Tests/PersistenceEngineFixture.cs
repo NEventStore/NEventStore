@@ -1,4 +1,4 @@
-﻿namespace EventStore.Persistence.AcceptanceTests
+﻿namespace NEventStore.Persistence.AcceptanceTests
 {
     using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.SqlPersistence;
