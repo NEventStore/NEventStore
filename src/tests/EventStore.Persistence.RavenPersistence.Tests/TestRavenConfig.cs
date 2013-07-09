@@ -4,6 +4,7 @@ using EventStore.Persistence.AcceptanceTests;
 
 namespace EventStore.Persistence.RavenPersistence.Tests
 {
+    using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Serialization;
 
     public static class TestRavenConfig

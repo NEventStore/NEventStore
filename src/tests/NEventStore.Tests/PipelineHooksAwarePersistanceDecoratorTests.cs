@@ -4,8 +4,8 @@
 
 namespace NEventStore
 {
-    using EventStore.Persistence.AcceptanceTests.BDD;
     using NEventStore.Persistence;
+    using Persistence.AcceptanceTests.BDD;
     using Xunit;
     using System;
     using System.Collections.Generic;

@@ -4,8 +4,8 @@
 
 namespace NEventStore.ConversionTests
 {
-    using EventStore.Persistence.AcceptanceTests.BDD;
     using NEventStore.Conversion;
+    using Persistence.AcceptanceTests.BDD;
     using Xunit;
     using Xunit.Should;
     using System;

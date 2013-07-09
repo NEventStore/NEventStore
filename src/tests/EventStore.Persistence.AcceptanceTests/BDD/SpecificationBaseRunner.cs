@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Xunit;
-using Xunit.Sdk;
-
-namespace EventStore.Persistence.AcceptanceTests.BDD
+﻿namespace NEventStore.Persistence.AcceptanceTests.BDD
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Reflection;
+    using Xunit;
+    using Xunit.Sdk;
+
     class SpecificationBaseRunner : ITestClassCommand
     {
         SpecificationBase objectUnderTest;

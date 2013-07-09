@@ -63,9 +63,9 @@
       <Project>{03946843-f343-419c-88ef-3e446d08dfa6}</Project>
       <Name>NEventStore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\EventStore.Persistence.AcceptanceTests\EventStore.Persistence.AcceptanceTests.csproj">
+    <ProjectReference Include="..\EventStore.Persistence.AcceptanceTests\NEventStore.Persistence.AcceptanceTests.csproj">
       <Project>{3fe594fe-16ff-4405-97d5-5a58fb12520b}</Project>
-      <Name>EventStore.Persistence.AcceptanceTests</Name>
+      <Name>NEventStore.Persistence.AcceptanceTests</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,3 @@
-using EventStore.Persistence.AcceptanceTests.BDD;
 using Xunit;
 using Xunit.Should;
 using System;
@@ -13,6 +12,9 @@ namespace EventStore.Persistence.AcceptanceTests
     using NEventStore;
     using NEventStore.Diagnostics;
     using NEventStore.Persistence;
+    using NEventStore.Persistence.AcceptanceTests;
+    using NEventStore.Persistence.AcceptanceTests.BDD;
+    using ExtensionMethods = NEventStore.Persistence.AcceptanceTests.ExtensionMethods;
 
     public class when_a_commit_header_has_a_name_that_contains_a_period : PersistenceEngineConcern 
     {

@@ -4,7 +4,7 @@
 
 namespace NEventStore.Persistence.InMemoryPersistence
 {
-    using EventStore.Persistence.AcceptanceTests.BDD;
+    using AcceptanceTests.BDD;
     using Xunit;
     using Xunit.Should;
     using System;

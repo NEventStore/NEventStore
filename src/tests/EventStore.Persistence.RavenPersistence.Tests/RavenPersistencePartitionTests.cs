@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using EventStore.Persistence.AcceptanceTests;
-using EventStore.Persistence.AcceptanceTests.BDD;
 using Xunit;
 using Xunit.Should;
 
@@ -14,6 +13,8 @@ namespace EventStore.Persistence.RavenPersistence.Tests
 {
     using NEventStore;
     using NEventStore.Persistence;
+    using NEventStore.Persistence.AcceptanceTests;
+    using NEventStore.Persistence.AcceptanceTests.BDD;
 
     public class when_committing_a_stream_with_the_same_id_as_a_stream_in_another_partition : using_raven_persistence_with_partitions
     {

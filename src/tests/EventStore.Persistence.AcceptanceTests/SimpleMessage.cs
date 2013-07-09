@@ -1,9 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-
-namespace EventStore.Persistence.AcceptanceTests
+namespace NEventStore.Persistence.AcceptanceTests
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+
     [Serializable]
 	public class SimpleMessage
 	{

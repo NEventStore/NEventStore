@@ -4,9 +4,9 @@
 
 namespace NEventStore.DispatcherTests
 {
-    using EventStore.Persistence.AcceptanceTests.BDD;
     using NEventStore.Dispatcher;
     using NEventStore.Persistence;
+    using Persistence.AcceptanceTests.BDD;
     using Xunit;
     using System;
     using System.Linq;

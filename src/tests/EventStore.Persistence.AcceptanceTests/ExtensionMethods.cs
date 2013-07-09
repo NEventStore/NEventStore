@@ -1,11 +1,10 @@
-using System.Linq;
-
-namespace EventStore.Persistence.AcceptanceTests
+namespace NEventStore.Persistence.AcceptanceTests
 {
-	using System;
-	using System.Collections.Generic;
-	using NEventStore;
-	using NEventStore.Persistence;
+    using System.Linq;
+    using System;
+    using System.Collections.Generic;
+    using NEventStore;
+    using NEventStore.Persistence;
 
     public static class ExtensionMethods
 	{

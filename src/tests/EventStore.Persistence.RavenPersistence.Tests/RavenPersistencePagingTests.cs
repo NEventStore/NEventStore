@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using EventStore.Persistence.AcceptanceTests;
-using EventStore.Persistence.AcceptanceTests.BDD;
 using Xunit;
 using Xunit.Should;
 
@@ -11,6 +10,8 @@ using Xunit.Should;
 namespace EventStore.Persistence.RavenPersistence.Tests
 {
     using NEventStore;
+    using NEventStore.Persistence.AcceptanceTests;
+    using NEventStore.Persistence.AcceptanceTests.BDD;
 
     public class when_getting_paged_commits : PersistenceEngineConcern
     {

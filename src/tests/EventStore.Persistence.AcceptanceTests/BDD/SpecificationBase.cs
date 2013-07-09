@@ -1,7 +1,7 @@
-﻿using Xunit;
-
-namespace EventStore.Persistence.AcceptanceTests.BDD
+﻿namespace NEventStore.Persistence.AcceptanceTests.BDD
 {
+    using Xunit;
+
     [RunWith(typeof(SpecificationBaseRunner))]
     public abstract class SpecificationBase
     {

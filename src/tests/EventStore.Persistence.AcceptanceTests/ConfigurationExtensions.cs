@@ -1,10 +1,10 @@
-namespace EventStore.Persistence.AcceptanceTests
+namespace NEventStore.Persistence.AcceptanceTests
 {
-	using System;
-	using System.Configuration;
-	using System.Linq;
+    using System;
+    using System.Configuration;
+    using System.Linq;
 
-	public static class ConfigurationExtensions
+    public static class ConfigurationExtensions
 	{
 		public static string GetSetting(this string settingName)
 		{

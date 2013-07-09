@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using EventStore.Persistence.AcceptanceTests;
-using EventStore.Persistence.AcceptanceTests.BDD;
 using Xunit;
 using Xunit.Should;
 
 namespace EventStore.Serialization.AcceptanceTests
 {
     using NEventStore;
+    using NEventStore.Persistence.AcceptanceTests;
+    using NEventStore.Persistence.AcceptanceTests.BDD;
     using NEventStore.Serialization;
 
     public class when_serializing_a_simple_message : SerializationConcern

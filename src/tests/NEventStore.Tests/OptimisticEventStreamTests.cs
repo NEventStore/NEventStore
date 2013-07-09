@@ -5,7 +5,8 @@
 namespace NEventStore
 {
     using EventStore.Persistence.AcceptanceTests;
-    using EventStore.Persistence.AcceptanceTests.BDD;
+    using Persistence.AcceptanceTests;
+    using Persistence.AcceptanceTests.BDD;
     using Xunit;
     using Xunit.Should;
     using System;

@@ -1,5 +1,6 @@
 ﻿namespace EventStore.Persistence.AcceptanceTests
 {
+    using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.SqlPersistence;
     using NEventStore.Persistence.SqlPersistence.SqlDialects;
     using NEventStore.Serialization;

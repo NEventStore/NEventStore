@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace EventStore.Persistence.AcceptanceTests
+﻿namespace NEventStore.Persistence.AcceptanceTests
 {
+    using System;
+
     public static class Catch
     {
          public static Exception Exception(Action action)

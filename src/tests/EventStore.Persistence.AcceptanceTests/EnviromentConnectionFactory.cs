@@ -1,10 +1,9 @@
-namespace EventStore.Persistence.AcceptanceTests
+namespace NEventStore.Persistence.AcceptanceTests
 {
     using System;
     using System.Data;
     using System.Data.Common;
     using System.Diagnostics;
-    using NEventStore;
     using NEventStore.Persistence;
     using NEventStore.Persistence.SqlPersistence;
 
