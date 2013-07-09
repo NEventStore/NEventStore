@@ -1,8 +1,8 @@
 namespace EventStore
 {
-	using System;
+    using System;
 
-	internal static class ExtensionMethods
+    internal static class CommitExtensions
 	{
 		public static bool IsValid(this Commit attempt)
 		{

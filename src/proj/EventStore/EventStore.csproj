@@ -46,17 +46,41 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="CommitExtensions.cs" />
     <Compile Include="ConcurrencyException.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Conversion\EventUpconverterPipelineHook.cs" />
+    <Compile Include="Diagnostics\PerformanceCounterPersistenceEngine.cs" />
+    <Compile Include="Diagnostics\PerformanceCounters.cs" />
+    <Compile Include="Dispatcher\AsynchronousDispatchScheduler.cs" />
+    <Compile Include="Dispatcher\DelegateMessageDispatcher.cs" />
     <Compile Include="Dispatcher\IDispatchCommits.cs" />
+    <Compile Include="Dispatcher\NullDispatcher.cs" />
+    <Compile Include="Dispatcher\SynchronousDispatchScheduler.cs" />
+    <Compile Include="DispatchSchedulerPipelineHook.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Conversion\IUpconvertEvents.cs" />
+    <Compile Include="ImmutableCollection.cs" />
+    <Compile Include="Logging\ConsoleWindowLogger.cs" />
+    <Compile Include="Logging\ExtensionMethods.cs" />
     <Compile Include="Logging\ILog.cs" />
     <Compile Include="IPipelineHook.cs" />
     <Compile Include="Logging\LogFactory.cs" />
     <Compile Include="Conversion\MultipleConvertersFoundException.cs" />
+    <Compile Include="Logging\OutputWindowLogger.cs" />
+    <Compile Include="OptimisticEventStore.cs" />
+    <Compile Include="OptimisticEventStream.cs" />
+    <Compile Include="OptimisticPipelineHook.cs" />
+    <Compile Include="Persistence\InMemoryPersistence\InMemoryPersistenceEngine.cs" />
+    <Compile Include="Persistence\InMemoryPersistence\InMemoryPersistenceFactory.cs" />
+    <Compile Include="Persistence\PipelineHooksAwarePersistanceDecorator.cs" />
     <Compile Include="Persistence\StorageUnavailableException.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Serialization\IDocumentSerializer.cs" />
     <Compile Include="StreamNotFoundException.cs" />
     <Compile Include="Dispatcher\IScheduleDispatches.cs" />
@@ -86,7 +110,13 @@
     <Reference Include="System" />
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>

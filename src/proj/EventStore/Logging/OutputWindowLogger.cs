@@ -1,9 +1,9 @@
 namespace EventStore.Logging
 {
-	using System;
-	using System.Diagnostics;
+    using System;
+    using System.Diagnostics;
 
-	public class OutputWindowLogger : ILog
+    public class OutputWindowLogger : ILog
 	{
 		private static readonly object Sync = new object();
 		private readonly Type typeToLog;

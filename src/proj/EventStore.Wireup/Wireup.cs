@@ -8,7 +8,7 @@ namespace EventStore
 	using Persistence;
 	using Persistence.InMemoryPersistence;
 
-	public class Wireup
+    public class Wireup
 	{
 		private readonly Wireup inner;
 		private readonly NanoContainer container;

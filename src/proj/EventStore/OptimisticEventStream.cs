@@ -1,12 +1,12 @@
 namespace EventStore
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Diagnostics.CodeAnalysis;
-	using System.Linq;
-	using Logging;
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
+    using Logging;
 
-	[SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix",
+    [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix",
 		Justification = "This behaves like a stream--not a .NET 'Stream' object, but a stream nonetheless.")]
 	public class OptimisticEventStream : IEventStream
 	{

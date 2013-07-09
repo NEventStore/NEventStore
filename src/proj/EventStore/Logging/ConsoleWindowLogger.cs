@@ -1,8 +1,8 @@
 namespace EventStore.Logging
 {
-	using System;
+    using System;
 
-	public class ConsoleWindowLogger : ILog
+    public class ConsoleWindowLogger : ILog
 	{
 		private static readonly object Sync = new object();
 		private readonly ConsoleColor originalColor = Console.ForegroundColor;

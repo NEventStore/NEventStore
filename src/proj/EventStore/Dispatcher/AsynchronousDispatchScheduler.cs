@@ -1,13 +1,11 @@
 namespace EventStore.Dispatcher
 {
-	using System;
-	using System.Threading;
-	using Logging;
-	using Persistence;
     using System.Collections.Concurrent;
     using System.Threading.Tasks;
+    using Logging;
+    using Persistence;
 
-	public class AsynchronousDispatchScheduler : SynchronousDispatchScheduler
+    public class AsynchronousDispatchScheduler : SynchronousDispatchScheduler
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(AsynchronousDispatchScheduler));
         private BlockingCollection<Commit> _queue;

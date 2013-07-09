@@ -1,8 +1,8 @@
 namespace EventStore.Dispatcher
 {
-	using System;
+    using System;
 
-	public class DelegateMessageDispatcher : IDispatchCommits
+    public class DelegateMessageDispatcher : IDispatchCommits
 	{
 		private readonly Action<Commit> dispatch;
 

@@ -67,10 +67,6 @@
     <Compile Include="Wireup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EventStore.Core\EventStore.Core.csproj">
-      <Project>{D6413244-42F5-4233-B347-D0A804B09CC9}</Project>
-      <Name>EventStore.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\EventStore.Persistence.SqlPersistence\EventStore.Persistence.SqlPersistence.csproj">
       <Project>{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}</Project>
       <Name>EventStore.Persistence.SqlPersistence</Name>

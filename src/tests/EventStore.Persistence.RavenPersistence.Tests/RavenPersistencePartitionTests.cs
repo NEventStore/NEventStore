@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using EventStore.Persistence.AcceptanceTests;
 using EventStore.Persistence.AcceptanceTests.BDD;
-using EventStore.Persistence.InMemoryPersistence;
 using Xunit;
 using Xunit.Should;
 

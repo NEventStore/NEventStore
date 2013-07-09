@@ -1,9 +1,9 @@
 namespace EventStore.Dispatcher
 {
-	using System;
-	using Logging;
+    using System;
+    using Logging;
 
-	public sealed class NullDispatcher : IScheduleDispatches, IDispatchCommits
+    public sealed class NullDispatcher : IScheduleDispatches, IDispatchCommits
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(NullDispatcher));
 

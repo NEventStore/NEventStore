@@ -1,9 +1,9 @@
 namespace EventStore
 {
-	using System;
-	using Dispatcher;
+    using System;
+    using Dispatcher;
 
-	public class DispatchSchedulerPipelineHook : IPipelineHook
+    public class DispatchSchedulerPipelineHook : IPipelineHook
 	{
 		private readonly IScheduleDispatches scheduler;
 

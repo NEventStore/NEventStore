@@ -1,4 +1,4 @@
-﻿namespace EventStore.Persistence.InMemoryPersistence
+namespace EventStore.Persistence.InMemoryPersistence
 {
 	public class InMemoryPersistenceFactory : IPersistenceFactory
 	{

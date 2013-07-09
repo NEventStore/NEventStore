@@ -1,11 +1,11 @@
 namespace EventStore
 {
-	using System;
-	using System.Collections.Generic;
-	using Logging;
-	using Persistence;
+    using System;
+    using System.Collections.Generic;
+    using Logging;
+    using Persistence;
 
-	/// <summary>
+    /// <summary>
 	/// Tracks the heads of streams to reduce latency by avoiding roundtrips to storage.
 	/// </summary>
 	public class OptimisticPipelineHook : IPipelineHook

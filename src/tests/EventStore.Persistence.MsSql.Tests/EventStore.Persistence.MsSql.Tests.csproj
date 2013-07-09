@@ -56,10 +56,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\proj\EventStore.Core\EventStore.Core.csproj">
-      <Project>{d6413244-42f5-4233-b347-d0a804b09cc9}</Project>
-      <Name>EventStore.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\proj\EventStore.Persistence.SqlPersistence\EventStore.Persistence.SqlPersistence.csproj">
       <Project>{DAFD3F38-33F3-4F53-BFEA-44E51BD1E8F1}</Project>
       <Name>EventStore.Persistence.SqlPersistence</Name>

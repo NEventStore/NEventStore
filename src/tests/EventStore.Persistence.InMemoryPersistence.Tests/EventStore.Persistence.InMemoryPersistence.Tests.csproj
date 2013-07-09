@@ -61,10 +61,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\proj\EventStore.Core\EventStore.Core.csproj">
-      <Project>{D6413244-42F5-4233-B347-D0A804B09CC9}</Project>
-      <Name>EventStore.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\proj\EventStore.Persistence.RavenPersistence\EventStore.Persistence.RavenPersistence.csproj">
       <Project>{F9E7FD69-0818-48CA-9249-5387739E1B6A}</Project>
       <Name>EventStore.Persistence.RavenPersistence</Name>

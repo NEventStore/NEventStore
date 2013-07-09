@@ -1,12 +1,12 @@
 namespace EventStore
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using Logging;
-	using Persistence;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Logging;
+    using Persistence;
 
-	public class OptimisticEventStore : IStoreEvents, ICommitEvents
+    public class OptimisticEventStore : IStoreEvents, ICommitEvents
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(OptimisticEventStore));
 		private readonly IPersistStreams persistence;

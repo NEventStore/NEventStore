@@ -1,10 +1,10 @@
 namespace EventStore.Dispatcher
 {
-	using System;
-	using Logging;
-	using Persistence;
+    using System;
+    using Logging;
+    using Persistence;
 
-	public class SynchronousDispatchScheduler : IScheduleDispatches
+    public class SynchronousDispatchScheduler : IScheduleDispatches
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(SynchronousDispatchScheduler));
 		private readonly IDispatchCommits dispatcher;

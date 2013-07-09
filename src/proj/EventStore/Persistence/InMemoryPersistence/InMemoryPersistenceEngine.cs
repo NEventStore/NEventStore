@@ -1,11 +1,11 @@
 namespace EventStore.Persistence.InMemoryPersistence
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using Logging;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Logging;
 
-	public class InMemoryPersistenceEngine : IPersistStreams
+    public class InMemoryPersistenceEngine : IPersistStreams
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(InMemoryPersistenceEngine));
 		private readonly IList<Commit> commits = new List<Commit>();

@@ -1,10 +1,10 @@
-﻿namespace EventStore.Conversion
+namespace EventStore.Conversion
 {
-	using System;
-	using System.Collections.Generic;
-	using Logging;
+    using System;
+    using System.Collections.Generic;
+    using Logging;
 
-	public class EventUpconverterPipelineHook : IPipelineHook
+    public class EventUpconverterPipelineHook : IPipelineHook
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(EventUpconverterPipelineHook));
 		private readonly IDictionary<Type, Func<object, object>> converters;

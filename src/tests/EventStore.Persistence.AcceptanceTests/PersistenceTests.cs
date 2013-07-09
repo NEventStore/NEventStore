@@ -1,4 +1,3 @@
-using EventStore.Diagnostics;
 using EventStore.Persistence.AcceptanceTests.BDD;
 using Xunit;
 using Xunit.Should;
@@ -11,7 +10,9 @@ using System.Linq;
 
 namespace EventStore.Persistence.AcceptanceTests
 {
-	public class when_a_commit_header_has_a_name_that_contains_a_period : PersistenceEngineConcern 
+    using Diagnostics;
+
+    public class when_a_commit_header_has_a_name_that_contains_a_period : PersistenceEngineConcern 
     {
         Guid streamId;
         Commit commit, persisted;
