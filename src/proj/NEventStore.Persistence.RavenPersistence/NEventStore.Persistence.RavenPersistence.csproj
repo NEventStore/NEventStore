@@ -66,9 +66,6 @@
     <Compile Include="RavenSnapshot.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="EventStore (ILMerged)" Condition="'$(ILMerged)' == 'true'">
-      <HintPath>..\..\..\output\bin\EventStore.dll</HintPath>
-    </Reference>
     <ProjectReference Include="..\NEventStore\NEventStore.csproj" Condition="'$(ILMerged)' != 'true'">
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
       <Name>NEventStore</Name>
