@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{49C544AF-02FB-4BE9-BDDF-79EB087E00C3}</ProjectGuid>
+    <ProjectGuid>{DE2428C7-5F47-4541-9727-B3AACB14DCD6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EventStore.Persistence.MongoPersistence.Tests</RootNamespace>
-    <AssemblyName>EventStore.Persistence.MongoPersistence.Tests</AssemblyName>
+    <RootNamespace>NEventStore.Persistence.AcceptanceTests</RootNamespace>
+    <AssemblyName>NEventStore.Persistence.Sqlite.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
@@ -35,10 +34,13 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <Reference Include="System.Data.SQLite">
+      <HintPath>..\..\packages\System.Data.SQLite.1.0.86.0\lib\net40\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite.Linq">
+      <HintPath>..\..\packages\System.Data.SQLite.1.0.86.0\lib\net40\System.Data.SQLite.Linq.dll</HintPath>
+    </Reference>
     <Reference Include="xunit">
       <HintPath>..\..\packages\xunit.1.9.1\lib\net20\xunit.dll</HintPath>
     </Reference>
@@ -47,29 +49,50 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\NEventStore.Persistence.AcceptanceTests\PersistenceTests.cs">
-      <Link>AcceptanceTests\PersistenceTests.cs</Link>
+    <Compile Include="..\..\proj\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AcceptanceTestMongoPersistenceFactory.cs" />
-    <Compile Include="AcceptanceTests\PersistenceEngineFixture.cs" />
+    <Compile Include="..\..\proj\VersionAssemblyInfo.cs">
+      <Link>Properties\VersionAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\NEventStore.Persistence.AcceptanceTests\PersistenceTests.cs">
+      <Link>PersistenceTests.cs</Link>
+    </Compile>
+    <Compile Include="PersistenceEngineFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <DependentUpon>Settings.settings</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\proj\EventStore.Persistence.MongoPersistence\EventStore.Persistence.MongoPersistence.csproj">
-      <Project>{32ADD8CE-0F3F-41D8-BFA1-6E5D685E64DD}</Project>
-      <Name>EventStore.Persistence.MongoPersistence</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\proj\NEventStore\NEventStore.csproj">
-      <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
+      <Project>{03946843-f343-419c-88ef-3e446d08dfa6}</Project>
       <Name>NEventStore</Name>
     </ProjectReference>
     <ProjectReference Include="..\NEventStore.Persistence.AcceptanceTests\NEventStore.Persistence.AcceptanceTests.csproj">
-      <Project>{3FE594FE-16FF-4405-97D5-5A58FB12520B}</Project>
+      <Project>{3fe594fe-16ff-4405-97d5-5a58fb12520b}</Project>
       <Name>NEventStore.Persistence.AcceptanceTests</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="x64\SQLite.Interop.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="x86\SQLite.Interop.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

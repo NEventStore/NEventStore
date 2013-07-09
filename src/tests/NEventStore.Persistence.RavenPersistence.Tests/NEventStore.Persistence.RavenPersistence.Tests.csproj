@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6073E59E-589B-4DC1-8073-0B3E462E825A}</ProjectGuid>
+    <ProjectGuid>{B358D0B5-6FF9-4621-8DDD-2F7E4A6E91EA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EventStore.Persistence.AcceptanceTests</RootNamespace>
-    <AssemblyName>EventStore.Persistence.MySql.Tests</AssemblyName>
+    <RootNamespace>NEventStore.Persistence.RavenPersistence.Tests</RootNamespace>
+    <AssemblyName>NEventStore.Persistence.RavenPersistence.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -32,13 +33,27 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MySql.Data">
-      <HintPath>..\..\packages\MySql.Data.6.6.5\lib\net40\MySql.Data.dll</HintPath>
+    <Reference Include="Raven.Abstractions">
+      <HintPath>..\..\packages\RavenDB.Database.2.0.2360\lib\net40\Raven.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Raven.Client.Embedded">
+      <HintPath>..\..\packages\RavenDB.Embedded.2.0.2360\lib\net40\Raven.Client.Embedded.dll</HintPath>
+    </Reference>
+    <Reference Include="Raven.Client.Lightweight">
+      <HintPath>..\..\packages\RavenDB.Client.2.0.2360\lib\net40\Raven.Client.Lightweight.dll</HintPath>
+    </Reference>
+    <Reference Include="Raven.Database">
+      <HintPath>..\..\packages\RavenDB.Database.2.0.2360\lib\net40\Raven.Database.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
     <Reference Include="xunit">
       <HintPath>..\..\packages\xunit.1.9.1\lib\net20\xunit.dll</HintPath>
     </Reference>
@@ -47,33 +62,33 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\proj\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="..\..\proj\VersionAssemblyInfo.cs">
-      <Link>Properties\VersionAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="..\NEventStore.Persistence.AcceptanceTests\PersistenceTests.cs">
-      <Link>PersistenceTests.cs</Link>
+      <Link>AcceptanceTests\PersistenceTests.cs</Link>
     </Compile>
-    <Compile Include="PersistenceEngineFixture.cs" />
+    <Compile Include="AcceptanceTests\PersistenceEngineFixture.cs" />
+    <Compile Include="RavenPersistenceEngineFixture.cs" />
+    <Compile Include="InMemoryRavenPersistenceFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RavenPersistencePagingTests.cs" />
+    <Compile Include="RavenPersistencePartitionTests.cs" />
+    <Compile Include="TestRavenConfig.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\proj\EventStore.Persistence.RavenPersistence\EventStore.Persistence.RavenPersistence.csproj">
+      <Project>{F9E7FD69-0818-48CA-9249-5387739E1B6A}</Project>
+      <Name>EventStore.Persistence.RavenPersistence</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\proj\NEventStore\NEventStore.csproj">
-      <Project>{03946843-f343-419c-88ef-3e446d08dfa6}</Project>
+      <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
       <Name>NEventStore</Name>
     </ProjectReference>
     <ProjectReference Include="..\NEventStore.Persistence.AcceptanceTests\NEventStore.Persistence.AcceptanceTests.csproj">
-      <Project>{3fe594fe-16ff-4405-97d5-5a58fb12520b}</Project>
+      <Project>{3FE594FE-16FF-4405-97D5-5A58FB12520B}</Project>
       <Name>NEventStore.Persistence.AcceptanceTests</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

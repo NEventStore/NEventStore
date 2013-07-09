@@ -1,9 +1,8 @@
-namespace EventStore
+namespace NEventStore
 {
-    using NEventStore;
-    using Serialization;
+    using NEventStore.Serialization;
 
-	public static class WireupExtensions
+    public static class WireupExtensions
 	{
 		public static SerializationWireup UsingJsonSerialization(this PersistenceWireup wireup)
 		{

@@ -1,26 +1,24 @@
-namespace EventStore.Serialization
+namespace NEventStore.Serialization
 {
-	using System;
-	using System.Collections.Generic;
-	using System.IO;
-	using System.Linq;
-	using System.Text;
-	using NEventStore;
-	using NEventStore.Logging;
-	using NEventStore.Serialization;
-	using Newtonsoft.Json;
-	using JsonNetSerializer = Newtonsoft.Json.JsonSerializer;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
+    using NEventStore;
+    using NEventStore.Logging;
+    using Newtonsoft.Json;
 
-	public class JsonSerializer : ISerialize
+    public class JsonSerializer : ISerialize
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(JsonSerializer));
-		private readonly JsonNetSerializer untypedSerializer = new JsonNetSerializer
+		private readonly Newtonsoft.Json.JsonSerializer untypedSerializer = new Newtonsoft.Json.JsonSerializer
 		{
 			TypeNameHandling = TypeNameHandling.Auto,
 			DefaultValueHandling = DefaultValueHandling.Ignore,
 			NullValueHandling = NullValueHandling.Ignore
 		};
-		private readonly JsonNetSerializer typedSerializer = new JsonNetSerializer
+		private readonly Newtonsoft.Json.JsonSerializer typedSerializer = new Newtonsoft.Json.JsonSerializer
 		{
 			TypeNameHandling = TypeNameHandling.All,
 			DefaultValueHandling = DefaultValueHandling.Ignore,
@@ -69,7 +67,7 @@ namespace EventStore.Serialization
 				return (T)this.GetSerializer(type).Deserialize(reader, type);
 		}
 
-		protected virtual JsonNetSerializer GetSerializer(Type typeToSerialize)
+		protected virtual Newtonsoft.Json.JsonSerializer GetSerializer(Type typeToSerialize)
 		{
 			if (this.knownTypes.Contains(typeToSerialize))
 			{

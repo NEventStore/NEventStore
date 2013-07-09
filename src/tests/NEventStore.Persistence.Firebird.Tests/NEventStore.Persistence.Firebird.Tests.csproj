@@ -7,8 +7,8 @@
     <ProjectGuid>{973502AE-429F-4081-A361-080C1D8B57B1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EventStore.Persistence.AcceptanceTests</RootNamespace>
-    <AssemblyName>EventStore.Persistence.Firebird.Tests</AssemblyName>
+    <RootNamespace>NEventStore.Persistence.AcceptanceTests</RootNamespace>
+    <AssemblyName>NEventStore.Persistence.Firebird.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>

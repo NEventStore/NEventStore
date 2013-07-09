@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5BC2809F-2CC0-4152-A3D6-4BF729349103}</ProjectGuid>
+    <ProjectGuid>{41BD8E8F-F530-48CB-A07B-92E65C8C742E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EventStore.Serialization.Json.Tests</RootNamespace>
-    <AssemblyName>EventStore.Serialization.Json.Tests</AssemblyName>
+    <RootNamespace>NEventStore.Serialization.Binary.Tests</RootNamespace>
+    <AssemblyName>NEventStore.Serialization.Binary.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
@@ -55,10 +55,6 @@
     <Compile Include="SerializerFixture.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\proj\EventStore.Serialization.Json\EventStore.Serialization.Json.csproj">
-      <Project>{CFD895BD-7CB2-4811-A6FA-1851DF769B67}</Project>
-      <Name>EventStore.Serialization.Json</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\proj\NEventStore\NEventStore.csproj">
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
       <Name>NEventStore</Name>

@@ -1,12 +1,12 @@
-namespace EventStore.Serialization
+namespace NEventStore.Serialization
 {
-	using System;
-	using System.Collections;
-	using System.IO;
-	using NEventStore.Logging;
-	using Newtonsoft.Json.Bson;
+    using System;
+    using System.Collections;
+    using System.IO;
+    using NEventStore.Logging;
+    using Newtonsoft.Json.Bson;
 
-	public class BsonSerializer : JsonSerializer
+    public class BsonSerializer : JsonSerializer
 	{
 		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(BsonSerializer));
 

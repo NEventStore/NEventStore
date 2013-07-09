@@ -4,16 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C6BFE4FC-4017-438B-AE99-D4D6F6FC4FE5}</ProjectGuid>
+    <ProjectGuid>{49C544AF-02FB-4BE9-BDDF-79EB087E00C3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EventStore.Serialization.Gzip.Tests</RootNamespace>
-    <AssemblyName>EventStore.Serialization.Gzip.Tests</AssemblyName>
+    <RootNamespace>NEventStore.Persistence.MongoPersistence.Tests</RootNamespace>
+    <AssemblyName>NEventStore.Persistence.MongoPersistence.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -37,7 +37,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="xunit">
@@ -48,13 +47,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\NEventStore.Persistence.AcceptanceTests\SerializationTests.cs">
-      <Link>SerializationTests.cs</Link>
+    <Compile Include="..\NEventStore.Persistence.AcceptanceTests\PersistenceTests.cs">
+      <Link>AcceptanceTests\PersistenceTests.cs</Link>
     </Compile>
+    <Compile Include="AcceptanceTestMongoPersistenceFactory.cs" />
+    <Compile Include="AcceptanceTests\PersistenceEngineFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SerializerFixture.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\proj\EventStore.Persistence.MongoPersistence\EventStore.Persistence.MongoPersistence.csproj">
+      <Project>{32ADD8CE-0F3F-41D8-BFA1-6E5D685E64DD}</Project>
+      <Name>EventStore.Persistence.MongoPersistence</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\proj\NEventStore\NEventStore.csproj">
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
       <Name>NEventStore</Name>

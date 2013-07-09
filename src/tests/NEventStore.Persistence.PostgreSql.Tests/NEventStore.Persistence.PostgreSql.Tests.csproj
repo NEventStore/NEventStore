@@ -4,16 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{41BD8E8F-F530-48CB-A07B-92E65C8C742E}</ProjectGuid>
+    <ProjectGuid>{770FE444-6CC3-44D0-950E-EAF6B7CF7382}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EventStore.Serialization.Binary.Tests</RootNamespace>
-    <AssemblyName>EventStore.Serialization.Binary.Tests</AssemblyName>
+    <RootNamespace>NEventStore.Persistence.AcceptanceTests</RootNamespace>
+    <AssemblyName>NEventStore.Persistence.PostgreSql.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,13 +32,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Mono.Security">
+      <HintPath>..\..\packages\Npgsql.2.0.12.1\lib\net40\Mono.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Npgsql">
+      <HintPath>..\..\packages\Npgsql.2.0.12.1\lib\net40\Npgsql.dll</HintPath>
+    </Reference>
+    <Reference Include="policy.2.0.Npgsql">
+      <HintPath>..\..\packages\Npgsql.2.0.12.1\lib\net40\policy.2.0.Npgsql.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
     <Reference Include="xunit">
       <HintPath>..\..\packages\xunit.1.9.1\lib\net20\xunit.dll</HintPath>
     </Reference>
@@ -48,23 +52,32 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\NEventStore.Persistence.AcceptanceTests\SerializationTests.cs">
-      <Link>SerializationTests.cs</Link>
+    <Compile Include="..\..\proj\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="..\..\proj\VersionAssemblyInfo.cs">
+      <Link>Properties\VersionAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\NEventStore.Persistence.AcceptanceTests\PersistenceTests.cs">
+      <Link>PersistenceTests.cs</Link>
+    </Compile>
+    <Compile Include="PersistenceEngineFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SerializerFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\proj\NEventStore\NEventStore.csproj">
-      <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
+      <Project>{03946843-f343-419c-88ef-3e446d08dfa6}</Project>
       <Name>NEventStore</Name>
     </ProjectReference>
     <ProjectReference Include="..\NEventStore.Persistence.AcceptanceTests\NEventStore.Persistence.AcceptanceTests.csproj">
-      <Project>{3FE594FE-16FF-4405-97D5-5A58FB12520B}</Project>
+      <Project>{3fe594fe-16ff-4405-97d5-5a58fb12520b}</Project>
       <Name>NEventStore.Persistence.AcceptanceTests</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

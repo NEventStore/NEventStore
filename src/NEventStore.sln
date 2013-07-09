@@ -14,7 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".doc", ".doc", "{CD37080A-F
 		..\readme.markdown = ..\readme.markdown
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Serialization.Json", "proj\EventStore.Serialization.Json\EventStore.Serialization.Json.csproj", "{CFD895BD-7CB2-4811-A6FA-1851DF769B67}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Serialization.Json", "proj\EventStore.Serialization.Json\NEventStore.Serialization.Json.csproj", "{CFD895BD-7CB2-4811-A6FA-1851DF769B67}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.MongoPersistence", "proj\EventStore.Persistence.MongoPersistence\EventStore.Persistence.MongoPersistence.csproj", "{32ADD8CE-0F3F-41D8-BFA1-6E5D685E64DD}"
 EndProject
@@ -24,7 +24,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.Rave
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "serialization", "serialization", "{52F7988F-452D-46C2-A144-D85E0CF371C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Serialization.Json.Wireup", "proj\EventStore.Serialization.Json.Wireup\EventStore.Serialization.Json.Wireup.csproj", "{DEFFE0C3-2988-4C58-9E36-1302842FFDBD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Serialization.Json.Wireup", "proj\EventStore.Serialization.Json.Wireup\NEventStore.Serialization.Json.Wireup.csproj", "{DEFFE0C3-2988-4C58-9E36-1302842FFDBD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.MongoPersistence.Wireup", "proj\EventStore.Persistence.MongoPersistence.Wireup\EventStore.Persistence.MongoPersistence.Wireup.csproj", "{E95780CB-3114-4925-A38A-1FA4CC4EC213}"
 EndProject
@@ -44,21 +44,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{08A28C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Persistence.AcceptanceTests", "tests\NEventStore.Persistence.AcceptanceTests\NEventStore.Persistence.AcceptanceTests.csproj", "{3FE594FE-16FF-4405-97D5-5A58FB12520B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.MongoPersistence.Tests", "tests\NEventStore.Persistence.MongoPersistence.Tests\EventStore.Persistence.MongoPersistence.Tests.csproj", "{49C544AF-02FB-4BE9-BDDF-79EB087E00C3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Persistence.MongoPersistence.Tests", "tests\NEventStore.Persistence.MongoPersistence.Tests\NEventStore.Persistence.MongoPersistence.Tests.csproj", "{49C544AF-02FB-4BE9-BDDF-79EB087E00C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.MsSql.Tests", "tests\NEventStore.Persistence.MsSql.Tests\EventStore.Persistence.MsSql.Tests.csproj", "{79D255F6-B001-425E-B3BF-CBF1E9A884B9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Persistence.MsSql.Tests", "tests\NEventStore.Persistence.MsSql.Tests\NEventStore.Persistence.MsSql.Tests.csproj", "{79D255F6-B001-425E-B3BF-CBF1E9A884B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.Firebird.Tests", "tests\NEventStore.Persistence.Firebird.Tests\EventStore.Persistence.Firebird.Tests.csproj", "{973502AE-429F-4081-A361-080C1D8B57B1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Persistence.Firebird.Tests", "tests\NEventStore.Persistence.Firebird.Tests\NEventStore.Persistence.Firebird.Tests.csproj", "{973502AE-429F-4081-A361-080C1D8B57B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.MySql.Tests", "tests\NEventStore.Persistence.MySql.Tests\EventStore.Persistence.MySql.Tests.csproj", "{6073E59E-589B-4DC1-8073-0B3E462E825A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Persistence.MySql.Tests", "tests\NEventStore.Persistence.MySql.Tests\NEventStore.Persistence.MySql.Tests.csproj", "{6073E59E-589B-4DC1-8073-0B3E462E825A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.Oracle.Tests", "tests\NEventStore.Persistence.Oracle.Tests\EventStore.Persistence.Oracle.Tests.csproj", "{860604D7-63EA-4F57-815B-57DF4830F212}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Persistence.Oracle.Tests", "tests\NEventStore.Persistence.Oracle.Tests\NEventStore.Persistence.Oracle.Tests.csproj", "{860604D7-63EA-4F57-815B-57DF4830F212}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.PostgreSql.Tests", "tests\NEventStore.Persistence.PostgreSql.Tests\EventStore.Persistence.PostgreSql.Tests.csproj", "{770FE444-6CC3-44D0-950E-EAF6B7CF7382}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Persistence.PostgreSql.Tests", "tests\NEventStore.Persistence.PostgreSql.Tests\NEventStore.Persistence.PostgreSql.Tests.csproj", "{770FE444-6CC3-44D0-950E-EAF6B7CF7382}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.SqlCe.Tests", "tests\NEventStore.Persistence.SqlCe.Tests\EventStore.Persistence.SqlCe.Tests.csproj", "{1A0C56B7-0186-4E2B-89FA-6B14FED37A75}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Persistence.SqlCe.Tests", "tests\NEventStore.Persistence.SqlCe.Tests\NEventStore.Persistence.SqlCe.Tests.csproj", "{1A0C56B7-0186-4E2B-89FA-6B14FED37A75}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.Sqlite.Tests", "tests\NEventStore.Persistence.Sqlite.Tests\EventStore.Persistence.Sqlite.Tests.csproj", "{DE2428C7-5F47-4541-9727-B3AACB14DCD6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Persistence.Sqlite.Tests", "tests\NEventStore.Persistence.Sqlite.Tests\NEventStore.Persistence.Sqlite.Tests.csproj", "{DE2428C7-5F47-4541-9727-B3AACB14DCD6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "persistence.mongo", "persistence.mongo", "{154F4778-2DE9-4A1E-94AF-411FD10BA8E5}"
 EndProject
@@ -70,19 +70,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "core", "core", "{D35087BF-9
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "serialization.json", "serialization.json", "{C865111F-C7D9-4D4E-A927-EE6C27306047}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Serialization.Binary.Tests", "tests\NEventStore.Serialization.Binary.Tests\EventStore.Serialization.Binary.Tests.csproj", "{41BD8E8F-F530-48CB-A07B-92E65C8C742E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Serialization.Binary.Tests", "tests\NEventStore.Serialization.Binary.Tests\NEventStore.Serialization.Binary.Tests.csproj", "{41BD8E8F-F530-48CB-A07B-92E65C8C742E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Serialization.Gzip.Tests", "tests\NEventStore.Serialization.Gzip.Tests\EventStore.Serialization.Gzip.Tests.csproj", "{C6BFE4FC-4017-438B-AE99-D4D6F6FC4FE5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Serialization.Gzip.Tests", "tests\NEventStore.Serialization.Gzip.Tests\NEventStore.Serialization.Gzip.Tests.csproj", "{C6BFE4FC-4017-438B-AE99-D4D6F6FC4FE5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Serialization.Rijndael.Tests", "tests\NEventStore.Serialization.Rijndael.Tests\EventStore.Serialization.Rijndael.Tests.csproj", "{76554E1F-CAE0-41EB-9C92-A47EC7188714}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Serialization.Rijndael.Tests", "tests\NEventStore.Serialization.Rijndael.Tests\NEventStore.Serialization.Rijndael.Tests.csproj", "{76554E1F-CAE0-41EB-9C92-A47EC7188714}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Serialization.Json.Tests", "tests\NEventStore.Serialization.Json.Tests\EventStore.Serialization.Json.Tests.csproj", "{5BC2809F-2CC0-4152-A3D6-4BF729349103}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Serialization.Json.Tests", "tests\NEventStore.Serialization.Json.Tests\NEventStore.Serialization.Json.Tests.csproj", "{5BC2809F-2CC0-4152-A3D6-4BF729349103}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Serialization.Bson.Tests", "tests\NEventStore.Serialization.Bson.Tests\EventStore.Serialization.Bson.Tests.csproj", "{ED77D452-FE7B-4149-8680-348740DA7B67}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Serialization.Bson.Tests", "tests\NEventStore.Serialization.Bson.Tests\NEventStore.Serialization.Bson.Tests.csproj", "{ED77D452-FE7B-4149-8680-348740DA7B67}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Tests", "tests\NEventStore.Tests\NEventStore.Tests.csproj", "{785B7EF4-BD47-4F98-9802-DA1C4A55ECA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore.Persistence.RavenPersistence.Tests", "tests\NEventStore.Persistence.RavenPersistence.Tests\EventStore.Persistence.RavenPersistence.Tests.csproj", "{B358D0B5-6FF9-4621-8DDD-2F7E4A6E91EA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Persistence.RavenPersistence.Tests", "tests\NEventStore.Persistence.RavenPersistence.Tests\NEventStore.Persistence.RavenPersistence.Tests.csproj", "{B358D0B5-6FF9-4621-8DDD-2F7E4A6E91EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
