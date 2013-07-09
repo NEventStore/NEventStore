@@ -50,6 +50,7 @@
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Transactions" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\GlobalAssemblyInfo.cs">
@@ -69,6 +70,8 @@
     </Compile>
     <Compile Include="MongoPersistenceEngine.cs" />
     <Compile Include="MongoPersistenceFactory.cs" />
+    <Compile Include="MongoPersistenceWireup.cs" />
+    <Compile Include="MongoPersistenceWireupExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

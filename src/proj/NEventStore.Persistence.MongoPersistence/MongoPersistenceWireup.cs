@@ -1,4 +1,6 @@
+// ReSharper disable CheckNamespace
 namespace NEventStore
+// ReSharper restore CheckNamespace
 {
 	using System.Transactions;
 	using NEventStore;

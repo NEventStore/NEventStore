@@ -1,6 +1,7 @@
+// ReSharper disable CheckNamespace
 namespace NEventStore
+// ReSharper restore CheckNamespace
 {
-    using NEventStore;
     using NEventStore.Serialization;
 
     public static class MongoPersistenceWireupExtensions
