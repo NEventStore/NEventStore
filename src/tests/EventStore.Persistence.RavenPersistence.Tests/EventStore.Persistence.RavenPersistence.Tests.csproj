@@ -66,6 +66,7 @@
       <Link>AcceptanceTests\PersistenceTests.cs</Link>
     </Compile>
     <Compile Include="AcceptanceTests\PersistenceEngineFixture.cs" />
+    <Compile Include="RavenPersistenceAmbientTransactionTests.cs" />
     <Compile Include="RavenPersistenceEngineFixture.cs" />
     <Compile Include="InMemoryRavenPersistenceFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
