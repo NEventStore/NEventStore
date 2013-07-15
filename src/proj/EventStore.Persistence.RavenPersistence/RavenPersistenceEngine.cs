@@ -367,9 +367,13 @@
 
                 query = conditions.Aggregate(query, (current, condition) => current.Where(condition));
 
-                return query
+                var results = query
                     .Skip(skip).Take(take)
                     .ToArray();
+
+                scope.Complete();
+
+                return results;
             }
             catch (WebException e)
             {
