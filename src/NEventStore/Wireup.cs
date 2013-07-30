@@ -3,80 +3,84 @@ namespace NEventStore
     using System.Collections.Generic;
     using System.Linq;
     using System.Transactions;
-    using Conversion;
-    using Dispatcher;
-    using Persistence;
-    using Persistence.InMemoryPersistence;
+    using NEventStore.Conversion;
+    using NEventStore.Dispatcher;
+    using NEventStore.Persistence;
+    using NEventStore.Persistence.InMemoryPersistence;
 
     public class Wireup
-	{
-		private readonly Wireup inner;
-		private readonly NanoContainer container;
+    {
+        private readonly NanoContainer _container;
+        private readonly Wireup _inner;
 
-		protected Wireup(NanoContainer container)
-		{
-			this.container = container;
-		}
-		protected Wireup(Wireup inner)
-		{
-			this.inner = inner;
-		}
+        protected Wireup(NanoContainer container)
+        {
+            _container = container;
+        }
 
-		public static Wireup Init()
-		{
-			var container = new NanoContainer();
+        protected Wireup(Wireup inner)
+        {
+            _inner = inner;
+        }
 
-			container.Register(TransactionScopeOption.Suppress);
-			container.Register<IPersistStreams>(new InMemoryPersistenceEngine());
-			container.Register(BuildEventStore);
+        protected NanoContainer Container
+        {
+            get { return _container ?? _inner.Container; }
+        }
 
-			return new Wireup(container);
-		}
+        public static Wireup Init()
+        {
+            var container = new NanoContainer();
 
-		protected NanoContainer Container
-		{
-			get { return this.container ?? this.inner.Container; }
-		}
+            container.Register(TransactionScopeOption.Suppress);
+            container.Register<IPersistStreams>(new InMemoryPersistenceEngine());
+            container.Register(BuildEventStore);
 
-		public virtual Wireup With<T>(T instance) where T : class
-		{
-			this.Container.Register(instance);
-			return this;
-		}
+            return new Wireup(container);
+        }
 
-		public virtual Wireup HookIntoPipelineUsing(IEnumerable<IPipelineHook> hooks)
-		{
-			return this.HookIntoPipelineUsing((hooks ?? new IPipelineHook[0]).ToArray());
-		}
-		public virtual Wireup HookIntoPipelineUsing(params IPipelineHook[] hooks)
-		{
-			ICollection<IPipelineHook> collection = (hooks ?? new IPipelineHook[] { }).Where(x => x != null).ToArray();
-			this.Container.Register(collection);
-			return this;
-		}
+        public virtual Wireup With<T>(T instance) where T : class
+        {
+            Container.Register(instance);
+            return this;
+        }
 
-		public virtual IStoreEvents Build()
-		{
-			if (this.inner != null)
-				return this.inner.Build();
+        public virtual Wireup HookIntoPipelineUsing(IEnumerable<IPipelineHook> hooks)
+        {
+            return HookIntoPipelineUsing((hooks ?? new IPipelineHook[0]).ToArray());
+        }
 
-			return this.Container.Resolve<IStoreEvents>();
-		}
+        public virtual Wireup HookIntoPipelineUsing(params IPipelineHook[] hooks)
+        {
+            ICollection<IPipelineHook> collection = (hooks ?? new IPipelineHook[] {}).Where(x => x != null).ToArray();
+            Container.Register(collection);
+            return this;
+        }
 
-		private static IStoreEvents BuildEventStore(NanoContainer context)
-		{
-			var scopeOption = context.Resolve<TransactionScopeOption>();
-			var concurrency = scopeOption == TransactionScopeOption.Suppress ? new OptimisticPipelineHook() : null;
-			var scheduler = new DispatchSchedulerPipelineHook(context.Resolve<IScheduleDispatches>());
-			var upconverter = context.Resolve<EventUpconverterPipelineHook>();
+        public virtual IStoreEvents Build()
+        {
+            if (_inner != null)
+            {
+                return _inner.Build();
+            }
 
-			var hooks = context.Resolve<ICollection<IPipelineHook>>() ?? new IPipelineHook[0];
-			hooks = new IPipelineHook[] { concurrency, scheduler, upconverter }
-				.Concat(hooks)
-				.Where(x => x != null)
-				.ToArray();
+            return Container.Resolve<IStoreEvents>();
+        }
 
-			return new OptimisticEventStore(context.Resolve<IPersistStreams>(), hooks);
-		}
-	}
+        private static IStoreEvents BuildEventStore(NanoContainer context)
+        {
+            var scopeOption = context.Resolve<TransactionScopeOption>();
+            OptimisticPipelineHook concurrency = scopeOption == TransactionScopeOption.Suppress ? new OptimisticPipelineHook() : null;
+            var scheduler = new DispatchSchedulerPipelineHook(context.Resolve<IScheduleDispatches>());
+            var upconverter = context.Resolve<EventUpconverterPipelineHook>();
+
+            ICollection<IPipelineHook> hooks = context.Resolve<ICollection<IPipelineHook>>() ?? new IPipelineHook[0];
+            hooks = new IPipelineHook[] {concurrency, scheduler, upconverter}
+                .Concat(hooks)
+                .Where(x => x != null)
+                .ToArray();
+
+            return new OptimisticEventStore(context.Resolve<IPersistStreams>(), hooks);
+        }
+    }
 }

@@ -2,126 +2,149 @@ namespace NEventStore
 {
     using System;
     using System.Collections.Generic;
-    using Logging;
-    using Persistence;
+    using NEventStore.Logging;
+    using NEventStore.Persistence;
 
     /// <summary>
-	/// Tracks the heads of streams to reduce latency by avoiding roundtrips to storage.
-	/// </summary>
-	public class OptimisticPipelineHook : IPipelineHook
-	{
-		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(OptimisticPipelineHook));
-		private const int MaxStreamsToTrack = 100;
-		private readonly LinkedList<Guid> maxItemsToTrack = new LinkedList<Guid>();
-		private readonly IDictionary<Guid, Commit> heads = new Dictionary<Guid, Commit>();
-		private readonly int maxStreamsToTrack;
+    ///     Tracks the heads of streams to reduce latency by avoiding roundtrips to storage.
+    /// </summary>
+    public class OptimisticPipelineHook : IPipelineHook
+    {
+        private const int MaxStreamsToTrack = 100;
+        private static readonly ILog Logger = LogFactory.BuildLogger(typeof (OptimisticPipelineHook));
+        private readonly IDictionary<Guid, Commit> _heads = new Dictionary<Guid, Commit>();
+        private readonly LinkedList<Guid> _maxItemsToTrack = new LinkedList<Guid>();
+        private readonly int _maxStreamsToTrack;
 
-		public OptimisticPipelineHook()
-			: this(MaxStreamsToTrack)
-		{
-		}
-		public OptimisticPipelineHook(int maxStreamsToTrack)
-		{
-			Logger.Debug(Resources.TrackingStreams, maxStreamsToTrack);
-			this.maxStreamsToTrack = maxStreamsToTrack;
-		}
-		public void Dispose()
-		{
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-		protected virtual void Dispose(bool disposing)
-		{
-			this.heads.Clear();
-			this.maxItemsToTrack.Clear();
-		}
+        public OptimisticPipelineHook()
+            : this(MaxStreamsToTrack)
+        {}
 
-		public virtual Commit Select(Commit committed)
-		{
-			this.Track(committed);
-			return committed;
-		}
-		public virtual bool PreCommit(Commit attempt)
-		{
-			Logger.Debug(Resources.OptimisticConcurrencyCheck, attempt.StreamId);
+        public OptimisticPipelineHook(int maxStreamsToTrack)
+        {
+            Logger.Debug(Resources.TrackingStreams, maxStreamsToTrack);
+            _maxStreamsToTrack = maxStreamsToTrack;
+        }
 
-			var head = this.GetStreamHead(attempt.StreamId);
-			if (head == null)
-				return true;
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-			if (head.CommitSequence >= attempt.CommitSequence)
-				throw new ConcurrencyException();
+        public virtual Commit Select(Commit committed)
+        {
+            Track(committed);
+            return committed;
+        }
 
-			if (head.StreamRevision >= attempt.StreamRevision)
-				throw new ConcurrencyException();
+        public virtual bool PreCommit(Commit attempt)
+        {
+            Logger.Debug(Resources.OptimisticConcurrencyCheck, attempt.StreamId);
 
-			if (head.CommitSequence < attempt.CommitSequence - 1)
-				throw new StorageException(); // beyond the end of the stream
+            Commit head = GetStreamHead(attempt.StreamId);
+            if (head == null)
+            {
+                return true;
+            }
 
-			if (head.StreamRevision < attempt.StreamRevision - attempt.Events.Count)
-				throw new StorageException(); // beyond the end of the stream
+            if (head.CommitSequence >= attempt.CommitSequence)
+            {
+                throw new ConcurrencyException();
+            }
 
-			Logger.Debug(Resources.NoConflicts, attempt.StreamId);
-			return true;
-		}
-		public virtual void PostCommit(Commit committed)
-		{
-			this.Track(committed);
-		}
+            if (head.StreamRevision >= attempt.StreamRevision)
+            {
+                throw new ConcurrencyException();
+            }
 
-		public virtual void Track(Commit committed)
-		{
-			if (committed == null)
-				return;
+            if (head.CommitSequence < attempt.CommitSequence - 1)
+            {
+                throw new StorageException(); // beyond the end of the stream
+            }
 
-			lock (this.maxItemsToTrack)
-			{
-				this.UpdateStreamHead(committed);
-				this.TrackUpToCapacity(committed);
-			}
-		}
-		private void UpdateStreamHead(Commit committed)
-		{
-			var head = this.GetStreamHead(committed.StreamId);
-			if (AlreadyTracked(head))
-				this.maxItemsToTrack.Remove(committed.StreamId);
+            if (head.StreamRevision < attempt.StreamRevision - attempt.Events.Count)
+            {
+                throw new StorageException(); // beyond the end of the stream
+            }
 
-			head = head ?? committed;
-			head = head.StreamRevision > committed.StreamRevision ? head : committed;
+            Logger.Debug(Resources.NoConflicts, attempt.StreamId);
+            return true;
+        }
 
-			this.heads[committed.StreamId] = head;
-		}
-		private static bool AlreadyTracked(Commit head)
-		{
-			return head != null;
-		}
-		private void TrackUpToCapacity(Commit committed)
-		{
-			Logger.Verbose(Resources.TrackingCommit, committed.CommitSequence, committed.StreamId);
-			this.maxItemsToTrack.AddFirst(committed.StreamId);
-			if (this.maxItemsToTrack.Count <= this.maxStreamsToTrack)
-				return;
+        public virtual void PostCommit(Commit committed)
+        {
+            Track(committed);
+        }
 
-			var expired = this.maxItemsToTrack.Last.Value;
-			Logger.Verbose(Resources.NoLongerTrackingStream, expired);
+        protected virtual void Dispose(bool disposing)
+        {
+            _heads.Clear();
+            _maxItemsToTrack.Clear();
+        }
 
-			this.heads.Remove(expired);
-			this.maxItemsToTrack.RemoveLast();
-		}
+        public virtual void Track(Commit committed)
+        {
+            if (committed == null)
+            {
+                return;
+            }
 
-		public virtual bool Contains(Commit attempt)
-		{
-			return this.GetStreamHead(attempt.StreamId) != null;
-		}
+            lock (_maxItemsToTrack)
+            {
+                UpdateStreamHead(committed);
+                TrackUpToCapacity(committed);
+            }
+        }
 
-		private Commit GetStreamHead(Guid streamId)
-		{
-			lock (this.maxItemsToTrack)
-			{
-				Commit head;
-				this.heads.TryGetValue(streamId, out head);
-				return head;
-			}
-		}
-	}
+        private void UpdateStreamHead(Commit committed)
+        {
+            Commit head = GetStreamHead(committed.StreamId);
+            if (AlreadyTracked(head))
+            {
+                _maxItemsToTrack.Remove(committed.StreamId);
+            }
+
+            head = head ?? committed;
+            head = head.StreamRevision > committed.StreamRevision ? head : committed;
+
+            _heads[committed.StreamId] = head;
+        }
+
+        private static bool AlreadyTracked(Commit head)
+        {
+            return head != null;
+        }
+
+        private void TrackUpToCapacity(Commit committed)
+        {
+            Logger.Verbose(Resources.TrackingCommit, committed.CommitSequence, committed.StreamId);
+            _maxItemsToTrack.AddFirst(committed.StreamId);
+            if (_maxItemsToTrack.Count <= _maxStreamsToTrack)
+            {
+                return;
+            }
+
+            Guid expired = _maxItemsToTrack.Last.Value;
+            Logger.Verbose(Resources.NoLongerTrackingStream, expired);
+
+            _heads.Remove(expired);
+            _maxItemsToTrack.RemoveLast();
+        }
+
+        public virtual bool Contains(Commit attempt)
+        {
+            return GetStreamHead(attempt.StreamId) != null;
+        }
+
+        private Commit GetStreamHead(Guid streamId)
+        {
+            lock (_maxItemsToTrack)
+            {
+                Commit head;
+                _heads.TryGetValue(streamId, out head);
+                return head;
+            }
+        }
+    }
 }

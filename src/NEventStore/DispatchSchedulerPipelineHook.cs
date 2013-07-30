@@ -1,42 +1,48 @@
 namespace NEventStore
 {
     using System;
-    using Dispatcher;
+    using NEventStore.Dispatcher;
 
     public class DispatchSchedulerPipelineHook : IPipelineHook
-	{
-		private readonly IScheduleDispatches scheduler;
+    {
+        private readonly IScheduleDispatches _scheduler;
 
-		public DispatchSchedulerPipelineHook()
-			: this(null)
-		{
-		}
-		public DispatchSchedulerPipelineHook(IScheduleDispatches scheduler)
-		{
-			this.scheduler = scheduler ?? new NullDispatcher(); // serves as a scheduler also
-		}
-		public void Dispose()
-		{
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-		protected virtual void Dispose(bool disposing)
-		{
-			this.scheduler.Dispose();
-		}
+        public DispatchSchedulerPipelineHook()
+            : this(null)
+        {}
 
-		public Commit Select(Commit committed)
-		{
-			return committed;
-		}
-		public virtual bool PreCommit(Commit attempt)
-		{
-			return true;
-		}
-		public void PostCommit(Commit committed)
-		{
-			if (committed != null)
-				this.scheduler.ScheduleDispatch(committed);
-		}
-	}
+        public DispatchSchedulerPipelineHook(IScheduleDispatches scheduler)
+        {
+            _scheduler = scheduler ?? new NullDispatcher(); // serves as a scheduler also
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        public Commit Select(Commit committed)
+        {
+            return committed;
+        }
+
+        public virtual bool PreCommit(Commit attempt)
+        {
+            return true;
+        }
+
+        public void PostCommit(Commit committed)
+        {
+            if (committed != null)
+            {
+                _scheduler.ScheduleDispatch(committed);
+            }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            _scheduler.Dispose();
+        }
+    }
 }

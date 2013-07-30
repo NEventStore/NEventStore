@@ -3,103 +3,126 @@ namespace NEventStore.Persistence.SqlPersistence
     using System;
     using System.Configuration;
     using System.Transactions;
-    using Serialization;
-    using SqlDialects;
+    using NEventStore.Persistence.SqlPersistence.SqlDialects;
+    using NEventStore.Serialization;
 
     public class SqlPersistenceFactory : IPersistenceFactory
-	{
-		private const int DefaultPageSize = 128;
-		private readonly IConnectionFactory connectionFactory;
-		private readonly ISqlDialect dialect;
-		private readonly ISerialize serializer;
-		private readonly TransactionScopeOption scopeOption;
+    {
+        private const int DefaultPageSize = 128;
+        private readonly IConnectionFactory _connectionFactory;
+        private readonly ISqlDialect _dialect;
+        private readonly TransactionScopeOption _scopeOption;
+        private readonly ISerialize _serializer;
 
-		public SqlPersistenceFactory(string connectionName, ISerialize serializer)
-			: this(connectionName, serializer, null)
-		{
-		}
-		public SqlPersistenceFactory(string connectionName, ISerialize serializer, ISqlDialect dialect)
-			: this(serializer, TransactionScopeOption.Suppress, DefaultPageSize)
-		{
-			this.connectionFactory = new ConfigurationConnectionFactory(connectionName);
-			this.dialect = dialect ?? ResolveDialect(new ConfigurationConnectionFactory(connectionName).Settings);
-		}
-		public SqlPersistenceFactory(IConnectionFactory factory, ISerialize serializer, ISqlDialect dialect)
-			: this(factory, serializer, dialect, TransactionScopeOption.Suppress, DefaultPageSize)
-		{
-		}
-		public SqlPersistenceFactory(
-			IConnectionFactory factory,
-			ISerialize serializer,
-			ISqlDialect dialect,
-			TransactionScopeOption scopeOption,
-			int pageSize)
-			: this(serializer, scopeOption, pageSize)
-		{
-			if (dialect == null)
-				throw new ArgumentNullException("dialect");
+        public SqlPersistenceFactory(string connectionName, ISerialize serializer)
+            : this(connectionName, serializer, null)
+        {}
 
-			this.connectionFactory = factory;
-			this.dialect = dialect;
-		}
-		private SqlPersistenceFactory(ISerialize serializer, TransactionScopeOption scopeOption, int pageSize)
-		{
-			this.serializer = serializer;
-			this.scopeOption = scopeOption;
+        public SqlPersistenceFactory(string connectionName, ISerialize serializer, ISqlDialect dialect)
+            : this(serializer, TransactionScopeOption.Suppress, DefaultPageSize)
+        {
+            _connectionFactory = new ConfigurationConnectionFactory(connectionName);
+            _dialect = dialect ?? ResolveDialect(new ConfigurationConnectionFactory(connectionName).Settings);
+        }
 
-			this.PageSize = pageSize;
-		}
+        public SqlPersistenceFactory(IConnectionFactory factory, ISerialize serializer, ISqlDialect dialect)
+            : this(factory, serializer, dialect, TransactionScopeOption.Suppress, DefaultPageSize)
+        {}
 
-		protected virtual IConnectionFactory ConnectionFactory
-		{
-			get { return this.connectionFactory; }
-		}
-		protected virtual ISqlDialect Dialect
-		{
-			get { return this.dialect; }
-		}
-		protected virtual ISerialize Serializer
-		{
-			get { return this.serializer; }
-		}
-		protected int PageSize { get; set; }
+        public SqlPersistenceFactory(
+            IConnectionFactory factory,
+            ISerialize serializer,
+            ISqlDialect dialect,
+            TransactionScopeOption scopeOption,
+            int pageSize)
+            : this(serializer, scopeOption, pageSize)
+        {
+            if (dialect == null)
+            {
+                throw new ArgumentNullException("dialect");
+            }
 
-		public virtual IPersistStreams Build()
-		{
-			return new SqlPersistenceEngine(
-				this.ConnectionFactory, this.Dialect, this.Serializer, this.scopeOption, this.PageSize);
-		}
+            _connectionFactory = factory;
+            _dialect = dialect;
+        }
 
-		protected static ISqlDialect ResolveDialect(ConnectionStringSettings settings)
-		{
-			var connectionString = settings.ConnectionString.ToUpperInvariant();
-			var providerName = settings.ProviderName.ToUpperInvariant();
+        private SqlPersistenceFactory(ISerialize serializer, TransactionScopeOption scopeOption, int pageSize)
+        {
+            _serializer = serializer;
+            _scopeOption = scopeOption;
 
-			if (providerName.Contains("MYSQL"))
-				return new MySqlDialect();
+            PageSize = pageSize;
+        }
 
-			if (providerName.Contains("SQLITE"))
-				return new SqliteDialect();
+        protected virtual IConnectionFactory ConnectionFactory
+        {
+            get { return _connectionFactory; }
+        }
 
-			if (providerName.Contains("SQLSERVERCE") || connectionString.Contains(".SDF"))
-				return new SqlCeDialect();
+        protected virtual ISqlDialect Dialect
+        {
+            get { return _dialect; }
+        }
 
-			if (providerName.Contains("FIREBIRD"))
-				return new FirebirdSqlDialect();
+        protected virtual ISerialize Serializer
+        {
+            get { return _serializer; }
+        }
 
-			if (providerName.Contains("POSTGRES") || providerName.Contains("NPGSQL"))
-				return new PostgreSqlDialect();
+        protected int PageSize { get; set; }
 
-			if (providerName.Contains("FIREBIRD"))
-				return new FirebirdSqlDialect();
+        public virtual IPersistStreams Build()
+        {
+            return new SqlPersistenceEngine(
+                ConnectionFactory, Dialect, Serializer, _scopeOption, PageSize);
+        }
+
+        protected static ISqlDialect ResolveDialect(ConnectionStringSettings settings)
+        {
+            string connectionString = settings.ConnectionString.ToUpperInvariant();
+            string providerName = settings.ProviderName.ToUpperInvariant();
+
+            if (providerName.Contains("MYSQL"))
+            {
+                return new MySqlDialect();
+            }
+
+            if (providerName.Contains("SQLITE"))
+            {
+                return new SqliteDialect();
+            }
+
+            if (providerName.Contains("SQLSERVERCE") || connectionString.Contains(".SDF"))
+            {
+                return new SqlCeDialect();
+            }
+
+            if (providerName.Contains("FIREBIRD"))
+            {
+                return new FirebirdSqlDialect();
+            }
+
+            if (providerName.Contains("POSTGRES") || providerName.Contains("NPGSQL"))
+            {
+                return new PostgreSqlDialect();
+            }
+
+            if (providerName.Contains("FIREBIRD"))
+            {
+                return new FirebirdSqlDialect();
+            }
 
             if (providerName.Contains("ORACLE") && providerName.Contains("DATAACCESS"))
+            {
                 return new OracleNativeDialect();
+            }
 
             if (providerName == "SYSTEM.DATA.ORACLECLIENT")
+            {
                 return new OracleNativeDialect();
+            }
 
-			return new MsSqlDialect();
-		}
-	}
+            return new MsSqlDialect();
+        }
+    }
 }

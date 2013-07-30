@@ -1,80 +1,87 @@
 namespace NEventStore.Dispatcher
 {
     using System;
-    using Logging;
-    using Persistence;
+    using NEventStore.Logging;
+    using NEventStore.Persistence;
 
     public class SynchronousDispatchScheduler : IScheduleDispatches
-	{
-		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(SynchronousDispatchScheduler));
-		private readonly IDispatchCommits dispatcher;
-		private readonly IPersistStreams persistence;
-		private bool disposed;
+    {
+        private static readonly ILog Logger = LogFactory.BuildLogger(typeof (SynchronousDispatchScheduler));
+        private readonly IDispatchCommits _dispatcher;
+        private readonly IPersistStreams _persistence;
+        private bool _disposed;
 
-		public SynchronousDispatchScheduler(IDispatchCommits dispatcher, IPersistStreams persistence)
-		{
-			this.dispatcher = dispatcher;
-			this.persistence = persistence;
+        public SynchronousDispatchScheduler(IDispatchCommits dispatcher, IPersistStreams persistence)
+        {
+            _dispatcher = dispatcher;
+            _persistence = persistence;
 
-			Logger.Info(Resources.StartingDispatchScheduler);
-			this.Start();
-		}
+            Logger.Info(Resources.StartingDispatchScheduler);
+            Start();
+        }
 
-		public void Dispose()
-		{
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-		protected virtual void Dispose(bool disposing)
-		{
-			if (!disposing || this.disposed)
-				return;
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-			Logger.Debug(Resources.ShuttingDownDispatchScheduler);
-			this.disposed = true;
-			this.dispatcher.Dispose();
-			this.persistence.Dispose();
-		}
+        public virtual void ScheduleDispatch(Commit commit)
+        {
+            DispatchImmediately(commit);
+            MarkAsDispatched(commit);
+        }
 
-		protected virtual void Start()
-		{
-			Logger.Debug(Resources.InitializingPersistence);
-			this.persistence.Initialize();
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposing || _disposed)
+            {
+                return;
+            }
 
-			Logger.Debug(Resources.GettingUndispatchedCommits);
-			foreach (var commit in this.persistence.GetUndispatchedCommits())
-				this.ScheduleDispatch(commit);
-		}
+            Logger.Debug(Resources.ShuttingDownDispatchScheduler);
+            _disposed = true;
+            _dispatcher.Dispose();
+            _persistence.Dispose();
+        }
 
-		public virtual void ScheduleDispatch(Commit commit)
-		{
-			this.DispatchImmediately(commit);
-			this.MarkAsDispatched(commit);
-		}
-		private void DispatchImmediately(Commit commit)
-		{
-			try
-			{
-				Logger.Info(Resources.SchedulingDispatch, commit.CommitId);
-				this.dispatcher.Dispatch(commit);
-			}
-			catch
-			{
-				Logger.Error(Resources.UnableToDispatch, this.dispatcher.GetType(), commit.CommitId);
-				throw;
-			}
-		}
-		private void MarkAsDispatched(Commit commit)
-		{
-			try
-			{
-				Logger.Info(Resources.MarkingCommitAsDispatched, commit.CommitId);
-				this.persistence.MarkCommitAsDispatched(commit);
-			}
-			catch (ObjectDisposedException)
-			{
-				Logger.Warn(Resources.UnableToMarkDispatched, commit.CommitId);
-			}
-		}
-	}
+        protected virtual void Start()
+        {
+            Logger.Debug(Resources.InitializingPersistence);
+            _persistence.Initialize();
+
+            Logger.Debug(Resources.GettingUndispatchedCommits);
+            foreach (var commit in _persistence.GetUndispatchedCommits())
+            {
+                ScheduleDispatch(commit);
+            }
+        }
+
+        private void DispatchImmediately(Commit commit)
+        {
+            try
+            {
+                Logger.Info(Resources.SchedulingDispatch, commit.CommitId);
+                _dispatcher.Dispatch(commit);
+            }
+            catch
+            {
+                Logger.Error(Resources.UnableToDispatch, _dispatcher.GetType(), commit.CommitId);
+                throw;
+            }
+        }
+
+        private void MarkAsDispatched(Commit commit)
+        {
+            try
+            {
+                Logger.Info(Resources.MarkingCommitAsDispatched, commit.CommitId);
+                _persistence.MarkCommitAsDispatched(commit);
+            }
+            catch (ObjectDisposedException)
+            {
+                Logger.Warn(Resources.UnableToMarkDispatched, commit.CommitId);
+            }
+        }
+    }
 }

@@ -3,185 +3,205 @@ namespace NEventStore.Persistence.InMemoryPersistence
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Logging;
+    using NEventStore.Logging;
 
     public class InMemoryPersistenceEngine : IPersistStreams
-	{
-		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(InMemoryPersistenceEngine));
-		private readonly IList<Commit> commits = new List<Commit>();
-		private readonly ICollection<StreamHead> heads = new LinkedList<StreamHead>();
-		private readonly ICollection<Commit> undispatched = new LinkedList<Commit>();
-		private readonly ICollection<Snapshot> snapshots = new LinkedList<Snapshot>();
-		private readonly IDictionary<Guid, DateTime> stamps = new Dictionary<Guid, DateTime>();
-		private bool disposed;
+    {
+        private static readonly ILog Logger = LogFactory.BuildLogger(typeof (InMemoryPersistenceEngine));
+        private readonly IList<Commit> _commits = new List<Commit>();
+        private readonly ICollection<StreamHead> _heads = new LinkedList<StreamHead>();
+        private readonly ICollection<Snapshot> _snapshots = new LinkedList<Snapshot>();
+        private readonly IDictionary<Guid, DateTime> _stamps = new Dictionary<Guid, DateTime>();
+        private readonly ICollection<Commit> _undispatched = new LinkedList<Commit>();
+        private bool _disposed;
 
-		public void Dispose()
-		{
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-		protected virtual void Dispose(bool disposing)
-		{
-			this.disposed = true;
-			Logger.Info(Resources.DisposingEngine);
-		}
-		private void ThrowWhenDisposed()
-		{
-			if (!this.disposed)
-				return;
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-			Logger.Warn(Resources.AlreadyDisposed);
-			throw new ObjectDisposedException(Resources.AlreadyDisposed);
-		}
+        public void Initialize()
+        {
+            Logger.Info(Resources.InitializingEngine);
+        }
 
-		public void Initialize()
-		{
-			Logger.Info(Resources.InitializingEngine);
-		}
+        public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
+        {
+            ThrowWhenDisposed();
+            Logger.Debug(Resources.GettingAllCommitsFromRevision, streamId, minRevision, maxRevision);
 
-		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
-		{
-			this.ThrowWhenDisposed();
-			Logger.Debug(Resources.GettingAllCommitsFromRevision, streamId, minRevision, maxRevision);
+            lock (_commits)
+                return
+                    _commits.Where(x => x.StreamId == streamId && x.StreamRevision >= minRevision && (x.StreamRevision - x.Events.Count + 1) <= maxRevision)
+                            .OrderBy(c => c.CommitSequence)
+                            .ToArray();
+        }
 
-			lock (this.commits)
-				return this.commits.Where(x => x.StreamId == streamId && x.StreamRevision >= minRevision && (x.StreamRevision - x.Events.Count + 1) <= maxRevision).OrderBy(c => c.CommitSequence).ToArray();
-		}
+        public virtual IEnumerable<Commit> GetFrom(DateTime start)
+        {
+            ThrowWhenDisposed();
+            Logger.Debug(Resources.GettingAllCommitsFromTime, start);
 
-		public virtual IEnumerable<Commit> GetFrom(DateTime start)
-		{
-			this.ThrowWhenDisposed();
-			Logger.Debug(Resources.GettingAllCommitsFromTime, start);
+            Guid commitId = _stamps.Where(x => x.Value >= start).Select(x => x.Key).FirstOrDefault();
+            if (commitId == Guid.Empty)
+            {
+                return new Commit[] {};
+            }
 
-			var commitId = this.stamps.Where(x => x.Value >= start).Select(x => x.Key).FirstOrDefault();
-			if (commitId == Guid.Empty)
-				return new Commit[] { };
+            Commit startingCommit = _commits.FirstOrDefault(x => x.CommitId == commitId);
+            return _commits.Skip(_commits.IndexOf(startingCommit));
+        }
 
-			var startingCommit = this.commits.FirstOrDefault(x => x.CommitId == commitId);
-			return this.commits.Skip(this.commits.IndexOf(startingCommit));
-		}
+        public virtual IEnumerable<Commit> GetFromTo(DateTime start, DateTime end)
+        {
+            ThrowWhenDisposed();
+            Logger.Debug(Resources.GettingAllCommitsFromToTime, start, end);
 
-		public virtual IEnumerable<Commit> GetFromTo(DateTime start, DateTime end)
-		{
-			this.ThrowWhenDisposed();
-			Logger.Debug(Resources.GettingAllCommitsFromToTime, start, end);
+            IEnumerable<Guid> selectedCommitIds = _stamps.Where(x => x.Value >= start && x.Value < end).Select(x => x.Key);
+            Guid firstCommitId = selectedCommitIds.FirstOrDefault();
+            Guid lastCommitId = selectedCommitIds.LastOrDefault();
 
-			var selectedCommitIds = this.stamps.Where(x => x.Value >= start && x.Value < end).Select(x => x.Key);
-			var firstCommitId = selectedCommitIds.FirstOrDefault();
-			var lastCommitId = selectedCommitIds.LastOrDefault();
+            if (lastCommitId == Guid.Empty && lastCommitId == Guid.Empty)
+            {
+                return new Commit[] {};
+            }
 
-			if (lastCommitId == Guid.Empty && lastCommitId == Guid.Empty)
-				return new Commit[] { };
+            Commit startingCommit = _commits.FirstOrDefault(x => x.CommitId == firstCommitId);
+            Commit endingCommit = _commits.FirstOrDefault(x => x.CommitId == lastCommitId);
 
-			var startingCommit = this.commits.FirstOrDefault(x => x.CommitId == firstCommitId);
-			var endingCommit = this.commits.FirstOrDefault(x => x.CommitId == lastCommitId);
+            int startingCommitIndex = (startingCommit == null) ? 0 : _commits.IndexOf(startingCommit);
+            int endingCommitIndex = (endingCommit == null) ? _commits.Count - 1 : _commits.IndexOf(endingCommit);
+            int numberToTake = endingCommitIndex - startingCommitIndex + 1;
 
-			var startingCommitIndex = (startingCommit == null) ? 0 : this.commits.IndexOf(startingCommit);
-			var endingCommitIndex = (endingCommit == null) ? this.commits.Count - 1 : this.commits.IndexOf(endingCommit);
-			var numberToTake = endingCommitIndex - startingCommitIndex + 1;
+            return _commits.Skip(_commits.IndexOf(startingCommit)).Take(numberToTake);
+        }
 
-			return this.commits.Skip(this.commits.IndexOf(startingCommit)).Take(numberToTake);
-		}
+        public virtual void Commit(Commit attempt)
+        {
+            ThrowWhenDisposed();
+            Logger.Debug(Resources.AttemptingToCommit, attempt.CommitId, attempt.StreamId, attempt.CommitSequence);
 
-		public virtual void Commit(Commit attempt)
-		{
-			this.ThrowWhenDisposed();
-			Logger.Debug(Resources.AttemptingToCommit, attempt.CommitId, attempt.StreamId, attempt.CommitSequence);
+            lock (_commits)
+            {
+                if (_commits.Contains(attempt))
+                {
+                    throw new DuplicateCommitException();
+                }
+                if (_commits.Any(c => c.StreamId == attempt.StreamId && c.StreamRevision == attempt.StreamRevision))
+                {
+                    throw new ConcurrencyException();
+                }
 
-			lock (this.commits)
-			{
-				if (this.commits.Contains(attempt))
-					throw new DuplicateCommitException();
-				if (this.commits.Any(c => c.StreamId == attempt.StreamId && c.StreamRevision == attempt.StreamRevision))
-					throw new ConcurrencyException();
+                _stamps[attempt.CommitId] = attempt.CommitStamp;
+                _commits.Add(attempt);
 
-				this.stamps[attempt.CommitId] = attempt.CommitStamp;
-				this.commits.Add(attempt);
+                _undispatched.Add(attempt);
 
-				this.undispatched.Add(attempt);
+                StreamHead head = _heads.FirstOrDefault(x => x.StreamId == attempt.StreamId);
+                _heads.Remove(head);
 
-				var head = this.heads.FirstOrDefault(x => x.StreamId == attempt.StreamId);
-				this.heads.Remove(head);
+                Logger.Debug(Resources.UpdatingStreamHead, attempt.StreamId);
+                int snapshotRevision = head == null ? 0 : head.SnapshotRevision;
+                _heads.Add(new StreamHead(attempt.StreamId, attempt.StreamRevision, snapshotRevision));
+            }
+        }
 
-				Logger.Debug(Resources.UpdatingStreamHead, attempt.StreamId);
-				var snapshotRevision = head == null ? 0 : head.SnapshotRevision;
-				this.heads.Add(new StreamHead(attempt.StreamId, attempt.StreamRevision, snapshotRevision));
-			}
-		}
+        public virtual IEnumerable<Commit> GetUndispatchedCommits()
+        {
+            lock (_commits)
+            {
+                ThrowWhenDisposed();
+                Logger.Debug(Resources.RetrievingUndispatchedCommits, _commits.Count);
+                return _commits.Where(c => _undispatched.Contains(c)).OrderBy(c => c.CommitSequence);
+            }
+        }
 
-		public virtual IEnumerable<Commit> GetUndispatchedCommits()
-		{
-			lock (this.commits)
-			{
-				this.ThrowWhenDisposed();
-				Logger.Debug(Resources.RetrievingUndispatchedCommits, this.commits.Count);
-                return this.commits.Where(c => this.undispatched.Contains(c)).OrderBy(c => c.CommitSequence);
-			}
-		}
-		public virtual void MarkCommitAsDispatched(Commit commit)
-		{
-			this.ThrowWhenDisposed();
-			Logger.Debug(Resources.MarkingAsDispatched, commit.CommitId);
+        public virtual void MarkCommitAsDispatched(Commit commit)
+        {
+            ThrowWhenDisposed();
+            Logger.Debug(Resources.MarkingAsDispatched, commit.CommitId);
 
-			lock (this.commits)
-				this.undispatched.Remove(commit);
-		}
+            lock (_commits)
+                _undispatched.Remove(commit);
+        }
 
-		public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
-		{
-			this.ThrowWhenDisposed();
-			Logger.Debug(Resources.GettingStreamsToSnapshot, maxThreshold);
+        public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
+        {
+            ThrowWhenDisposed();
+            Logger.Debug(Resources.GettingStreamsToSnapshot, maxThreshold);
 
-			lock (this.commits)
-				return this.heads.Where(x => x.HeadRevision >= x.SnapshotRevision + maxThreshold)
-					.Select(stream => new StreamHead(stream.StreamId, stream.HeadRevision, stream.SnapshotRevision));
-		}
-		public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
-		{
-			this.ThrowWhenDisposed();
-			Logger.Debug(Resources.GettingSnapshotForStream, streamId, maxRevision);
+            lock (_commits)
+                return _heads.Where(x => x.HeadRevision >= x.SnapshotRevision + maxThreshold)
+                             .Select(stream => new StreamHead(stream.StreamId, stream.HeadRevision, stream.SnapshotRevision));
+        }
 
-			lock (this.commits)
-				return this.snapshots
-					.Where(x => x.StreamId == streamId && x.StreamRevision <= maxRevision)
-					.OrderByDescending(x => x.StreamRevision)
-					.FirstOrDefault();
-		}
-		public virtual bool AddSnapshot(Snapshot snapshot)
-		{
-			this.ThrowWhenDisposed();
-			Logger.Debug(Resources.AddingSnapshot, snapshot.StreamId, snapshot.StreamRevision);
+        public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
+        {
+            ThrowWhenDisposed();
+            Logger.Debug(Resources.GettingSnapshotForStream, streamId, maxRevision);
 
-			lock (this.commits)
-			{
-				var currentHead = this.heads.FirstOrDefault(h => h.StreamId == snapshot.StreamId);
-				if (currentHead == null)
-					return false;
+            lock (_commits)
+                return _snapshots
+                    .Where(x => x.StreamId == streamId && x.StreamRevision <= maxRevision)
+                    .OrderByDescending(x => x.StreamRevision)
+                    .FirstOrDefault();
+        }
 
-				this.snapshots.Add(snapshot);
-				this.heads.Remove(currentHead);
-				this.heads.Add(new StreamHead(currentHead.StreamId, currentHead.HeadRevision, snapshot.StreamRevision));
-			}
+        public virtual bool AddSnapshot(Snapshot snapshot)
+        {
+            ThrowWhenDisposed();
+            Logger.Debug(Resources.AddingSnapshot, snapshot.StreamId, snapshot.StreamRevision);
 
-			return true;
-		}
+            lock (_commits)
+            {
+                StreamHead currentHead = _heads.FirstOrDefault(h => h.StreamId == snapshot.StreamId);
+                if (currentHead == null)
+                {
+                    return false;
+                }
 
-		public virtual void Purge()
-		{
-			this.ThrowWhenDisposed();
-			Logger.Warn(Resources.PurgingStore);
+                _snapshots.Add(snapshot);
+                _heads.Remove(currentHead);
+                _heads.Add(new StreamHead(currentHead.StreamId, currentHead.HeadRevision, snapshot.StreamRevision));
+            }
 
-			lock (this.commits)
-			{
-				this.commits.Clear();
-				this.snapshots.Clear();
-				this.heads.Clear();
-			}
-		}
+            return true;
+        }
 
-	    public bool IsDisposed
-	    {
-            get { return this.disposed; }
-	    }
-	}
+        public virtual void Purge()
+        {
+            ThrowWhenDisposed();
+            Logger.Warn(Resources.PurgingStore);
+
+            lock (_commits)
+            {
+                _commits.Clear();
+                _snapshots.Clear();
+                _heads.Clear();
+            }
+        }
+
+        public bool IsDisposed
+        {
+            get { return _disposed; }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            _disposed = true;
+            Logger.Info(Resources.DisposingEngine);
+        }
+
+        private void ThrowWhenDisposed()
+        {
+            if (!_disposed)
+            {
+                return;
+            }
+
+            Logger.Warn(Resources.AlreadyDisposed);
+            throw new ObjectDisposedException(Resources.AlreadyDisposed);
+        }
+    }
 }

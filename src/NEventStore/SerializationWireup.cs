@@ -1,36 +1,36 @@
 namespace NEventStore
 {
-    using Logging;
-    using Serialization;
+    using NEventStore.Logging;
+    using NEventStore.Serialization;
 
     public class SerializationWireup : Wireup
-	{
-		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(SerializationWireup));
+    {
+        private static readonly ILog Logger = LogFactory.BuildLogger(typeof (SerializationWireup));
 
-		public SerializationWireup(Wireup inner, ISerialize serializer)
-			: base(inner)
-		{
-			this.Container.Register(serializer);
-		}
+        public SerializationWireup(Wireup inner, ISerialize serializer)
+            : base(inner)
+        {
+            Container.Register(serializer);
+        }
 
-		public SerializationWireup Compress()
-		{
-			Logger.Debug(Messages.ConfiguringCompression);
-			var wrapped = this.Container.Resolve<ISerialize>();
+        public SerializationWireup Compress()
+        {
+            Logger.Debug(Messages.ConfiguringCompression);
+            var wrapped = Container.Resolve<ISerialize>();
 
-			Logger.Debug(Messages.WrappingSerializerGZip, wrapped.GetType());
-			this.Container.Register<ISerialize>(new GzipSerializer(wrapped));
-			return this;
-		}
+            Logger.Debug(Messages.WrappingSerializerGZip, wrapped.GetType());
+            Container.Register<ISerialize>(new GzipSerializer(wrapped));
+            return this;
+        }
 
-		public SerializationWireup EncryptWith(byte[] encryptionKey)
-		{
-			Logger.Debug(Messages.ConfiguringEncryption);
-			var wrapped = this.Container.Resolve<ISerialize>();
+        public SerializationWireup EncryptWith(byte[] encryptionKey)
+        {
+            Logger.Debug(Messages.ConfiguringEncryption);
+            var wrapped = Container.Resolve<ISerialize>();
 
-			Logger.Debug(Messages.WrappingSerializerEncryption, wrapped.GetType());
-			this.Container.Register<ISerialize>(new RijndaelSerializer(wrapped, encryptionKey));
-			return this;
-		}
-	}
+            Logger.Debug(Messages.WrappingSerializerEncryption, wrapped.GetType());
+            Container.Register<ISerialize>(new RijndaelSerializer(wrapped, encryptionKey));
+            return this;
+        }
+    }
 }

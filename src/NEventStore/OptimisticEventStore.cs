@@ -3,111 +3,128 @@ namespace NEventStore
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Logging;
-    using Persistence;
+    using NEventStore.Logging;
+    using NEventStore.Persistence;
 
     public class OptimisticEventStore : IStoreEvents, ICommitEvents
-	{
-		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(OptimisticEventStore));
-		private readonly IPersistStreams persistence;
-		private readonly IEnumerable<IPipelineHook> pipelineHooks;
+    {
+        private static readonly ILog Logger = LogFactory.BuildLogger(typeof (OptimisticEventStore));
+        private readonly IPersistStreams _persistence;
+        private readonly IEnumerable<IPipelineHook> _pipelineHooks;
 
-		public OptimisticEventStore(IPersistStreams persistence, IEnumerable<IPipelineHook> pipelineHooks)
-		{
-			if (persistence == null)
-				throw new ArgumentNullException("persistence");
+        public OptimisticEventStore(IPersistStreams persistence, IEnumerable<IPipelineHook> pipelineHooks)
+        {
+            if (persistence == null)
+            {
+                throw new ArgumentNullException("persistence");
+            }
 
-			this.pipelineHooks = pipelineHooks ?? new IPipelineHook[0];
-            this.persistence = new PipelineHooksAwarePersistanceDecorator(persistence, pipelineHooks);
-		}
+            _pipelineHooks = pipelineHooks ?? new IPipelineHook[0];
+            _persistence = new PipelineHooksAwarePersistanceDecorator(persistence, pipelineHooks);
+        }
 
-		public void Dispose()
-		{
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-		protected virtual void Dispose(bool disposing)
-		{
-			if (!disposing)
-				return;
+        public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
+        {
+            foreach (var commit in _persistence.GetFrom(streamId, minRevision, maxRevision))
+            {
+                Commit filtered = commit;
+                foreach (var hook in _pipelineHooks.Where(x => (filtered = x.Select(filtered)) == null))
+                {
+                    Logger.Info(Resources.PipelineHookSkippedCommit, hook.GetType(), commit.CommitId);
+                    break;
+                }
 
-			Logger.Info(Resources.ShuttingDownStore);
-			this.persistence.Dispose();
-			foreach (var hook in this.pipelineHooks)
-				hook.Dispose();
-		}
+                if (filtered == null)
+                {
+                    Logger.Info(Resources.PipelineHookFilteredCommit);
+                }
+                else
+                {
+                    yield return filtered;
+                }
+            }
+        }
 
-		public virtual IEventStream CreateStream(Guid streamId)
-		{
-			Logger.Info(Resources.CreatingStream, streamId);
-			return new OptimisticEventStream(streamId, this);
-		}
-		public virtual IEventStream OpenStream(Guid streamId, int minRevision, int maxRevision)
-		{
-			maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
+        public virtual void Commit(Commit attempt)
+        {
+            if (!attempt.IsValid() || attempt.IsEmpty())
+            {
+                Logger.Debug(Resources.CommitAttemptFailedIntegrityChecks);
+                return;
+            }
 
-			Logger.Debug(Resources.OpeningStreamAtRevision, streamId, minRevision, maxRevision);
-			return new OptimisticEventStream(streamId, this, minRevision, maxRevision);
-		}
-		public virtual IEventStream OpenStream(Snapshot snapshot, int maxRevision)
-		{
-			if (snapshot == null)
-				throw new ArgumentNullException("snapshot");
+            foreach (var hook in _pipelineHooks)
+            {
+                Logger.Debug(Resources.InvokingPreCommitHooks, attempt.CommitId, hook.GetType());
+                if (hook.PreCommit(attempt))
+                {
+                    continue;
+                }
 
-			Logger.Debug(Resources.OpeningStreamWithSnapshot, snapshot.StreamId, snapshot.StreamRevision, maxRevision);
-			maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
-			return new OptimisticEventStream(snapshot, this, maxRevision);
-		}
+                Logger.Info(Resources.CommitRejectedByPipelineHook, hook.GetType(), attempt.CommitId);
+                return;
+            }
 
-		public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
-		{
-			foreach (var commit in this.persistence.GetFrom(streamId, minRevision, maxRevision))
-			{
-				var filtered = commit;
-				foreach (var hook in this.pipelineHooks.Where(x => (filtered = x.Select(filtered)) == null))
-				{
-					Logger.Info(Resources.PipelineHookSkippedCommit, hook.GetType(), commit.CommitId);
-					break;
-				}
+            Logger.Info(Resources.CommittingAttempt, attempt.CommitId, attempt.Events.Count);
+            _persistence.Commit(attempt);
 
-				if (filtered == null)
-					Logger.Info(Resources.PipelineHookFilteredCommit);
-				else
-					yield return filtered;
-			}
-		}
+            foreach (var hook in _pipelineHooks)
+            {
+                Logger.Debug(Resources.InvokingPostCommitPipelineHooks, attempt.CommitId, hook.GetType());
+                hook.PostCommit(attempt);
+            }
+        }
 
-	    public virtual void Commit(Commit attempt)
-		{
-			if (!attempt.IsValid() || attempt.IsEmpty())
-			{
-				Logger.Debug(Resources.CommitAttemptFailedIntegrityChecks);
-				return;
-			}
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-			foreach (var hook in this.pipelineHooks)
-			{
-				Logger.Debug(Resources.InvokingPreCommitHooks, attempt.CommitId, hook.GetType());
-				if (hook.PreCommit(attempt))
-					continue;
+        public virtual IEventStream CreateStream(Guid streamId)
+        {
+            Logger.Info(Resources.CreatingStream, streamId);
+            return new OptimisticEventStream(streamId, this);
+        }
 
-				Logger.Info(Resources.CommitRejectedByPipelineHook, hook.GetType(), attempt.CommitId);
-				return;
-			}
+        public virtual IEventStream OpenStream(Guid streamId, int minRevision, int maxRevision)
+        {
+            maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
 
-			Logger.Info(Resources.CommittingAttempt, attempt.CommitId, attempt.Events.Count);
-			this.persistence.Commit(attempt);
+            Logger.Debug(Resources.OpeningStreamAtRevision, streamId, minRevision, maxRevision);
+            return new OptimisticEventStream(streamId, this, minRevision, maxRevision);
+        }
 
-			foreach (var hook in this.pipelineHooks)
-			{
-				Logger.Debug(Resources.InvokingPostCommitPipelineHooks, attempt.CommitId, hook.GetType());
-				hook.PostCommit(attempt);
-			}
-		}
+        public virtual IEventStream OpenStream(Snapshot snapshot, int maxRevision)
+        {
+            if (snapshot == null)
+            {
+                throw new ArgumentNullException("snapshot");
+            }
 
-		public virtual IPersistStreams Advanced
-		{
-			get { return this.persistence; }
-		}
-	}
+            Logger.Debug(Resources.OpeningStreamWithSnapshot, snapshot.StreamId, snapshot.StreamRevision, maxRevision);
+            maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
+            return new OptimisticEventStream(snapshot, this, maxRevision);
+        }
+
+        public virtual IPersistStreams Advanced
+        {
+            get { return _persistence; }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposing)
+            {
+                return;
+            }
+
+            Logger.Info(Resources.ShuttingDownStore);
+            _persistence.Dispose();
+            foreach (var hook in _pipelineHooks)
+            {
+                hook.Dispose();
+            }
+        }
+    }
 }

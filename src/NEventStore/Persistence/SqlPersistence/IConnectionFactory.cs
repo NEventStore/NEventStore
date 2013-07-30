@@ -4,8 +4,9 @@ namespace NEventStore.Persistence.SqlPersistence
     using System.Data;
 
     public interface IConnectionFactory
-	{
-		IDbConnection OpenMaster(Guid streamId);
-		IDbConnection OpenReplica(Guid streamId);
-	}
+    {
+        IDbConnection OpenMaster(Guid streamId);
+
+        IDbConnection OpenReplica(Guid streamId);
+    }
 }

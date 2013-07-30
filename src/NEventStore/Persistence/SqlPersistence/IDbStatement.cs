@@ -3,20 +3,22 @@ namespace NEventStore.Persistence.SqlPersistence
     using System;
     using System.Collections.Generic;
     using System.Data;
-    using SqlDialects;
+    using NEventStore.Persistence.SqlPersistence.SqlDialects;
 
     public interface IDbStatement : IDisposable
-	{
-		void AddParameter(string name, object value);
+    {
+        int PageSize { get; set; }
 
-		int ExecuteNonQuery(string commandText);
-		int ExecuteWithoutExceptions(string commandText);
+        void AddParameter(string name, object value);
 
-		object ExecuteScalar(string commandText);
+        int ExecuteNonQuery(string commandText);
 
-		int PageSize { get; set; }
+        int ExecuteWithoutExceptions(string commandText);
 
-		IEnumerable<IDataRecord> ExecuteWithQuery(string queryText);
-		IEnumerable<IDataRecord> ExecutePagedQuery(string queryText, NextPageDelegate nextpage);
-	}
+        object ExecuteScalar(string commandText);
+
+        IEnumerable<IDataRecord> ExecuteWithQuery(string queryText);
+
+        IEnumerable<IDataRecord> ExecutePagedQuery(string queryText, NextPageDelegate nextpage);
+    }
 }

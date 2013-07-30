@@ -5,166 +5,199 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects
     using System.Collections.Generic;
     using System.Data;
     using System.Transactions;
-    using Logging;
+    using NEventStore.Logging;
 
     public class PagedEnumerationCollection : IEnumerable<IDataRecord>, IEnumerator<IDataRecord>
-	{
-		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(PagedEnumerationCollection));
-		private readonly IEnumerable<IDisposable> disposable = new IDisposable[] { };
-		private readonly ISqlDialect dialect;
-		private readonly IDbCommand command;
-		private readonly NextPageDelegate nextpage;
-		private readonly int pageSize;
-		private readonly TransactionScope scope;
+    {
+        private static readonly ILog Logger = LogFactory.BuildLogger(typeof (PagedEnumerationCollection));
+        private readonly IDbCommand _command;
+        private readonly ISqlDialect _dialect;
+        private readonly IEnumerable<IDisposable> _disposable = new IDisposable[] {};
+        private readonly NextPageDelegate _nextpage;
+        private readonly int _pageSize;
+        private readonly TransactionScope _scope;
 
-		private IDataReader reader;
-		private int position;
-		private IDataRecord current;
-		private bool disposed;
+        private IDataRecord _current;
+        private bool _disposed;
+        private int _position;
+        private IDataReader _reader;
 
-		public PagedEnumerationCollection(
-			TransactionScope scope,
-			ISqlDialect dialect,
-			IDbCommand command,
-			NextPageDelegate nextpage,
-			int pageSize,
-			params IDisposable[] disposable)
-		{
-			this.scope = scope;
-			this.dialect = dialect;
-			this.command = command;
-			this.nextpage = nextpage;
-			this.pageSize = pageSize;
-			this.disposable = disposable ?? this.disposable;
-		}
+        public PagedEnumerationCollection(
+            TransactionScope scope,
+            ISqlDialect dialect,
+            IDbCommand command,
+            NextPageDelegate nextpage,
+            int pageSize,
+            params IDisposable[] disposable)
+        {
+            _scope = scope;
+            _dialect = dialect;
+            _command = command;
+            _nextpage = nextpage;
+            _pageSize = pageSize;
+            _disposable = disposable ?? _disposable;
+        }
 
-		public void Dispose()
-		{
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-		protected virtual void Dispose(bool disposing)
-		{
-			if (!disposing || this.disposed)
-				return;
+        public virtual IEnumerator<IDataRecord> GetEnumerator()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(Messages.ObjectAlreadyDisposed);
+            }
 
-			this.disposed = true;
-			this.position = 0;
-			this.current = null;
+            return this;
+        }
 
-			if (this.reader != null)
-				this.reader.Dispose();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
 
-			this.reader = null;
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-			if (this.command != null)
-				this.command.Dispose();
+        bool IEnumerator.MoveNext()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(Messages.ObjectAlreadyDisposed);
+            }
 
-			// queries do not modify state and thus calling Complete() on a so-called 'failed' query only
-			// allows any outer transaction scope to decide the fate of the transaction
-			if (this.scope != null)
-				this.scope.Complete(); // caller will dispose scope.
+            if (MoveToNextRecord())
+            {
+                return true;
+            }
 
-			foreach (var dispose in this.disposable)
-				dispose.Dispose();
-		}
+            Logger.Verbose(Messages.QueryCompleted);
+            return false;
+        }
 
-		public virtual IEnumerator<IDataRecord> GetEnumerator()
-		{
-			if (this.disposed)
-				throw new ObjectDisposedException(Messages.ObjectAlreadyDisposed);
+        public virtual void Reset()
+        {
+            throw new NotSupportedException("Forward-only readers.");
+        }
 
-			return this;
-		}
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return this.GetEnumerator();
-		}
+        public virtual IDataRecord Current
+        {
+            get
+            {
+                if (_disposed)
+                {
+                    throw new ObjectDisposedException(Messages.ObjectAlreadyDisposed);
+                }
 
-		bool IEnumerator.MoveNext()
-		{
-			if (this.disposed)
-				throw new ObjectDisposedException(Messages.ObjectAlreadyDisposed);
+                return _current = _reader;
+            }
+        }
 
-			if (this.MoveToNextRecord())
-				return true;
+        object IEnumerator.Current
+        {
+            get { return ((IEnumerator<IDataRecord>) this).Current; }
+        }
 
-			Logger.Verbose(Messages.QueryCompleted);
-			return false;
-		}
-		private bool MoveToNextRecord()
-		{
-			if (this.pageSize > 0 && this.position >= this.pageSize)
-			{
-				this.command.SetParameter(this.dialect.Skip, this.position);
-				this.nextpage(this.command, this.current);
-			}
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposing || _disposed)
+            {
+                return;
+            }
 
-			this.reader = this.reader ?? this.OpenNextPage();
+            _disposed = true;
+            _position = 0;
+            _current = null;
 
-			if (this.reader.Read())
-				return this.IncrementPosition();
+            if (_reader != null)
+            {
+                _reader.Dispose();
+            }
 
-			if (!this.PagingEnabled())
-				return false;
+            _reader = null;
 
-			if (!this.PageCompletelyEnumerated())
-				return false;
+            if (_command != null)
+            {
+                _command.Dispose();
+            }
 
-			Logger.Verbose(Messages.EnumeratedRowCount, this.position);
-			this.reader.Dispose();
-			this.reader = this.OpenNextPage();
+            // queries do not modify state and thus calling Complete() on a so-called 'failed' query only
+            // allows any outer transaction scope to decide the fate of the transaction
+            if (_scope != null)
+            {
+                _scope.Complete(); // caller will dispose scope.
+            }
 
-			if (this.reader.Read())
-				return this.IncrementPosition();
+            foreach (var dispose in _disposable)
+            {
+                dispose.Dispose();
+            }
+        }
 
-			return false;
-		}
+        private bool MoveToNextRecord()
+        {
+            if (_pageSize > 0 && _position >= _pageSize)
+            {
+                _command.SetParameter(_dialect.Skip, _position);
+                _nextpage(_command, _current);
+            }
 
-		private bool IncrementPosition()
-		{
-			this.position++;
-			return true;
-		}
+            _reader = _reader ?? OpenNextPage();
 
-		private bool PagingEnabled()
-		{
-			return this.pageSize > 0;
-		}
-		private bool PageCompletelyEnumerated()
-		{
-			return this.position > 0 && 0 == this.position % this.pageSize;
-		}
-		private IDataReader OpenNextPage()
-		{
-			try
-			{
-				return this.command.ExecuteReader();
-			}
-			catch (Exception e)
-			{
-				Logger.Debug(Messages.EnumerationThrewException, e.GetType());
-				throw new StorageUnavailableException(e.Message, e);
-			}
-		}
+            if (_reader.Read())
+            {
+                return IncrementPosition();
+            }
 
-		public virtual void Reset()
-		{
-			throw new NotSupportedException("Forward-only readers.");
-		}
-		public virtual IDataRecord Current
-		{
-			get
-			{
-				if (this.disposed)
-					throw new ObjectDisposedException(Messages.ObjectAlreadyDisposed);
+            if (!PagingEnabled())
+            {
+                return false;
+            }
 
-				return this.current = this.reader;
-			}
-		}
-		object IEnumerator.Current
-		{
-			get { return ((IEnumerator<IDataRecord>)this).Current; }
-		}
-	}
+            if (!PageCompletelyEnumerated())
+            {
+                return false;
+            }
+
+            Logger.Verbose(Messages.EnumeratedRowCount, _position);
+            _reader.Dispose();
+            _reader = OpenNextPage();
+
+            if (_reader.Read())
+            {
+                return IncrementPosition();
+            }
+
+            return false;
+        }
+
+        private bool IncrementPosition()
+        {
+            _position++;
+            return true;
+        }
+
+        private bool PagingEnabled()
+        {
+            return _pageSize > 0;
+        }
+
+        private bool PageCompletelyEnumerated()
+        {
+            return _position > 0 && 0 == _position%_pageSize;
+        }
+
+        private IDataReader OpenNextPage()
+        {
+            try
+            {
+                return _command.ExecuteReader();
+            }
+            catch (Exception e)
+            {
+                Logger.Debug(Messages.EnumerationThrewException, e.GetType());
+                throw new StorageUnavailableException(e.Message, e);
+            }
+        }
+    }
 }

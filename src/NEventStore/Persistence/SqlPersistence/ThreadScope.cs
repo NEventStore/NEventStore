@@ -3,77 +3,96 @@ namespace NEventStore.Persistence.SqlPersistence
     using System;
     using System.Threading;
     using System.Web;
-    using Logging;
+    using NEventStore.Logging;
 
     public class ThreadScope<T> : IDisposable where T : class
-	{
-		private readonly ILog logger = LogFactory.BuildLogger(typeof(ThreadScope<T>));
-		private readonly HttpContext context = HttpContext.Current;
-		private readonly string threadKey;
-		private readonly T current;
-		private readonly bool rootScope;
-		private bool disposed;
+    {
+        private readonly HttpContext _context = HttpContext.Current;
+        private readonly T _current;
+        private readonly ILog _logger = LogFactory.BuildLogger(typeof (ThreadScope<T>));
+        private readonly bool _rootScope;
+        private readonly string _threadKey;
+        private bool _disposed;
 
-		public ThreadScope(string key, Func<T> factory)
-		{
-			this.threadKey = typeof(ThreadScope<T>).Name + ":[{0}]".FormatWith(key ?? string.Empty);
+        public ThreadScope(string key, Func<T> factory)
+        {
+            _threadKey = typeof (ThreadScope<T>).Name + ":[{0}]".FormatWith(key ?? string.Empty);
 
-			var parent = this.Load();
-			this.rootScope = parent == null;
-			this.logger.Debug(Messages.OpeningThreadScope, this.threadKey, this.rootScope);
+            T parent = Load();
+            _rootScope = parent == null;
+            _logger.Debug(Messages.OpeningThreadScope, _threadKey, _rootScope);
 
-			this.current = parent ?? factory();
+            _current = parent ?? factory();
 
-			if (this.current == null)
-				throw new ArgumentException(Messages.BadFactoryResult, "factory");
+            if (_current == null)
+            {
+                throw new ArgumentException(Messages.BadFactoryResult, "factory");
+            }
 
-			if (this.rootScope)
-				this.Store(this.current);
-		}
+            if (_rootScope)
+            {
+                Store(_current);
+            }
+        }
 
-		public void Dispose()
-		{
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-		protected virtual void Dispose(bool disposing)
-		{
-			if (!disposing || this.disposed)
-				return;
+        public T Current
+        {
+            get { return _current; }
+        }
 
-			this.logger.Debug(Messages.DisposingThreadScope, this.rootScope);
-			this.disposed = true;
-			if (!this.rootScope)
-				return;
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-			this.logger.Verbose(Messages.CleaningRootThreadScope);
-			this.Store(null);
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposing || _disposed)
+            {
+                return;
+            }
 
-			var resource = this.current as IDisposable;
-			if (resource == null)
-				return;
+            _logger.Debug(Messages.DisposingThreadScope, _rootScope);
+            _disposed = true;
+            if (!_rootScope)
+            {
+                return;
+            }
 
-			this.logger.Verbose(Messages.DisposingRootThreadScopeResources);
-			resource.Dispose();
-		}
+            _logger.Verbose(Messages.CleaningRootThreadScope);
+            Store(null);
 
-		private T Load()
-		{
-			if (this.context != null)
-				return this.context.Items[this.threadKey] as T;
+            var resource = _current as IDisposable;
+            if (resource == null)
+            {
+                return;
+            }
 
-			return Thread.GetData(Thread.GetNamedDataSlot(this.threadKey)) as T;
-		}
-		private void Store(T value)
-		{
-			if (this.context != null)
-				this.context.Items[this.threadKey] = value;
-			else
-				Thread.SetData(Thread.GetNamedDataSlot(this.threadKey), value);
-		}
-		public T Current
-		{
-			get { return this.current; }
-		}
-	}
+            _logger.Verbose(Messages.DisposingRootThreadScopeResources);
+            resource.Dispose();
+        }
+
+        private T Load()
+        {
+            if (_context != null)
+            {
+                return _context.Items[_threadKey] as T;
+            }
+
+            return Thread.GetData(Thread.GetNamedDataSlot(_threadKey)) as T;
+        }
+
+        private void Store(T value)
+        {
+            if (_context != null)
+            {
+                _context.Items[_threadKey] = value;
+            }
+            else
+            {
+                Thread.SetData(Thread.GetNamedDataSlot(_threadKey), value);
+            }
+        }
+    }
 }

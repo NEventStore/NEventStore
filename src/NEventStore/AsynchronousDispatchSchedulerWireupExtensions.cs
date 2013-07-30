@@ -1,17 +1,18 @@
 namespace NEventStore
 {
-    using Dispatcher;
+    using NEventStore.Dispatcher;
 
     public static class AsynchronousDispatchSchedulerWireupExtensions
-	{
-		public static AsynchronousDispatchSchedulerWireup UsingAsynchronousDispatchScheduler(this Wireup wireup)
-		{
-			return wireup.UsingAsynchronousDispatchScheduler(null);
-		}
-		public static AsynchronousDispatchSchedulerWireup UsingAsynchronousDispatchScheduler(
-			this Wireup wireup, IDispatchCommits dispatcher)
-		{
-			return new AsynchronousDispatchSchedulerWireup(wireup, dispatcher);
-		}
-	}
+    {
+        public static AsynchronousDispatchSchedulerWireup UsingAsynchronousDispatchScheduler(this Wireup wireup)
+        {
+            return wireup.UsingAsynchronousDispatchScheduler(null);
+        }
+
+        public static AsynchronousDispatchSchedulerWireup UsingAsynchronousDispatchScheduler(
+            this Wireup wireup, IDispatchCommits dispatcher)
+        {
+            return new AsynchronousDispatchSchedulerWireup(wireup, dispatcher);
+        }
+    }
 }

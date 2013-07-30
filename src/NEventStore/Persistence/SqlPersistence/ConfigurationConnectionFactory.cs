@@ -5,162 +5,189 @@ namespace NEventStore.Persistence.SqlPersistence
     using System.Configuration;
     using System.Data;
     using System.Data.Common;
+    using System.Globalization;
     using System.Linq;
-    using Logging;
+    using NEventStore.Logging;
 
     public class ConfigurationConnectionFactory : IConnectionFactory
-	{
-		private const int DefaultShards = 16;
-		private const string DefaultConnectionName = "EventStore";
+    {
+        private const int DefaultShards = 16;
+        private const string DefaultConnectionName = "EventStore";
 
-		private static readonly ILog Logger = LogFactory.BuildLogger(typeof(ConfigurationConnectionFactory));
-		private static readonly IDictionary<string, ConnectionStringSettings> CachedSettings =
-			new Dictionary<string, ConnectionStringSettings>();
-		private static readonly IDictionary<string, DbProviderFactory> CachedFactories =
-			new Dictionary<string, DbProviderFactory>();
+        private static readonly ILog Logger = LogFactory.BuildLogger(typeof (ConfigurationConnectionFactory));
 
-		private readonly string masterConnectionName;
-		private readonly string replicaConnectionName;
-		private readonly int shards;
+        private static readonly IDictionary<string, ConnectionStringSettings> CachedSettings =
+            new Dictionary<string, ConnectionStringSettings>();
 
-		public ConfigurationConnectionFactory(string connectionName)
-			: this(connectionName, connectionName, DefaultShards)
-		{
-		}
-		public ConfigurationConnectionFactory(
-			string masterConnectionName, string replicaConnectionName, int shards)
-		{
-			this.masterConnectionName = masterConnectionName ?? DefaultConnectionName;
-			this.replicaConnectionName = replicaConnectionName ?? this.masterConnectionName;
-			this.shards = shards >= 0 ? shards : DefaultShards;
+        private static readonly IDictionary<string, DbProviderFactory> CachedFactories =
+            new Dictionary<string, DbProviderFactory>();
 
-			Logger.Debug(Messages.ConfiguringConnections,
-				this.masterConnectionName, this.replicaConnectionName, this.shards);
-		}
+        private readonly string _masterConnectionName;
+        private readonly string _replicaConnectionName;
+        private readonly int _shards;
 
-		public static IDisposable OpenScope()
-		{
-			var settings = CachedSettings.FirstOrDefault();
-			if (string.IsNullOrEmpty(settings.Key))
-				throw new ConfigurationErrorsException(Messages.NotConnectionsAvailable);
+        public ConfigurationConnectionFactory(string connectionName)
+            : this(connectionName, connectionName, DefaultShards)
+        {}
 
-			return OpenScope(Guid.Empty, settings.Key);
-		}
-		public static IDisposable OpenScope(string connectionName)
-		{
-			return OpenScope(Guid.Empty, connectionName);
-		}
-		public static IDisposable OpenScope(Guid streamId, string connectionName)
-		{
-			var factory = new ConfigurationConnectionFactory(connectionName);
-			return factory.Open(streamId, connectionName);
-		}
+        public ConfigurationConnectionFactory(
+            string masterConnectionName, string replicaConnectionName, int shards)
+        {
+            _masterConnectionName = masterConnectionName ?? DefaultConnectionName;
+            _replicaConnectionName = replicaConnectionName ?? _masterConnectionName;
+            _shards = shards >= 0 ? shards : DefaultShards;
 
-		public virtual ConnectionStringSettings Settings
-		{
-			get { return this.GetConnectionStringSettings(this.masterConnectionName); }
-		}
+            Logger.Debug(Messages.ConfiguringConnections,
+                _masterConnectionName, _replicaConnectionName, _shards);
+        }
 
-		public virtual IDbConnection OpenMaster(Guid streamId)
-		{
-			Logger.Verbose(Messages.OpeningMasterConnection, this.masterConnectionName);
-			return this.Open(streamId, this.masterConnectionName);
-		}
-		public virtual IDbConnection OpenReplica(Guid streamId)
-		{
-			Logger.Verbose(Messages.OpeningReplicaConnection, this.replicaConnectionName);
-			return this.Open(streamId, this.replicaConnectionName);
-		}
-		protected virtual IDbConnection Open(Guid streamId, string connectionName)
-		{
-			var setting = this.GetSetting(connectionName);
-			var connectionString = this.BuildConnectionString(streamId, setting);
-			return new ConnectionScope(connectionString, () => this.Open(connectionString, setting));
-		}
-		protected virtual IDbConnection Open(string connectionString, ConnectionStringSettings setting)
-		{
-			var factory = this.GetFactory(setting);
-			var connection = factory.CreateConnection();
-			if (connection == null)
-				throw new ConfigurationErrorsException(Messages.BadConnectionName);
+        public virtual ConnectionStringSettings Settings
+        {
+            get { return GetConnectionStringSettings(_masterConnectionName); }
+        }
 
-			connection.ConnectionString = connectionString;
+        public virtual IDbConnection OpenMaster(Guid streamId)
+        {
+            Logger.Verbose(Messages.OpeningMasterConnection, _masterConnectionName);
+            return Open(streamId, _masterConnectionName);
+        }
 
-			try
-			{
-				Logger.Verbose(Messages.OpeningConnection, setting.Name);
-				connection.Open();
-			}
-			catch (Exception e)
-			{
-				Logger.Warn(Messages.OpenFailed, setting.Name);
-				throw new StorageUnavailableException(e.Message, e);
-			}
+        public virtual IDbConnection OpenReplica(Guid streamId)
+        {
+            Logger.Verbose(Messages.OpeningReplicaConnection, _replicaConnectionName);
+            return Open(streamId, _replicaConnectionName);
+        }
 
-			return connection;
-		}
+        public static IDisposable OpenScope()
+        {
+            KeyValuePair<string, ConnectionStringSettings> settings = CachedSettings.FirstOrDefault();
+            if (string.IsNullOrEmpty(settings.Key))
+            {
+                throw new ConfigurationErrorsException(Messages.NotConnectionsAvailable);
+            }
 
-		protected virtual ConnectionStringSettings GetSetting(string connectionName)
-		{
-			lock (CachedSettings)
-			{
-				ConnectionStringSettings setting;
-				if (CachedSettings.TryGetValue(connectionName, out setting))
-					return setting;
+            return OpenScope(Guid.Empty, settings.Key);
+        }
 
-				setting = this.GetConnectionStringSettings(connectionName);
-				return CachedSettings[connectionName] = setting;
-			}
-		}
-		protected virtual DbProviderFactory GetFactory(ConnectionStringSettings setting)
-		{
-			lock (CachedFactories)
-			{
-				DbProviderFactory factory;
-				if (CachedFactories.TryGetValue(setting.Name, out factory))
-					return factory;
+        public static IDisposable OpenScope(string connectionName)
+        {
+            return OpenScope(Guid.Empty, connectionName);
+        }
 
-				factory = DbProviderFactories.GetFactory(setting.ProviderName);
-				Logger.Debug(Messages.DiscoveredConnectionProvider, setting.Name, factory.GetType());
-				return CachedFactories[setting.Name] = factory;
-			}
-		}
-		protected virtual ConnectionStringSettings GetConnectionStringSettings(string connectionName)
-		{
-			Logger.Debug(Messages.DiscoveringConnectionSettings, connectionName);
+        public static IDisposable OpenScope(Guid streamId, string connectionName)
+        {
+            var factory = new ConfigurationConnectionFactory(connectionName);
+            return factory.Open(streamId, connectionName);
+        }
 
-			var settings = ConfigurationManager.ConnectionStrings
-				.Cast<ConnectionStringSettings>()
-				.FirstOrDefault(x => x.Name == connectionName);
+        protected virtual IDbConnection Open(Guid streamId, string connectionName)
+        {
+            ConnectionStringSettings setting = GetSetting(connectionName);
+            string connectionString = BuildConnectionString(streamId, setting);
+            return new ConnectionScope(connectionString, () => Open(connectionString, setting));
+        }
 
-			if (settings == null)
-				throw new ConfigurationErrorsException(
-					Messages.ConnectionNotFound.FormatWith(connectionName));
+        protected virtual IDbConnection Open(string connectionString, ConnectionStringSettings setting)
+        {
+            DbProviderFactory factory = GetFactory(setting);
+            DbConnection connection = factory.CreateConnection();
+            if (connection == null)
+            {
+                throw new ConfigurationErrorsException(Messages.BadConnectionName);
+            }
 
-			if ((settings.ConnectionString ?? string.Empty).Trim().Length == 0)
-				throw new ConfigurationErrorsException(
-					Messages.MissingConnectionString.FormatWith(connectionName));
+            connection.ConnectionString = connectionString;
 
-			if ((settings.ProviderName ?? string.Empty).Trim().Length == 0)
-				throw new ConfigurationErrorsException(
-					Messages.MissingProviderName.FormatWith(connectionName));
+            try
+            {
+                Logger.Verbose(Messages.OpeningConnection, setting.Name);
+                connection.Open();
+            }
+            catch (Exception e)
+            {
+                Logger.Warn(Messages.OpenFailed, setting.Name);
+                throw new StorageUnavailableException(e.Message, e);
+            }
 
-			return settings;
-		}
+            return connection;
+        }
 
-		protected virtual string BuildConnectionString(Guid streamId, ConnectionStringSettings setting)
-		{
-			if (this.shards == 0)
-				return setting.ConnectionString;
+        protected virtual ConnectionStringSettings GetSetting(string connectionName)
+        {
+            lock (CachedSettings)
+            {
+                ConnectionStringSettings setting;
+                if (CachedSettings.TryGetValue(connectionName, out setting))
+                {
+                    return setting;
+                }
 
-			Logger.Verbose(Messages.EmbeddingShardKey, setting.Name);
-			return setting.ConnectionString.FormatWith(this.ComputeHashKey(streamId));
-		}
-		protected virtual string ComputeHashKey(Guid streamId)
-		{
-			// simple sharding scheme which could easily be improved through such techniques
-			// as consistent hashing (Amazon Dynamo) or other kinds of sharding.
-			return (this.shards == 0 ? 0 : streamId.ToByteArray()[0] % this.shards).ToString();
-		}
-	}
+                setting = GetConnectionStringSettings(connectionName);
+                return CachedSettings[connectionName] = setting;
+            }
+        }
+
+        protected virtual DbProviderFactory GetFactory(ConnectionStringSettings setting)
+        {
+            lock (CachedFactories)
+            {
+                DbProviderFactory factory;
+                if (CachedFactories.TryGetValue(setting.Name, out factory))
+                {
+                    return factory;
+                }
+
+                factory = DbProviderFactories.GetFactory(setting.ProviderName);
+                Logger.Debug(Messages.DiscoveredConnectionProvider, setting.Name, factory.GetType());
+                return CachedFactories[setting.Name] = factory;
+            }
+        }
+
+        protected virtual ConnectionStringSettings GetConnectionStringSettings(string connectionName)
+        {
+            Logger.Debug(Messages.DiscoveringConnectionSettings, connectionName);
+
+            ConnectionStringSettings settings = ConfigurationManager.ConnectionStrings
+                                                                    .Cast<ConnectionStringSettings>()
+                                                                    .FirstOrDefault(x => x.Name == connectionName);
+
+            if (settings == null)
+            {
+                throw new ConfigurationErrorsException(
+                    Messages.ConnectionNotFound.FormatWith(connectionName));
+            }
+
+            if ((settings.ConnectionString ?? string.Empty).Trim().Length == 0)
+            {
+                throw new ConfigurationErrorsException(
+                    Messages.MissingConnectionString.FormatWith(connectionName));
+            }
+
+            if ((settings.ProviderName ?? string.Empty).Trim().Length == 0)
+            {
+                throw new ConfigurationErrorsException(
+                    Messages.MissingProviderName.FormatWith(connectionName));
+            }
+
+            return settings;
+        }
+
+        protected virtual string BuildConnectionString(Guid streamId, ConnectionStringSettings setting)
+        {
+            if (_shards == 0)
+            {
+                return setting.ConnectionString;
+            }
+
+            Logger.Verbose(Messages.EmbeddingShardKey, setting.Name);
+            return setting.ConnectionString.FormatWith(ComputeHashKey(streamId));
+        }
+
+        protected virtual string ComputeHashKey(Guid streamId)
+        {
+            // simple sharding scheme which could easily be improved through such techniques
+            // as consistent hashing (Amazon Dynamo) or other kinds of sharding.
+            return (_shards == 0 ? 0 : streamId.ToByteArray()[0]%_shards).ToString(CultureInfo.InvariantCulture);
+        }
+    }
 }

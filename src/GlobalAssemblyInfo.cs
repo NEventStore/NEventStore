@@ -3,6 +3,7 @@
 //	 Copyright (c) Jonathan Oliver. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+
 using System;
 using System.Reflection;
 using System.Resources;
