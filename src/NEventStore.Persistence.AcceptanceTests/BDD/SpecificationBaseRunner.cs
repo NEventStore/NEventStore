@@ -6,22 +6,22 @@
     using Xunit;
     using Xunit.Sdk;
 
-    class SpecificationBaseRunner : ITestClassCommand
+    internal class SpecificationBaseRunner : ITestClassCommand
     {
-        SpecificationBase objectUnderTest;
-        readonly List<object> fixtures = new List<object>();
+        private readonly List<object> _fixtures = new List<object>();
+        private SpecificationBase _objectUnderTest;
 
         public SpecificationBase ObjectUnderTest
         {
             get
             {
-                if (objectUnderTest == null)
+                if (_objectUnderTest == null)
                 {
                     GuardTypeUnderTest();
-                    objectUnderTest = (SpecificationBase)Activator.CreateInstance(TypeUnderTest.Type);
+                    _objectUnderTest = (SpecificationBase) Activator.CreateInstance(TypeUnderTest.Type);
                 }
 
-                return objectUnderTest;
+                return _objectUnderTest;
             }
         }
 
@@ -57,11 +57,13 @@
             {
                 ObjectUnderTest.OnFinish();
 
-                foreach (object fixtureData in fixtures)
+                foreach (var fixtureData in _fixtures)
                 {
                     var disposable = fixtureData as IDisposable;
                     if (disposable != null)
+                    {
                         disposable.Dispose();
+                    }
                 }
 
                 return null;
@@ -71,11 +73,11 @@
                 return ex;
             }
         }
-        
+
         public IEnumerable<ITestCommand> EnumerateTestCommands(IMethodInfo testMethod)
         {
             string displayName = (TypeUnderTest.Type.Name + ", it " + testMethod.Name).Replace('_', ' ');
-            return new[] { new SpecTestCommand(testMethod, displayName) };
+            return new[] {new SpecTestCommand(testMethod, displayName)};
         }
 
         public IEnumerable<IMethodInfo> EnumerateTestMethods()
@@ -90,29 +92,31 @@
             return MethodUtility.IsTest(testMethod);
         }
 
-        void SetupFixtures()
+        private void SetupFixtures()
         {
             try
             {
-                foreach (Type @interface in TypeUnderTest.Type.GetInterfaces())
+                foreach (var @interface in TypeUnderTest.Type.GetInterfaces())
                 {
                     if (@interface.IsGenericType)
                     {
-                        var genericDefinition = @interface.GetGenericTypeDefinition();
+                        Type genericDefinition = @interface.GetGenericTypeDefinition();
 
-                        if (genericDefinition == typeof(IUseFixture<>))
+                        if (genericDefinition == typeof (IUseFixture<>))
                         {
-                            var dataType = @interface.GetGenericArguments()[0];
+                            Type dataType = @interface.GetGenericArguments()[0];
                             if (dataType == TypeUnderTest.Type)
+                            {
                                 throw new InvalidOperationException("Cannot use a test class as its own fixture data");
+                            }
 
                             object fixtureData = null;
 
                             fixtureData = Activator.CreateInstance(dataType);
 
-                            var method = @interface.GetMethod("SetFixture", new Type[] { dataType });
-                            fixtures.Add(fixtureData);
-                            method.Invoke(ObjectUnderTest, new[] { fixtureData });
+                            MethodInfo method = @interface.GetMethod("SetFixture", new[] {dataType});
+                            _fixtures.Add(fixtureData);
+                            method.Invoke(ObjectUnderTest, new[] {fixtureData});
                         }
                     }
                 }
@@ -123,19 +127,23 @@
             }
         }
 
-        void GuardTypeUnderTest()
+        private void GuardTypeUnderTest()
         {
             if (TypeUnderTest == null)
+            {
                 throw new InvalidOperationException("Forgot to set TypeUnderTest before calling ObjectUnderTest");
+            }
 
-            if (!typeof(SpecificationBase).IsAssignableFrom(TypeUnderTest.Type))
+            if (!typeof (SpecificationBase).IsAssignableFrom(TypeUnderTest.Type))
+            {
                 throw new InvalidOperationException("SpecificationBaseRunner can only be used with types that derive from SpecificationBase");
+            }
         }
-        
-        class SpecTestCommand : TestCommand
+
+        private class SpecTestCommand : TestCommand
         {
-            public SpecTestCommand(IMethodInfo testMethod, string displayName)
-                : base(testMethod, displayName, 0) { }
+            public SpecTestCommand(IMethodInfo testMethod, string displayName) : base(testMethod, displayName, 0)
+            {}
 
             public override MethodResult Execute(object testClass)
             {

@@ -1,6 +1,5 @@
 ﻿namespace NEventStore.Persistence.AcceptanceTests
 {
-    using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.SqlPersistence;
     using NEventStore.Persistence.SqlPersistence.SqlDialects;
     using NEventStore.Serialization;
@@ -9,11 +8,10 @@
     {
         public PersistenceEngineFixture()
         {
-            this.createPersistence = () =>
-                new SqlPersistenceFactory(
-                    new EnviromentConnectionFactory("Firebird", "FirebirdSql.Data.FirebirdClient"),
-                    new BinarySerializer(),
-                    new FirebirdSqlDialect()).Build();
+            _createPersistence = () =>
+                    new SqlPersistenceFactory(new EnviromentConnectionFactory("Firebird", "FirebirdSql.Data.FirebirdClient"),
+                        new BinarySerializer(),
+                        new FirebirdSqlDialect()).Build();
         }
     }
 }

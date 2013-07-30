@@ -2,36 +2,35 @@
 {
     using System.Configuration;
     using MongoDB.Driver;
-    using NEventStore.Persistence;
     using NEventStore.Serialization;
 
     public class MongoPersistenceFactory : IPersistenceFactory
-	{
-		private readonly string connectionName;
-		private readonly IDocumentSerializer serializer;
+    {
+        private readonly string _connectionName;
+        private readonly IDocumentSerializer _serializer;
 
-		public MongoPersistenceFactory(string connectionName, IDocumentSerializer serializer)
-		{
-			this.connectionName = connectionName;
-			this.serializer = serializer;
-		}
+        public MongoPersistenceFactory(string connectionName, IDocumentSerializer serializer)
+        {
+            _connectionName = connectionName;
+            _serializer = serializer;
+        }
 
-		public virtual IPersistStreams Build()
-		{
-			var connectionString = this.TransformConnectionString(this.GetConnectionString());
+        public virtual IPersistStreams Build()
+        {
+            string connectionString = TransformConnectionString(GetConnectionString());
             var builder = new MongoUrlBuilder(connectionString);
-		    var database = (new MongoClient(connectionString)).GetServer().GetDatabase(builder.DatabaseName);
-			return new MongoPersistenceEngine(database, this.serializer);
-		}
+            MongoDatabase database = (new MongoClient(connectionString)).GetServer().GetDatabase(builder.DatabaseName);
+            return new MongoPersistenceEngine(database, _serializer);
+        }
 
-		protected virtual string GetConnectionString()
-		{
-			return ConfigurationManager.ConnectionStrings[this.connectionName].ConnectionString;
-		}
+        protected virtual string GetConnectionString()
+        {
+            return ConfigurationManager.ConnectionStrings[_connectionName].ConnectionString;
+        }
 
-		protected virtual string TransformConnectionString(string connectionString)
-		{
-			return connectionString;
-		}
-	}
+        protected virtual string TransformConnectionString(string connectionString)
+        {
+            return connectionString;
+        }
+    }
 }

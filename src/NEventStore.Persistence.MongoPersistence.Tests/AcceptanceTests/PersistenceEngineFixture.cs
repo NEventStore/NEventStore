@@ -1,13 +1,12 @@
-﻿using EventStore.Persistence.MongoPersistence.Tests;
-
-namespace NEventStore.Persistence.AcceptanceTests
+﻿namespace NEventStore.Persistence.AcceptanceTests
 {
+    using EventStore.Persistence.MongoPersistence.Tests;
+
     public partial class PersistenceEngineFixture
     {
         public PersistenceEngineFixture()
         {
-            this.createPersistence = () =>
-                new AcceptanceTestMongoPersistenceFactory().Build();
+            _createPersistence = () => new AcceptanceTestMongoPersistenceFactory().Build();
         }
     }
 }

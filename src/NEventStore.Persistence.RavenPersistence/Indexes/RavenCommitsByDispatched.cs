@@ -4,11 +4,11 @@ namespace NEventStore.Persistence.RavenPersistence.Indexes
     using Raven.Client.Indexes;
 
     public class RavenCommitsByDispatched : AbstractIndexCreationTask<RavenCommit>
-	{
-		public RavenCommitsByDispatched()
-		{
+    {
+        public RavenCommitsByDispatched()
+        {
             //Redundant ?? null needed for compatibility with older models. Please do not remove.
-            this.Map = commits => from c in commits select new { c.Dispatched, Partition = c.Partition ?? null };
-		}
-	}
+            Map = commits => from c in commits select new {c.Dispatched, Partition = c.Partition ?? null};
+        }
+    }
 }

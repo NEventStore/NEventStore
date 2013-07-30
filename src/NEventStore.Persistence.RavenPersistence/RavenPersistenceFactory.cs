@@ -1,43 +1,47 @@
 ﻿namespace NEventStore.Persistence.RavenPersistence
 {
-    using NEventStore.Persistence;
     using Raven.Client;
     using Raven.Client.Document;
 
     public class RavenPersistenceFactory : IPersistenceFactory
-	{
-		private readonly RavenConfiguration config;
+    {
+        private readonly RavenConfiguration _config;
 
-		public RavenPersistenceFactory(RavenConfiguration config)
-		{
-			this.config = config;
-		}
+        public RavenPersistenceFactory(RavenConfiguration config)
+        {
+            _config = config;
+        }
 
-		public virtual IPersistStreams Build()
-		{
-			var store = this.GetStore();
-			return new RavenPersistenceEngine(store, this.config);
-		}
+        public virtual IPersistStreams Build()
+        {
+            IDocumentStore store = GetStore();
+            return new RavenPersistenceEngine(store, _config);
+        }
 
 #pragma warning disable 612,618
         protected virtual IDocumentStore GetStore()
-		{
-			var store = new DocumentStore();
-            
-			if (!string.IsNullOrEmpty(this.config.ConnectionName))
-				store.ConnectionStringName = this.config.ConnectionName;
+        {
+            var store = new DocumentStore();
 
-			if (this.config.Url != null)
-				store.Url = this.config.Url.ToString();
+            if (!string.IsNullOrEmpty(_config.ConnectionName))
+            {
+                store.ConnectionStringName = _config.ConnectionName;
+            }
 
-			if (!string.IsNullOrEmpty(this.config.DefaultDatabase))
-				store.DefaultDatabase = this.config.DefaultDatabase;
+            if (_config.Url != null)
+            {
+                store.Url = _config.Url.ToString();
+            }
 
-			store.Initialize();
+            if (!string.IsNullOrEmpty(_config.DefaultDatabase))
+            {
+                store.DefaultDatabase = _config.DefaultDatabase;
+            }
 
-			return store;
+            store.Initialize();
+
+            return store;
         }
 #pragma warning restore 612,618
-
     }
 }

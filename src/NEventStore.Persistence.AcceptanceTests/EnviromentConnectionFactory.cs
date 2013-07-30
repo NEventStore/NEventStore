@@ -4,18 +4,17 @@ namespace NEventStore.Persistence.AcceptanceTests
     using System.Data;
     using System.Data.Common;
     using System.Diagnostics;
-    using NEventStore.Persistence;
     using NEventStore.Persistence.SqlPersistence;
 
     public class EnviromentConnectionFactory : IConnectionFactory
     {
-        private readonly string providerInvariantName;
-        private readonly string envVarKey;
+        private readonly string _envVarKey;
+        private readonly string _providerInvariantName;
 
         public EnviromentConnectionFactory(string envDatabaseName, string providerInvariantName)
         {
-            this.envVarKey = "NEventStore.{0}".FormatWith(envDatabaseName);
-            this.providerInvariantName = providerInvariantName;
+            _envVarKey = "NEventStore.{0}".FormatWith(envDatabaseName);
+            _providerInvariantName = providerInvariantName;
         }
 
         public IDbConnection OpenMaster(Guid streamId)
@@ -30,13 +29,16 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         private IDbConnection Open()
         {
-            DbProviderFactory dbProviderFactory = DbProviderFactories.GetFactory(providerInvariantName);
-            string connectionString = Environment.GetEnvironmentVariable(envVarKey, EnvironmentVariableTarget.Process);
+            DbProviderFactory dbProviderFactory = DbProviderFactories.GetFactory(_providerInvariantName);
+            string connectionString = Environment.GetEnvironmentVariable(_envVarKey, EnvironmentVariableTarget.Process);
             if (connectionString == null)
             {
-                string message = string.Format("Failed to get '{0}' environment variable. Please ensure " +
-                    "you have correctly setup the connection string environment variables. Refer to the " +
-                    "NEventStore wiki for details.", envVarKey);
+                string message =
+                    string.Format(
+                                  "Failed to get '{0}' environment variable. Please ensure " +
+                                      "you have correctly setup the connection string environment variables. Refer to the " +
+                                      "NEventStore wiki for details.",
+                        _envVarKey);
                 throw new InvalidOperationException(message);
             }
             connectionString = connectionString.TrimStart('"').TrimEnd('"');

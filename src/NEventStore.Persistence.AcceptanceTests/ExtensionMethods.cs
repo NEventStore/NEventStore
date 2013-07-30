@@ -1,13 +1,11 @@
 namespace NEventStore.Persistence.AcceptanceTests
 {
-    using System.Linq;
     using System;
     using System.Collections.Generic;
-    using NEventStore;
-    using NEventStore.Persistence;
+    using System.Linq;
 
     public static class ExtensionMethods
-	{
+    {
         public static HashSet<T> ToHashSet<T>(this IEnumerable<T> collection)
         {
             return new HashSet<T>(collection);
@@ -20,18 +18,18 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         public static Commit CommitSingle(this IPersistStreams persistence, Guid? streamId = null)
         {
-            var commit = (streamId ?? Guid.NewGuid()).BuildAttempt();
+            Commit commit = (streamId ?? Guid.NewGuid()).BuildAttempt();
             persistence.Commit(commit);
             return commit;
         }
-        
+
         public static Commit CommitNext(this IPersistStreams persistence, Commit previous)
         {
-            var commit = previous.BuildNextAttempt();
+            Commit commit = previous.BuildNextAttempt();
             persistence.Commit(commit);
             return commit;
         }
-        
+
         public static IEnumerable<Commit> CommitMany(this IPersistStreams persistence, int numberOfCommits, Guid? streamId = null)
         {
             var commits = new List<Commit>();
@@ -46,45 +44,45 @@ namespace NEventStore.Persistence.AcceptanceTests
 
             return commits;
         }
-        
-		public static Commit BuildAttempt(this Guid streamId, DateTime now)
-		{
-			var messages = new List<EventMessage>
-			{
-				new EventMessage { Body = new SomeDomainEvent { SomeProperty = "Test" } },
-				new EventMessage { Body = new SomeDomainEvent { SomeProperty = "Test2" } },
-			};
 
-			return new Commit(
-				streamId,
-				2,
-				Guid.NewGuid(),
-				1,
-				now,
-				new Dictionary<string, object> { { "A header", "A string value" }, { "Another header", 2 } },
-				messages);
-		}
-		public static Commit BuildAttempt(this Guid streamId)
-		{
-			return streamId.BuildAttempt(SystemTime.UtcNow);
-		}
-		public static Commit BuildNextAttempt(this Commit commit)
-		{
-			var messages = new List<EventMessage>
-			{
-				new EventMessage { Body = new SomeDomainEvent { SomeProperty = "Another test" } },
-				new EventMessage { Body = new SomeDomainEvent { SomeProperty = "Another test2" } },
-			};
+        public static Commit BuildAttempt(this Guid streamId, DateTime now)
+        {
+            var messages = new List<EventMessage>
+            {
+                new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Test"}},
+                new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Test2"}},
+            };
 
-			return new Commit(
-				commit.StreamId,
-				commit.StreamRevision + 2,
-				Guid.NewGuid(),
-				commit.CommitSequence + 1,
-				commit.CommitStamp.AddSeconds(1),
-				new Dictionary<string, object>(),
-				messages);
-		}
+            return new Commit(streamId,
+                2,
+                Guid.NewGuid(),
+                1,
+                now,
+                new Dictionary<string, object> {{"A header", "A string value"}, {"Another header", 2}},
+                messages);
+        }
+
+        public static Commit BuildAttempt(this Guid streamId)
+        {
+            return streamId.BuildAttempt(SystemTime.UtcNow);
+        }
+
+        public static Commit BuildNextAttempt(this Commit commit)
+        {
+            var messages = new List<EventMessage>
+            {
+                new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Another test"}},
+                new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Another test2"}},
+            };
+
+            return new Commit(commit.StreamId,
+                commit.StreamRevision + 2,
+                Guid.NewGuid(),
+                commit.CommitSequence + 1,
+                commit.CommitStamp.AddSeconds(1),
+                new Dictionary<string, object>(),
+                messages);
+        }
 
         public static SimpleMessage Populate(this SimpleMessage message)
         {
@@ -96,7 +94,7 @@ namespace NEventStore.Persistence.AcceptanceTests
                 Count = 1234,
                 Created = new DateTime(2000, 2, 3, 4, 5, 6, 7).ToUniversalTime(),
                 Value = message.Value + "Hello, World!",
-                Contents = { "a", null, string.Empty, "d" }
+                Contents = {"a", null, string.Empty, "d"}
             };
         }
 
@@ -104,44 +102,34 @@ namespace NEventStore.Persistence.AcceptanceTests
         {
             const int StreamRevision = 2;
             const int CommitSequence = 2;
-            var commitId = Guid.NewGuid();
-            var headers = new Dictionary<string, object> { { "Key", "Value" }, { "Key2", (long)1234 }, { "Key3", null } };
+            Guid commitId = Guid.NewGuid();
+            var headers = new Dictionary<string, object> {{"Key", "Value"}, {"Key2", (long) 1234}, {"Key3", null}};
             var events = new[]
-			{
-				new EventMessage
-				{
-					Headers =
-					{
-						{ "MsgKey1", TimeSpan.MinValue },
-						{ "MsgKey2", Guid.NewGuid() },
-						{ "MsgKey3", 1.1M },
-						{ "MsgKey4", (ushort)1 }
-					},
-					Body = "some value"
-				},
-				new EventMessage
-				{
-					Headers =
-					{
-						{ "MsgKey1", new Uri("http://www.google.com/") },
-						{ "MsgKey4", "some header" }
-					},
-					Body = new[] { "message body" }
-				}
-			};
+            {
+                new EventMessage
+                {
+                    Headers = {{"MsgKey1", TimeSpan.MinValue}, {"MsgKey2", Guid.NewGuid()}, {"MsgKey3", 1.1M}, {"MsgKey4", (ushort) 1}},
+                    Body = "some value"
+                },
+                new EventMessage
+                {
+                    Headers = {{"MsgKey1", new Uri("http://www.google.com/")}, {"MsgKey4", "some header"}},
+                    Body = new[] {"message body"}
+                }
+            };
 
             return new Commit(streamId, StreamRevision, commitId, CommitSequence, SystemTime.UtcNow, headers, events.ToList());
         }
 
-		[Serializable]
-		public class SomeDomainEvent
-		{
-			public string SomeProperty { get; set; }
+        [Serializable]
+        public class SomeDomainEvent
+        {
+            public string SomeProperty { get; set; }
 
-			public override string ToString()
-			{
-				return this.SomeProperty;
-			}
-		}
-	}
+            public override string ToString()
+            {
+                return SomeProperty;
+            }
+        }
+    }
 }

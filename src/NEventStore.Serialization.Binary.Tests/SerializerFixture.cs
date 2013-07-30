@@ -1,4 +1,6 @@
-﻿namespace NEventStore.Serialization.AcceptanceTests
+﻿// ReSharper disable CheckNamespace
+namespace NEventStore.Serialization.AcceptanceTests
+// ReSharper restore CheckNamespace
 {
     using NEventStore.Serialization;
 

@@ -1,6 +1,5 @@
 ﻿namespace NEventStore.Persistence.AcceptanceTests
 {
-    using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.SqlPersistence;
     using NEventStore.Persistence.SqlPersistence.SqlDialects;
     using NEventStore.Serialization;
@@ -9,7 +8,7 @@
     {
         public PersistenceEngineFixture()
         {
-            this.createPersistence = () =>
+            _createPersistence = () =>
                 new SqlPersistenceFactory(
                     new EnviromentConnectionFactory("Oracle", "Oracle.DataAccess.Client"),
                     new BinarySerializer(),

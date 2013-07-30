@@ -1,6 +1,5 @@
 ﻿namespace NEventStore.Persistence.AcceptanceTests
 {
-    using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.SqlPersistence;
     using NEventStore.Persistence.SqlPersistence.SqlDialects;
     using NEventStore.Serialization;
@@ -9,11 +8,10 @@
     {
         public PersistenceEngineFixture()
         {
-            this.createPersistence = () =>
-                new SqlPersistenceFactory(
-                    new EnviromentConnectionFactory("MySql", "MySql.Data.MySqlClient"),
-                    new BinarySerializer(),
-                    new MySqlDialect()).Build();
+            _createPersistence = () =>
+                    new SqlPersistenceFactory(new EnviromentConnectionFactory("MySql", "MySql.Data.MySqlClient"),
+                        new BinarySerializer(),
+                        new MySqlDialect()).Build();
         }
     }
 }

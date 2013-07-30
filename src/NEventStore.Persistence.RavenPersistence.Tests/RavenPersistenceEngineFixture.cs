@@ -1,13 +1,12 @@
 namespace NEventStore.Persistence.RavenPersistence.Tests
 {
     using System;
-    using NEventStore.Persistence.RavenPersistence;
 
     public class RavenPersistenceEngineFixture : IDisposable
     {
         public RavenPersistenceEngineFixture()
         {
-            Persistence = (RavenPersistenceEngine)new InMemoryRavenPersistenceFactory(TestRavenConfig.GetDefaultConfig()).Build();
+            Persistence = (RavenPersistenceEngine) new InMemoryRavenPersistenceFactory(TestRavenConfig.GetDefaultConfig()).Build();
             Persistence.Initialize();
         }
 
