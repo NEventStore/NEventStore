@@ -6,21 +6,24 @@ namespace NEventStore
     internal class EnumerableCounter : IEnumerable<Commit>
     {
         private readonly IEnumerable<Commit> enumerable;
-        public int GetEnumeratorCallCount { get; private set; }
 
         public EnumerableCounter(IEnumerable<Commit> enumerable)
         {
             this.enumerable = enumerable;
-            this.GetEnumeratorCallCount = 0;
+            GetEnumeratorCallCount = 0;
         }
+
+        public int GetEnumeratorCallCount { get; private set; }
+
         public IEnumerator<Commit> GetEnumerator()
         {
-            this.GetEnumeratorCallCount++;
-            return this.enumerable.GetEnumerator();
+            GetEnumeratorCallCount++;
+            return enumerable.GetEnumerator();
         }
+
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
     }
 }

@@ -4,19 +4,19 @@
 
 namespace NEventStore.Persistence.InMemoryPersistence
 {
-    using AcceptanceTests.BDD;
-    using Xunit;
-    using Xunit.Should;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using NEventStore.Persistence.AcceptanceTests.BDD;
+    using Xunit;
+    using Xunit.Should;
 
     public class when_getting_from_to_then_should_not_get_later_commits : SpecificationBase
     {
-        InMemoryPersistenceEngine engine;
-        Commit[] commits;
-        DateTime startDate = new DateTime(2013, 1, 1);
-        DateTime endDate = new DateTime(2013, 1, 2);
+        private readonly DateTime endDate = new DateTime(2013, 1, 2);
+        private readonly DateTime startDate = new DateTime(2013, 1, 1);
+        private Commit[] commits;
+        private InMemoryPersistenceEngine engine;
 
         protected override void Context()
         {

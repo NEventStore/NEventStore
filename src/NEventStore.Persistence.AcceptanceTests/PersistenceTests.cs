@@ -1,35 +1,32 @@
-using Xunit;
-using Xunit.Should;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 #pragma warning disable 169
 // ReSharper disable InconsistentNaming
 
 namespace NEventStore.Persistence.AcceptanceTests
 {
-    using NEventStore;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using NEventStore.Diagnostics;
-    using NEventStore.Persistence;
-    using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
+    using Xunit;
+    using Xunit.Should;
 
-    public class when_a_commit_header_has_a_name_that_contains_a_period : PersistenceEngineConcern 
+    public class when_a_commit_header_has_a_name_that_contains_a_period : PersistenceEngineConcern
     {
-        Guid streamId;
-        Commit commit, persisted;
+        private Commit commit, persisted;
+        private Guid streamId;
 
         protected override void Context()
         {
             streamId = Guid.NewGuid();
-            commit = new Commit(streamId, 2, Guid.NewGuid(), 1, DateTime.Now, 
+            commit = new Commit(streamId, 2, Guid.NewGuid(), 1, DateTime.Now,
                 new Dictionary<string, object> {{"key.1", "value"}},
                 new List<EventMessage>
                 {
                     new EventMessage {Body = new ExtensionMethods.SomeDomainEvent {SomeProperty = "Test"}}
                 });
-            var persistence = Persistence;
+            IPersistStreams persistence = Persistence;
             persistence.Commit(commit);
         }
 
@@ -46,83 +43,84 @@ namespace NEventStore.Persistence.AcceptanceTests
     }
 
     public class when_a_commit_is_successfully_persisted : PersistenceEngineConcern
-        
-	{
-        Guid streamId;
-	    DateTime now;
-		Commit attempt, persisted;
+
+    {
+        private Commit attempt;
+        private DateTime now;
+        private Commit persisted;
+        private Guid streamId;
 
         protected override void Context()
         {
             now = SystemTime.UtcNow.AddYears(1);
             streamId = Guid.NewGuid();
             attempt = streamId.BuildAttempt(now);
-            
-			Persistence.Commit(attempt);
+
+            Persistence.Commit(attempt);
         }
 
-	    protected override void Because()
-	    {
-	        persisted = Persistence.GetFrom(streamId, 0, int.MaxValue).First();
-	    }
-
-	    public void should_correctly_persist_the_stream_identifier()
-	    {
-	        persisted.StreamId.ShouldBe(attempt.StreamId);
-	    }
-
-	    public void should_correctly_persist_the_stream_stream_revision()
-	    {
-	        persisted.StreamRevision.ShouldBe(attempt.StreamRevision);
-	    }
-
-	    public void should_correctly_persist_the_commit_identifier()
-	    {
-	        persisted.CommitId.ShouldBe(attempt.CommitId);
-	    }
-
-	    public void should_correctly_persist_the_commit_sequence()
-	    {
-	        persisted.CommitSequence.ShouldBe(attempt.CommitSequence);
-	    }
-
-	    // persistence engines have varying levels of precision with respect to time.
-	    public void should_correctly_persist_the_commit_stamp()
-	    {
-	        persisted.CommitStamp.Subtract(now).ShouldBeLessThan(TimeSpan.FromSeconds(1));
-	    }
-
-	    public void should_correctly_persist_the_headers()
-	    {
-	        persisted.Headers.Count.ShouldBe(attempt.Headers.Count);
-	    }
-
-	    public void should_correctly_persist_the_events()
-	    {
-	        persisted.Events.Count.ShouldBe(attempt.Events.Count);
-	    }
-
-	    public void should_add_the_commit_to_the_set_of_undispatched_commits() {
-			Persistence.GetUndispatchedCommits()
-				.FirstOrDefault(x => x.CommitId == attempt.CommitId).ShouldNotBeNull();
+        protected override void Because()
+        {
+            persisted = Persistence.GetFrom(streamId, 0, int.MaxValue).First();
         }
 
-	    public void should_cause_the_stream_to_be_found_in_the_list_of_streams_to_snapshot()
-	    {
-	        Persistence.GetStreamsToSnapshot(1)
-	                   .FirstOrDefault(x => x.StreamId == streamId).ShouldNotBeNull();
-	    }
-	}
+        public void should_correctly_persist_the_stream_identifier()
+        {
+            persisted.StreamId.ShouldBe(attempt.StreamId);
+        }
 
-	public class when_reading_from_a_given_revision : PersistenceEngineConcern
-        
-	{
-        Guid streamId;
+        public void should_correctly_persist_the_stream_stream_revision()
+        {
+            persisted.StreamRevision.ShouldBe(attempt.StreamRevision);
+        }
 
-		const int LoadFromCommitContainingRevision = 3;
-		const int UpToCommitWithContainingRevision = 5;
-	    Commit oldest, oldest2, oldest3;
-		Commit[] committed;
+        public void should_correctly_persist_the_commit_identifier()
+        {
+            persisted.CommitId.ShouldBe(attempt.CommitId);
+        }
+
+        public void should_correctly_persist_the_commit_sequence()
+        {
+            persisted.CommitSequence.ShouldBe(attempt.CommitSequence);
+        }
+
+        // persistence engines have varying levels of precision with respect to time.
+        public void should_correctly_persist_the_commit_stamp()
+        {
+            persisted.CommitStamp.Subtract(now).ShouldBeLessThan(TimeSpan.FromSeconds(1));
+        }
+
+        public void should_correctly_persist_the_headers()
+        {
+            persisted.Headers.Count.ShouldBe(attempt.Headers.Count);
+        }
+
+        public void should_correctly_persist_the_events()
+        {
+            persisted.Events.Count.ShouldBe(attempt.Events.Count);
+        }
+
+        public void should_add_the_commit_to_the_set_of_undispatched_commits()
+        {
+            Persistence.GetUndispatchedCommits()
+                       .FirstOrDefault(x => x.CommitId == attempt.CommitId).ShouldNotBeNull();
+        }
+
+        public void should_cause_the_stream_to_be_found_in_the_list_of_streams_to_snapshot()
+        {
+            Persistence.GetStreamsToSnapshot(1)
+                       .FirstOrDefault(x => x.StreamId == streamId).ShouldNotBeNull();
+        }
+    }
+
+    public class when_reading_from_a_given_revision : PersistenceEngineConcern
+
+    {
+        private const int LoadFromCommitContainingRevision = 3;
+        private const int UpToCommitWithContainingRevision = 5;
+        private Commit[] committed;
+        private Commit oldest, oldest2, oldest3;
+        private Guid streamId;
 
         protected override void Context()
         {
@@ -132,37 +130,37 @@ namespace NEventStore.Persistence.AcceptanceTests
             Persistence.CommitNext(oldest3); // 2 events, revision 7-8
 
             streamId = oldest.StreamId;
-		}
+        }
 
-	    protected override void Because()
-	    {
-	        committed = Persistence
+        protected override void Because()
+        {
+            committed = Persistence
                 .GetFrom(streamId, LoadFromCommitContainingRevision, UpToCommitWithContainingRevision)
                 .ToArray();
-	    }
+        }
 
         [Fact]
         public void should_start_from_the_commit_which_contains_the_min_stream_revision_specified()
-	    {
-	        committed.First().CommitId.ShouldBe(oldest2.CommitId); // contains revision 3
-	    }
+        {
+            committed.First().CommitId.ShouldBe(oldest2.CommitId); // contains revision 3
+        }
 
         [Fact]
         public void should_read_up_to_the_commit_which_contains_the_max_stream_revision_specified()
-	    {
-	        committed.Last().CommitId.ShouldBe(oldest3.CommitId); // contains revision 5
-	    }
-	}
+        {
+            committed.Last().CommitId.ShouldBe(oldest3.CommitId); // contains revision 5
+        }
+    }
 
     public class when_committing_a_stream_with_the_same_revision : PersistenceEngineConcern
-        
-	{
-		Commit attemptWithSameRevision;
-		Exception thrown;
+
+    {
+        private Commit attemptWithSameRevision;
+        private Exception thrown;
 
         protected override void Context()
         {
-            var attempt = Persistence.CommitSingle();
+            Commit attempt = Persistence.CommitSingle();
             attemptWithSameRevision = attempt.StreamId.BuildAttempt();
         }
 
@@ -176,18 +174,18 @@ namespace NEventStore.Persistence.AcceptanceTests
         {
             thrown.ShouldBeInstanceOf<ConcurrencyException>();
         }
-	}
+    }
 
     //TODO:This test looks exactly like the one above. What are we trying to prove?
     public class when_committing_a_stream_with_the_same_sequence : PersistenceEngineConcern
-        
-	{
-		Commit attempt1, attempt2;
-		Exception thrown;
+
+    {
+        private Commit attempt1, attempt2;
+        private Exception thrown;
 
         protected override void Context()
         {
-            var streamId = Guid.NewGuid();
+            Guid streamId = Guid.NewGuid();
             attempt1 = streamId.BuildAttempt();
             attempt2 = streamId.BuildAttempt();
 
@@ -204,19 +202,19 @@ namespace NEventStore.Persistence.AcceptanceTests
         {
             thrown.ShouldBeInstanceOf<ConcurrencyException>();
         }
-	}
+    }
 
     //TODO:This test looks exactly like the one above. What are we trying to prove?
     public class when_attempting_to_overwrite_a_committed_sequence : PersistenceEngineConcern
-        
-	{
-		Exception thrown;
-        Commit failedAttempt;
+
+    {
+        private Commit failedAttempt;
+        private Exception thrown;
 
         protected override void Context()
         {
-            var streamId = Guid.NewGuid();
-            var successfulAttempt = streamId.BuildAttempt();
+            Guid streamId = Guid.NewGuid();
+            Commit successfulAttempt = streamId.BuildAttempt();
             failedAttempt = streamId.BuildAttempt();
 
             Persistence.Commit(successfulAttempt);
@@ -232,13 +230,13 @@ namespace NEventStore.Persistence.AcceptanceTests
         {
             thrown.ShouldBeInstanceOf<ConcurrencyException>();
         }
-	}
+    }
 
     public class when_attempting_to_persist_a_commit_twice : PersistenceEngineConcern
-        
+
     {
-        Commit attemptTwice;
-		Exception thrown;
+        private Commit attemptTwice;
+        private Exception thrown;
 
         protected override void Context()
         {
@@ -255,12 +253,12 @@ namespace NEventStore.Persistence.AcceptanceTests
         {
             thrown.ShouldBeInstanceOf<DuplicateCommitException>();
         }
-	}
+    }
 
     public class when_a_commit_has_been_marked_as_dispatched : PersistenceEngineConcern
-        
-	{
-		Commit attempt;
+
+    {
+        private Commit attempt;
 
         protected override void Context()
         {
@@ -276,31 +274,32 @@ namespace NEventStore.Persistence.AcceptanceTests
         public void should_no_longer_be_found_in_the_set_of_undispatched_commits()
         {
             Persistence.GetUndispatchedCommits()
-                .FirstOrDefault(x => x.CommitId == attempt.CommitId)
-                .ShouldBeNull();
+                       .FirstOrDefault(x => x.CommitId == attempt.CommitId)
+                       .ShouldBeNull();
         }
-	}
+    }
 
     public class when_committing_more_events_than_the_configured_page_size : PersistenceEngineConcern
-        
-	{
-        Guid streamId;
-		HashSet<Guid> committed;
-		ICollection<Guid> loaded;
 
-        protected override void Context() {
+    {
+        private HashSet<Guid> committed;
+        private ICollection<Guid> loaded;
+        private Guid streamId;
+
+        protected override void Context()
+        {
             streamId = Guid.NewGuid();
-            
+
             committed = Persistence.CommitMany(ConfiguredPageSizeForTesting + 1, streamId)
-                .Select(c => c.CommitId)
-                .ToHashSet();
-		}
+                                   .Select(c => c.CommitId)
+                                   .ToHashSet();
+        }
 
         protected override void Because()
         {
             loaded = Persistence.GetFrom(streamId, 0, int.MaxValue)
-                .Select(c => c.CommitId)
-                .ToLinkedList();
+                                .Select(c => c.CommitId)
+                                .ToLinkedList();
         }
 
         [Fact]
@@ -315,14 +314,14 @@ namespace NEventStore.Persistence.AcceptanceTests
             committed.All(x => loaded.Contains(x)).ShouldBeTrue();
             // all commits should be found in loaded collection
         }
-	}
+    }
 
     public class when_saving_a_snapshot : PersistenceEngineConcern
-        
-	{
-		bool added;
-        Snapshot snapshot;
-        Guid streamId;
+
+    {
+        private bool added;
+        private Snapshot snapshot;
+        private Guid streamId;
 
         protected override void Context()
         {
@@ -347,28 +346,30 @@ namespace NEventStore.Persistence.AcceptanceTests
         {
             Persistence.GetSnapshot(streamId, snapshot.StreamRevision).ShouldNotBeNull();
         }
-	}
+    }
 
     public class when_retrieving_a_snapshot : PersistenceEngineConcern
-        
-	{
-        Guid streamId;
-		
-        Snapshot tooFarBack, 
-            correct, 
-            tooFarForward, 
-            snapshot;
 
-        protected override void Context() {
+    {
+        private Snapshot correct;
+        private Snapshot snapshot;
+        private Guid streamId;
+
+        private Snapshot tooFarBack;
+
+        private Snapshot tooFarForward;
+
+        protected override void Context()
+        {
             streamId = Guid.NewGuid();
-			var commit1 = Persistence.CommitSingle(streamId); // rev 1-2
-			var commit2 = Persistence.CommitNext(commit1); // rev 3-4
-			Persistence.CommitNext(commit2); // rev 5-6
+            Commit commit1 = Persistence.CommitSingle(streamId); // rev 1-2
+            Commit commit2 = Persistence.CommitNext(commit1); // rev 3-4
+            Persistence.CommitNext(commit2); // rev 5-6
 
             Persistence.AddSnapshot(tooFarBack = new Snapshot(streamId, 1, string.Empty));
             Persistence.AddSnapshot(correct = new Snapshot(streamId, 3, "Snapshot"));
             Persistence.AddSnapshot(tooFarForward = new Snapshot(streamId, 5, string.Empty));
-		}
+        }
 
         protected override void Because()
         {
@@ -386,52 +387,53 @@ namespace NEventStore.Persistence.AcceptanceTests
         {
             snapshot.Payload.ShouldBe(correct.Payload);
         }
-	}
+    }
 
     public class when_a_snapshot_has_been_added_to_the_most_recent_commit_of_a_stream : PersistenceEngineConcern
-        
-	{
-		const string SnapshotData = "snapshot";
-	    Guid streamId;
-		Commit oldest, oldest2, newest;
 
-	    protected override void Context() 
+    {
+        private const string SnapshotData = "snapshot";
+        private Commit newest;
+        private Commit oldest, oldest2;
+        private Guid streamId;
+
+        protected override void Context()
         {
             streamId = Guid.NewGuid();
-			oldest = Persistence.CommitSingle(streamId);
-			oldest2 = Persistence.CommitNext(oldest);
-			newest = Persistence.CommitNext(oldest2);
-		}
+            oldest = Persistence.CommitSingle(streamId);
+            oldest2 = Persistence.CommitNext(oldest);
+            newest = Persistence.CommitNext(oldest2);
+        }
 
-	    protected override void Because()
-	    {
-	        Persistence.AddSnapshot(new Snapshot(streamId, newest.StreamRevision, SnapshotData));
-	    }
+        protected override void Because()
+        {
+            Persistence.AddSnapshot(new Snapshot(streamId, newest.StreamRevision, SnapshotData));
+        }
 
         [Fact]
         public void should_no_longer_find_the_stream_in_the_set_of_streams_to_be_snapshot()
-	    {
-	        Persistence.GetStreamsToSnapshot(1).Any(x => x.StreamId == streamId).ShouldBeFalse();
-	    }
-	}
+        {
+            Persistence.GetStreamsToSnapshot(1).Any(x => x.StreamId == streamId).ShouldBeFalse();
+        }
+    }
 
     public class when_adding_a_commit_after_a_snapshot : PersistenceEngineConcern
-        
-	{
-		const int WithinThreshold = 2;
-		const int OverThreshold = 3;
-		const string SnapshotData = "snapshot";
-        Guid streamId;
-		
-        Commit oldest, oldest2;
+
+    {
+        private const int WithinThreshold = 2;
+        private const int OverThreshold = 3;
+        private const string SnapshotData = "snapshot";
+
+        private Commit oldest, oldest2;
+        private Guid streamId;
 
         protected override void Context()
-		{
+        {
             streamId = Guid.NewGuid();
-			oldest = Persistence.CommitSingle(streamId);
-			oldest2 = Persistence.CommitNext(oldest);
-			Persistence.AddSnapshot(new Snapshot(streamId, oldest2.StreamRevision, SnapshotData));
-		}
+            oldest = Persistence.CommitSingle(streamId);
+            oldest2 = Persistence.CommitNext(oldest);
+            Persistence.AddSnapshot(new Snapshot(streamId, oldest2.StreamRevision, SnapshotData));
+        }
 
         protected override void Because()
         {
@@ -443,39 +445,41 @@ namespace NEventStore.Persistence.AcceptanceTests
         public void should_find_the_stream_in_the_set_of_streams_to_be_snapshot_when_within_the_threshold()
         {
             Persistence.GetStreamsToSnapshot(WithinThreshold)
-                .FirstOrDefault(x => x.StreamId == streamId)
-                .ShouldNotBeNull();
+                       .FirstOrDefault(x => x.StreamId == streamId)
+                       .ShouldNotBeNull();
         }
 
         [Fact]
         public void should_not_find_the_stream_in_the_set_of_streams_to_be_snapshot_when_over_the_threshold()
         {
             Persistence.GetStreamsToSnapshot(OverThreshold)
-                .Any(x => x.StreamId == streamId)
-                .ShouldBeFalse();
+                       .Any(x => x.StreamId == streamId)
+                       .ShouldBeFalse();
         }
-	}
+    }
 
     public class when_reading_all_commits_from_a_particular_point_in_time : PersistenceEngineConcern
-        
-	{
-        Guid streamId;
-        DateTime now;
-        Commit first, second, third;
-		Commit[] committed;
+
+    {
+        private Commit[] committed;
+        private Commit first;
+        private DateTime now;
+        private Commit second;
+        private Guid streamId;
+        private Commit third;
 
         protected override void Context()
-		{
+        {
             streamId = Guid.NewGuid();
 
             now = SystemTime.UtcNow.AddYears(1);
-		    first = streamId.BuildAttempt(now.AddSeconds(1));
+            first = streamId.BuildAttempt(now.AddSeconds(1));
             Persistence.Commit(first);
 
-			second = Persistence.CommitNext(first);
-			third = Persistence.CommitNext(second);
-			Persistence.CommitNext(third);
-		}
+            second = Persistence.CommitNext(first);
+            third = Persistence.CommitNext(second);
+            Persistence.CommitNext(third);
+        }
 
         protected override void Because()
         {
@@ -487,48 +491,48 @@ namespace NEventStore.Persistence.AcceptanceTests
         {
             committed.Length.ShouldBe(4);
         }
-	}
+    }
 
     public class when_paging_over_all_commits_from_a_particular_point_in_time : PersistenceEngineConcern
-        
-	{
-        Guid streamId;
-		DateTime start;
-		HashSet<Guid> committed;
-		ICollection<Guid> loaded;
+
+    {
+        private HashSet<Guid> committed;
+        private ICollection<Guid> loaded;
+        private DateTime start;
+        private Guid streamId;
 
         protected override void Context()
         {
             start = SystemTime.UtcNow;
             committed = Persistence.CommitMany(ConfiguredPageSizeForTesting + 1)
-                .Select(c => c.CommitId)
-                .ToHashSet();
-		}
+                                   .Select(c => c.CommitId)
+                                   .ToHashSet();
+        }
 
-	    protected override void Because()
-	    {
-	        loaded = Persistence.GetFrom(start)
-                .Select(c => c.CommitId)
-                .ToLinkedList();
-	    }
+        protected override void Because()
+        {
+            loaded = Persistence.GetFrom(start)
+                                .Select(c => c.CommitId)
+                                .ToLinkedList();
+        }
 
         [Fact]
         public void should_load_the_same_number_of_commits_which_have_been_persisted()
-	    {
-	        loaded.Count.ShouldBeGreaterThanOrEqualTo(committed.Count);
-	    }
+        {
+            loaded.Count.ShouldBeGreaterThanOrEqualTo(committed.Count);
+        }
 
         [Fact]
         public void should_load_the_same_commits_which_have_been_persisted()
-	    {
-	        committed.All(x => loaded.Contains(x)).ShouldBeTrue(); // all commits should be found in loaded collection
-	    }
-	}
+        {
+            committed.All(x => loaded.Contains(x)).ShouldBeTrue(); // all commits should be found in loaded collection
+        }
+    }
 
     public class when_reading_all_commits_from_the_year_1_AD : PersistenceEngineConcern
-        
-	{
-		Exception thrown;
+
+    {
+        private Exception thrown;
 
         protected override void Because()
         {
@@ -540,20 +544,20 @@ namespace NEventStore.Persistence.AcceptanceTests
         {
             thrown.ShouldBeNull();
         }
-	}
+    }
 
     public class when_purging_all_commits : PersistenceEngineConcern
-        
-	{
+
+    {
         protected override void Context()
         {
             Persistence.CommitSingle();
         }
 
         protected override void Because()
-		{
-			Persistence.Purge();
-		}
+        {
+            Persistence.Purge();
+        }
 
         public void should_not_find_any_commits_stored()
         {
@@ -571,17 +575,17 @@ namespace NEventStore.Persistence.AcceptanceTests
         {
             Persistence.GetUndispatchedCommits().Count().ShouldBe(0);
         }
-	}
+    }
 
     public class when_invoking_after_disposal : PersistenceEngineConcern
-        
-	{
-		Exception thrown;
 
-		protected override void Context()
-	    {
-	        Persistence.Dispose();
-	    }
+    {
+        private Exception thrown;
+
+        protected override void Context()
+        {
+            Persistence.Dispose();
+        }
 
         protected override void Because()
         {
@@ -591,24 +595,24 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_throw_an_ObjectDisposedException()
         {
-			thrown.ShouldBeInstanceOf<ObjectDisposedException>();
+            thrown.ShouldBeInstanceOf<ObjectDisposedException>();
         }
-	}
+    }
 
     public class when_persisting_commits_out_of_order : PersistenceEngineConcern
     {
         // Issue 159 OrderingByCommitStampIsNotReliable
-        Commit[] undispatched;
+        private Commit[] undispatched;
 
         protected override void Context()
         {
             Persistence.Purge();
-            var streamId = Guid.NewGuid();
+            Guid streamId = Guid.NewGuid();
             var dateTime = new DateTime(2013, 1, 1);
             SystemTime.Resolver = () => dateTime;
-            Persistence.Commit(new Commit(streamId, 1, Guid.NewGuid(), 1, SystemTime.UtcNow, null, new List<EventMessage> { new EventMessage{ Body = "M1" } }));
-            Persistence.Commit(new Commit(streamId, 3, Guid.NewGuid(), 3, SystemTime.UtcNow, null, new List<EventMessage> { new EventMessage { Body = "M3" } }));
-            Persistence.Commit(new Commit(streamId, 2, Guid.NewGuid(), 2, SystemTime.UtcNow, null, new List<EventMessage> { new EventMessage { Body = "M2" } }));
+            Persistence.Commit(new Commit(streamId, 1, Guid.NewGuid(), 1, SystemTime.UtcNow, null, new List<EventMessage> {new EventMessage {Body = "M1"}}));
+            Persistence.Commit(new Commit(streamId, 3, Guid.NewGuid(), 3, SystemTime.UtcNow, null, new List<EventMessage> {new EventMessage {Body = "M3"}}));
+            Persistence.Commit(new Commit(streamId, 2, Guid.NewGuid(), 2, SystemTime.UtcNow, null, new List<EventMessage> {new EventMessage {Body = "M2"}}));
         }
 
         protected override void Because()
@@ -624,18 +628,21 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_have_commits_in_correct_order()
         {
-            for (var i = 1; i <= undispatched.Length; i++)
+            for (int i = 1; i <= undispatched.Length; i++)
             {
-                undispatched[i-1].CommitSequence.ShouldBe(i);
+                undispatched[i - 1].CommitSequence.ShouldBe(i);
             }
         }
     }
 
     public class PersistenceEngineConcern : SpecificationBase, IUseFixture<PersistenceEngineFixture>
     {
-        PersistenceEngineFixture data;
+        private PersistenceEngineFixture data;
 
-        public IPersistStreams Persistence { get { return data.Persistence; } }
+        public IPersistStreams Persistence
+        {
+            get { return data.Persistence; }
+        }
 
         public virtual int ConfiguredPageSizeForTesting
         {
@@ -650,8 +657,8 @@ namespace NEventStore.Persistence.AcceptanceTests
 
     public partial class PersistenceEngineFixture : IDisposable
     {
-        IPersistStreams persistence;
-        Func<IPersistStreams> createPersistence;
+        private readonly Func<IPersistStreams> createPersistence;
+        private IPersistStreams persistence;
 
         public IPersistStreams Persistence
         {
@@ -666,7 +673,6 @@ namespace NEventStore.Persistence.AcceptanceTests
                 return persistence;
             }
         }
-
 
         public void Dispose()
         {

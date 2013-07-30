@@ -6,7 +6,7 @@
     {
         public PersistenceEngineFixture()
         {
-            this.createPersistence = () =>
+            createPersistence = () =>
                 new InMemoryPersistenceEngine();
         }
     }

@@ -4,29 +4,29 @@
 
 namespace NEventStore.DispatcherTests
 {
-    using NEventStore.Dispatcher;
-    using NEventStore.Persistence;
-    using Persistence.AcceptanceTests.BDD;
-    using Xunit;
     using System;
     using System.Linq;
     using System.Threading;
     using Moq;
+    using NEventStore.Dispatcher;
+    using NEventStore.Persistence;
+    using NEventStore.Persistence.AcceptanceTests.BDD;
+    using Xunit;
 
     public class when_instantiating_the_asynchronous_dispatch_scheduler : SpecificationBase
     {
-        readonly Guid streamId = Guid.NewGuid();
-        Commit[] commits;
-        readonly Mock<IDispatchCommits> dispatcher = new Mock<IDispatchCommits>();
-        readonly Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
+        private readonly Mock<IDispatchCommits> dispatcher = new Mock<IDispatchCommits>();
+        private readonly Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
+        private readonly Guid streamId = Guid.NewGuid();
+        private Commit[] commits;
 
         protected override void Context()
         {
             commits = new[]
             {
-			    new Commit(streamId, 0, Guid.NewGuid(), 0, SystemTime.UtcNow, null, null),
-			    new Commit(streamId, 0, Guid.NewGuid(), 0, SystemTime.UtcNow, null, null)
-		    };
+                new Commit(streamId, 0, Guid.NewGuid(), 0, SystemTime.UtcNow, null, null),
+                new Commit(streamId, 0, Guid.NewGuid(), 0, SystemTime.UtcNow, null, null)
+            };
 
             persistence.Setup(x => x.Initialize());
             persistence.Setup(x => x.GetUndispatchedCommits()).Returns(commits);
@@ -66,10 +66,10 @@ namespace NEventStore.DispatcherTests
 
     public class when_asynchronously_scheduling_a_commit_for_dispatch : SpecificationBase
     {
-        readonly Commit commit = new Commit(Guid.NewGuid(), 0, Guid.NewGuid(), 0, SystemTime.UtcNow, null, null);
-        readonly Mock<IDispatchCommits> dispatcher = new Mock<IDispatchCommits>();
-        readonly Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
-        AsynchronousDispatchScheduler dispatchScheduler;
+        private readonly Commit commit = new Commit(Guid.NewGuid(), 0, Guid.NewGuid(), 0, SystemTime.UtcNow, null, null);
+        private readonly Mock<IDispatchCommits> dispatcher = new Mock<IDispatchCommits>();
+        private readonly Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
+        private AsynchronousDispatchScheduler dispatchScheduler;
 
         protected override void Context()
         {
@@ -105,9 +105,9 @@ namespace NEventStore.DispatcherTests
 
     public class when_disposing_the_async_dispatch_scheduler : SpecificationBase
     {
-        readonly Mock<IDispatchCommits> dispatcher = new Mock<IDispatchCommits>();
-        readonly Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
-        AsynchronousDispatchScheduler dispatchScheduler;
+        private readonly Mock<IDispatchCommits> dispatcher = new Mock<IDispatchCommits>();
+        private readonly Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
+        private AsynchronousDispatchScheduler dispatchScheduler;
 
         protected override void Context()
         {

@@ -4,13 +4,13 @@
 
 namespace NEventStore
 {
-    using NEventStore.Persistence;
-    using Persistence.AcceptanceTests.BDD;
-    using Xunit;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using Moq;
+    using NEventStore.Persistence;
+    using NEventStore.Persistence.AcceptanceTests.BDD;
+    using Xunit;
 
     public class when_disposing_the_decorator : using_underlying_persistence
     {
@@ -28,11 +28,10 @@ namespace NEventStore
 
     public class when_reading_the_all_events_from_date : using_underlying_persistence
     {
-        private Mock<IPipelineHook> hook1;
-        private Mock<IPipelineHook> hook2;
         private Commit commit;
         private DateTime date;
-        
+        private Mock<IPipelineHook> hook1;
+        private Mock<IPipelineHook> hook2;
 
         protected override void Context()
         {
@@ -47,7 +46,7 @@ namespace NEventStore
             hook2.Setup(h => h.Select(commit)).Returns(commit);
             pipelineHooks.Add(hook2);
 
-            persistence.Setup(p => p.GetFrom(date)).Returns(new List<Commit> { commit });
+            persistence.Setup(p => p.GetFrom(date)).Returns(new List<Commit> {commit});
         }
 
         protected override void Because()
@@ -71,13 +70,12 @@ namespace NEventStore
 
     public class when_reading_the_all_events_to_date : using_underlying_persistence
     {
+        private Commit commit;
+        private DateTime end;
         private Mock<IPipelineHook> hook1;
         private Mock<IPipelineHook> hook2;
-        private Commit commit;
 
         private DateTime start;
-        private DateTime end;
-
 
         protected override void Context()
         {
@@ -93,7 +91,7 @@ namespace NEventStore
             hook2.Setup(h => h.Select(commit)).Returns(commit);
             pipelineHooks.Add(hook2);
 
-            persistence.Setup(p => p.GetFromTo(start, end)).Returns(new List<Commit> { commit });
+            persistence.Setup(p => p.GetFromTo(start, end)).Returns(new List<Commit> {commit});
         }
 
         protected override void Because()
@@ -138,10 +136,10 @@ namespace NEventStore
 
     public abstract class using_underlying_persistence : SpecificationBase
     {
-        protected Guid streamId = Guid.NewGuid();
+        private PipelineHooksAwarePersistanceDecorator decorator;
         protected Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
         protected List<Mock<IPipelineHook>> pipelineHooks = new List<Mock<IPipelineHook>>();
-        PipelineHooksAwarePersistanceDecorator decorator;
+        protected Guid streamId = Guid.NewGuid();
 
         public PipelineHooksAwarePersistanceDecorator Decorator
         {
