@@ -1,24 +1,24 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>EventStore.Persistence.MongoPersistence</id>
-    <version>3.1</version>
-    <title>EventStore MongoDB Persistence Plugin</title>
+    <id>NEventStore.Persistence.MongoPersistence</id>
+    <version>4.0</version>
+    <title>NEventStore MongoDB Persistence Plugin</title>
     <authors>NEventStore Dev Team</authors>
     <owners>NEventStore Dev Team</owners>
     <projectUrl>http://neventstore.org</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Additional persistence provider for EventStore using MongoDB.</description>
+    <description>Additional persistence provider for NEventStore using MongoDB.</description>
     <summary>MongoDB persistence provider for EventStore.</summary>
     <language>es-US</language>
     <tags>events, event sourcing, cqrs, storage, persistence, database, mongodb</tags>
     <dependencies>
-      <dependency id="EventStore" version="3.2" />
+      <dependency id="NEventStore" version="4.0" />
       <dependency id="mongocsharpdriver" version="[1.8, 1.9)" />
     </dependencies>
   </metadata>
   <files>
-    <file src="publish-net40\plugins\persistence\mongo\EventStore.Persistence.MongoPersistence.dll" target="lib\net40"/>
-    <file src="publish-net40\plugins\persistence\mongo\EventStore.Persistence.MongoPersistence.pdb" target="lib\net40"/>
+    <file src="publish-net40\plugins\persistence\mongo\NEventStore.Persistence.MongoPersistence.dll" target="lib\net40"/>
+    <file src="publish-net40\plugins\persistence\mongo\NEventStore.Persistence.MongoPersistence.pdb" target="lib\net40"/>
   </files>
 </package>
