@@ -1,7 +1,7 @@
-EventStore
+NEventStore
 ======================================================================
 
- - The most recent stable release is avaiable on [NuGet.org](https://nuget.org/packages/EventStore)
+ - The most recent stable release is avaiable on [NuGet.org](https://nuget.org/packages/NEventStore)
  - CI builds can be viewed on [Codebetter's TeamCity server](http://teamcity.codebetter.com/project.html?projectId=project247&tab=projectOverview).
  - [CI package feed] (https://www.myget.org/F/neventstore-ci/)
  - [Beta package feed] (https://www.myget.org/F/neventstore-beta/)
