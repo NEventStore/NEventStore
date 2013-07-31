@@ -7,6 +7,7 @@ namespace NEventStore.Persistence.SqlPersistence
     using System.Data.Common;
     using System.Globalization;
     using System.Linq;
+    using System.Text;
     using NEventStore.Logging;
 
     public class ConfigurationConnectionFactory : IConnectionFactory
@@ -46,13 +47,13 @@ namespace NEventStore.Persistence.SqlPersistence
             get { return GetConnectionStringSettings(_masterConnectionName); }
         }
 
-        public virtual IDbConnection OpenMaster(Guid streamId)
+        public virtual IDbConnection OpenMaster(string streamId)
         {
             Logger.Verbose(Messages.OpeningMasterConnection, _masterConnectionName);
             return Open(streamId, _masterConnectionName);
         }
 
-        public virtual IDbConnection OpenReplica(Guid streamId)
+        public virtual IDbConnection OpenReplica(string streamId)
         {
             Logger.Verbose(Messages.OpeningReplicaConnection, _replicaConnectionName);
             return Open(streamId, _replicaConnectionName);
@@ -66,21 +67,21 @@ namespace NEventStore.Persistence.SqlPersistence
                 throw new ConfigurationErrorsException(Messages.NotConnectionsAvailable);
             }
 
-            return OpenScope(Guid.Empty, settings.Key);
+            return OpenScope(string.Empty, settings.Key);
         }
 
         public static IDisposable OpenScope(string connectionName)
         {
-            return OpenScope(Guid.Empty, connectionName);
+            return OpenScope(string.Empty, connectionName);
         }
 
-        public static IDisposable OpenScope(Guid streamId, string connectionName)
+        public static IDisposable OpenScope(string streamId, string connectionName)
         {
             var factory = new ConfigurationConnectionFactory(connectionName);
             return factory.Open(streamId, connectionName);
         }
 
-        protected virtual IDbConnection Open(Guid streamId, string connectionName)
+        protected virtual IDbConnection Open(string streamId, string connectionName)
         {
             ConnectionStringSettings setting = GetSetting(connectionName);
             string connectionString = BuildConnectionString(streamId, setting);
@@ -172,7 +173,7 @@ namespace NEventStore.Persistence.SqlPersistence
             return settings;
         }
 
-        protected virtual string BuildConnectionString(Guid streamId, ConnectionStringSettings setting)
+        protected virtual string BuildConnectionString(string streamId, ConnectionStringSettings setting)
         {
             if (_shards == 0)
             {
@@ -183,11 +184,11 @@ namespace NEventStore.Persistence.SqlPersistence
             return setting.ConnectionString.FormatWith(ComputeHashKey(streamId));
         }
 
-        protected virtual string ComputeHashKey(Guid streamId)
+        protected virtual string ComputeHashKey(string streamId)
         {
             // simple sharding scheme which could easily be improved through such techniques
             // as consistent hashing (Amazon Dynamo) or other kinds of sharding.
-            return (_shards == 0 ? 0 : streamId.ToByteArray()[0]%_shards).ToString(CultureInfo.InvariantCulture);
+            return (_shards == 0 ? 0 : Encoding.UTF8.GetBytes(streamId)[0] % _shards).ToString(CultureInfo.InvariantCulture);
         }
     }
 }

@@ -71,11 +71,11 @@ namespace NEventStore.Persistence.SqlPersistence
             }
 
             Logger.Debug(Messages.InitializingStorage);
-            ExecuteCommand(Guid.Empty, statement =>
+            ExecuteCommand(string.Empty, statement =>
                 statement.ExecuteWithoutExceptions(_dialect.InitializeStorage));
         }
 
-        public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
+        public virtual IEnumerable<Commit> GetFrom(string streamId, int minRevision, int maxRevision)
         {
             Logger.Debug(Messages.GettingAllCommitsBetween, streamId, minRevision, maxRevision);
             return ExecuteQuery(streamId, query =>
@@ -97,7 +97,7 @@ namespace NEventStore.Persistence.SqlPersistence
             start = start < EpochTime ? EpochTime : start;
 
             Logger.Debug(Messages.GettingAllCommitsFrom, start);
-            return ExecuteQuery(Guid.Empty, query =>
+            return ExecuteQuery(string.Empty, query =>
             {
                 string statement = _dialect.GetCommitsFromInstant;
                 query.AddParameter(_dialect.CommitStamp, start);
@@ -113,7 +113,7 @@ namespace NEventStore.Persistence.SqlPersistence
             end = end < EpochTime ? EpochTime : end;
 
             Logger.Debug(Messages.GettingAllCommitsFromTo, start, end);
-            return ExecuteQuery(Guid.Empty, query =>
+            return ExecuteQuery(string.Empty, query =>
             {
                 string statement = _dialect.GetCommitsFromToInstant;
                 query.AddParameter(_dialect.CommitStampStart, start);
@@ -151,7 +151,7 @@ namespace NEventStore.Persistence.SqlPersistence
         public virtual IEnumerable<Commit> GetUndispatchedCommits()
         {
             Logger.Debug(Messages.GettingUndispatchedCommits);
-            return ExecuteQuery(Guid.Empty, query =>
+            return ExecuteQuery(string.Empty, query =>
                 query.ExecutePagedQuery(_dialect.GetUndispatchedCommits, (q, r) => { }))
                 .Select(x => x.GetCommit(_serializer))
                 .ToArray(); // avoid paging
@@ -171,7 +171,7 @@ namespace NEventStore.Persistence.SqlPersistence
         public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
         {
             Logger.Debug(Messages.GettingStreamsToSnapshot);
-            return ExecuteQuery(Guid.Empty, query =>
+            return ExecuteQuery(string.Empty, query =>
             {
                 string statement = _dialect.GetStreamsRequiringSnapshots;
                 query.AddParameter(_dialect.StreamId, Guid.Empty);
@@ -182,7 +182,7 @@ namespace NEventStore.Persistence.SqlPersistence
             });
         }
 
-        public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
+        public virtual Snapshot GetSnapshot(string streamId, int maxRevision)
         {
             Logger.Debug(Messages.GettingRevision, streamId, maxRevision);
             return ExecuteQuery(streamId, query =>
@@ -209,7 +209,7 @@ namespace NEventStore.Persistence.SqlPersistence
         public virtual void Purge()
         {
             Logger.Warn(Messages.PurgingStorage);
-            ExecuteCommand(Guid.Empty, cmd =>
+            ExecuteCommand(string.Empty, cmd =>
                 cmd.ExecuteNonQuery(_dialect.PurgeStorage));
         }
 
@@ -260,7 +260,7 @@ namespace NEventStore.Persistence.SqlPersistence
             });
         }
 
-        protected virtual IEnumerable<T> ExecuteQuery<T>(Guid streamId, Func<IDbStatement, IEnumerable<T>> query)
+        protected virtual IEnumerable<T> ExecuteQuery<T>(string streamId, Func<IDbStatement, IEnumerable<T>> query)
         {
             ThrowWhenDisposed();
 
@@ -324,7 +324,7 @@ namespace NEventStore.Persistence.SqlPersistence
             throw new ObjectDisposedException(Messages.AlreadyDisposed);
         }
 
-        protected virtual T ExecuteCommand<T>(Guid streamId, Func<IDbStatement, T> command)
+        protected virtual T ExecuteCommand<T>(string streamId, Func<IDbStatement, T> command)
         {
             ThrowWhenDisposed();
 

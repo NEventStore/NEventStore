@@ -11,7 +11,7 @@ namespace NEventStore.Persistence.SqlPersistence
         public static StreamHead GetStreamToSnapshot(this IDataRecord record)
         {
             return new StreamHead(
-                record[StreamIdIndex].ToGuid(),
+                record[StreamIdIndex].ToString(),
                 record[HeadRevisionIndex].ToInt(),
                 record[SnapshotRevisionIndex].ToInt());
         }

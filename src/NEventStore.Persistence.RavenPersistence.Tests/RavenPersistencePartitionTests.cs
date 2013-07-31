@@ -109,11 +109,11 @@ namespace NEventStore.Persistence.RavenPersistence.Tests
         protected override void Context()
         {
             _now = SystemTime.UtcNow.AddYears(1);
-            _first = Guid.NewGuid().BuildAttempt(_now.AddSeconds(1));
+            _first = Guid.NewGuid().ToString().BuildAttempt(_now.AddSeconds(1));
             _second = _first.BuildNextAttempt();
             _third = _second.BuildNextAttempt();
             _fourth = _third.BuildNextAttempt();
-            _fifth = Guid.NewGuid().BuildAttempt(_now.AddSeconds(1));
+            _fifth = Guid.NewGuid().ToString().BuildAttempt(_now.AddSeconds(1));
 
             _persistence1 = Partitions.NewEventStoreWithPartition();
             _persistence2 = Partitions.NewEventStoreWithPartition();
@@ -201,7 +201,7 @@ namespace NEventStore.Persistence.RavenPersistence.Tests
 
     public class using_raven_persistence_with_partitions : SpecificationBase, IUseFixture<RavenPartitionedFixture>
     {
-        protected Guid StreamId = Guid.NewGuid();
+        protected string StreamId = Guid.NewGuid().ToString();
 
         protected RavenPartitionedFixture Partitions { get; private set; }
 

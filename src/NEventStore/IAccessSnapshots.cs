@@ -20,7 +20,7 @@ namespace NEventStore
         /// <returns>If found, it returns the snapshot; otherwise null is returned.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        Snapshot GetSnapshot(Guid streamId, int maxRevision);
+        Snapshot GetSnapshot(string streamId, int maxRevision);
 
         /// <summary>
         ///     Adds the snapshot provided to the stream indicated.

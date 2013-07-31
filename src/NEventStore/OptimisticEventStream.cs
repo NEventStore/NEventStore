@@ -19,13 +19,13 @@ namespace NEventStore
         private readonly IDictionary<string, object> _uncommittedHeaders = new Dictionary<string, object>();
         private bool _disposed;
 
-        public OptimisticEventStream(Guid streamId, ICommitEvents persistence)
+        public OptimisticEventStream(string streamId, ICommitEvents persistence)
         {
             StreamId = streamId;
             _persistence = persistence;
         }
 
-        public OptimisticEventStream(Guid streamId, ICommitEvents persistence, int minRevision, int maxRevision)
+        public OptimisticEventStream(string streamId, ICommitEvents persistence, int minRevision, int maxRevision)
             : this(streamId, persistence)
         {
             IEnumerable<Commit> commits = persistence.GetFrom(streamId, minRevision, maxRevision);
@@ -51,7 +51,7 @@ namespace NEventStore
             GC.SuppressFinalize(this);
         }
 
-        public virtual Guid StreamId { get; private set; }
+        public virtual string StreamId { get; private set; }
         public virtual int StreamRevision { get; private set; }
         public virtual int CommitSequence { get; private set; }
 

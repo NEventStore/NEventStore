@@ -137,9 +137,9 @@ namespace NEventStore
     public abstract class using_underlying_persistence : SpecificationBase
     {
         private PipelineHooksAwarePersistanceDecorator decorator;
-        protected Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
-        protected List<Mock<IPipelineHook>> pipelineHooks = new List<Mock<IPipelineHook>>();
-        protected Guid streamId = Guid.NewGuid();
+        protected readonly Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
+        protected readonly List<Mock<IPipelineHook>> pipelineHooks = new List<Mock<IPipelineHook>>();
+        protected string streamId = Guid.NewGuid().ToString();
 
         public PipelineHooksAwarePersistanceDecorator Decorator
         {

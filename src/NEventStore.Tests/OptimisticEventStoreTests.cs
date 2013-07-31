@@ -587,7 +587,7 @@ namespace NEventStore
         private Mock<IPersistStreams> persistence;
         private List<Mock<IPipelineHook>> pipelineHooks;
         private OptimisticEventStore store;
-        protected Guid streamId = Guid.NewGuid();
+        protected string streamId = Guid.NewGuid().ToString();
 
         public Mock<IPersistStreams> Persistence
         {
@@ -606,7 +606,7 @@ namespace NEventStore
 
         protected override void Cleanup()
         {
-            streamId = Guid.NewGuid();
+            streamId = Guid.NewGuid().ToString();
         }
 
         protected Commit BuildCommitStub(Guid commitId)

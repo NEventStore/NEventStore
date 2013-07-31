@@ -16,9 +16,9 @@ namespace NEventStore.Persistence.AcceptanceTests
             return new LinkedList<T>(collection);
         }
 
-        public static Commit CommitSingle(this IPersistStreams persistence, Guid? streamId = null)
+        public static Commit CommitSingle(this IPersistStreams persistence, string streamId = null)
         {
-            Commit commit = (streamId ?? Guid.NewGuid()).BuildAttempt();
+            Commit commit = (streamId ?? Guid.NewGuid().ToString()).BuildAttempt();
             persistence.Commit(commit);
             return commit;
         }
@@ -30,14 +30,14 @@ namespace NEventStore.Persistence.AcceptanceTests
             return commit;
         }
 
-        public static IEnumerable<Commit> CommitMany(this IPersistStreams persistence, int numberOfCommits, Guid? streamId = null)
+        public static IEnumerable<Commit> CommitMany(this IPersistStreams persistence, int numberOfCommits, string streamId = null)
         {
             var commits = new List<Commit>();
             Commit attempt = null;
 
             for (int i = 0; i < numberOfCommits; i++)
             {
-                attempt = attempt == null ? (streamId ?? Guid.NewGuid()).BuildAttempt() : attempt.BuildNextAttempt();
+                attempt = attempt == null ? (streamId ?? Guid.NewGuid().ToString()).BuildAttempt() : attempt.BuildNextAttempt();
                 persistence.Commit(attempt);
                 commits.Add(attempt);
             }
@@ -45,7 +45,7 @@ namespace NEventStore.Persistence.AcceptanceTests
             return commits;
         }
 
-        public static Commit BuildAttempt(this Guid streamId, DateTime now)
+        public static Commit BuildAttempt(this string streamId, DateTime now)
         {
             var messages = new List<EventMessage>
             {
@@ -62,7 +62,7 @@ namespace NEventStore.Persistence.AcceptanceTests
                 messages);
         }
 
-        public static Commit BuildAttempt(this Guid streamId)
+        public static Commit BuildAttempt(this string streamId)
         {
             return streamId.BuildAttempt(SystemTime.UtcNow);
         }
@@ -98,10 +98,10 @@ namespace NEventStore.Persistence.AcceptanceTests
             };
         }
 
-        public static Commit BuildCommit(this Guid streamId)
+        public static Commit BuildCommit(this string streamId)
         {
-            const int StreamRevision = 2;
-            const int CommitSequence = 2;
+            const int streamRevision = 2;
+            const int commitSequence = 2;
             Guid commitId = Guid.NewGuid();
             var headers = new Dictionary<string, object> {{"Key", "Value"}, {"Key2", (long) 1234}, {"Key3", null}};
             var events = new[]
@@ -118,7 +118,7 @@ namespace NEventStore.Persistence.AcceptanceTests
                 }
             };
 
-            return new Commit(streamId, StreamRevision, commitId, CommitSequence, SystemTime.UtcNow, headers, events.ToList());
+            return new Commit(streamId, streamRevision, commitId, commitSequence, SystemTime.UtcNow, headers, events.ToList());
         }
 
         [Serializable]
