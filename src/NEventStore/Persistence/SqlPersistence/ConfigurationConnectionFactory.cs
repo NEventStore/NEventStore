@@ -12,7 +12,7 @@ namespace NEventStore.Persistence.SqlPersistence
 
     public class ConfigurationConnectionFactory : IConnectionFactory
     {
-        private const int DefaultShards = 16;
+        private const int DefaultShards = 0; // TODO remove sharding functionality
         private const string DefaultConnectionName = "EventStore";
 
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (ConfigurationConnectionFactory));
