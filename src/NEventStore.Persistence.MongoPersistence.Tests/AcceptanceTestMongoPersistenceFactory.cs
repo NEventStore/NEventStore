@@ -1,4 +1,4 @@
-﻿namespace EventStore.Persistence.MongoPersistence.Tests
+﻿namespace NEventStore.Persistence.MongoPersistence.Tests
 {
     using System;
     using NEventStore.Persistence.MongoPersistence;
