@@ -1,6 +1,6 @@
 ﻿namespace NEventStore.Persistence.AcceptanceTests
 {
-    using EventStore.Persistence.MongoPersistence.Tests;
+    using NEventStore.Persistence.MongoPersistence.Tests;
 
     public partial class PersistenceEngineFixture
     {
