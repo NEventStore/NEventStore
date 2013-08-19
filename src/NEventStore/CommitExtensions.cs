@@ -36,7 +36,7 @@ namespace NEventStore
 
         public static bool HasIdentifier(this Commit attempt)
         {
-            return attempt.StreamId != Guid.Empty && attempt.CommitId != Guid.Empty;
+            return !string.IsNullOrWhiteSpace(attempt.StreamId) && attempt.CommitId != Guid.Empty;
         }
 
         public static bool IsEmpty(this Commit attempt)

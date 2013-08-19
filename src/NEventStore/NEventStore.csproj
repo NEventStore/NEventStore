@@ -183,6 +183,7 @@
     <Compile Include="Serialization\RijndaelSerializer.cs" />
     <Compile Include="SqlPersistenceWireup.cs" />
     <Compile Include="SqlPersistenceWireupExtensions.cs" />
+    <Compile Include="StoreEventsExtensions.cs" />
     <Compile Include="StreamNotFoundException.cs" />
     <Compile Include="Dispatcher\IScheduleDispatches.cs" />
     <Compile Include="ICommitEvents.cs" />

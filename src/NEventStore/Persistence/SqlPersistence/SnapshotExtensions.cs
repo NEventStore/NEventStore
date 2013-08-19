@@ -16,7 +16,7 @@ namespace NEventStore.Persistence.SqlPersistence
             Logger.Verbose(Messages.DeserializingSnapshot);
 
             return new Snapshot(
-                record[StreamIdIndex].ToGuid(),
+                record[StreamIdIndex].ToString(),
                 record[StreamRevisionIndex].ToInt(),
                 serializer.Deserialize<object>(record, PayloadIndex));
         }

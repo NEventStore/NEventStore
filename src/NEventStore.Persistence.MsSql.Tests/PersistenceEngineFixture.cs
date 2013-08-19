@@ -9,9 +9,9 @@
         public PersistenceEngineFixture()
         {
             _createPersistence = () =>
-                    new SqlPersistenceFactory(new EnviromentConnectionFactory("MsSql", "System.Data.SqlClient"),
-                        new BinarySerializer(),
-                        new MsSqlDialect()).Build();
+                new SqlPersistenceFactory(new EnviromentConnectionFactory("MsSql", "System.Data.SqlClient"),
+                    new BinarySerializer(),
+                    new MsSqlDialect()).Build();
         }
     }
 }

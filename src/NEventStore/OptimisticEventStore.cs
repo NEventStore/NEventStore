@@ -23,7 +23,7 @@ namespace NEventStore
             _persistence = new PipelineHooksAwarePersistanceDecorator(persistence, pipelineHooks);
         }
 
-        public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
+        public virtual IEnumerable<Commit> GetFrom(string streamId, int minRevision, int maxRevision)
         {
             foreach (var commit in _persistence.GetFrom(streamId, minRevision, maxRevision))
             {
@@ -81,13 +81,13 @@ namespace NEventStore
             GC.SuppressFinalize(this);
         }
 
-        public virtual IEventStream CreateStream(Guid streamId)
+        public virtual IEventStream CreateStream(string streamId)
         {
             Logger.Info(Resources.CreatingStream, streamId);
             return new OptimisticEventStream(streamId, this);
         }
 
-        public virtual IEventStream OpenStream(Guid streamId, int minRevision, int maxRevision)
+        public virtual IEventStream OpenStream(string streamId, int minRevision, int maxRevision)
         {
             maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
 

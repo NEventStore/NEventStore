@@ -6,7 +6,7 @@ namespace NEventStore.Serialization.AcceptanceTests
     {
         public SerializerFixture()
         {
-            createSerializer = () =>
+            _createSerializer = () =>
                 new JsonSerializer();
         }
     }

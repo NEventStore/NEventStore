@@ -12,8 +12,8 @@ namespace NEventStore
     {
         private const int MaxStreamsToTrack = 100;
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (OptimisticPipelineHook));
-        private readonly IDictionary<Guid, Commit> _heads = new Dictionary<Guid, Commit>();
-        private readonly LinkedList<Guid> _maxItemsToTrack = new LinkedList<Guid>();
+        private readonly IDictionary<string, Commit> _heads = new Dictionary<string, Commit>();
+        private readonly LinkedList<string> _maxItemsToTrack = new LinkedList<string>();
         private readonly int _maxStreamsToTrack;
 
         public OptimisticPipelineHook()
@@ -125,7 +125,7 @@ namespace NEventStore
                 return;
             }
 
-            Guid expired = _maxItemsToTrack.Last.Value;
+            string expired = _maxItemsToTrack.Last.Value;
             Logger.Verbose(Resources.NoLongerTrackingStream, expired);
 
             _heads.Remove(expired);
@@ -137,7 +137,7 @@ namespace NEventStore
             return GetStreamHead(attempt.StreamId) != null;
         }
 
-        private Commit GetStreamHead(Guid streamId)
+        private Commit GetStreamHead(string streamId)
         {
             lock (_maxItemsToTrack)
             {

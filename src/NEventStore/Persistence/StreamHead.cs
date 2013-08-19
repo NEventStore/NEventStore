@@ -1,7 +1,5 @@
 namespace NEventStore.Persistence
 {
-    using System;
-
     /// <summary>
     ///     Indicates the most recent information representing the head of a given stream.
     /// </summary>
@@ -13,7 +11,7 @@ namespace NEventStore.Persistence
         /// <param name="streamId">The value which uniquely identifies the stream where the last snapshot exceeds the allowed threshold.</param>
         /// <param name="headRevision">The value which indicates the revision, length, or number of events committed to the stream.</param>
         /// <param name="snapshotRevision">The value which indicates the revision at which the last snapshot was taken.</param>
-        public StreamHead(Guid streamId, int headRevision, int snapshotRevision)
+        public StreamHead(string streamId, int headRevision, int snapshotRevision)
             : this()
         {
             StreamId = streamId;
@@ -30,7 +28,7 @@ namespace NEventStore.Persistence
         /// <summary>
         ///     Gets the value which uniquely identifies the stream where the last snapshot exceeds the allowed threshold.
         /// </summary>
-        public Guid StreamId { get; private set; }
+        public string StreamId { get; private set; }
 
         /// <summary>
         ///     Gets the value which indicates the revision, length, or number of events committed to the stream.

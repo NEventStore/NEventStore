@@ -120,7 +120,8 @@
   <data name="InitializeStorage" xml:space="preserve">
     <value>CREATE TABLE Commits
 (
-       StreamId uniqueidentifier NOT NULL,
+       StreamId nchar(40) NOT NULL,
+       StreamIdOriginal nvarchar(1000) NOT NULL,
        StreamRevision int NOT NULL,
        Items tinyint NOT NULL,
        CommitId uniqueidentifier NOT NULL,
@@ -138,7 +139,7 @@ CREATE INDEX IX_Commits_Stamp ON Commits (CommitStamp);
 
 CREATE TABLE Snapshots
 (
-       StreamId uniqueidentifier NOT NULL,
+       StreamId nchar(40) NOT NULL,
        StreamRevision int NOT NULL,
        Payload image NOT NULL,
        CONSTRAINT PK_Snapshots PRIMARY KEY (StreamId, StreamRevision)

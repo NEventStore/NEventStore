@@ -15,7 +15,7 @@ namespace NEventStore
         /// <summary>
         ///     Gets the value which uniquely identifies the stream to which the stream belongs.
         /// </summary>
-        Guid StreamId { get; }
+        string StreamId { get; }
 
         /// <summary>
         ///     Gets the value which indiciates the most recent committed revision of event stream.

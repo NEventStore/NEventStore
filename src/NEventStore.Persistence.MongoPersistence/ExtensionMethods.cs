@@ -56,7 +56,7 @@
             }
 
             BsonDocument id = doc["_id"].AsBsonDocument;
-            Guid streamId = id["StreamId"].AsGuid;
+            string streamId = id["StreamId"].AsString;
             int commitSequence = id["CommitSequence"].AsInt32;
 
             List<EventMessage> events =
@@ -95,7 +95,7 @@
             }
 
             BsonDocument id = doc["_id"].AsBsonDocument;
-            Guid streamId = id["StreamId"].AsGuid;
+            string streamId = id["StreamId"].AsString;
             int streamRevision = id["StreamRevision"].AsInt32;
             BsonValue bsonPayload = doc["Payload"];
 
@@ -118,7 +118,7 @@
 
         public static StreamHead ToStreamHead(this BsonDocument doc)
         {
-            return new StreamHead(doc["_id"].AsGuid, doc["HeadRevision"].AsInt32, doc["SnapshotRevision"].AsInt32);
+            return new StreamHead(doc["_id"].AsString, doc["HeadRevision"].AsInt32, doc["SnapshotRevision"].AsInt32);
         }
 
         public static IMongoQuery ToMongoCommitIdQuery(this Commit commit)
@@ -127,7 +127,7 @@
                 Query.And(Query.EQ("StreamId", commit.StreamId), Query.EQ("CommitSequence", commit.CommitSequence)).ToBsonDocument());
         }
 
-        public static IMongoQuery ToSnapshotQuery(this Guid streamId, int maxRevision)
+        public static IMongoQuery ToSnapshotQuery(this string streamId, int maxRevision)
         {
             return
                 Query.And(

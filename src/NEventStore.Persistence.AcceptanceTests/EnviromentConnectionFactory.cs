@@ -17,12 +17,12 @@ namespace NEventStore.Persistence.AcceptanceTests
             _providerInvariantName = providerInvariantName;
         }
 
-        public IDbConnection OpenMaster(Guid streamId)
+        public IDbConnection OpenMaster(string streamId)
         {
             return new ConnectionScope("master", Open);
         }
 
-        public IDbConnection OpenReplica(Guid streamId)
+        public IDbConnection OpenReplica(string streamId)
         {
             return new ConnectionScope("master", Open);
         }

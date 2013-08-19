@@ -30,7 +30,7 @@ namespace NEventStore.Persistence
             _original.Dispose();
         }
 
-        public IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
+        public IEnumerable<Commit> GetFrom(string streamId, int minRevision, int maxRevision)
         {
             return _original.GetFrom(streamId, minRevision, maxRevision);
         }
@@ -40,7 +40,7 @@ namespace NEventStore.Persistence
             _original.Commit(attempt);
         }
 
-        public Snapshot GetSnapshot(Guid streamId, int maxRevision)
+        public Snapshot GetSnapshot(string streamId, int maxRevision)
         {
             return _original.GetSnapshot(streamId, maxRevision);
         }
