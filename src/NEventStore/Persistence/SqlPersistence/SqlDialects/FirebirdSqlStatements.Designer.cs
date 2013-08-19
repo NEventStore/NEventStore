@@ -63,7 +63,7 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         /// <summary>
         ///   Looks up a localized string similar to CREATE TABLE Commits
         ///(
-        ///       StreamId varchar(1000) character set utf8 NOT NULL,
+        ///       StreamId varchar(253) character set utf8 NOT NULL,
         ///       StreamRevision int NOT NULL CHECK (StreamRevision &gt; 0),
         ///       Items smallint NOT NULL CHECK (Items &gt; 0),
         ///       CommitId char(16) character set octets NOT NULL,
@@ -72,7 +72,7 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         ///       Dispatched char(1) DEFAULT 0 NOT NULL,
         ///       Headers blob,
         ///       Payload blob NOT NULL,
-        ///       CONSTRAINT PK_Commits PRIMARY KEY (StreamId, [rest of string was truncated]&quot;;.
+        ///       CONSTRAINT PK_Commits PRIMARY KEY (StreamId,  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {
