@@ -178,7 +178,6 @@ namespace NEventStore.Persistence.SqlPersistence
             return ExecuteQuery(string.Empty, query =>
             {
                 string statement = _dialect.GetStreamsRequiringSnapshots;
-                query.AddParameter(_dialect.StreamId, string.Empty);
                 query.AddParameter(_dialect.Threshold, maxThreshold);
                 return query.ExecutePagedQuery(statement,
                     (q, s) => q.SetParameter(_dialect.StreamId, _dialect.CoalesceParameterValue(s.StreamId())))

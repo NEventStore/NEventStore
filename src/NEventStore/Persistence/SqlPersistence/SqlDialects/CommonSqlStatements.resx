@@ -175,13 +175,12 @@ SELECT @StreamId, @StreamRevision, @Payload
  LIMIT 1;</value>
   </data>
   <data name="GetStreamsRequiringSnapshots" xml:space="preserve">
-    <value>SELECT C.StreamIdOriginal, MAX(C.StreamRevision) AS StreamRevision, MAX(COALESCE(S.StreamRevision, 0)) AS SnapshotRevision
+    <value>SELECT C.StreamId, C.StreamIdOriginal, MAX(C.StreamRevision) AS StreamRevision, MAX(COALESCE(S.StreamRevision, 0)) AS SnapshotRevision
   FROM Commits AS C
  LEFT OUTER JOIN Snapshots AS S
     ON C.StreamId = S.StreamId
    AND C.StreamRevision &gt;= S.StreamRevision
- WHERE C.StreamId &gt; @StreamId
- GROUP BY C.StreamId
+ GROUP BY C.StreamId, C.StreamIdOriginal
 HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Threshold
  ORDER BY C.StreamId
  LIMIT @Limit;</value>

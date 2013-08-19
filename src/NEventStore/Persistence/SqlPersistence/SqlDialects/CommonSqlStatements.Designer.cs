@@ -154,13 +154,12 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT C.StreamIdOriginal, MAX(C.StreamRevision) AS StreamRevision, MAX(COALESCE(S.StreamRevision, 0)) AS SnapshotRevision
+        ///   Looks up a localized string similar to SELECT C.StreamId, C.StreamIdOriginal, MAX(C.StreamRevision) AS StreamRevision, MAX(COALESCE(S.StreamRevision, 0)) AS SnapshotRevision
         ///  FROM Commits AS C
         /// LEFT OUTER JOIN Snapshots AS S
         ///    ON C.StreamId = S.StreamId
         ///   AND C.StreamRevision &gt;= S.StreamRevision
-        /// WHERE C.StreamId &gt; @StreamId
-        /// GROUP BY C.StreamId
+        /// GROUP BY C.StreamId, C.StreamIdOriginal
         ///HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Threshold
         /// ORDER BY C.StreamId
         /// LIMIT @Limit;.
