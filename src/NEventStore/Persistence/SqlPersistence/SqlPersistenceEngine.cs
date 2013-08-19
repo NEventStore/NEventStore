@@ -4,6 +4,8 @@ namespace NEventStore.Persistence.SqlPersistence
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
+    using System.Security.Cryptography;
+    using System.Text;
     using System.Threading;
     using System.Transactions;
     using NEventStore.Logging;
@@ -78,6 +80,7 @@ namespace NEventStore.Persistence.SqlPersistence
         public virtual IEnumerable<Commit> GetFrom(string streamId, int minRevision, int maxRevision)
         {
             Logger.Debug(Messages.GettingAllCommitsBetween, streamId, minRevision, maxRevision);
+            streamId = streamId.ToHash();
             return ExecuteQuery(streamId, query =>
             {
                 string statement = _dialect.GetCommitsFromStartingRevision;
@@ -160,9 +163,10 @@ namespace NEventStore.Persistence.SqlPersistence
         public virtual void MarkCommitAsDispatched(Commit commit)
         {
             Logger.Debug(Messages.MarkingCommitAsDispatched, commit.CommitId);
-            ExecuteCommand(commit.StreamId, cmd =>
+            var streamId = commit.StreamId.ToHash();
+            ExecuteCommand(streamId, cmd =>
             {
-                cmd.AddParameter(_dialect.StreamId, commit.StreamId);
+                cmd.AddParameter(_dialect.StreamId, streamId);
                 cmd.AddParameter(_dialect.CommitSequence, commit.CommitSequence);
                 return cmd.ExecuteWithoutExceptions(_dialect.MarkCommitAsDispatched);
             });
@@ -174,7 +178,7 @@ namespace NEventStore.Persistence.SqlPersistence
             return ExecuteQuery(string.Empty, query =>
             {
                 string statement = _dialect.GetStreamsRequiringSnapshots;
-                query.AddParameter(_dialect.StreamId, Guid.Empty);
+                query.AddParameter(_dialect.StreamId, string.Empty);
                 query.AddParameter(_dialect.Threshold, maxThreshold);
                 return query.ExecutePagedQuery(statement,
                     (q, s) => q.SetParameter(_dialect.StreamId, _dialect.CoalesceParameterValue(s.StreamId())))
@@ -185,6 +189,7 @@ namespace NEventStore.Persistence.SqlPersistence
         public virtual Snapshot GetSnapshot(string streamId, int maxRevision)
         {
             Logger.Debug(Messages.GettingRevision, streamId, maxRevision);
+            streamId = streamId.ToHash();
             return ExecuteQuery(streamId, query =>
             {
                 string statement = _dialect.GetSnapshot;
@@ -197,9 +202,10 @@ namespace NEventStore.Persistence.SqlPersistence
         public virtual bool AddSnapshot(Snapshot snapshot)
         {
             Logger.Debug(Messages.AddingSnapshot, snapshot.StreamId, snapshot.StreamRevision);
-            return ExecuteCommand(snapshot.StreamId, cmd =>
+            var streamId = snapshot.StreamId.ToHash();
+            return ExecuteCommand(streamId, cmd =>
             {
-                cmd.AddParameter(_dialect.StreamId, snapshot.StreamId);
+                cmd.AddParameter(_dialect.StreamId, streamId);
                 cmd.AddParameter(_dialect.StreamRevision, snapshot.StreamRevision);
                 cmd.AddParameter(_dialect.Payload, _serializer.Serialize(snapshot.Payload));
                 return cmd.ExecuteWithoutExceptions(_dialect.AppendSnapshotToCommit);
@@ -233,10 +239,11 @@ namespace NEventStore.Persistence.SqlPersistence
         {
             Logger.Debug(Messages.AttemptingToCommit,
                 attempt.Events.Count, attempt.StreamId, attempt.CommitSequence);
-
-            ExecuteCommand(attempt.StreamId, cmd =>
+            var streamId = attempt.StreamId.ToHash();
+            ExecuteCommand(streamId, cmd =>
             {
-                cmd.AddParameter(_dialect.StreamId, attempt.StreamId);
+                cmd.AddParameter(_dialect.StreamId, streamId);
+                cmd.AddParameter(_dialect.StreamIdOriginal, attempt.StreamId);
                 cmd.AddParameter(_dialect.StreamRevision, attempt.StreamRevision);
                 cmd.AddParameter(_dialect.Items, attempt.Events.Count);
                 cmd.AddParameter(_dialect.CommitId, attempt.CommitId);
@@ -250,9 +257,10 @@ namespace NEventStore.Persistence.SqlPersistence
 
         private bool DetectDuplicate(Commit attempt)
         {
-            return ExecuteCommand(attempt.StreamId, cmd =>
+            string streamId = attempt.StreamId.ToHash();
+            return ExecuteCommand(streamId, cmd =>
             {
-                cmd.AddParameter(_dialect.StreamId, attempt.StreamId);
+                cmd.AddParameter(_dialect.StreamId, streamId);
                 cmd.AddParameter(_dialect.CommitId, attempt.CommitId);
                 cmd.AddParameter(_dialect.CommitSequence, attempt.CommitSequence);
                 object value = cmd.ExecuteScalar(_dialect.DuplicateCommit);
@@ -264,6 +272,7 @@ namespace NEventStore.Persistence.SqlPersistence
         {
             ThrowWhenDisposed();
 
+            streamId = streamId.ToHash();
             TransactionScope scope = OpenQueryScope();
             IDbConnection connection = null;
             IDbTransaction transaction = null;
@@ -328,6 +337,7 @@ namespace NEventStore.Persistence.SqlPersistence
         {
             ThrowWhenDisposed();
 
+            streamId = streamId.ToHash();
             using (TransactionScope scope = OpenCommandScope())
             using (IDbConnection connection = _connectionFactory.OpenMaster(streamId))
             using (IDbTransaction transaction = _dialect.OpenTransaction(connection))
@@ -378,6 +388,15 @@ namespace NEventStore.Persistence.SqlPersistence
         private static bool RecoverableException(Exception e)
         {
             return e is UniqueKeyViolationException || e is StorageUnavailableException;
+        }
+    }
+
+    internal static class StreamIdHashExtensions
+    {
+        internal static string ToHash(this string streamId)
+        {
+            byte[] hashBytes = SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes(streamId));
+            return BitConverter.ToString(hashBytes).Replace("-", "");
         }
     }
 }

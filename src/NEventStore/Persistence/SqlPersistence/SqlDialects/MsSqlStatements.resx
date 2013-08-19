@@ -122,7 +122,8 @@
 
 CREATE TABLE [dbo].[Commits]
 (
-       [StreamId] [nvarchar](1000) NOT NULL,
+       [StreamId] [char](40) NOT NULL,
+       [StreamIdOriginal] [nvarchar](1000) NOT NULL,
        [StreamRevision] [int] NOT NULL CHECK ([StreamRevision] &gt; 0),
        [Items] [tinyint] NOT NULL CHECK ([Items] &gt; 0),
        [CommitId] [uniqueidentifier] NOT NULL CHECK ([CommitId] != 0x0),
@@ -140,7 +141,7 @@ CREATE INDEX [IX_Commits_Stamp] ON Commits ([CommitStamp]);
 
 CREATE TABLE [dbo].[Snapshots]
 (
-       [StreamId] [nvarchar](1000) NOT NULL,
+       [StreamId] [char](40) NOT NULL,
        [StreamRevision] [int] NOT NULL CHECK ([StreamRevision] &gt; 0),
        [Payload] [varbinary](MAX) NOT NULL CHECK (DATALENGTH([Payload]) &gt; 0),
        CONSTRAINT [PK_Snapshots] PRIMARY KEY CLUSTERED ([StreamId], [StreamRevision])

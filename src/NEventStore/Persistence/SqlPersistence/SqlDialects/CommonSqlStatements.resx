@@ -142,14 +142,14 @@ SELECT @StreamId, @StreamRevision, @Payload
    AND CommitId = @CommitId;</value>
   </data>
   <data name="GetCommitsFromInstant" xml:space="preserve">
-    <value>SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
+    <value>SELECT StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
   FROM Commits
  WHERE CommitStamp &gt;= @CommitStamp
  ORDER BY CommitSequence, StreamId, StreamRevision
  LIMIT @Limit OFFSET @Skip;</value>
   </data>
   <data name="GetCommitsFromToInstant" xml:space="preserve">
-    <value>SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
+    <value>SELECT StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
   FROM Commits
  WHERE CommitStamp &gt;= @CommitStampStart
    AND CommitStamp &lt; @CommitStampEnd
@@ -157,7 +157,7 @@ SELECT @StreamId, @StreamRevision, @Payload
  LIMIT @Limit OFFSET @Skip;</value>
   </data>
   <data name="GetCommitsFromStartingRevision" xml:space="preserve">
-    <value>SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
+    <value>SELECT StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
   FROM Commits
  WHERE StreamId = @StreamId
    AND StreamRevision &gt;= @StreamRevision
@@ -175,7 +175,7 @@ SELECT @StreamId, @StreamRevision, @Payload
  LIMIT 1;</value>
   </data>
   <data name="GetStreamsRequiringSnapshots" xml:space="preserve">
-    <value>SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(COALESCE(S.StreamRevision, 0)) AS SnapshotRevision
+    <value>SELECT C.StreamIdOriginal, MAX(C.StreamRevision) AS StreamRevision, MAX(COALESCE(S.StreamRevision, 0)) AS SnapshotRevision
   FROM Commits AS C
  LEFT OUTER JOIN Snapshots AS S
     ON C.StreamId = S.StreamId
@@ -187,7 +187,7 @@ HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Thresho
  LIMIT @Limit;</value>
   </data>
   <data name="GetUndispatchedCommits" xml:space="preserve">
-    <value>SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
+    <value>SELECT StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
   FROM Commits
  WHERE Dispatched = 0
  ORDER BY CommitSequence
@@ -202,8 +202,8 @@ HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Thresho
   <data name="PersistCommit" xml:space="preserve">
     <value>INSERT
   INTO Commits
-     ( StreamId, CommitId, CommitSequence, StreamRevision, Items, CommitStamp, Headers, Payload )
-VALUES (@StreamId, @CommitId, @CommitSequence, @StreamRevision, @Items, @CommitStamp, @Headers, @Payload);</value>
+     ( StreamId, StreamIdOriginal, CommitId, CommitSequence, StreamRevision, Items, CommitStamp, Headers, Payload )
+VALUES (@StreamId, @StreamIdOriginal, @CommitId, @CommitSequence, @StreamRevision, @Items, @CommitStamp, @Headers, @Payload);</value>
   </data>
   <data name="PurgeStorage" xml:space="preserve">
     <value>DELETE FROM Snapshots;

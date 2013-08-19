@@ -150,14 +150,14 @@ WHERE	(
   </data>
   <data name="GetCommitsFromInstant" xml:space="preserve">
     <value>/*GetCommitsFromInstant*/
-SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
+SELECT StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
 FROM Commits 
 WHERE	CommitStamp &gt;= :CommitStamp
 ORDER BY CommitStamp, StreamId, StreamRevision</value>
   </data>
   <data name="GetCommitsFromStartingRevision" xml:space="preserve">
     <value>/*GetCommitsFromStartingRevision*/
-SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
+SELECT StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
 FROM Commits
 WHERE StreamId = :StreamId
    AND StreamRevision &gt;= :StreamRevision
@@ -176,7 +176,7 @@ ORDER BY StreamRevision DESC</value>
   </data>
   <data name="GetStreamsRequiringSnapshots" xml:space="preserve">
     <value>/*GetStreamsRequiringSnapshots*/
-SELECT StreamId ,  StreamRevision, SnapshotRevision
+SELECT StreamIdOriginal,  StreamRevision, SnapshotRevision
 FROM (
   SELECT C.StreamId, MAX(C.StreamRevision) AS StreamRevision, MAX(COALESCE(S.StreamRevision, 0)) AS SnapshotRevision
   FROM  Commits C LEFT OUTER JOIN Snapshots S
@@ -189,7 +189,7 @@ FROM (
 WHERE ROWNUM &lt;= :Limit;</value>
   </data>
   <data name="InitializeStorage" xml:space="preserve">
-    <value>/*InitializeStorage*/    DECLARE     table_count   INTEGER;  BEGIN     SELECT   COUNT (OBJECT_ID)       INTO   table_count       FROM   USER_OBJECTS      WHERE   EXISTS                 (SELECT   OBJECT_NAME                    FROM   USER_OBJECTS                   WHERE   (OBJECT_NAME = 'COMMITS' AND OBJECT_TYPE = 'TABLE'));       IF table_count = 0     THEN        DBMS_OUTPUT.PUT_LINE ('Creating the Commits table');          EXECUTE IMMEDIATE ('CREATE TABLE Commits                          (                          StreamId nvarchar2(1000) NOT NULL,                           StreamRevision NUMBER(8) CHECK (StreamRevision &gt; 0) NOT NULL,                           Items NUMBER(8) CHECK (Items &gt; 0) NOT NULL,                           CommitId raw(16) CHECK (CommitId != HEXTORAW(0)) NOT NULL,                           CommitSequence NUMBER(8) CHECK (CommitSequence &gt; 0) NOT NULL,                           CommitStamp DATE NOT NULL,                           Dispatched NUMBER(1) DEFAULT(0) NOT NULL,                           Headers BLOB CHECK (Headers IS NULL OR    LENGTH(Headers) &gt; 0) NULL,                           Payload BLOB CHECK (LENGTH(Payload) &gt; 0) NOT NULL,                           CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)                         )');          EXECUTE IMMEDIATE ('CREATE UNIQUE INDEX IX_Commits ON Commits (StreamId, CommitId)');          EXECUTE IMMEDIATE ('CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (StreamId, StreamRevision, Items)');          EXECUTE IMMEDIATE ('CREATE INDEX IX_Commits_Dispatched ON Commits (Dispatched)');          EXECUTE IMMEDIATE ('CREATE INDEX IX_Commits_Stamp ON Commits (CommitStamp)');     ELSE        DBMS_OUTPUT.PUT_LINE (           'The Commits table already exist in the database.'        );     END IF;       SELECT   COUNT (OBJECT_ID)       INTO   table_count       FROM   USER_OBJECTS      WHERE   EXISTS                 (SELECT   OBJECT_NAME                    FROM   USER_OBJECTS                   WHERE   (OBJECT_NAME = 'SNAPSHOTS' AND OBJECT_TYPE = 'TABLE'));       IF table_count = 0     THEN        DBMS_OUTPUT.PUT_LINE ('Creating the Snapshots table');          EXECUTE IMMEDIATE ('CREATE TABLE Snapshots                          (                          StreamId nvarchar2(1000) NOT NULL,                           StreamRevision NUMBER(8) CHECK (StreamRevision &gt; 0) NOT NULL,                           Payload BLOB CHECK (LENGTH(Payload) &gt; 0) NOT NULL,                           CONSTRAINT PK_Snapshots PRIMARY KEY (StreamId, StreamRevision)                         )');     ELSE        DBMS_OUTPUT.PUT_LINE (           'The Snapshots table already exist in the database.'        );        RETURN;     END IF;  EXCEPTION     WHEN OTHERS     THEN        DBMS_OUTPUT.PUT_LINE('An unexpected exception has occured.  Please re-evaluate the PL/SQL script');  END;</value>
+    <value>/*InitializeStorage*/    DECLARE     table_count   INTEGER;  BEGIN     SELECT   COUNT (OBJECT_ID)       INTO   table_count       FROM   USER_OBJECTS      WHERE   EXISTS                 (SELECT   OBJECT_NAME                    FROM   USER_OBJECTS                   WHERE   (OBJECT_NAME = 'COMMITS' AND OBJECT_TYPE = 'TABLE'));       IF table_count = 0     THEN        DBMS_OUTPUT.PUT_LINE ('Creating the Commits table');          EXECUTE IMMEDIATE ('CREATE TABLE Commits                          (                          StreamId char(40) NOT NULL,                           StreamIdOriginal nvarchar2(1000) NOT NULL,                           StreamRevision NUMBER(8) CHECK (StreamRevision &gt; 0) NOT NULL,                           Items NUMBER(8) CHECK (Items &gt; 0) NOT NULL,                           CommitId raw(16) CHECK (CommitId != HEXTORAW(0)) NOT NULL,                           CommitSequence NUMBER(8) CHECK (CommitSequence &gt; 0) NOT NULL,                           CommitStamp DATE NOT NULL,                           Dispatched NUMBER(1) DEFAULT(0) NOT NULL,                           Headers BLOB CHECK (Headers IS NULL OR    LENGTH(Headers) &gt; 0) NULL,                           Payload BLOB CHECK (LENGTH(Payload) &gt; 0) NOT NULL,                           CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)                         )');          EXECUTE IMMEDIATE ('CREATE UNIQUE INDEX IX_Commits ON Commits (StreamId, CommitId)');          EXECUTE IMMEDIATE ('CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (StreamId, StreamRevision, Items)');          EXECUTE IMMEDIATE ('CREATE INDEX IX_Commits_Dispatched ON Commits (Dispatched)');          EXECUTE IMMEDIATE ('CREATE INDEX IX_Commits_Stamp ON Commits (CommitStamp)');     ELSE        DBMS_OUTPUT.PUT_LINE (           'The Commits table already exist in the database.'        );     END IF;       SELECT   COUNT (OBJECT_ID)       INTO   table_count       FROM   USER_OBJECTS      WHERE   EXISTS                 (SELECT   OBJECT_NAME                    FROM   USER_OBJECTS                   WHERE   (OBJECT_NAME = 'SNAPSHOTS' AND OBJECT_TYPE = 'TABLE'));       IF table_count = 0     THEN        DBMS_OUTPUT.PUT_LINE ('Creating the Snapshots table');          EXECUTE IMMEDIATE ('CREATE TABLE Snapshots                          (                          StreamId char(40) NOT NULL,                           StreamRevision NUMBER(8) CHECK (StreamRevision &gt; 0) NOT NULL,                           Payload BLOB CHECK (LENGTH(Payload) &gt; 0) NOT NULL,                           CONSTRAINT PK_Snapshots PRIMARY KEY (StreamId, StreamRevision)                         )');     ELSE        DBMS_OUTPUT.PUT_LINE (           'The Snapshots table already exist in the database.'        );        RETURN;     END IF;  EXCEPTION     WHEN OTHERS     THEN        DBMS_OUTPUT.PUT_LINE('An unexpected exception has occured.  Please re-evaluate the PL/SQL script');  END;</value>
   </data>
   <data name="LimitedQueryFormat" xml:space="preserve">
     <value>/*LimitedQueryFormat*/
@@ -220,6 +220,7 @@ WHERE ROW_NUMBER_VAL &gt; :Skip AND ROW_NUMBER_VAL &lt;= (:Limit + :Skip)</value
     <value>/*PersistCommit*/
 INSERT INTO Commits (  
 	StreamId, 
+	StreamIdOriginal,
 	CommitId, 
 	CommitSequence, 
 	StreamRevision, 
@@ -230,6 +231,7 @@ INSERT INTO Commits (
 )  
 VALUES ( 
 	:StreamId, 
+	:StreamIdOriginal, 
 	:CommitId, 
 	:CommitSequence, 
 	:StreamRevision, 

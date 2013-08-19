@@ -24,6 +24,7 @@ namespace NEventStore.Persistence.SqlPersistence
         string MarkCommitAsDispatched { get; }
 
         string StreamId { get; }
+        string StreamIdOriginal { get; }
         string StreamRevision { get; }
         string MaxStreamRevision { get; }
         string Items { get; }

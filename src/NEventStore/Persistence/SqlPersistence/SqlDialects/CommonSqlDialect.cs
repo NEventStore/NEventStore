@@ -68,6 +68,11 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects
             get { return "@StreamId"; }
         }
 
+        public virtual string StreamIdOriginal
+        {
+            get { return "@StreamIdOriginal"; }
+        }
+
         public virtual string StreamRevision
         {
             get { return "@StreamRevision"; }

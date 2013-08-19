@@ -65,13 +65,13 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         ///
         ///CREATE TABLE [dbo].[Commits]
         ///(
-        ///       [StreamId] [nvarchar](1000) NOT NULL,
+        ///       [StreamId] [char](40) NOT NULL,
+        ///       [StreamIdOriginal] [nvarchar](1000) NOT NULL,
         ///       [StreamRevision] [int] NOT NULL CHECK ([StreamRevision] &gt; 0),
         ///       [Items] [tinyint] NOT NULL CHECK ([Items] &gt; 0),
         ///       [CommitId] [uniqueidentifier] NOT NULL CHECK ([CommitId] != 0x0),
         ///       [CommitSequence] [int] NOT NULL CHECK ([CommitSequence] &gt; 0),
-        ///       [CommitStamp] [datetime] NOT NULL,
-        ///       [Dispatched] [bit] NOT NULL D [rest of string was truncated]&quot;;.
+        ///       [CommitStamp] [datetime] [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {
