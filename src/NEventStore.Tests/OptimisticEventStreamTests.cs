@@ -525,7 +525,7 @@ namespace NEventStore
         protected const int DefaultCommitSequence = 1;
         private Mock<ICommitEvents> persistence;
         private OptimisticEventStream stream;
-        protected Guid streamId = Guid.NewGuid();
+        protected string streamId = Guid.NewGuid().ToString();
 
         public Mock<ICommitEvents> Persistence
         {

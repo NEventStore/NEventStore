@@ -22,7 +22,7 @@ namespace NEventStore.Persistence.InMemoryPersistence
         {
             engine = new InMemoryPersistenceEngine();
             engine.Initialize();
-            Guid streamId = Guid.NewGuid();
+            string streamId = Guid.NewGuid().ToString();
             engine.Commit(new Commit(streamId, 0, Guid.NewGuid(), 0, startDate, new Dictionary<string, object>(), new List<EventMessage>()));
             engine.Commit(new Commit(streamId, 1, Guid.NewGuid(), 1, endDate, new Dictionary<string, object>(), new List<EventMessage>()));
         }

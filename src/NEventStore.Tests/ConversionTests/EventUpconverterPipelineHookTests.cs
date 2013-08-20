@@ -16,7 +16,7 @@ namespace NEventStore.ConversionTests
     public class when_opening_a_commit_that_does_not_have_convertible_events : using_event_converter
     {
         private readonly Commit commit = new Commit(
-            Guid.NewGuid(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
+            Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
 
         private Commit converted;
 
@@ -45,7 +45,7 @@ namespace NEventStore.ConversionTests
     public class when_opening_a_commit_that_has_convertible_events : using_event_converter
     {
         private readonly Commit commit = new Commit(
-            Guid.NewGuid(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
+            Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
 
         private readonly Guid id = Guid.NewGuid();
         private Commit converted;
@@ -82,7 +82,7 @@ namespace NEventStore.ConversionTests
     public class when_an_event_converter_implements_the_IConvertEvents_interface_explicitly : using_event_converter
     {
         private readonly Commit commit = new Commit(
-            Guid.NewGuid(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
+            Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
 
         private readonly Guid id = Guid.NewGuid();
         private Commit converted;

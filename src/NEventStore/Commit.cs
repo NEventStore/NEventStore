@@ -22,7 +22,7 @@ namespace NEventStore
         /// <param name="headers">The metadata which provides additional, unstructured information about this commit.</param>
         /// <param name="events">The collection of event messages to be committed as a single unit.</param>
         public Commit(
-            Guid streamId,
+            string streamId,
             int streamRevision,
             Guid commitId,
             int commitSequence,
@@ -50,7 +50,7 @@ namespace NEventStore
         ///     Gets the value which uniquely identifies the stream to which the commit belongs.
         /// </summary>
         [DataMember]
-        public virtual Guid StreamId { get; private set; }
+        public virtual string StreamId { get; private set; }
 
         /// <summary>
         ///     Gets the value which indicates the revision of the most recent event in the stream to which this commit applies.

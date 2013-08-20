@@ -15,11 +15,11 @@ namespace NEventStore.Persistence.AcceptanceTests
     public class when_a_commit_header_has_a_name_that_contains_a_period : PersistenceEngineConcern
     {
         private Commit _commit, _persisted;
-        private Guid _streamId;
+        private string _streamId;
 
         protected override void Context()
         {
-            _streamId = Guid.NewGuid();
+            _streamId = Guid.NewGuid().ToString();
             _commit = new Commit(_streamId,
                 2,
                 Guid.NewGuid(),
@@ -44,17 +44,16 @@ namespace NEventStore.Persistence.AcceptanceTests
     }
 
     public class when_a_commit_is_successfully_persisted : PersistenceEngineConcern
-
     {
         private Commit attempt;
         private DateTime now;
         private Commit persisted;
-        private Guid streamId;
+        private string streamId;
 
         protected override void Context()
         {
             now = SystemTime.UtcNow.AddYears(1);
-            streamId = Guid.NewGuid();
+            streamId = Guid.NewGuid().ToString();
             attempt = streamId.BuildAttempt(now);
 
             Persistence.Commit(attempt);
@@ -113,13 +112,12 @@ namespace NEventStore.Persistence.AcceptanceTests
     }
 
     public class when_reading_from_a_given_revision : PersistenceEngineConcern
-
     {
         private const int LoadFromCommitContainingRevision = 3;
         private const int UpToCommitWithContainingRevision = 5;
         private Commit[] _committed;
         private Commit _oldest, _oldest2, _oldest3;
-        private Guid _streamId;
+        private string _streamId;
 
         protected override void Context()
         {
@@ -182,7 +180,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Context()
         {
-            Guid streamId = Guid.NewGuid();
+            string streamId = Guid.NewGuid().ToString();
             _attempt1 = streamId.BuildAttempt();
             _attempt2 = streamId.BuildAttempt();
 
@@ -210,7 +208,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Context()
         {
-            Guid streamId = Guid.NewGuid();
+            string streamId = Guid.NewGuid().ToString();
             Commit successfulAttempt = streamId.BuildAttempt();
             _failedAttempt = streamId.BuildAttempt();
 
@@ -278,11 +276,11 @@ namespace NEventStore.Persistence.AcceptanceTests
     {
         private HashSet<Guid> _committed;
         private ICollection<Guid> _loaded;
-        private Guid _streamId;
+        private string _streamId;
 
         protected override void Context()
         {
-            _streamId = Guid.NewGuid();
+            _streamId = Guid.NewGuid().ToString();
             _committed = Persistence.CommitMany(ConfiguredPageSizeForTesting + 1, _streamId).Select(c => c.CommitId).ToHashSet();
         }
 
@@ -309,11 +307,11 @@ namespace NEventStore.Persistence.AcceptanceTests
     {
         private bool _added;
         private Snapshot _snapshot;
-        private Guid _streamId;
+        private string _streamId;
 
         protected override void Context()
         {
-            _streamId = Guid.NewGuid();
+            _streamId = Guid.NewGuid().ToString();
             _snapshot = new Snapshot(_streamId, 1, "Snapshot");
             Persistence.CommitSingle(_streamId);
         }
@@ -341,13 +339,13 @@ namespace NEventStore.Persistence.AcceptanceTests
     {
         private Snapshot _correct;
         private Snapshot _snapshot;
-        private Guid _streamId;
+        private string _streamId;
         private Snapshot _tooFarBack;
         private Snapshot _tooFarForward;
 
         protected override void Context()
         {
-            _streamId = Guid.NewGuid();
+            _streamId = Guid.NewGuid().ToString();
             Commit commit1 = Persistence.CommitSingle(_streamId); // rev 1-2
             Commit commit2 = Persistence.CommitNext(commit1); // rev 3-4
             Persistence.CommitNext(commit2); // rev 5-6
@@ -380,11 +378,11 @@ namespace NEventStore.Persistence.AcceptanceTests
         private const string SnapshotData = "snapshot";
         private Commit _newest;
         private Commit _oldest, _oldest2;
-        private Guid _streamId;
+        private string _streamId;
 
         protected override void Context()
         {
-            _streamId = Guid.NewGuid();
+            _streamId = Guid.NewGuid().ToString();
             _oldest = Persistence.CommitSingle(_streamId);
             _oldest2 = Persistence.CommitNext(_oldest);
             _newest = Persistence.CommitNext(_oldest2);
@@ -408,11 +406,11 @@ namespace NEventStore.Persistence.AcceptanceTests
         private const int OverThreshold = 3;
         private const string SnapshotData = "snapshot";
         private Commit _oldest, _oldest2;
-        private Guid _streamId;
+        private string _streamId;
 
         protected override void Context()
         {
-            _streamId = Guid.NewGuid();
+            _streamId = Guid.NewGuid().ToString();
             _oldest = Persistence.CommitSingle(_streamId);
             _oldest2 = Persistence.CommitNext(_oldest);
             Persistence.AddSnapshot(new Snapshot(_streamId, _oldest2.StreamRevision, SnapshotData));
@@ -443,12 +441,12 @@ namespace NEventStore.Persistence.AcceptanceTests
         private Commit _first;
         private DateTime _now;
         private Commit _second;
-        private Guid _streamId;
+        private string _streamId;
         private Commit _third;
 
         protected override void Context()
         {
-            _streamId = Guid.NewGuid();
+            _streamId = Guid.NewGuid().ToString();
 
             _now = SystemTime.UtcNow.AddYears(1);
             _first = _streamId.BuildAttempt(_now.AddSeconds(1));
@@ -577,7 +575,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         protected override void Context()
         {
             Persistence.Purge();
-            Guid streamId = Guid.NewGuid();
+            string streamId = Guid.NewGuid().ToString();
             var dateTime = new DateTime(2013, 1, 1);
             SystemTime.Resolver = () => dateTime;
             Persistence.Commit(new Commit(streamId,

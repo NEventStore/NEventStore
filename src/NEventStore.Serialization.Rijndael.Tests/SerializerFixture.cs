@@ -9,7 +9,7 @@ namespace NEventStore.Serialization.AcceptanceTests
 
         public SerializerFixture()
         {
-            createSerializer = () => new RijndaelSerializer(new BinarySerializer(), EncryptionKey);
+            _createSerializer = () => new RijndaelSerializer(new BinarySerializer(), EncryptionKey);
         }
     }
 }

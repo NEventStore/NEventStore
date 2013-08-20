@@ -46,7 +46,7 @@ namespace NEventStore.Diagnostics
             return _persistence.GetUndispatchedCommits();
         }
 
-        public virtual IEnumerable<Commit> GetFrom(Guid streamId, int minRevision, int maxRevision)
+        public virtual IEnumerable<Commit> GetFrom(string streamId, int minRevision, int maxRevision)
         {
             return _persistence.GetFrom(streamId, minRevision, maxRevision);
         }
@@ -67,7 +67,7 @@ namespace NEventStore.Diagnostics
             return result;
         }
 
-        public virtual Snapshot GetSnapshot(Guid streamId, int maxRevision)
+        public virtual Snapshot GetSnapshot(string streamId, int maxRevision)
         {
             return _persistence.GetSnapshot(streamId, maxRevision);
         }

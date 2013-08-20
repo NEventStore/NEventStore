@@ -15,7 +15,7 @@ namespace NEventStore
     public class when_a_commit_has_been_persisted : SpecificationBase
     {
         private readonly Commit commit = new Commit(
-            Guid.NewGuid(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
+            Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
 
         private readonly Mock<IScheduleDispatches> dispatcher = new Mock<IScheduleDispatches>();
         private DispatchSchedulerPipelineHook DispatchSchedulerHook;
@@ -43,7 +43,7 @@ namespace NEventStore
         private readonly DispatchSchedulerPipelineHook DispatchSchedulerHook = new DispatchSchedulerPipelineHook();
 
         private readonly Commit commit = new Commit(
-            Guid.NewGuid(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
+            Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
 
         private Exception thrown;
 
@@ -64,7 +64,7 @@ namespace NEventStore
         private readonly DispatchSchedulerPipelineHook DispatchSchedulerHook = new DispatchSchedulerPipelineHook();
 
         private readonly Commit commit = new Commit(
-            Guid.NewGuid(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
+            Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
 
         private Commit selected;
 

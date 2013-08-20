@@ -134,7 +134,7 @@
 
     public class when_serializing_a_commit_message : SerializationConcern
     {
-        private readonly Commit _message = Guid.NewGuid().BuildCommit();
+        private readonly Commit _message = Guid.NewGuid().ToString().BuildCommit();
         private Commit _deserialized;
         private byte[] _serialized;
 
@@ -198,64 +198,64 @@
 
     public class when_serializing_an_untyped_payload_on_a_snapshot : SerializationConcern
     {
-        private Snapshot deserialized;
-        private IDictionary<string, List<int>> payload;
-        private byte[] serialized;
-        private Snapshot snapshot;
+        private Snapshot _deserialized;
+        private IDictionary<string, List<int>> _payload;
+        private byte[] _serialized;
+        private Snapshot _snapshot;
 
         protected override void Context()
         {
-            payload = new Dictionary<string, List<int>>();
-            snapshot = new Snapshot(Guid.NewGuid(), 42, payload);
-            serialized = Serializer.Serialize(snapshot);
+            _payload = new Dictionary<string, List<int>>();
+            _snapshot = new Snapshot(Guid.NewGuid().ToString(), 42, _payload);
+            _serialized = Serializer.Serialize(_snapshot);
         }
 
         protected override void Because()
         {
-            deserialized = Serializer.Deserialize<Snapshot>(serialized);
+            _deserialized = Serializer.Deserialize<Snapshot>(_serialized);
         }
 
         [Fact]
         public void should_correctly_deserialize_the_untyped_payload_contents()
         {
-            deserialized.Payload.ShouldBe(snapshot.Payload);
+            _deserialized.Payload.ShouldBe(_snapshot.Payload);
         }
 
         [Fact]
         public void should_correctly_deserialize_the_untyped_payload_type()
         {
-            deserialized.Payload.ShouldBeInstanceOf(snapshot.Payload.GetType());
+            _deserialized.Payload.ShouldBeInstanceOf(_snapshot.Payload.GetType());
         }
     }
 
     public class SerializationConcern : SpecificationBase, IUseFixture<SerializerFixture>
     {
-        private SerializerFixture data;
+        private SerializerFixture _data;
 
         public ISerialize Serializer
         {
-            get { return data.Serializer; }
+            get { return _data.Serializer; }
         }
 
-        public virtual int ConfiguredPageSizeForTesting
+        public int ConfiguredPageSizeForTesting
         {
             get { return int.Parse("pageSize".GetSetting() ?? "0"); }
         }
 
         public void SetFixture(SerializerFixture data)
         {
-            this.data = data;
+            _data = data;
         }
     }
 
     public partial class SerializerFixture
     {
-        private readonly Func<ISerialize> createSerializer;
-        private ISerialize serializer;
+        private readonly Func<ISerialize> _createSerializer;
+        private ISerialize _serializer;
 
         public ISerialize Serializer
         {
-            get { return serializer ?? (serializer = createSerializer()); }
+            get { return _serializer ?? (_serializer = _createSerializer()); }
         }
     }
 }

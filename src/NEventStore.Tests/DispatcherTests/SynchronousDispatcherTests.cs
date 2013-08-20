@@ -16,7 +16,7 @@ namespace NEventStore.DispatcherTests
     {
         private readonly Mock<IDispatchCommits> dispatcher = new Mock<IDispatchCommits>();
         private readonly Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
-        private readonly Guid streamId = Guid.NewGuid();
+        private readonly string streamId = Guid.NewGuid().ToString();
         private Commit[] commits;
 
         protected override void Context()
@@ -59,7 +59,7 @@ namespace NEventStore.DispatcherTests
 
     public class when_synchronously_scheduling_a_commit_for_dispatch : SpecificationBase
     {
-        private readonly Commit commit = new Commit(Guid.NewGuid(), 0, Guid.NewGuid(), 0, SystemTime.UtcNow, null, null);
+        private readonly Commit commit = new Commit(Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, SystemTime.UtcNow, null, null);
         private readonly Mock<IDispatchCommits> dispatcher = new Mock<IDispatchCommits>();
         private readonly Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
         private SynchronousDispatchScheduler dispatchScheduler;

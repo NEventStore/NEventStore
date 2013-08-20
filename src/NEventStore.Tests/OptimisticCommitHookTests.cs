@@ -241,6 +241,11 @@ namespace NEventStore
 
         private Commit BuildCommit(Guid streamId, Guid commitId)
         {
+            return BuildCommit(streamId.ToString(), commitId);
+        }
+
+        private Commit BuildCommit(string streamId, Guid commitId)
+        {
             return new Commit(streamId, 0, commitId, 0, SystemTime.UtcNow, null, null);
         }
     }
@@ -248,7 +253,7 @@ namespace NEventStore
     public abstract class using_commit_hooks : SpecificationBase
     {
         protected OptimisticPipelineHook hook = new OptimisticPipelineHook();
-        protected Guid streamId = Guid.NewGuid();
+        protected string streamId = Guid.NewGuid().ToString();
 
         protected Commit BuildCommitStub(Guid commitId)
         {
