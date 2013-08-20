@@ -121,8 +121,8 @@
     <value>INSERT
   INTO Snapshots
      ( StreamId, StreamRevision, Payload )
-SELECT @StreamId, @StreamRevision, @Payload
-/*FROM DUAL*/
+ SELECT @StreamId, @StreamRevision, @Payload
+ /*FROM DUAL*/
  WHERE EXISTS
      ( SELECT *
          FROM Commits

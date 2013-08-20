@@ -50,7 +50,7 @@ task Test -depends RunUnitTests, RunPersistenceTests, RunSerializationTests
 task RunUnitTests {
 	"Unit Tests"
 	EnsureDirectory $output_directory
-	Invoke-XUnit -Path $src_directory\tests -TestSpec '*NEventStore.Tests.dll' `
+	Invoke-XUnit -Path $src_directory -TestSpec '*NEventStore.Tests.dll' `
     -SummaryPath $output_directory\unit_tests.xml `
     -XUnitPath $xunit_path
 }
@@ -58,7 +58,7 @@ task RunUnitTests {
 task RunPersistenceTests -precondition { $runPersistenceTests } {
 	"Persistence Tests"
 	EnsureDirectory $output_directory
-	Invoke-XUnit -Path $src_directory\tests -TestSpec '*Persistence.*.Tests.dll' `
+	Invoke-XUnit -Path $src_directory -TestSpec '*Persistence.*.Tests.dll' `
     -SummaryPath $output_directory\persistence_tests.xml `
     -XUnitPath $xunit_path
 }
@@ -66,7 +66,7 @@ task RunPersistenceTests -precondition { $runPersistenceTests } {
 task RunSerializationTests {
 	"Serialization Tests"
 	EnsureDirectory $output_directory
-	Invoke-XUnit -Path $src_directory\tests -TestSpec '*Serialization.*.Tests.dll' `
+	Invoke-XUnit -Path $src_directory -TestSpec '*Serialization.*.Tests.dll' `
     -SummaryPath $output_directory\serialization_tests.xml `
     -XUnitPath $xunit_path
 }
