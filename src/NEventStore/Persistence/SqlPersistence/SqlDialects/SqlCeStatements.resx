@@ -126,7 +126,7 @@
        Items tinyint NOT NULL,
        CommitId uniqueidentifier NOT NULL,
        CommitSequence int NOT NULL,
-       CommitStamp datetime NOT NULL,
+       CommitStamp datetime2 NOT NULL,
        Dispatched bit NOT NULL DEFAULT 0,
        Headers image NULL,
        Payload image NOT NULL,

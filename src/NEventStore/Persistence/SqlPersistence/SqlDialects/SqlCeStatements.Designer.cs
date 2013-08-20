@@ -69,13 +69,13 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         ///       Items tinyint NOT NULL,
         ///       CommitId uniqueidentifier NOT NULL,
         ///       CommitSequence int NOT NULL,
-        ///       CommitStamp datetime NOT NULL,
+        ///       CommitStamp datetime2 NOT NULL,
         ///       Dispatched bit NOT NULL DEFAULT 0,
         ///       Headers image NULL,
         ///       Payload image NOT NULL,
         ///       CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)
         ///);
-        ///CREATE UNIQUE INDEX IX_Commits ON C [rest of string was truncated]&quot;;.
+        ///CREATE UNIQUE INDEX IX_Commits ON  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {
