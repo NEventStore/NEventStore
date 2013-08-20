@@ -111,12 +111,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Persistence\SqlPersistence\SqlDialects\DelimitedDbStatement.cs" />
-    <Compile Include="Persistence\SqlPersistence\SqlDialects\FirebirdSqlDialect.cs" />
-    <Compile Include="Persistence\SqlPersistence\SqlDialects\FirebirdSqlStatements.Designer.cs">
-      <DependentUpon>FirebirdSqlStatements.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Persistence\SqlPersistence\SqlDialects\MsSqlDialect.cs" />
     <Compile Include="Persistence\SqlPersistence\SqlDialects\MsSqlStatements.Designer.cs">
       <DependentUpon>MsSqlStatements.resx</DependentUpon>
@@ -233,11 +227,6 @@
     <EmbeddedResource Include="Persistence\SqlPersistence\SqlDialects\CommonSqlStatements.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CommonSqlStatements.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Persistence\SqlPersistence\SqlDialects\FirebirdSqlStatements.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>FirebirdSqlStatements.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Persistence\SqlPersistence\SqlDialects\MsSqlStatements.resx">

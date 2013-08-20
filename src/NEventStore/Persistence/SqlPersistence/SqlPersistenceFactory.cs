@@ -97,19 +97,9 @@ namespace NEventStore.Persistence.SqlPersistence
                 return new SqlCeDialect();
             }
 
-            if (providerName.Contains("FIREBIRD"))
-            {
-                return new FirebirdSqlDialect();
-            }
-
             if (providerName.Contains("POSTGRES") || providerName.Contains("NPGSQL"))
             {
                 return new PostgreSqlDialect();
-            }
-
-            if (providerName.Contains("FIREBIRD"))
-            {
-                return new FirebirdSqlDialect();
             }
 
             if (providerName.Contains("ORACLE") && providerName.Contains("DATAACCESS"))
