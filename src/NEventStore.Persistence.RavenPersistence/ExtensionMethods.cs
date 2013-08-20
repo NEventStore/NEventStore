@@ -112,7 +112,8 @@ namespace NEventStore.Persistence.RavenPersistence
 
         public static StreamHead ToStreamHead(this RavenStreamHead streamHead)
         {
-            return new StreamHead(streamHead.StreamId, streamHead.HeadRevision, streamHead.SnapshotRevision);
+            throw new NotImplementedException();
+            //return new StreamHead(streamHead.StreamId, streamHead.HeadRevision, streamHead.SnapshotRevision);
         }
     }
 }

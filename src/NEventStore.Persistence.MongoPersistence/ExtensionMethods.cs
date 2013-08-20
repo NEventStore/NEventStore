@@ -118,7 +118,8 @@
 
         public static StreamHead ToStreamHead(this BsonDocument doc)
         {
-            return new StreamHead(doc["_id"].AsString, doc["HeadRevision"].AsInt32, doc["SnapshotRevision"].AsInt32);
+            throw new NotImplementedException();
+            //return new StreamHead( doc["_id"].AsString, doc["HeadRevision"].AsInt32, doc["SnapshotRevision"].AsInt32);
         }
 
         public static IMongoQuery ToMongoCommitIdQuery(this Commit commit)

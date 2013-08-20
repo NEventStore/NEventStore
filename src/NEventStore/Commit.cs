@@ -12,9 +12,30 @@ namespace NEventStore
     public class Commit
     {
         /// <summary>
-        ///     Initializes a new instance of the Commit class.
+        ///     Initializes a new instance of the Commit class for the default bucket.
         /// </summary>
-        /// <param name="streamId">The value which uniquely identifies the stream to which the commit belongs.</param>
+        /// <param name="streamId">The value which uniquely identifies the stream in a bucket to which the commit belongs.</param>
+        /// <param name="streamRevision">The value which indicates the revision of the most recent event in the stream to which this commit applies.</param>
+        /// <param name="commitId">The value which uniquely identifies the commit within the stream.</param>
+        /// <param name="commitSequence">The value which indicates the sequence (or position) in the stream to which this commit applies.</param>
+        /// <param name="commitStamp">The point in time at which the commit was persisted.</param>
+        /// <param name="headers">The metadata which provides additional, unstructured information about this commit.</param>
+        /// <param name="events">The collection of event messages to be committed as a single unit.</param>
+        public Commit(
+            Guid streamId,
+            int streamRevision,
+            Guid commitId,
+            int commitSequence,
+            DateTime commitStamp,
+            Dictionary<string, object> headers,
+            List<EventMessage> events)
+            : this(Bucket.Default, streamId.ToString(), streamRevision, commitId, commitSequence, commitStamp, headers, events)
+        { }
+
+        /// <summary>
+        ///     Initializes a new instance of the Commit class for the default bucket.
+        /// </summary>
+        /// <param name="streamId">The value which uniquely identifies the stream in a bucket to which the commit belongs.</param>
         /// <param name="streamRevision">The value which indicates the revision of the most recent event in the stream to which this commit applies.</param>
         /// <param name="commitId">The value which uniquely identifies the commit within the stream.</param>
         /// <param name="commitSequence">The value which indicates the sequence (or position) in the stream to which this commit applies.</param>
@@ -29,8 +50,32 @@ namespace NEventStore
             DateTime commitStamp,
             Dictionary<string, object> headers,
             List<EventMessage> events)
+            : this(Bucket.Default, streamId, streamRevision, commitId, commitSequence, commitStamp, headers, events)
+        {}
+
+        /// <summary>
+        ///     Initializes a new instance of the Commit class.
+        /// </summary>
+        /// <param name="bucketId">The value which identifies bucket to which the the stream and the the commit belongs</param>
+        /// <param name="streamId">The value which uniquely identifies the stream in a bucket to which the commit belongs.</param>
+        /// <param name="streamRevision">The value which indicates the revision of the most recent event in the stream to which this commit applies.</param>
+        /// <param name="commitId">The value which uniquely identifies the commit within the stream.</param>
+        /// <param name="commitSequence">The value which indicates the sequence (or position) in the stream to which this commit applies.</param>
+        /// <param name="commitStamp">The point in time at which the commit was persisted.</param>
+        /// <param name="headers">The metadata which provides additional, unstructured information about this commit.</param>
+        /// <param name="events">The collection of event messages to be committed as a single unit.</param>
+        public Commit(
+            string bucketId,
+            string streamId,
+            int streamRevision,
+            Guid commitId,
+            int commitSequence,
+            DateTime commitStamp,
+            Dictionary<string, object> headers,
+            List<EventMessage> events)
             : this()
         {
+            BucketId = bucketId;
             StreamId = streamId;
             CommitId = commitId;
             StreamRevision = streamRevision;
@@ -45,6 +90,12 @@ namespace NEventStore
         /// </summary>
         protected Commit()
         {}
+
+        /// <summary>
+        ///     Gets the value which identifies bucket to which the the stream and the the commit belongs.
+        /// </summary>
+        [DataMember]
+        public virtual string BucketId { get; private set; }
 
         /// <summary>
         ///     Gets the value which uniquely identifies the stream to which the commit belongs.

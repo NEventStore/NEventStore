@@ -36,9 +36,9 @@ namespace NEventStore.Diagnostics
             _counters.CountCommitDispatched();
         }
 
-        public IEnumerable<Commit> GetFromTo(DateTime start, DateTime end)
+        public IEnumerable<Commit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
-            return _persistence.GetFromTo(start, end);
+            return _persistence.GetFromTo(bucketId, start, end);
         }
 
         public virtual IEnumerable<Commit> GetUndispatchedCommits()
@@ -46,14 +46,14 @@ namespace NEventStore.Diagnostics
             return _persistence.GetUndispatchedCommits();
         }
 
-        public virtual IEnumerable<Commit> GetFrom(string streamId, int minRevision, int maxRevision)
+        public virtual IEnumerable<Commit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
         {
-            return _persistence.GetFrom(streamId, minRevision, maxRevision);
+            return _persistence.GetFrom(bucketId, streamId, minRevision, maxRevision);
         }
 
-        public virtual IEnumerable<Commit> GetFrom(DateTime start)
+        public virtual IEnumerable<Commit> GetFrom(string bucketId, DateTime start)
         {
-            return _persistence.GetFrom(start);
+            return _persistence.GetFrom(bucketId, start);
         }
 
         public virtual bool AddSnapshot(Snapshot snapshot)
@@ -67,14 +67,14 @@ namespace NEventStore.Diagnostics
             return result;
         }
 
-        public virtual Snapshot GetSnapshot(string streamId, int maxRevision)
+        public virtual Snapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
         {
-            return _persistence.GetSnapshot(streamId, maxRevision);
+            return _persistence.GetSnapshot(bucketId, streamId, maxRevision);
         }
 
-        public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
+        public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
         {
-            return _persistence.GetStreamsToSnapshot(maxThreshold);
+            return _persistence.GetStreamsToSnapshot(bucketId, maxThreshold);
         }
 
         public virtual void Purge()

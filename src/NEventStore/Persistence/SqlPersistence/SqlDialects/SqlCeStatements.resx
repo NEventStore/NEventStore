@@ -120,29 +120,31 @@
   <data name="InitializeStorage" xml:space="preserve">
     <value>CREATE TABLE Commits
 (
-       StreamId nchar(40) NOT NULL,
-       StreamIdOriginal nvarchar(1000) NOT NULL,
-       StreamRevision int NOT NULL,
-       Items tinyint NOT NULL,
-       CommitId uniqueidentifier NOT NULL,
-       CommitSequence int NOT NULL,
-       CommitStamp datetime2 NOT NULL,
-       Dispatched bit NOT NULL DEFAULT 0,
-       Headers image NULL,
-       Payload image NOT NULL,
-       CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)
+    BucketId nchar(40) NOT NULL,
+    StreamId nchar(40) NOT NULL,
+    StreamIdOriginal nvarchar(1000) NOT NULL,
+    StreamRevision int NOT NULL,
+    Items tinyint NOT NULL,
+    CommitId uniqueidentifier NOT NULL,
+    CommitSequence int NOT NULL,
+    CommitStamp datetime NOT NULL,
+    Dispatched bit NOT NULL DEFAULT 0,
+    Headers image NULL,
+    Payload image NOT NULL,
+    CONSTRAINT PK_Commits PRIMARY KEY (BucketId, StreamId, CommitSequence)
 );
-CREATE UNIQUE INDEX IX_Commits ON Commits (StreamId, CommitId);
-CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (StreamId, StreamRevision, Items);
+CREATE UNIQUE INDEX IX_Commits ON Commits (BucketId, StreamId, CommitId);
+CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (BucketId, StreamId, StreamRevision, Items);
 CREATE INDEX IX_Commits_Dispatched ON Commits (Dispatched);
 CREATE INDEX IX_Commits_Stamp ON Commits (CommitStamp);
 
 CREATE TABLE Snapshots
 (
-       StreamId nchar(40) NOT NULL,
-       StreamRevision int NOT NULL,
-       Payload image NOT NULL,
-       CONSTRAINT PK_Snapshots PRIMARY KEY (StreamId, StreamRevision)
+    BucketId nchar(40) NOT NULL,
+    StreamId nchar(40) NOT NULL,
+    StreamRevision int NOT NULL,
+    Payload image NOT NULL,
+    CONSTRAINT PK_Snapshots PRIMARY KEY (BucketId, StreamId, StreamRevision)
 );</value>
   </data>
 </root>

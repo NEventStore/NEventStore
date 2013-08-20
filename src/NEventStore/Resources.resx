@@ -163,10 +163,10 @@
     <value>Getting all commits for stream '{0}' between '{1}' and '{2}'.</value>
   </data>
   <data name="GettingAllCommitsFromTime" xml:space="preserve">
-    <value>Getting all commits from '{0}' forward.</value>
+    <value>Getting all commits from bucket '{0}' from '{1}' forward.</value>
   </data>
   <data name="GettingAllCommitsFromToTime" xml:space="preserve">
-    <value>Getting all commits from '{0}' to '{1}'.</value>
+    <value>Getting all commits from bucket '{0}' from '{1}' to '{2}'.</value>
   </data>
   <data name="AttemptingToCommit" xml:space="preserve">
     <value>Attempting to append commit '{0}' to stream '{1}' at position '{2}'.</value>
@@ -181,10 +181,10 @@
     <value>Marking commit '{0}' as dispatched.</value>
   </data>
   <data name="GettingStreamsToSnapshot" xml:space="preserve">
-    <value>Getting the set of all streams to be snapshot which exceed {0} revisions without a snapshot.</value>
+    <value>Getting the set of all streams to be snapshot from bucket '{0}' which exceed {1} revisions without a snapshot.</value>
   </data>
   <data name="GettingSnapshotForStream" xml:space="preserve">
-    <value>Getting the most recent snapshot for stream '{0}' on/since revision '{1}'.</value>
+    <value>Getting the most recent snapshot from bucket '{0}' for stream '{1}' on/since revision '{2}'.</value>
   </data>
   <data name="AddingSnapshot" xml:space="preserve">
     <value>Adding a snapshot for stream '{0}' at revision '{1}'.</value>
@@ -208,10 +208,10 @@
     <value>Purging all commits on stream '{0}' from tracking.</value>
   </data>
   <data name="CreatingStream" xml:space="preserve">
-    <value>Creating stream '{0}'.</value>
+    <value>Creating stream '{0}' in bucket '{1}'.</value>
   </data>
   <data name="OpeningStreamAtRevision" xml:space="preserve">
-    <value>Opening stream '{0}' between revisions {1} and {2}.</value>
+    <value>Opening stream '{0}' from bucket '{1}' between revisions {2} and {3}.</value>
   </data>
   <data name="OpeningStreamWithSnapshot" xml:space="preserve">
     <value>Opening stream '{0}' with snapshot at {1} up to revision {2}.</value>

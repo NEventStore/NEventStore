@@ -20,15 +20,24 @@ namespace NEventStore
         private bool _disposed;
 
         public OptimisticEventStream(string streamId, ICommitEvents persistence)
+            : this(Bucket.Default, streamId, persistence)
+        {}
+
+        public OptimisticEventStream(string bucketId, string streamId, ICommitEvents persistence)
         {
+            BucketId = bucketId;
             StreamId = streamId;
             _persistence = persistence;
         }
 
         public OptimisticEventStream(string streamId, ICommitEvents persistence, int minRevision, int maxRevision)
-            : this(streamId, persistence)
+            : this(Bucket.Default, streamId, persistence, minRevision, maxRevision)
+        {}
+
+        public OptimisticEventStream(string bucketId, string streamId, ICommitEvents persistence, int minRevision, int maxRevision)
+            : this(bucketId, streamId, persistence)
         {
-            IEnumerable<Commit> commits = persistence.GetFrom(streamId, minRevision, maxRevision);
+            IEnumerable<Commit> commits = persistence.GetFrom(bucketId, streamId, minRevision, maxRevision);
             PopulateStream(minRevision, maxRevision, commits);
 
             if (minRevision > 0 && _committed.Count == 0)
@@ -38,9 +47,9 @@ namespace NEventStore
         }
 
         public OptimisticEventStream(Snapshot snapshot, ICommitEvents persistence, int maxRevision)
-            : this(snapshot.StreamId, persistence)
+            : this(snapshot.BucketId, snapshot.StreamId, persistence)
         {
-            IEnumerable<Commit> commits = persistence.GetFrom(snapshot.StreamId, snapshot.StreamRevision, maxRevision);
+            IEnumerable<Commit> commits = persistence.GetFrom(snapshot.BucketId, snapshot.StreamId, snapshot.StreamRevision, maxRevision);
             PopulateStream(snapshot.StreamRevision + 1, maxRevision, commits);
             StreamRevision = snapshot.StreamRevision + _committed.Count;
         }
@@ -51,6 +60,7 @@ namespace NEventStore
             GC.SuppressFinalize(this);
         }
 
+        public virtual string BucketId { get; private set; }
         public virtual string StreamId { get; private set; }
         public virtual int StreamRevision { get; private set; }
         public virtual int CommitSequence { get; private set; }
@@ -107,7 +117,7 @@ namespace NEventStore
             catch (ConcurrencyException)
             {
                 Logger.Info(Resources.UnderlyingStreamHasChanged, StreamId);
-                IEnumerable<Commit> commits = _persistence.GetFrom(StreamId, StreamRevision + 1, int.MaxValue);
+                IEnumerable<Commit> commits = _persistence.GetFrom(BucketId, StreamId, StreamRevision + 1, int.MaxValue);
                 PopulateStream(StreamRevision + 1, int.MaxValue, commits);
 
                 throw;

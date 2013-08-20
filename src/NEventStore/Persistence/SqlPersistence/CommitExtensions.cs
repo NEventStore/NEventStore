@@ -8,14 +8,15 @@ namespace NEventStore.Persistence.SqlPersistence
 
     public static class CommitExtensions
     {
-        private const int StreamIdIndex = 0;
-        private const int StreamIdOriginalIndex = 1;
-        private const int StreamRevisionIndex = 2;
-        private const int CommitIdIndex = 3;
-        private const int CommitSequenceIndex = 4;
-        private const int CommitStampIndex = 5;
-        private const int HeadersIndex = 6;
-        private const int PayloadIndex = 7;
+        private const int BucketIdIndex = 0;
+        private const int StreamIdIndex = 1;
+        private const int StreamIdOriginalIndex = 2;
+        private const int StreamRevisionIndex = 3;
+        private const int CommitIdIndex = 4;
+        private const int CommitSequenceIndex = 5;
+        private const int CommitStampIndex = 6;
+        private const int HeadersIndex = 7;
+        private const int PayloadIndex = 8;
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (CommitExtensions));
 
         public static Commit GetCommit(this IDataRecord record, ISerialize serializer)
@@ -25,6 +26,7 @@ namespace NEventStore.Persistence.SqlPersistence
             var events = serializer.Deserialize<List<EventMessage>>(record, PayloadIndex);
 
             return new Commit(
+                record[BucketIdIndex].ToString(),
                 record[StreamIdOriginalIndex].ToString(),
                 record[StreamRevisionIndex].ToInt(),
                 record[CommitIdIndex].ToGuid(),

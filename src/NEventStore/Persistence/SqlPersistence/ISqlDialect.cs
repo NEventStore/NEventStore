@@ -23,6 +23,7 @@ namespace NEventStore.Persistence.SqlPersistence
         string GetUndispatchedCommits { get; }
         string MarkCommitAsDispatched { get; }
 
+        string BucketId { get; }
         string StreamId { get; }
         string StreamIdOriginal { get; }
         string StreamRevision { get; }

@@ -30,9 +30,9 @@ namespace NEventStore.Persistence
             _original.Dispose();
         }
 
-        public IEnumerable<Commit> GetFrom(string streamId, int minRevision, int maxRevision)
+        public IEnumerable<Commit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
         {
-            return _original.GetFrom(streamId, minRevision, maxRevision);
+            return _original.GetFrom(bucketId, streamId, minRevision, maxRevision);
         }
 
         public void Commit(Commit attempt)
@@ -40,9 +40,9 @@ namespace NEventStore.Persistence
             _original.Commit(attempt);
         }
 
-        public Snapshot GetSnapshot(string streamId, int maxRevision)
+        public Snapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
         {
-            return _original.GetSnapshot(streamId, maxRevision);
+            return _original.GetSnapshot(bucketId, streamId, maxRevision);
         }
 
         public bool AddSnapshot(Snapshot snapshot)
@@ -50,9 +50,9 @@ namespace NEventStore.Persistence
             return _original.AddSnapshot(snapshot);
         }
 
-        public IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
+        public IEnumerable<StreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
         {
-            return _original.GetStreamsToSnapshot(maxThreshold);
+            return _original.GetStreamsToSnapshot(bucketId, maxThreshold);
         }
 
         public void Initialize()
@@ -60,14 +60,14 @@ namespace NEventStore.Persistence
             _original.Initialize();
         }
 
-        public IEnumerable<Commit> GetFrom(DateTime start)
+        public IEnumerable<Commit> GetFrom(string bucketId, DateTime start)
         {
-            return ExecuteHooks(_original.GetFrom(start));
+            return ExecuteHooks(_original.GetFrom(bucketId, start));
         }
 
-        public IEnumerable<Commit> GetFromTo(DateTime start, DateTime end)
+        public IEnumerable<Commit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
-            return ExecuteHooks(_original.GetFromTo(start, end));
+            return ExecuteHooks(_original.GetFromTo(bucketId, start, end));
         }
 
         public IEnumerable<Commit> GetUndispatchedCommits()

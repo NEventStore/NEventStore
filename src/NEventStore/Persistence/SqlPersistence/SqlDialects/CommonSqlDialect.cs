@@ -63,6 +63,11 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects
             get { return CommonSqlStatements.MarkCommitAsDispatched; }
         }
 
+        public virtual string BucketId
+        {
+            get { return "@BucketId"; }
+        }
+
         public virtual string StreamId
         {
             get { return "@StreamId"; }

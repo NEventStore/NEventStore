@@ -97,7 +97,7 @@
             });
         }
 
-        public virtual IEnumerable<Commit> GetFrom(string streamId, int minRevision, int maxRevision)
+        public virtual IEnumerable<Commit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
         {
             Logger.Debug(Messages.GettingAllCommitsBetween, streamId, minRevision, maxRevision);
 
@@ -108,14 +108,14 @@
                                                                  x.StartingStreamRevision <= maxRevision).OrderBy(x => x.CommitSequence);
         }
 
-        public virtual IEnumerable<Commit> GetFrom(DateTime start)
+        public virtual IEnumerable<Commit> GetFrom(string bucketId, DateTime start)
         {
             Logger.Debug(Messages.GettingAllCommitsFrom, start);
 
             return QueryCommits<RavenCommitByDate>(x => x.CommitStamp >= start).OrderBy(x => x.CommitStamp);
         }
 
-        public virtual IEnumerable<Commit> GetFromTo(DateTime start, DateTime end)
+        public virtual IEnumerable<Commit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             Logger.Debug(Messages.GettingAllCommitsFromTo, start, end);
 
@@ -188,7 +188,7 @@
             });
         }
 
-        public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold)
+        public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
         {
             Logger.Debug(Messages.GettingStreamsToSnapshot);
 
@@ -197,7 +197,7 @@
                     .Select(s => s.ToStreamHead());
         }
 
-        public virtual Snapshot GetSnapshot(string streamId, int maxRevision)
+        public virtual Snapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
         {
             Logger.Debug(Messages.GettingRevision, streamId, maxRevision);
 

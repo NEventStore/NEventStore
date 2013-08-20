@@ -120,29 +120,31 @@
   <data name="InitializeStorage" xml:space="preserve">
     <value>CREATE TABLE Commits
 (
-       StreamId char(40) NOT NULL,
-       StreamIdOriginal varchar(1000) NOT NULL,
-       StreamRevision int NOT NULL CHECK (StreamRevision &gt; 0),
-       Items smallint NOT NULL CHECK (Items &gt; 0),
-       CommitId uuid NOT NULL,
-       CommitSequence int NOT NULL CHECK (CommitSequence &gt; 0),
-       CommitStamp timestamp NOT NULL,
-       Dispatched boolean NOT NULL DEFAULT false,
-       Headers bytea NULL,
-       Payload bytea NOT NULL,
-       CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)
+    BucketId char(40) NOT NULL,
+    StreamId char(40) NOT NULL,
+    StreamIdOriginal varchar(1000) NOT NULL,
+    StreamRevision int NOT NULL CHECK (StreamRevision &gt; 0),
+    Items smallint NOT NULL CHECK (Items &gt; 0),
+    CommitId uuid NOT NULL,
+    CommitSequence int NOT NULL CHECK (CommitSequence &gt; 0),
+    CommitStamp timestamp NOT NULL,
+    Dispatched boolean NOT NULL DEFAULT false,
+    Headers bytea NULL,
+    Payload bytea NOT NULL,
+    CONSTRAINT PK_Commits PRIMARY KEY (StreamId, CommitSequence)
 );
-CREATE UNIQUE INDEX IX_Commits_CommitId ON Commits (StreamId, CommitId);
-CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (StreamId, StreamRevision, Items);
+CREATE UNIQUE INDEX IX_Commits_CommitId ON Commits (BucketId, StreamId, CommitId);
+CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (BucketId, StreamId, StreamRevision, Items);
 CREATE INDEX IX_Commits_Dispatched ON Commits (Dispatched);
 CREATE INDEX IX_Commits_Stamp ON Commits (CommitStamp);
 
 CREATE TABLE Snapshots
 (
-       StreamId char(40) NOT NULL,
-       StreamRevision int NOT NULL CHECK (StreamRevision &gt; 0),
-       Payload bytea NOT NULL,
-       CONSTRAINT PK_Snapshots PRIMARY KEY (StreamId, StreamRevision)
+    BucketId char(40) NOT NULL,
+    StreamId char(40) NOT NULL,
+    StreamRevision int NOT NULL CHECK (StreamRevision &gt; 0),
+    Payload bytea NOT NULL,
+    CONSTRAINT PK_Snapshots PRIMARY KEY (BucketId, StreamId, StreamRevision)
 );</value>
   </data>
 </root>

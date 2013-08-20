@@ -88,6 +88,11 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects
             get { return MakeOracleParameter(base.Skip); }
         }
 
+        public override string BucketId
+        {
+            get { return MakeOracleParameter(base.BucketId); }
+        }
+
         public override string StreamId
         {
             get { return MakeOracleParameter(base.StreamId); }

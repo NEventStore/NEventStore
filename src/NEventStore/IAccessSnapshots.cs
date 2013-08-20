@@ -14,12 +14,13 @@ namespace NEventStore
         /// <summary>
         ///     Gets the most recent snapshot which was taken on or before the revision indicated.
         /// </summary>
+        /// <param name="bucketId">The value which uniquely identifies bucket the stream belongs to.</param>
         /// <param name="streamId">The stream to be searched for a snapshot.</param>
         /// <param name="maxRevision">The maximum revision possible for the desired snapshot.</param>
         /// <returns>If found, it returns the snapshot; otherwise null is returned.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        Snapshot GetSnapshot(string streamId, int maxRevision);
+        Snapshot GetSnapshot(string bucketId, string streamId, int maxRevision);
 
         /// <summary>
         ///     Adds the snapshot provided to the stream indicated.
@@ -33,10 +34,11 @@ namespace NEventStore
         /// <summary>
         ///     Gets identifiers for all streams whose head and last snapshot revisions differ by at least the threshold specified.
         /// </summary>
+        /// <param name="bucketId">The value which uniquely identifies bucket the stream belongs to.</param>
         /// <param name="maxThreshold">The maximum difference between the head and most recent snapshot revisions.</param>
         /// <returns>The streams for which the head and snapshot revisions differ by at least the threshold specified.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        IEnumerable<StreamHead> GetStreamsToSnapshot(int maxThreshold);
+        IEnumerable<StreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold);
     }
 }

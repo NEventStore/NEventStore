@@ -178,7 +178,7 @@
     <value>Commit '{0}' persisted successfully.</value>
   </data>
   <data name="AttemptingToCommit" xml:space="preserve">
-    <value>Attempting to commit {0} events on stream '{1}' at sequence {2}.</value>
+    <value>Attempting to commit {0} events on stream '{1}' at sequence {2} in bucket '{3}'.</value>
   </data>
   <data name="MarkingCommitAsDispatched" xml:space="preserve">
     <value>Marking commit '{0}' as dispatched.</value>

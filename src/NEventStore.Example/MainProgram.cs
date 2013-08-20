@@ -8,7 +8,7 @@ namespace NEventStore.Example
 
     internal static class MainProgram
 	{
-		private static readonly string StreamId = Guid.NewGuid().ToString(); // aggregate identifier
+		private static readonly Guid StreamId = Guid.NewGuid(); // aggregate identifier
 		private static readonly byte[] EncryptionKey = new byte[]
 		{
 			0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf
@@ -80,7 +80,7 @@ namespace NEventStore.Example
 		}
 		private static void AppendToStream()
 		{
-			using (var stream = store.OpenStream(StreamId, int.MinValue, int.MaxValue))
+			using (var stream = store.OpenStream(StreamId))
 			{
 				var @event = new SomeDomainEvent { Value = "Second event." };
 
@@ -91,7 +91,7 @@ namespace NEventStore.Example
 		private static void TakeSnapshot()
 		{
 			var memento = new AggregateMemento { Value = "snapshot" };
-			store.Advanced.AddSnapshot(new Snapshot(StreamId, 2, memento));
+			store.Advanced.AddSnapshot(new Snapshot(StreamId.ToString(), 2, memento));
 		}
 		private static void LoadFromSnapshotForwardAndAppend()
 		{

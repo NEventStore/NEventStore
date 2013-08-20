@@ -48,8 +48,11 @@
     <Compile Include="..\VersionAssemblyInfo.cs">
       <Link>Properties\VersionAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AccessSnapshotsExtensions.cs" />
     <Compile Include="AsynchronousDispatchSchedulerWireup.cs" />
     <Compile Include="AsynchronousDispatchSchedulerWireupExtensions.cs" />
+    <Compile Include="Bucket.cs" />
+    <Compile Include="CommitEventsExtensions.cs" />
     <Compile Include="CommitExtensions.cs" />
     <Compile Include="ConcurrencyException.cs">
       <SubType>Code</SubType>
@@ -89,6 +92,7 @@
     <Compile Include="PersistenceWireupExtensions.cs" />
     <Compile Include="Persistence\InMemoryPersistence\InMemoryPersistenceEngine.cs" />
     <Compile Include="Persistence\InMemoryPersistence\InMemoryPersistenceFactory.cs" />
+    <Compile Include="Persistence\PersistStreamsExtensions.cs" />
     <Compile Include="Persistence\PipelineHooksAwarePersistanceDecorator.cs" />
     <Compile Include="Persistence\SqlPersistence\CommitExtensions.cs" />
     <Compile Include="Persistence\SqlPersistence\ConfigurationConnectionFactory.cs" />

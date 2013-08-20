@@ -26,21 +26,23 @@ namespace NEventStore.Persistence
         /// <summary>
         ///     Gets all commits on or after from the specified starting time.
         /// </summary>
+        /// <param name="bucketId">The value which uniquely identifies bucket the stream belongs to.</param>
         /// <param name="start">The point in time at which to start.</param>
         /// <returns>All commits that have occurred on or after the specified starting time.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        IEnumerable<Commit> GetFrom(DateTime start);
+        IEnumerable<Commit> GetFrom(string bucketId, DateTime start);
 
         /// <summary>
         ///     Gets all commits on or after from the specified starting time and before the specified end time.
         /// </summary>
+        /// <param name="bucketId">The value which uniquely identifies bucket the stream belongs to.</param>
         /// <param name="start">The point in time at which to start.</param>
         /// <param name="end">The point in time at which to end.</param>
         /// <returns>All commits that have occurred on or after the specified starting time and before the end time.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        IEnumerable<Commit> GetFromTo(DateTime start, DateTime end);
+        IEnumerable<Commit> GetFromTo(string bucketId, DateTime start, DateTime end);
 
         /// <summary>
         ///     Gets a set of commits that has not yet been dispatched.

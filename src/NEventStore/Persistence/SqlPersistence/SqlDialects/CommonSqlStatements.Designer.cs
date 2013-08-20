@@ -62,20 +62,22 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         
         /// <summary>
         ///   Looks up a localized string similar to INSERT
-        ///  INTO Snapshots
-        ///     ( StreamId, StreamRevision, Payload )
-        ///SELECT @StreamId, @StreamRevision, @Payload
+        ///INTO Snapshots
+        /// ( BucketId, StreamId, StreamRevision, Payload )
+        ///SELECT @BucketId, @StreamId, @StreamRevision, @Payload
         ////*FROM DUAL*/
-        /// WHERE EXISTS
-        ///     ( SELECT *
-        ///         FROM Commits
-        ///        WHERE StreamId = @StreamId
-        ///          AND (StreamRevision - Items) &lt;= @StreamRevision )
-        ///   AND NOT EXISTS
-        ///     ( SELECT *
-        ///         FROM Snapshots
-        ///        WHERE StreamId = @StreamId
-        ///          AND StreamRevision = @StreamRevision );.
+        ///WHERE EXISTS
+        /// ( SELECT *
+        ///     FROM Commits
+        ///    WHERE BucketId = @BucketId
+        ///      AND StreamId = @StreamId
+        ///      AND (StreamRevision - Items) &lt;= @StreamRevision )
+        ///AND NOT EXISTS
+        /// ( SELECT *
+        ///     FROM Snapshots
+        ///    WHERE BucketId = @BucketId
+        ///      AND StreamId = @StreamId
+        ///      AND StreamRevision = @StreamRevision );.
         /// </summary>
         internal static string AppendSnapshotToCommit {
             get {
@@ -86,7 +88,8 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         /// <summary>
         ///   Looks up a localized string similar to SELECT COUNT(*)
         ///  FROM Commits
-        /// WHERE StreamId = @StreamId
+        /// WHERE BucketId = @BucketId 
+        ///   AND StreamId = @StreamId
         ///   AND CommitSequence = @CommitSequence
         ///   AND CommitId = @CommitId;.
         /// </summary>
@@ -97,7 +100,7 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
+        ///   Looks up a localized string similar to SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
         ///  FROM Commits
         /// WHERE CommitStamp &gt;= @CommitStamp
         /// ORDER BY CommitSequence, StreamId, StreamRevision
@@ -110,9 +113,10 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
+        ///   Looks up a localized string similar to SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
         ///  FROM Commits
-        /// WHERE StreamId = @StreamId
+        /// WHERE BucketId = @BucketId
+        ///   AND StreamId = @StreamId
         ///   AND StreamRevision &gt;= @StreamRevision
         ///   AND (StreamRevision - Items) &lt;= @MaxStreamRevision
         ///   AND CommitSequence &gt; @CommitSequence
@@ -126,9 +130,10 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
+        ///   Looks up a localized string similar to SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
         ///  FROM Commits
-        /// WHERE CommitStamp &gt;= @CommitStampStart
+        /// WHERE BucketId = @BucketId
+        ///   AND CommitStamp &gt;= @CommitStampStart
         ///   AND CommitStamp &lt; @CommitStampEnd
         /// ORDER BY CommitSequence, StreamId, StreamRevision
         /// LIMIT @Limit OFFSET @Skip;.
@@ -142,7 +147,8 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         /// <summary>
         ///   Looks up a localized string similar to SELECT *
         ///  FROM Snapshots
-        /// WHERE StreamId = @StreamId
+        /// WHERE BucketId = @BucketId
+        ///   AND StreamId = @StreamId
         ///   AND StreamRevision &lt;= @StreamRevision
         /// ORDER BY StreamRevision DESC
         /// LIMIT 1;.
@@ -154,12 +160,13 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT C.StreamId, C.StreamIdOriginal, MAX(C.StreamRevision) AS StreamRevision, MAX(COALESCE(S.StreamRevision, 0)) AS SnapshotRevision
+        ///   Looks up a localized string similar to SELECT C.BucketId, C.StreamId, C.StreamIdOriginal, MAX(C.StreamRevision) AS StreamRevision, MAX(COALESCE(S.StreamRevision, 0)) AS SnapshotRevision
         ///  FROM Commits AS C
         /// LEFT OUTER JOIN Snapshots AS S
-        ///    ON C.StreamId = S.StreamId
+        ///    ON C.BucketId = @BucketId
+        ///   AND C.StreamId = S.StreamId
         ///   AND C.StreamRevision &gt;= S.StreamRevision
-        /// GROUP BY C.StreamId, C.StreamIdOriginal
+        /// GROUP BY C.StreamId, C.BucketId, C.StreamIdOriginal
         ///HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Threshold
         /// ORDER BY C.StreamId
         /// LIMIT @Limit;.
@@ -171,7 +178,7 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
+        ///   Looks up a localized string similar to SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
         ///  FROM Commits
         /// WHERE Dispatched = 0
         /// ORDER BY CommitSequence
@@ -186,7 +193,8 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         /// <summary>
         ///   Looks up a localized string similar to UPDATE Commits
         ///   SET Dispatched = 1
-        /// WHERE StreamId = @StreamId
+        /// WHERE BucketId = @BucketId
+        ///   AND StreamId = @StreamId
         ///   AND CommitSequence = @CommitSequence;.
         /// </summary>
         internal static string MarkCommitAsDispatched {
@@ -198,8 +206,8 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         /// <summary>
         ///   Looks up a localized string similar to INSERT
         ///  INTO Commits
-        ///     ( StreamId, StreamIdOriginal, CommitId, CommitSequence, StreamRevision, Items, CommitStamp, Headers, Payload )
-        ///VALUES (@StreamId, @StreamIdOriginal, @CommitId, @CommitSequence, @StreamRevision, @Items, @CommitStamp, @Headers, @Payload);.
+        ///     ( BucketId, StreamId, StreamIdOriginal, CommitId, CommitSequence, StreamRevision, Items, CommitStamp, Headers, Payload )
+        ///VALUES (@BucketId, @StreamId, @StreamIdOriginal, @CommitId, @CommitSequence, @StreamRevision, @Items, @CommitStamp, @Headers, @Payload);.
         /// </summary>
         internal static string PersistCommit {
             get {

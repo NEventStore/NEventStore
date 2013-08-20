@@ -23,9 +23,9 @@ namespace NEventStore
             _persistence = new PipelineHooksAwarePersistanceDecorator(persistence, pipelineHooks);
         }
 
-        public virtual IEnumerable<Commit> GetFrom(string streamId, int minRevision, int maxRevision)
+        public virtual IEnumerable<Commit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
         {
-            foreach (var commit in _persistence.GetFrom(streamId, minRevision, maxRevision))
+            foreach (var commit in _persistence.GetFrom(bucketId, streamId, minRevision, maxRevision))
             {
                 Commit filtered = commit;
                 foreach (var hook in _pipelineHooks.Where(x => (filtered = x.Select(filtered)) == null))
@@ -81,18 +81,18 @@ namespace NEventStore
             GC.SuppressFinalize(this);
         }
 
-        public virtual IEventStream CreateStream(string streamId)
+        public virtual IEventStream CreateStream(string bucketId, string streamId)
         {
-            Logger.Info(Resources.CreatingStream, streamId);
-            return new OptimisticEventStream(streamId, this);
+            Logger.Info(Resources.CreatingStream, streamId, bucketId);
+            return new OptimisticEventStream(bucketId, streamId, this);
         }
 
-        public virtual IEventStream OpenStream(string streamId, int minRevision, int maxRevision)
+        public virtual IEventStream OpenStream(string bucketId, string streamId, int minRevision, int maxRevision)
         {
             maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
 
-            Logger.Debug(Resources.OpeningStreamAtRevision, streamId, minRevision, maxRevision);
-            return new OptimisticEventStream(streamId, this, minRevision, maxRevision);
+            Logger.Debug(Resources.OpeningStreamAtRevision, streamId, bucketId, minRevision, maxRevision);
+            return new OptimisticEventStream(bucketId, streamId, this, minRevision, maxRevision);
         }
 
         public virtual IEventStream OpenStream(Snapshot snapshot, int maxRevision)
