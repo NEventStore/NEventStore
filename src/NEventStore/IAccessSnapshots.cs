@@ -1,6 +1,5 @@
 namespace NEventStore
 {
-    using System;
     using System.Collections.Generic;
     using NEventStore.Persistence;
 

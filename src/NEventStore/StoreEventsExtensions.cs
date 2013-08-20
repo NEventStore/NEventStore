@@ -14,7 +14,7 @@ namespace NEventStore
         public static IEventStream CreateStream(this IStoreEvents storeEvents, Guid streamId)
         {
             EnsureStoreEventsNotNull(storeEvents);
-            return storeEvents.CreateStream(streamId);
+            return storeEvents.CreateStream(streamId.ToString());
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace NEventStore
         public static IEventStream OpenStream(this IStoreEvents storeEvents, Guid streamId, int minRevision = int.MinValue, int maxRevision = int.MaxValue)
         {
             EnsureStoreEventsNotNull(storeEvents);
-            return storeEvents.OpenStream(streamId, minRevision, maxRevision);
+            return storeEvents.OpenStream(streamId.ToString(), minRevision, maxRevision);
         }
 
         private static void EnsureStoreEventsNotNull(IStoreEvents storeEvents)
