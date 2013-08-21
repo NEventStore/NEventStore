@@ -9,7 +9,7 @@ namespace NEventStore.Persistence.RavenPersistence
     {
         public static string ToRavenCommitId(this Commit commit, string partition)
         {
-            string id = string.Format(CultureInfo.InvariantCulture, "{0}/{1}", commit.StreamId, commit.CommitSequence);
+            string id = string.Format(CultureInfo.InvariantCulture, "{0}/{1}/{2}", commit.BucketId, commit.StreamId, commit.CommitSequence);
 
             if (!string.IsNullOrEmpty(partition))
             {
@@ -25,6 +25,7 @@ namespace NEventStore.Persistence.RavenPersistence
             {
                 Id = ToRavenCommitId(commit, partition),
                 Partition = partition,
+                BucketId = commit.BucketId,
                 StreamId = commit.StreamId,
                 CommitSequence = commit.CommitSequence,
                 StartingStreamRevision = commit.StreamRevision - (commit.Events.Count - 1),
@@ -49,7 +50,7 @@ namespace NEventStore.Persistence.RavenPersistence
 
         public static string ToRavenSnapshotId(Snapshot snapshot, string partition)
         {
-            return string.Format("Snapshots/{0}/{1}", snapshot.StreamId, snapshot.StreamRevision);
+            return string.Format("Snapshots/{0}/{1}/{2}", snapshot.BucketId, snapshot.StreamId, snapshot.StreamRevision);
         }
 
         public static RavenSnapshot ToRavenSnapshot(this Snapshot snapshot, string partition, IDocumentSerializer serializer)
@@ -58,6 +59,7 @@ namespace NEventStore.Persistence.RavenPersistence
             {
                 Id = ToRavenSnapshotId(snapshot, partition),
                 Partition = partition,
+                BucketId = snapshot.BucketId,
                 StreamId = snapshot.StreamId,
                 StreamRevision = snapshot.StreamRevision,
                 Payload = serializer.Serialize(snapshot.Payload)
@@ -71,12 +73,12 @@ namespace NEventStore.Persistence.RavenPersistence
                 return null;
             }
 
-            return new Snapshot(snapshot.StreamId, snapshot.StreamRevision, serializer.Deserialize<object>(snapshot.Payload));
+            return new Snapshot(snapshot.BucketId, snapshot.StreamRevision, serializer.Deserialize<object>(snapshot.Payload));
         }
 
-        public static string ToRavenStreamId(this string streamId, string partition)
+        public static string ToRavenStreamId(this string bucketId, string streamId, string partition)
         {
-            string id = string.Format("StreamHeads/{0}", streamId);
+            string id = string.Format("StreamHeads/{0}/{1}", bucketId, streamId);
 
             if (!string.IsNullOrEmpty(partition))
             {
@@ -90,8 +92,9 @@ namespace NEventStore.Persistence.RavenPersistence
         {
             return new RavenStreamHead
             {
-                Id = commit.StreamId.ToRavenStreamId(partition),
+                Id = commit.BucketId.ToRavenStreamId(commit.StreamId, partition),
                 Partition = partition,
+                BucketId = commit.BucketId,
                 StreamId = commit.StreamId,
                 HeadRevision = commit.StreamRevision,
                 SnapshotRevision = 0
@@ -102,8 +105,9 @@ namespace NEventStore.Persistence.RavenPersistence
         {
             return new RavenStreamHead
             {
-                Id = snapshot.StreamId.ToRavenStreamId(partition),
+                Id = snapshot.BucketId.ToRavenStreamId(snapshot.StreamId, partition),
                 Partition = partition,
+                BucketId = snapshot.BucketId,
                 StreamId = snapshot.StreamId,
                 HeadRevision = snapshot.StreamRevision,
                 SnapshotRevision = snapshot.StreamRevision
@@ -112,8 +116,7 @@ namespace NEventStore.Persistence.RavenPersistence
 
         public static StreamHead ToStreamHead(this RavenStreamHead streamHead)
         {
-            throw new NotImplementedException();
-            //return new StreamHead(streamHead.StreamId, streamHead.HeadRevision, streamHead.SnapshotRevision);
+            return new StreamHead(streamHead.BucketId, streamHead.StreamId, streamHead.HeadRevision, streamHead.SnapshotRevision);
         }
     }
 }

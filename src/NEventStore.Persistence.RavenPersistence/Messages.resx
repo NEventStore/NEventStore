@@ -118,13 +118,13 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AttemptingToCommit" xml:space="preserve">
-    <value>Attempting to commit {0} events on stream '{1}' at sequence {2}.</value>
+    <value>Attempting to commit {0} events on stream '{1}' at sequence {2} to bucket '{3}'</value>
   </data>
   <data name="GettingAllCommitsBetween" xml:space="preserve">
-    <value>Getting all commits for stream '{0}' between revisions '{1}' and '{2}'.</value>
+    <value>Getting all commits for stream '{0}' in bucket '{1}' between revisions '{2}' and '{3}'.</value>
   </data>
   <data name="GettingAllCommitsFrom" xml:space="preserve">
-    <value>Getting all commits from '{0}' forward.</value>
+    <value>Getting all commits from bucket from '{0}' in bucket '{1}' forward.</value>
   </data>
   <data name="InitializingStorage" xml:space="preserve">
     <value>Initializing storage engine.</value>
@@ -133,7 +133,7 @@
     <value>Shutting down persistence.</value>
   </data>
   <data name="CommitPersisted" xml:space="preserve">
-    <value>Commit '{0}' persisted.</value>
+    <value>Commit '{0}' persisted in bucket '{1}'.</value>
   </data>
   <data name="ConcurrentWriteDetected" xml:space="preserve">
     <value>Concurrent write detected.</value>
@@ -142,19 +142,19 @@
     <value>Concurrency issue; determining whether attempt was duplicate.</value>
   </data>
   <data name="AddingSnapshot" xml:space="preserve">
-    <value>Adding snapshot to stream '{0}' at position {1}.</value>
+    <value>Adding snapshot to stream '{0}' at position {1} to bucket '{2}'</value>
   </data>
   <data name="GettingRevision" xml:space="preserve">
     <value>Getting snapshot for stream '{0}' on or before revision {1}.</value>
   </data>
   <data name="GettingStreamsToSnapshot" xml:space="preserve">
-    <value>Getting a list of streams to snapshot.</value>
+    <value>Getting a list of streams to snapshot from bucket '{0}'.</value>
   </data>
   <data name="GettingUndispatchedCommits" xml:space="preserve">
     <value>Getting the list of all undispatched commits.</value>
   </data>
   <data name="MarkingCommitAsDispatched" xml:space="preserve">
-    <value>Marking commit '{0}' as dispatched.</value>
+    <value>Marking commit '{0}' in bucket '{1}' as dispatched.</value>
   </data>
   <data name="PurgingStorage" xml:space="preserve">
     <value>Purging all stored data.</value>
@@ -184,6 +184,6 @@
     <value>Scope is complete.</value>
   </data>
   <data name="GettingAllCommitsFromTo" xml:space="preserve">
-    <value>Getting all commits from '{0}' to '{1}'.</value>
+    <value>Getting all commits from '{0}' to '{1}' in bucket '{2}'.</value>
   </data>
 </root>

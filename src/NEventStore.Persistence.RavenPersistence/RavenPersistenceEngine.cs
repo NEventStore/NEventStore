@@ -99,32 +99,34 @@
 
         public virtual IEnumerable<Commit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
         {
-            Logger.Debug(Messages.GettingAllCommitsBetween, streamId, minRevision, maxRevision);
+            Logger.Debug(Messages.GettingAllCommitsBetween, streamId, bucketId, minRevision, maxRevision);
 
             return
-                QueryCommits<RavenCommitByRevisionRange>(
-                                                         x =>
-                                                             x.StreamId == streamId && x.StreamRevision >= minRevision &&
-                                                                 x.StartingStreamRevision <= maxRevision).OrderBy(x => x.CommitSequence);
+                QueryCommits<RavenCommitByRevisionRange>(x => 
+                    x.BucketId == bucketId &&
+                    x.StreamId == streamId &&
+                    x.StreamRevision >= minRevision &&
+                    x.StartingStreamRevision <= maxRevision)
+                    .OrderBy(x => x.CommitSequence);
         }
 
         public virtual IEnumerable<Commit> GetFrom(string bucketId, DateTime start)
         {
-            Logger.Debug(Messages.GettingAllCommitsFrom, start);
+            Logger.Debug(Messages.GettingAllCommitsFrom, start, bucketId);
 
-            return QueryCommits<RavenCommitByDate>(x => x.CommitStamp >= start).OrderBy(x => x.CommitStamp);
+            return QueryCommits<RavenCommitByDate>(x => x.BucketId == bucketId && x.CommitStamp >= start).OrderBy(x => x.CommitStamp);
         }
 
         public virtual IEnumerable<Commit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
-            Logger.Debug(Messages.GettingAllCommitsFromTo, start, end);
+            Logger.Debug(Messages.GettingAllCommitsFromTo, start, end, bucketId);
 
-            return QueryCommits<RavenCommitByDate>(x => x.CommitStamp >= start && x.CommitStamp < end).OrderBy(x => x.CommitStamp);
+            return QueryCommits<RavenCommitByDate>(x => x.BucketId == bucketId && x.CommitStamp >= start && x.CommitStamp < end).OrderBy(x => x.CommitStamp);
         }
 
         public virtual void Commit(Commit attempt)
         {
-            Logger.Debug(Messages.AttemptingToCommit, attempt.Events.Count, attempt.StreamId, attempt.CommitSequence);
+            Logger.Debug(Messages.AttemptingToCommit, attempt.Events.Count, attempt.StreamId, attempt.CommitSequence, attempt.BucketId);
 
             try
             {
@@ -134,12 +136,13 @@
                     using (IDocumentSession session = _store.OpenSession())
                     {
                         session.Advanced.UseOptimisticConcurrency = true;
-                        session.Store(attempt.ToRavenCommit(_partition, _serializer));
+                        var doc = attempt.ToRavenCommit(_partition, _serializer);
+                        session.Store(doc);
                         session.SaveChanges();
                         scope.Complete();
                     }
 
-                    Logger.Debug(Messages.CommitPersisted, attempt.CommitId);
+                    Logger.Debug(Messages.CommitPersisted, attempt.CommitId, attempt.BucketId);
                     SaveStreamHead(attempt.ToRavenStreamHead(_partition));
                     return true;
                 });
@@ -173,7 +176,7 @@
             var patch = new PatchRequest {Type = PatchCommandType.Set, Name = "Dispatched", Value = RavenJToken.Parse("true")};
             var data = new PatchCommandData {Key = commit.ToRavenCommitId(_partition), Patches = new[] {patch}};
 
-            Logger.Debug(Messages.MarkingCommitAsDispatched, commit.CommitId);
+            Logger.Debug(Messages.MarkingCommitAsDispatched, commit.CommitId, commit.BucketId);
 
             TryRaven(() =>
             {
@@ -190,10 +193,10 @@
 
         public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
         {
-            Logger.Debug(Messages.GettingStreamsToSnapshot);
+            Logger.Debug(Messages.GettingStreamsToSnapshot, bucketId);
 
             return
-                Query<RavenStreamHead, RavenStreamHeadBySnapshotAge>(s => s.SnapshotAge >= maxThreshold && s.Partition == _partition)
+                Query<RavenStreamHead, RavenStreamHeadBySnapshotAge>(s => s.BucketId == bucketId && s.SnapshotAge >= maxThreshold && s.Partition == _partition)
                     .Select(s => s.ToStreamHead());
         }
 
@@ -202,10 +205,11 @@
             Logger.Debug(Messages.GettingRevision, streamId, maxRevision);
 
             return
-                Query<RavenSnapshot, RavenSnapshotByStreamIdAndRevision>(
-                                                                         x =>
-                                                                             x.StreamId == streamId && x.StreamRevision <= maxRevision &&
-                                                                                 x.Partition == _partition)
+                Query<RavenSnapshot, RavenSnapshotByStreamIdAndRevision>(x =>  
+                    x.BucketId == bucketId &&
+                    x.StreamId == streamId &&
+                    x.StreamRevision <= maxRevision &&
+                    x.Partition == _partition)
                     .OrderByDescending(x => x.StreamRevision)
                     .FirstOrDefault()
                     .ToSnapshot(_serializer);
@@ -218,7 +222,7 @@
                 return false;
             }
 
-            Logger.Debug(Messages.AddingSnapshot, snapshot.StreamId, snapshot.StreamRevision);
+            Logger.Debug(Messages.AddingSnapshot, snapshot.StreamId, snapshot.StreamRevision, snapshot.BucketId);
 
             try
             {
@@ -428,7 +432,7 @@
                 using (TransactionScope scope = OpenCommandScope())
                 using (IDocumentSession session = _store.OpenSession())
                 {
-                    RavenStreamHead current = session.Load<RavenStreamHead>(updated.StreamId.ToRavenStreamId(_partition)) ?? updated;
+                    RavenStreamHead current = session.Load<RavenStreamHead>(updated.BucketId.ToRavenStreamId(updated.StreamId, _partition)) ?? updated;
                     current.HeadRevision = updated.HeadRevision;
 
                     if (updated.SnapshotRevision > 0)

@@ -9,6 +9,7 @@ namespace NEventStore.Persistence.RavenPersistence
     {
         public string Id { get; set; }
 
+        public string BucketId { get; set; }
         public string StreamId { get; set; }
         public int CommitSequence { get; set; }
 
