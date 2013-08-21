@@ -13,5 +13,17 @@ namespace NEventStore.Persistence.RavenPersistence
         {
             get { return HeadRevision - SnapshotRevision; } // set by map/reduce on the server
         }
+
+        public static string GetStreamHeadId(string bucketId, string streamId, string partition)
+        {
+            string id = string.Format("StreamHeads/{0}/{1}", bucketId, streamId);
+
+            if (!string.IsNullOrEmpty(partition))
+            {
+                id = string.Format("{0}/{1}", partition, id);
+            }
+
+            return id;
+        }
     }
 }

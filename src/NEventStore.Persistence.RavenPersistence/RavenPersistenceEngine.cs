@@ -432,7 +432,7 @@
                 using (TransactionScope scope = OpenCommandScope())
                 using (IDocumentSession session = _store.OpenSession())
                 {
-                    RavenStreamHead current = session.Load<RavenStreamHead>(updated.BucketId.ToRavenStreamId(updated.StreamId, _partition)) ?? updated;
+                    RavenStreamHead current = session.Load<RavenStreamHead>(RavenStreamHead.GetStreamHeadId(updated.BucketId, updated.StreamId, _partition)) ?? updated;
                     current.HeadRevision = updated.HeadRevision;
 
                     if (updated.SnapshotRevision > 0)

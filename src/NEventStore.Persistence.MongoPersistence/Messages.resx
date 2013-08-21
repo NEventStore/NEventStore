@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AddingSnapshot" xml:space="preserve">
-    <value>Adding snapshot to stream '{0}' at position {1}.</value>
+    <value>Adding snapshot to stream '{0}' in bucket '{1}' at position {2}.</value>
   </data>
   <data name="AttemptingToCommit" xml:space="preserve">
     <value>Attempting to commit {0} events on stream '{1}' at sequence {2}.</value>
@@ -133,10 +133,10 @@
     <value>Concurrency issue; determining whether attempt was duplicate.</value>
   </data>
   <data name="GettingAllCommitsBetween" xml:space="preserve">
-    <value>Getting all commits for stream '{0}' between revisions '{1}' and '{2}'.</value>
+    <value>Getting all commits for stream '{0}' in bucket '{1}' between revisions '{2}' and '{3}'.</value>
   </data>
   <data name="GettingAllCommitsFrom" xml:space="preserve">
-    <value>Getting all commits from '{0}' forward.</value>
+    <value>Getting all commits from '{0}' forward from bucket '{1}'.</value>
   </data>
   <data name="GettingRevision" xml:space="preserve">
     <value>Getting snapshot for stream '{0}' on or before revision {1}.</value>

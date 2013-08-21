@@ -1,6 +1,5 @@
 namespace NEventStore.Persistence.RavenPersistence
 {
-    using System;
     using System.Collections.Generic;
     using System.Globalization;
     using NEventStore.Serialization;
@@ -76,23 +75,11 @@ namespace NEventStore.Persistence.RavenPersistence
             return new Snapshot(snapshot.BucketId, snapshot.StreamRevision, serializer.Deserialize<object>(snapshot.Payload));
         }
 
-        public static string ToRavenStreamId(this string bucketId, string streamId, string partition)
-        {
-            string id = string.Format("StreamHeads/{0}/{1}", bucketId, streamId);
-
-            if (!string.IsNullOrEmpty(partition))
-            {
-                id = string.Format("{0}/{1}", partition, id);
-            }
-
-            return id;
-        }
-
         public static RavenStreamHead ToRavenStreamHead(this Commit commit, string partition)
         {
             return new RavenStreamHead
             {
-                Id = commit.BucketId.ToRavenStreamId(commit.StreamId, partition),
+                Id = RavenStreamHead.GetStreamHeadId(commit.BucketId, commit.StreamId, partition),
                 Partition = partition,
                 BucketId = commit.BucketId,
                 StreamId = commit.StreamId,
@@ -105,7 +92,7 @@ namespace NEventStore.Persistence.RavenPersistence
         {
             return new RavenStreamHead
             {
-                Id = snapshot.BucketId.ToRavenStreamId(snapshot.StreamId, partition),
+                Id = RavenStreamHead.GetStreamHeadId(snapshot.BucketId, snapshot.StreamId, partition),
                 Partition = partition,
                 BucketId = snapshot.BucketId,
                 StreamId = snapshot.StreamId,
