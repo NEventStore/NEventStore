@@ -36,7 +36,7 @@ namespace NEventStore
             Committed[3].Headers["Common"] = string.Empty;
             Committed[0].Headers["Unique"] = string.Empty;
 
-            Persistence.Setup(x => x.GetFrom(streamId, MinRevision, MaxRevision)).Returns(Committed);
+            Persistence.Setup(x => x.GetFrom(Bucket.Default, streamId, MinRevision, MaxRevision)).Returns(Committed);
         }
 
         protected override void Because()
@@ -102,7 +102,7 @@ namespace NEventStore
                 BuildCommitStub(8, 3, EventsPerCommit) // 7-8
             };
 
-            Persistence.Setup(x => x.GetFrom(streamId, 0, int.MaxValue)).Returns(Committed);
+            Persistence.Setup(x => x.GetFrom(Bucket.Default, streamId, 0, int.MaxValue)).Returns(Committed);
         }
 
         protected override void Because()
@@ -376,7 +376,7 @@ namespace NEventStore
             DupliateCommitId = Committed[0].CommitId;
 
             Persistence
-                .Setup(x => x.GetFrom(streamId, 0, int.MaxValue))
+                .Setup(x => x.GetFrom(Bucket.Default, streamId, 0, int.MaxValue))
                 .Returns(Committed);
 
             Stream = new OptimisticEventStream(
@@ -413,10 +413,10 @@ namespace NEventStore
                 .Setup(x => x.Commit(It.IsAny<Commit>()))
                 .Throws(new ConcurrencyException());
             Persistence
-                .Setup(x => x.GetFrom(streamId, StreamRevision, int.MaxValue))
+                .Setup(x => x.GetFrom(Bucket.Default, streamId, StreamRevision, int.MaxValue))
                 .Returns(Committed);
             Persistence
-                .Setup(x => x.GetFrom(streamId, StreamRevision + 1, int.MaxValue))
+                .Setup(x => x.GetFrom(Bucket.Default, streamId, StreamRevision + 1, int.MaxValue))
                 .Returns(DiscoveredOnCommit);
 
             Stream = new OptimisticEventStream(streamId, Persistence.Object, StreamRevision, int.MaxValue);
@@ -437,7 +437,7 @@ namespace NEventStore
         [Fact]
         public void should_query_the_underlying_storage_to_discover_the_new_commits()
         {
-            Persistence.Verify(x => x.GetFrom(streamId, StreamRevision + 1, int.MaxValue), Times.Once());
+            Persistence.Verify(x => x.GetFrom(Bucket.Default, streamId, StreamRevision + 1, int.MaxValue), Times.Once());
         }
 
         [Fact]

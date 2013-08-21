@@ -46,7 +46,7 @@ namespace NEventStore
             hook2.Setup(h => h.Select(commit)).Returns(commit);
             pipelineHooks.Add(hook2);
 
-            persistence.Setup(p => p.GetFrom(date)).Returns(new List<Commit> {commit});
+            persistence.Setup(p => p.GetFrom(Bucket.Default, date)).Returns(new List<Commit> { commit });
         }
 
         protected override void Because()
@@ -57,7 +57,7 @@ namespace NEventStore
         [Fact]
         public void should_call_the_underlying_persistence_to_get_events()
         {
-            persistence.Verify(x => x.GetFrom(date), Times.Once());
+            persistence.Verify(x => x.GetFrom(Bucket.Default, date), Times.Once());
         }
 
         [Fact]
@@ -91,7 +91,7 @@ namespace NEventStore
             hook2.Setup(h => h.Select(commit)).Returns(commit);
             pipelineHooks.Add(hook2);
 
-            persistence.Setup(p => p.GetFromTo(start, end)).Returns(new List<Commit> {commit});
+            persistence.Setup(p => p.GetFromTo(Bucket.Default, start, end)).Returns(new List<Commit> { commit });
         }
 
         protected override void Because()
@@ -102,7 +102,7 @@ namespace NEventStore
         [Fact]
         public void should_call_the_underlying_persistence_to_get_events()
         {
-            persistence.Verify(x => x.GetFromTo(start, end), Times.Once());
+            persistence.Verify(x => x.GetFromTo(Bucket.Default, start, end), Times.Once());
         }
 
         [Fact]

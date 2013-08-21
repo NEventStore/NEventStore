@@ -72,7 +72,7 @@ namespace NEventStore
 
         protected override void Context()
         {
-            Persistence.Setup(x => x.GetFrom(streamId, 0, 0)).Returns(new Commit[0]);
+            Persistence.Setup(x => x.GetFrom(Bucket.Default, streamId, 0, 0)).Returns(new Commit[0]);
         }
 
         protected override void Because()
@@ -130,7 +130,7 @@ namespace NEventStore
 
         protected override void Context()
         {
-            Persistence.Setup(x => x.GetFrom(streamId, MinRevision, int.MaxValue)).Returns(new Commit[0]);
+            Persistence.Setup(x => x.GetFrom(Bucket.Default, streamId, MinRevision, int.MaxValue)).Returns(new Commit[0]);
         }
 
         protected override void Because()
@@ -156,7 +156,7 @@ namespace NEventStore
         {
             Committed = BuildCommitStub(MinRevision, 1);
 
-            Persistence.Setup(x => x.GetFrom(streamId, MinRevision, MaxRevision)).Returns(new[] {Committed});
+            Persistence.Setup(x => x.GetFrom(Bucket.Default, streamId, MinRevision, MaxRevision)).Returns(new[] {Committed});
             PipelineHooks.Add(new Mock<IPipelineHook>());
             PipelineHooks[0].Setup(x => x.Select(Committed)).Returns(Committed);
         }
@@ -169,7 +169,7 @@ namespace NEventStore
         [Fact]
         public void should_invoke_the_underlying_infrastructure_with_the_values_provided()
         {
-            Persistence.Verify(x => x.GetFrom(streamId, MinRevision, MaxRevision), Times.Once());
+            Persistence.Verify(x => x.GetFrom(Bucket.Default, streamId, MinRevision, MaxRevision), Times.Once());
         }
 
         [Fact]
@@ -196,7 +196,7 @@ namespace NEventStore
             snapshot = new Snapshot(streamId, 42, "snapshot");
             Committed = new[] {BuildCommitStub(42, 0)};
 
-            Persistence.Setup(x => x.GetFrom(streamId, 42, MaxRevision)).Returns(Committed);
+            Persistence.Setup(x => x.GetFrom(Bucket.Default, streamId, 42, MaxRevision)).Returns(Committed);
         }
 
         protected override void Because()
@@ -207,7 +207,7 @@ namespace NEventStore
         [Fact]
         public void should_query_the_underlying_storage_using_the_revision_of_the_snapshot()
         {
-            Persistence.Verify(x => x.GetFrom(streamId, 42, MaxRevision), Times.Once());
+            Persistence.Verify(x => x.GetFrom(Bucket.Default, streamId, 42, MaxRevision), Times.Once());
         }
     }
 
@@ -225,7 +225,7 @@ namespace NEventStore
             Committed = new EnumerableCounter(
                 new[] {BuildCommitStub(HeadStreamRevision, HeadCommitSequence)});
 
-            Persistence.Setup(x => x.GetFrom(streamId, HeadStreamRevision, int.MaxValue)).Returns(Committed);
+            Persistence.Setup(x => x.GetFrom(Bucket.Default, streamId, HeadStreamRevision, int.MaxValue)).Returns(Committed);
         }
 
         protected override void Because()
@@ -274,7 +274,7 @@ namespace NEventStore
     {
         protected override void Context()
         {
-            Persistence.Setup(x => x.GetFrom(streamId, 0, int.MaxValue)).Returns(new Commit[] {});
+            Persistence.Setup(x => x.GetFrom(Bucket.Default, streamId, 0, int.MaxValue)).Returns(new Commit[] { });
         }
 
         protected override void Because()
@@ -285,7 +285,7 @@ namespace NEventStore
         [Fact]
         public void should_pass_a_revision_range_to_the_persistence_infrastructure()
         {
-            Persistence.Verify(x => x.GetFrom(streamId, 0, int.MaxValue), Times.Once());
+            Persistence.Verify(x => x.GetFrom(Bucket.Default, streamId, 0, int.MaxValue), Times.Once());
         }
     }
 
@@ -298,7 +298,7 @@ namespace NEventStore
             Committed = BuildCommitStub(1, 1);
 
             Persistence
-                .Setup(x => x.GetFrom(streamId, 0, int.MaxValue))
+                .Setup(x => x.GetFrom(Bucket.Default, streamId, 0, int.MaxValue))
                 .Returns(new[] {Committed});
         }
 
@@ -310,7 +310,7 @@ namespace NEventStore
         [Fact]
         public void should_pass_the_maximum_possible_revision_to_the_persistence_infrastructure()
         {
-            Persistence.Verify(x => x.GetFrom(streamId, 0, int.MaxValue), Times.Once());
+            Persistence.Verify(x => x.GetFrom(Bucket.Default, streamId, 0, int.MaxValue), Times.Once());
         }
     }
 
@@ -341,7 +341,7 @@ namespace NEventStore
             Committed = BuildCommitStub(1, 1);
 
             Persistence
-                .Setup(x => x.GetFrom(streamId, snapshot.StreamRevision, int.MaxValue))
+                .Setup(x => x.GetFrom(Bucket.Default, streamId, snapshot.StreamRevision, int.MaxValue))
                 .Returns(new[] {Committed});
         }
 
@@ -353,7 +353,7 @@ namespace NEventStore
         [Fact]
         public void should_pass_the_maximum_possible_revision_to_the_persistence_infrastructure()
         {
-            Persistence.Verify(x => x.GetFrom(streamId, snapshot.StreamRevision, int.MaxValue), Times.Once());
+            Persistence.Verify(x => x.GetFrom(Bucket.Default, streamId, snapshot.StreamRevision, int.MaxValue), Times.Once());
         }
     }
 
