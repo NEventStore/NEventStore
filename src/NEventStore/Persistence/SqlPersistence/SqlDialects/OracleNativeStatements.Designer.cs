@@ -113,7 +113,7 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         ///   Looks up a localized string similar to /*GetCommitsFromInstant*/
         ///SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
         ///FROM Commits 
-        ///WHERE	CommitStamp &gt;= :CommitStamp
+        ///WHERE BucketId = :BucketId AND CommitStamp &gt;= :CommitStamp
         ///ORDER BY CommitStamp, StreamId, StreamRevision.
         /// </summary>
         internal static string GetCommitsFromInstant {
@@ -160,8 +160,8 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         ///  SELECT C.BucketId, C.StreamId, C.StreamIdOriginal, MAX(C.StreamRevision) AS StreamRevision, MAX(COALESCE(S.StreamRevision, 0)) AS SnapshotRevision
         ///  FROM  Commits C LEFT OUTER JOIN Snapshots S
         ///    ON C.BucketId = :BucketId AND C.StreamId = S.StreamId AND C.StreamRevision &gt;= S.StreamRevision
-        ///  GROUP BY C.StreamId, C.StreamIdOriginal
-        ///  HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.St [rest of string was truncated]&quot;;.
+        ///  GROUP BY C.StreamId, C.BucketId, C.StreamIdOriginal
+        ///  HAVING MAX(C.StreamRevision) &gt;= MAX(C [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GetStreamsRequiringSnapshots {
             get {

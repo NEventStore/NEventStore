@@ -167,7 +167,7 @@ namespace NEventStore.Persistence.SqlPersistence
         {
             Logger.Debug(Messages.MarkingCommitAsDispatched, commit.CommitId);
             var streamId = commit.StreamId.ToHash();
-            int i = ExecuteCommand(streamId, cmd =>
+            ExecuteCommand(streamId, cmd =>
             {
                 cmd.AddParameter(_dialect.BucketId, commit.BucketId);
                 cmd.AddParameter(_dialect.StreamId, streamId);
@@ -185,7 +185,7 @@ namespace NEventStore.Persistence.SqlPersistence
                 query.AddParameter(_dialect.BucketId, bucketId);
                 query.AddParameter(_dialect.Threshold, maxThreshold);
                 return query.ExecutePagedQuery(statement,
-                    (q, s) => q.SetParameter(_dialect.StreamId, s.StreamId()))
+                    (q, s) => q.SetParameter(_dialect.StreamId, _dialect.CoalesceParameterValue(s.StreamId())))
                             .Select(x => x.GetStreamToSnapshot());
             });
         }

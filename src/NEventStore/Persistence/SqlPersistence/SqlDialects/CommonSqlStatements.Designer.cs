@@ -102,7 +102,7 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         /// <summary>
         ///   Looks up a localized string similar to SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
         ///  FROM Commits
-        /// WHERE CommitStamp &gt;= @CommitStamp
+        /// WHERE BucketId = @BucketId AND CommitStamp &gt;= @CommitStamp
         /// ORDER BY CommitSequence, StreamId, StreamRevision
         /// LIMIT @Limit OFFSET @Skip;.
         /// </summary>

@@ -5,6 +5,6 @@ namespace NEventStore
         /// <summary>
         /// The default bucket Id.
         /// </summary>
-        public const string Default = "defaultbucket";
+        public const string Default = "default";
     }
 }

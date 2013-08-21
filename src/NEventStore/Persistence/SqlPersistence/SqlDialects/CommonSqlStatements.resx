@@ -147,7 +147,7 @@ AND NOT EXISTS
   <data name="GetCommitsFromInstant" xml:space="preserve">
     <value>SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
   FROM Commits
- WHERE CommitStamp &gt;= @CommitStamp
+ WHERE BucketId = @BucketId AND CommitStamp &gt;= @CommitStamp
  ORDER BY CommitSequence, StreamId, StreamRevision
  LIMIT @Limit OFFSET @Skip;</value>
   </data>
