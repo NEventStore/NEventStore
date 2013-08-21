@@ -170,7 +170,18 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /*InitializeStorage*/    DECLARE     table_count   INTEGER;  BEGIN     SELECT   COUNT (OBJECT_ID)       INTO   table_count       FROM   USER_OBJECTS      WHERE   EXISTS                 (SELECT   OBJECT_NAME                    FROM   USER_OBJECTS                   WHERE   (OBJECT_NAME = &apos;COMMITS&apos; AND OBJECT_TYPE = &apos;TABLE&apos;));       IF table_count = 0     THEN        DBMS_OUTPUT.PUT_LINE (&apos;Creating the Commits table&apos;);          EXECUTE IMMEDIATE (&apos;CREATE TABLE Commits                          (                 [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to /*InitializeStorage*/
+        ///DECLARE table_count INTEGER;
+        ///BEGIN 
+        ///  SELECT COUNT (OBJECT_ID) INTO table_count FROM USER_OBJECTS WHERE EXISTS (
+        ///    SELECT OBJECT_NAME FROM USER_OBJECTS WHERE (OBJECT_NAME = &apos;COMMITS&apos; AND OBJECT_TYPE = &apos;TABLE&apos;));
+        ///IF table_count = 0 THEN DBMS_OUTPUT.PUT_LINE (&apos;Creating the Commits table&apos;);
+        ///  EXECUTE IMMEDIATE (
+        ///   &apos;CREATE TABLE Commits(
+        ///      BucketId char(40) NOT NULL,
+        ///      StreamId char(40) NOT NULL,
+        ///      StreamIdOriginal nvarchar2(1000) NOT NULL,
+        ///      StreamRevision NU [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {
@@ -197,7 +208,7 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         ///   Looks up a localized string similar to /*MarkCommitAsDispatched*/
         ///UPDATE Commits   
         ///SET Dispatched = 1
-        ///WHERE BucketId = :BucketId
+        ///WHERE CAST(BucketId AS NVARCHAR2(40)) = :BucketId
         /// AND StreamId  = :StreamId
         /// AND CommitSequence  = :CommitSequence.
         /// </summary>
