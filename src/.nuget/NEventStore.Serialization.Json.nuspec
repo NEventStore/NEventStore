@@ -8,12 +8,12 @@
     <owners>NEventStore Dev Team</owners>
     <projectUrl>http://neventstore.org</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Additional serialization provider for EventStore based on the Newtonsoft JSON.NET library.</description>
-    <summary>Newtonsoft JSON.NET Serializer for EventStore.</summary>
+    <description>Additional serialization provider for NEventStore based on the Newtonsoft JSON.NET library.</description>
+    <summary>Newtonsoft JSON.NET Serializer for NEventStore.</summary>
     <language>es-US</language>
     <tags>events, event sourcing, cqrs, storage, persistence, database, newtonsoft, json, serialization</tags>
     <dependencies>
-      <dependency id="EventStore" version="4.0" />
+      <dependency id="NEventStore" version="4.0" />
     </dependencies>
   </metadata>
   <files>
