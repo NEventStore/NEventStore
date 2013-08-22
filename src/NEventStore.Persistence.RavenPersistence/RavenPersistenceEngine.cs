@@ -371,23 +371,28 @@
             IDocumentSession session, Expression<Func<T, bool>>[] conditions, int skip, int take, out RavenQueryStatistics stats)
             where TIndex : AbstractIndexCreationTask, new()
         {
-            TransactionScope scope = null;
-
             try
             {
-                scope = OpenQueryScope();
-
-                IQueryable<T> query = session.Query<T, TIndex>().Customize(x =>
+                using (TransactionScope scope = OpenQueryScope())
                 {
-                    if (_consistentQueries)
+                    IQueryable<T> query = session.Query<T, TIndex>().Customize(x =>
                     {
-                        x.WaitForNonStaleResults();
-                    }
-                }).Statistics(out stats);
+                        if (_consistentQueries)
+                        {
+                            x.WaitForNonStaleResults();
+                        }
+                    }).Statistics(out stats);
 
-                query = conditions.Aggregate(query, (current, condition) => current.Where(condition));
+                    query = conditions.Aggregate(query, (current, condition) => current.Where(condition));
 
-                return query.Skip(skip).Take(take).ToArray();
+                    var results = query
+                        .Skip(skip).Take(take)
+                        .ToArray();
+
+                    scope.Complete();
+
+                    return results;
+                }
             }
             catch (WebException e)
             {
@@ -403,13 +408,6 @@
             {
                 Logger.Error(Messages.StorageThrewException, e.GetType());
                 throw new StorageException(e.Message, e);
-            }
-            finally
-            {
-                if (scope != null)
-                {
-                    scope.Dispose();
-                }
             }
         }
 
