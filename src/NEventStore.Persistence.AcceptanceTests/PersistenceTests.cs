@@ -64,47 +64,56 @@ namespace NEventStore.Persistence.AcceptanceTests
             persisted = Persistence.GetFrom(streamId, 0, int.MaxValue).First();
         }
 
+        [Fact]
         public void should_correctly_persist_the_stream_identifier()
         {
             persisted.StreamId.ShouldBe(attempt.StreamId);
         }
 
+        [Fact]
         public void should_correctly_persist_the_stream_stream_revision()
         {
             persisted.StreamRevision.ShouldBe(attempt.StreamRevision);
         }
 
+        [Fact]
         public void should_correctly_persist_the_commit_identifier()
         {
             persisted.CommitId.ShouldBe(attempt.CommitId);
         }
 
+        [Fact]
         public void should_correctly_persist_the_commit_sequence()
         {
             persisted.CommitSequence.ShouldBe(attempt.CommitSequence);
         }
 
         // persistence engines have varying levels of precision with respect to time.
+        [Fact]
         public void should_correctly_persist_the_commit_stamp()
         {
             persisted.CommitStamp.Subtract(now).ShouldBeLessThan(TimeSpan.FromSeconds(1));
         }
 
+        [Fact]
         public void should_correctly_persist_the_headers()
         {
             persisted.Headers.Count.ShouldBe(attempt.Headers.Count);
         }
 
+        [Fact]
         public void should_correctly_persist_the_events()
         {
             persisted.Events.Count.ShouldBe(attempt.Events.Count);
         }
 
+        [Fact]
         public void should_add_the_commit_to_the_set_of_undispatched_commits()
         {
             Persistence.GetUndispatchedCommits().FirstOrDefault(x => x.CommitId == attempt.CommitId).ShouldNotBeNull();
         }
 
+        [Fact]
         public void should_cause_the_stream_to_be_found_in_the_list_of_streams_to_snapshot()
         {
             Persistence.GetStreamsToSnapshot(1).FirstOrDefault(x => x.StreamId == streamId).ShouldNotBeNull();
