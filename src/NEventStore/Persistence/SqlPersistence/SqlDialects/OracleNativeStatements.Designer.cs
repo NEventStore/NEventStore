@@ -265,7 +265,22 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /*PurgeStorage*/DECLARE  row_count INTEGER;BEGIN  SELECT COUNT(1) INTO row_count  FROM Snapshots;      IF row_count != 0 THEN    EXECUTE IMMEDIATE (&apos;TRUNCATE TABLE Snapshots&apos;);  ELSE    DBMS_OUTPUT.PUT_LINE(&apos;The Snapshots table has already been purged.&apos;);  END IF;    SELECT COUNT(1) INTO row_count  FROM Commits;      IF row_count != 0 THEN    EXECUTE IMMEDIATE (&apos;TRUNCATE TABLE Commits&apos;);  ELSE    DBMS_OUTPUT.PUT_LINE(&apos;The Commits table has already been purged.&apos;);  END IF;  EXCEPTION  WHEN OTHERS THEN    DBM [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to /*PurgeStorage*/
+        ///DECLARE row_count INTEGER;
+        ///BEGIN
+        ///  SELECT COUNT(1) INTO row_count FROM Snapshots;
+        ///  IF row_count != 0 THEN
+        ///    EXECUTE IMMEDIATE (&apos;TRUNCATE TABLE Snapshots&apos;);
+        ///  ELSE
+        ///    DBMS_OUTPUT.PUT_LINE(&apos;The Snapshots table has already been purged.&apos;);
+        ///  END IF;
+        ///  SELECT COUNT(1) INTO row_count FROM Commits;
+        ///  IF row_count != 0 THEN
+        ///    EXECUTE IMMEDIATE (&apos;TRUNCATE TABLE Commits&apos;);
+        ///  ELSE
+        ///    DBMS_OUTPUT.PUT_LINE(&apos;The Commits table has already been purged.&apos;);
+        ///  END IF;
+        ///  EXCEPTION WHEN OT [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string PurgeStorage {
             get {
