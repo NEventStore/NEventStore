@@ -196,7 +196,7 @@ BEGIN
 IF table_count = 0 THEN DBMS_OUTPUT.PUT_LINE ('Creating the Commits table');
   EXECUTE IMMEDIATE (
    'CREATE TABLE Commits(
-      BucketId char(40) NOT NULL,
+      BucketId varchar2(40) NOT NULL,
       StreamId char(40) NOT NULL,
       StreamIdOriginal nvarchar2(1000) NOT NULL,
       StreamRevision NUMBER(8) CHECK (StreamRevision &gt; 0) NOT NULL,
@@ -220,7 +220,7 @@ SELECT COUNT (OBJECT_ID) INTO table_count FROM USER_OBJECTS WHERE EXISTS (
   IF table_count = 0 THEN DBMS_OUTPUT.PUT_LINE ('Creating the Snapshots table');
     EXECUTE IMMEDIATE (
       'CREATE TABLE Snapshots(
-        BucketId char(40) NOT NULL,
+        BucketId varchar2(40) NOT NULL,
         StreamId nchar(40) NOT NULL,
         StreamRevision NUMBER(8) CHECK (StreamRevision &gt; 0) NOT NULL, 
         Payload BLOB CHECK (LENGTH(Payload) &gt; 0) NOT NULL, 
