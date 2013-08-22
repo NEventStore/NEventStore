@@ -9,7 +9,7 @@
     <projectUrl>http://neventstore.org</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Additional persistence provider for NEventStore using MongoDB.</description>
-    <summary>MongoDB persistence provider for EventStore.</summary>
+    <summary>MongoDB persistence provider for NEventStore.</summary>
     <language>es-US</language>
     <tags>events, event sourcing, cqrs, storage, persistence, database, mongodb</tags>
     <dependencies>
