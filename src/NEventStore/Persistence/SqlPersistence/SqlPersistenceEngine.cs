@@ -100,7 +100,7 @@ namespace NEventStore.Persistence.SqlPersistence
             start = start.AddTicks(-(start.Ticks%TimeSpan.TicksPerSecond)); // Rounds down to the nearest second.
             start = start < EpochTime ? EpochTime : start;
 
-            Logger.Debug(Messages.GettingAllCommitsFrom, start);
+            Logger.Debug(Messages.GettingAllCommitsFrom, start, bucketId);
             return ExecuteQuery(string.Empty, query =>
             {
                 string statement = _dialect.GetCommitsFromInstant;

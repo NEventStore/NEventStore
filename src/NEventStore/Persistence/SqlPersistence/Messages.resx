@@ -196,7 +196,7 @@
     <value>Getting the list of all undispatched commits.</value>
   </data>
   <data name="GettingAllCommitsFrom" xml:space="preserve">
-    <value>Getting all commits from '{0}' forward.</value>
+    <value>Getting all commits from '{0}' forward from bucket '{0}'.</value>
   </data>
   <data name="GettingAllCommitsFromTo" xml:space="preserve">
     <value>Getting all commits from '{0}' to '{1}'.</value>
