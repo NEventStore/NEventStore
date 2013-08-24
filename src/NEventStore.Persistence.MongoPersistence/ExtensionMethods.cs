@@ -11,6 +11,7 @@
     using MongoDB.Driver;
     using MongoDB.Driver.Builders;
     using NEventStore.Serialization;
+    using BsonSerializer = MongoDB.Bson.Serialization.BsonSerializer;
 
     public static class ExtensionMethods
     {

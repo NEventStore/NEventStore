@@ -91,11 +91,9 @@ task PackageRavenPersistence -depends Clean, Compile, PackageEventStore {
 }
 
 task PackageJsonSerialization -depends Clean, Compile, PackageEventStore {
-	mkdir $publish_directory\plugins\serialization\json-net | out-null
-
-	Merge-Assemblies -outputFile "$publish_directory/plugins/serialization/json-net/NEventStore.Serialization.Json.dll" -exclude "NEventStore.*"  -files @(
-		"$src_directory/NEventStore.Serialization.Json/bin/$target_config/NEventStore.Serialization.Json.dll", 
-		"$src_directory/NEventStore.Serialization.Json/bin/$target_config/Newtonsoft.Json*.dll"
+	Merge-Assemblies -outputFile "$publish_directory/bin/NEventStore.dll" -files @(
+		"$src_directory/NEventStore/bin/$target_config/NEventStore.dll", 
+		"$src_directory/NEventStore/bin/$target_config/Newtonsoft.Json*.dll"
 	)
 }
 
