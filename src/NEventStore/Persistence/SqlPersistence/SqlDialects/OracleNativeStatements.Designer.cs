@@ -268,6 +268,28 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         ///   Looks up a localized string similar to /*PurgeStorage*/
         ///DECLARE row_count INTEGER;
         ///BEGIN
+        ///  SELECT COUNT(1) INTO row_count FROM Snapshots WHERE BucketId = :BucketId;
+        ///  IF row_count != 0 THEN
+        ///    EXECUTE IMMEDIATE (&apos;TRUNCATE TABLE Snapshots&apos;);
+        ///  ELSE
+        ///    DBMS_OUTPUT.PUT_LINE(&apos;The Snapshots table has already been purged.&apos;);
+        ///  END IF;
+        ///  SELECT COUNT(1) INTO row_count FROM Commits WHERE BucketId = :BucketId;
+        ///  IF row_count != 0 THEN
+        ///    EXECUTE IMMEDIATE (&apos;TRUNCATE TABLE Commits&apos;);
+        ///  ELSE
+        ///    DBMS_OUTPUT.PUT_LINE(&apos;The Commits table has a [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string PurgeBucket {
+            get {
+                return ResourceManager.GetString("PurgeBucket", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to /*PurgeStorage*/
+        ///DECLARE row_count INTEGER;
+        ///BEGIN
         ///  SELECT COUNT(1) INTO row_count FROM Snapshots;
         ///  IF row_count != 0 THEN
         ///    EXECUTE IMMEDIATE (&apos;TRUNCATE TABLE Snapshots&apos;);

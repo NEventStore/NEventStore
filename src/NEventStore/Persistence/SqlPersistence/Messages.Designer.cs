@@ -502,6 +502,15 @@ namespace NEventStore.Persistence.SqlPersistence {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Purging all stored data for bucket &apos;{0}&apos;.
+        /// </summary>
+        internal static string PurgingBucket {
+            get {
+                return ResourceManager.GetString("PurgingBucket", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Purging all stored data..
         /// </summary>
         internal static string PurgingStorage {

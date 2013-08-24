@@ -85,6 +85,11 @@ namespace NEventStore.Persistence
             _original.Purge();
         }
 
+        public void Purge(string bucketId)
+        {
+            _original.Purge(bucketId);
+        }
+
         public bool IsDisposed
         {
             get { return _original.IsDisposed; }

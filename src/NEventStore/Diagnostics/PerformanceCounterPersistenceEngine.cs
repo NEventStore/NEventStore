@@ -82,6 +82,11 @@ namespace NEventStore.Diagnostics
             _persistence.Purge();
         }
 
+        public void Purge(string bucketId)
+        {
+            _persistence.Purge(bucketId);
+        }
+
         public bool IsDisposed
         {
             get { return _persistence.IsDisposed; }

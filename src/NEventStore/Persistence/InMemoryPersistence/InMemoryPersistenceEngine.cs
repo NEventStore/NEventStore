@@ -100,6 +100,12 @@ namespace NEventStore.Persistence.InMemoryPersistence
             }
         }
 
+        public void Purge(string bucketId)
+        {
+            Bucket _;
+            _buckets.TryRemove(bucketId, out _);
+        }
+
         public bool IsDisposed
         {
             get { return _disposed; }

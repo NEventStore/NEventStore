@@ -282,4 +282,7 @@
   <data name="ConcurrentWriteDetected" xml:space="preserve">
     <value>Concurrent write detected.</value>
   </data>
+  <data name="PurgingBucket" xml:space="preserve">
+    <value>Purging all stored data for bucket '{0}'</value>
+  </data>
 </root>

@@ -283,6 +283,25 @@ VALUES (
 	:Payload
 )</value>
   </data>
+  <data name="PurgeBucket" xml:space="preserve">
+    <value>/*PurgeStorage*/
+DECLARE row_count INTEGER;
+BEGIN
+  SELECT COUNT(1) INTO row_count FROM Snapshots WHERE BucketId = :BucketId;
+  IF row_count != 0 THEN
+    EXECUTE IMMEDIATE ('TRUNCATE TABLE Snapshots');
+  ELSE
+    DBMS_OUTPUT.PUT_LINE('The Snapshots table has already been purged.');
+  END IF;
+  SELECT COUNT(1) INTO row_count FROM Commits WHERE BucketId = :BucketId;
+  IF row_count != 0 THEN
+    EXECUTE IMMEDIATE ('TRUNCATE TABLE Commits');
+  ELSE
+    DBMS_OUTPUT.PUT_LINE('The Commits table has already been purged.');
+  END IF;
+  EXCEPTION WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('An unexpected exception has occured. Please re-evaluate the PL/SQL script');
+END;</value>
+  </data>
   <data name="PurgeStorage" xml:space="preserve">
     <value>/*PurgeStorage*/
 DECLARE row_count INTEGER;

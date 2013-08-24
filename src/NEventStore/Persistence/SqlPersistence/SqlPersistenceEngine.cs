@@ -225,6 +225,16 @@ namespace NEventStore.Persistence.SqlPersistence
                 cmd.ExecuteNonQuery(_dialect.PurgeStorage));
         }
 
+        public void Purge(string bucketId)
+        {
+            Logger.Warn(Messages.PurgingBucket, bucketId);
+            ExecuteCommand(string.Empty, cmd =>
+            {
+                cmd.AddParameter(_dialect.BucketId, bucketId);
+                return cmd.ExecuteNonQuery(_dialect.PurgeBucket);
+            });
+        }
+
         public bool IsDisposed
         {
             get { return _disposed; }

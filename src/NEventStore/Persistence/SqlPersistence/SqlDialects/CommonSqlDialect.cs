@@ -13,6 +13,11 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects
             get { return CommonSqlStatements.PurgeStorage; }
         }
 
+        public string PurgeBucket
+        {
+            get { return CommonSqlStatements.PurgeBucket; }
+        }
+
         public virtual string GetCommitsFromStartingRevision
         {
             get { return CommonSqlStatements.GetCommitsFromStartingRevision; }

@@ -216,4 +216,8 @@ VALUES (@BucketId, @StreamId, @StreamIdOriginal, @CommitId, @CommitSequence, @St
     <value>DELETE FROM Snapshots;
 DELETE FROM Commits;</value>
   </data>
+  <data name="PurgeBucket" xml:space="preserve">
+    <value>DELETE FROM Snapshots WHERE BucketId = @BucketId;
+DELETE FROM Commits WHERE BucketId = @BucketId;</value>
+  </data>
 </root>
