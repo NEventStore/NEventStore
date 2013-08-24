@@ -263,6 +263,11 @@
             });
         }
 
+        public void Purge(string bucketId)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool IsDisposed
         {
             get { return _store.WasDisposed; }
