@@ -24,7 +24,6 @@
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (RavenPersistenceEngine));
         private readonly bool _consistentQueries;
         private readonly int _pageSize;
-        private readonly string _partition;
         private readonly TransactionScopeOption _scopeOption;
         private readonly IDocumentSerializer _serializer;
         private readonly IDocumentStore _store;
@@ -57,7 +56,6 @@
             _scopeOption = config.ScopeOption;
             _consistentQueries = config.ConsistentQueries;
             _pageSize = config.PageSize;
-            _partition = config.Partition;
         }
 
         public IDocumentStore Store
@@ -136,14 +134,14 @@
                     using (IDocumentSession session = _store.OpenSession())
                     {
                         session.Advanced.UseOptimisticConcurrency = true;
-                        var doc = attempt.ToRavenCommit(_partition, _serializer);
+                        var doc = attempt.ToRavenCommit(_serializer);
                         session.Store(doc);
                         session.SaveChanges();
                         scope.Complete();
                     }
 
                     Logger.Debug(Messages.CommitPersisted, attempt.CommitId, attempt.BucketId);
-                    SaveStreamHead(attempt.ToRavenStreamHead(_partition));
+                    SaveStreamHead(attempt.ToRavenStreamHead());
                     return true;
                 });
             }
@@ -174,7 +172,7 @@
             }
 
             var patch = new PatchRequest {Type = PatchCommandType.Set, Name = "Dispatched", Value = RavenJToken.Parse("true")};
-            var data = new PatchCommandData {Key = commit.ToRavenCommitId(_partition), Patches = new[] {patch}};
+            var data = new PatchCommandData {Key = commit.ToRavenCommitId(), Patches = new[] {patch}};
 
             Logger.Debug(Messages.MarkingCommitAsDispatched, commit.CommitId, commit.BucketId);
 
@@ -196,7 +194,7 @@
             Logger.Debug(Messages.GettingStreamsToSnapshot, bucketId);
 
             return
-                Query<RavenStreamHead, RavenStreamHeadBySnapshotAge>(s => s.BucketId == bucketId && s.SnapshotAge >= maxThreshold && s.Partition == _partition)
+                Query<RavenStreamHead, RavenStreamHeadBySnapshotAge>(s => s.BucketId == bucketId && s.SnapshotAge >= maxThreshold)
                     .Select(s => s.ToStreamHead());
         }
 
@@ -208,8 +206,7 @@
                 Query<RavenSnapshot, RavenSnapshotByStreamIdAndRevision>(x =>  
                     x.BucketId == bucketId &&
                     x.StreamId == streamId &&
-                    x.StreamRevision <= maxRevision &&
-                    x.Partition == _partition)
+                    x.StreamRevision <= maxRevision)
                     .OrderByDescending(x => x.StreamRevision)
                     .FirstOrDefault()
                     .ToSnapshot(_serializer);
@@ -231,13 +228,13 @@
                     using (TransactionScope scope = OpenCommandScope())
                     using (IDocumentSession session = _store.OpenSession())
                     {
-                        RavenSnapshot ravenSnapshot = snapshot.ToRavenSnapshot(_partition, _serializer);
+                        RavenSnapshot ravenSnapshot = snapshot.ToRavenSnapshot(_serializer);
                         session.Store(ravenSnapshot);
                         session.SaveChanges();
                         scope.Complete();
                     }
 
-                    SaveStreamHead(snapshot.ToRavenStreamHead(_partition));
+                    SaveStreamHead(snapshot.ToRavenStreamHead());
 
                     return true;
                 });
@@ -291,7 +288,7 @@
                 using (TransactionScope scope = OpenQueryScope())
                 using (IDocumentSession session = _store.OpenSession())
                 {
-                    var commit = session.Load<RavenCommit>(attempt.ToRavenCommitId(_partition));
+                    var commit = session.Load<RavenCommit>(attempt.ToRavenCommitId());
                     scope.Complete();
                     return commit;
                 }
@@ -302,10 +299,8 @@
         {
             Func<Type, string> getTagCondition = t => "Tag:" + session.Advanced.DocumentStore.Conventions.GetTypeTagName(t);
 
-            string typeQuery = "(" + getTagCondition(typeof (RavenCommit)) + " OR " + getTagCondition(typeof (RavenSnapshot)) + " OR " +
+            string queryText = "(" + getTagCondition(typeof (RavenCommit)) + " OR " + getTagCondition(typeof (RavenSnapshot)) + " OR " +
                 getTagCondition(typeof (RavenStreamHead)) + ")";
-            string partitionQuery = "Partition:" + (_partition ?? "[[NULL_VALUE]]");
-            string queryText = partitionQuery + " AND " + typeQuery;
 
             var query = new IndexQuery {Query = queryText};
 
@@ -330,7 +325,7 @@
         private IEnumerable<Commit> QueryCommits<TIndex>(Expression<Func<RavenCommit, bool>> query)
             where TIndex : AbstractIndexCreationTask, new()
         {
-            IEnumerable<RavenCommit> commits = Query<RavenCommit, TIndex>(query, c => c.Partition == _partition);
+            IEnumerable<RavenCommit> commits = Query<RavenCommit, TIndex>(query);
 
             return commits.Select(x => x.ToCommit(_serializer));
         }
@@ -430,7 +425,7 @@
                 using (TransactionScope scope = OpenCommandScope())
                 using (IDocumentSession session = _store.OpenSession())
                 {
-                    RavenStreamHead current = session.Load<RavenStreamHead>(RavenStreamHead.GetStreamHeadId(updated.BucketId, updated.StreamId, _partition)) ?? updated;
+                    RavenStreamHead current = session.Load<RavenStreamHead>(RavenStreamHead.GetStreamHeadId(updated.BucketId, updated.StreamId)) ?? updated;
                     current.HeadRevision = updated.HeadRevision;
 
                     if (updated.SnapshotRevision > 0)

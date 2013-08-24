@@ -15,8 +15,6 @@ namespace NEventStore.Persistence.RavenPersistence
         [Obsolete("This will be removed after 3.2")]
         public string DefaultDatabase { get; set; }
 
-        public string Partition { get; set; }
-
         public IDocumentSerializer Serializer { get; set; }
         public TransactionScopeOption ScopeOption { get; set; }
         public bool ConsistentQueries { get; set; }

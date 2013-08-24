@@ -7,10 +7,8 @@ namespace NEventStore.Persistence.RavenPersistence.Indexes
     {
         public RavenStreamHeadBySnapshotAge()
         {
-            //Redundant ?? null needed for compatibility with older models. Please do not remove.
-            Map =
-                snapshots =>
-                    from s in snapshots select new { s.BucketId, SnapshotAge = s.HeadRevision - s.SnapshotRevision, Partition = s.Partition ?? null};
+            Map = snapshots =>
+                from s in snapshots select new { s.BucketId, SnapshotAge = s.HeadRevision - s.SnapshotRevision };
         }
     }
 }

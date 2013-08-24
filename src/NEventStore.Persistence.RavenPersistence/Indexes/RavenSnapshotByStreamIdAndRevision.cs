@@ -7,8 +7,7 @@ namespace NEventStore.Persistence.RavenPersistence.Indexes
     {
         public RavenSnapshotByStreamIdAndRevision()
         {
-            //Redundant ?? null needed for compatibility with older models. Please do not remove.
-            Map = snapshots => from s in snapshots select new { s.BucketId, s.StreamId, s.StreamRevision, Partition = s.Partition ?? null};
+            Map = snapshots => from s in snapshots select new { s.BucketId, s.StreamId, s.StreamRevision };
         }
     }
 }

@@ -19,8 +19,6 @@ namespace NEventStore.Persistence.RavenPersistence
         public Guid CommitId { get; set; }
         public DateTime CommitStamp { get; set; }
 
-        public string Partition { get; set; }
-
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly",
             Justification = "This is a simple DTO and is only used internally by Raven.")]
         public Dictionary<string, object> Headers { get; set; }

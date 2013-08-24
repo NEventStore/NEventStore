@@ -21,7 +21,6 @@ namespace NEventStore
         private bool _consistentQueries; // stale queries perform better
         private int _maxServerPageSize = 1024;
         private int _pageSize = 128;
-        private string _partition;
         private IDocumentSerializer _serializer = new DocumentObjectSerializer();
 
         public RavenPersistenceWireup(Wireup inner) : base(inner)
@@ -37,7 +36,6 @@ namespace NEventStore
                                        ConsistentQueries = _consistentQueries,
                                        MaxServerPageSize = _maxServerPageSize,
                                        RequestedPageSize = _pageSize,
-                                       Partition = _partition,
                                    });
 
             Container.Register<IPersistStreams>(c => new RavenPersistenceEngine(_getStoreAction(), c.Resolve<RavenConfiguration>()));
@@ -86,14 +84,7 @@ namespace NEventStore
 
             return this;
         }
-
-        public virtual RavenPersistenceWireup Partition(string name)
-        {
-            _partition = name;
-
-            return this;
-        }
-
+        
         public virtual RavenPersistenceWireup PageEvery(int records)
         {
             Logger.Debug("Page result set every {0} records.", records);

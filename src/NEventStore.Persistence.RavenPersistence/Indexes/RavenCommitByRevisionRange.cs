@@ -7,10 +7,8 @@ namespace NEventStore.Persistence.RavenPersistence.Indexes
     {
         public RavenCommitByRevisionRange()
         {
-            //Redundant ?? null needed for compatibility with older models. Please do not remove.
-            Map =
-                commits =>
-                    from c in commits select new {c.BucketId, c.StreamId, c.StartingStreamRevision, c.StreamRevision, Partition = c.Partition ?? null};
+            Map = commits =>
+                from c in commits select new { c.BucketId, c.StreamId, c.StartingStreamRevision, c.StreamRevision };
         }
     }
 }
