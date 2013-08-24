@@ -7,6 +7,7 @@ namespace NEventStore.Persistence.AcceptanceTests
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using NEventStore.Diagnostics;
     using NEventStore.Persistence.AcceptanceTests.BDD;
     using Xunit;
@@ -627,6 +628,172 @@ namespace NEventStore.Persistence.AcceptanceTests
             {
                 _undispatched[i - 1].CommitSequence.ShouldBe(i);
             }
+        }
+    }
+
+    public class when_committing_a_stream_with_the_same_id_as_a_stream_in_another_bucket : PersistenceEngineConcern
+    {
+        const string _bucketAId = "a";
+        const string _bucketBId = "b";
+
+        private string _streamId;
+
+        private static Commit _attemptForbucketA, _attemptForBucketB;
+
+        private static Exception _thrown;
+
+        protected override void Context()
+        {
+            _streamId = Guid.NewGuid().ToString();
+            DateTime now = SystemTime.UtcNow;
+            _attemptForbucketA = _streamId.BuildAttempt(now, _bucketAId);
+            _attemptForBucketB = _streamId.BuildAttempt(now.Subtract(TimeSpan.FromDays(1)),_bucketBId);
+
+            Persistence.Commit(_attemptForbucketA);
+        }
+
+        protected override void Because()
+        {
+            _thrown = Catch.Exception(() => Persistence.Commit(_attemptForBucketB));
+        }
+
+        [Fact]
+        public void should_succeed()
+        {
+            _thrown.ShouldBeNull();
+        }
+
+        [Fact]
+        public void should_persist_to_the_correct_bucket()
+        {
+            Commit[] stream = Persistence.GetFrom(_bucketBId,_streamId, 0, int.MaxValue).ToArray();
+            stream.ShouldNotBeNull();
+            stream.Count().ShouldBe(1);
+            stream.First().CommitStamp.ShouldBe(_attemptForBucketB.CommitStamp);
+        }
+
+        [Fact]
+        public void should_not_affect_the_stream_from_the_other_bucket()
+        {
+            Commit[] stream = Persistence.GetFrom(_bucketAId,_streamId, 0, int.MaxValue).ToArray();
+            stream.ShouldNotBeNull();
+            stream.Count().ShouldBe(1);
+            stream.First().CommitStamp.ShouldBe(_attemptForbucketA.CommitStamp);
+        }
+    }
+
+    public class when_saving_a_snapshot_for_a_stream_with_the_same_id_as_a_stream_in_another_bucket : PersistenceEngineConcern
+    {
+        const string _bucketAId = "a";
+        const string _bucketBId = "b";
+
+        string _streamId;
+        
+        private static Snapshot _snapshot;
+
+        protected override void Context()
+        {
+            _streamId = Guid.NewGuid().ToString();
+            _snapshot = new Snapshot(_bucketBId, _streamId, 1, "Snapshot");
+            Persistence.Commit(_streamId.BuildAttempt(bucketId: _bucketAId));
+            Persistence.Commit(_streamId.BuildAttempt(bucketId: _bucketBId));
+        }
+
+        protected override void Because()
+        {
+            Persistence.AddSnapshot(_snapshot);
+        }
+
+        [Fact]
+        public void should_affect_snapshots_from_another_bucket()
+        {
+            Persistence.GetSnapshot(_bucketAId, _streamId, _snapshot.StreamRevision).ShouldBeNull();
+        }
+    }
+
+    public class when_reading_all_commits_from_a_particular_point_in_time_and_there_are_streams_in_multiple_buckets : PersistenceEngineConcern
+    {
+        const string _bucketAId = "a";
+        const string _bucketBId = "b";
+
+        private static DateTime _now;
+        private static Commit[] _returnedCommits;
+        Commit _commitToBucketB;
+
+        protected override void Context()
+        {
+            _now = SystemTime.UtcNow.AddYears(1);
+
+            var commitToBucketA = Guid.NewGuid().ToString().BuildAttempt(_now.AddSeconds(1), _bucketAId);
+
+            Persistence.Commit(commitToBucketA);
+            Persistence.Commit(commitToBucketA = commitToBucketA.BuildNextAttempt());
+            Persistence.Commit(commitToBucketA = commitToBucketA.BuildNextAttempt());
+            Persistence.Commit(commitToBucketA.BuildNextAttempt());
+
+            _commitToBucketB = Guid.NewGuid().ToString().BuildAttempt(_now.AddSeconds(1), _bucketBId);
+
+            Persistence.Commit(_commitToBucketB);
+        }
+
+        protected override void Because()
+        {
+            _returnedCommits = Persistence.GetFrom(_bucketAId, _now).ToArray();
+        }
+        
+        [Fact]
+        public void should_not_return_commits_from_other_buckets()
+        {
+            _returnedCommits.Any(c => c.CommitId.Equals(_commitToBucketB.CommitId)).ShouldBeFalse();
+        }
+    }
+
+    public class when_purging_all_commits_and_there_are_streams_in_multiple_buckets : PersistenceEngineConcern
+    {
+        const string _bucketAId = "a";
+        const string _bucketBId = "b";
+
+        string _streamId;
+        protected override void Context()
+        {
+            _streamId = Guid.NewGuid().ToString();
+            Persistence.Commit(_streamId.BuildAttempt(bucketId: _bucketAId));
+            Persistence.Commit(_streamId.BuildAttempt(bucketId: _bucketBId));
+        }
+
+        protected override void Because()
+        {
+            Persistence.Purge();
+        }
+
+        [Fact]
+        public void should_purge_all_commits_stored_in_bucket_a()
+        {
+            Persistence.GetFrom(_bucketAId, DateTime.MinValue).Count().ShouldBe(0);
+        }
+
+        [Fact]
+        public void should_purge_all_commits_stored_in_bucket_b()
+        {
+            Persistence.GetFrom(_bucketBId, DateTime.MinValue).Count().ShouldBe(0);
+        }
+
+        [Fact]
+        public void should_purge_all_streams_to_snapshot_in_bucket_a()
+        {
+            Persistence.GetStreamsToSnapshot(_bucketAId, 0).Count().ShouldBe(0);
+        }
+
+        [Fact]
+        public void should_purge_all_streams_to_snapshot_in_bucket_b()
+        {
+            Persistence.GetStreamsToSnapshot(_bucketBId, 0).Count().ShouldBe(0);
+        }
+
+        [Fact]
+        public void should_purge_all_undispatched_commits()
+        {
+            Persistence.GetUndispatchedCommits().Count().ShouldBe(0);
         }
     }
 
