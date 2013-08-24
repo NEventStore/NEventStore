@@ -62,17 +62,17 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         
         /// <summary>
         ///   Looks up a localized string similar to INSERT
-        ///INTO Snapshots
+        /// INTO Snapshots
         /// ( BucketId, StreamId, StreamRevision, Payload )
-        ///SELECT @BucketId, @StreamId, @StreamRevision, @Payload
-        ////*FROM DUAL*/
-        ///WHERE EXISTS
+        /// SELECT @BucketId, @StreamId, @StreamRevision, @Payload
+        /// /*FROM DUAL*/
+        /// WHERE EXISTS
         /// ( SELECT *
         ///     FROM Commits
         ///    WHERE BucketId = @BucketId
         ///      AND StreamId = @StreamId
         ///      AND (StreamRevision - Items) &lt;= @StreamRevision )
-        ///AND NOT EXISTS
+        /// AND NOT EXISTS
         /// ( SELECT *
         ///     FROM Snapshots
         ///    WHERE BucketId = @BucketId
