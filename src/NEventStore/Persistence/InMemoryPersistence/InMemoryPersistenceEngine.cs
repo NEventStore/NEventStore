@@ -88,7 +88,7 @@ namespace NEventStore.Persistence.InMemoryPersistence
                 {
                     throw new DuplicateCommitException();
                 }
-                if (_commits.Any(c => c.StreamId == attempt.StreamId && c.StreamRevision == attempt.StreamRevision))
+                if (_commits.Any(c => c.StreamId == attempt.StreamId && c.CommitSequence == attempt.CommitSequence))
                 {
                     throw new ConcurrencyException();
                 }
