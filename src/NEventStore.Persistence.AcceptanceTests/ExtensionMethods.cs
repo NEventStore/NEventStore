@@ -45,26 +45,21 @@ namespace NEventStore.Persistence.AcceptanceTests
             return commits;
         }
 
-        public static Commit BuildAttempt(this Guid streamId, DateTime now)
+        public static Commit BuildAttempt(this Guid streamId, DateTime? now = null, int eventMessageCount = 2)
         {
-            var messages = new List<EventMessage>
-            {
-                new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Test"}},
-                new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Test2"}},
-            };
+            now = now ?? SystemTime.UtcNow;
+            var messages = Enumerable
+                .Repeat(new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Test"}}, eventMessageCount)
+                .ToList();
 
-            return new Commit(streamId,
-                2,
+            return new Commit(
+                streamId,
+                messages.Count,
                 Guid.NewGuid(),
                 1,
-                now,
+                now.Value,
                 new Dictionary<string, object> {{"A header", "A string value"}, {"Another header", 2}},
                 messages);
-        }
-
-        public static Commit BuildAttempt(this Guid streamId)
-        {
-            return streamId.BuildAttempt(SystemTime.UtcNow);
         }
 
         public static Commit BuildNextAttempt(this Commit commit)
