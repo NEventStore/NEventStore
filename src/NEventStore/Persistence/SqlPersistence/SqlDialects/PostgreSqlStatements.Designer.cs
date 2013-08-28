@@ -71,10 +71,10 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         ///    CommitId uuid NOT NULL,
         ///    CommitSequence int NOT NULL CHECK (CommitSequence &gt; 0),
         ///    CommitStamp timestamp NOT NULL,
+        ///    CheckpointNumber SERIAL NOT NULL,
         ///    Dispatched boolean NOT NULL DEFAULT false,
         ///    Headers bytea NULL,
-        ///    Payload bytea NOT NULL,
-        ///    CONSTRAINT PK_Commits PRIMARY KEY [rest of string was truncated]&quot;;.
+        ///    Payload bytea NOT NULL, [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {
