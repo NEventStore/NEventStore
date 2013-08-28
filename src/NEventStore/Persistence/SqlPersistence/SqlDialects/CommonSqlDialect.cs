@@ -163,7 +163,7 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects
             get { return "@CheckpointNumber"; }
         }
 
-        public string GetCommitsSinceCheckpoint
+        public virtual string GetCommitsSinceCheckpoint
         {
             get { return CommonSqlStatements.GetCommitsSinceCheckpoint; }
         }

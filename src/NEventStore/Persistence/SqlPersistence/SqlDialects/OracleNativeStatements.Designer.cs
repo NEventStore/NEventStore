@@ -97,6 +97,7 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         ///   Looks up a localized string similar to BEGIN
         ///  EXECUTE IMMEDIATE (&apos;DROP TABLE Snapshots PURGE&apos;);
         ///  EXECUTE IMMEDIATE (&apos;DROP TABLE Commits PURGE&apos;);
+        ///  EXECUTE IMMEDIATE (&apos;DROP SEQUENCE Commit_CheckpointNumber&apos;);
         ///END;.
         /// </summary>
         internal static string DropTables {
@@ -123,7 +124,7 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         
         /// <summary>
         ///   Looks up a localized string similar to /*GetCommitsFromInstant*/
-        ///SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
+        ///SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
         ///FROM Commits 
         ///WHERE BucketId = :BucketId AND CommitStamp &gt;= :CommitStamp
         ///ORDER BY CommitStamp, StreamId, StreamRevision.
@@ -136,7 +137,7 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         
         /// <summary>
         ///   Looks up a localized string similar to /*GetCommitsFromStartingRevision*/
-        ///SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
+        ///SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
         ///FROM Commits
         ///WHERE BucketId = :BucketId AND StreamId = :StreamId
         ///   AND StreamRevision &gt;= :StreamRevision
@@ -147,6 +148,19 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         internal static string GetCommitsFromStartingRevision {
             get {
                 return ResourceManager.GetString("GetCommitsFromStartingRevision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to /*GetCommitsFromInstant*/
+        ///SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
+        ///FROM Commits 
+        /// WHERE  CheckpointNumber &gt;= :CheckpointNumber
+        /// ORDER BY  CheckpointNumber.
+        /// </summary>
+        internal static string GetCommitsSinceCheckpoint {
+            get {
+                return ResourceManager.GetString("GetCommitsSinceCheckpoint", resourceCulture);
             }
         }
         
