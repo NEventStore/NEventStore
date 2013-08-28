@@ -220,4 +220,8 @@ DELETE FROM Commits;</value>
     <value>DELETE FROM Snapshots WHERE BucketId = @BucketId;
 DELETE FROM Commits WHERE BucketId = @BucketId;</value>
   </data>
+  <data name="DropTables" xml:space="preserve">
+    <value>DROP TABLE Snapshots;
+DROP TABLE Commits;</value>
+  </data>
 </root>

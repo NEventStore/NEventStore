@@ -83,6 +83,11 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects
             get { return OracleNativeStatements.PurgeStorage; }
         }
 
+        public override string Drop
+        {
+            get { return OracleNativeStatements.DropTables; }
+        }
+
         public override string Skip
         {
             get { return MakeOracleParameter(base.Skip); }

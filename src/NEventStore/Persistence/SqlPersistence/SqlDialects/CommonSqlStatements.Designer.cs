@@ -86,6 +86,16 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to DROP TABLE Snapshots;
+        ///DROP TABLE Commits;.
+        /// </summary>
+        internal static string DropTables {
+            get {
+                return ResourceManager.GetString("DropTables", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SELECT COUNT(*)
         ///  FROM Commits
         /// WHERE BucketId = @BucketId 

@@ -138,6 +138,12 @@ WHERE	EXISTS
       And	Streamrevision = :Streamrevision
 	)</value>
   </data>
+  <data name="DropTables" xml:space="preserve">
+    <value>BEGIN
+  EXECUTE IMMEDIATE ('DROP TABLE Snapshots PURGE');
+  EXECUTE IMMEDIATE ('DROP TABLE Commits PURGE');
+END;</value>
+  </data>
   <data name="DuplicateCommit" xml:space="preserve">
     <value>/*DuplicateCommit*/
 SELECT CAST( COUNT(*) AS NUMBER(8,0) )

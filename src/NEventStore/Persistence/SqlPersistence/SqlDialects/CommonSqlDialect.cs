@@ -18,6 +18,11 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects
             get { return CommonSqlStatements.PurgeBucket; }
         }
 
+        public virtual string Drop
+        {
+            get { return CommonSqlStatements.DropTables; }
+        }
+
         public virtual string GetCommitsFromStartingRevision
         {
             get { return CommonSqlStatements.GetCommitsFromStartingRevision; }

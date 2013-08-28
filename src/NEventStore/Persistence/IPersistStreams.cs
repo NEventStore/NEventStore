@@ -70,5 +70,11 @@ namespace NEventStore.Persistence
         ///     in the specified bucket.  Use with caution.
         /// </summary>
         void Purge(string bucketId);
+
+        /// <summary>
+        ///     Completely DESTROYS the contents and schema (if applicable) containting ANY and ALL streams that have been successfully persisted
+        ///     in the specified bucket.  Use with caution.
+        /// </summary>
+        void Drop();
     }
 }

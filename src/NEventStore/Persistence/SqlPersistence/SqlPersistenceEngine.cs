@@ -235,6 +235,12 @@ namespace NEventStore.Persistence.SqlPersistence
             });
         }
 
+        public void Drop()
+        {
+            Logger.Warn(Messages.DroppingTables);
+            ExecuteCommand(string.Empty, cmd => cmd.ExecuteNonQuery(_dialect.Drop));
+        }
+
         public bool IsDisposed
         {
             get { return _disposed; }

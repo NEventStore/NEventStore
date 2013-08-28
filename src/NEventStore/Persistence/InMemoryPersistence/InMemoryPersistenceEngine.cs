@@ -106,6 +106,11 @@ namespace NEventStore.Persistence.InMemoryPersistence
             _buckets.TryRemove(bucketId, out _);
         }
 
+        public void Drop()
+        {
+            _buckets.Clear();
+        }
+
         public bool IsDisposed
         {
             get { return _disposed; }

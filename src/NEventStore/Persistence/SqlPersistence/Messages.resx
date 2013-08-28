@@ -285,4 +285,7 @@
   <data name="PurgingBucket" xml:space="preserve">
     <value>Purging all stored data for bucket '{0}'</value>
   </data>
+  <data name="DroppingTables" xml:space="preserve">
+    <value>Dropping tables.</value>
+  </data>
 </root>

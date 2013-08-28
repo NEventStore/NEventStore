@@ -7,7 +7,6 @@ namespace NEventStore.Persistence.AcceptanceTests
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading;
     using NEventStore.Diagnostics;
     using NEventStore.Persistence.AcceptanceTests.BDD;
     using Xunit;
@@ -836,7 +835,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         {
             if (_persistence != null && !_persistence.IsDisposed)
             {
-                _persistence.Purge();
+                _persistence.Drop();
             }
 
             Persistence.Dispose();

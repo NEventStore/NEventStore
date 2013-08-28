@@ -94,6 +94,18 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to BEGIN
+        ///  EXECUTE IMMEDIATE (&apos;DROP TABLE Snapshots PURGE&apos;);
+        ///  EXECUTE IMMEDIATE (&apos;DROP TABLE Commits PURGE&apos;);
+        ///END;.
+        /// </summary>
+        internal static string DropTables {
+            get {
+                return ResourceManager.GetString("DropTables", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to /*DuplicateCommit*/
         ///SELECT CAST( COUNT(*) AS NUMBER(8,0) )
         ///FROM Commits 

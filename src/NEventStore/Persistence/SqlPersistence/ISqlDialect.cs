@@ -9,6 +9,7 @@ namespace NEventStore.Persistence.SqlPersistence
         string InitializeStorage { get; }
         string PurgeStorage { get; }
         string PurgeBucket { get; }
+        string Drop { get; }
 
         string GetCommitsFromStartingRevision { get; }
         string GetCommitsFromInstant { get; }
