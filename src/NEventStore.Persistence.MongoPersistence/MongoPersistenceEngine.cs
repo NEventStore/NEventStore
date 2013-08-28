@@ -285,8 +285,7 @@
 
         public IEnumerable<Commit> GetSince(int checkpoint)
         {
-            //Logger.Debug(Messages.GettingAllCommitsFrom, start, bucketId);
-
+            Logger.Debug(Messages.GettingAllCommitsSinceCheckpoint, checkpoint);
             return TryMongo(() => PersistedCommits
                 .Find(Query.GTE(MongoFields.CheckpointNumber, checkpoint)))
                 .SetSortOrder(MongoFields.CheckpointNumber)

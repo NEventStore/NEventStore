@@ -249,6 +249,7 @@ namespace NEventStore.Persistence.SqlPersistence
 
         public IEnumerable<Commit> GetSince(int checkpoint)
         {
+            Logger.Debug(Messages.GettingAllCommitsSinceCheckpoint, checkpoint);
             return ExecuteQuery(string.Empty, query =>
             {
                 string statement = _dialect.GetCommitsSinceCheckpoint;

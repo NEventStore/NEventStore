@@ -288,4 +288,7 @@
   <data name="DroppingTables" xml:space="preserve">
     <value>Dropping tables.</value>
   </data>
+  <data name="GettingAllCommitsSinceCheckpoint" xml:space="preserve">
+    <value>Getting all commits since since checkpoint '{0}'.</value>
+  </data>
 </root>

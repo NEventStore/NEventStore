@@ -232,6 +232,15 @@ namespace NEventStore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Getting all commits since since checkpoint &apos;{0}&apos;..
+        /// </summary>
+        internal static string GettingAllCommitsSinceCheckpoint {
+            get {
+                return ResourceManager.GetString("GettingAllCommitsSinceCheckpoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Getting the most recent snapshot from bucket &apos;{0}&apos; for stream &apos;{1}&apos; on/since revision &apos;{2}&apos;..
         /// </summary>
         internal static string GettingSnapshotForStream {

@@ -46,6 +46,7 @@ namespace NEventStore.Persistence.InMemoryPersistence
 
         public IEnumerable<Commit> GetSince(int checkpoint)
         {
+            Logger.Debug(Resources.GettingAllCommitsSinceCheckpoint, checkpoint);
             return _buckets.Values.SelectMany(b => b.GetCommits()).Where(c => c.Checkpoint > checkpoint).OrderBy(c => c.Checkpoint).ToArray();
         }
 
