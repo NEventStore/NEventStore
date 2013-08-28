@@ -5,7 +5,6 @@
     using System.Linq;
     using MongoDB.Bson;
     using MongoDB.Bson.IO;
-    using MongoDB.Bson.Serialization;
     using MongoDB.Bson.Serialization.Options;
     using MongoDB.Bson.Serialization.Serializers;
     using MongoDB.Driver;
@@ -27,7 +26,7 @@
             }
         }
 
-        public static BsonDocument ToMongoCommit(this Commit commit, IDocumentSerializer serializer)
+        public static BsonDocument ToMongoCommit(this Commit commit, Func<int> getNextCheckpointNumber, IDocumentSerializer serializer)
         {
             int streamRevision = commit.StreamRevision - (commit.Events.Count - 1);
             IEnumerable<BsonDocument> events = commit
@@ -49,6 +48,7 @@
                  },
                 {MongoFields.CommitId, commit.CommitId},
                 {MongoFields.CommitStamp, commit.CommitStamp},
+                {MongoFields.CheckpointNumber, getNextCheckpointNumber()},
                 {MongoFields.Headers, BsonDocumentWrapper.Create(commit.Headers)},
                 {MongoFields.Events, new BsonArray(events)},
                 {MongoFields.Dispatched, false}
@@ -75,15 +75,17 @@
                         : serializer.Deserialize<EventMessage>(e.AsBsonDocument[MongoFields.Payload].AsByteArray))
                 .ToList();
             int streamRevision = doc[MongoFields.Events].AsBsonArray.Last().AsBsonDocument[MongoFields.StreamRevision].AsInt32;
-            return new Commit(
-                bucketId,
+            return new Commit(bucketId,
                 streamId,
                 streamRevision,
                 doc[MongoFields.CommitId].AsGuid,
                 commitSequence,
                 doc[MongoFields.CommitStamp].ToUniversalTime(),
                 doc[MongoFields.Headers].AsDictionary<string, object>(),
-                events);
+                events)
+            {
+                Checkpoint = doc[MongoFields.CheckpointNumber].ToInt32()
+            };
         }
 
         public static BsonDocument ToMongoSnapshot(this Snapshot snapshot, IDocumentSerializer serializer)

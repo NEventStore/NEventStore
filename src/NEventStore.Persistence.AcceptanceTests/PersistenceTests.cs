@@ -581,7 +581,6 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Context()
         {
-            Persistence.Purge();
             string streamId = Guid.NewGuid().ToString();
             var dateTime = new DateTime(2013, 1, 1);
             SystemTime.Resolver = () => dateTime;

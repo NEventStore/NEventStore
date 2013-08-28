@@ -6,6 +6,7 @@
         public const string CommitId = "CommitId";
         public const string CommitStamp = "CommitStamp";
         public const string CommitSequence = "CommitSequence";
+        public const string CheckpointNumber = "CheckpointNumber";
         public const string Dispatched = "Dispatched";
         public const string Events = "Events";
         public const string Headers = "Headers";
