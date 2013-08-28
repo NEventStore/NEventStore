@@ -263,6 +263,11 @@
             });
         }
 
+        public void Drop()
+        {
+            Purge();
+        }
+
         public bool IsDisposed
         {
             get { return _store.WasDisposed; }

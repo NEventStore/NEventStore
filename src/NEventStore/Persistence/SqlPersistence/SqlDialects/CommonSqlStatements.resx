@@ -209,4 +209,8 @@ VALUES (@StreamId, @CommitId, @CommitSequence, @StreamRevision, @Items, @CommitS
     <value>DELETE FROM Snapshots;
 DELETE FROM Commits;</value>
   </data>
+  <data name="DropTables" xml:space="preserve">
+    <value>DROP TABLE Snapshots;
+DROP TABLE Commits;</value>
+  </data>
 </root>

@@ -277,6 +277,15 @@ namespace NEventStore.Persistence.SqlPersistence {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Dropping tables..
+        /// </summary>
+        internal static string DroppingTables {
+            get {
+                return ResourceManager.GetString("DroppingTables", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplicate commit detected; throwing..
         /// </summary>
         internal static string DuplicateCommit {

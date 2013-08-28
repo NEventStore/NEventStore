@@ -82,6 +82,12 @@ namespace NEventStore.Diagnostics
             _persistence.Purge();
         }
 
+        public void Drop()
+        {
+            _persistence.Drop();
+        }
+
+
         public bool IsDisposed
         {
             get { return _persistence.IsDisposed; }

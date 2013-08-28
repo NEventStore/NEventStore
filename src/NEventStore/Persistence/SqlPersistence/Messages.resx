@@ -282,4 +282,7 @@
   <data name="ConcurrentWriteDetected" xml:space="preserve">
     <value>Concurrent write detected.</value>
   </data>
+  <data name="DroppingTables" xml:space="preserve">
+    <value>Dropping tables.</value>
+  </data>
 </root>

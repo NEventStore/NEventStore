@@ -213,6 +213,13 @@ namespace NEventStore.Persistence.SqlPersistence
                 cmd.ExecuteNonQuery(_dialect.PurgeStorage));
         }
 
+
+        public void Drop()
+        {
+            Logger.Warn(Messages.DroppingTables);
+            ExecuteCommand(Guid.Empty, cmd => cmd.ExecuteNonQuery(_dialect.Drop));
+        }
+
         public bool IsDisposed
         {
             get { return _disposed; }

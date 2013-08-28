@@ -182,6 +182,11 @@ namespace NEventStore.Persistence.InMemoryPersistence
             }
         }
 
+        public void Drop()
+        {
+            Purge();
+        }
+
         public bool IsDisposed
         {
             get { return _disposed; }

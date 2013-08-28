@@ -673,7 +673,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         {
             if (_persistence != null && !_persistence.IsDisposed)
             {
-                _persistence.Purge();
+                _persistence.Drop();
             }
 
             Persistence.Dispose();
