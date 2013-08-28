@@ -241,6 +241,11 @@ namespace NEventStore.Persistence.SqlPersistence
             ExecuteCommand(string.Empty, cmd => cmd.ExecuteNonQuery(_dialect.Drop));
         }
 
+        public IEnumerable<Commit> GetFrom(int checkpoint)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool IsDisposed
         {
             get { return _disposed; }

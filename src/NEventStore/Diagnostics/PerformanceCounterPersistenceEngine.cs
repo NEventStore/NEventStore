@@ -92,6 +92,11 @@ namespace NEventStore.Diagnostics
             _persistence.Drop();
         }
 
+        public IEnumerable<Commit> GetFrom(int checkpoint)
+        {
+            return _persistence.GetFrom(checkpoint);
+        }
+
         public bool IsDisposed
         {
             get { return _persistence.IsDisposed; }

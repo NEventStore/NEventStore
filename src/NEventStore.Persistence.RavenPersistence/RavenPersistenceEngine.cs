@@ -273,6 +273,11 @@
             Purge();
         }
 
+        public IEnumerable<Commit> GetFrom(int checkpoint)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool IsDisposed
         {
             get { return _store.WasDisposed; }

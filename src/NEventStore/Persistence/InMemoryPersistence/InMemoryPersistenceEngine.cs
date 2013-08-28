@@ -42,6 +42,16 @@ namespace NEventStore.Persistence.InMemoryPersistence
             return this[bucketId].GetFrom(start);
         }
 
+        public IEnumerable<Commit> GetFrom(int checkpoint)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<Commit> GetFrom(Guid commitId)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual IEnumerable<Commit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             ThrowWhenDisposed();
@@ -207,7 +217,7 @@ namespace NEventStore.Persistence.InMemoryPersistence
                 }
             }
 
-            public virtual IEnumerable<Commit> GetUndispatchedCommits()
+            public IEnumerable<Commit> GetUndispatchedCommits()
             {
                 lock (_commits)
                 {
