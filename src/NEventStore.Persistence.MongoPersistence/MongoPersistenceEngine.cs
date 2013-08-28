@@ -113,17 +113,17 @@
             Logger.Debug(Messages.GettingAllCommitsFrom, start, bucketId);
 
             return TryMongo(() => PersistedCommits
-                .Find(Query.GTE(MongoFields.CommitStamp, start))
+                .Find(Query.And(Query.EQ("_id.BucketId", bucketId), Query.GTE(MongoFields.CommitStamp, start)))
                 .SetSortOrder(MongoFields.Id)
                 .Select(x => x.ToCommit(_serializer)));
         }
 
         public virtual IEnumerable<Commit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
-            Logger.Debug(Messages.GettingAllCommitsFromTo, start, end);
+            Logger.Debug(Messages.GettingAllCommitsFromTo, start, end, bucketId);
 
             return TryMongo(() => PersistedCommits
-                .Find(Query.And(Query.GTE(MongoFields.CommitStamp, start), Query.LT(MongoFields.CommitStamp, end)))
+                .Find(Query.And(Query.EQ("_id.BucketId", bucketId), Query.GTE(MongoFields.CommitStamp, start), Query.LT(MongoFields.CommitStamp, end)))
                 .SetSortOrder(MongoFields.Id)
                 .Select(x => x.ToCommit(_serializer)));
         }
