@@ -635,21 +635,18 @@ namespace NEventStore.Persistence.AcceptanceTests
     {
         const string _bucketAId = "a";
         const string _bucketBId = "b";
-
         private string _streamId;
-
-        private static Commit _attemptForbucketA, _attemptForBucketB;
-
+        private static Commit  _attemptForBucketB;
         private static Exception _thrown;
+        private DateTime _attemptACommitStamp;
 
         protected override void Context()
         {
             _streamId = Guid.NewGuid().ToString();
             DateTime now = SystemTime.UtcNow;
-            _attemptForbucketA = _streamId.BuildAttempt(now, _bucketAId);
+            Persistence.Commit(_streamId.BuildAttempt(now, _bucketAId));
+            _attemptACommitStamp = Persistence.GetFrom(_bucketAId, _streamId, 0, int.MaxValue).First().CommitStamp;
             _attemptForBucketB = _streamId.BuildAttempt(now.Subtract(TimeSpan.FromDays(1)),_bucketBId);
-
-            Persistence.Commit(_attemptForbucketA);
         }
 
         protected override void Because()
@@ -669,7 +666,6 @@ namespace NEventStore.Persistence.AcceptanceTests
             Commit[] stream = Persistence.GetFrom(_bucketBId,_streamId, 0, int.MaxValue).ToArray();
             stream.ShouldNotBeNull();
             stream.Count().ShouldBe(1);
-            stream.First().CommitStamp.ShouldBe(_attemptForBucketB.CommitStamp);
         }
 
         [Fact]
@@ -678,7 +674,7 @@ namespace NEventStore.Persistence.AcceptanceTests
             Commit[] stream = Persistence.GetFrom(_bucketAId,_streamId, 0, int.MaxValue).ToArray();
             stream.ShouldNotBeNull();
             stream.Count().ShouldBe(1);
-            stream.First().CommitStamp.ShouldBe(_attemptForbucketA.CommitStamp);
+            stream.First().CommitStamp.ShouldBe(_attemptACommitStamp);
         }
     }
 
