@@ -145,14 +145,14 @@ AND NOT EXISTS
    AND CommitId = @CommitId;</value>
   </data>
   <data name="GetCommitsFromInstant" xml:space="preserve">
-    <value>SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
+    <value>SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
   FROM Commits
  WHERE BucketId = @BucketId AND CommitStamp &gt;= @CommitStamp
  ORDER BY CommitSequence, StreamId, StreamRevision
  LIMIT @Limit OFFSET @Skip;</value>
   </data>
   <data name="GetCommitsFromToInstant" xml:space="preserve">
-    <value>SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
+    <value>SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
   FROM Commits
  WHERE BucketId = @BucketId
    AND CommitStamp &gt;= @CommitStampStart
@@ -161,7 +161,7 @@ AND NOT EXISTS
  LIMIT @Limit OFFSET @Skip;</value>
   </data>
   <data name="GetCommitsFromStartingRevision" xml:space="preserve">
-    <value>SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
+    <value>SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp,  CheckpointNumber, Headers, Payload
   FROM Commits
  WHERE BucketId = @BucketId
    AND StreamId = @StreamId
@@ -193,7 +193,7 @@ HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Thresho
  LIMIT @Limit;</value>
   </data>
   <data name="GetUndispatchedCommits" xml:space="preserve">
-    <value>SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
+    <value>SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
   FROM Commits
  WHERE Dispatched = 0
  ORDER BY CommitSequence
@@ -223,5 +223,11 @@ DELETE FROM Commits WHERE BucketId = @BucketId;</value>
   <data name="DropTables" xml:space="preserve">
     <value>DROP TABLE Snapshots;
 DROP TABLE Commits;</value>
+  </data>
+  <data name="GetCommitsSinceCheckpoint" xml:space="preserve">
+    <value>SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
+  FROM Commits
+ WHERE  CheckpointNumber &gt;= @CheckpointNumber
+ ORDER BY  CheckpointNumber</value>
   </data>
 </root>

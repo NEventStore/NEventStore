@@ -158,6 +158,16 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects
             get { return true; }
         }
 
+        public string CheckpointNumber
+        {
+            get { return "@CheckpointNumber"; }
+        }
+
+        public string GetCommitsSinceCheckpoint
+        {
+            get { return CommonSqlStatements.GetCommitsSinceCheckpoint; }
+        }
+
         public virtual object CoalesceParameterValue(object value)
         {
             return value;

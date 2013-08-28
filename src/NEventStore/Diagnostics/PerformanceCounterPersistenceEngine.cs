@@ -92,9 +92,9 @@ namespace NEventStore.Diagnostics
             _persistence.Drop();
         }
 
-        public IEnumerable<Commit> GetFrom(int checkpoint)
+        public IEnumerable<Commit> GetSince(int checkpoint)
         {
-            return _persistence.GetFrom(checkpoint);
+            return _persistence.GetSince(checkpoint);
         }
 
         public bool IsDisposed

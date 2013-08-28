@@ -71,13 +71,45 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         ///       CommitId guid NOT NULL CHECK (CommitId != 0),
         ///       CommitSequence int NOT NULL CHECK (CommitSequence &gt; 0),
         ///       CommitStamp datetime NOT NULL,
+        ///       CheckpointNumber int NOT NULL DEFAULT 0,
         ///       Dispatched bit NOT NULL DEFAULT 0,
-        ///       Headers blob NULL,
-        ///       Payload blob NOT  [rest of string was truncated]&quot;;.
+        ///   [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {
                 return ResourceManager.GetString("InitializeStorage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to INSERT INTO Commits (
+        ///    BucketId,
+        ///    StreamId,
+        ///    StreamIdOriginal,
+        ///    CommitId,
+        ///    CommitSequence,
+        ///    StreamRevision,
+        ///    Items,
+        ///    CommitStamp,
+        ///    CheckpointNumber,
+        ///    Headers,
+        ///    Payload)
+        ///VALUES (
+        ///    @BucketId,
+        ///    @StreamId,
+        ///    @StreamIdOriginal,
+        ///    @CommitId,
+        ///    @CommitSequence,
+        ///    @StreamRevision,
+        ///    @Items,
+        ///    @CommitStamp,
+        ///    (SELECT IFNULL(MAX(CheckpointNumber), 0) + 1 FROM Commits),
+        ///    @Headers,
+        ///    @Payload);.
+        /// </summary>
+        internal static string PersistCommit {
+            get {
+                return ResourceManager.GetString("PersistCommit", resourceCulture);
             }
         }
     }

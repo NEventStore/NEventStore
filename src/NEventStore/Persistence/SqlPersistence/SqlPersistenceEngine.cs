@@ -73,26 +73,25 @@ namespace NEventStore.Persistence.SqlPersistence
             }
 
             Logger.Debug(Messages.InitializingStorage);
-            ExecuteCommand(string.Empty, statement =>
-                statement.ExecuteWithoutExceptions(_dialect.InitializeStorage));
+            ExecuteCommand(string.Empty, statement => statement.ExecuteWithoutExceptions(_dialect.InitializeStorage));
         }
 
         public virtual IEnumerable<Commit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
         {
             Logger.Debug(Messages.GettingAllCommitsBetween, streamId, minRevision, maxRevision);
             streamId = streamId.ToHash();
-            return ExecuteQuery(streamId, query =>
-            {
-                string statement = _dialect.GetCommitsFromStartingRevision;
-                query.AddParameter(_dialect.BucketId, bucketId);
-                query.AddParameter(_dialect.StreamId, streamId);
-                query.AddParameter(_dialect.StreamRevision, minRevision);
-                query.AddParameter(_dialect.MaxStreamRevision, maxRevision);
-                query.AddParameter(_dialect.CommitSequence, 0);
-                return query.ExecutePagedQuery(statement,
-                    (q, r) => q.SetParameter(_dialect.CommitSequence, r.CommitSequence()))
+            return ExecuteQuery(streamId,
+                query =>
+                {
+                    string statement = _dialect.GetCommitsFromStartingRevision;
+                    query.AddParameter(_dialect.BucketId, bucketId);
+                    query.AddParameter(_dialect.StreamId, streamId);
+                    query.AddParameter(_dialect.StreamRevision, minRevision);
+                    query.AddParameter(_dialect.MaxStreamRevision, maxRevision);
+                    query.AddParameter(_dialect.CommitSequence, 0);
+                    return query.ExecutePagedQuery(statement, (q, r) => q.SetParameter(_dialect.CommitSequence, r.CommitSequence()))
                             .Select(x => x.GetCommit(_serializer));
-            });
+                });
         }
 
         public virtual IEnumerable<Commit> GetFrom(string bucketId, DateTime start)
@@ -101,14 +100,16 @@ namespace NEventStore.Persistence.SqlPersistence
             start = start < EpochTime ? EpochTime : start;
 
             Logger.Debug(Messages.GettingAllCommitsFrom, start, bucketId);
-            return ExecuteQuery(string.Empty, query =>
-            {
-                string statement = _dialect.GetCommitsFromInstant;
-                query.AddParameter(_dialect.BucketId, bucketId);
-                query.AddParameter(_dialect.CommitStamp, start);
-                return query.ExecutePagedQuery(statement, (q, r) => { })
+            return ExecuteQuery(string.Empty,
+                query =>
+                {
+                    string statement = _dialect.GetCommitsFromInstant;
+                    query.AddParameter(_dialect.BucketId, bucketId);
+                    query.AddParameter(_dialect.CommitStamp, start);
+                    return query.ExecutePagedQuery(statement, (q, r) => q.SetParameter(_dialect.CommitSequence, r.CommitSequence()))
                             .Select(x => x.GetCommit(_serializer));
-            });
+
+                });
         }
 
         public virtual IEnumerable<Commit> GetFromTo(string bucketId, DateTime start, DateTime end)
@@ -118,15 +119,15 @@ namespace NEventStore.Persistence.SqlPersistence
             end = end < EpochTime ? EpochTime : end;
 
             Logger.Debug(Messages.GettingAllCommitsFromTo, start, end);
-            return ExecuteQuery(string.Empty, query =>
-            {
-                string statement = _dialect.GetCommitsFromToInstant;
-                query.AddParameter(_dialect.BucketId, bucketId);
-                query.AddParameter(_dialect.CommitStampStart, start);
-                query.AddParameter(_dialect.CommitStampEnd, end);
-                return query.ExecutePagedQuery(statement, (q, r) => { })
-                            .Select(x => x.GetCommit(_serializer));
-            });
+            return ExecuteQuery(string.Empty,
+                query =>
+                {
+                    string statement = _dialect.GetCommitsFromToInstant;
+                    query.AddParameter(_dialect.BucketId, bucketId);
+                    query.AddParameter(_dialect.CommitStampStart, start);
+                    query.AddParameter(_dialect.CommitStampEnd, end);
+                    return query.ExecutePagedQuery(statement, (q, r) => { }).Select(x => x.GetCommit(_serializer));
+                });
         }
 
         public virtual void Commit(Commit attempt)
@@ -157,82 +158,87 @@ namespace NEventStore.Persistence.SqlPersistence
         public virtual IEnumerable<Commit> GetUndispatchedCommits()
         {
             Logger.Debug(Messages.GettingUndispatchedCommits);
-            return ExecuteQuery(string.Empty, query =>
-                query.ExecutePagedQuery(_dialect.GetUndispatchedCommits, (q, r) => { }))
-                .Select(x => x.GetCommit(_serializer))
-                .ToArray(); // avoid paging
+            return
+                ExecuteQuery(string.Empty, query => query.ExecutePagedQuery(_dialect.GetUndispatchedCommits, (q, r) => { }))
+                    .Select(x => x.GetCommit(_serializer))
+                    .ToArray(); // avoid paging
         }
 
         public virtual void MarkCommitAsDispatched(Commit commit)
         {
             Logger.Debug(Messages.MarkingCommitAsDispatched, commit.CommitId);
-            var streamId = commit.StreamId.ToHash();
-            ExecuteCommand(streamId, cmd =>
-            {
-                cmd.AddParameter(_dialect.BucketId, commit.BucketId);
-                cmd.AddParameter(_dialect.StreamId, streamId);
-                cmd.AddParameter(_dialect.CommitSequence, commit.CommitSequence);
-                return cmd.ExecuteWithoutExceptions(_dialect.MarkCommitAsDispatched);
-            });
+            string streamId = commit.StreamId.ToHash();
+            ExecuteCommand(streamId,
+                cmd =>
+                {
+                    cmd.AddParameter(_dialect.BucketId, commit.BucketId);
+                    cmd.AddParameter(_dialect.StreamId, streamId);
+                    cmd.AddParameter(_dialect.CommitSequence, commit.CommitSequence);
+                    return cmd.ExecuteWithoutExceptions(_dialect.MarkCommitAsDispatched);
+                });
         }
 
         public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
         {
             Logger.Debug(Messages.GettingStreamsToSnapshot);
-            return ExecuteQuery(string.Empty, query =>
-            {
-                string statement = _dialect.GetStreamsRequiringSnapshots;
-                query.AddParameter(_dialect.BucketId, bucketId);
-                query.AddParameter(_dialect.Threshold, maxThreshold);
-                return query.ExecutePagedQuery(statement,
-                    (q, s) => q.SetParameter(_dialect.StreamId, _dialect.CoalesceParameterValue(s.StreamId())))
+            return ExecuteQuery(string.Empty,
+                query =>
+                {
+                    string statement = _dialect.GetStreamsRequiringSnapshots;
+                    query.AddParameter(_dialect.BucketId, bucketId);
+                    query.AddParameter(_dialect.Threshold, maxThreshold);
+                    return
+                        query.ExecutePagedQuery(statement,
+                            (q, s) => q.SetParameter(_dialect.StreamId, _dialect.CoalesceParameterValue(s.StreamId())))
                             .Select(x => x.GetStreamToSnapshot());
-            });
+                });
         }
 
         public virtual Snapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
         {
             Logger.Debug(Messages.GettingRevision, streamId, maxRevision);
             streamId = streamId.ToHash();
-            return ExecuteQuery(streamId, query =>
-            {
-                string statement = _dialect.GetSnapshot;
-                query.AddParameter(_dialect.BucketId, bucketId);
-                query.AddParameter(_dialect.StreamId, streamId);
-                query.AddParameter(_dialect.StreamRevision, maxRevision);
-                return query.ExecuteWithQuery(statement).Select(x => x.GetSnapshot(_serializer));
-            }).FirstOrDefault();
+            return ExecuteQuery(streamId,
+                query =>
+                {
+                    string statement = _dialect.GetSnapshot;
+                    query.AddParameter(_dialect.BucketId, bucketId);
+                    query.AddParameter(_dialect.StreamId, streamId);
+                    query.AddParameter(_dialect.StreamRevision, maxRevision);
+                    return query.ExecuteWithQuery(statement).Select(x => x.GetSnapshot(_serializer));
+                }).FirstOrDefault();
         }
 
         public virtual bool AddSnapshot(Snapshot snapshot)
         {
             Logger.Debug(Messages.AddingSnapshot, snapshot.StreamId, snapshot.StreamRevision);
-            var streamId = snapshot.StreamId.ToHash();
-            return ExecuteCommand(streamId, cmd =>
-            {
-                cmd.AddParameter(_dialect.BucketId, snapshot.BucketId);
-                cmd.AddParameter(_dialect.StreamId, streamId);
-                cmd.AddParameter(_dialect.StreamRevision, snapshot.StreamRevision);
-                cmd.AddParameter(_dialect.Payload, _serializer.Serialize(snapshot.Payload));
-                return cmd.ExecuteWithoutExceptions(_dialect.AppendSnapshotToCommit);
-            }) > 0;
+            string streamId = snapshot.StreamId.ToHash();
+            return ExecuteCommand(streamId,
+                cmd =>
+                {
+                    cmd.AddParameter(_dialect.BucketId, snapshot.BucketId);
+                    cmd.AddParameter(_dialect.StreamId, streamId);
+                    cmd.AddParameter(_dialect.StreamRevision, snapshot.StreamRevision);
+                    cmd.AddParameter(_dialect.Payload, _serializer.Serialize(snapshot.Payload));
+                    return cmd.ExecuteWithoutExceptions(_dialect.AppendSnapshotToCommit);
+                }) > 0;
         }
 
         public virtual void Purge()
         {
             Logger.Warn(Messages.PurgingStorage);
-            ExecuteCommand(string.Empty, cmd =>
-                cmd.ExecuteNonQuery(_dialect.PurgeStorage));
+            ExecuteCommand(string.Empty, cmd => cmd.ExecuteNonQuery(_dialect.PurgeStorage));
         }
 
         public void Purge(string bucketId)
         {
             Logger.Warn(Messages.PurgingBucket, bucketId);
-            ExecuteCommand(string.Empty, cmd =>
-            {
-                cmd.AddParameter(_dialect.BucketId, bucketId);
-                return cmd.ExecuteNonQuery(_dialect.PurgeBucket);
-            });
+            ExecuteCommand(string.Empty,
+                cmd =>
+                {
+                    cmd.AddParameter(_dialect.BucketId, bucketId);
+                    return cmd.ExecuteNonQuery(_dialect.PurgeBucket);
+                });
         }
 
         public void Drop()
@@ -241,9 +247,14 @@ namespace NEventStore.Persistence.SqlPersistence
             ExecuteCommand(string.Empty, cmd => cmd.ExecuteNonQuery(_dialect.Drop));
         }
 
-        public IEnumerable<Commit> GetFrom(int checkpoint)
+        public IEnumerable<Commit> GetSince(int checkpoint)
         {
-            throw new NotImplementedException();
+            return ExecuteQuery(string.Empty, query =>
+            {
+                string statement = _dialect.GetCommitsSinceCheckpoint;
+                query.AddParameter(_dialect.CheckpointNumber, checkpoint);
+                return query.ExecuteWithQuery(statement).Select(x => x.GetCommit(_serializer));
+            });
         }
 
         public bool IsDisposed
@@ -264,37 +275,38 @@ namespace NEventStore.Persistence.SqlPersistence
 
         private void PersistCommit(Commit attempt)
         {
-            Logger.Debug(Messages.AttemptingToCommit,
-                attempt.Events.Count, attempt.StreamId, attempt.CommitSequence, attempt.BucketId);
-            var streamId = attempt.StreamId.ToHash();
-            ExecuteCommand(streamId, cmd =>
-            {
-                cmd.AddParameter(_dialect.BucketId, attempt.BucketId);
-                cmd.AddParameter(_dialect.StreamId, streamId);
-                cmd.AddParameter(_dialect.StreamIdOriginal, attempt.StreamId);
-                cmd.AddParameter(_dialect.StreamRevision, attempt.StreamRevision);
-                cmd.AddParameter(_dialect.Items, attempt.Events.Count);
-                cmd.AddParameter(_dialect.CommitId, attempt.CommitId);
-                cmd.AddParameter(_dialect.CommitSequence, attempt.CommitSequence);
-                cmd.AddParameter(_dialect.CommitStamp, attempt.CommitStamp);
-                cmd.AddParameter(_dialect.Headers, _serializer.Serialize(attempt.Headers));
-                cmd.AddParameter(_dialect.Payload, _serializer.Serialize(attempt.Events));
-                return cmd.ExecuteNonQuery(_dialect.PersistCommit);
-            });
+            Logger.Debug(Messages.AttemptingToCommit, attempt.Events.Count, attempt.StreamId, attempt.CommitSequence, attempt.BucketId);
+            string streamId = attempt.StreamId.ToHash();
+            ExecuteCommand(streamId,
+                cmd =>
+                {
+                    cmd.AddParameter(_dialect.BucketId, attempt.BucketId);
+                    cmd.AddParameter(_dialect.StreamId, streamId);
+                    cmd.AddParameter(_dialect.StreamIdOriginal, attempt.StreamId);
+                    cmd.AddParameter(_dialect.StreamRevision, attempt.StreamRevision);
+                    cmd.AddParameter(_dialect.Items, attempt.Events.Count);
+                    cmd.AddParameter(_dialect.CommitId, attempt.CommitId);
+                    cmd.AddParameter(_dialect.CommitSequence, attempt.CommitSequence);
+                    cmd.AddParameter(_dialect.CommitStamp, attempt.CommitStamp);
+                    cmd.AddParameter(_dialect.Headers, _serializer.Serialize(attempt.Headers));
+                    cmd.AddParameter(_dialect.Payload, _serializer.Serialize(attempt.Events));
+                    return cmd.ExecuteNonQuery(_dialect.PersistCommit);
+                });
         }
 
         private bool DetectDuplicate(Commit attempt)
         {
             string streamId = attempt.StreamId.ToHash();
-            return ExecuteCommand(streamId, cmd =>
-            {
-                cmd.AddParameter(_dialect.BucketId, attempt.BucketId);
-                cmd.AddParameter(_dialect.StreamId, streamId);
-                cmd.AddParameter(_dialect.CommitId, attempt.CommitId);
-                cmd.AddParameter(_dialect.CommitSequence, attempt.CommitSequence);
-                object value = cmd.ExecuteScalar(_dialect.DuplicateCommit);
-                return (value is long ? (long) value : (int) value) > 0;
-            });
+            return ExecuteCommand(streamId,
+                cmd =>
+                {
+                    cmd.AddParameter(_dialect.BucketId, attempt.BucketId);
+                    cmd.AddParameter(_dialect.StreamId, streamId);
+                    cmd.AddParameter(_dialect.CommitId, attempt.CommitId);
+                    cmd.AddParameter(_dialect.CommitSequence, attempt.CommitSequence);
+                    object value = cmd.ExecuteScalar(_dialect.DuplicateCommit);
+                    return (value is long ? (long) value : (int) value) > 0;
+                });
         }
 
         protected virtual IEnumerable<T> ExecuteQuery<T>(string streamId, Func<IDbStatement, IEnumerable<T>> query)

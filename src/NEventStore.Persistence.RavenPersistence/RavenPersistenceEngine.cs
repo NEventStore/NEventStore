@@ -273,7 +273,7 @@
             Purge();
         }
 
-        public IEnumerable<Commit> GetFrom(int checkpoint)
+        public IEnumerable<Commit> GetSince(int checkpoint)
         {
             throw new NotImplementedException();
         }

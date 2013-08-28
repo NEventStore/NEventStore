@@ -15,8 +15,9 @@ namespace NEventStore.Persistence.SqlPersistence
         private const int CommitIdIndex = 4;
         private const int CommitSequenceIndex = 5;
         private const int CommitStampIndex = 6;
-        private const int HeadersIndex = 7;
-        private const int PayloadIndex = 8;
+        private const int CheckpointIndex = 7;
+        private const int HeadersIndex = 8;
+        private const int PayloadIndex = 9;
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (CommitExtensions));
 
         public static Commit GetCommit(this IDataRecord record, ISerialize serializer)
@@ -25,15 +26,17 @@ namespace NEventStore.Persistence.SqlPersistence
             var headers = serializer.Deserialize<Dictionary<string, object>>(record, HeadersIndex);
             var events = serializer.Deserialize<List<EventMessage>>(record, PayloadIndex);
 
-            return new Commit(
-                record[BucketIdIndex].ToString(),
+            return new Commit(record[BucketIdIndex].ToString(),
                 record[StreamIdOriginalIndex].ToString(),
                 record[StreamRevisionIndex].ToInt(),
                 record[CommitIdIndex].ToGuid(),
                 record[CommitSequenceIndex].ToInt(),
                 record[CommitStampIndex].ToDateTime(),
                 headers,
-                events);
+                events)
+            {
+                Checkpoint = record[CheckpointIndex].ToInt()
+            };
         }
 
         public static string StreamId(this IDataRecord record)
