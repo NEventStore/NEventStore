@@ -117,61 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="InitializeStorage" xml:space="preserve">
-    <value>CREATE TABLE IF NOT EXISTS Commits
-(
-       BucketId char(40) NOT NULL,
-       StreamId char(40) NOT NULL,
-       StreamIdOriginal text NOT NULL,
-       StreamRevision int NOT NULL CHECK (StreamRevision &gt; 0),
-       Items int NOT NULL CHECK (Items &gt; 0),
-       CommitId guid NOT NULL CHECK (CommitId != 0),
-       CommitSequence int NOT NULL CHECK (CommitSequence &gt; 0),
-       CommitStamp datetime NOT NULL,
-       CheckpointNumber int NOT NULL DEFAULT 0,
-       Dispatched bit NOT NULL DEFAULT 0,
-       Headers blob NULL,
-       Payload blob NOT NULL,
-       CONSTRAINT PK_Commits PRIMARY KEY (BucketId, StreamId, CommitSequence)
-);
-CREATE UNIQUE INDEX IF NOT EXISTS IX_Commits_CommitId ON Commits (BucketId, StreamId, CommitId);
-CREATE UNIQUE INDEX IF NOT EXISTS IX_Commits_Revisions ON Commits (BucketId, StreamId, StreamRevision, Items);
-CREATE INDEX IF NOT EXISTS IX_Commits_Dispatched ON Commits (Dispatched);
-CREATE INDEX IF NOT EXISTS IX_Commits_Stamp ON Commits (CommitStamp);
-
-CREATE TABLE IF NOT EXISTS Snapshots
-(
-       BucketId char(40) NOT NULL,
-       StreamId char(40) NOT NULL,
-       StreamRevision int NOT NULL CHECK (StreamRevision &gt; 0),
-       Payload blob NOT NULL,
-       CONSTRAINT PK_Snapshots PRIMARY KEY (BucketId, StreamId, StreamRevision)
-);</value>
+  <data name="MustBeGreaterThanOrEqualToZero" xml:space="preserve">
+    <value>{0} must be greater than or equal to zero.</value>
   </data>
-  <data name="PersistCommit" xml:space="preserve">
-    <value>INSERT INTO Commits (
-    BucketId,
-    StreamId,
-    StreamIdOriginal,
-    CommitId,
-    CommitSequence,
-    StreamRevision,
-    Items,
-    CommitStamp,
-    CheckpointNumber,
-    Headers,
-    Payload)
-VALUES (
-    @BucketId,
-    @StreamId,
-    @StreamIdOriginal,
-    @CommitId,
-    @CommitSequence,
-    @StreamRevision,
-    @Items,
-    @CommitStamp,
-    (SELECT IFNULL(MAX(CheckpointNumber), 0) + 1 FROM Commits),
-    @Headers,
-    @Payload);</value>
+  <data name="MustBeGreaterThanZero" xml:space="preserve">
+    <value>{0} must be greater than zero.</value>
   </data>
 </root>

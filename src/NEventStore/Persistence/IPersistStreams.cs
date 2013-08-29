@@ -34,6 +34,13 @@ namespace NEventStore.Persistence
         IEnumerable<Commit> GetFrom(string bucketId, DateTime start);
 
         /// <summary>
+        /// Gets all commits after from the specified checkpoint.
+        /// </summary>
+        /// <param name="checkpoint">The checkpoint.</param>
+        /// <returns></returns>
+        IEnumerable<Commit> GetFrom(int checkpoint);
+
+        /// <summary>
         ///     Gets all commits on or after from the specified starting time and before the specified end time.
         /// </summary>
         /// <param name="bucketId">The value which uniquely identifies bucket the stream belongs to.</param>

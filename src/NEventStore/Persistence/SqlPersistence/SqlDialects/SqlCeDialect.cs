@@ -32,6 +32,11 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects
             get { return RemovePaging(base.GetCommitsFromToInstant); }
         }
 
+        public override string GetCommitsFromCheckpoint
+        {
+            get { return RemovePaging(base.GetCommitsFromCheckpoint); }
+        }
+
         public override string GetStreamsRequiringSnapshots
         {
             get { return RemovePaging(base.GetStreamsRequiringSnapshots); }

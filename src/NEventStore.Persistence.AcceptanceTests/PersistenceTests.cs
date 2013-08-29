@@ -260,7 +260,6 @@ namespace NEventStore.Persistence.AcceptanceTests
     }
 
     public class when_a_commit_has_been_marked_as_dispatched : PersistenceEngineConcern
-
     {
         private Commit _attempt;
 
@@ -344,7 +343,6 @@ namespace NEventStore.Persistence.AcceptanceTests
     }
 
     public class when_retrieving_a_snapshot : PersistenceEngineConcern
-
     {
         private Snapshot _correct;
         private Snapshot _snapshot;
@@ -583,7 +581,6 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Context()
         {
-            Persistence.Purge();
             string streamId = Guid.NewGuid().ToString();
             var dateTime = new DateTime(2013, 1, 1);
             SystemTime.Resolver = () => dateTime;
@@ -742,6 +739,43 @@ namespace NEventStore.Persistence.AcceptanceTests
             _returnedCommits.Any(c => c.CommitId.Equals(_commitToBucketB.CommitId)).ShouldBeFalse();
         }
     }
+
+    public class when_getting_all_commits_since_checkpoint_and_there_are_streams_in_multiple_buckets : PersistenceEngineConcern
+    {
+        private Commit[] _commits;
+
+        protected override void Context()
+        {
+            const string bucketAId = "a";
+            const string bucketBId = "b";
+            Persistence.Commit(Guid.NewGuid().ToString().BuildAttempt(bucketId: bucketAId));
+            Persistence.Commit(Guid.NewGuid().ToString().BuildAttempt(bucketId: bucketBId));
+            Persistence.Commit(Guid.NewGuid().ToString().BuildAttempt(bucketId: bucketAId));
+        }
+
+        protected override void Because()
+        {
+            _commits = Persistence.GetFrom(0).ToArray();
+        }
+
+        [Fact]
+        public void should_not_be_empty()
+        {
+            _commits.ShouldNotBeEmpty();
+        }
+
+        [Fact]
+        public void should_be_in_order_by_checkpoint()
+        {
+            int checkpoint = 0;
+            foreach (var commit in _commits)
+            {
+                commit.Checkpoint.ShouldBeGreaterThan(checkpoint);
+                checkpoint = commit.Checkpoint;
+            }
+        }
+    }
+
 
     public class when_purging_all_commits_and_there_are_streams_in_multiple_buckets : PersistenceEngineConcern
     {

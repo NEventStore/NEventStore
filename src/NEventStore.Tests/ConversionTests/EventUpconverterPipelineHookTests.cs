@@ -30,6 +30,7 @@ namespace NEventStore.ConversionTests
             converted = EventUpconverter.Select(commit);
         }
 
+        [Fact]
         public void should_not_be_converted()
         {
             converted.ShouldBeSameAs(commit);

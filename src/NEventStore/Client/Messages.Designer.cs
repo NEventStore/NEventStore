@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
+namespace NEventStore.Client {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class MySqlStatements {
+    internal class Messages {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal MySqlStatements() {
+        internal Messages() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("NEventStore.Persistence.SqlPersistence.SqlDialects.MySqlStatements", typeof(MySqlStatements).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("NEventStore.Client.Messages", typeof(Messages).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,22 +61,20 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CREATE TABLE IF NOT EXISTS Commits
-        ///(
-        ///    BucketId varchar(40) charset utf8 NOT NULL,
-        ///    StreamId varchar(40) charset utf8 NOT NULL,
-        ///    StreamIdOriginal varchar(1000) charset utf8 NOT NULL,
-        ///    StreamRevision int NOT NULL CHECK (StreamRevision &gt; 0),
-        ///    Items tinyint NOT NULL CHECK (Items &gt; 0),
-        ///    CommitId binary(16) NOT NULL CHECK (CommitId != 0),
-        ///    CommitSequence int NOT NULL CHECK (CommitSequence &gt; 0),
-        ///    CommitStamp bigint NOT NULL,
-        ///    CheckpointNumber bigint AUTO_INCREMENT,
-        ///    Dispatc [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to {0} must be greater than or equal to zero..
         /// </summary>
-        internal static string InitializeStorage {
+        internal static string MustBeGreaterThanOrEqualToZero {
             get {
-                return ResourceManager.GetString("InitializeStorage", resourceCulture);
+                return ResourceManager.GetString("MustBeGreaterThanOrEqualToZero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} must be greater than zero..
+        /// </summary>
+        internal static string MustBeGreaterThanZero {
+            get {
+                return ResourceManager.GetString("MustBeGreaterThanZero", resourceCulture);
             }
         }
     }

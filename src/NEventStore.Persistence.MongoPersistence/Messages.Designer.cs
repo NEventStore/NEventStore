@@ -133,6 +133,15 @@ namespace NEventStore.Persistence.MongoPersistence {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Getting all commits since since checkpoint &apos;{0}&apos;..
+        /// </summary>
+        internal static string GettingAllCommitsSinceCheckpoint {
+            get {
+                return ResourceManager.GetString("GettingAllCommitsSinceCheckpoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Getting snapshot for stream &apos;{0}&apos; on or before revision {1}..
         /// </summary>
         internal static string GettingRevision {

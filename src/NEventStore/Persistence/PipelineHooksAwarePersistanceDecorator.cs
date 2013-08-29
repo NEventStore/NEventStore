@@ -95,6 +95,11 @@ namespace NEventStore.Persistence
             _original.Drop();
         }
 
+        public IEnumerable<Commit> GetFrom(int checkpoint)
+        {
+            return _original.GetFrom(checkpoint);
+        }
+
         public bool IsDisposed
         {
             get { return _original.IsDisposed; }

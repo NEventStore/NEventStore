@@ -4,6 +4,7 @@ namespace NEventStore.Persistence.InMemoryPersistence
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using NEventStore.Logging;
 
     public class InMemoryPersistenceEngine : IPersistStreams
@@ -11,6 +12,7 @@ namespace NEventStore.Persistence.InMemoryPersistence
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (InMemoryPersistenceEngine));
         private readonly ConcurrentDictionary<string, Bucket> _buckets = new ConcurrentDictionary<string, Bucket>();
         private bool _disposed;
+        private int _checkpoint;
 
         private Bucket this[string bucketId]
         {
@@ -42,6 +44,17 @@ namespace NEventStore.Persistence.InMemoryPersistence
             return this[bucketId].GetFrom(start);
         }
 
+        public IEnumerable<Commit> GetFrom(int checkpoint)
+        {
+            Logger.Debug(Resources.GettingAllCommitsSinceCheckpoint, checkpoint);
+            return _buckets
+                .Values
+                .SelectMany(b => b.GetCommits())
+                .Where(c => c.Checkpoint > checkpoint)
+                .OrderBy(c => c.Checkpoint)
+                .ToArray();
+        }
+
         public virtual IEnumerable<Commit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             ThrowWhenDisposed();
@@ -53,6 +66,7 @@ namespace NEventStore.Persistence.InMemoryPersistence
         {
             ThrowWhenDisposed();
             Logger.Debug(Resources.AttemptingToCommit, attempt.CommitId, attempt.StreamId, attempt.CommitSequence);
+            attempt.Checkpoint = Interlocked.Increment(ref _checkpoint);
             this[attempt.BucketId].Commit(attempt);
         }
 
@@ -137,6 +151,14 @@ namespace NEventStore.Persistence.InMemoryPersistence
         {
             private readonly IList<Commit> _commits = new List<Commit>();
 
+            public Commit[] GetCommits()
+            {
+                lock (_commits)
+                {
+                    return _commits.ToArray();
+                }
+            }
+
             private readonly ICollection<StreamHead> _heads = new LinkedList<StreamHead>();
             private readonly ICollection<Snapshot> _snapshots = new LinkedList<Snapshot>();
             private readonly IDictionary<Guid, DateTime> _stamps = new Dictionary<Guid, DateTime>();
@@ -207,7 +229,7 @@ namespace NEventStore.Persistence.InMemoryPersistence
                 }
             }
 
-            public virtual IEnumerable<Commit> GetUndispatchedCommits()
+            public IEnumerable<Commit> GetUndispatchedCommits()
             {
                 lock (_commits)
                 {

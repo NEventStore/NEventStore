@@ -142,6 +142,7 @@ WHERE	EXISTS
     <value>BEGIN
   EXECUTE IMMEDIATE ('DROP TABLE Snapshots PURGE');
   EXECUTE IMMEDIATE ('DROP TABLE Commits PURGE');
+  EXECUTE IMMEDIATE ('DROP SEQUENCE Commit_CheckpointNumber');
 END;</value>
   </data>
   <data name="DuplicateCommit" xml:space="preserve">
@@ -156,20 +157,28 @@ WHERE	(
   </data>
   <data name="GetCommitsFromInstant" xml:space="preserve">
     <value>/*GetCommitsFromInstant*/
-SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
+SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
 FROM Commits 
 WHERE BucketId = :BucketId AND CommitStamp &gt;= :CommitStamp
 ORDER BY CommitStamp, StreamId, StreamRevision</value>
   </data>
   <data name="GetCommitsFromStartingRevision" xml:space="preserve">
     <value>/*GetCommitsFromStartingRevision*/
-SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
+SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
 FROM Commits
 WHERE BucketId = :BucketId AND StreamId = :StreamId
    AND StreamRevision &gt;= :StreamRevision
    AND (StreamRevision - Items) &lt;= :MaxStreamRevision
    AND CommitSequence &gt; :CommitSequence
 ORDER BY CommitSequence</value>
+  </data>
+  <data name="GetCommitsSinceCheckpoint" xml:space="preserve">
+    <value>/*GetCommitsFromInstant*/
+SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
+FROM Commits 
+WHERE  CheckpointNumber &gt;= :CheckpointNumber
+ORDER BY  CheckpointNumber
+WHERE ROWNUM &lt;= :Limit;</value>
   </data>
   <data name="GetSnapshot" xml:space="preserve">
     <value>/*GetSnapshot*/
@@ -210,6 +219,7 @@ IF table_count = 0 THEN DBMS_OUTPUT.PUT_LINE ('Creating the Commits table');
       CommitId raw(16) CHECK (CommitId != HEXTORAW(0)) NOT NULL,
       CommitSequence NUMBER(8) CHECK (CommitSequence &gt; 0) NOT NULL,
       CommitStamp timestamp NOT NULL,
+      CheckpointNumber NUMBER(19) NOT NULL,
       Dispatched NUMBER(1) DEFAULT(0) NOT NULL,
       Headers BLOB CHECK (Headers IS NULL OR LENGTH(Headers) &gt; 0) NULL,
       Payload BLOB CHECK (LENGTH(Payload) &gt; 0) NOT NULL,
@@ -218,6 +228,16 @@ IF table_count = 0 THEN DBMS_OUTPUT.PUT_LINE ('Creating the Commits table');
   EXECUTE IMMEDIATE ('CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (BucketId, StreamId, StreamRevision, Items)');
   EXECUTE IMMEDIATE ('CREATE INDEX IX_Commits_Dispatched ON Commits (Dispatched)');
   EXECUTE IMMEDIATE ('CREATE INDEX IX_Commits_Stamp ON Commits (CommitStamp)');
+  EXECUTE IMMEDIATE ('CREATE SEQUENCE Commit_CheckpointNumber');
+  EXECUTE IMMEDIATE ('
+    CREATE OR REPLACE TRIGGER Commit_CheckpointNumber_Trig 
+    BEFORE INSERT ON Commits 
+    FOR EACH ROW
+    BEGIN
+      SELECT Commit_CheckpointNumber.NEXTVAL
+      INTO   :new.CheckpointNumber
+      FROM   dual;
+    END;');
 ELSE
   DBMS_OUTPUT.PUT_LINE ('The Commits table already exist in the database.');
 END IF;
