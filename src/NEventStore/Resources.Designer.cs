@@ -232,7 +232,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Getting all commits since since checkpoint &apos;{0}&apos;..
+        ///   Looks up a localized string similar to Getting all commits since since checkpoint &apos;{0}&apos; with batchsize &apos;{1}&apos;..
         /// </summary>
         internal static string GettingAllCommitsSinceCheckpoint {
             get {

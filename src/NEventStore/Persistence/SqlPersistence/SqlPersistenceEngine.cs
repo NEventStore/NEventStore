@@ -247,7 +247,7 @@ namespace NEventStore.Persistence.SqlPersistence
             ExecuteCommand(string.Empty, cmd => cmd.ExecuteNonQuery(_dialect.Drop));
         }
 
-        public IEnumerable<Commit> GetSince(int checkpoint)
+        public IEnumerable<Commit> GetSince(int checkpoint, int batchSize)
         {
             Logger.Debug(Messages.GettingAllCommitsSinceCheckpoint, checkpoint);
             return ExecuteQuery(string.Empty, query =>

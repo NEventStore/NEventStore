@@ -33,7 +33,13 @@ namespace NEventStore.Persistence
         /// <exception cref="StorageUnavailableException" />
         IEnumerable<Commit> GetFrom(string bucketId, DateTime start);
 
-        IEnumerable<Commit> GetSince(int checkpoint);
+        /// <summary>
+        /// Gets all commits after from the specified checkpoint.
+        /// </summary>
+        /// <param name="checkpoint">The checkpoint.</param>
+        /// <param name="batchSize">Size of the batch to process on each poll.</param>
+        /// <returns></returns>
+        IEnumerable<Commit> GetSince(int checkpoint, int batchSize);
 
         /// <summary>
         ///     Gets all commits on or after from the specified starting time and before the specified end time.

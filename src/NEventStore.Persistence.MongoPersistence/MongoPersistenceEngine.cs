@@ -283,12 +283,13 @@
             Purge();
         }
 
-        public IEnumerable<Commit> GetSince(int checkpoint)
+        public IEnumerable<Commit> GetSince(int checkpoint, int batchSize)
         {
             Logger.Debug(Messages.GettingAllCommitsSinceCheckpoint, checkpoint);
             return TryMongo(() => PersistedCommits
                 .Find(Query.GTE(MongoFields.CheckpointNumber, checkpoint)))
                 .SetSortOrder(MongoFields.CheckpointNumber)
+                .Take(batchSize)
                 .Select(x => x.ToCommit(_serializer));
         }
 

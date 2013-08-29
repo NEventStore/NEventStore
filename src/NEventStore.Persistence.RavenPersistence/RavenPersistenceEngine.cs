@@ -273,7 +273,7 @@
             Purge();
         }
 
-        public IEnumerable<Commit> GetSince(int checkpoint)
+        public IEnumerable<Commit> GetSince(int checkpoint, int batchSize)
         {
             throw new NotImplementedException();
         }

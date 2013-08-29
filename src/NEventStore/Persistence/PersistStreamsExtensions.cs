@@ -39,5 +39,19 @@ namespace NEventStore.Persistence
             }
             return persistStreams.GetFromTo(Bucket.Default, start, end);
         }
+
+        /// <summary>
+        /// Gets all commits after from the specified checkpoint with default batchSize of 100.
+        /// </summary>
+        /// <param name="checkpoint">The checkpoint.</param>
+        /// <returns></returns>
+        public static IEnumerable<Commit> GetSince(this IPersistStreams persistStreams, int checkpoint)
+        {
+            if (persistStreams == null)
+            {
+                throw new ArgumentException("persistStreams is null");
+            }
+            return persistStreams.GetSince(checkpoint, 100);
+        }
     }
 }

@@ -55,6 +55,11 @@
     <Compile Include="AsynchronousDispatchSchedulerWireup.cs" />
     <Compile Include="AsynchronousDispatchSchedulerWireupExtensions.cs" />
     <Compile Include="Bucket.cs" />
+    <Compile Include="Client\Messages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Messages.resx</DependentUpon>
+    </Compile>
     <Compile Include="Client\PollingClient.cs" />
     <Compile Include="Client\ClientBase.cs" />
     <Compile Include="Client\IObserveCommits.cs" />
@@ -243,6 +248,10 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Client\Messages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Messages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
