@@ -143,7 +143,7 @@
         {
             _observeCommits1.Start();
             _observeCommits2.Start();
-            Task.Run(() =>
+            Task.Factory.StartNew(() =>
             {
                 for (int i = 0; i < 15; i++)
                 {
@@ -189,7 +189,7 @@
         protected override void Because()
         {
             _observeCommits1.Start();
-            Task.Run(() =>
+            Task.Factory.StartNew(() =>
             {
                 for (int i = 0; i < 15; i++)
                 {
