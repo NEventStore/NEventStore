@@ -71,30 +71,30 @@ task RunSerializationTests {
     -XUnitPath $xunit_path
 }
 
-task Package -depends Build, PackageEventStore, PackageMongoPersistence, PackageRavenPersistence, PackageJsonSerialization {
+task Package -depends Build, PackageNEventStore, PackageMongoPersistence, PackageRavenPersistence {
 	move $output_directory $publish_directory
 }
 
-task PackageEventStore -depends Clean, Compile {
+task PackageNEventStore -depends Clean, Compile {
 	mkdir "$publish_directory\bin" | out-null
-	copy "$src_directory\NEventStore\bin\$target_config\NEventStore.???" "$publish_directory\bin"
+	Merge-Assemblies -outputFile "$publish_directory/bin/NEventStore.dll" -files @(
+		"$src_directory/NEventStore/bin/$target_config/NEventStore.dll", 
+		"$src_directory/NEventStore/bin/$target_config/System.Reactive.Interfaces.dll",
+		"$src_directory/NEventStore/bin/$target_config/System.Reactive.Core.dll",
+		"$src_directory/NEventStore/bin/$target_config/System.Reactive.Linq.dll",
+		"$src_directory/NEventStore/bin/$target_config/Newtonsoft.Json.dll"
+	)
+	#copy "$src_directory\NEventStore\bin\$target_config\NEventStore.???" "$publish_directory\bin"
 }
 
-task PackageMongoPersistence -depends Clean, Compile,PackageEventStore {
+task PackageMongoPersistence -depends Clean, Compile {
 	mkdir $publish_directory\plugins\persistence\mongo | out-null
 	copy "$src_directory\NEventStore.Persistence.MongoPersistence\bin\$target_config\NEventStore.Persistence.MongoPersistence.???" "$publish_directory\plugins\persistence\mongo"
 }
 
-task PackageRavenPersistence -depends Clean, Compile, PackageEventStore {
+task PackageRavenPersistence -depends Clean, Compile {
 	mkdir $publish_directory\plugins\persistence\raven | out-null
 	copy "$src_directory\NEventStore.Persistence.RavenPersistence\bin\$target_config\NEventStore.Persistence.RavenPersistence.???" "$publish_directory\plugins\persistence\raven"
-}
-
-task PackageJsonSerialization -depends Clean, Compile, PackageEventStore {
-	Merge-Assemblies -outputFile "$publish_directory/bin/NEventStore.dll" -files @(
-		"$src_directory/NEventStore/bin/$target_config/NEventStore.dll", 
-		"$src_directory/NEventStore/bin/$target_config/Newtonsoft.Json*.dll"
-	)
 }
 
 task Clean {
