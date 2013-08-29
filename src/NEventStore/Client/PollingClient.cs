@@ -6,17 +6,13 @@
     using System.Reactive.Subjects;
     using System.Threading;
     using System.Threading.Tasks;
-    using NEventStore.Logging;
     using NEventStore.Persistence;
 
     public sealed class PollingClient : ClientBase
     {
-        private static ILog Logger = LogFactory.BuildLogger(typeof (PollingClient));
         private readonly int _interval;
-        private readonly int _batchSize;
 
-        public PollingClient(IPersistStreams persistStreams, int interval = 5000)
-            : base(persistStreams)
+        public PollingClient(IPersistStreams persistStreams, int interval = 5000) : base(persistStreams)
         {
             if (persistStreams == null)
             {
@@ -80,23 +76,21 @@
                     Dispose();
                     return;
                 }
-                TaskHelpers.Delay(_interval, _stopRequested.Token)
-                    .WhenCompleted(
-                    _ =>
-                        {
-                            try
-                            {
-                                GetNextCommits(_stopRequested.Token);
-                            }
-                            catch (Exception ex)
-                            {
-                                _subject.OnError(ex);
-                                _runningTaskCompletionSource.TrySetException(ex);
-                                return;
-                            }
-                            Poll();
-                        },
-                     _ => Dispose());
+                TaskHelpers.Delay(_interval, _stopRequested.Token).WhenCompleted(_ =>
+                {
+                    try
+                    {
+                        GetNextCommits(_stopRequested.Token);
+                    }
+                    catch (Exception ex)
+                    {
+                        _subject.OnError(ex);
+                        _runningTaskCompletionSource.TrySetException(ex);
+                        return;
+                    }
+                    Poll();
+                },
+                    _ => Dispose());
             }
 
             private void GetNextCommits(CancellationToken cancellationToken)
@@ -119,6 +113,5 @@
             }
         }
 
-        
     }
 }
