@@ -139,6 +139,9 @@ namespace NEventStore
         [DataMember]
         public virtual List<EventMessage> Events { get; private set; }
 
+        [DataMember]
+        public int Checkpoint { get; set; }
+
         /// <summary>
         ///     Determines whether the specified object is equal to the current object.
         /// </summary>

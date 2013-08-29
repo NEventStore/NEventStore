@@ -19,8 +19,10 @@
         private readonly MongoCollectionSettings _snapshotSettings;
         private readonly MongoDatabase _store;
         private readonly MongoCollectionSettings _streamSettings;
+        private readonly MongoCollectionSettings _countersSettings;
         private bool _disposed;
         private int _initialized;
+        private readonly Func<int> _getNextCheckpointNumber;
 
         public MongoPersistenceEngine(MongoDatabase store, IDocumentSerializer serializer)
         {
@@ -42,6 +44,16 @@
             _snapshotSettings = new MongoCollectionSettings {AssignIdOnInsert = false, WriteConcern = WriteConcern.Unacknowledged};
 
             _streamSettings = new MongoCollectionSettings {AssignIdOnInsert = false, WriteConcern = WriteConcern.Unacknowledged};
+
+            _countersSettings = new MongoCollectionSettings {AssignIdOnInsert = false, WriteConcern = WriteConcern.Acknowledged};
+
+            _getNextCheckpointNumber = () => TryMongo(() =>
+            {
+                IMongoQuery query = Query.And(Query.EQ("_id", "CheckpointNumber"));
+                IMongoUpdate update = Update.Inc("seq", 1);
+                FindAndModifyResult result = Counters.FindAndModify(query, null, update, true);
+                return result.ModifiedDocument["seq"].ToInt32();
+            });
         }
 
         protected virtual MongoCollection<BsonDocument> PersistedCommits
@@ -57,6 +69,11 @@
         protected virtual MongoCollection<BsonDocument> PersistedSnapshots
         {
             get { return _store.GetCollection("Snapshots", _snapshotSettings); }
+        }
+
+        protected MongoCollection<BsonDocument> Counters
+        {
+            get { return _store.GetCollection("Counters", _countersSettings); }
         }
 
         public void Dispose()
@@ -82,10 +99,15 @@
                 PersistedCommits.EnsureIndex(IndexKeys.Ascending("_id.BucketId", "_id.StreamId", "Events.StreamRevision"),
                     IndexOptions.SetName("GetFrom_Index").SetUnique(true));
 
-                PersistedCommits.EnsureIndex(IndexKeys.Ascending(MongoFields.CommitStamp), IndexOptions.SetName("CommitStamp_Index").SetUnique(false));
+                PersistedCommits.EnsureIndex(IndexKeys.Ascending(MongoFields.CommitStamp),
+                    IndexOptions.SetName("CommitStamp_Index").SetUnique(false));
 
                 PersistedStreamHeads.EnsureIndex(IndexKeys.Ascending("Unsnapshotted"),
                     IndexOptions.SetName("Unsnapshotted_Index").SetUnique(false));
+
+                IMongoQuery query = Query.EQ("_id", MongoFields.CheckpointNumber);
+                IMongoUpdate update = Update.Replace(new BsonDocument {{"_id", "CheckpointNumber"}, {"seq", 0}});
+                Counters.Update(query, update, UpdateFlags.Upsert, WriteConcern.Acknowledged);
             });
         }
 
@@ -134,7 +156,7 @@
 
             TryMongo(() =>
             {
-                BsonDocument commit = attempt.ToMongoCommit(_serializer);
+                BsonDocument commit = attempt.ToMongoCommit(_getNextCheckpointNumber, _serializer);
                 try
                 {
                     // for concurrency / duplicate commit detection safe mode is required
@@ -248,6 +270,7 @@
             PersistedCommits.Drop();
             PersistedStreamHeads.Drop();
             PersistedSnapshots.Drop();
+            Counters.Drop();
         }
 
         public void Purge(string bucketId)
@@ -258,6 +281,15 @@
         public void Drop()
         {
             Purge();
+        }
+
+        public IEnumerable<Commit> GetFrom(int checkpoint)
+        {
+            Logger.Debug(Messages.GettingAllCommitsSinceCheckpoint, checkpoint);
+            return TryMongo(() => PersistedCommits
+                .Find(Query.GTE(MongoFields.CheckpointNumber, checkpoint)))
+                .SetSortOrder(MongoFields.CheckpointNumber)
+                .Select(x => x.ToCommit(_serializer));
         }
 
         public bool IsDisposed

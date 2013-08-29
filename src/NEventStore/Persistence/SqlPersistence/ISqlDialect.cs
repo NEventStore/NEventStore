@@ -43,6 +43,8 @@ namespace NEventStore.Persistence.SqlPersistence
         string Limit { get; }
         string Skip { get; }
         bool CanPage { get; }
+        string CheckpointNumber { get; }
+        string GetCommitsFromCheckpoint { get; }
 
         object CoalesceParameterValue(object value);
 

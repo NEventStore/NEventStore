@@ -13,3 +13,4 @@ _dotCover.*
 *.cache
 ~$*
 [Pp]ublish
+*.ide

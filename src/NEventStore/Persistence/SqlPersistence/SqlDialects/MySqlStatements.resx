@@ -128,11 +128,13 @@
     CommitId binary(16) NOT NULL CHECK (CommitId != 0),
     CommitSequence int NOT NULL CHECK (CommitSequence &gt; 0),
     CommitStamp bigint NOT NULL,
+    CheckpointNumber bigint AUTO_INCREMENT,
     Dispatched bit NOT NULL DEFAULT 0,
     Headers blob NULL,
     Payload mediumblob NOT NULL,
-    CONSTRAINT PK_Commits PRIMARY KEY (BucketId, StreamId, CommitSequence)
+    PRIMARY KEY (CheckpointNumber)
 );
+CREATE UNIQUE INDEX IX_Commits ON Commits (BucketId, StreamId, CommitSequence);
 CREATE UNIQUE INDEX IX_Commits_CommitId ON Commits (BucketId, StreamId, CommitId);
 CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (BucketId, StreamId, StreamRevision, Items);
 CREATE INDEX IX_Commits_Dispatched ON Commits (Dispatched);

@@ -273,6 +273,11 @@
             Purge();
         }
 
+        public IEnumerable<Commit> GetFrom(int checkpoint)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool IsDisposed
         {
             get { return _store.WasDisposed; }
@@ -373,7 +378,7 @@
         }
 
         private T[] PerformQuery<T, TIndex>(
-            IDocumentSession session, Expression<Func<T, bool>>[] conditions, int skip, int take, out RavenQueryStatistics stats)
+            IDocumentSession session, IEnumerable<Expression<Func<T, bool>>> conditions, int skip, int take, out RavenQueryStatistics stats)
             where TIndex : AbstractIndexCreationTask, new()
         {
             try

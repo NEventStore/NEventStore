@@ -12,5 +12,10 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects
         {
             get { return base.GetCommitsFromStartingRevision.Replace("\n ORDER BY ", "\n  AND @Skip = @Skip\nORDER BY "); }
         }
+
+        public override string PersistCommit
+        {
+            get { return SqliteStatements.PersistCommit; }
+        }
     }
 }
