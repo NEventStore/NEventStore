@@ -4,10 +4,45 @@
     using System.Reactive.Linq;
     using System.Reactive.Threading.Tasks;
     using System.Threading.Tasks;
+    using Moq;
+    using NEventStore.Persistence;
     using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
     using Xunit;
     using Xunit.Should;
+
+    public class CreatingPollingClientTests
+    {
+        [Fact]
+        public void When_persist_streams_is_null_then_should_throw()
+        {
+            Catch.Exception(() => new PollingClient(null)).ShouldBeInstanceOf<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void When_interval_less_than_zero_then_should_throw()
+        {
+            Catch.Exception(() => new PollingClient(new Mock<IPersistStreams>().Object,-1)).ShouldBeInstanceOf<ArgumentException>();
+        }
+
+        [Fact]
+        public void When_interval_is_zero_then_should_throw()
+        {
+            Catch.Exception(() => new PollingClient(new Mock<IPersistStreams>().Object, 0)).ShouldBeInstanceOf<ArgumentException>();
+        }
+
+        [Fact]
+        public void When_batch_size_less_than_zero_then_should_throw()
+        {
+            Catch.Exception(() => new PollingClient(new Mock<IPersistStreams>().Object, batchSize: -1)).ShouldBeInstanceOf<ArgumentException>();
+        }
+
+        [Fact]
+        public void When_batch_size_is_zero_then_should_throw()
+        {
+            Catch.Exception(() => new PollingClient(new Mock<IPersistStreams>().Object, batchSize: 0)).ShouldBeInstanceOf<ArgumentException>();
+        }
+    }
 
     public abstract class using_polling_client : SpecificationBase
     {
