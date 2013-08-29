@@ -30,18 +30,6 @@
         {
             Catch.Exception(() => new PollingClient(new Mock<IPersistStreams>().Object, 0)).ShouldBeInstanceOf<ArgumentException>();
         }
-
-        [Fact]
-        public void When_batch_size_less_than_zero_then_should_throw()
-        {
-            Catch.Exception(() => new PollingClient(new Mock<IPersistStreams>().Object, batchSize: -1)).ShouldBeInstanceOf<ArgumentException>();
-        }
-
-        [Fact]
-        public void When_batch_size_is_zero_then_should_throw()
-        {
-            Catch.Exception(() => new PollingClient(new Mock<IPersistStreams>().Object, batchSize: 0)).ShouldBeInstanceOf<ArgumentException>();
-        }
     }
 
     public abstract class using_polling_client : SpecificationBase

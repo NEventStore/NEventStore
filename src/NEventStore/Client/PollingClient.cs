@@ -15,7 +15,7 @@
         private readonly int _interval;
         private readonly int _batchSize;
 
-        public PollingClient(IPersistStreams persistStreams, int interval = 5000, int batchSize = 100)
+        public PollingClient(IPersistStreams persistStreams, int interval = 5000)
             : base(persistStreams)
         {
             if (persistStreams == null)
@@ -26,17 +26,12 @@
             {
                 throw new ArgumentException(Messages.MustBeGreaterThanZero.FormatWith("interval"));
             }
-            if (batchSize <= 0)
-            {
-                throw new ArgumentException(Messages.MustBeGreaterThanZero.FormatWith("batchSize"));
-            }
             _interval = interval;
-            _batchSize = batchSize;
         }
 
         public override IObserveCommits ObserveFrom(int checkpoint)
         {
-            return new PollingObserveCommits(PersistStreams, checkpoint, _interval, _batchSize);
+            return new PollingObserveCommits(PersistStreams, checkpoint, _interval);
         }
 
         private class PollingObserveCommits : IObserveCommits
@@ -44,17 +39,15 @@
             private readonly IPersistStreams _persistStreams;
             private int _checkpoint;
             private readonly int _interval;
-            private readonly int _batchSize;
             private readonly Subject<Commit> _subject = new Subject<Commit>();
             private readonly CancellationTokenSource _stopRequested = new CancellationTokenSource();
             private TaskCompletionSource<Unit> _runningTaskCompletionSource;
 
-            public PollingObserveCommits(IPersistStreams persistStreams, int checkpoint, int interval, int batchSize)
+            public PollingObserveCommits(IPersistStreams persistStreams, int checkpoint, int interval)
             {
                 _persistStreams = persistStreams;
                 _checkpoint = checkpoint;
                 _interval = interval;
-                _batchSize = batchSize;
             }
 
             public IDisposable Subscribe(IObserver<Commit> observer)
