@@ -58,6 +58,7 @@
     <Compile Include="Client\PollingClient.cs" />
     <Compile Include="Client\ClientBase.cs" />
     <Compile Include="Client\IObserveCommits.cs" />
+    <Compile Include="Client\TaskHelpers.cs" />
     <Compile Include="CommitEventsExtensions.cs" />
     <Compile Include="CommitExtensions.cs" />
     <Compile Include="ConcurrencyException.cs">
