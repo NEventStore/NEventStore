@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Reactive;
     using System.Reactive.Subjects;
     using System.Threading;
     using System.Threading.Tasks;
@@ -28,8 +29,8 @@
             private int _checkpoint;
             private readonly int _interval;
             private readonly Subject<Commit> _subject = new Subject<Commit>();
-            private bool _started;
             private readonly CancellationTokenSource _stopRequested = new CancellationTokenSource();
+            private TaskCompletionSource<Unit> _runningTaskCompletionSource;
 
             public PollingObserveCommits(IPersistStreams persistStreams, int checkpoint, int interval)
             {
@@ -45,39 +46,49 @@
 
             public void Dispose()
             {
-                 _stopRequested.Cancel();
+                _stopRequested.Cancel();
+                _subject.Dispose();
+                _runningTaskCompletionSource.TrySetResult(new Unit());
             }
 
-            public void Start()
+            public Task Start()
             {
-                if (_started)
+                if (_runningTaskCompletionSource != null)
                 {
-                    return;
+                    return _runningTaskCompletionSource.Task;
                 }
+                _runningTaskCompletionSource = new TaskCompletionSource<Unit>();
                 Poll();
-                _started = true;
+                return _runningTaskCompletionSource.Task;
             }
 
-            private async void Poll()
+            private void Poll()
             {
-                try
+                if (_stopRequested.IsCancellationRequested)
                 {
-                    GetNextCommits();
-                    while (!_stopRequested.IsCancellationRequested)
-                    {
-                        await Task.Delay(_interval, _stopRequested.Token);
-                        GetNextCommits();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _subject.OnError(ex);
+                    Dispose();
                     return;
                 }
-                _subject.OnCompleted();
+                Delay(_interval, _stopRequested.Token)
+                    .WhenCompleted(
+                    _ =>
+                        {
+                            try
+                            {
+                                GetNextCommits(_stopRequested.Token);
+                            }
+                            catch (Exception ex)
+                            {
+                                _subject.OnError(ex);
+                                _runningTaskCompletionSource.TrySetException(ex);
+                                return;
+                            }
+                            Poll();
+                        },
+                     _ => Dispose());
             }
 
-            private void GetNextCommits()
+            private void GetNextCommits(CancellationToken cancellationToken)
             {
                 IEnumerable<Commit> commits = _persistStreams.GetSince(_checkpoint);
                 foreach (var commit in commits)
@@ -86,10 +97,92 @@
                     {
                         continue;
                     }
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        _subject.OnCompleted();
+                        return;
+                    }
                     _subject.OnNext(commit);
                     _checkpoint = commit.Checkpoint;
                 }
             }
+        }
+
+        private static Task Delay(double milliseconds, CancellationToken cancellationToken)
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            var timer = new System.Timers.Timer();
+            timer.Elapsed += (obj, args) => tcs.TrySetResult(true);
+            timer.Interval = milliseconds;
+            timer.AutoReset = false;
+            timer.Start();
+            CancellationTokenRegistration cancellationTokenRegistration = cancellationToken.Register(() =>
+            {
+                timer.Stop();
+                tcs.TrySetCanceled();
+            });
+            return tcs.Task.ContinueWith(_ =>
+            {
+                cancellationTokenRegistration.Dispose();
+                timer.Dispose();
+            },TaskContinuationOptions.ExecuteSynchronously);
+        }
+    }
+
+    internal static class TaskExtensions
+    {
+        public static void WhenCompleted<T>(this Task<T> task, Action<Task<T>> onComplete, Action<Task<T>> onFaulted, bool execSync = false)
+        {
+            if (task.IsCompleted)
+            {
+                if (task.IsFaulted)
+                {
+                    onFaulted.Invoke(task);
+                    return;
+                }
+
+                onComplete.Invoke(task);
+                return;
+            }
+
+            task.ContinueWith(
+                onComplete,
+                execSync ?
+                    TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion :
+                    TaskContinuationOptions.OnlyOnRanToCompletion);
+
+            task.ContinueWith(
+                onFaulted,
+                execSync ?
+                    TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnFaulted :
+                    TaskContinuationOptions.OnlyOnFaulted);
+        }
+
+        public static void WhenCompleted(this Task task, Action<Task> onComplete, Action<Task> onFaulted, bool execSync = false)
+        {
+            if (task.IsCompleted)
+            {
+                if (task.IsFaulted)
+                {
+                    onFaulted.Invoke(task);
+                    return;
+                }
+
+                onComplete.Invoke(task);
+                return;
+            }
+
+            task.ContinueWith(
+                onComplete,
+                execSync ?
+                    TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion :
+                    TaskContinuationOptions.OnlyOnRanToCompletion);
+
+            task.ContinueWith(
+                onFaulted,
+                execSync ?
+                    TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnFaulted :
+                    TaskContinuationOptions.OnlyOnFaulted);
         }
     }
 }

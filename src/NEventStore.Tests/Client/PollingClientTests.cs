@@ -1,5 +1,6 @@
 ﻿namespace NEventStore.Client
 {
+    using System;
     using System.Reactive.Linq;
     using System.Reactive.Threading.Tasks;
     using System.Threading.Tasks;
@@ -94,6 +95,145 @@
         public void should_observe_two_commits()
         {
             _twoCommitsObserved.Wait(PollingInterval * 2).ShouldBe(true);
+        }
+    }
+
+    public class with_two_observers_and_multiple_commits : using_polling_client
+    {
+        private IObserveCommits _observeCommits1;
+        private IObserveCommits _observeCommits2;
+        private Task<Commit> _observeCommits1Complete;
+        private Task<Commit> _observeCommits2Complete;
+
+        protected override void Context()
+        {
+            base.Context();
+            StoreEvents.Advanced.CommitSingle();
+            _observeCommits1 = PollingClient.ObserveFrom(5);
+            _observeCommits1Complete = _observeCommits1.Take(5).ToTask();
+
+            _observeCommits2 = PollingClient.ObserveFrom(0);
+            _observeCommits2Complete = _observeCommits1.Take(10).ToTask();
+        }
+
+        protected override void Because()
+        {
+            _observeCommits1.Start();
+            _observeCommits2.Start();
+            Task.Run(() =>
+            {
+                for (int i = 0; i < 15; i++)
+                {
+                    StoreEvents.Advanced.CommitSingle();
+                }
+            });
+        }
+
+        protected override void Cleanup()
+        {
+            _observeCommits1.Dispose();
+            _observeCommits2.Dispose();
+        }
+
+        [Fact]
+        public void should_observe_commits_on_first_observer()
+        {
+            _observeCommits1Complete.Wait(PollingInterval * 10).ShouldBe(true);
+        }
+
+        [Fact]
+        public void should_observe_commits_on_second_observer()
+        {
+            _observeCommits2Complete.Wait(PollingInterval * 10).ShouldBe(true);
+        }
+    }
+
+    public class with_two_subscriptions_on_a_single_observer_and_multiple_commits : using_polling_client
+    {
+        private IObserveCommits _observeCommits1;
+        private Task<Commit> _observeCommits1Complete;
+        private Task<Commit> _observeCommits2Complete;
+
+        protected override void Context()
+        {
+            base.Context();
+            StoreEvents.Advanced.CommitSingle();
+            _observeCommits1 = PollingClient.ObserveFrom(0);
+            _observeCommits1Complete = _observeCommits1.Take(5).ToTask();
+            _observeCommits2Complete = _observeCommits1.Take(10).ToTask();
+        }
+
+        protected override void Because()
+        {
+            _observeCommits1.Start();
+            Task.Run(() =>
+            {
+                for (int i = 0; i < 15; i++)
+                {
+                    StoreEvents.Advanced.CommitSingle();
+                }
+            });
+        }
+
+        protected override void Cleanup()
+        {
+            _observeCommits1.Dispose();
+        }
+
+        [Fact]
+        public void should_observe_commits_on_first_observer()
+        {
+            _observeCommits1Complete.Wait(PollingInterval * 10).ShouldBe(true);
+        }
+
+        [Fact]
+        public void should_observe_commits_on_second_observer()
+        {
+            _observeCommits2Complete.Wait(PollingInterval * 10).ShouldBe(true);
+        }
+    }
+
+    public class with_exception_when_handling_commit : using_polling_client
+    {
+        private IObserveCommits _observeCommits;
+        private IDisposable _subscription;
+        private Task _observingCommits;
+        private Exception _subscriberException;
+        private Exception _exception;
+        private Exception _onErrorException;
+
+        protected override void Context()
+        {
+            base.Context();
+            StoreEvents.Advanced.CommitSingle();
+            _observeCommits = PollingClient.ObserveFrom(0);
+            _subscriberException = new Exception();
+            _subscription = _observeCommits.Subscribe(c => { throw _subscriberException; }, ex => _onErrorException = ex);
+        }
+
+        protected override void Because()
+        {
+            _observingCommits = _observeCommits.Start();
+            StoreEvents.Advanced.CommitSingle();
+            _exception = Catch.Exception(() => _observingCommits.Wait(1000));
+        }
+
+        protected override void Cleanup()
+        {
+            _subscription.Dispose();
+            _observeCommits.Dispose();
+        }
+
+        [Fact]
+        public void should_observe_exception_from_start_task()
+        {
+            _exception.InnerException.ShouldBe(_subscriberException);
+        }
+
+        [Fact]
+        public void should_observe_exception_on_subscription()
+        {
+            _onErrorException.ShouldBe(_subscriberException);
         }
     }
 }
