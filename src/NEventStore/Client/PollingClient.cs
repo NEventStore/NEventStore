@@ -108,7 +108,7 @@
 
             private void GetNextCommits(CancellationToken cancellationToken)
             {
-                IEnumerable<Commit> commits = _persistStreams.GetSince(_checkpoint, _batchSize);
+                IEnumerable<Commit> commits = _persistStreams.GetFrom(_checkpoint);
                 foreach (var commit in commits)
                 {
                     if (commit.Checkpoint < _checkpoint)

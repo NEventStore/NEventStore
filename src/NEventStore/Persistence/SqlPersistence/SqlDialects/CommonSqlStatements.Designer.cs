@@ -111,6 +111,19 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         
         /// <summary>
         ///   Looks up a localized string similar to SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
+        ///FROM Commits
+        ///WHERE  CheckpointNumber &gt;= @CheckpointNumber
+        ///ORDER BY CheckpointNumber
+        /// LIMIT @Limit OFFSET @Skip;.
+        /// </summary>
+        internal static string GetCommitsFromCheckpoint {
+            get {
+                return ResourceManager.GetString("GetCommitsFromCheckpoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
         ///  FROM Commits
         /// WHERE BucketId = @BucketId AND CommitStamp &gt;= @CommitStamp
         /// ORDER BY CommitSequence, StreamId, StreamRevision
@@ -151,18 +164,6 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         internal static string GetCommitsFromToInstant {
             get {
                 return ResourceManager.GetString("GetCommitsFromToInstant", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
-        ///  FROM Commits
-        /// WHERE  CheckpointNumber &gt;= @CheckpointNumber
-        /// ORDER BY  CheckpointNumber.
-        /// </summary>
-        internal static string GetCommitsSinceCheckpoint {
-            get {
-                return ResourceManager.GetString("GetCommitsSinceCheckpoint", resourceCulture);
             }
         }
         

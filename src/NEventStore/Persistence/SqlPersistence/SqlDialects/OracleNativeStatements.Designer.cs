@@ -155,8 +155,9 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         ///   Looks up a localized string similar to /*GetCommitsFromInstant*/
         ///SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
         ///FROM Commits 
-        /// WHERE  CheckpointNumber &gt;= :CheckpointNumber
-        /// ORDER BY  CheckpointNumber.
+        ///WHERE  CheckpointNumber &gt;= :CheckpointNumber
+        ///ORDER BY  CheckpointNumber
+        ///WHERE ROWNUM &lt;= :Limit;.
         /// </summary>
         internal static string GetCommitsSinceCheckpoint {
             get {

@@ -755,7 +755,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Because()
         {
-            _commits = Persistence.GetSince(0).ToArray();
+            _commits = Persistence.GetFrom(0).ToArray();
         }
 
         [Fact]

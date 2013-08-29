@@ -44,15 +44,14 @@ namespace NEventStore.Persistence.InMemoryPersistence
             return this[bucketId].GetFrom(start);
         }
 
-        public IEnumerable<Commit> GetSince(int checkpoint, int batchSize)
+        public IEnumerable<Commit> GetFrom(int checkpoint)
         {
-            Logger.Debug(Resources.GettingAllCommitsSinceCheckpoint, checkpoint, batchSize);
+            Logger.Debug(Resources.GettingAllCommitsSinceCheckpoint, checkpoint);
             return _buckets
                 .Values
                 .SelectMany(b => b.GetCommits())
                 .Where(c => c.Checkpoint > checkpoint)
                 .OrderBy(c => c.Checkpoint)
-                .Take(batchSize)
                 .ToArray();
         }
 

@@ -247,14 +247,14 @@ namespace NEventStore.Persistence.SqlPersistence
             ExecuteCommand(string.Empty, cmd => cmd.ExecuteNonQuery(_dialect.Drop));
         }
 
-        public IEnumerable<Commit> GetSince(int checkpoint, int batchSize)
+        public IEnumerable<Commit> GetFrom(int checkpoint)
         {
             Logger.Debug(Messages.GettingAllCommitsSinceCheckpoint, checkpoint);
             return ExecuteQuery(string.Empty, query =>
             {
-                string statement = _dialect.GetCommitsSinceCheckpoint;
+                string statement = _dialect.GetCommitsFromCheckpoint;
                 query.AddParameter(_dialect.CheckpointNumber, checkpoint);
-                return query.ExecuteWithQuery(statement).Select(x => x.GetCommit(_serializer));
+                return query.ExecutePagedQuery(statement, (q, r) => q.SetParameter(_dialect.CheckpointNumber, r.CheckpointNumber())).Select(x => x.GetCommit(_serializer));
             });
         }
 

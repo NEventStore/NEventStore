@@ -48,9 +48,9 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects
             get { return OraclePaging(OracleNativeStatements.GetCommitsFromInstant); }
         }
 
-        public override string GetCommitsSinceCheckpoint
+        public override string GetCommitsFromCheckpoint
         {
-            get { return OracleNativeStatements.GetCommitsSinceCheckpoint; }
+            get { return OraclePaging(OracleNativeStatements.GetCommitsSinceCheckpoint); }
         }
 
         public override string GetUndispatchedCommits

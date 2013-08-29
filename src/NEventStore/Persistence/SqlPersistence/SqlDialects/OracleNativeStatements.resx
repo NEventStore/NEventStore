@@ -176,8 +176,9 @@ ORDER BY CommitSequence</value>
     <value>/*GetCommitsFromInstant*/
 SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
 FROM Commits 
- WHERE  CheckpointNumber &gt;= :CheckpointNumber
- ORDER BY  CheckpointNumber</value>
+WHERE  CheckpointNumber &gt;= :CheckpointNumber
+ORDER BY  CheckpointNumber
+WHERE ROWNUM &lt;= :Limit;</value>
   </data>
   <data name="GetSnapshot" xml:space="preserve">
     <value>/*GetSnapshot*/

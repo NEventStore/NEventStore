@@ -32,6 +32,11 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects
             get { return CommonTableExpressionPaging(base.GetCommitsFromToInstant); }
         }
 
+        public override string GetCommitsFromCheckpoint
+        {
+            get { return CommonTableExpressionPaging(base.GetCommitsFromCheckpoint); }
+        }
+
         public override string GetUndispatchedCommits
         {
             get { return CommonTableExpressionPaging(base.GetUndispatchedCommits); }

@@ -273,7 +273,7 @@
             Purge();
         }
 
-        public IEnumerable<Commit> GetSince(int checkpoint, int batchSize)
+        public IEnumerable<Commit> GetFrom(int checkpoint)
         {
             throw new NotImplementedException();
         }
@@ -378,7 +378,7 @@
         }
 
         private T[] PerformQuery<T, TIndex>(
-            IDocumentSession session, Expression<Func<T, bool>>[] conditions, int skip, int take, out RavenQueryStatistics stats)
+            IDocumentSession session, IEnumerable<Expression<Func<T, bool>>> conditions, int skip, int take, out RavenQueryStatistics stats)
             where TIndex : AbstractIndexCreationTask, new()
         {
             try

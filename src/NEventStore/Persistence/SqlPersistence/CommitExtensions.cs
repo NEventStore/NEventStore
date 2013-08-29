@@ -49,6 +49,11 @@ namespace NEventStore.Persistence.SqlPersistence
             return record[CommitSequenceIndex].ToInt();
         }
 
+        public static int CheckpointNumber(this IDataRecord record)
+        {
+            return record[CheckpointIndex].ToInt();
+        }
+
         public static T Deserialize<T>(this ISerialize serializer, IDataRecord record, int index)
         {
             if (index >= record.FieldCount)

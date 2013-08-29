@@ -224,10 +224,11 @@ DELETE FROM Commits WHERE BucketId = @BucketId;</value>
     <value>DROP TABLE Snapshots;
 DROP TABLE Commits;</value>
   </data>
-  <data name="GetCommitsSinceCheckpoint" xml:space="preserve">
+  <data name="GetCommitsFromCheckpoint" xml:space="preserve">
     <value>SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
-  FROM Commits
- WHERE  CheckpointNumber &gt;= @CheckpointNumber
- ORDER BY  CheckpointNumber</value>
+FROM Commits
+WHERE  CheckpointNumber &gt;= @CheckpointNumber
+ORDER BY CheckpointNumber
+ LIMIT @Limit OFFSET @Skip;</value>
   </data>
 </root>

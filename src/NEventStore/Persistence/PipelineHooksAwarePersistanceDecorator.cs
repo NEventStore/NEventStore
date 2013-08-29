@@ -95,9 +95,9 @@ namespace NEventStore.Persistence
             _original.Drop();
         }
 
-        public IEnumerable<Commit> GetSince(int checkpoint, int batchSize)
+        public IEnumerable<Commit> GetFrom(int checkpoint)
         {
-            return _original.GetSince(checkpoint, batchSize);
+            return _original.GetFrom(checkpoint);
         }
 
         public bool IsDisposed
