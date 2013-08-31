@@ -1,0 +1,294 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ConnectionNotFound" xml:space="preserve">
+    <value>Could not find connection name '{0}' in the configuration file.</value>
+  </data>
+  <data name="MissingConnectionString" xml:space="preserve">
+    <value>Could not find the required attribute 'connection string' on the connection name '{0}' in the configuration file.</value>
+  </data>
+  <data name="MissingProviderName" xml:space="preserve">
+    <value>Could not find the required attribute 'providerName' on the connection name '{0}' in the configuration file.</value>
+  </data>
+  <data name="BadConnectionName" xml:space="preserve">
+    <value>A connection could not be created for the specified named connection.</value>
+  </data>
+  <data name="ConfiguringConnections" xml:space="preserve">
+    <value>Configuring connections: master '{0}'; replica '{1}', shards: {2}.</value>
+  </data>
+  <data name="OpeningMasterConnection" xml:space="preserve">
+    <value>Opening master connection '{0}'</value>
+  </data>
+  <data name="OpeningReplicaConnection" xml:space="preserve">
+    <value>Opening replica connection '{0}'.</value>
+  </data>
+  <data name="OpeningConnection" xml:space="preserve">
+    <value>Opening connection '{0}'.</value>
+  </data>
+  <data name="OpenFailed" xml:space="preserve">
+    <value>Unable to open connection '{0}'.</value>
+  </data>
+  <data name="DiscoveredConnectionProvider" xml:space="preserve">
+    <value>Discovered DB provider factory settings for '{0}', using '{1}'.</value>
+  </data>
+  <data name="DiscoveringConnectionSettings" xml:space="preserve">
+    <value>Discovering connection settings for '{0}'.</value>
+  </data>
+  <data name="EmbeddingShardKey" xml:space="preserve">
+    <value>Embedding sharding key into connection string for '{0}'.</value>
+  </data>
+  <data name="StorageThrewException" xml:space="preserve">
+    <value>Storage threw exception of type '{0}', wrapping and re-throwing.</value>
+  </data>
+  <data name="QueryCompleted" xml:space="preserve">
+    <value>Enumeration of result set completed, completing associated transaction scope.</value>
+  </data>
+  <data name="UsingScope" xml:space="preserve">
+    <value>Participating in connection with ambient transaction scope of </value>
+  </data>
+  <data name="ExecutingCommand" xml:space="preserve">
+    <value>Executing command.</value>
+  </data>
+  <data name="CommandExecuted" xml:space="preserve">
+    <value>Command executed, {0} rows affected.</value>
+  </data>
+  <data name="ExecutingQuery" xml:space="preserve">
+    <value>Executing query.</value>
+  </data>
+  <data name="DeserializingCommit" xml:space="preserve">
+    <value>Deserializing commit from record using serializer of type '{0}'.</value>
+  </data>
+  <data name="CommitPersisted" xml:space="preserve">
+    <value>Commit '{0}' persisted successfully.</value>
+  </data>
+  <data name="AttemptingToCommit" xml:space="preserve">
+    <value>Attempting to commit {0} events on stream '{1}' at sequence {2} in bucket '{3}'.</value>
+  </data>
+  <data name="MarkingCommitAsDispatched" xml:space="preserve">
+    <value>Marking commit '{0}' as dispatched.</value>
+  </data>
+  <data name="GettingStreamsToSnapshot" xml:space="preserve">
+    <value>Getting a list of streams to snapshot.</value>
+  </data>
+  <data name="GettingRevision" xml:space="preserve">
+    <value>Getting snapshot for stream '{0}' on or before revision {1}.</value>
+  </data>
+  <data name="AddingSnapshot" xml:space="preserve">
+    <value>Adding snapshot to stream '{0}' at position {1}.</value>
+  </data>
+  <data name="GettingUndispatchedCommits" xml:space="preserve">
+    <value>Getting the list of all undispatched commits.</value>
+  </data>
+  <data name="GettingAllCommitsFrom" xml:space="preserve">
+    <value>Getting all commits from '{0}' forward from bucket '{0}'.</value>
+  </data>
+  <data name="GettingAllCommitsFromTo" xml:space="preserve">
+    <value>Getting all commits from '{0}' to '{1}'.</value>
+  </data>
+  <data name="GettingAllCommitsBetween" xml:space="preserve">
+    <value>Getting all commits for stream '{0}' between revisions '{1}' and '{2}'.</value>
+  </data>
+  <data name="InitializingStorage" xml:space="preserve">
+    <value>Initializing storage engine.</value>
+  </data>
+  <data name="PurgingStorage" xml:space="preserve">
+    <value>Purging all stored data.</value>
+  </data>
+  <data name="DeserializingSnapshot" xml:space="preserve">
+    <value>Deserializing snapshot from data record.</value>
+  </data>
+  <data name="ExceptionSuppressed" xml:space="preserve">
+    <value>Executed statement threw an exception, but the exception was suppressed.</value>
+  </data>
+  <data name="AddingParameter" xml:space="preserve">
+    <value>Adding parameter named '{0}' to statement.</value>
+  </data>
+  <data name="DisposingStatement" xml:space="preserve">
+    <value>Disposing SQL statement resources, including any transactions and connections.</value>
+  </data>
+  <data name="DuplicateCommit" xml:space="preserve">
+    <value>Duplicate commit detected; throwing.</value>
+  </data>
+  <data name="CommandThrewException" xml:space="preserve">
+    <value>Non-query statement threw an exception of type '{0}'.</value>
+  </data>
+  <data name="MaxPageSize" xml:space="preserve">
+    <value>Executing query with max page size of {0}.</value>
+  </data>
+  <data name="CreatingCommand" xml:space="preserve">
+    <value>Creating command.</value>
+  </data>
+  <data name="ClientControlledTransaction" xml:space="preserve">
+    <value>Command has client-controlled transaction: {0}.</value>
+  </data>
+  <data name="CommandTextToExecute" xml:space="preserve">
+    <value>Command text to be executed: {0}</value>
+  </data>
+  <data name="BindingParameter" xml:space="preserve">
+    <value>Binding parameter '{0}' with value: {1}</value>
+  </data>
+  <data name="EnumeratedRowCount" xml:space="preserve">
+    <value>Enumerated {0} rows, re-querying for next page.</value>
+  </data>
+  <data name="EnumerationThrewException" xml:space="preserve">
+    <value>Enumeration of paged results threw exception of type '{0}'.</value>
+  </data>
+  <data name="ShuttingDownPersistence" xml:space="preserve">
+    <value>Shutting down persistence.</value>
+  </data>
+  <data name="RecoverableExceptionCompletesScope" xml:space="preserve">
+    <value>Exception is recoverable, completing scope.</value>
+  </data>
+  <data name="ObjectAlreadyDisposed" xml:space="preserve">
+    <value>The object has been disposed and cannot be used.</value>
+  </data>
+  <data name="AlreadyDisposed" xml:space="preserve">
+    <value>Attempt to use storage after it has been disposed.</value>
+  </data>
+  <data name="OpeningThreadScope" xml:space="preserve">
+    <value>Opening new threaded scope for key '{0}'; scope is root: {1}</value>
+  </data>
+  <data name="DisposingThreadScope" xml:space="preserve">
+    <value>Disposing threaded scope; scope is root: {0}</value>
+  </data>
+  <data name="CleaningRootThreadScope" xml:space="preserve">
+    <value>Cleaning up root threaded scope</value>
+  </data>
+  <data name="DisposingRootThreadScopeResources" xml:space="preserve">
+    <value>Disposing underlying thread-scoped resource.</value>
+  </data>
+  <data name="BadFactoryResult" xml:space="preserve">
+    <value>The factory provided was unable to create an object to store.</value>
+  </data>
+  <data name="NotConnectionsAvailable" xml:space="preserve">
+    <value>No connections have been opened yet.</value>
+  </data>
+  <data name="ConcurrentWriteDetected" xml:space="preserve">
+    <value>Concurrent write detected.</value>
+  </data>
+  <data name="PurgingBucket" xml:space="preserve">
+    <value>Purging all stored data for bucket '{0}'</value>
+  </data>
+  <data name="DroppingTables" xml:space="preserve">
+    <value>Dropping tables.</value>
+  </data>
+  <data name="GettingAllCommitsSinceCheckpoint" xml:space="preserve">
+    <value>Getting all commits since since checkpoint '{0}'.</value>
+  </data>
+</root>

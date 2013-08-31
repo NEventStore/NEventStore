@@ -1,11 +1,10 @@
-EventStore
+NEventStore
 ======================================================================
 
- - The most recent stable release is avaiable on [NuGet.org](https://nuget.org/packages/EventStore)
+ - The most recent stable release is avaiable on [NuGet.org](https://nuget.org/packages/NEventStore)
  - CI builds can be viewed on [Codebetter's TeamCity server](http://teamcity.codebetter.com/project.html?projectId=project247&tab=projectOverview).
- - CI package are availble on [myget.org](http://www.myget.org/gallery/eventstore).
- 
- CI builds and packages are to be considered unstable.
+ - [CI package feed] (https://www.myget.org/F/neventstore-ci/)
+ - [Beta package feed] (https://www.myget.org/F/neventstore-beta/)
 
 ## Overview
 The EventStore is a persistence library used to abstract different storage implementations

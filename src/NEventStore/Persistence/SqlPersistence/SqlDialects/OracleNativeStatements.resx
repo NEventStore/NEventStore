@@ -1,0 +1,350 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AddCommitSequence" xml:space="preserve">
+    <value>AND CommitSequence &gt; :CommitSequence</value>
+  </data>
+  <data name="AppendSnapshotToCommit" xml:space="preserve">
+    <value>/*AppendSnapshotToCommit*/
+INSERT INTO Snapshots   
+  (BucketId, StreamId, StreamRevision, Payload)  
+SELECT :BucketId, :StreamId, :StreamRevision, :Payload FROM SYS.DUAL 
+WHERE	EXISTS
+	(
+    SELECT * FROM COMMITS 
+    WHERE	BucketId = :BucketId AND StreamId = :StreamId
+      AND	(StreamRevision - Items) &lt;= :StreamRevision
+	)
+ AND NOT EXISTS
+	(
+    SELECT * FROM SNAPSHOTS 
+    WHERE	BucketId = :BucketId AND StreamId = :StreamId
+      And	Streamrevision = :Streamrevision
+	)</value>
+  </data>
+  <data name="DropTables" xml:space="preserve">
+    <value>BEGIN
+  EXECUTE IMMEDIATE ('DROP TABLE Snapshots PURGE');
+  EXECUTE IMMEDIATE ('DROP TABLE Commits PURGE');
+  EXECUTE IMMEDIATE ('DROP SEQUENCE Commit_CheckpointNumber');
+END;</value>
+  </data>
+  <data name="DuplicateCommit" xml:space="preserve">
+    <value>/*DuplicateCommit*/
+SELECT CAST( COUNT(*) AS NUMBER(8,0) )
+FROM Commits 
+WHERE	(
+  BucketId = :BucketId AND StreamId = :StreamId
+  AND CommitSequence = :CommitSequence
+  AND CommitId = :CommitId
+)</value>
+  </data>
+  <data name="GetCommitsFromInstant" xml:space="preserve">
+    <value>/*GetCommitsFromInstant*/
+SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
+FROM Commits 
+WHERE BucketId = :BucketId AND CommitStamp &gt;= :CommitStamp
+ORDER BY CommitStamp, StreamId, StreamRevision</value>
+  </data>
+  <data name="GetCommitsFromStartingRevision" xml:space="preserve">
+    <value>/*GetCommitsFromStartingRevision*/
+SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
+FROM Commits
+WHERE BucketId = :BucketId AND StreamId = :StreamId
+   AND StreamRevision &gt;= :StreamRevision
+   AND (StreamRevision - Items) &lt;= :MaxStreamRevision
+   AND CommitSequence &gt; :CommitSequence
+ORDER BY CommitSequence</value>
+  </data>
+  <data name="GetCommitsSinceCheckpoint" xml:space="preserve">
+    <value>/*GetCommitsFromInstant*/
+SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
+FROM Commits 
+WHERE  CheckpointNumber &gt;= :CheckpointNumber
+ORDER BY  CheckpointNumber
+WHERE ROWNUM &lt;= :Limit;</value>
+  </data>
+  <data name="GetSnapshot" xml:space="preserve">
+    <value>/*GetSnapshot*/
+SELECT *
+FROM  Snapshots 
+WHERE BucketId = :BucketId AND StreamId = :StreamId
+ AND	StreamRevision  &lt;= :StreamRevision
+ AND	ROWNUM &lt;= (:Skip + 1) AND ROWNUM  &gt; :Skip
+ORDER BY StreamRevision DESC</value>
+  </data>
+  <data name="GetStreamsRequiringSnapshots" xml:space="preserve">
+    <value>/*GetStreamsRequiringSnapshots*/
+SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, SnapshotRevision
+FROM (
+  SELECT C.BucketId, C.StreamId, C.StreamIdOriginal, MAX(C.StreamRevision) AS StreamRevision, MAX(COALESCE(S.StreamRevision, 0)) AS SnapshotRevision
+  FROM  Commits C LEFT OUTER JOIN Snapshots S
+    ON C.BucketId = :BucketId AND C.StreamId = S.StreamId AND C.StreamRevision &gt;= S.StreamRevision
+  GROUP BY C.StreamId, C.BucketId, C.StreamIdOriginal
+  HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + :Threshold
+  ORDER BY C.StreamId
+)
+WHERE ROWNUM &lt;= :Limit;</value>
+  </data>
+  <data name="InitializeStorage" xml:space="preserve">
+    <value>/*InitializeStorage*/
+DECLARE table_count INTEGER;
+BEGIN 
+  SELECT COUNT (OBJECT_ID) INTO table_count FROM USER_OBJECTS WHERE EXISTS (
+    SELECT OBJECT_NAME FROM USER_OBJECTS WHERE (OBJECT_NAME = 'COMMITS' AND OBJECT_TYPE = 'TABLE'));
+IF table_count = 0 THEN DBMS_OUTPUT.PUT_LINE ('Creating the Commits table');
+  EXECUTE IMMEDIATE (
+   'CREATE TABLE Commits(
+      BucketId varchar2(40) NOT NULL,
+      StreamId char(40) NOT NULL,
+      StreamIdOriginal nvarchar2(1000) NOT NULL,
+      StreamRevision NUMBER(8) CHECK (StreamRevision &gt; 0) NOT NULL,
+      Items NUMBER(8) CHECK (Items &gt; 0) NOT NULL,
+      CommitId raw(16) CHECK (CommitId != HEXTORAW(0)) NOT NULL,
+      CommitSequence NUMBER(8) CHECK (CommitSequence &gt; 0) NOT NULL,
+      CommitStamp timestamp NOT NULL,
+      CheckpointNumber NUMBER(19) NOT NULL,
+      Dispatched NUMBER(1) DEFAULT(0) NOT NULL,
+      Headers BLOB CHECK (Headers IS NULL OR LENGTH(Headers) &gt; 0) NULL,
+      Payload BLOB CHECK (LENGTH(Payload) &gt; 0) NOT NULL,
+      CONSTRAINT PK_Commits PRIMARY KEY (BucketId, StreamId, CommitSequence))');
+  EXECUTE IMMEDIATE ('CREATE UNIQUE INDEX IX_Commits ON Commits (BucketId, StreamId, CommitId)');
+  EXECUTE IMMEDIATE ('CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (BucketId, StreamId, StreamRevision, Items)');
+  EXECUTE IMMEDIATE ('CREATE INDEX IX_Commits_Dispatched ON Commits (Dispatched)');
+  EXECUTE IMMEDIATE ('CREATE INDEX IX_Commits_Stamp ON Commits (CommitStamp)');
+  EXECUTE IMMEDIATE ('CREATE SEQUENCE Commit_CheckpointNumber');
+  EXECUTE IMMEDIATE ('
+    CREATE OR REPLACE TRIGGER Commit_CheckpointNumber_Trig 
+    BEFORE INSERT ON Commits 
+    FOR EACH ROW
+    BEGIN
+      SELECT Commit_CheckpointNumber.NEXTVAL
+      INTO   :new.CheckpointNumber
+      FROM   dual;
+    END;');
+ELSE
+  DBMS_OUTPUT.PUT_LINE ('The Commits table already exist in the database.');
+END IF;
+SELECT COUNT (OBJECT_ID) INTO table_count FROM USER_OBJECTS WHERE EXISTS (
+    SELECT OBJECT_NAME FROM USER_OBJECTS WHERE (OBJECT_NAME = 'SNAPSHOTS' AND OBJECT_TYPE = 'TABLE'));
+  IF table_count = 0 THEN DBMS_OUTPUT.PUT_LINE ('Creating the Snapshots table');
+    EXECUTE IMMEDIATE (
+      'CREATE TABLE Snapshots(
+        BucketId varchar2(40) NOT NULL,
+        StreamId nchar(40) NOT NULL,
+        StreamRevision NUMBER(8) CHECK (StreamRevision &gt; 0) NOT NULL, 
+        Payload BLOB CHECK (LENGTH(Payload) &gt; 0) NOT NULL, 
+        CONSTRAINT PK_Snapshots PRIMARY KEY (BucketId, StreamId, StreamRevision))');
+  ELSE
+    DBMS_OUTPUT.PUT_LINE ('The Snapshots table already exist in the database.');
+  RETURN;
+  END IF;
+  EXCEPTION WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('An unexpected exception has occured. Please re-evaluate the PL/SQL script');
+END;</value>
+  </data>
+  <data name="LimitedQueryFormat" xml:space="preserve">
+    <value>/*LimitedQueryFormat*/
+SELECT OuterQuery.* FROM (
+  SELECT InnerQuery.*, ROWNUM AS ROW_NUMBER_VAL FROM (
+    {0}    
+  ) InnerQuery
+) OuterQuery
+WHERE ROW_NUMBER_VAL &gt; :Skip AND ROW_NUMBER_VAL &lt;= (:Limit + :Skip)</value>
+  </data>
+  <data name="MarkCommitAsDispatched" xml:space="preserve">
+    <value>/*MarkCommitAsDispatched*/
+UPDATE Commits   
+SET Dispatched = 1
+WHERE CAST(BucketId AS NVARCHAR2(40)) = :BucketId
+ AND StreamId  = :StreamId
+ AND CommitSequence  = :CommitSequence</value>
+  </data>
+  <data name="PagedQueryFormat" xml:space="preserve">
+    <value>/*PagedQueryFormat*/
+SELECT *
+FROM ( {0},
+       ROW_NUMBER() OVER({1}) AS ROW_NUMBER_VAL
+       {2}
+) PagedQueryFormat
+WHERE ROW_NUMBER_VAL &gt; :Skip AND ROW_NUMBER_VAL &lt;= (:Limit + :Skip)</value>
+  </data>
+  <data name="PersistCommit" xml:space="preserve">
+    <value>/*PersistCommit*/
+INSERT INTO Commits (  
+	BucketId, StreamId, 
+	StreamIdOriginal,
+	CommitId, 
+	CommitSequence, 
+	StreamRevision, 
+	Items, 
+	CommitStamp, 
+	Headers, 
+	Payload
+)  
+VALUES ( 
+	:BucketId, :StreamId, 
+	:StreamIdOriginal, 
+	:CommitId, 
+	:CommitSequence, 
+	:StreamRevision, 
+	:Items, 
+	:CommitStamp, 
+	:Headers, 
+	:Payload
+)</value>
+  </data>
+  <data name="PurgeBucket" xml:space="preserve">
+    <value>/*PurgeStorage*/
+DECLARE row_count INTEGER;
+BEGIN
+  SELECT COUNT(1) INTO row_count FROM Snapshots WHERE BucketId = :BucketId;
+  IF row_count != 0 THEN
+    EXECUTE IMMEDIATE ('TRUNCATE TABLE Snapshots');
+  ELSE
+    DBMS_OUTPUT.PUT_LINE('The Snapshots table has already been purged.');
+  END IF;
+  SELECT COUNT(1) INTO row_count FROM Commits WHERE BucketId = :BucketId;
+  IF row_count != 0 THEN
+    EXECUTE IMMEDIATE ('TRUNCATE TABLE Commits');
+  ELSE
+    DBMS_OUTPUT.PUT_LINE('The Commits table has already been purged.');
+  END IF;
+  EXCEPTION WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('An unexpected exception has occured. Please re-evaluate the PL/SQL script');
+END;</value>
+  </data>
+  <data name="PurgeStorage" xml:space="preserve">
+    <value>/*PurgeStorage*/
+DECLARE row_count INTEGER;
+BEGIN
+  SELECT COUNT(1) INTO row_count FROM Snapshots;
+  IF row_count != 0 THEN
+    EXECUTE IMMEDIATE ('TRUNCATE TABLE Snapshots');
+  ELSE
+    DBMS_OUTPUT.PUT_LINE('The Snapshots table has already been purged.');
+  END IF;
+  SELECT COUNT(1) INTO row_count FROM Commits;
+  IF row_count != 0 THEN
+    EXECUTE IMMEDIATE ('TRUNCATE TABLE Commits');
+  ELSE
+    DBMS_OUTPUT.PUT_LINE('The Commits table has already been purged.');
+  END IF;
+  EXCEPTION WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('An unexpected exception has occured. Please re-evaluate the PL/SQL script');
+END;</value>
+  </data>
+</root>

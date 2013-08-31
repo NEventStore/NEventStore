@@ -14,7 +14,6 @@ function Merge-Assemblies {
 	$exclude | out-file ".\exclude.txt"
 
 	$args = @(
-		"/keyfile:$keyfile",
 		"/internalize:exclude.txt", 
 		"/xmldocs",
 		"/wildcards",
