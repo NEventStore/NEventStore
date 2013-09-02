@@ -63,7 +63,7 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         /// <summary>
         ///   Looks up a localized string similar to CREATE TABLE IF NOT EXISTS Commits
         ///(
-        ///       BucketId char(40) NOT NULL,
+        ///       BucketId varchar(40) NOT NULL,
         ///       StreamId char(40) NOT NULL,
         ///       StreamIdOriginal text NOT NULL,
         ///       StreamRevision int NOT NULL CHECK (StreamRevision &gt; 0),
@@ -72,8 +72,7 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         ///       CommitSequence int NOT NULL CHECK (CommitSequence &gt; 0),
         ///       CommitStamp datetime NOT NULL,
         ///       CheckpointNumber int NOT NULL DEFAULT 0,
-        ///       Dispatched bit NOT NULL DEFAULT 0,
-        ///   [rest of string was truncated]&quot;;.
+        ///       Dispatched bit NOT NULL DEFAULT 0,        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {

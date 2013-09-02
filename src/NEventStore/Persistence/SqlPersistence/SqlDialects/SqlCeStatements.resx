@@ -120,7 +120,7 @@
   <data name="InitializeStorage" xml:space="preserve">
     <value>CREATE TABLE Commits
 (
-    BucketId nchar(40) NOT NULL,
+    BucketId nvarchar(40) NOT NULL,
     StreamId nchar(40) NOT NULL,
     StreamIdOriginal nvarchar(1000) NOT NULL,
     StreamRevision int NOT NULL,
