@@ -575,59 +575,6 @@ namespace NEventStore.Persistence.AcceptanceTests
         }
     }
 
-    public class when_persisting_commits_out_of_order : PersistenceEngineConcern
-    {
-        // Issue 159 OrderingByCommitStampIsNotReliable
-        private Commit[] _undispatched;
-
-        protected override void Context()
-        {
-            string streamId = Guid.NewGuid().ToString();
-            var dateTime = new DateTime(2013, 1, 1);
-            SystemTime.Resolver = () => dateTime;
-            Persistence.Commit(new Commit(streamId,
-                1,
-                Guid.NewGuid(),
-                1,
-                SystemTime.UtcNow,
-                null,
-                new List<EventMessage> {new EventMessage {Body = "M1"}}));
-            Persistence.Commit(new Commit(streamId,
-                3,
-                Guid.NewGuid(),
-                3,
-                SystemTime.UtcNow,
-                null,
-                new List<EventMessage> {new EventMessage {Body = "M3"}}));
-            Persistence.Commit(new Commit(streamId,
-                2,
-                Guid.NewGuid(),
-                2,
-                SystemTime.UtcNow,
-                null,
-                new List<EventMessage> {new EventMessage {Body = "M2"}}));
-        }
-
-        protected override void Because()
-        {
-            _undispatched = Persistence.GetUndispatchedCommits().ToArray();
-        }
-
-        protected override void Cleanup()
-        {
-            SystemTime.Resolver = null;
-        }
-
-        [Fact]
-        public void should_have_commits_in_correct_order()
-        {
-            for (int i = 1; i <= _undispatched.Length; i++)
-            {
-                _undispatched[i - 1].CommitSequence.ShouldBe(i);
-            }
-        }
-    }
-
     public class when_committing_a_stream_with_the_same_id_as_a_stream_in_another_bucket : PersistenceEngineConcern
     {
         const string _bucketAId = "a";
