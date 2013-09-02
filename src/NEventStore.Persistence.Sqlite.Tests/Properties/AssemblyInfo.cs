@@ -1,4 +1,4 @@
 ﻿using System.Reflection;
 
-[assembly: AssemblyTitle("EventStore.Persistence.Sqlite.Tests")]
+[assembly: AssemblyTitle("NEventStore.Persistence.Sqlite.Tests")]
 [assembly: AssemblyDescription("")]

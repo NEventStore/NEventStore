@@ -10,7 +10,7 @@
         {
             _createPersistence = () => 
                 new SqlPersistenceFactory(
-                    new ConfigurationConnectionFactory("EventStore.Persistence.AcceptanceTests.Properties.Settings.SQLite"),
+                    new ConfigurationConnectionFactory("NEventStore.Persistence.AcceptanceTests.Properties.Settings.SQLite"),
                     new BinarySerializer(),
                     new SqliteDialect()).Build();
         }

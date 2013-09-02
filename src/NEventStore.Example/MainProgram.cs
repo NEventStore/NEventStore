@@ -36,7 +36,7 @@ namespace NEventStore.Example
 			 return Wireup.Init()
 				.LogToOutputWindow()
 				.UsingInMemoryPersistence()
-				.UsingSqlPersistence("EventStore") // Connection string is in app.config
+				.UsingSqlPersistence("NEventStore") // Connection string is in app.config
 					.WithDialect(new MsSqlDialect())
 					.EnlistInAmbientTransaction() // two-phase commit
 					.InitializeStorageEngine()

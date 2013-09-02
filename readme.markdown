@@ -7,21 +7,21 @@ NEventStore
  - [Beta package feed] (https://www.myget.org/F/neventstore-beta/)
 
 ## Overview
-The EventStore is a persistence library used to abstract different storage implementations
+NEventStore is a persistence library used to abstract different storage implementations
 when using event sourcing as storage mechanism.  Event sourcing is most closely associated
 with a concept known as [CQRS](http://cqrsinfo.com).
 
 ### Need Help? Have a Question?
-Ask your question on [Stack Overflow](http://stackoverflow.com/search?q=[cqrs]+eventstore) and tag your question with
-the CQRS tag and the word "EventStore" in the title.
+Ask your question on [Stack Overflow](http://stackoverflow.com/search?q=[cqrs]+neventstore) and tag your question with
+the CQRS tag and the word "NEventStore" in the title.
 
 ### Purpose and Theory
-The purpose of the EventStore is to represent a series of events as a stream.  Furthermore,
+The purpose of an event store is to represent a series of events as a stream.  Furthermore,
 it provides hooks whereby any events committed to the stream can be dispatched to interested
 parties.
 
 Guided by a number strategic design decisions based upon the needs of applications using event sourcing,
-the EventStore is able to liberate applications from the stringent requirements often imposed by
+NEventStore is able to liberate applications from the stringent requirements often imposed by
 infrastructure components.  Specifically, most CQRS-style applications read from a message queue
 and perform some processing.  When processing is complete, the application then commits the work
 to storage and publishes the completed work.  In almost all cases, this requires a two-phase commit
@@ -36,7 +36,7 @@ other choices, but the constraints imposed by a two-phase commit are burdensome.
 creates additional issues when utilizing shared hosting or running on Mono as support in frameworks
 and drivers is either poor, buggy, or unavailable.
 
-The EventStore liberates application developers from this level of infrastructure awareness and
+NEventStore liberates application developers from this level of infrastructure awareness and
 concern by committing all work within a separate isolated atomic unit--all without using transactions.
 Furthermore, it does this outside of any ambient transaction from a message queue or other
 persistence mechanisms.  In other words, application developers are free to use virtually any
@@ -148,7 +148,7 @@ TransactionScopeOption of 'Required'.  Simply indicate this using the following 
 ## Building
 Simply run **build.cmd** from the command line.  Once built, the files will be placed in the "publish-net40" subdirectory.
 
-## Using the EventStore
+## Using NEventStore
 
 	var store = Wireup.Init()
 		.UsingSqlPersistence("Name Of EventStore ConnectionString In Config File")
@@ -182,9 +182,9 @@ Simply run **build.cmd** from the command line.  Once built, the files will be p
 		}
 	}
 
-For a more complete example, please see [EventStore.Example](https://github.com/joliver/EventStore/blob/master/doc/EventStore.Example/MainProgram.cs) project in the doc subdirectory.
+For a more complete example, please see [NEventStore.Example](https://github.com/joliver/EventStore/blob/master/doc/NEventStore.Example/MainProgram.cs) project in the doc subdirectory.
 
 ## Running the Example
-The EventStore.Example project is configured by default to use a SQL event store. To run the example 
+The NEventStore.Example project is configured by default to use a SQL event store. To run the example 
 program, either change the SQL connection string in the app.config file to connect to a existing SQL database 
 or change WireupEventStore() to call UsingInMemoryPersistence() rather than UsingSqlPersistence().

@@ -1,4 +1,4 @@
 ﻿using System.Reflection;
 
-[assembly: AssemblyTitle("EventStore.Persistence.Oracle.Tests")]
+[assembly: AssemblyTitle("NEventStore.Persistence.Oracle.Tests")]
 [assembly: AssemblyDescription("")]

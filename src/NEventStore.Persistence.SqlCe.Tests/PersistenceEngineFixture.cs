@@ -10,7 +10,7 @@
         {
             _createPersistence = () => 
                 new SqlPersistenceFactory(
-                    new ConfigurationConnectionFactory("EventStore.Persistence.AcceptanceTests.Properties.Settings.SQLCE"),
+                    new ConfigurationConnectionFactory("NEventStore.Persistence.AcceptanceTests.Properties.Settings.SQLCE"),
                     new BinarySerializer(),
                     new SqlCeDialect()).Build();
         }
