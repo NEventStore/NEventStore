@@ -95,6 +95,11 @@ namespace NEventStore.Persistence
             _original.Drop();
         }
 
+        public void DeleteStream(string bucketId, string streamId)
+        {
+            _original.DeleteStream(bucketId, streamId);
+        }
+
         public IEnumerable<Commit> GetFrom(int checkpoint)
         {
             return _original.GetFrom(checkpoint);

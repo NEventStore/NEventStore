@@ -95,6 +95,18 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         
         /// <summary>
         ///   Looks up a localized string similar to BEGIN
+        ///   DELETE FROM Snapshots WHERE BucketId =:BucketId AND StreamId = :StreamId;
+        ///   DELETE FROM Commits WHERE BucketId = :BucketId AND StreamId = :StreamId;
+        ///END;.
+        /// </summary>
+        internal static string DeleteStream {
+            get {
+                return ResourceManager.GetString("DeleteStream", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BEGIN
         ///  EXECUTE IMMEDIATE (&apos;DROP TABLE Snapshots PURGE&apos;);
         ///  EXECUTE IMMEDIATE (&apos;DROP TABLE Commits PURGE&apos;);
         ///  EXECUTE IMMEDIATE (&apos;DROP SEQUENCE Commit_CheckpointNumber&apos;);

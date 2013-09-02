@@ -214,6 +214,15 @@ namespace NEventStore.Persistence.SqlPersistence {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Deleting stream &apos;{0}&apos; from bucket &apos;{1}&apos;..
+        /// </summary>
+        internal static string DeletingStream {
+            get {
+                return ResourceManager.GetString("DeletingStream", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Deserializing commit from record using serializer of type &apos;{0}&apos;..
         /// </summary>
         internal static string DeserializingCommit {

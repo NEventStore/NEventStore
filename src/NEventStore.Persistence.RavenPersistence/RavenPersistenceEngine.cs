@@ -273,9 +273,14 @@
             Purge();
         }
 
+        public void DeleteStream(string bucketId, string streamId)
+        {
+            throw new NotImplementedException("Engine to be rewritten");
+        }
+
         public IEnumerable<Commit> GetFrom(int checkpoint)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("Engine to be rewritten");
         }
 
         public bool IsDisposed

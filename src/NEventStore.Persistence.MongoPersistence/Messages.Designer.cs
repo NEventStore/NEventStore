@@ -97,6 +97,15 @@ namespace NEventStore.Persistence.MongoPersistence {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Deleting stream &apos;{0}&apos; from bucket &apos;{1}&apos;..
+        /// </summary>
+        internal static string DeletingStream {
+            get {
+                return ResourceManager.GetString("DeletingStream", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Concurrency issue; determining whether attempt was duplicate..
         /// </summary>
         internal static string DetectingConcurrency {

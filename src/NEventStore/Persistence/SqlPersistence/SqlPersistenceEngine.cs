@@ -247,6 +247,19 @@ namespace NEventStore.Persistence.SqlPersistence
             ExecuteCommand(string.Empty, cmd => cmd.ExecuteNonQuery(_dialect.Drop));
         }
 
+        public void DeleteStream(string bucketId, string streamId)
+        {
+            Logger.Warn(Messages.DeletingStream, streamId, bucketId);
+            streamId = streamId.ToHash();
+            ExecuteCommand(string.Empty,
+                cmd =>
+                {
+                    cmd.AddParameter(_dialect.BucketId, bucketId);
+                    cmd.AddParameter(_dialect.StreamId, streamId);
+                    return cmd.ExecuteNonQuery(_dialect.DeleteStream);
+                });
+        }
+
         public IEnumerable<Commit> GetFrom(int checkpoint)
         {
             Logger.Debug(Messages.GettingAllCommitsSinceCheckpoint, checkpoint);
