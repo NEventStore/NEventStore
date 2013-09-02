@@ -193,8 +193,8 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Serialization\RijndaelSerializer.cs" />
-    <Compile Include="SqlPersistenceWireup.cs" />
-    <Compile Include="SqlPersistenceWireupExtensions.cs" />
+    <Compile Include="Persistence\SqlPersistence\SqlPersistenceWireup.cs" />
+    <Compile Include="Persistence\SqlPersistence\SqlPersistenceWireupExtensions.cs" />
     <Compile Include="StoreEventsExtensions.cs" />
     <Compile Include="StreamNotFoundException.cs" />
     <Compile Include="Dispatcher\IScheduleDispatches.cs" />
