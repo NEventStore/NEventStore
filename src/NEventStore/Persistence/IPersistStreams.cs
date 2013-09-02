@@ -34,7 +34,7 @@ namespace NEventStore.Persistence
         IEnumerable<Commit> GetFrom(string bucketId, DateTime start);
 
         /// <summary>
-        /// Gets all commits after from the specified checkpoint.
+        ///     Gets all commits after from the specified checkpoint.
         /// </summary>
         /// <param name="checkpoint">The checkpoint.</param>
         /// <returns></returns>
@@ -79,9 +79,17 @@ namespace NEventStore.Persistence
         void Purge(string bucketId);
 
         /// <summary>
-        ///     Completely DESTROYS the contents and schema (if applicable) containting ANY and ALL streams that have been successfully persisted
+        ///     Completely DESTROYS the contents and schema (if applicable) containting ANY and ALL streams that have been
+        ///     successfully persisted
         ///     in the specified bucket.  Use with caution.
         /// </summary>
         void Drop();
+
+        /// <summary>
+        /// Deletes a stream.
+        /// </summary>
+        /// <param name="bucketId">The bucket Id from which the stream is to be deleted.</param>
+        /// <param name="streamId">The stream Id of the stream that is to be deleted.</param>
+        void DeleteStream(string bucketId, string streamId);
     }
 }

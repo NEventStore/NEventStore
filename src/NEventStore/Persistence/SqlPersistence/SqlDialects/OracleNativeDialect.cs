@@ -88,6 +88,11 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects
             get { return OracleNativeStatements.PurgeStorage; }
         }
 
+        public override string DeleteStream
+        {
+            get { return OracleNativeStatements.DeleteStream; }
+        }
+
         public override string Drop
         {
             get { return OracleNativeStatements.DropTables; }

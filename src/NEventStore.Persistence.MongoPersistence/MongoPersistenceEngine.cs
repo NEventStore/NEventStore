@@ -283,6 +283,17 @@
             Purge();
         }
 
+        public void DeleteStream(string bucketId, string streamId)
+        {
+            Logger.Warn(Messages.DeletingStream, streamId, bucketId);
+            TryMongo(() =>
+            {
+                PersistedStreamHeads.Remove(Query.And(Query.EQ("_id.BucketId", bucketId), Query.EQ("_id.StreamId", streamId)));
+                PersistedSnapshots.Remove(Query.And(Query.EQ("_id.BucketId", bucketId), Query.EQ("_id.StreamId", streamId)));
+                PersistedCommits.Remove(Query.And(Query.EQ("_id.BucketId", bucketId), Query.EQ("_id.StreamId", streamId)));
+            });
+        }
+
         public IEnumerable<Commit> GetFrom(int checkpoint)
         {
             Logger.Debug(Messages.GettingAllCommitsSinceCheckpoint, checkpoint);

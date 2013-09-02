@@ -231,4 +231,8 @@ WHERE  CheckpointNumber &gt;= @CheckpointNumber
 ORDER BY CheckpointNumber
  LIMIT @Limit OFFSET @Skip;</value>
   </data>
+  <data name="DeleteStream" xml:space="preserve">
+    <value>DELETE FROM Snapshots WHERE BucketId =@BucketId AND StreamId = @StreamId;
+DELETE FROM Commits WHERE BucketId = @BucketId AND StreamId = @StreamId;</value>
+  </data>
 </root>

@@ -3,6 +3,7 @@ namespace NEventStore.Persistence.InMemoryPersistence
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Configuration;
     using System.Linq;
     using System.Threading;
     using NEventStore.Logging;
@@ -123,6 +124,17 @@ namespace NEventStore.Persistence.InMemoryPersistence
         public void Drop()
         {
             _buckets.Clear();
+        }
+
+        public void DeleteStream(string bucketId, string streamId)
+        {
+            Logger.Warn(Resources.DeletingStream, streamId, bucketId);
+            Bucket bucket;
+            if (!_buckets.TryGetValue(bucketId, out bucket))
+            {
+                return;
+            }
+            bucket.DeleteStream(streamId);
         }
 
         public bool IsDisposed
@@ -291,6 +303,28 @@ namespace NEventStore.Persistence.InMemoryPersistence
                     _commits.Clear();
                     _snapshots.Clear();
                     _heads.Clear();
+                }
+            }
+
+            public void DeleteStream(string streamId)
+            {
+                lock (_commits)
+                {
+                    Commit[] commits = _commits.Where(c => c.StreamId == streamId).ToArray();
+                    foreach (var commit in commits)
+                    {
+                        _commits.Remove(commit);
+                    }
+                    Snapshot[] snapshots = _snapshots.Where(s => s.StreamId == streamId).ToArray();
+                    foreach (var snapshot in snapshots)
+                    {
+                        _snapshots.Remove(snapshot);
+                    }
+                    StreamHead streamHead = _heads.SingleOrDefault(s => s.StreamId == streamId);
+                    if (streamHead != null)
+                    {
+                        _heads.Remove(streamHead);
+                    }
                 }
             }
         }

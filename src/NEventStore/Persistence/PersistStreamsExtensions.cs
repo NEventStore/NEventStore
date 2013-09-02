@@ -39,5 +39,19 @@ namespace NEventStore.Persistence
             }
             return persistStreams.GetFromTo(Bucket.Default, start, end);
         }
+
+        /// <summary>
+        /// Deletes a stream from the default bucket.
+        /// </summary>
+        /// <param name="persistStreams">The IPersistStreams instance.</param>
+        /// <param name="streamId">The stream id to be deleted.</param>
+        public static void DeleteStream(this IPersistStreams persistStreams, string streamId)
+        {
+            if (persistStreams == null)
+            {
+                throw new ArgumentException("persistStreams is null");
+            }
+            persistStreams.DeleteStream(Bucket.Default, streamId);
+        }
     }
 }
