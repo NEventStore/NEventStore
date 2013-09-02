@@ -139,7 +139,7 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         ///SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
         ///FROM Commits 
         ///WHERE BucketId = :BucketId AND CommitStamp &gt;= :CommitStamp
-        ///ORDER BY CommitStamp, StreamId, StreamRevision.
+        ///ORDER BY CheckpointNumber.
         /// </summary>
         internal static string GetCommitsFromInstant {
             get {
@@ -155,7 +155,7 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         ///   AND StreamRevision &gt;= :StreamRevision
         ///   AND (StreamRevision - Items) &lt;= :MaxStreamRevision
         ///   AND CommitSequence &gt; :CommitSequence
-        ///ORDER BY CommitSequence.
+        ///ORDER BY CheckpointNumber.
         /// </summary>
         internal static string GetCommitsFromStartingRevision {
             get {

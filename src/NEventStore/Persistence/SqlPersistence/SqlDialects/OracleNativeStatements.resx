@@ -166,7 +166,7 @@ WHERE	(
 SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
 FROM Commits 
 WHERE BucketId = :BucketId AND CommitStamp &gt;= :CommitStamp
-ORDER BY CommitStamp, StreamId, StreamRevision</value>
+ORDER BY CheckpointNumber</value>
   </data>
   <data name="GetCommitsFromStartingRevision" xml:space="preserve">
     <value>/*GetCommitsFromStartingRevision*/
@@ -176,7 +176,7 @@ WHERE BucketId = :BucketId AND StreamId = :StreamId
    AND StreamRevision &gt;= :StreamRevision
    AND (StreamRevision - Items) &lt;= :MaxStreamRevision
    AND CommitSequence &gt; :CommitSequence
-ORDER BY CommitSequence</value>
+ORDER BY CheckpointNumber</value>
   </data>
   <data name="GetCommitsSinceCheckpoint" xml:space="preserve">
     <value>/*GetCommitsFromInstant*/
