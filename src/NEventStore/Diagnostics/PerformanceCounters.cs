@@ -5,7 +5,7 @@ namespace NEventStore.Diagnostics
 
     internal class PerformanceCounters : IDisposable
     {
-        private const string CategoryName = "EventStore";
+        private const string CategoryName = "NEventStore";
         private const string TotalCommitsName = "Total Commits";
         private const string CommitsRateName = "Commits/Sec";
         private const string AvgCommitDuration = "Average Commit Duration";
@@ -55,9 +55,9 @@ namespace NEventStore.Diagnostics
             //  * Commits per Query (Total / average / per second)
             //  * Events per Query (Total / average / per second)
             //
-            // Some of these will involve hooking into other parts of the EventStore
+            // Some of these will involve hooking into other parts of the NEventStore
 
-            PerformanceCounterCategory.Create(CategoryName, "EventStore Event-Sourcing Persistence", PerformanceCounterCategoryType.MultiInstance, counters);
+            PerformanceCounterCategory.Create(CategoryName, "NEventStore Event-Sourcing Persistence", PerformanceCounterCategoryType.MultiInstance, counters);
         }
 
         public PerformanceCounters(string instanceName)

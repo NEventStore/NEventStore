@@ -17,17 +17,12 @@ namespace NEventStore.Persistence.AcceptanceTests
             _providerInvariantName = providerInvariantName;
         }
 
-        public IDbConnection OpenMaster(string streamId)
+        public IDbConnection Open()
         {
-            return new ConnectionScope("master", Open);
+            return new ConnectionScope("master", OpenInternal);
         }
 
-        public IDbConnection OpenReplica(string streamId)
-        {
-            return new ConnectionScope("master", Open);
-        }
-
-        private IDbConnection Open()
+        private IDbConnection OpenInternal()
         {
             DbProviderFactory dbProviderFactory = DbProviderFactories.GetFactory(_providerInvariantName);
             string connectionString = Environment.GetEnvironmentVariable(_envVarKey, EnvironmentVariableTarget.Process);
