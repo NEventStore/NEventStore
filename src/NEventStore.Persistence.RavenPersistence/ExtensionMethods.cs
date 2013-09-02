@@ -37,7 +37,7 @@ namespace NEventStore.Persistence.RavenPersistence
                 commit.CommitSequence,
                 commit.CommitStamp,
                 commit.Headers,
-                serializer.Deserialize<List<EventMessage>>(commit.Payload));
+                serializer.Deserialize<List<IEventMessage>>(commit.Payload));
         }
 
         public static string ToRavenSnapshotId(ISnapshot snapshot)
