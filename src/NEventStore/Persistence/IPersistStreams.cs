@@ -84,5 +84,12 @@ namespace NEventStore.Persistence
         ///     in the specified bucket.  Use with caution.
         /// </summary>
         void Drop();
+
+        /// <summary>
+        /// Deletes a stream.
+        /// </summary>
+        /// <param name="bucketId">The bucket Id from which the stream is to be deleted.</param>
+        /// <param name="streamId">The stream Id of the stream that is to be deleted.</param>
+        void DeleteStream(string bucketId, string streamId);
     }
 }

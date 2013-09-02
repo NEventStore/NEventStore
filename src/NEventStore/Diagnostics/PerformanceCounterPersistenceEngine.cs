@@ -92,6 +92,11 @@ namespace NEventStore.Diagnostics
             _persistence.Drop();
         }
 
+        public void DeleteStream(string bucketId, string streamId)
+        {
+            _persistence.DeleteStream(bucketId, streamId);
+        }
+
         public IEnumerable<Commit> GetFrom(int checkpoint)
         {
             return _persistence.GetFrom(checkpoint);
