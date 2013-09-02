@@ -29,12 +29,24 @@ namespace NEventStore.Conversion
 
         public virtual ICommit Select(ICommit committed)
         {
+            bool converted = false;
             var eventMessages = committed
                 .Events
-                .Select(eventMessage => new EventMessage {Headers = eventMessage.Headers, Body = Convert(eventMessage.Body)})
-                .Cast<IEventMessage>()
+                .Select(eventMessage =>
+                {
+                    object convert = Convert(eventMessage.Body);
+                    if (ReferenceEquals(convert, eventMessage.Body))
+                    {
+                        return eventMessage;
+                    }
+                    converted = true;
+                    return new EventMessage {Headers = eventMessage.Headers, Body = convert };
+                })
                 .ToList();
-
+            if (!converted)
+            {
+                return committed;
+            }
             return new Commit(committed.BucketId,
                 committed.StreamId,
                 committed.StreamRevision,
