@@ -136,7 +136,7 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         ///   Looks up a localized string similar to SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
         ///  FROM Commits
         /// WHERE BucketId = @BucketId AND CommitStamp &gt;= @CommitStamp
-        /// ORDER BY CommitSequence, StreamId, StreamRevision
+        /// ORDER BY CheckpointNumber
         /// LIMIT @Limit OFFSET @Skip;.
         /// </summary>
         internal static string GetCommitsFromInstant {
@@ -168,7 +168,7 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         /// WHERE BucketId = @BucketId
         ///   AND CommitStamp &gt;= @CommitStampStart
         ///   AND CommitStamp &lt; @CommitStampEnd
-        /// ORDER BY CommitSequence, StreamId, StreamRevision
+        /// ORDER BY CheckpointNumber
         /// LIMIT @Limit OFFSET @Skip;.
         /// </summary>
         internal static string GetCommitsFromToInstant {
@@ -214,7 +214,7 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         ///   Looks up a localized string similar to SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
         ///  FROM Commits
         /// WHERE Dispatched = 0
-        /// ORDER BY CommitSequence
+        /// ORDER BY CheckpointNumber
         /// LIMIT @Limit OFFSET @Skip;.
         /// </summary>
         internal static string GetUndispatchedCommits {

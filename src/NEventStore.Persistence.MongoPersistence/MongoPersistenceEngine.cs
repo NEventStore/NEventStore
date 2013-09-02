@@ -136,7 +136,7 @@
 
             return TryMongo(() => PersistedCommits
                 .Find(Query.And(Query.EQ("_id.BucketId", bucketId), Query.GTE(MongoFields.CommitStamp, start)))
-                .SetSortOrder(MongoFields.Id)
+                .SetSortOrder(MongoFields.CheckpointNumber)
                 .Select(x => x.ToCommit(_serializer)));
         }
 
@@ -146,7 +146,7 @@
 
             return TryMongo(() => PersistedCommits
                 .Find(Query.And(Query.EQ("_id.BucketId", bucketId), Query.GTE(MongoFields.CommitStamp, start), Query.LT(MongoFields.CommitStamp, end)))
-                .SetSortOrder(MongoFields.Id)
+                .SetSortOrder(MongoFields.CheckpointNumber)
                 .Select(x => x.ToCommit(_serializer)));
         }
 
