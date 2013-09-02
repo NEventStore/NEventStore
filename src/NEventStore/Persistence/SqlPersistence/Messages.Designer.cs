@@ -304,15 +304,6 @@ namespace NEventStore.Persistence.SqlPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Embedding sharding key into connection string for &apos;{0}&apos;..
-        /// </summary>
-        internal static string EmbeddingShardKey {
-            get {
-                return ResourceManager.GetString("EmbeddingShardKey", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Enumerated {0} rows, re-querying for next page..
         /// </summary>
         internal static string EnumeratedRowCount {
@@ -466,15 +457,6 @@ namespace NEventStore.Persistence.SqlPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No connections have been opened yet..
-        /// </summary>
-        internal static string NotConnectionsAvailable {
-            get {
-                return ResourceManager.GetString("NotConnectionsAvailable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The object has been disposed and cannot be used..
         /// </summary>
         internal static string ObjectAlreadyDisposed {
@@ -507,15 +489,6 @@ namespace NEventStore.Persistence.SqlPersistence {
         internal static string OpeningMasterConnection {
             get {
                 return ResourceManager.GetString("OpeningMasterConnection", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Opening replica connection &apos;{0}&apos;..
-        /// </summary>
-        internal static string OpeningReplicaConnection {
-            get {
-                return ResourceManager.GetString("OpeningReplicaConnection", resourceCulture);
             }
         }
         

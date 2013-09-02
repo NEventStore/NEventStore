@@ -73,15 +73,14 @@ namespace NEventStore.Persistence.SqlPersistence
             }
 
             Logger.Debug(Messages.InitializingStorage);
-            ExecuteCommand(string.Empty, statement => statement.ExecuteWithoutExceptions(_dialect.InitializeStorage));
+            ExecuteCommand(statement => statement.ExecuteWithoutExceptions(_dialect.InitializeStorage));
         }
 
         public virtual IEnumerable<Commit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
         {
             Logger.Debug(Messages.GettingAllCommitsBetween, streamId, minRevision, maxRevision);
             streamId = streamId.ToHash();
-            return ExecuteQuery(streamId,
-                query =>
+            return ExecuteQuery(query =>
                 {
                     string statement = _dialect.GetCommitsFromStartingRevision;
                     query.AddParameter(_dialect.BucketId, bucketId);
@@ -100,8 +99,7 @@ namespace NEventStore.Persistence.SqlPersistence
             start = start < EpochTime ? EpochTime : start;
 
             Logger.Debug(Messages.GettingAllCommitsFrom, start, bucketId);
-            return ExecuteQuery(string.Empty,
-                query =>
+            return ExecuteQuery(query =>
                 {
                     string statement = _dialect.GetCommitsFromInstant;
                     query.AddParameter(_dialect.BucketId, bucketId);
@@ -119,8 +117,7 @@ namespace NEventStore.Persistence.SqlPersistence
             end = end < EpochTime ? EpochTime : end;
 
             Logger.Debug(Messages.GettingAllCommitsFromTo, start, end);
-            return ExecuteQuery(string.Empty,
-                query =>
+            return ExecuteQuery(query =>
                 {
                     string statement = _dialect.GetCommitsFromToInstant;
                     query.AddParameter(_dialect.BucketId, bucketId);
@@ -159,7 +156,7 @@ namespace NEventStore.Persistence.SqlPersistence
         {
             Logger.Debug(Messages.GettingUndispatchedCommits);
             return
-                ExecuteQuery(string.Empty, query => query.ExecutePagedQuery(_dialect.GetUndispatchedCommits, (q, r) => { }))
+                ExecuteQuery(query => query.ExecutePagedQuery(_dialect.GetUndispatchedCommits, (q, r) => { }))
                     .Select(x => x.GetCommit(_serializer))
                     .ToArray(); // avoid paging
         }
@@ -168,8 +165,7 @@ namespace NEventStore.Persistence.SqlPersistence
         {
             Logger.Debug(Messages.MarkingCommitAsDispatched, commit.CommitId);
             string streamId = commit.StreamId.ToHash();
-            ExecuteCommand(streamId,
-                cmd =>
+            ExecuteCommand(cmd =>
                 {
                     cmd.AddParameter(_dialect.BucketId, commit.BucketId);
                     cmd.AddParameter(_dialect.StreamId, streamId);
@@ -181,8 +177,7 @@ namespace NEventStore.Persistence.SqlPersistence
         public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
         {
             Logger.Debug(Messages.GettingStreamsToSnapshot);
-            return ExecuteQuery(string.Empty,
-                query =>
+            return ExecuteQuery(query =>
                 {
                     string statement = _dialect.GetStreamsRequiringSnapshots;
                     query.AddParameter(_dialect.BucketId, bucketId);
@@ -198,8 +193,7 @@ namespace NEventStore.Persistence.SqlPersistence
         {
             Logger.Debug(Messages.GettingRevision, streamId, maxRevision);
             streamId = streamId.ToHash();
-            return ExecuteQuery(streamId,
-                query =>
+            return ExecuteQuery(query =>
                 {
                     string statement = _dialect.GetSnapshot;
                     query.AddParameter(_dialect.BucketId, bucketId);
@@ -213,8 +207,7 @@ namespace NEventStore.Persistence.SqlPersistence
         {
             Logger.Debug(Messages.AddingSnapshot, snapshot.StreamId, snapshot.StreamRevision);
             string streamId = snapshot.StreamId.ToHash();
-            return ExecuteCommand(streamId,
-                cmd =>
+            return ExecuteCommand(cmd =>
                 {
                     cmd.AddParameter(_dialect.BucketId, snapshot.BucketId);
                     cmd.AddParameter(_dialect.StreamId, streamId);
@@ -227,14 +220,13 @@ namespace NEventStore.Persistence.SqlPersistence
         public virtual void Purge()
         {
             Logger.Warn(Messages.PurgingStorage);
-            ExecuteCommand(string.Empty, cmd => cmd.ExecuteNonQuery(_dialect.PurgeStorage));
+            ExecuteCommand(cmd => cmd.ExecuteNonQuery(_dialect.PurgeStorage));
         }
 
         public void Purge(string bucketId)
         {
             Logger.Warn(Messages.PurgingBucket, bucketId);
-            ExecuteCommand(string.Empty,
-                cmd =>
+            ExecuteCommand(cmd =>
                 {
                     cmd.AddParameter(_dialect.BucketId, bucketId);
                     return cmd.ExecuteNonQuery(_dialect.PurgeBucket);
@@ -244,15 +236,14 @@ namespace NEventStore.Persistence.SqlPersistence
         public void Drop()
         {
             Logger.Warn(Messages.DroppingTables);
-            ExecuteCommand(string.Empty, cmd => cmd.ExecuteNonQuery(_dialect.Drop));
+            ExecuteCommand(cmd => cmd.ExecuteNonQuery(_dialect.Drop));
         }
 
         public void DeleteStream(string bucketId, string streamId)
         {
             Logger.Warn(Messages.DeletingStream, streamId, bucketId);
             streamId = streamId.ToHash();
-            ExecuteCommand(string.Empty,
-                cmd =>
+            ExecuteCommand(cmd =>
                 {
                     cmd.AddParameter(_dialect.BucketId, bucketId);
                     cmd.AddParameter(_dialect.StreamId, streamId);
@@ -263,7 +254,7 @@ namespace NEventStore.Persistence.SqlPersistence
         public IEnumerable<Commit> GetFrom(int checkpoint)
         {
             Logger.Debug(Messages.GettingAllCommitsSinceCheckpoint, checkpoint);
-            return ExecuteQuery(string.Empty, query =>
+            return ExecuteQuery(query =>
             {
                 string statement = _dialect.GetCommitsFromCheckpoint;
                 query.AddParameter(_dialect.CheckpointNumber, checkpoint);
@@ -291,8 +282,7 @@ namespace NEventStore.Persistence.SqlPersistence
         {
             Logger.Debug(Messages.AttemptingToCommit, attempt.Events.Count, attempt.StreamId, attempt.CommitSequence, attempt.BucketId);
             string streamId = attempt.StreamId.ToHash();
-            ExecuteCommand(streamId,
-                cmd =>
+            ExecuteCommand(cmd =>
                 {
                     cmd.AddParameter(_dialect.BucketId, attempt.BucketId);
                     cmd.AddParameter(_dialect.StreamId, streamId);
@@ -311,8 +301,7 @@ namespace NEventStore.Persistence.SqlPersistence
         private bool DetectDuplicate(Commit attempt)
         {
             string streamId = attempt.StreamId.ToHash();
-            return ExecuteCommand(streamId,
-                cmd =>
+            return ExecuteCommand(cmd =>
                 {
                     cmd.AddParameter(_dialect.BucketId, attempt.BucketId);
                     cmd.AddParameter(_dialect.StreamId, streamId);
@@ -323,11 +312,10 @@ namespace NEventStore.Persistence.SqlPersistence
                 });
         }
 
-        protected virtual IEnumerable<T> ExecuteQuery<T>(string streamId, Func<IDbStatement, IEnumerable<T>> query)
+        protected virtual IEnumerable<T> ExecuteQuery<T>(Func<IDbStatement, IEnumerable<T>> query)
         {
             ThrowWhenDisposed();
 
-            streamId = streamId.ToHash();
             TransactionScope scope = OpenQueryScope();
             IDbConnection connection = null;
             IDbTransaction transaction = null;
@@ -335,7 +323,7 @@ namespace NEventStore.Persistence.SqlPersistence
 
             try
             {
-                connection = _connectionFactory.OpenReplica(streamId);
+                connection = _connectionFactory.Open();
                 transaction = _dialect.OpenTransaction(connection);
                 statement = _dialect.BuildStatement(scope, connection, transaction);
                 statement.PageSize = _pageSize;
@@ -388,13 +376,12 @@ namespace NEventStore.Persistence.SqlPersistence
             throw new ObjectDisposedException(Messages.AlreadyDisposed);
         }
 
-        protected virtual T ExecuteCommand<T>(string streamId, Func<IDbStatement, T> command)
+        protected virtual T ExecuteCommand<T>(Func<IDbStatement, T> command)
         {
             ThrowWhenDisposed();
 
-            streamId = streamId.ToHash();
             using (TransactionScope scope = OpenCommandScope())
-            using (IDbConnection connection = _connectionFactory.OpenMaster(streamId))
+            using (IDbConnection connection = _connectionFactory.Open())
             using (IDbTransaction transaction = _dialect.OpenTransaction(connection))
             using (IDbStatement statement = _dialect.BuildStatement(scope, connection, transaction))
             {

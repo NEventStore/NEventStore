@@ -3,7 +3,7 @@ namespace NEventStore
     using System.Globalization;
 
     /// <summary>
-    ///     A set of common methods used through the EventStore.
+    ///     A set of common methods used through the NEventStore.
     /// </summary>
     public static class ExtensionMethods
     {
