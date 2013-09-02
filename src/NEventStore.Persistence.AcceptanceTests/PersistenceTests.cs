@@ -553,6 +553,38 @@ namespace NEventStore.Persistence.AcceptanceTests
         }
     }
 
+    public class when_purging_a_bucket : PersistenceEngineConcern
+    {
+        private Commit _commitSingle;
+
+        protected override void Context()
+        {
+            _commitSingle = Persistence.CommitSingle();
+        }
+
+        protected override void Because()
+        {
+            Persistence.Purge(_commitSingle.BucketId);
+        }
+
+        public void should_not_find_any_commits_stored()
+        {
+            Persistence.GetFrom(DateTime.MinValue).Count().ShouldBe(0);
+        }
+
+        [Fact]
+        public void should_not_find_any_streams_to_snapshot()
+        {
+            Persistence.GetStreamsToSnapshot(0).Count().ShouldBe(0);
+        }
+
+        [Fact]
+        public void should_not_find_any_undispatched_commits()
+        {
+            Persistence.GetUndispatchedCommits().Count().ShouldBe(0);
+        }
+    }
+
     public class when_invoking_after_disposal : PersistenceEngineConcern
     {
         private Exception _thrown;
