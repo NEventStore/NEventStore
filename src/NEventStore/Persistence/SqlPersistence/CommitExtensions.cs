@@ -24,7 +24,7 @@ namespace NEventStore.Persistence.SqlPersistence
         {
             Logger.Verbose(Messages.DeserializingCommit, serializer.GetType());
             var headers = serializer.Deserialize<Dictionary<string, object>>(record, HeadersIndex);
-            var events = serializer.Deserialize<List<EventMessage>>(record, PayloadIndex);
+            var events = serializer.Deserialize<List<IEventMessage>>(record, PayloadIndex);
 
             return new Commit(record[BucketIdIndex].ToString(),
                 record[StreamIdOriginalIndex].ToString(),
