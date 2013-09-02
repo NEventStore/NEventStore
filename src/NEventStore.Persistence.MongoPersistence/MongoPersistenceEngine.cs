@@ -275,7 +275,14 @@
 
         public void Purge(string bucketId)
         {
-            throw new NotImplementedException();
+            Logger.Warn(Messages.PurgingBucket, bucketId);
+            TryMongo(() =>
+            {
+                PersistedStreamHeads.Remove(Query.EQ("_id.BucketId", bucketId));
+                PersistedSnapshots.Remove(Query.EQ("_id.BucketId", bucketId));
+                PersistedCommits.Remove(Query.EQ("_id.BucketId", bucketId));
+            });
+
         }
 
         public void Drop()

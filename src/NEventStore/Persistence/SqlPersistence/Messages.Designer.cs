@@ -511,7 +511,7 @@ namespace NEventStore.Persistence.SqlPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Opening new threaded scope for key &apos;{0}&apos;; scope is root: {1}.
+        ///   Looks up a localized string similar to Opening new threaded scope for key &apos;{0}&apos;; scope is root: {1}..
         /// </summary>
         internal static string OpeningThreadScope {
             get {
@@ -520,7 +520,7 @@ namespace NEventStore.Persistence.SqlPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Purging all stored data for bucket &apos;{0}&apos;.
+        ///   Looks up a localized string similar to Purging all stored data for bucket &apos;{0}&apos;..
         /// </summary>
         internal static string PurgingBucket {
             get {
