@@ -554,36 +554,6 @@ namespace NEventStore.Persistence.AcceptanceTests
         }
     }
 
-    public class when_deleting_stream : PersistenceEngineConcern
-    {
-        private Commit _commit;
-        private Snapshot _snapshot;
-
-        protected override void Context()
-        {
-            _commit = Persistence.CommitSingle();
-            _snapshot = new Snapshot(_commit.StreamId, 1, "Snapshot");
-            Persistence.AddSnapshot(_snapshot);
-        }
-
-        protected override void Because()
-        {
-            Persistence.DeleteStream(_commit.BucketId, _commit.StreamId);
-        }
-
-        [Fact]
-        public void should_not_find_any_commits_stored()
-        {
-            Persistence.GetFrom(DateTime.MinValue).Count().ShouldBe(0);
-        }
-
-        [Fact]
-        public void should_not_find_any_snapshots_stored()
-        {
-            Persistence.GetSnapshot(_snapshot.BucketId, _snapshot.StreamId, int.MaxValue).ShouldBeNull();
-        }
-    }
-
     public class when_invoking_after_disposal : PersistenceEngineConcern
     {
         private Exception _thrown;

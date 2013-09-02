@@ -174,4 +174,7 @@
   <data name="DeletingStream" xml:space="preserve">
     <value>Deleting stream '{0}' from bucket '{1}'.</value>
   </data>
+  <data name="PurgingBucket" xml:space="preserve">
+    <value>Purging all stored data for bucket '{0}'.</value>
+  </data>
 </root>
