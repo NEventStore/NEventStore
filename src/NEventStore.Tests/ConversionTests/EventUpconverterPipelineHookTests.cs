@@ -15,115 +15,106 @@ namespace NEventStore.ConversionTests
 
     public class when_opening_a_commit_that_does_not_have_convertible_events : using_event_converter
     {
-        private readonly Commit commit = new Commit(
-            Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
+        private readonly ICommit _commit = new Commit(Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
 
-        private Commit converted;
+        private ICommit _converted;
 
         protected override void Context()
         {
-            commit.Events.Add(new EventMessage {Body = new NonConvertingEvent()});
+            _commit.Events.Add(new EventMessage {Body = new NonConvertingEvent()});
         }
 
         protected override void Because()
         {
-            converted = EventUpconverter.Select(commit);
+            _converted = EventUpconverter.Select(_commit);
         }
 
         [Fact]
         public void should_not_be_converted()
         {
-            converted.ShouldBeSameAs(commit);
+            _converted.ShouldBeSameAs(_commit);
         }
 
         [Fact]
         public void should_have_the_same_instance_of_the_event()
         {
-            converted.Events.Single().ShouldBe(commit.Events.Single());
+            _converted.Events.Single().ShouldBe(_commit.Events.Single());
         }
     }
 
     public class when_opening_a_commit_that_has_convertible_events : using_event_converter
     {
-        private readonly Commit commit = new Commit(
-            Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
+        private readonly ICommit _commit = new Commit(Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
 
-        private readonly Guid id = Guid.NewGuid();
-        private Commit converted;
-        private EventMessage eventMessage;
+        private readonly Guid _id = Guid.NewGuid();
+        private ICommit _converted;
+        private EventMessage _eventMessage;
 
         protected override void Context()
         {
-            eventMessage = new EventMessage
-            {
-                Body = new ConvertingEvent(id)
-            };
+            _eventMessage = new EventMessage {Body = new ConvertingEvent(_id)};
 
-            commit.Events.Add(eventMessage);
+            _commit.Events.Add(_eventMessage);
         }
 
         protected override void Because()
         {
-            converted = EventUpconverter.Select(commit);
+            _converted = EventUpconverter.Select(_commit);
         }
 
         [Fact]
         public void should_be_of_the_converted_type()
         {
-            converted.Events.Single().Body.GetType().ShouldBe(typeof (ConvertingEvent3));
+            _converted.Events.Single().Body.GetType().ShouldBe(typeof (ConvertingEvent3));
         }
 
         [Fact]
         public void should_have_the_same_id_of_the_commited_event()
         {
-            ((ConvertingEvent3) converted.Events.Single().Body).Id.ShouldBe(id);
+            ((ConvertingEvent3) _converted.Events.Single().Body).Id.ShouldBe(_id);
         }
     }
 
     public class when_an_event_converter_implements_the_IConvertEvents_interface_explicitly : using_event_converter
     {
-        private readonly Commit commit = new Commit(
-            Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
+        private readonly ICommit _commit = new Commit(Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
 
-        private readonly Guid id = Guid.NewGuid();
-        private Commit converted;
-        private EventMessage eventMessage;
+        private readonly Guid _id = Guid.NewGuid();
+        private ICommit _converted;
+        private IEventMessage _eventMessage;
 
         protected override void Context()
         {
-            eventMessage = new EventMessage
-            {
-                Body = new ConvertingEvent2(id, "FooEvent")
-            };
+            _eventMessage = new EventMessage {Body = new ConvertingEvent2(_id, "FooEvent")};
 
-            commit.Events.Add(eventMessage);
+            _commit.Events.Add(_eventMessage);
         }
 
         protected override void Because()
         {
-            converted = EventUpconverter.Select(commit);
+            _converted = EventUpconverter.Select(_commit);
         }
 
         [Fact]
         public void should_be_of_the_converted_type()
         {
-            converted.Events.Single().Body.GetType().ShouldBe(typeof (ConvertingEvent3));
+            _converted.Events.Single().Body.GetType().ShouldBe(typeof (ConvertingEvent3));
         }
 
         [Fact]
         public void should_have_the_same_id_of_the_commited_event()
         {
-            ((ConvertingEvent3) converted.Events.Single().Body).Id.ShouldBe(id);
+            ((ConvertingEvent3) _converted.Events.Single().Body).Id.ShouldBe(_id);
         }
     }
 
     public class using_event_converter : SpecificationBase
     {
-        protected IEnumerable<Assembly> assemblies;
-        protected Dictionary<Type, Func<object, object>> converters;
+        private IEnumerable<Assembly> assemblies;
+        private Dictionary<Type, Func<object, object>> converters;
         private EventUpconverterPipelineHook eventUpconverter;
 
-        public EventUpconverterPipelineHook EventUpconverter
+        protected EventUpconverterPipelineHook EventUpconverter
         {
             get { return eventUpconverter ?? (eventUpconverter = CreateUpConverterHook()); }
         }
@@ -138,15 +129,13 @@ namespace NEventStore.ConversionTests
         private Dictionary<Type, Func<object, object>> GetConverters(IEnumerable<Assembly> toScan)
         {
             IEnumerable<KeyValuePair<Type, Func<object, object>>> c = from a in toScan
-                                                                      from t in a.GetTypes()
-                                                                      let i = t.GetInterface(typeof (IUpconvertEvents<,>).FullName)
-                                                                      where i != null
-                                                                      let sourceType = i.GetGenericArguments().First()
-                                                                      let convertMethod = i.GetMethods(BindingFlags.Public | BindingFlags.Instance).First()
-                                                                      let instance = Activator.CreateInstance(t)
-                                                                      select new KeyValuePair<Type, Func<object, object>>(
-                                                                          sourceType,
-                                                                          e => convertMethod.Invoke(instance, new[] {e}));
+                from t in a.GetTypes()
+                let i = t.GetInterface(typeof (IUpconvertEvents<,>).FullName)
+                where i != null
+                let sourceType = i.GetGenericArguments().First()
+                let convertMethod = i.GetMethods(BindingFlags.Public | BindingFlags.Instance).First()
+                let instance = Activator.CreateInstance(t)
+                select new KeyValuePair<Type, Func<object, object>>(sourceType, e => convertMethod.Invoke(instance, new[] {e}));
             try
             {
                 return c.ToDictionary(x => x.Key, x => x.Value);
@@ -159,10 +148,8 @@ namespace NEventStore.ConversionTests
 
         private IEnumerable<Assembly> GetAllAssemblies()
         {
-            return Assembly.GetCallingAssembly()
-                           .GetReferencedAssemblies()
-                           .Select(Assembly.Load)
-                           .Concat(new[] {Assembly.GetCallingAssembly()});
+            return
+                Assembly.GetCallingAssembly().GetReferencedAssemblies().Select(Assembly.Load).Concat(new[] {Assembly.GetCallingAssembly()});
         }
     }
 

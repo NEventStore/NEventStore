@@ -22,17 +22,17 @@ namespace NEventStore
             GC.SuppressFinalize(this);
         }
 
-        public Commit Select(Commit committed)
+        public ICommit Select(ICommit committed)
         {
             return committed;
         }
 
-        public virtual bool PreCommit(Commit attempt)
+        public virtual bool PreCommit(ICommit attempt)
         {
             return true;
         }
 
-        public void PostCommit(Commit committed)
+        public void PostCommit(ICommit committed)
         {
             if (committed != null)
             {

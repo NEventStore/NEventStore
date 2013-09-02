@@ -22,7 +22,7 @@ namespace NEventStore
         /// <returns>A series of committed events from the stream specified sorted in ascending order.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        IEnumerable<Commit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision);
+        IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision);
 
         /// <summary>
         ///     Writes the to-be-commited events provided to the underlying persistence mechanism.
@@ -31,6 +31,6 @@ namespace NEventStore
         /// <exception cref="ConcurrencyException" />
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        void Commit(Commit attempt);
+        void Commit(ICommit attempt);
     }
 }

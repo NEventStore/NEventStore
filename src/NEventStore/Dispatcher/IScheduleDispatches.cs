@@ -14,6 +14,6 @@ namespace NEventStore.Dispatcher
         ///     Schedules the series of messages contained within the commit provided for delivery to all interested parties.
         /// </summary>
         /// <param name="commit">The commit representing the series of messages to be dispatched.</param>
-        void ScheduleDispatch(Commit commit);
+        void ScheduleDispatch(ICommit commit);
     }
 }

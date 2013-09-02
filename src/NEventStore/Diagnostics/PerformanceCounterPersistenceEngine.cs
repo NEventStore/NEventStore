@@ -21,7 +21,7 @@ namespace NEventStore.Diagnostics
             _persistence.Initialize();
         }
 
-        public virtual void Commit(Commit attempt)
+        public virtual void Commit(ICommit attempt)
         {
             Stopwatch clock = Stopwatch.StartNew();
             _persistence.Commit(attempt);
@@ -30,33 +30,33 @@ namespace NEventStore.Diagnostics
             _counters.CountCommit(attempt.Events.Count, clock.ElapsedMilliseconds);
         }
 
-        public virtual void MarkCommitAsDispatched(Commit commit)
+        public virtual void MarkCommitAsDispatched(ICommit commit)
         {
             _persistence.MarkCommitAsDispatched(commit);
             _counters.CountCommitDispatched();
         }
 
-        public IEnumerable<Commit> GetFromTo(string bucketId, DateTime start, DateTime end)
+        public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             return _persistence.GetFromTo(bucketId, start, end);
         }
 
-        public virtual IEnumerable<Commit> GetUndispatchedCommits()
+        public virtual IEnumerable<ICommit> GetUndispatchedCommits()
         {
             return _persistence.GetUndispatchedCommits();
         }
 
-        public virtual IEnumerable<Commit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
+        public virtual IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
         {
             return _persistence.GetFrom(bucketId, streamId, minRevision, maxRevision);
         }
 
-        public virtual IEnumerable<Commit> GetFrom(string bucketId, DateTime start)
+        public virtual IEnumerable<ICommit> GetFrom(string bucketId, DateTime start)
         {
             return _persistence.GetFrom(bucketId, start);
         }
 
-        public virtual bool AddSnapshot(Snapshot snapshot)
+        public virtual bool AddSnapshot(ISnapshot snapshot)
         {
             bool result = _persistence.AddSnapshot(snapshot);
             if (result)
@@ -67,12 +67,12 @@ namespace NEventStore.Diagnostics
             return result;
         }
 
-        public virtual Snapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
+        public virtual ISnapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
         {
             return _persistence.GetSnapshot(bucketId, streamId, maxRevision);
         }
 
-        public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
+        public virtual IEnumerable<IStreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
         {
             return _persistence.GetStreamsToSnapshot(bucketId, maxThreshold);
         }
@@ -97,7 +97,7 @@ namespace NEventStore.Diagnostics
             _persistence.DeleteStream(bucketId, streamId);
         }
 
-        public IEnumerable<Commit> GetFrom(int checkpoint)
+        public IEnumerable<ICommit> GetFrom(int checkpoint)
         {
             return _persistence.GetFrom(checkpoint);
         }

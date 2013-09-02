@@ -9,7 +9,7 @@ namespace NEventStore
     /// </summary>
     [DataContract]
     [Serializable]
-    public class Commit
+    public class Commit : ICommit
     {
         /// <summary>
         ///     Initializes a new instance of the Commit class for the default bucket.
@@ -27,8 +27,8 @@ namespace NEventStore
             Guid commitId,
             int commitSequence,
             DateTime commitStamp,
-            Dictionary<string, object> headers,
-            List<EventMessage> events)
+            IDictionary<string, object> headers,
+            IEnumerable<IEventMessage> events)
             : this(Bucket.Default, streamId.ToString(), streamRevision, commitId, commitSequence, commitStamp, headers, events)
         { }
 
@@ -48,8 +48,8 @@ namespace NEventStore
             Guid commitId,
             int commitSequence,
             DateTime commitStamp,
-            Dictionary<string, object> headers,
-            List<EventMessage> events)
+            IDictionary<string, object> headers,
+            IEnumerable<IEventMessage> events)
             : this(Bucket.Default, streamId, streamRevision, commitId, commitSequence, commitStamp, headers, events)
         {}
 
@@ -71,8 +71,8 @@ namespace NEventStore
             Guid commitId,
             int commitSequence,
             DateTime commitStamp,
-            Dictionary<string, object> headers,
-            List<EventMessage> events)
+            IDictionary<string, object> headers,
+            IEnumerable<IEventMessage> events)
             : this()
         {
             BucketId = bucketId;
@@ -82,7 +82,7 @@ namespace NEventStore
             CommitSequence = commitSequence;
             CommitStamp = commitStamp;
             Headers = headers ?? new Dictionary<string, object>();
-            Events = events ?? new List<EventMessage>();
+            Events = events == null ? new List<IEventMessage>() : new List<IEventMessage>(events);
         }
 
         /// <summary>
@@ -131,13 +131,13 @@ namespace NEventStore
         ///     Gets the metadata which provides additional, unstructured information about this commit.
         /// </summary>
         [DataMember]
-        public virtual Dictionary<string, object> Headers { get; private set; }
+        public virtual IDictionary<string, object> Headers { get; private set; }
 
         /// <summary>
         ///     Gets the collection of event messages to be committed as a single unit.
         /// </summary>
         [DataMember]
-        public virtual List<EventMessage> Events { get; private set; }
+        public virtual ICollection<IEventMessage> Events { get; private set; }
 
         [DataMember]
         public int Checkpoint { get; set; }

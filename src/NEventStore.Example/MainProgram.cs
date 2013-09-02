@@ -49,7 +49,7 @@ namespace NEventStore.Example
 					.DispatchTo(new DelegateMessageDispatcher(DispatchCommit))
 				.Build();
 		}
-		private static void DispatchCommit(Commit commit)
+		private static void DispatchCommit(ICommit commit)
 		{
 			// This is where we'd hook into our messaging infrastructure, such as NServiceBus,
 			// MassTransit, WCF, or some other communications infrastructure.

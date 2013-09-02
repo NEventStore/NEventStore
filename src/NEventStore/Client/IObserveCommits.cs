@@ -3,7 +3,7 @@
     using System;
     using System.Threading.Tasks;
 
-    public interface IObserveCommits : IObservable<Commit>, IDisposable
+    public interface IObserveCommits : IObservable<ICommit>, IDisposable
     {
         Task Start();
     }

@@ -13,7 +13,7 @@ namespace NEventStore.Persistence
         /// <returns>All commits that have occurred on or after the specified starting time.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        public static IEnumerable<Commit> GetFrom(this IPersistStreams persistStreams, DateTime start)
+        public static IEnumerable<ICommit> GetFrom(this IPersistStreams persistStreams, DateTime start)
         {
             if (persistStreams == null)
             {
@@ -31,7 +31,7 @@ namespace NEventStore.Persistence
         /// <returns>All commits that have occurred on or after the specified starting time and before the end time.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        public static IEnumerable<Commit> GetFromTo(this IPersistStreams persistStreams, DateTime start, DateTime end)
+        public static IEnumerable<ICommit> GetFromTo(this IPersistStreams persistStreams, DateTime start, DateTime end)
         {
             if (persistStreams == null)
             {

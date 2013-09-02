@@ -9,7 +9,7 @@
     /// </summary>
     [DataContract]
     [Serializable]
-    public class EventMessage
+    public class EventMessage : IEventMessage
     {
         /// <summary>
         ///     Initializes a new instance of the EventMessage class.
@@ -23,7 +23,7 @@
         ///     Gets the metadata which provides additional, unstructured information about this message.
         /// </summary>
         [DataMember]
-        public Dictionary<string, object> Headers { get; private set; }
+        public IDictionary<string, object> Headers { get; set; }
 
         /// <summary>
         ///     Gets or sets the actual event message body.

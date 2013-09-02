@@ -11,9 +11,9 @@ namespace NEventStore
     public class OptimisticEventStream : IEventStream
     {
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (OptimisticEventStream));
-        private readonly ICollection<EventMessage> _committed = new LinkedList<EventMessage>();
+        private readonly ICollection<IEventMessage> _committed = new LinkedList<IEventMessage>();
         private readonly IDictionary<string, object> _committedHeaders = new Dictionary<string, object>();
-        private readonly ICollection<EventMessage> _events = new LinkedList<EventMessage>();
+        private readonly ICollection<IEventMessage> _events = new LinkedList<IEventMessage>();
         private readonly ICollection<Guid> _identifiers = new HashSet<Guid>();
         private readonly ICommitEvents _persistence;
         private readonly IDictionary<string, object> _uncommittedHeaders = new Dictionary<string, object>();
@@ -37,7 +37,7 @@ namespace NEventStore
         public OptimisticEventStream(string bucketId, string streamId, ICommitEvents persistence, int minRevision, int maxRevision)
             : this(bucketId, streamId, persistence)
         {
-            IEnumerable<Commit> commits = persistence.GetFrom(bucketId, streamId, minRevision, maxRevision);
+            IEnumerable<ICommit> commits = persistence.GetFrom(bucketId, streamId, minRevision, maxRevision);
             PopulateStream(minRevision, maxRevision, commits);
 
             if (minRevision > 0 && _committed.Count == 0)
@@ -46,10 +46,10 @@ namespace NEventStore
             }
         }
 
-        public OptimisticEventStream(Snapshot snapshot, ICommitEvents persistence, int maxRevision)
+        public OptimisticEventStream(ISnapshot snapshot, ICommitEvents persistence, int maxRevision)
             : this(snapshot.BucketId, snapshot.StreamId, persistence)
         {
-            IEnumerable<Commit> commits = persistence.GetFrom(snapshot.BucketId, snapshot.StreamId, snapshot.StreamRevision, maxRevision);
+            IEnumerable<ICommit> commits = persistence.GetFrom(snapshot.BucketId, snapshot.StreamId, snapshot.StreamRevision, maxRevision);
             PopulateStream(snapshot.StreamRevision + 1, maxRevision, commits);
             StreamRevision = snapshot.StreamRevision + _committed.Count;
         }
@@ -65,9 +65,9 @@ namespace NEventStore
         public virtual int StreamRevision { get; private set; }
         public virtual int CommitSequence { get; private set; }
 
-        public virtual ICollection<EventMessage> CommittedEvents
+        public virtual ICollection<IEventMessage> CommittedEvents
         {
-            get { return new ImmutableCollection<EventMessage>(_committed); }
+            get { return new ImmutableCollection<IEventMessage>(_committed); }
         }
 
         public virtual IDictionary<string, object> CommittedHeaders
@@ -75,9 +75,9 @@ namespace NEventStore
             get { return _committedHeaders; }
         }
 
-        public virtual ICollection<EventMessage> UncommittedEvents
+        public virtual ICollection<IEventMessage> UncommittedEvents
         {
-            get { return new ImmutableCollection<EventMessage>(_events); }
+            get { return new ImmutableCollection<IEventMessage>(_events); }
         }
 
         public virtual IDictionary<string, object> UncommittedHeaders
@@ -85,7 +85,7 @@ namespace NEventStore
             get { return _uncommittedHeaders; }
         }
 
-        public virtual void Add(EventMessage uncommittedEvent)
+        public virtual void Add(IEventMessage uncommittedEvent)
         {
             if (uncommittedEvent == null || uncommittedEvent.Body == null)
             {
@@ -117,7 +117,7 @@ namespace NEventStore
             catch (ConcurrencyException)
             {
                 Logger.Info(Resources.UnderlyingStreamHasChanged, StreamId);
-                IEnumerable<Commit> commits = _persistence.GetFrom(BucketId, StreamId, StreamRevision + 1, int.MaxValue);
+                IEnumerable<ICommit> commits = _persistence.GetFrom(BucketId, StreamId, StreamRevision + 1, int.MaxValue);
                 PopulateStream(StreamRevision + 1, int.MaxValue, commits);
 
                 throw;
@@ -131,7 +131,7 @@ namespace NEventStore
             _uncommittedHeaders.Clear();
         }
 
-        protected void PopulateStream(int minRevision, int maxRevision, IEnumerable<Commit> commits)
+        protected void PopulateStream(int minRevision, int maxRevision, IEnumerable<ICommit> commits)
         {
             foreach (var commit in commits ?? new Commit[0])
             {
@@ -150,7 +150,7 @@ namespace NEventStore
             }
         }
 
-        private void CopyToCommittedHeaders(Commit commit)
+        private void CopyToCommittedHeaders(ICommit commit)
         {
             foreach (var key in commit.Headers.Keys)
             {
@@ -158,7 +158,7 @@ namespace NEventStore
             }
         }
 
-        private void CopyToEvents(int minRevision, int maxRevision, int currentRevision, Commit commit)
+        private void CopyToEvents(int minRevision, int maxRevision, int currentRevision, ICommit commit)
         {
             foreach (var @event in commit.Events)
             {

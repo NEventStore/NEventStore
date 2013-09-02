@@ -15,7 +15,7 @@ namespace NEventStore
         /// <returns>If found, it returns the snapshot; otherwise null is returned.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        public static Snapshot GetSnapshot(this IAccessSnapshots accessSnapshots, Guid streamId, int maxRevision)
+        public static ISnapshot GetSnapshot(this IAccessSnapshots accessSnapshots, Guid streamId, int maxRevision)
         {
             return GetSnapshot(accessSnapshots, streamId.ToString(), maxRevision);
         }
@@ -29,7 +29,7 @@ namespace NEventStore
         /// <returns>If found, it returns the snapshot; otherwise null is returned.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        public static Snapshot GetSnapshot(this IAccessSnapshots accessSnapshots, string streamId, int maxRevision)
+        public static ISnapshot GetSnapshot(this IAccessSnapshots accessSnapshots, string streamId, int maxRevision)
         {
             return accessSnapshots.GetSnapshot(Bucket.Default, streamId, maxRevision);
         }
@@ -44,7 +44,7 @@ namespace NEventStore
         /// <returns>If found, it returns the snapshot; otherwise null is returned.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        public static Snapshot GetSnapshot(this IAccessSnapshots accessSnapshots, string bucketId, Guid streamId, int maxRevision)
+        public static ISnapshot GetSnapshot(this IAccessSnapshots accessSnapshots, string bucketId, Guid streamId, int maxRevision)
         {
             if (accessSnapshots == null)
             {
@@ -61,7 +61,7 @@ namespace NEventStore
         /// <returns>The streams for which the head and snapshot revisions differ by at least the threshold specified.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        public static IEnumerable<StreamHead> GetStreamsToSnapshot(this IAccessSnapshots accessSnapshots, int maxThreshold)
+        public static IEnumerable<IStreamHead> GetStreamsToSnapshot(this IAccessSnapshots accessSnapshots, int maxThreshold)
         {
             if (accessSnapshots == null)
             {

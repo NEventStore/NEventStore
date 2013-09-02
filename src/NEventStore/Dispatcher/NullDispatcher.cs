@@ -7,7 +7,7 @@ namespace NEventStore.Dispatcher
     {
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (NullDispatcher));
 
-        public void Dispatch(Commit commit)
+        public void Dispatch(ICommit commit)
         {
             Logger.Info(Resources.DispatchingToDevNull);
         }
@@ -18,7 +18,7 @@ namespace NEventStore.Dispatcher
             GC.SuppressFinalize(this);
         }
 
-        public void ScheduleDispatch(Commit commit)
+        public void ScheduleDispatch(ICommit commit)
         {
             Logger.Info(Resources.SchedulingDispatch, commit.CommitId);
             Dispatch(commit);

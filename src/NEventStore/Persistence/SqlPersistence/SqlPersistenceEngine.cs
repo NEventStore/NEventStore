@@ -76,7 +76,7 @@ namespace NEventStore.Persistence.SqlPersistence
             ExecuteCommand(statement => statement.ExecuteWithoutExceptions(_dialect.InitializeStorage));
         }
 
-        public virtual IEnumerable<Commit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
+        public virtual IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
         {
             Logger.Debug(Messages.GettingAllCommitsBetween, streamId, minRevision, maxRevision);
             streamId = streamId.ToHash();
@@ -93,7 +93,7 @@ namespace NEventStore.Persistence.SqlPersistence
                 });
         }
 
-        public virtual IEnumerable<Commit> GetFrom(string bucketId, DateTime start)
+        public virtual IEnumerable<ICommit> GetFrom(string bucketId, DateTime start)
         {
             start = start.AddTicks(-(start.Ticks%TimeSpan.TicksPerSecond)); // Rounds down to the nearest second.
             start = start < EpochTime ? EpochTime : start;
@@ -110,7 +110,7 @@ namespace NEventStore.Persistence.SqlPersistence
                 });
         }
 
-        public virtual IEnumerable<Commit> GetFromTo(string bucketId, DateTime start, DateTime end)
+        public virtual IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             start = start.AddTicks(-(start.Ticks%TimeSpan.TicksPerSecond)); // Rounds down to the nearest second.
             start = start < EpochTime ? EpochTime : start;
@@ -127,7 +127,7 @@ namespace NEventStore.Persistence.SqlPersistence
                 });
         }
 
-        public virtual void Commit(Commit attempt)
+        public virtual void Commit(ICommit attempt)
         {
             try
             {
@@ -152,7 +152,7 @@ namespace NEventStore.Persistence.SqlPersistence
             }
         }
 
-        public virtual IEnumerable<Commit> GetUndispatchedCommits()
+        public virtual IEnumerable<ICommit> GetUndispatchedCommits()
         {
             Logger.Debug(Messages.GettingUndispatchedCommits);
             return
@@ -161,7 +161,7 @@ namespace NEventStore.Persistence.SqlPersistence
                     .ToArray(); // avoid paging
         }
 
-        public virtual void MarkCommitAsDispatched(Commit commit)
+        public virtual void MarkCommitAsDispatched(ICommit commit)
         {
             Logger.Debug(Messages.MarkingCommitAsDispatched, commit.CommitId);
             string streamId = commit.StreamId.ToHash();
@@ -174,7 +174,7 @@ namespace NEventStore.Persistence.SqlPersistence
                 });
         }
 
-        public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
+        public virtual IEnumerable<IStreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
         {
             Logger.Debug(Messages.GettingStreamsToSnapshot);
             return ExecuteQuery(query =>
@@ -189,7 +189,7 @@ namespace NEventStore.Persistence.SqlPersistence
                 });
         }
 
-        public virtual Snapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
+        public virtual ISnapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
         {
             Logger.Debug(Messages.GettingRevision, streamId, maxRevision);
             streamId = streamId.ToHash();
@@ -203,7 +203,7 @@ namespace NEventStore.Persistence.SqlPersistence
                 }).FirstOrDefault();
         }
 
-        public virtual bool AddSnapshot(Snapshot snapshot)
+        public virtual bool AddSnapshot(ISnapshot snapshot)
         {
             Logger.Debug(Messages.AddingSnapshot, snapshot.StreamId, snapshot.StreamRevision);
             string streamId = snapshot.StreamId.ToHash();
@@ -251,7 +251,7 @@ namespace NEventStore.Persistence.SqlPersistence
                 });
         }
 
-        public IEnumerable<Commit> GetFrom(int checkpoint)
+        public IEnumerable<ICommit> GetFrom(int checkpoint)
         {
             Logger.Debug(Messages.GettingAllCommitsSinceCheckpoint, checkpoint);
             return ExecuteQuery(query =>
@@ -278,7 +278,7 @@ namespace NEventStore.Persistence.SqlPersistence
             _disposed = true;
         }
 
-        private void PersistCommit(Commit attempt)
+        private void PersistCommit(ICommit attempt)
         {
             Logger.Debug(Messages.AttemptingToCommit, attempt.Events.Count, attempt.StreamId, attempt.CommitSequence, attempt.BucketId);
             string streamId = attempt.StreamId.ToHash();
@@ -298,7 +298,7 @@ namespace NEventStore.Persistence.SqlPersistence
                 });
         }
 
-        private bool DetectDuplicate(Commit attempt)
+        private bool DetectDuplicate(ICommit attempt)
         {
             string streamId = attempt.StreamId.ToHash();
             return ExecuteCommand(cmd =>

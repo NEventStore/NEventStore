@@ -23,9 +23,9 @@ namespace NEventStore.Persistence.AcceptanceTests
             return commit;
         }
 
-        public static Commit CommitNext(this IPersistStreams persistence, Commit previous)
+        public static ICommit CommitNext(this IPersistStreams persistence, ICommit previous)
         {
-            Commit commit = previous.BuildNextAttempt();
+            ICommit commit = previous.BuildNextAttempt();
             persistence.Commit(commit);
             return commit;
         }
@@ -64,8 +64,8 @@ namespace NEventStore.Persistence.AcceptanceTests
                 new Dictionary<string, object> {{"A header", "A string value"}, {"Another header", 2}},
                 messages);
         }
-        
-        public static Commit BuildNextAttempt(this Commit commit)
+
+        public static Commit BuildNextAttempt(this ICommit commit)
         {
             var messages = new List<EventMessage>
             {
@@ -73,7 +73,8 @@ namespace NEventStore.Persistence.AcceptanceTests
                 new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Another test2"}},
             };
 
-            return new Commit(commit.BucketId, commit.StreamId,
+            return new Commit(commit.BucketId,
+                commit.StreamId,
                 commit.StreamRevision + 2,
                 Guid.NewGuid(),
                 commit.CommitSequence + 1,

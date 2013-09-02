@@ -26,7 +26,7 @@ namespace NEventStore.Dispatcher
             GC.SuppressFinalize(this);
         }
 
-        public virtual void ScheduleDispatch(Commit commit)
+        public virtual void ScheduleDispatch(ICommit commit)
         {
             DispatchImmediately(commit);
             MarkAsDispatched(commit);
@@ -57,7 +57,7 @@ namespace NEventStore.Dispatcher
             }
         }
 
-        private void DispatchImmediately(Commit commit)
+        private void DispatchImmediately(ICommit commit)
         {
             try
             {
@@ -71,7 +71,7 @@ namespace NEventStore.Dispatcher
             }
         }
 
-        private void MarkAsDispatched(Commit commit)
+        private void MarkAsDispatched(ICommit commit)
         {
             try
             {

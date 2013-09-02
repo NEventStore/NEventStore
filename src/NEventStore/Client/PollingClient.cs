@@ -35,7 +35,7 @@
             private readonly IPersistStreams _persistStreams;
             private int _checkpoint;
             private readonly int _interval;
-            private readonly Subject<Commit> _subject = new Subject<Commit>();
+            private readonly Subject<ICommit> _subject = new Subject<ICommit>();
             private readonly CancellationTokenSource _stopRequested = new CancellationTokenSource();
             private TaskCompletionSource<Unit> _runningTaskCompletionSource;
 
@@ -46,7 +46,7 @@
                 _interval = interval;
             }
 
-            public IDisposable Subscribe(IObserver<Commit> observer)
+            public IDisposable Subscribe(IObserver<ICommit> observer)
             {
                 return _subject.Subscribe(observer);
             }
@@ -95,7 +95,7 @@
 
             private void GetNextCommits(CancellationToken cancellationToken)
             {
-                IEnumerable<Commit> commits = _persistStreams.GetFrom(_checkpoint);
+                IEnumerable<ICommit> commits = _persistStreams.GetFrom(_checkpoint);
                 foreach (var commit in commits)
                 {
                     if (commit.Checkpoint < _checkpoint)

@@ -30,27 +30,27 @@ namespace NEventStore.Persistence
             _original.Dispose();
         }
 
-        public IEnumerable<Commit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
+        public IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
         {
             return _original.GetFrom(bucketId, streamId, minRevision, maxRevision);
         }
 
-        public void Commit(Commit attempt)
+        public void Commit(ICommit attempt)
         {
             _original.Commit(attempt);
         }
 
-        public Snapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
+        public ISnapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
         {
             return _original.GetSnapshot(bucketId, streamId, maxRevision);
         }
 
-        public bool AddSnapshot(Snapshot snapshot)
+        public bool AddSnapshot(ISnapshot snapshot)
         {
             return _original.AddSnapshot(snapshot);
         }
 
-        public IEnumerable<StreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
+        public IEnumerable<IStreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
         {
             return _original.GetStreamsToSnapshot(bucketId, maxThreshold);
         }
@@ -60,22 +60,22 @@ namespace NEventStore.Persistence
             _original.Initialize();
         }
 
-        public IEnumerable<Commit> GetFrom(string bucketId, DateTime start)
+        public IEnumerable<ICommit> GetFrom(string bucketId, DateTime start)
         {
             return ExecuteHooks(_original.GetFrom(bucketId, start));
         }
 
-        public IEnumerable<Commit> GetFromTo(string bucketId, DateTime start, DateTime end)
+        public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             return ExecuteHooks(_original.GetFromTo(bucketId, start, end));
         }
 
-        public IEnumerable<Commit> GetUndispatchedCommits()
+        public IEnumerable<ICommit> GetUndispatchedCommits()
         {
             return _original.GetUndispatchedCommits();
         }
 
-        public void MarkCommitAsDispatched(Commit commit)
+        public void MarkCommitAsDispatched(ICommit commit)
         {
             _original.MarkCommitAsDispatched(commit);
         }
@@ -100,7 +100,7 @@ namespace NEventStore.Persistence
             _original.DeleteStream(bucketId, streamId);
         }
 
-        public IEnumerable<Commit> GetFrom(int checkpoint)
+        public IEnumerable<ICommit> GetFrom(int checkpoint)
         {
             return _original.GetFrom(checkpoint);
         }
@@ -110,11 +110,11 @@ namespace NEventStore.Persistence
             get { return _original.IsDisposed; }
         }
 
-        private IEnumerable<Commit> ExecuteHooks(IEnumerable<Commit> commits)
+        private IEnumerable<ICommit> ExecuteHooks(IEnumerable<ICommit> commits)
         {
             foreach (var commit in commits)
             {
-                Commit filtered = commit;
+                ICommit filtered = commit;
                 foreach (var hook in _pipelineHooks.Where(x => (filtered = x.Select(filtered)) == null))
                 {
                     Logger.Info(Resources.PipelineHookSkippedCommit, hook.GetType(), commit.CommitId);

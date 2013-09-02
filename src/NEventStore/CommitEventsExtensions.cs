@@ -17,7 +17,7 @@ namespace NEventStore
         /// <returns>A series of committed events from the stream specified sorted in ascending order.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        public static IEnumerable<Commit> GetFrom(this ICommitEvents commitEvents, string streamId, int minRevision, int maxRevision)
+        public static IEnumerable<ICommit> GetFrom(this ICommitEvents commitEvents, string streamId, int minRevision, int maxRevision)
         {
             if (commitEvents == null)
             {

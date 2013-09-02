@@ -111,7 +111,7 @@
             });
         }
 
-        public virtual IEnumerable<Commit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
+        public virtual IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
         {
             Logger.Debug(Messages.GettingAllCommitsBetween, streamId, bucketId, minRevision, maxRevision);
 
@@ -130,7 +130,7 @@
             });
         }
 
-        public virtual IEnumerable<Commit> GetFrom(string bucketId, DateTime start)
+        public virtual IEnumerable<ICommit> GetFrom(string bucketId, DateTime start)
         {
             Logger.Debug(Messages.GettingAllCommitsFrom, start, bucketId);
 
@@ -140,7 +140,7 @@
                 .Select(x => x.ToCommit(_serializer)));
         }
 
-        public virtual IEnumerable<Commit> GetFromTo(string bucketId, DateTime start, DateTime end)
+        public virtual IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             Logger.Debug(Messages.GettingAllCommitsFromTo, start, end, bucketId);
 
@@ -150,7 +150,7 @@
                 .Select(x => x.ToCommit(_serializer)));
         }
 
-        public virtual void Commit(Commit attempt)
+        public virtual void Commit(ICommit attempt)
         {
             Logger.Debug(Messages.AttemptingToCommit, attempt.Events.Count, attempt.StreamId, attempt.CommitSequence);
 
@@ -181,7 +181,7 @@
             });
         }
 
-        public virtual IEnumerable<Commit> GetUndispatchedCommits()
+        public virtual IEnumerable<ICommit> GetUndispatchedCommits()
         {
             Logger.Debug(Messages.GettingUndispatchedCommits);
 
@@ -191,7 +191,7 @@
                     .Select(mc => mc.ToCommit(_serializer)));
         }
 
-        public virtual void MarkCommitAsDispatched(Commit commit)
+        public virtual void MarkCommitAsDispatched(ICommit commit)
         {
             Logger.Debug(Messages.MarkingCommitAsDispatched, commit.CommitId);
 
@@ -203,7 +203,7 @@
             });
         }
 
-        public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
+        public virtual IEnumerable<IStreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
         {
             Logger.Debug(Messages.GettingStreamsToSnapshot);
 
@@ -217,7 +217,7 @@
             });
         }
 
-        public virtual Snapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
+        public virtual ISnapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
         {
             Logger.Debug(Messages.GettingRevision, streamId, maxRevision);
 
@@ -229,7 +229,7 @@
                 .FirstOrDefault());
         }
 
-        public virtual bool AddSnapshot(Snapshot snapshot)
+        public virtual bool AddSnapshot(ISnapshot snapshot)
         {
             if (snapshot == null)
             {
@@ -301,7 +301,7 @@
             });
         }
 
-        public IEnumerable<Commit> GetFrom(int checkpoint)
+        public IEnumerable<ICommit> GetFrom(int checkpoint)
         {
             Logger.Debug(Messages.GettingAllCommitsSinceCheckpoint, checkpoint);
             return TryMongo(() => PersistedCommits

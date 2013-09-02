@@ -46,6 +46,6 @@ namespace NEventStore
         /// <returns>A series of committed events represented as a stream.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        IEventStream OpenStream(Snapshot snapshot, int maxRevision);
+        IEventStream OpenStream(ISnapshot snapshot, int maxRevision);
     }
 }

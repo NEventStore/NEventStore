@@ -31,14 +31,14 @@ namespace NEventStore.Persistence
         /// <returns>All commits that have occurred on or after the specified starting time.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        IEnumerable<Commit> GetFrom(string bucketId, DateTime start);
+        IEnumerable<ICommit> GetFrom(string bucketId, DateTime start);
 
         /// <summary>
         ///     Gets all commits after from the specified checkpoint.
         /// </summary>
         /// <param name="checkpoint">The checkpoint.</param>
         /// <returns></returns>
-        IEnumerable<Commit> GetFrom(int checkpoint);
+        IEnumerable<ICommit> GetFrom(int checkpoint);
 
         /// <summary>
         ///     Gets all commits on or after from the specified starting time and before the specified end time.
@@ -49,7 +49,7 @@ namespace NEventStore.Persistence
         /// <returns>All commits that have occurred on or after the specified starting time and before the end time.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        IEnumerable<Commit> GetFromTo(string bucketId, DateTime start, DateTime end);
+        IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end);
 
         /// <summary>
         ///     Gets a set of commits that has not yet been dispatched.
@@ -57,7 +57,7 @@ namespace NEventStore.Persistence
         /// <returns>The set of commits to be dispatched.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        IEnumerable<Commit> GetUndispatchedCommits();
+        IEnumerable<ICommit> GetUndispatchedCommits();
 
         /// <summary>
         ///     Marks the commit specified as dispatched.
@@ -65,7 +65,7 @@ namespace NEventStore.Persistence
         /// <param name="commit">The commit to be marked as dispatched.</param>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        void MarkCommitAsDispatched(Commit commit);
+        void MarkCommitAsDispatched(ICommit commit);
 
         /// <summary>
         ///     Completely DESTROYS the contents of ANY and ALL streams that have been successfully persisted.  Use with caution.

@@ -15,17 +15,17 @@ namespace NEventStore.Example
 			// no op
 		}
 
-		public Commit Select(Commit committed)
+		public ICommit Select(ICommit committed)
 		{
 			// return null if the user isn't authorized to see this commit
 			return committed;
 		}
-		public bool PreCommit(Commit attempt)
+		public bool PreCommit(ICommit attempt)
 		{
 			// Can easily do logging or other such activities here
 			return true; // true == allow commit to continue, false = stop.
 		}
-		public void PostCommit(Commit committed)
+		public void PostCommit(ICommit committed)
 		{
 			// anything to do after the commit has been persisted.
 		}

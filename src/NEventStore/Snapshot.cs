@@ -8,7 +8,7 @@ namespace NEventStore
     /// </summary>
     [DataContract]
     [Serializable]
-    public class Snapshot
+    public class Snapshot : ISnapshot
     {
         /// <summary>
         ///     Initializes a new instance of the Snapshot class for the default bucket.

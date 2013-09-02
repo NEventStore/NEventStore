@@ -2,6 +2,8 @@ namespace NEventStore.Conversion
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Runtime.InteropServices;
     using NEventStore.Logging;
 
     public class EventUpconverterPipelineHook : IPipelineHook
@@ -25,22 +27,30 @@ namespace NEventStore.Conversion
             GC.SuppressFinalize(this);
         }
 
-        public virtual Commit Select(Commit committed)
+        public virtual ICommit Select(ICommit committed)
         {
-            foreach (var eventMessage in committed.Events)
-            {
-                eventMessage.Body = Convert(eventMessage.Body);
-            }
+            var eventMessages = committed
+                .Events
+                .Select(eventMessage => new EventMessage {Headers = eventMessage.Headers, Body = Convert(eventMessage.Body)})
+                .Cast<IEventMessage>()
+                .ToList();
 
-            return committed;
+            return new Commit(committed.BucketId,
+                committed.StreamId,
+                committed.StreamRevision,
+                committed.CommitId,
+                committed.CommitSequence,
+                committed.CommitStamp,
+                committed.Headers,
+                eventMessages);
         }
 
-        public virtual bool PreCommit(Commit attempt)
+        public virtual bool PreCommit(ICommit attempt)
         {
             return true;
         }
 
-        public virtual void PostCommit(Commit committed)
+        public virtual void PostCommit(ICommit committed)
         {}
 
         protected virtual void Dispose(bool disposing)

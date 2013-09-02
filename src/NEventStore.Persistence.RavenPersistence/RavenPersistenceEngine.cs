@@ -95,7 +95,7 @@
             });
         }
 
-        public virtual IEnumerable<Commit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
+        public virtual IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
         {
             Logger.Debug(Messages.GettingAllCommitsBetween, streamId, bucketId, minRevision, maxRevision);
 
@@ -108,21 +108,21 @@
                     .OrderBy(x => x.CommitSequence);
         }
 
-        public virtual IEnumerable<Commit> GetFrom(string bucketId, DateTime start)
+        public virtual IEnumerable<ICommit> GetFrom(string bucketId, DateTime start)
         {
             Logger.Debug(Messages.GettingAllCommitsFrom, start, bucketId);
 
             return QueryCommits<RavenCommitByDate>(x => x.BucketId == bucketId && x.CommitStamp >= start).OrderBy(x => x.CommitStamp);
         }
 
-        public virtual IEnumerable<Commit> GetFromTo(string bucketId, DateTime start, DateTime end)
+        public virtual IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             Logger.Debug(Messages.GettingAllCommitsFromTo, start, end, bucketId);
 
             return QueryCommits<RavenCommitByDate>(x => x.BucketId == bucketId && x.CommitStamp >= start && x.CommitStamp < end).OrderBy(x => x.CommitStamp);
         }
 
-        public virtual void Commit(Commit attempt)
+        public virtual void Commit(ICommit attempt)
         {
             Logger.Debug(Messages.AttemptingToCommit, attempt.Events.Count, attempt.StreamId, attempt.CommitSequence, attempt.BucketId);
 
@@ -158,13 +158,13 @@
             }
         }
 
-        public virtual IEnumerable<Commit> GetUndispatchedCommits()
+        public virtual IEnumerable<ICommit> GetUndispatchedCommits()
         {
             Logger.Debug(Messages.GettingUndispatchedCommits);
             return QueryCommits<RavenCommitsByDispatched>(c => c.Dispatched == false).OrderBy(x => x.CommitSequence);
         }
 
-        public virtual void MarkCommitAsDispatched(Commit commit)
+        public virtual void MarkCommitAsDispatched(ICommit commit)
         {
             if (commit == null)
             {
@@ -189,7 +189,7 @@
             });
         }
 
-        public virtual IEnumerable<StreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
+        public virtual IEnumerable<IStreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
         {
             Logger.Debug(Messages.GettingStreamsToSnapshot, bucketId);
 
@@ -198,7 +198,7 @@
                     .Select(s => s.ToStreamHead());
         }
 
-        public virtual Snapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
+        public virtual ISnapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
         {
             Logger.Debug(Messages.GettingRevision, streamId, maxRevision);
 
@@ -212,7 +212,7 @@
                     .ToSnapshot(_serializer);
         }
 
-        public virtual bool AddSnapshot(Snapshot snapshot)
+        public virtual bool AddSnapshot(ISnapshot snapshot)
         {
             if (snapshot == null)
             {
@@ -278,7 +278,7 @@
             throw new NotImplementedException("Engine to be rewritten");
         }
 
-        public IEnumerable<Commit> GetFrom(int checkpoint)
+        public IEnumerable<ICommit> GetFrom(int checkpoint)
         {
             throw new NotImplementedException("Engine to be rewritten");
         }
@@ -299,7 +299,7 @@
             _store.Dispose();
         }
 
-        private RavenCommit LoadSavedCommit(Commit attempt)
+        private RavenCommit LoadSavedCommit(ICommit attempt)
         {
             Logger.Debug(Messages.DetectingConcurrency);
 

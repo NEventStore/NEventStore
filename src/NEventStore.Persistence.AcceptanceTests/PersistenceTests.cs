@@ -14,7 +14,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
     public class when_a_commit_header_has_a_name_that_contains_a_period : PersistenceEngineConcern
     {
-        private Commit _commit, _persisted;
+        private ICommit _commit, _persisted;
         private string _streamId;
 
         protected override void Context()
@@ -45,9 +45,9 @@ namespace NEventStore.Persistence.AcceptanceTests
 
     public class when_a_commit_is_successfully_persisted : PersistenceEngineConcern
     {
-        private Commit attempt;
+        private ICommit attempt;
         private DateTime now;
-        private Commit persisted;
+        private ICommit persisted;
         private string streamId;
 
         protected override void Context()
@@ -124,8 +124,8 @@ namespace NEventStore.Persistence.AcceptanceTests
     {
         private const int LoadFromCommitContainingRevision = 3;
         private const int UpToCommitWithContainingRevision = 5;
-        private Commit[] _committed;
-        private Commit _oldest, _oldest2, _oldest3;
+        private ICommit[] _committed;
+        private ICommit _oldest, _oldest2, _oldest3;
         private string _streamId;
 
         protected override void Context()
@@ -344,17 +344,17 @@ namespace NEventStore.Persistence.AcceptanceTests
 
     public class when_retrieving_a_snapshot : PersistenceEngineConcern
     {
-        private Snapshot _correct;
-        private Snapshot _snapshot;
+        private ISnapshot _correct;
+        private ISnapshot _snapshot;
         private string _streamId;
-        private Snapshot _tooFarBack;
-        private Snapshot _tooFarForward;
+        private ISnapshot _tooFarBack;
+        private ISnapshot _tooFarForward;
 
         protected override void Context()
         {
             _streamId = Guid.NewGuid().ToString();
-            Commit commit1 = Persistence.CommitSingle(_streamId); // rev 1-2
-            Commit commit2 = Persistence.CommitNext(commit1); // rev 3-4
+            ICommit commit1 = Persistence.CommitSingle(_streamId); // rev 1-2
+            ICommit commit2 = Persistence.CommitNext(commit1); // rev 3-4
             Persistence.CommitNext(commit2); // rev 5-6
 
             Persistence.AddSnapshot(_tooFarBack = new Snapshot(_streamId, 1, string.Empty));
@@ -383,8 +383,8 @@ namespace NEventStore.Persistence.AcceptanceTests
     public class when_a_snapshot_has_been_added_to_the_most_recent_commit_of_a_stream : PersistenceEngineConcern
     {
         private const string SnapshotData = "snapshot";
-        private Commit _newest;
-        private Commit _oldest, _oldest2;
+        private ICommit _newest;
+        private ICommit _oldest, _oldest2;
         private string _streamId;
 
         protected override void Context()
@@ -412,7 +412,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         private const int WithinThreshold = 2;
         private const int OverThreshold = 3;
         private const string SnapshotData = "snapshot";
-        private Commit _oldest, _oldest2;
+        private ICommit _oldest, _oldest2;
         private string _streamId;
 
         protected override void Context()
@@ -444,12 +444,12 @@ namespace NEventStore.Persistence.AcceptanceTests
 
     public class when_reading_all_commits_from_a_particular_point_in_time : PersistenceEngineConcern
     {
-        private Commit[] _committed;
-        private Commit _first;
+        private ICommit[] _committed;
+        private ICommit _first;
         private DateTime _now;
-        private Commit _second;
+        private ICommit _second;
         private string _streamId;
-        private Commit _third;
+        private ICommit _third;
 
         protected override void Context()
         {
@@ -513,6 +513,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Because()
         {
+// ReSharper disable once ReturnValueOfPureMethodIsNotUsed
             _thrown = Catch.Exception(() => Persistence.GetFrom(DateTime.MinValue).FirstOrDefault());
         }
 
@@ -580,7 +581,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         const string _bucketAId = "a";
         const string _bucketBId = "b";
         private string _streamId;
-        private static Commit  _attemptForBucketB;
+        private static ICommit _attemptForBucketB;
         private static Exception _thrown;
         private DateTime _attemptACommitStamp;
 
@@ -607,7 +608,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_persist_to_the_correct_bucket()
         {
-            Commit[] stream = Persistence.GetFrom(_bucketBId,_streamId, 0, int.MaxValue).ToArray();
+            ICommit[] stream = Persistence.GetFrom(_bucketBId, _streamId, 0, int.MaxValue).ToArray();
             stream.ShouldNotBeNull();
             stream.Count().ShouldBe(1);
         }
@@ -615,7 +616,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_not_affect_the_stream_from_the_other_bucket()
         {
-            Commit[] stream = Persistence.GetFrom(_bucketAId,_streamId, 0, int.MaxValue).ToArray();
+            ICommit[] stream = Persistence.GetFrom(_bucketAId, _streamId, 0, int.MaxValue).ToArray();
             stream.ShouldNotBeNull();
             stream.Count().ShouldBe(1);
             stream.First().CommitStamp.ShouldBe(_attemptACommitStamp);
@@ -657,8 +658,8 @@ namespace NEventStore.Persistence.AcceptanceTests
         const string _bucketBId = "b";
 
         private static DateTime _now;
-        private static Commit[] _returnedCommits;
-        Commit _commitToBucketB;
+        private static ICommit[] _returnedCommits;
+        ICommit _commitToBucketB;
 
         protected override void Context()
         {
@@ -690,7 +691,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
     public class when_getting_all_commits_since_checkpoint_and_there_are_streams_in_multiple_buckets : PersistenceEngineConcern
     {
-        private Commit[] _commits;
+        private ICommit[] _commits;
 
         protected override void Context()
         {
@@ -778,12 +779,12 @@ namespace NEventStore.Persistence.AcceptanceTests
     {
         private PersistenceEngineFixture _data;
 
-        public IPersistStreams Persistence
+        protected IPersistStreams Persistence
         {
             get { return _data.Persistence; }
         }
 
-        public int ConfiguredPageSizeForTesting
+        protected int ConfiguredPageSizeForTesting
         {
             get { return int.Parse("pageSize".GetSetting() ?? "0"); }
         }

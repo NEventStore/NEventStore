@@ -1,6 +1,5 @@
 
 #pragma warning disable 169
-// ReSharper disable InconsistentNaming
 
 namespace NEventStore
 {
@@ -14,72 +13,71 @@ namespace NEventStore
 
     public class when_a_commit_has_been_persisted : SpecificationBase
     {
-        private readonly Commit commit = new Commit(
+        private readonly ICommit _commit = new Commit(
             Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
 
-        private readonly Mock<IScheduleDispatches> dispatcher = new Mock<IScheduleDispatches>();
-        private DispatchSchedulerPipelineHook DispatchSchedulerHook;
+        private readonly Mock<IScheduleDispatches> _dispatcher = new Mock<IScheduleDispatches>();
+        private DispatchSchedulerPipelineHook _dispatchSchedulerHook;
 
         protected override void Context()
         {
-            DispatchSchedulerHook = new DispatchSchedulerPipelineHook(dispatcher.Object);
-            dispatcher.Setup(x => x.ScheduleDispatch(null));
+            _dispatchSchedulerHook = new DispatchSchedulerPipelineHook(_dispatcher.Object);
+            _dispatcher.Setup(x => x.ScheduleDispatch(null));
         }
 
         protected override void Because()
         {
-            DispatchSchedulerHook.PostCommit(commit);
+            _dispatchSchedulerHook.PostCommit(_commit);
         }
 
         [Fact]
         public void should_invoke_the_configured_dispatcher()
         {
-            dispatcher.Verify(x => x.ScheduleDispatch(commit), Times.Once());
+            _dispatcher.Verify(x => x.ScheduleDispatch(_commit), Times.Once());
         }
     }
 
     public class when_the_hook_has_no_dispatcher_configured : SpecificationBase
     {
-        private readonly DispatchSchedulerPipelineHook DispatchSchedulerHook = new DispatchSchedulerPipelineHook();
+        private readonly DispatchSchedulerPipelineHook _dispatchSchedulerHook = new DispatchSchedulerPipelineHook();
 
-        private readonly Commit commit = new Commit(
+        private readonly ICommit _commit = new Commit(
             Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
 
-        private Exception thrown;
+        private Exception _thrown;
 
         protected override void Because()
         {
-            thrown = Catch.Exception(() => DispatchSchedulerHook.PostCommit(commit));
+            _thrown = Catch.Exception(() => _dispatchSchedulerHook.PostCommit(_commit));
         }
 
         [Fact]
         public void should_not_throw_an_exception()
         {
-            thrown.ShouldBeNull();
+            _thrown.ShouldBeNull();
         }
     }
 
     public class when_a_commit_is_selected : SpecificationBase
     {
-        private readonly DispatchSchedulerPipelineHook DispatchSchedulerHook = new DispatchSchedulerPipelineHook();
+        private readonly DispatchSchedulerPipelineHook _dispatchSchedulerHook = new DispatchSchedulerPipelineHook();
 
-        private readonly Commit commit = new Commit(
+        private readonly ICommit _commit = new Commit(
             Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
 
-        private Commit selected;
+        private ICommit _selected;
 
         protected override void Because()
         {
-            selected = DispatchSchedulerHook.Select(commit);
+            _selected = _dispatchSchedulerHook.Select(_commit);
         }
 
         [Fact]
         public void should_always_return_the_exact_same_commit()
         {
-            ReferenceEquals(selected, commit).ShouldBeTrue();
+            ReferenceEquals(_selected, _commit).ShouldBeTrue();
         }
     }
 }
 
-// ReSharper enable InconsistentNaming
 #pragma warning restore 169

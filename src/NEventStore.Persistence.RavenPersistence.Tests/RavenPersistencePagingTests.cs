@@ -14,7 +14,7 @@ namespace NEventStore.Persistence.RavenPersistence.Tests
     public class when_getting_paged_commits : PersistenceEngineConcern
     {
         private const int NumberOfCommits = 30;
-        private Commit[] _results;
+        private ICommit[] _results;
         private DateTime _start;
 
         protected override void Context()
@@ -39,7 +39,7 @@ namespace NEventStore.Persistence.RavenPersistence.Tests
     {
         private const int NumberOfCommits = 30;
         private Exception _exception;
-        private Commit[] _firstPage, _secondPage;
+        private ICommit[] _firstPage, _secondPage;
         private DateTime _start;
 
         protected override void Context()
@@ -50,7 +50,7 @@ namespace NEventStore.Persistence.RavenPersistence.Tests
 
         protected override void Because()
         {
-            IEnumerable<Commit> enumerable = Persistence.GetFrom(_start);
+            IEnumerable<ICommit> enumerable = Persistence.GetFrom(_start);
             _firstPage = enumerable.Take(10).ToArray();
             _secondPage = enumerable.ToArray();
         }
@@ -73,7 +73,7 @@ namespace NEventStore.Persistence.RavenPersistence.Tests
     {
         private const int NumberOfCommits = 30;
         private Exception _exception;
-        private Commit[] _firstPage;
+        private ICommit[] _firstPage;
         private RavenPersistenceEngine _persistence;
         private DateTime _start;
 
@@ -90,7 +90,7 @@ namespace NEventStore.Persistence.RavenPersistence.Tests
 
         protected override void Because()
         {
-            IEnumerable<Commit> enumerable = _persistence.GetFrom(_start);
+            IEnumerable<ICommit> enumerable = _persistence.GetFrom(_start);
             _firstPage = enumerable.Take(10).ToArray();
             _persistence.Store.Dispose();
 

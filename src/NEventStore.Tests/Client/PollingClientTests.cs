@@ -63,7 +63,7 @@
     public class when_commit_is_comitted_before_subscribing : using_polling_client
     {
         private IObserveCommits _observeCommits;
-        private Task<Commit> _commitObserved;
+        private Task<ICommit> _commitObserved;
 
         protected override void Context()
         {
@@ -93,7 +93,7 @@
     public class when_commit_is_comitted_before_and_after_subscribing : using_polling_client
     {
         private IObserveCommits _observeCommits;
-        private Task<Commit> _twoCommitsObserved;
+        private Task<ICommit> _twoCommitsObserved;
 
         protected override void Context()
         {
@@ -125,8 +125,8 @@
     {
         private IObserveCommits _observeCommits1;
         private IObserveCommits _observeCommits2;
-        private Task<Commit> _observeCommits1Complete;
-        private Task<Commit> _observeCommits2Complete;
+        private Task<ICommit> _observeCommits1Complete;
+        private Task<ICommit> _observeCommits2Complete;
 
         protected override void Context()
         {
@@ -174,8 +174,8 @@
     public class with_two_subscriptions_on_a_single_observer_and_multiple_commits : using_polling_client
     {
         private IObserveCommits _observeCommits1;
-        private Task<Commit> _observeCommits1Complete;
-        private Task<Commit> _observeCommits2Complete;
+        private Task<ICommit> _observeCommits1Complete;
+        private Task<ICommit> _observeCommits2Complete;
 
         protected override void Context()
         {

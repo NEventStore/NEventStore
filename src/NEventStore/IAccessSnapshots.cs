@@ -20,7 +20,7 @@ namespace NEventStore
         /// <returns>If found, it returns the snapshot; otherwise null is returned.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        Snapshot GetSnapshot(string bucketId, string streamId, int maxRevision);
+        ISnapshot GetSnapshot(string bucketId, string streamId, int maxRevision);
 
         /// <summary>
         ///     Adds the snapshot provided to the stream indicated.
@@ -29,7 +29,7 @@ namespace NEventStore
         /// <returns>If the snapshot was added, returns true; otherwise false.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        bool AddSnapshot(Snapshot snapshot);
+        bool AddSnapshot(ISnapshot snapshot);
 
         /// <summary>
         ///     Gets identifiers for all streams whose head and last snapshot revisions differ by at least the threshold specified.
@@ -39,6 +39,6 @@ namespace NEventStore
         /// <returns>The streams for which the head and snapshot revisions differ by at least the threshold specified.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        IEnumerable<StreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold);
+        IEnumerable<IStreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold);
     }
 }

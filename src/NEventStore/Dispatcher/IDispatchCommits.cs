@@ -14,6 +14,6 @@ namespace NEventStore.Dispatcher
         ///     Dispatches the commit specified to the messaging infrastructure.
         /// </summary>
         /// <param name="commit">The commmit to be dispatched.</param>
-        void Dispatch(Commit commit);
+        void Dispatch(ICommit commit);
     }
 }

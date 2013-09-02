@@ -30,7 +30,7 @@ namespace NEventStore
         /// <summary>
         ///     Gets the collection of events which have been successfully persisted to durable storage.
         /// </summary>
-        ICollection<EventMessage> CommittedEvents { get; }
+        ICollection<IEventMessage> CommittedEvents { get; }
 
         /// <summary>
         ///     Gets the collection of committed headers associated with the stream.
@@ -40,7 +40,7 @@ namespace NEventStore
         /// <summary>
         ///     Gets the collection of yet-to-be-committed events that have not yet been persisted to durable storage.
         /// </summary>
-        ICollection<EventMessage> UncommittedEvents { get; }
+        ICollection<IEventMessage> UncommittedEvents { get; }
 
         /// <summary>
         ///     Gets the collection of yet-to-be-committed headers associated with the uncommitted events.
@@ -51,7 +51,7 @@ namespace NEventStore
         ///     Adds the event messages provided to the session to be tracked.
         /// </summary>
         /// <param name="uncommittedEvent">The event to be tracked.</param>
-        void Add(EventMessage uncommittedEvent);
+        void Add(IEventMessage uncommittedEvent);
 
         /// <summary>
         ///     Commits the changes to durable storage.

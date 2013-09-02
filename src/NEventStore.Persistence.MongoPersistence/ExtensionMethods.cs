@@ -26,7 +26,7 @@
             }
         }
 
-        public static BsonDocument ToMongoCommit(this Commit commit, Func<int> getNextCheckpointNumber, IDocumentSerializer serializer)
+        public static BsonDocument ToMongoCommit(this ICommit commit, Func<int> getNextCheckpointNumber, IDocumentSerializer serializer)
         {
             int streamRevision = commit.StreamRevision - (commit.Events.Count - 1);
             IEnumerable<BsonDocument> events = commit
@@ -88,7 +88,7 @@
             };
         }
 
-        public static BsonDocument ToMongoSnapshot(this Snapshot snapshot, IDocumentSerializer serializer)
+        public static BsonDocument ToMongoSnapshot(this ISnapshot snapshot, IDocumentSerializer serializer)
         {
             return new BsonDocument
             {
@@ -141,7 +141,7 @@
             return new StreamHead(bucketId, streamId, doc[MongoFields.HeadRevision].AsInt32, doc[MongoFields.SnapshotRevision].AsInt32);
         }
 
-        public static IMongoQuery ToMongoCommitIdQuery(this Commit commit)
+        public static IMongoQuery ToMongoCommitIdQuery(this ICommit commit)
         {
             return Query.EQ(MongoFields.Id, Query.And(
                     Query.EQ(MongoFields.BucketId, commit.BucketId),

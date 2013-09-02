@@ -1,9 +1,11 @@
 namespace NEventStore.Persistence
 {
+    using System.Collections.Generic;
+
     /// <summary>
     ///     Indicates the most recent information representing the head of a given stream.
     /// </summary>
-    public class StreamHead
+    public class StreamHead : IStreamHead
     {
         /// <summary>
         ///     Initializes a new instance of the StreamHead class.
@@ -19,6 +21,15 @@ namespace NEventStore.Persistence
             StreamId = streamId;
             HeadRevision = headRevision;
             SnapshotRevision = snapshotRevision;
+        }
+
+        
+
+        private static readonly IEqualityComparer<StreamHead> StreamIdBucketIdComparerInstance = new StreamHeadEqualityComparer();
+
+        public static IEqualityComparer<StreamHead> StreamIdBucketIdComparer
+        {
+            get { return StreamIdBucketIdComparerInstance; }
         }
 
         /// <summary>

@@ -12,7 +12,7 @@ namespace NEventStore
     {
         private const int MaxStreamsToTrack = 100;
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (OptimisticPipelineHook));
-        private readonly IDictionary<string, Commit> _heads = new Dictionary<string, Commit>();
+        private readonly IDictionary<string, ICommit> _heads = new Dictionary<string, ICommit>();
         private readonly LinkedList<string> _maxItemsToTrack = new LinkedList<string>();
         private readonly int _maxStreamsToTrack;
 
@@ -32,17 +32,17 @@ namespace NEventStore
             GC.SuppressFinalize(this);
         }
 
-        public virtual Commit Select(Commit committed)
+        public virtual ICommit Select(ICommit committed)
         {
             Track(committed);
             return committed;
         }
 
-        public virtual bool PreCommit(Commit attempt)
+        public virtual bool PreCommit(ICommit attempt)
         {
             Logger.Debug(Resources.OptimisticConcurrencyCheck, attempt.StreamId);
 
-            Commit head = GetStreamHead(attempt.StreamId);
+            ICommit head = GetStreamHead(attempt.StreamId);
             if (head == null)
             {
                 return true;
@@ -72,7 +72,7 @@ namespace NEventStore
             return true;
         }
 
-        public virtual void PostCommit(Commit committed)
+        public virtual void PostCommit(ICommit committed)
         {
             Track(committed);
         }
@@ -83,7 +83,7 @@ namespace NEventStore
             _maxItemsToTrack.Clear();
         }
 
-        public virtual void Track(Commit committed)
+        public virtual void Track(ICommit committed)
         {
             if (committed == null)
             {
@@ -97,9 +97,9 @@ namespace NEventStore
             }
         }
 
-        private void UpdateStreamHead(Commit committed)
+        private void UpdateStreamHead(ICommit committed)
         {
-            Commit head = GetStreamHead(committed.StreamId);
+            ICommit head = GetStreamHead(committed.StreamId);
             if (AlreadyTracked(head))
             {
                 _maxItemsToTrack.Remove(committed.StreamId);
@@ -111,12 +111,12 @@ namespace NEventStore
             _heads[committed.StreamId] = head;
         }
 
-        private static bool AlreadyTracked(Commit head)
+        private static bool AlreadyTracked(ICommit head)
         {
             return head != null;
         }
 
-        private void TrackUpToCapacity(Commit committed)
+        private void TrackUpToCapacity(ICommit committed)
         {
             Logger.Verbose(Resources.TrackingCommit, committed.CommitSequence, committed.StreamId);
             _maxItemsToTrack.AddFirst(committed.StreamId);
@@ -132,16 +132,16 @@ namespace NEventStore
             _maxItemsToTrack.RemoveLast();
         }
 
-        public virtual bool Contains(Commit attempt)
+        public virtual bool Contains(ICommit attempt)
         {
             return GetStreamHead(attempt.StreamId) != null;
         }
 
-        private Commit GetStreamHead(string streamId)
+        private ICommit GetStreamHead(string streamId)
         {
             lock (_maxItemsToTrack)
             {
-                Commit head;
+                ICommit head;
                 _heads.TryGetValue(streamId, out head);
                 return head;
             }

@@ -2,18 +2,17 @@ namespace NEventStore.Persistence.RavenPersistence
 {
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using NEventStore.Serialization;
 
     public static class ExtensionMethods
     {
-        public static string ToRavenCommitId(this Commit commit)
+        public static string ToRavenCommitId(this ICommit commit)
         {
-            string id = string.Format(CultureInfo.InvariantCulture, "{0}/{1}/{2}", commit.BucketId, commit.StreamId, commit.CommitSequence);
-            
-            return id;
+            return string.Format(CultureInfo.InvariantCulture, "{0}/{1}/{2}", commit.BucketId, commit.StreamId, commit.CommitSequence);
         }
 
-        public static RavenCommit ToRavenCommit(this Commit commit, IDocumentSerializer serializer)
+        public static RavenCommit ToRavenCommit(this ICommit commit, IDocumentSerializer serializer)
         {
             return new RavenCommit
             {
@@ -25,7 +24,7 @@ namespace NEventStore.Persistence.RavenPersistence
                 StreamRevision = commit.StreamRevision,
                 CommitId = commit.CommitId,
                 CommitStamp = commit.CommitStamp,
-                Headers = commit.Headers,
+                Headers = commit.Headers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
                 Payload = serializer.Serialize(commit.Events)
             };
         }
@@ -41,12 +40,12 @@ namespace NEventStore.Persistence.RavenPersistence
                 serializer.Deserialize<List<EventMessage>>(commit.Payload));
         }
 
-        public static string ToRavenSnapshotId(Snapshot snapshot)
+        public static string ToRavenSnapshotId(ISnapshot snapshot)
         {
             return string.Format("Snapshots/{0}/{1}/{2}", snapshot.BucketId, snapshot.StreamId, snapshot.StreamRevision);
         }
 
-        public static RavenSnapshot ToRavenSnapshot(this Snapshot snapshot, IDocumentSerializer serializer)
+        public static RavenSnapshot ToRavenSnapshot(this ISnapshot snapshot, IDocumentSerializer serializer)
         {
             return new RavenSnapshot
             {
@@ -68,7 +67,7 @@ namespace NEventStore.Persistence.RavenPersistence
             return new Snapshot(snapshot.BucketId, snapshot.StreamRevision, serializer.Deserialize<object>(snapshot.Payload));
         }
 
-        public static RavenStreamHead ToRavenStreamHead(this Commit commit)
+        public static RavenStreamHead ToRavenStreamHead(this ICommit commit)
         {
             return new RavenStreamHead
             {
@@ -80,7 +79,7 @@ namespace NEventStore.Persistence.RavenPersistence
             };
         }
 
-        public static RavenStreamHead ToRavenStreamHead(this Snapshot snapshot)
+        public static RavenStreamHead ToRavenStreamHead(this ISnapshot snapshot)
         {
             return new RavenStreamHead
             {

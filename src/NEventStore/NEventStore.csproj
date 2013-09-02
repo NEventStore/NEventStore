@@ -64,6 +64,7 @@
     <Compile Include="Client\ClientBase.cs" />
     <Compile Include="Client\IObserveCommits.cs" />
     <Compile Include="Client\TaskHelpers.cs" />
+    <Compile Include="CommitEqualityComparer.cs" />
     <Compile Include="CommitEventsExtensions.cs" />
     <Compile Include="CommitExtensions.cs" />
     <Compile Include="ConcurrencyException.cs">
@@ -82,7 +83,10 @@
     <Compile Include="EventUpconverterWireupExtensions.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Conversion\IUpconvertEvents.cs" />
+    <Compile Include="ICommit.cs" />
+    <Compile Include="IEventMessage.cs" />
     <Compile Include="ImmutableCollection.cs" />
+    <Compile Include="ISnapshot.cs" />
     <Compile Include="LoggingWireupExtensions.cs" />
     <Compile Include="Logging\ConsoleWindowLogger.cs" />
     <Compile Include="Logging\ExtensionMethods.cs" />
@@ -104,6 +108,7 @@
     <Compile Include="PersistenceWireupExtensions.cs" />
     <Compile Include="Persistence\InMemoryPersistence\InMemoryPersistenceEngine.cs" />
     <Compile Include="Persistence\InMemoryPersistence\InMemoryPersistenceFactory.cs" />
+    <Compile Include="Persistence\IStreamHead.cs" />
     <Compile Include="Persistence\PersistStreamsExtensions.cs" />
     <Compile Include="Persistence\PipelineHooksAwarePersistanceDecorator.cs" />
     <Compile Include="Persistence\SqlPersistence\CommitExtensions.cs" />
@@ -172,6 +177,7 @@
     <Compile Include="Persistence\SqlPersistence\ThreadScope.cs" />
     <Compile Include="Persistence\SqlPersistence\UniqueKeyViolationException.cs" />
     <Compile Include="Persistence\StorageUnavailableException.cs" />
+    <Compile Include="Persistence\StreamHeadEqualityComparer.cs" />
     <Compile Include="Resources.Designer.cs">
       <DependentUpon>Resources.resx</DependentUpon>
       <AutoGen>True</AutoGen>

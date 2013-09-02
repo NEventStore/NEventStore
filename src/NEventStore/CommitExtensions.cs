@@ -4,7 +4,7 @@ namespace NEventStore
 
     internal static class CommitExtensions
     {
-        public static bool IsValid(this Commit attempt)
+        public static bool IsValid(this ICommit attempt)
         {
             if (attempt == null)
             {
@@ -34,12 +34,12 @@ namespace NEventStore
             return true;
         }
 
-        public static bool HasIdentifier(this Commit attempt)
+        public static bool HasIdentifier(this ICommit attempt)
         {
             return !string.IsNullOrWhiteSpace(attempt.StreamId) && attempt.CommitId != Guid.Empty;
         }
 
-        public static bool IsEmpty(this Commit attempt)
+        public static bool IsEmpty(this ICommit attempt)
         {
             return attempt == null || attempt.Events.Count == 0;
         }

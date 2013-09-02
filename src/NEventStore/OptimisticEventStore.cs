@@ -23,11 +23,11 @@ namespace NEventStore
             _persistence = new PipelineHooksAwarePersistanceDecorator(persistence, pipelineHooks);
         }
 
-        public virtual IEnumerable<Commit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
+        public virtual IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
         {
             foreach (var commit in _persistence.GetFrom(bucketId, streamId, minRevision, maxRevision))
             {
-                Commit filtered = commit;
+                ICommit filtered = commit;
                 foreach (var hook in _pipelineHooks.Where(x => (filtered = x.Select(filtered)) == null))
                 {
                     Logger.Info(Resources.PipelineHookSkippedCommit, hook.GetType(), commit.CommitId);
@@ -45,7 +45,7 @@ namespace NEventStore
             }
         }
 
-        public virtual void Commit(Commit attempt)
+        public virtual void Commit(ICommit attempt)
         {
             if (!attempt.IsValid() || attempt.IsEmpty())
             {
@@ -95,7 +95,7 @@ namespace NEventStore
             return new OptimisticEventStream(bucketId, streamId, this, minRevision, maxRevision);
         }
 
-        public virtual IEventStream OpenStream(Snapshot snapshot, int maxRevision)
+        public virtual IEventStream OpenStream(ISnapshot snapshot, int maxRevision)
         {
             if (snapshot == null)
             {
