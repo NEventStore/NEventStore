@@ -135,9 +135,6 @@
   <data name="OpeningMasterConnection" xml:space="preserve">
     <value>Opening master connection '{0}'</value>
   </data>
-  <data name="OpeningReplicaConnection" xml:space="preserve">
-    <value>Opening replica connection '{0}'.</value>
-  </data>
   <data name="OpeningConnection" xml:space="preserve">
     <value>Opening connection '{0}'.</value>
   </data>
@@ -149,9 +146,6 @@
   </data>
   <data name="DiscoveringConnectionSettings" xml:space="preserve">
     <value>Discovering connection settings for '{0}'.</value>
-  </data>
-  <data name="EmbeddingShardKey" xml:space="preserve">
-    <value>Embedding sharding key into connection string for '{0}'.</value>
   </data>
   <data name="StorageThrewException" xml:space="preserve">
     <value>Storage threw exception of type '{0}', wrapping and re-throwing.</value>
@@ -275,9 +269,6 @@
   </data>
   <data name="BadFactoryResult" xml:space="preserve">
     <value>The factory provided was unable to create an object to store.</value>
-  </data>
-  <data name="NotConnectionsAvailable" xml:space="preserve">
-    <value>No connections have been opened yet.</value>
   </data>
   <data name="ConcurrentWriteDetected" xml:space="preserve">
     <value>Concurrent write detected.</value>

@@ -5,15 +5,12 @@ namespace NEventStore.Persistence.SqlPersistence
     using System.Configuration;
     using System.Data;
     using System.Data.Common;
-    using System.Globalization;
     using System.Linq;
-    using System.Text;
     using NEventStore.Logging;
 
     public class ConfigurationConnectionFactory : IConnectionFactory
     {
-        private const int DefaultShards = 0; // TODO remove sharding functionality
-        private const string DefaultConnectionName = "EventStore";
+        private const string DefaultConnectionName = "NEventStore";
 
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (ConfigurationConnectionFactory));
 
@@ -23,68 +20,29 @@ namespace NEventStore.Persistence.SqlPersistence
         private static readonly IDictionary<string, DbProviderFactory> CachedFactories =
             new Dictionary<string, DbProviderFactory>();
 
-        private readonly string _masterConnectionName;
-        private readonly string _replicaConnectionName;
-        private readonly int _shards;
+        private readonly string _connectionName;
 
         public ConfigurationConnectionFactory(string connectionName)
-            : this(connectionName, connectionName, DefaultShards)
-        {}
-
-        public ConfigurationConnectionFactory(
-            string masterConnectionName, string replicaConnectionName, int shards)
         {
-            _masterConnectionName = masterConnectionName ?? DefaultConnectionName;
-            _replicaConnectionName = replicaConnectionName ?? _masterConnectionName;
-            _shards = shards >= 0 ? shards : DefaultShards;
-
-            Logger.Debug(Messages.ConfiguringConnections,
-                _masterConnectionName, _replicaConnectionName, _shards);
+            _connectionName = connectionName ?? DefaultConnectionName;
+            Logger.Debug(Messages.ConfiguringConnections, _connectionName);
         }
 
         public virtual ConnectionStringSettings Settings
         {
-            get { return GetConnectionStringSettings(_masterConnectionName); }
+            get { return GetConnectionStringSettings(_connectionName); }
         }
 
-        public virtual IDbConnection OpenMaster(string streamId)
+        public virtual IDbConnection Open()
         {
-            Logger.Verbose(Messages.OpeningMasterConnection, _masterConnectionName);
-            return Open(streamId, _masterConnectionName);
+            Logger.Verbose(Messages.OpeningMasterConnection, _connectionName);
+            return Open(_connectionName);
         }
 
-        public virtual IDbConnection OpenReplica(string streamId)
-        {
-            Logger.Verbose(Messages.OpeningReplicaConnection, _replicaConnectionName);
-            return Open(streamId, _replicaConnectionName);
-        }
-
-        public static IDisposable OpenScope()
-        {
-            KeyValuePair<string, ConnectionStringSettings> settings = CachedSettings.FirstOrDefault();
-            if (string.IsNullOrEmpty(settings.Key))
-            {
-                throw new ConfigurationErrorsException(Messages.NotConnectionsAvailable);
-            }
-
-            return OpenScope(string.Empty, settings.Key);
-        }
-
-        public static IDisposable OpenScope(string connectionName)
-        {
-            return OpenScope(string.Empty, connectionName);
-        }
-
-        public static IDisposable OpenScope(string streamId, string connectionName)
-        {
-            var factory = new ConfigurationConnectionFactory(connectionName);
-            return factory.Open(streamId, connectionName);
-        }
-
-        protected virtual IDbConnection Open(string streamId, string connectionName)
+        protected virtual IDbConnection Open(string connectionName)
         {
             ConnectionStringSettings setting = GetSetting(connectionName);
-            string connectionString = BuildConnectionString(streamId, setting);
+            string connectionString = setting.ConnectionString;
             return new ConnectionScope(connectionString, () => Open(connectionString, setting));
         }
 
@@ -171,24 +129,6 @@ namespace NEventStore.Persistence.SqlPersistence
             }
 
             return settings;
-        }
-
-        protected virtual string BuildConnectionString(string streamId, ConnectionStringSettings setting)
-        {
-            if (_shards == 0)
-            {
-                return setting.ConnectionString;
-            }
-
-            Logger.Verbose(Messages.EmbeddingShardKey, setting.Name);
-            return setting.ConnectionString.FormatWith(ComputeHashKey(streamId));
-        }
-
-        protected virtual string ComputeHashKey(string streamId)
-        {
-            // simple sharding scheme which could easily be improved through such techniques
-            // as consistent hashing (Amazon Dynamo) or other kinds of sharding.
-            return (_shards == 0 ? 0 : Encoding.UTF8.GetBytes(streamId)[0] % _shards).ToString(CultureInfo.InvariantCulture);
         }
     }
 }
