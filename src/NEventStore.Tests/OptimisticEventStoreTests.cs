@@ -373,30 +373,6 @@ namespace NEventStore
         }
     }
 
-    public class when_the_number_of_commits_is_greater_than_the_number_of_revisions : using_persistence
-    {
-        private const int StreamRevision = 1;
-        private const int CommitSequence = 2; // should never be greater than StreamRevision.
-        private CommitAttempt _corrupt;
-        private Exception _thrown;
-
-        protected override void Context()
-        {
-            _corrupt = BuildCommitAttemptStub(StreamRevision, CommitSequence);
-        }
-
-        protected override void Because()
-        {
-            _thrown = Catch.Exception(() => ((ICommitEvents) Store).Commit(_corrupt));
-        }
-
-        [Fact]
-        public void should_throw_a_StorageException()
-        {
-            _thrown.ShouldBeInstanceOf<ArgumentException>();
-        }
-    }
-
     public class when_committing_with_a_valid_and_populated_attempt_to_a_stream : using_persistence
     {
         private CommitAttempt _populatedAttempt;
@@ -405,18 +381,21 @@ namespace NEventStore
         protected override void Context()
         {
             _populatedAttempt = BuildCommitAttemptStub(1, 1);
-            _populatedCommit = BuildCommitStub(1, 1);
 
-            Persistence.Setup(x => x.Commit(_populatedAttempt)).Returns((CommitAttempt attempt) => new Commit(
-                attempt.BucketId,
-                attempt.StreamId,
-                attempt.StreamRevision,
-                attempt.CommitId,
-                attempt.CommitSequence,
-                attempt.CommitStamp,
-                new IntCheckpoint(0),
-                attempt.Headers,
-                attempt.Events));
+            Persistence.Setup(x => x.Commit(_populatedAttempt))
+                .Returns((CommitAttempt attempt) =>
+                {
+                    _populatedCommit = new Commit(attempt.BucketId,
+                        attempt.StreamId,
+                        attempt.StreamRevision,
+                        attempt.CommitId,
+                        attempt.CommitSequence,
+                        attempt.CommitStamp,
+                        new IntCheckpoint(0),
+                        attempt.Headers,
+                        attempt.Events);
+                    return _populatedCommit;
+                });
 
             PipelineHooks.Add(new Mock<IPipelineHook>());
             PipelineHooks[0].Setup(x => x.PreCommit(_populatedAttempt)).Returns(true);
