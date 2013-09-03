@@ -284,7 +284,7 @@
             throw new NotImplementedException("Engine to be rewritten");
         }
 
-        public IEnumerable<ICommit> GetFromBeginning()
+        public IEnumerable<ICommit> GetFromStart()
         {
             throw new NotImplementedException("Engine to be rewritten");
         }

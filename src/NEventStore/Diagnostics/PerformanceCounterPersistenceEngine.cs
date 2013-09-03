@@ -36,9 +36,9 @@ namespace NEventStore.Diagnostics
             _counters.CountCommitDispatched();
         }
 
-        public IEnumerable<ICommit> GetFromBeginning()
+        public IEnumerable<ICommit> GetFromStart()
         {
-            return _persistence.GetFromBeginning();
+            return _persistence.GetFromStart();
         }
 
         public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)

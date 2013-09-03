@@ -65,9 +65,9 @@ namespace NEventStore.Persistence
             return ExecuteHooks(_original.GetFrom(bucketId, start));
         }
 
-        public IEnumerable<ICommit> GetFromBeginning()
+        public IEnumerable<ICommit> GetFromStart()
         {
-            return _original.GetFromBeginning();
+            return _original.GetFromStart();
         }
 
         public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)

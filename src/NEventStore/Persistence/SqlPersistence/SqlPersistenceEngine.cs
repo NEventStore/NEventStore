@@ -110,7 +110,7 @@ namespace NEventStore.Persistence.SqlPersistence
                 });
         }
 
-        public IEnumerable<ICommit> GetFromBeginning()
+        public IEnumerable<ICommit> GetFromStart()
         {
             Logger.Debug(Messages.GettingAllCommitsSinceBeginning);
             return ExecuteQuery(query =>

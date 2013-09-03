@@ -55,7 +55,7 @@ namespace NEventStore.Persistence.InMemoryPersistence
                 .ToArray();
         }
 
-        public IEnumerable<ICommit> GetFromBeginning()
+        public IEnumerable<ICommit> GetFromStart()
         {
             ThrowWhenDisposed();
             Logger.Debug(Resources.GettingAllCommitsFromBeginning);

@@ -44,7 +44,7 @@ namespace NEventStore.Persistence
         ///     Gets all commits after from the specified checkpoint.
         /// </summary>
         /// <returns>An enumerable of Commits.</returns>
-        IEnumerable<ICommit> GetFromBeginning();
+        IEnumerable<ICommit> GetFromStart();
 
         /// <summary>
         ///     Gets all commits on or after from the specified starting time and before the specified end time.

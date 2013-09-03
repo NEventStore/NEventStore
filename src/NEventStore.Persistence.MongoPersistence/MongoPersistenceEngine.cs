@@ -140,7 +140,7 @@
                 .Select(x => x.ToCommit(_serializer)));
         }
 
-        public IEnumerable<ICommit> GetFromBeginning()
+        public IEnumerable<ICommit> GetFromStart()
         {
             Logger.Debug(Messages.GettingAllCommitsFromBeginning);
             return TryMongo(() => PersistedCommits
