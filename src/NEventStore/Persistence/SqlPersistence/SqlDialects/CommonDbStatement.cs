@@ -68,7 +68,9 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects
             try
             {
                 using (IDbCommand command = BuildCommand(commandText))
+                {
                     return command.ExecuteNonQuery();
+                }
             }
             catch (Exception e)
             {
@@ -83,8 +85,21 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects
 
         public virtual object ExecuteScalar(string commandText)
         {
-            using (IDbCommand command = BuildCommand(commandText))
-                return command.ExecuteScalar();
+            try
+            {
+                using (IDbCommand command = BuildCommand(commandText))
+                {
+                    return command.ExecuteScalar();
+                }
+            }
+            catch (Exception e)
+            {
+                if (_dialect.IsDuplicate(e))
+                {
+                    throw new UniqueKeyViolationException(e.Message, e);
+                }
+                throw;
+            }
         }
 
         public virtual IEnumerable<IDataRecord> ExecuteWithQuery(string queryText)
