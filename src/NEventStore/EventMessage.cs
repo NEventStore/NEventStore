@@ -23,7 +23,7 @@
         ///     Gets the metadata which provides additional, unstructured information about this message.
         /// </summary>
         [DataMember]
-        public IDictionary<string, object> Headers { get; set; }
+        public Dictionary<string, object> Headers { get; set; }
 
         /// <summary>
         ///     Gets or sets the actual event message body.
