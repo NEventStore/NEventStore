@@ -34,7 +34,7 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects
 
         public override string PersistCommit
         {
-            get { throw new NotImplementedException(); }
+            get { return SqlCeStatements.PersistCommit; }
         }
 
         public override string GetCommitsFromCheckpoint
