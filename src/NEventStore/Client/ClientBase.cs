@@ -18,6 +18,6 @@
 
         public abstract IObserveCommits ObserveFrom(ICheckpoint checkpoint);
 
-        public abstract IObserveCommits ObserveFromBegininng();
+        public abstract IObserveCommits ObserveFromStart();
     }
 }

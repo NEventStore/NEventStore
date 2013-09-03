@@ -46,7 +46,7 @@ namespace NEventStore.Persistence.InMemoryPersistence
 
         public IEnumerable<ICommit> GetFrom(ICheckpoint checkpoint)
         {
-            Logger.Debug(Resources.GettingAllCommitsSinceCheckpoint, checkpoint);
+            Logger.Debug(Resources.GettingAllCommitsFromCheckpoint, checkpoint);
             return _buckets
                 .Values
                 .SelectMany(b => b.GetCommits())
@@ -55,16 +55,7 @@ namespace NEventStore.Persistence.InMemoryPersistence
                 .ToArray();
         }
 
-        public IEnumerable<ICommit> GetFromStart()
-        {
-            ThrowWhenDisposed();
-            Logger.Debug(Resources.GettingAllCommitsFromBeginning);
-            return _buckets
-                 .Values
-                 .SelectMany(b => b.GetCommits())
-                 .OrderBy(c => c.Checkpoint)
-                 .ToArray();
-        }
+        public ICheckpoint StartCheckpoint { get { return new IntCheckpoint(0); } }
 
         public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {

@@ -205,11 +205,11 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Getting all commits from beginning..
+        ///   Looks up a localized string similar to Getting all commits since checkpoint &apos;{0}&apos;..
         /// </summary>
-        internal static string GettingAllCommitsFromBeginning {
+        internal static string GettingAllCommitsFromCheckpoint {
             get {
-                return ResourceManager.GetString("GettingAllCommitsFromBeginning", resourceCulture);
+                return ResourceManager.GetString("GettingAllCommitsFromCheckpoint", resourceCulture);
             }
         }
         
@@ -237,15 +237,6 @@ namespace NEventStore {
         internal static string GettingAllCommitsFromToTime {
             get {
                 return ResourceManager.GetString("GettingAllCommitsFromToTime", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Getting all commits since since checkpoint &apos;{0}&apos; with batchsize &apos;{1}&apos;..
-        /// </summary>
-        internal static string GettingAllCommitsSinceCheckpoint {
-            get {
-                return ResourceManager.GetString("GettingAllCommitsSinceCheckpoint", resourceCulture);
             }
         }
         

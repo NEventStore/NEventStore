@@ -27,12 +27,12 @@
 
         public override IObserveCommits ObserveFrom(ICheckpoint checkpoint)
         {
-            return new PollingObserveCommits(PersistStreams, checkpoint, _interval);
+            return new PollingObserveCommits(PersistStreams, _interval, checkpoint);
         }
 
-        public override IObserveCommits ObserveFromBegininng()
+        public override IObserveCommits ObserveFromStart()
         {
-            throw new NotImplementedException();
+            return new PollingObserveCommits(PersistStreams, _interval);
         }
 
         private class PollingObserveCommits : IObserveCommits
@@ -44,7 +44,11 @@
             private readonly CancellationTokenSource _stopRequested = new CancellationTokenSource();
             private TaskCompletionSource<Unit> _runningTaskCompletionSource;
 
-            public PollingObserveCommits(IPersistStreams persistStreams, ICheckpoint checkpoint, int interval)
+            public PollingObserveCommits(IPersistStreams persistStreams, int interval)
+                : this(persistStreams, interval, persistStreams.StartCheckpoint)
+            {}
+
+            public PollingObserveCommits(IPersistStreams persistStreams, int interval, ICheckpoint checkpoint)
             {
                 _persistStreams = persistStreams;
                 _checkpoint = checkpoint;

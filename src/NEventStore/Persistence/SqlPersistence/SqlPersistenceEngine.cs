@@ -110,17 +110,6 @@ namespace NEventStore.Persistence.SqlPersistence
                 });
         }
 
-        public IEnumerable<ICommit> GetFromStart()
-        {
-            Logger.Debug(Messages.GettingAllCommitsSinceBeginning);
-            return ExecuteQuery(query =>
-            {
-                string statement = _dialect.GetCommitsFromCheckpoint;
-                query.AddParameter(_dialect.CheckpointNumber, 0);
-                return query.ExecutePagedQuery(statement, (q, r) => q.SetParameter(_dialect.CheckpointNumber, r.CheckpointNumber())).Select(x => x.GetCommit(_serializer));
-            });
-        }
-
         public virtual IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             start = start.AddTicks(-(start.Ticks%TimeSpan.TicksPerSecond)); // Rounds down to the nearest second.
@@ -266,7 +255,7 @@ namespace NEventStore.Persistence.SqlPersistence
 
         public IEnumerable<ICommit> GetFrom(ICheckpoint checkpoint)
         {
-            Logger.Debug(Messages.GettingAllCommitsSinceCheckpoint, checkpoint);
+            Logger.Debug(Messages.GettingAllCommitsFromCheckpoint, checkpoint);
             return ExecuteQuery(query =>
             {
                 string statement = _dialect.GetCommitsFromCheckpoint;
@@ -274,6 +263,9 @@ namespace NEventStore.Persistence.SqlPersistence
                 return query.ExecutePagedQuery(statement, (q, r) => q.SetParameter(_dialect.CheckpointNumber, r.CheckpointNumber())).Select(x => x.GetCommit(_serializer));
             });
         }
+
+
+        public ICheckpoint StartCheckpoint { get { return new IntCheckpoint(0); } }
 
         public bool IsDisposed
         {

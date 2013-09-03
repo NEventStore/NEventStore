@@ -53,5 +53,18 @@ namespace NEventStore.Persistence
             }
             persistStreams.DeleteStream(Bucket.Default, streamId);
         }
+
+        /// <summary>
+        ///     Gets all commits after from start checkpoint.
+        /// </summary>
+        /// <param name="persistStreams">The IPersistStreams instance.</param>
+        public static IEnumerable<ICommit> GetFromStart(this IPersistStreams persistStreams)
+        {
+            if (persistStreams == null)
+            {
+                throw new ArgumentException("persistStreams is null");
+            }
+            return persistStreams.GetFrom(persistStreams.StartCheckpoint);
+        }
     }
 }

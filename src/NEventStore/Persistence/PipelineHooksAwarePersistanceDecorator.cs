@@ -65,11 +65,6 @@ namespace NEventStore.Persistence
             return ExecuteHooks(_original.GetFrom(bucketId, start));
         }
 
-        public IEnumerable<ICommit> GetFromStart()
-        {
-            return _original.GetFromStart();
-        }
-
         public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             return ExecuteHooks(_original.GetFromTo(bucketId, start, end));
@@ -109,6 +104,8 @@ namespace NEventStore.Persistence
         {
             return _original.GetFrom(checkpoint);
         }
+
+        public ICheckpoint StartCheckpoint { get { return _original.StartCheckpoint; } }
 
         public bool IsDisposed
         {

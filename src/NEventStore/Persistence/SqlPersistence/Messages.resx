@@ -279,13 +279,10 @@
   <data name="DroppingTables" xml:space="preserve">
     <value>Dropping tables.</value>
   </data>
-  <data name="GettingAllCommitsSinceCheckpoint" xml:space="preserve">
-    <value>Getting all commits since checkpoint '{0}'.</value>
+  <data name="GettingAllCommitsFromCheckpoint" xml:space="preserve">
+    <value>Getting all commits from checkpoint '{0}'.</value>
   </data>
   <data name="DeletingStream" xml:space="preserve">
     <value>Deleting stream '{0}' from bucket '{1}'.</value>
-  </data>
-  <data name="GettingAllCommitsSinceBeginning" xml:space="preserve">
-    <value>Getting all commits since beginning.</value>
   </data>
 </root>

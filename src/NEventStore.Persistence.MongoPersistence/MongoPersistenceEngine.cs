@@ -140,15 +140,6 @@
                 .Select(x => x.ToCommit(_serializer)));
         }
 
-        public IEnumerable<ICommit> GetFromStart()
-        {
-            Logger.Debug(Messages.GettingAllCommitsFromBeginning);
-            return TryMongo(() => PersistedCommits
-                .FindAll()
-                .SetSortOrder(MongoFields.CheckpointNumber)
-                .Select(x => x.ToCommit(_serializer)));
-        }
-
         public virtual IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             Logger.Debug(Messages.GettingAllCommitsFromTo, start, end, bucketId);
@@ -324,6 +315,8 @@
                 .SetSortOrder(MongoFields.CheckpointNumber)
                 .Select(x => x.ToCommit(_serializer));
         }
+
+        public ICheckpoint StartCheckpoint { get { return new IntCheckpoint(0); } }
 
         public bool IsDisposed
         {

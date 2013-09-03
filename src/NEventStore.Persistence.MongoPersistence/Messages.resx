@@ -180,7 +180,4 @@
   <data name="UnsupportedCheckpointType" xml:space="preserve">
     <value>Unsuppored checkpoint type. Expected {0} but got {1}.</value>
   </data>
-  <data name="GettingAllCommitsFromBeginning" xml:space="preserve">
-    <value>Getting all commits from beginning.</value>
-  </data>
 </root>

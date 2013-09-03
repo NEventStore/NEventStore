@@ -367,29 +367,20 @@ namespace NEventStore.Persistence.SqlPersistence {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Getting all commits from checkpoint &apos;{0}&apos;..
+        /// </summary>
+        internal static string GettingAllCommitsFromCheckpoint {
+            get {
+                return ResourceManager.GetString("GettingAllCommitsFromCheckpoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Getting all commits from &apos;{0}&apos; to &apos;{1}&apos;..
         /// </summary>
         internal static string GettingAllCommitsFromTo {
             get {
                 return ResourceManager.GetString("GettingAllCommitsFromTo", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Getting all commits since beginning..
-        /// </summary>
-        internal static string GettingAllCommitsSinceBeginning {
-            get {
-                return ResourceManager.GetString("GettingAllCommitsSinceBeginning", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Getting all commits since checkpoint &apos;{0}&apos;..
-        /// </summary>
-        internal static string GettingAllCommitsSinceCheckpoint {
-            get {
-                return ResourceManager.GetString("GettingAllCommitsSinceCheckpoint", resourceCulture);
             }
         }
         

@@ -232,6 +232,15 @@ namespace NEventStore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot only compare {0} with {1}..
+        /// </summary>
+        internal static string FailedToCompareCheckpoint {
+            get {
+                return ResourceManager.GetString("FailedToCompareCheckpoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Initializing the configured persistence engine..
         /// </summary>
         internal static string InitializingEngine {

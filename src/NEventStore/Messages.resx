@@ -216,4 +216,7 @@
   <data name="ConfiguringEnginePerformanceTracking" xml:space="preserve">
     <value>Configuring persistence engine to track performance</value>
   </data>
+  <data name="FailedToCompareCheckpoint" xml:space="preserve">
+    <value>Cannot only compare {0} with {1}.</value>
+  </data>
 </root>

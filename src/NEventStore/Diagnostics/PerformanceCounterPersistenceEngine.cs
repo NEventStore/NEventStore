@@ -36,11 +36,6 @@ namespace NEventStore.Diagnostics
             _counters.CountCommitDispatched();
         }
 
-        public IEnumerable<ICommit> GetFromStart()
-        {
-            return _persistence.GetFromStart();
-        }
-
         public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             return _persistence.GetFromTo(bucketId, start, end);
@@ -106,6 +101,8 @@ namespace NEventStore.Diagnostics
         {
             return _persistence.GetFrom(checkpoint);
         }
+
+        public ICheckpoint StartCheckpoint { get { return new IntCheckpoint(0); } }
 
         public bool IsDisposed
         {
