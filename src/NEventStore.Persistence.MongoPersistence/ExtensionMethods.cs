@@ -69,10 +69,9 @@
 
             List<EventMessage> events = doc[MongoFields.Events]
                 .AsBsonArray
-                .Select(e =>
-                    e.AsBsonDocument[MongoFields.Payload].IsBsonDocument
-                        ? BsonSerializer.Deserialize<EventMessage>(e.AsBsonDocument[MongoFields.Payload].AsBsonDocument)
-                        : serializer.Deserialize<EventMessage>(e.AsBsonDocument[MongoFields.Payload].AsByteArray))
+                .Select(e => e.AsBsonDocument[MongoFields.Payload].IsBsonDocument
+                    ? BsonSerializer.Deserialize<EventMessage>(e.AsBsonDocument[MongoFields.Payload].ToBsonDocument())
+                    : serializer.Deserialize<EventMessage>(e.AsBsonDocument[MongoFields.Payload].AsByteArray))
                 .ToList();
             int streamRevision = doc[MongoFields.Events].AsBsonArray.Last().AsBsonDocument[MongoFields.StreamRevision].AsInt32;
             return new Commit(bucketId,

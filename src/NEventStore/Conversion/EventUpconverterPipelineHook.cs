@@ -40,7 +40,7 @@ namespace NEventStore.Conversion
                         return eventMessage;
                     }
                     converted = true;
-                    return new EventMessage {Headers = eventMessage.Headers, Body = convert };
+                    return new EventMessage { Headers = eventMessage.Headers, Body = convert };
                 })
                 .ToList();
             if (!converted)
