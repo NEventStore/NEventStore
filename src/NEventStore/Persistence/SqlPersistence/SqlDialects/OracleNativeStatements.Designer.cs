@@ -274,28 +274,34 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         
         /// <summary>
         ///   Looks up a localized string similar to /*PersistCommit*/
+        ///DECLARE
+        ///   checkPointNumber NUMBER;
+        ///BEGIN
         ///INSERT INTO Commits (  
-        ///	BucketId, StreamId, 
-        ///	StreamIdOriginal,
-        ///	CommitId, 
-        ///	CommitSequence, 
-        ///	StreamRevision, 
-        ///	Items, 
-        ///	CommitStamp, 
-        ///	Headers, 
-        ///	Payload
+        ///    BucketId,
+        ///    StreamId, 
+        ///    StreamIdOriginal,
+        ///    CommitId, 
+        ///    CommitSequence, 
+        ///    StreamRevision, 
+        ///    Items, 
+        ///    CommitStamp, 
+        ///    Headers, 
+        ///    Payload
         ///)  
         ///VALUES ( 
-        ///	:BucketId, :StreamId, 
-        ///	:StreamIdOriginal, 
-        ///	:CommitId, 
-        ///	:CommitSequence, 
-        ///	:StreamRevision, 
-        ///	:Items, 
-        ///	:CommitStamp, 
-        ///	:Headers, 
-        ///	:Payload
-        ///).
+        ///    :BucketId,
+        ///    :StreamId, 
+        ///    :StreamIdOriginal, 
+        ///    :CommitId, 
+        ///    :CommitSequence, 
+        ///    :StreamRevision, 
+        ///    :Items, 
+        ///    :CommitStamp, 
+        ///    :Headers, 
+        ///    :Payload
+        ///)
+        ///RETURNING CheckpointNumber INTO checkPointNum [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string PersistCommit {
             get {

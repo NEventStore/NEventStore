@@ -292,28 +292,35 @@ WHERE ROW_NUMBER_VAL &gt; :Skip AND ROW_NUMBER_VAL &lt;= (:Limit + :Skip)</value
   </data>
   <data name="PersistCommit" xml:space="preserve">
     <value>/*PersistCommit*/
+DECLARE
+   checkPointNumber NUMBER;
+BEGIN
 INSERT INTO Commits (  
-	BucketId, StreamId, 
-	StreamIdOriginal,
-	CommitId, 
-	CommitSequence, 
-	StreamRevision, 
-	Items, 
-	CommitStamp, 
-	Headers, 
-	Payload
+    BucketId,
+    StreamId, 
+    StreamIdOriginal,
+    CommitId, 
+    CommitSequence, 
+    StreamRevision, 
+    Items, 
+    CommitStamp, 
+    Headers, 
+    Payload
 )  
 VALUES ( 
-	:BucketId, :StreamId, 
-	:StreamIdOriginal, 
-	:CommitId, 
-	:CommitSequence, 
-	:StreamRevision, 
-	:Items, 
-	:CommitStamp, 
-	:Headers, 
-	:Payload
-)</value>
+    :BucketId,
+    :StreamId, 
+    :StreamIdOriginal, 
+    :CommitId, 
+    :CommitSequence, 
+    :StreamRevision, 
+    :Items, 
+    :CommitStamp, 
+    :Headers, 
+    :Payload
+)
+RETURNING CheckpointNumber INTO checkPointNumber;
+END;</value>
   </data>
   <data name="PurgeBucket" xml:space="preserve">
     <value>/*PurgeStorage*/
