@@ -109,8 +109,8 @@
     <Compile Include="PersistenceWireup.cs" />
     <Compile Include="PersistenceWireupExtensions.cs" />
     <Compile Include="Persistence\Commit.cs" />
-    <Compile Include="Persistence\InMemoryPersistence\InMemoryPersistenceEngine.cs" />
-    <Compile Include="Persistence\InMemoryPersistence\InMemoryPersistenceFactory.cs" />
+    <Compile Include="Persistence\InMemory\InMemoryPersistenceEngine.cs" />
+    <Compile Include="Persistence\InMemory\InMemoryPersistenceFactory.cs" />
     <Compile Include="Persistence\IStreamHead.cs" />
     <Compile Include="Persistence\PersistStreamsExtensions.cs" />
     <Compile Include="Persistence\PipelineHooksAwarePersistanceDecorator.cs" />

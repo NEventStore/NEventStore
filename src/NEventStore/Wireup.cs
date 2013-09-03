@@ -6,7 +6,7 @@ namespace NEventStore
     using NEventStore.Conversion;
     using NEventStore.Dispatcher;
     using NEventStore.Persistence;
-    using NEventStore.Persistence.InMemoryPersistence;
+    using NEventStore.Persistence.InMemory;
 
     public class Wireup
     {

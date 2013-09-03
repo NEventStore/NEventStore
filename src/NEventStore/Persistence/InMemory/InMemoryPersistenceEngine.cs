@@ -1,4 +1,4 @@
-namespace NEventStore.Persistence.InMemoryPersistence
+namespace NEventStore.Persistence.InMemory
 {
     using System;
     using System.Collections.Concurrent;
