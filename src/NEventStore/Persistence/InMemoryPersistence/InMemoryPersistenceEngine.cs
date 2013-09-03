@@ -3,7 +3,6 @@ namespace NEventStore.Persistence.InMemoryPersistence
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
-    using System.Configuration;
     using System.Linq;
     using System.Threading;
     using NEventStore.Logging;
@@ -31,81 +30,91 @@ namespace NEventStore.Persistence.InMemoryPersistence
             Logger.Info(Resources.InitializingEngine);
         }
 
-        public virtual IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
+        public IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
         {
             ThrowWhenDisposed();
             Logger.Debug(Resources.GettingAllCommitsFromRevision, streamId, minRevision, maxRevision);
             return this[bucketId].GetFrom(streamId, minRevision, maxRevision);
         }
 
-        public virtual IEnumerable<ICommit> GetFrom(string bucketId, DateTime start)
+        public IEnumerable<ICommit> GetFrom(string bucketId, DateTime start)
         {
             ThrowWhenDisposed();
             Logger.Debug(Resources.GettingAllCommitsFromTime, bucketId, start);
             return this[bucketId].GetFrom(start);
         }
 
-        public IEnumerable<ICommit> GetFrom(int checkpoint)
+        public IEnumerable<ICommit> GetFrom(ICheckpoint checkpoint)
         {
             Logger.Debug(Resources.GettingAllCommitsSinceCheckpoint, checkpoint);
             return _buckets
                 .Values
                 .SelectMany(b => b.GetCommits())
-                .Where(c => c.Checkpoint > checkpoint)
+                .Where(c => c.Checkpoint.CompareTo(checkpoint) > 0)
                 .OrderBy(c => c.Checkpoint)
                 .ToArray();
         }
 
-        public virtual IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
+        public IEnumerable<ICommit> GetFromBeginning()
+        {
+            ThrowWhenDisposed();
+            Logger.Debug(Resources.GettingAllCommitsFromBeginning);
+            return _buckets
+                 .Values
+                 .SelectMany(b => b.GetCommits())
+                 .OrderBy(c => c.Checkpoint)
+                 .ToArray();
+        }
+
+        public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             ThrowWhenDisposed();
             Logger.Debug(Resources.GettingAllCommitsFromToTime, start, end);
             return this[bucketId].GetFromTo(start, end);
         }
 
-        public virtual void Commit(ICommit attempt)
+        public ICommit Commit(CommitAttempt attempt)
         {
             ThrowWhenDisposed();
             Logger.Debug(Resources.AttemptingToCommit, attempt.CommitId, attempt.StreamId, attempt.CommitSequence);
-            attempt.Checkpoint = Interlocked.Increment(ref _checkpoint);
-            this[attempt.BucketId].Commit(attempt);
+            return this[attempt.BucketId].Commit(attempt, new IntCheckpoint(Interlocked.Increment(ref _checkpoint)));
         }
 
-        public virtual IEnumerable<ICommit> GetUndispatchedCommits()
+        public IEnumerable<ICommit> GetUndispatchedCommits()
         {
             ThrowWhenDisposed();
             return _buckets.Values.SelectMany(b => b.GetUndispatchedCommits());
         }
 
-        public virtual void MarkCommitAsDispatched(ICommit commit)
+        public void MarkCommitAsDispatched(ICommit commit)
         {
             ThrowWhenDisposed();
             Logger.Debug(Resources.MarkingAsDispatched, commit.CommitId);
             this[commit.BucketId].MarkCommitAsDispatched(commit);
         }
 
-        public virtual IEnumerable<IStreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
+        public IEnumerable<IStreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
         {
             ThrowWhenDisposed();
             Logger.Debug(Resources.GettingStreamsToSnapshot, bucketId, maxThreshold);
             return this[bucketId].GetStreamsToSnapshot(maxThreshold);
         }
 
-        public virtual ISnapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
+        public ISnapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
         {
             ThrowWhenDisposed();
             Logger.Debug(Resources.GettingSnapshotForStream, bucketId, streamId, maxRevision);
             return this[bucketId].GetSnapshot(streamId, maxRevision);
         }
 
-        public virtual bool AddSnapshot(ISnapshot snapshot)
+        public bool AddSnapshot(ISnapshot snapshot)
         {
             ThrowWhenDisposed();
             Logger.Debug(Resources.AddingSnapshot, snapshot.StreamId, snapshot.StreamRevision);
             return this[snapshot.BucketId].AddSnapshot(snapshot);
         }
 
-        public virtual void Purge()
+        public void Purge()
         {
             ThrowWhenDisposed();
             Logger.Warn(Resources.PurgingStore);
@@ -142,7 +151,7 @@ namespace NEventStore.Persistence.InMemoryPersistence
             get { return _disposed; }
         }
 
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             _disposed = true;
             Logger.Info(Resources.DisposingEngine);
@@ -163,7 +172,7 @@ namespace NEventStore.Persistence.InMemoryPersistence
         {
             private readonly IList<ICommit> _commits = new List<ICommit>();
 
-            public ICommit[] GetCommits()
+            public IEnumerable<ICommit> GetCommits()
             {
                 lock (_commits)
                 {
@@ -192,7 +201,7 @@ namespace NEventStore.Persistence.InMemoryPersistence
                 Guid commitId = _stamps.Where(x => x.Value >= start).Select(x => x.Key).FirstOrDefault();
                 if (commitId == Guid.Empty)
                 {
-                    return new Commit[] {};
+                    return Enumerable.Empty<ICommit>();
                 }
 
                 ICommit startingCommit = _commits.FirstOrDefault(x => x.CommitId == commitId);
@@ -206,7 +215,7 @@ namespace NEventStore.Persistence.InMemoryPersistence
                 Guid lastCommitId = selectedCommitIds.LastOrDefault();
                 if (lastCommitId == Guid.Empty && lastCommitId == Guid.Empty)
                 {
-                    return new Commit[] {};
+                    return Enumerable.Empty<ICommit>();
                 }
                 ICommit startingCommit = _commits.FirstOrDefault(x => x.CommitId == firstCommitId);
                 ICommit endingCommit = _commits.FirstOrDefault(x => x.CommitId == lastCommitId);
@@ -217,27 +226,29 @@ namespace NEventStore.Persistence.InMemoryPersistence
                 return _commits.Skip(_commits.IndexOf(startingCommit)).Take(numberToTake);
             }
 
-            public void Commit(ICommit attempt)
+            public ICommit Commit(CommitAttempt attempt, ICheckpoint checkpoint)
             {
                 lock (_commits)
                 {
-                    if (_commits.Contains(attempt))
+                    ICommit commit = attempt.ToCommit(checkpoint);
+                    if (_commits.Contains(commit))
                     {
                         throw new DuplicateCommitException();
                     }
-                    if (_commits.Any(c => c.StreamId == attempt.StreamId && c.CommitSequence == attempt.CommitSequence))
+                    if (_commits.Any(c => c.StreamId == commit.StreamId && c.CommitSequence == commit.CommitSequence))
                     {
                         throw new ConcurrencyException();
                     }
 
-                    _stamps[attempt.CommitId] = attempt.CommitStamp;
-                    _commits.Add(attempt);
-                    _undispatched.Add(attempt);
-                    IStreamHead head = _heads.FirstOrDefault(x => x.StreamId == attempt.StreamId);
+                    _stamps[commit.CommitId] = commit.CommitStamp;
+                    _commits.Add(commit);
+                    _undispatched.Add(commit);
+                    IStreamHead head = _heads.FirstOrDefault(x => x.StreamId == commit.StreamId);
                     _heads.Remove(head);
-                    Logger.Debug(Resources.UpdatingStreamHead, attempt.StreamId);
+                    Logger.Debug(Resources.UpdatingStreamHead, commit.StreamId);
                     int snapshotRevision = head == null ? 0 : head.SnapshotRevision;
-                    _heads.Add(new StreamHead(attempt.BucketId, attempt.StreamId, attempt.StreamRevision, snapshotRevision));
+                    _heads.Add(new StreamHead(commit.BucketId, commit.StreamId, commit.StreamRevision, snapshotRevision));
+                    return commit;
                 }
             }
 

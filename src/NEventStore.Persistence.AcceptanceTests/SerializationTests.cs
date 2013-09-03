@@ -134,8 +134,8 @@
 
     public class when_serializing_a_commit_message : SerializationConcern
     {
-        private readonly Commit _message = Guid.NewGuid().ToString().BuildCommit();
-        private Commit _deserialized;
+        private readonly CommitAttempt _message = Guid.NewGuid().ToString().BuildCommit();
+        private CommitAttempt _deserialized;
         private byte[] _serialized;
 
         protected override void Context()
@@ -145,7 +145,7 @@
 
         protected override void Because()
         {
-            _deserialized = Serializer.Deserialize<Commit>(_serialized);
+            _deserialized = Serializer.Deserialize<CommitAttempt>(_serialized);
         }
 
         [Fact]

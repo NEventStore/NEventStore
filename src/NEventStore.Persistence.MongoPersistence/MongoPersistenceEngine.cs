@@ -71,7 +71,7 @@
             get { return _store.GetCollection("Snapshots", _snapshotSettings); }
         }
 
-        protected MongoCollection<BsonDocument> Counters
+        private MongoCollection<BsonDocument> Counters
         {
             get { return _store.GetCollection("Counters", _countersSettings); }
         }
@@ -140,6 +140,15 @@
                 .Select(x => x.ToCommit(_serializer)));
         }
 
+        public IEnumerable<ICommit> GetFromBeginning()
+        {
+            Logger.Debug(Messages.GettingAllCommitsFromBeginning);
+            return TryMongo(() => PersistedCommits
+                .FindAll()
+                .SetSortOrder(MongoFields.CheckpointNumber)
+                .Select(x => x.ToCommit(_serializer)));
+        }
+
         public virtual IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             Logger.Debug(Messages.GettingAllCommitsFromTo, start, end, bucketId);
@@ -150,17 +159,17 @@
                 .Select(x => x.ToCommit(_serializer)));
         }
 
-        public virtual void Commit(ICommit attempt)
+        public virtual ICommit Commit(CommitAttempt attempt)
         {
             Logger.Debug(Messages.AttemptingToCommit, attempt.Events.Count, attempt.StreamId, attempt.CommitSequence);
 
-            TryMongo(() =>
+            return TryMongo(() =>
             {
-                BsonDocument commit = attempt.ToMongoCommit(_getNextCheckpointNumber, _serializer);
+                BsonDocument commitDoc = attempt.ToMongoCommit(_getNextCheckpointNumber, _serializer);
                 try
                 {
                     // for concurrency / duplicate commit detection safe mode is required
-                    PersistedCommits.Insert(commit, WriteConcern.Acknowledged);
+                    PersistedCommits.Insert(commitDoc, WriteConcern.Acknowledged);
                     UpdateStreamHeadAsync(attempt.BucketId, attempt.StreamId, attempt.StreamRevision, attempt.Events.Count);
                     Logger.Debug(Messages.CommitPersisted, attempt.CommitId);
                 }
@@ -170,7 +179,7 @@
                     {
                         throw;
                     }
-                    Commit savedCommit = PersistedCommits.FindOne(attempt.ToMongoCommitIdQuery()).ToCommit(_serializer);
+                    ICommit savedCommit = PersistedCommits.FindOne(attempt.ToMongoCommitIdQuery()).ToCommit(_serializer);
                     if (savedCommit.CommitId == attempt.CommitId)
                     {
                         throw new DuplicateCommitException();
@@ -178,6 +187,7 @@
                     Logger.Debug(Messages.ConcurrentWriteDetected);
                     throw new ConcurrencyException();
                 }
+                return commitDoc.ToCommit(_serializer);
             });
         }
 
@@ -301,11 +311,16 @@
             });
         }
 
-        public IEnumerable<ICommit> GetFrom(int checkpoint)
+        public IEnumerable<ICommit> GetFrom(ICheckpoint checkpoint)
         {
-            Logger.Debug(Messages.GettingAllCommitsSinceCheckpoint, checkpoint);
+            var intCheckpoint = checkpoint as IntCheckpoint;
+            if (intCheckpoint == null)
+            {
+                throw new NotSupportedException(Messages.UnsupportedCheckpointType.FormatWith(typeof (IntCheckpoint), checkpoint.GetType()));
+            }
+            Logger.Debug(Messages.GettingAllCommitsFromCheckpoint, checkpoint);
             return TryMongo(() => PersistedCommits
-                .Find(Query.GTE(MongoFields.CheckpointNumber, checkpoint)))
+                .Find(Query.GTE(MongoFields.CheckpointNumber, intCheckpoint.IntValue)))
                 .SetSortOrder(MongoFields.CheckpointNumber)
                 .Select(x => x.ToCommit(_serializer));
         }

@@ -3,8 +3,8 @@ namespace NEventStore.Conversion
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Runtime.InteropServices;
     using NEventStore.Logging;
+    using NEventStore.Persistence;
 
     public class EventUpconverterPipelineHook : IPipelineHook
     {
@@ -53,11 +53,12 @@ namespace NEventStore.Conversion
                 committed.CommitId,
                 committed.CommitSequence,
                 committed.CommitStamp,
+                committed.Checkpoint,
                 committed.Headers,
                 eventMessages);
         }
 
-        public virtual bool PreCommit(ICommit attempt)
+        public virtual bool PreCommit(CommitAttempt attempt)
         {
             return true;
         }

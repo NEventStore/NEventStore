@@ -1,21 +1,18 @@
-﻿
-#pragma warning disable 169
-// ReSharper disable InconsistentNaming
-
-namespace NEventStore.ConversionTests
+﻿namespace NEventStore.ConversionTests
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using NEventStore.Conversion;
+    using NEventStore.Persistence;
     using NEventStore.Persistence.AcceptanceTests.BDD;
     using Xunit;
     using Xunit.Should;
 
     public class when_opening_a_commit_that_does_not_have_convertible_events : using_event_converter
     {
-        private readonly ICommit _commit = new Commit(Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
+        private readonly ICommit _commit = CreateCommit();
 
         private ICommit _converted;
 
@@ -44,7 +41,7 @@ namespace NEventStore.ConversionTests
 
     public class when_opening_a_commit_that_has_convertible_events : using_event_converter
     {
-        private readonly ICommit _commit = new Commit(Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
+        private readonly ICommit _commit = CreateCommit();
 
         private readonly Guid _id = Guid.NewGuid();
         private ICommit _converted;
@@ -75,9 +72,11 @@ namespace NEventStore.ConversionTests
         }
     }
 
+// ReSharper disable InconsistentNaming
     public class when_an_event_converter_implements_the_IConvertEvents_interface_explicitly : using_event_converter
+// ReSharper restore InconsistentNaming
     {
-        private readonly ICommit _commit = new Commit(Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
+        private readonly ICommit _commit = CreateCommit();
 
         private readonly Guid _id = Guid.NewGuid();
         private ICommit _converted;
@@ -110,20 +109,20 @@ namespace NEventStore.ConversionTests
 
     public class using_event_converter : SpecificationBase
     {
-        private IEnumerable<Assembly> assemblies;
-        private Dictionary<Type, Func<object, object>> converters;
-        private EventUpconverterPipelineHook eventUpconverter;
+        private IEnumerable<Assembly> _assemblies;
+        private Dictionary<Type, Func<object, object>> _converters;
+        private EventUpconverterPipelineHook _eventUpconverter;
 
         protected EventUpconverterPipelineHook EventUpconverter
         {
-            get { return eventUpconverter ?? (eventUpconverter = CreateUpConverterHook()); }
+            get { return _eventUpconverter ?? (_eventUpconverter = CreateUpConverterHook()); }
         }
 
         private EventUpconverterPipelineHook CreateUpConverterHook()
         {
-            assemblies = GetAllAssemblies();
-            converters = GetConverters(assemblies);
-            return new EventUpconverterPipelineHook(converters);
+            _assemblies = GetAllAssemblies();
+            _converters = GetConverters(_assemblies);
+            return new EventUpconverterPipelineHook(_converters);
         }
 
         private Dictionary<Type, Func<object, object>> GetConverters(IEnumerable<Assembly> toScan)
@@ -150,6 +149,19 @@ namespace NEventStore.ConversionTests
         {
             return
                 Assembly.GetCallingAssembly().GetReferencedAssemblies().Select(Assembly.Load).Concat(new[] {Assembly.GetCallingAssembly()});
+        }
+
+        protected static ICommit CreateCommit()
+        {
+            return new Commit(Bucket.Default,
+                Guid.NewGuid().ToString(),
+                0,
+                Guid.NewGuid(),
+                0,
+                DateTime.MinValue,
+                new IntCheckpoint(0),
+                null,
+                null);
         }
     }
 

@@ -28,7 +28,7 @@ namespace NEventStore
 
     public class when_reading_the_all_events_from_date : using_underlying_persistence
     {
-        private Commit commit;
+        private ICommit _commit;
         private DateTime date;
         private Mock<IPipelineHook> hook1;
         private Mock<IPipelineHook> hook2;
@@ -36,17 +36,17 @@ namespace NEventStore
         protected override void Context()
         {
             date = DateTime.Now;
-            commit = new Commit(streamId, 1, Guid.NewGuid(), 1, DateTime.Now, null, null);
+            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, new IntCheckpoint(0), null, null);
 
             hook1 = new Mock<IPipelineHook>();
-            hook1.Setup(h => h.Select(commit)).Returns(commit);
+            hook1.Setup(h => h.Select(_commit)).Returns(_commit);
             pipelineHooks.Add(hook1);
 
             hook2 = new Mock<IPipelineHook>();
-            hook2.Setup(h => h.Select(commit)).Returns(commit);
+            hook2.Setup(h => h.Select(_commit)).Returns(_commit);
             pipelineHooks.Add(hook2);
 
-            persistence.Setup(p => p.GetFrom(Bucket.Default, date)).Returns(new List<Commit> { commit });
+            persistence.Setup(p => p.GetFrom(Bucket.Default, date)).Returns(new List<ICommit> { _commit });
         }
 
         protected override void Because()
@@ -63,14 +63,14 @@ namespace NEventStore
         [Fact]
         public void should_pass_all_events_through_the_pipeline_hooks()
         {
-            hook1.Verify(h => h.Select(commit), Times.Once());
-            hook2.Verify(h => h.Select(commit), Times.Once());
+            hook1.Verify(h => h.Select(_commit), Times.Once());
+            hook2.Verify(h => h.Select(_commit), Times.Once());
         }
     }
 
     public class when_reading_the_all_events_to_date : using_underlying_persistence
     {
-        private Commit commit;
+        private ICommit _commit;
         private DateTime end;
         private Mock<IPipelineHook> hook1;
         private Mock<IPipelineHook> hook2;
@@ -81,17 +81,17 @@ namespace NEventStore
         {
             start = DateTime.Now;
             end = DateTime.Now;
-            commit = new Commit(streamId, 1, Guid.NewGuid(), 1, DateTime.Now, null, null);
+            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, new IntCheckpoint(0), null, null);
 
             hook1 = new Mock<IPipelineHook>();
-            hook1.Setup(h => h.Select(commit)).Returns(commit);
+            hook1.Setup(h => h.Select(_commit)).Returns(_commit);
             pipelineHooks.Add(hook1);
 
             hook2 = new Mock<IPipelineHook>();
-            hook2.Setup(h => h.Select(commit)).Returns(commit);
+            hook2.Setup(h => h.Select(_commit)).Returns(_commit);
             pipelineHooks.Add(hook2);
 
-            persistence.Setup(p => p.GetFromTo(Bucket.Default, start, end)).Returns(new List<Commit> { commit });
+            persistence.Setup(p => p.GetFromTo(Bucket.Default, start, end)).Returns(new List<ICommit> { _commit });
         }
 
         protected override void Because()
@@ -108,18 +108,18 @@ namespace NEventStore
         [Fact]
         public void should_pass_all_events_through_the_pipeline_hooks()
         {
-            hook1.Verify(h => h.Select(commit), Times.Once());
-            hook2.Verify(h => h.Select(commit), Times.Once());
+            hook1.Verify(h => h.Select(_commit), Times.Once());
+            hook2.Verify(h => h.Select(_commit), Times.Once());
         }
     }
 
     public class when_committing : using_underlying_persistence
     {
-        private Commit attempt;
+        private CommitAttempt attempt;
 
         protected override void Context()
         {
-            attempt = new Commit(streamId, 1, Guid.NewGuid(), 1, DateTime.Now, null, null);
+            attempt = new CommitAttempt(streamId, 1, Guid.NewGuid(), 1, DateTime.Now, null, null);
         }
 
         protected override void Because()

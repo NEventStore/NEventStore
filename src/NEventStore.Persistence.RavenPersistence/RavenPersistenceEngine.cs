@@ -122,7 +122,7 @@
             return QueryCommits<RavenCommitByDate>(x => x.BucketId == bucketId && x.CommitStamp >= start && x.CommitStamp < end).OrderBy(x => x.CommitStamp);
         }
 
-        public virtual void Commit(ICommit attempt)
+        public virtual ICommit Commit(CommitAttempt attempt)
         {
             Logger.Debug(Messages.AttemptingToCommit, attempt.Events.Count, attempt.StreamId, attempt.CommitSequence, attempt.BucketId);
 
@@ -156,6 +156,7 @@
                 Logger.Debug(Messages.ConcurrentWriteDetected);
                 throw new ConcurrencyException();
             }
+            throw new NotImplementedException("Engine to be re-implemented");
         }
 
         public virtual IEnumerable<ICommit> GetUndispatchedCommits()
@@ -278,7 +279,12 @@
             throw new NotImplementedException("Engine to be rewritten");
         }
 
-        public IEnumerable<ICommit> GetFrom(int checkpoint)
+        public IEnumerable<ICommit> GetFrom(ICheckpoint checkpoint)
+        {
+            throw new NotImplementedException("Engine to be rewritten");
+        }
+
+        public IEnumerable<ICommit> GetFromBeginning()
         {
             throw new NotImplementedException("Engine to be rewritten");
         }
@@ -299,7 +305,7 @@
             _store.Dispose();
         }
 
-        private RavenCommit LoadSavedCommit(ICommit attempt)
+        private RavenCommit LoadSavedCommit(CommitAttempt attempt)
         {
             Logger.Debug(Messages.DetectingConcurrency);
 
@@ -342,7 +348,7 @@
             return _store.DatabaseCommands.Query(index, query, null, true).TotalResults != 0;
         }
 
-        private IEnumerable<Commit> QueryCommits<TIndex>(Expression<Func<RavenCommit, bool>> query)
+        private IEnumerable<ICommit> QueryCommits<TIndex>(Expression<Func<RavenCommit, bool>> query)
             where TIndex : AbstractIndexCreationTask, new()
         {
             IEnumerable<RavenCommit> commits = Query<RavenCommit, TIndex>(query);

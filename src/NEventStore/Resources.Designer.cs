@@ -133,15 +133,6 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Commit attempt failed one or more integrity checks..
-        /// </summary>
-        internal static string CommitAttemptFailedIntegrityChecks {
-            get {
-                return ResourceManager.GetString("CommitAttemptFailedIntegrityChecks", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Pipeline hook of type &apos;{0}&apos; rejected attempt &apos;{1}&apos;..
         /// </summary>
         internal static string CommitRejectedByPipelineHook {
@@ -210,6 +201,15 @@ namespace NEventStore {
         internal static string DisposingEngine {
             get {
                 return ResourceManager.GetString("DisposingEngine", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Getting all commits from beginning..
+        /// </summary>
+        internal static string GettingAllCommitsFromBeginning {
+            get {
+                return ResourceManager.GetString("GettingAllCommitsFromBeginning", resourceCulture);
             }
         }
         

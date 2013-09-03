@@ -71,6 +71,7 @@
       <Link>Persistence\InMemoryPersistence\PersistenceTests.cs</Link>
     </Compile>
     <Compile Include="Client\PollingClientTests.cs" />
+    <Compile Include="CommitHelper.cs" />
     <Compile Include="ConversionTests\EventUpconverterPipelineHookTests.cs" />
     <Compile Include="DispatchCommitHookTests.cs" />
     <Compile Include="DispatcherTests\AsynchronousDispatcherTests.cs" />
@@ -80,8 +81,8 @@
     <Compile Include="OptimisticCommitHookTests.cs" />
     <Compile Include="OptimisticEventStoreTests.cs" />
     <Compile Include="OptimisticEventStreamTests.cs" />
-    <Compile Include="Persistence\InMemoryPersistence\InMemoryPersistenceTests.cs" />
-    <Compile Include="Persistence\InMemoryPersistence\PersistenceEngineFixture.cs" />
+    <Compile Include="Persistence\InMemory\InMemoryPersistenceTests.cs" />
+    <Compile Include="Persistence\InMemory\PersistenceEngineFixture.cs" />
     <Compile Include="PipelineHooksAwarePersistanceDecoratorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

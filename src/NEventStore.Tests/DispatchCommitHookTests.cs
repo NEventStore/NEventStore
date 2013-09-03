@@ -6,6 +6,7 @@ namespace NEventStore
     using System;
     using Moq;
     using NEventStore.Dispatcher;
+    using NEventStore.Persistence;
     using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
     using Xunit;
@@ -13,8 +14,7 @@ namespace NEventStore
 
     public class when_a_commit_has_been_persisted : SpecificationBase
     {
-        private readonly ICommit _commit = new Commit(
-            Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
+        private readonly ICommit _commit = new Commit(Bucket.Default, Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, new IntCheckpoint(0), null, null);
 
         private readonly Mock<IScheduleDispatches> _dispatcher = new Mock<IScheduleDispatches>();
         private DispatchSchedulerPipelineHook _dispatchSchedulerHook;
@@ -41,8 +41,7 @@ namespace NEventStore
     {
         private readonly DispatchSchedulerPipelineHook _dispatchSchedulerHook = new DispatchSchedulerPipelineHook();
 
-        private readonly ICommit _commit = new Commit(
-            Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
+        private readonly ICommit _commit = new Commit(Bucket.Default, Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, new IntCheckpoint(0), null, null);
 
         private Exception _thrown;
 
@@ -62,8 +61,7 @@ namespace NEventStore
     {
         private readonly DispatchSchedulerPipelineHook _dispatchSchedulerHook = new DispatchSchedulerPipelineHook();
 
-        private readonly ICommit _commit = new Commit(
-            Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, null, null);
+        private readonly ICommit _commit = new Commit(Bucket.Default, Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, new IntCheckpoint(0), null, null);
 
         private ICommit _selected;
 

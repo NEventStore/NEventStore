@@ -64,9 +64,9 @@
     <Compile Include="Client\ClientBase.cs" />
     <Compile Include="Client\IObserveCommits.cs" />
     <Compile Include="Client\TaskHelpers.cs" />
+    <Compile Include="CommitAttemptExtensions.cs" />
     <Compile Include="CommitEqualityComparer.cs" />
     <Compile Include="CommitEventsExtensions.cs" />
-    <Compile Include="CommitExtensions.cs" />
     <Compile Include="ConcurrencyException.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -83,6 +83,7 @@
     <Compile Include="EventUpconverterWireupExtensions.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Conversion\IUpconvertEvents.cs" />
+    <Compile Include="Guard.cs" />
     <Compile Include="ICommit.cs" />
     <Compile Include="IEventMessage.cs" />
     <Compile Include="ImmutableCollection.cs" />
@@ -106,6 +107,7 @@
     <Compile Include="OptimisticPipelineHook.cs" />
     <Compile Include="PersistenceWireup.cs" />
     <Compile Include="PersistenceWireupExtensions.cs" />
+    <Compile Include="Persistence\Commit.cs" />
     <Compile Include="Persistence\InMemoryPersistence\InMemoryPersistenceEngine.cs" />
     <Compile Include="Persistence\InMemoryPersistence\InMemoryPersistenceFactory.cs" />
     <Compile Include="Persistence\IStreamHead.cs" />
@@ -208,7 +210,7 @@
     <Compile Include="IEventStream.cs" />
     <Compile Include="IStoreEvents.cs" />
     <Compile Include="EventMessage.cs" />
-    <Compile Include="Commit.cs" />
+    <Compile Include="CommitAttempt.cs" />
     <Compile Include="IAccessSnapshots.cs" />
     <Compile Include="Persistence\IPersistenceFactory.cs" />
     <Compile Include="Serialization\ISerialize.cs" />

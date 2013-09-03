@@ -38,7 +38,7 @@ namespace NEventStore
             return committed;
         }
 
-        public virtual bool PreCommit(ICommit attempt)
+        public virtual bool PreCommit(CommitAttempt attempt)
         {
             Logger.Debug(Resources.OptimisticConcurrencyCheck, attempt.StreamId);
 

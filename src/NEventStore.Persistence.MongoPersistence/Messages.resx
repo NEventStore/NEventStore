@@ -168,13 +168,19 @@
   <data name="GettingAllCommitsFromTo" xml:space="preserve">
     <value>Getting all commits from '{0}' to '{1}'.</value>
   </data>
-  <data name="GettingAllCommitsSinceCheckpoint" xml:space="preserve">
-    <value>Getting all commits since since checkpoint '{0}'.</value>
+  <data name="GettingAllCommitsFromCheckpoint" xml:space="preserve">
+    <value>Getting all commits since checkpoint '{0}'.</value>
   </data>
   <data name="DeletingStream" xml:space="preserve">
     <value>Deleting stream '{0}' from bucket '{1}'.</value>
   </data>
   <data name="PurgingBucket" xml:space="preserve">
     <value>Purging all stored data for bucket '{0}'.</value>
+  </data>
+  <data name="UnsupportedCheckpointType" xml:space="preserve">
+    <value>Unsuppored checkpoint type. Expected {0} but got {1}.</value>
+  </data>
+  <data name="GettingAllCommitsFromBeginning" xml:space="preserve">
+    <value>Getting all commits from beginning.</value>
   </data>
 </root>

@@ -1,11 +1,10 @@
-﻿#pragma warning disable 169
-
-namespace NEventStore.Persistence.InMemoryPersistence
+﻿namespace NEventStore.Persistence.InMemory
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using NEventStore.Persistence.AcceptanceTests.BDD;
+    using NEventStore.Persistence.InMemoryPersistence;
     using Xunit;
     using Xunit.Should;
 
@@ -21,8 +20,8 @@ namespace NEventStore.Persistence.InMemoryPersistence
             engine = new InMemoryPersistenceEngine();
             engine.Initialize();
             var streamId = Guid.NewGuid().ToString();
-            engine.Commit(new Commit(streamId, 0, Guid.NewGuid(), 0, _startDate, new Dictionary<string, object>(), new List<EventMessage>()));
-            engine.Commit(new Commit(streamId, 1, Guid.NewGuid(), 1, _endDate, new Dictionary<string, object>(), new List<EventMessage>()));
+            engine.Commit(new CommitAttempt(streamId, 0, Guid.NewGuid(), 0, _startDate, new Dictionary<string, object>(), new List<EventMessage>()));
+            engine.Commit(new CommitAttempt(streamId, 1, Guid.NewGuid(), 1, _endDate, new Dictionary<string, object>(), new List<EventMessage>()));
         }
 
         protected override void Because()
@@ -37,5 +36,3 @@ namespace NEventStore.Persistence.InMemoryPersistence
         }
     }
 }
-
-#pragma warning restore 169

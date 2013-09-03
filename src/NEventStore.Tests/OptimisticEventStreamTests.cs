@@ -6,6 +6,7 @@ namespace NEventStore
     using System.Collections.Generic;
     using System.Linq;
     using Moq;
+    using NEventStore.Persistence;
     using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
     using Xunit;
@@ -223,7 +224,7 @@ namespace NEventStore
         [Fact]
         public void should_not_call_the_underlying_infrastructure()
         {
-            Persistence.Verify(x => x.Commit(It.IsAny<Commit>()), Times.Never());
+            Persistence.Verify(x => x.Commit(It.IsAny<CommitAttempt>()), Times.Never());
         }
 
         [Fact]
@@ -248,7 +249,7 @@ namespace NEventStore
 
         protected override void Context()
         {
-            Persistence.Setup(x => x.Commit(It.IsAny<ICommit>())).Callback<ICommit>(x => _constructed = x);
+            Persistence.Setup(x => x.Commit(It.IsAny<CommitAttempt>())).Callback<ICommit>(x => _constructed = x);
             Stream.Add(_uncommitted);
             foreach (var item in _headers)
             {
@@ -264,7 +265,7 @@ namespace NEventStore
         [Fact]
         public void should_provide_a_commit_to_the_underlying_infrastructure()
         {
-            Persistence.Verify(x => x.Commit(It.IsAny<ICommit>()), Times.Once());
+            Persistence.Verify(x => x.Commit(It.IsAny<CommitAttempt>()), Times.Once());
         }
 
         [Fact]
@@ -399,7 +400,7 @@ namespace NEventStore
         private readonly IEventMessage _uncommitted = new EventMessage {Body = string.Empty};
         private ICommit[] _committed;
         private ICommit[] _discoveredOnCommit;
-        private Commit _constructed;
+        private CommitAttempt _constructed;
         private Exception _thrown;
 
         protected override void Context()
@@ -408,7 +409,7 @@ namespace NEventStore
             _discoveredOnCommit = new[] {BuildCommitStub(3, 2, 2)};
 
             Persistence
-                .Setup(x => x.Commit(It.IsAny<Commit>()))
+                .Setup(x => x.Commit(It.IsAny<CommitAttempt>()))
                 .Throws(new ConcurrencyException());
             Persistence
                 .Setup(x => x.GetFrom(Bucket.Default, StreamId, StreamRevision, int.MaxValue))
@@ -547,7 +548,7 @@ namespace NEventStore
                 events.Add(new EventMessage());
             }
 
-            return new Commit(StreamId, revision, Guid.NewGuid(), sequence, SystemTime.UtcNow, null, events);
+            return new Commit(Bucket.Default, StreamId, revision, Guid.NewGuid(), sequence, SystemTime.UtcNow, new IntCheckpoint(0), null, events);
         }
     }
 

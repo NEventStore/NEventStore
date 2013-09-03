@@ -222,9 +222,6 @@
   <data name="PipelineHookFilteredCommit" xml:space="preserve">
     <value>One or more pipeline hooks filtered out the commit.</value>
   </data>
-  <data name="CommitAttemptFailedIntegrityChecks" xml:space="preserve">
-    <value>Commit attempt failed one or more integrity checks.</value>
-  </data>
   <data name="InvokingPreCommitHooks" xml:space="preserve">
     <value>Pushing commit '{0}' to pre-commit hook of type '{1}'.</value>
   </data>
@@ -293,5 +290,8 @@
   </data>
   <data name="DeletingStream" xml:space="preserve">
     <value>Deleting stream '{0}' from bucket '{1}'.</value>
+  </data>
+  <data name="GettingAllCommitsFromBeginning" xml:space="preserve">
+    <value>Getting all commits from beginning.</value>
   </data>
 </root>

@@ -22,7 +22,7 @@ namespace NEventStore
         /// </summary>
         /// <param name="attempt">The attempt to be committed.</param>
         /// <returns>If processing should continue, returns true; otherwise returns false.</returns>
-        bool PreCommit(ICommit attempt);
+        bool PreCommit(CommitAttempt attempt);
 
         /// <summary>
         ///     Hooks into the commit pipeline just after the commit has been *successfully* committed to durable storage.

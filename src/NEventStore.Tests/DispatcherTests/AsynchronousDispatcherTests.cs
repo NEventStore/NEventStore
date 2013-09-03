@@ -4,7 +4,6 @@
 
 namespace NEventStore.DispatcherTests
 {
-    using System;
     using System.Linq;
     using System.Threading;
     using Moq;
@@ -17,21 +16,20 @@ namespace NEventStore.DispatcherTests
     {
         private readonly Mock<IDispatchCommits> dispatcher = new Mock<IDispatchCommits>();
         private readonly Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
-        private readonly string streamId = Guid.NewGuid().ToString();
-        private Commit[] commits;
+        private ICommit[] _commits;
 
         protected override void Context()
         {
-            commits = new[]
+            _commits = new[]
             {
-                new Commit(streamId, 0, Guid.NewGuid(), 0, SystemTime.UtcNow, null, null),
-                new Commit(streamId, 0, Guid.NewGuid(), 0, SystemTime.UtcNow, null, null)
+                CommitHelper.Create(),
+                CommitHelper.Create()
             };
 
             persistence.Setup(x => x.Initialize());
-            persistence.Setup(x => x.GetUndispatchedCommits()).Returns(commits);
-            dispatcher.Setup(x => x.Dispatch(commits.First()));
-            dispatcher.Setup(x => x.Dispatch(commits.Last()));
+            persistence.Setup(x => x.GetUndispatchedCommits()).Returns(_commits);
+            dispatcher.Setup(x => x.Dispatch(_commits.First()));
+            dispatcher.Setup(x => x.Dispatch(_commits.Last()));
         }
 
         protected override void Because()
@@ -66,22 +64,22 @@ namespace NEventStore.DispatcherTests
 
     public class when_asynchronously_scheduling_a_commit_for_dispatch : SpecificationBase
     {
-        private readonly Commit commit = new Commit(Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, SystemTime.UtcNow, null, null);
+        private readonly ICommit _commit = CommitHelper.Create();
         private readonly Mock<IDispatchCommits> dispatcher = new Mock<IDispatchCommits>();
         private readonly Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
         private AsynchronousDispatchScheduler dispatchScheduler;
 
         protected override void Context()
         {
-            dispatcher.Setup(x => x.Dispatch(commit));
-            persistence.Setup(x => x.MarkCommitAsDispatched(commit));
+            dispatcher.Setup(x => x.Dispatch(_commit));
+            persistence.Setup(x => x.MarkCommitAsDispatched(_commit));
 
             dispatchScheduler = new AsynchronousDispatchScheduler(dispatcher.Object, persistence.Object);
         }
 
         protected override void Because()
         {
-            dispatchScheduler.ScheduleDispatch(commit);
+            dispatchScheduler.ScheduleDispatch(_commit);
         }
 
         [Fact]
@@ -93,13 +91,13 @@ namespace NEventStore.DispatcherTests
         [Fact]
         public void should_provide_the_commit_to_the_dispatcher()
         {
-            dispatcher.Verify(x => x.Dispatch(commit), Times.Once());
+            dispatcher.Verify(x => x.Dispatch(_commit), Times.Once());
         }
 
         [Fact]
         public void should_mark_the_commit_as_dispatched()
         {
-            persistence.Verify(x => x.MarkCommitAsDispatched(commit), Times.Once());
+            persistence.Verify(x => x.MarkCommitAsDispatched(_commit), Times.Once());
         }
     }
 

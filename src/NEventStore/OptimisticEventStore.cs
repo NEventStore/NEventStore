@@ -45,14 +45,8 @@ namespace NEventStore
             }
         }
 
-        public virtual void Commit(ICommit attempt)
+        public virtual ICommit Commit(CommitAttempt attempt)
         {
-            if (!attempt.IsValid() || attempt.IsEmpty())
-            {
-                Logger.Debug(Resources.CommitAttemptFailedIntegrityChecks);
-                return;
-            }
-
             foreach (var hook in _pipelineHooks)
             {
                 Logger.Debug(Resources.InvokingPreCommitHooks, attempt.CommitId, hook.GetType());
@@ -62,17 +56,18 @@ namespace NEventStore
                 }
 
                 Logger.Info(Resources.CommitRejectedByPipelineHook, hook.GetType(), attempt.CommitId);
-                return;
+                return null;
             }
 
             Logger.Info(Resources.CommittingAttempt, attempt.CommitId, attempt.Events.Count);
-            _persistence.Commit(attempt);
+            ICommit commit = _persistence.Commit(attempt);
 
             foreach (var hook in _pipelineHooks)
             {
                 Logger.Debug(Resources.InvokingPostCommitPipelineHooks, attempt.CommitId, hook.GetType());
-                hook.PostCommit(attempt);
+                hook.PostCommit(commit);
             }
+            return commit;
         }
 
         public void Dispose()

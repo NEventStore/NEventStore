@@ -1,9 +1,8 @@
 namespace NEventStore
 {
-    using System;
     using NEventStore.Dispatcher;
 
-    public class DispatchSchedulerPipelineHook : IPipelineHook
+    public sealed class DispatchSchedulerPipelineHook : IPipelineHook
     {
         private readonly IScheduleDispatches _scheduler;
 
@@ -18,8 +17,7 @@ namespace NEventStore
 
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            _scheduler.Dispose();
         }
 
         public ICommit Select(ICommit committed)
@@ -27,7 +25,7 @@ namespace NEventStore
             return committed;
         }
 
-        public virtual bool PreCommit(ICommit attempt)
+        public bool PreCommit(CommitAttempt attempt)
         {
             return true;
         }
@@ -38,11 +36,6 @@ namespace NEventStore
             {
                 _scheduler.ScheduleDispatch(committed);
             }
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            _scheduler.Dispose();
         }
     }
 }

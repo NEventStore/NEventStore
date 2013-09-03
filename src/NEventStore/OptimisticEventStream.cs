@@ -8,7 +8,7 @@ namespace NEventStore
 
     [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix",
         Justification = "This behaves like a stream--not a .NET 'Stream' object, but a stream nonetheless.")]
-    public class OptimisticEventStream : IEventStream
+    public sealed class OptimisticEventStream : IEventStream
     {
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (OptimisticEventStream));
         private readonly ICollection<IEventMessage> _committed = new LinkedList<IEventMessage>();
@@ -54,38 +54,32 @@ namespace NEventStore
             StreamRevision = snapshot.StreamRevision + _committed.Count;
         }
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+        public string BucketId { get; private set; }
+        public string StreamId { get; private set; }
+        public int StreamRevision { get; private set; }
+        public int CommitSequence { get; private set; }
 
-        public virtual string BucketId { get; private set; }
-        public virtual string StreamId { get; private set; }
-        public virtual int StreamRevision { get; private set; }
-        public virtual int CommitSequence { get; private set; }
-
-        public virtual ICollection<IEventMessage> CommittedEvents
+        public ICollection<IEventMessage> CommittedEvents
         {
             get { return new ImmutableCollection<IEventMessage>(_committed); }
         }
 
-        public virtual IDictionary<string, object> CommittedHeaders
+        public IDictionary<string, object> CommittedHeaders
         {
             get { return _committedHeaders; }
         }
 
-        public virtual ICollection<IEventMessage> UncommittedEvents
+        public ICollection<IEventMessage> UncommittedEvents
         {
             get { return new ImmutableCollection<IEventMessage>(_events); }
         }
 
-        public virtual IDictionary<string, object> UncommittedHeaders
+        public IDictionary<string, object> UncommittedHeaders
         {
             get { return _uncommittedHeaders; }
         }
 
-        public virtual void Add(IEventMessage uncommittedEvent)
+        public void Add(IEventMessage uncommittedEvent)
         {
             if (uncommittedEvent == null || uncommittedEvent.Body == null)
             {
@@ -96,7 +90,7 @@ namespace NEventStore
             _events.Add(uncommittedEvent);
         }
 
-        public virtual void CommitChanges(Guid commitId)
+        public void CommitChanges(Guid commitId)
         {
             Logger.Debug(Resources.AttemptingToCommitChanges, StreamId);
 
@@ -124,16 +118,16 @@ namespace NEventStore
             }
         }
 
-        public virtual void ClearChanges()
+        public void ClearChanges()
         {
             Logger.Debug(Resources.ClearingUncommittedChanges, StreamId);
             _events.Clear();
             _uncommittedHeaders.Clear();
         }
 
-        protected void PopulateStream(int minRevision, int maxRevision, IEnumerable<ICommit> commits)
+        private void PopulateStream(int minRevision, int maxRevision, IEnumerable<ICommit> commits)
         {
-            foreach (var commit in commits ?? new Commit[0])
+            foreach (var commit in commits ?? Enumerable.Empty<ICommit>())
             {
                 Logger.Verbose(Resources.AddingCommitsToStream, commit.CommitId, commit.Events.Count, StreamId);
                 _identifiers.Add(commit.CommitId);
@@ -179,12 +173,7 @@ namespace NEventStore
             }
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            _disposed = true;
-        }
-
-        protected virtual bool HasChanges()
+        private bool HasChanges()
         {
             if (_disposed)
             {
@@ -200,21 +189,21 @@ namespace NEventStore
             return false;
         }
 
-        protected virtual void PersistChanges(Guid commitId)
+        private void PersistChanges(Guid commitId)
         {
-            Commit attempt = BuildCommitAttempt(commitId);
+            CommitAttempt attempt = BuildCommitAttempt(commitId);
 
             Logger.Debug(Resources.PersistingCommit, commitId, StreamId);
-            _persistence.Commit(attempt);
+            ICommit commit = _persistence.Commit(attempt);
 
-            PopulateStream(StreamRevision + 1, attempt.StreamRevision, new[] {attempt});
+            PopulateStream(StreamRevision + 1, attempt.StreamRevision, new[] { commit });
             ClearChanges();
         }
 
-        protected virtual Commit BuildCommitAttempt(Guid commitId)
+        private CommitAttempt BuildCommitAttempt(Guid commitId)
         {
             Logger.Debug(Resources.BuildingCommitAttempt, commitId, StreamId);
-            return new Commit(
+            return new CommitAttempt(
                 StreamId,
                 StreamRevision + _events.Count,
                 commitId,
@@ -222,6 +211,11 @@ namespace NEventStore
                 SystemTime.UtcNow,
                 _uncommittedHeaders.ToDictionary(x => x.Key, x => x.Value),
                 _events.ToList());
+        }
+
+        public void Dispose()
+        {
+            _disposed = true;
         }
     }
 }

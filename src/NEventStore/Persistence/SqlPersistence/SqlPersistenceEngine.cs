@@ -110,6 +110,17 @@ namespace NEventStore.Persistence.SqlPersistence
                 });
         }
 
+        public IEnumerable<ICommit> GetFromBeginning()
+        {
+            Logger.Debug(Messages.GettingAllCommitsSinceBeginning);
+            return ExecuteQuery(query =>
+            {
+                string statement = _dialect.GetCommitsFromCheckpoint;
+                query.AddParameter(_dialect.CheckpointNumber, 0);
+                return query.ExecutePagedQuery(statement, (q, r) => q.SetParameter(_dialect.CheckpointNumber, r.CheckpointNumber())).Select(x => x.GetCommit(_serializer));
+            });
+        }
+
         public virtual IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             start = start.AddTicks(-(start.Ticks%TimeSpan.TicksPerSecond)); // Rounds down to the nearest second.
@@ -127,11 +138,12 @@ namespace NEventStore.Persistence.SqlPersistence
                 });
         }
 
-        public virtual void Commit(ICommit attempt)
+        public virtual ICommit Commit(CommitAttempt attempt)
         {
+            ICommit commit;
             try
             {
-                PersistCommit(attempt);
+                commit = PersistCommit(attempt);
                 Logger.Debug(Messages.CommitPersisted, attempt.CommitId);
             }
             catch (Exception e)
@@ -150,6 +162,7 @@ namespace NEventStore.Persistence.SqlPersistence
                 Logger.Info(Messages.ConcurrentWriteDetected);
                 throw new ConcurrencyException(e.Message, e);
             }
+            return commit;
         }
 
         public virtual IEnumerable<ICommit> GetUndispatchedCommits()
@@ -251,13 +264,13 @@ namespace NEventStore.Persistence.SqlPersistence
                 });
         }
 
-        public IEnumerable<ICommit> GetFrom(int checkpoint)
+        public IEnumerable<ICommit> GetFrom(ICheckpoint checkpoint)
         {
             Logger.Debug(Messages.GettingAllCommitsSinceCheckpoint, checkpoint);
             return ExecuteQuery(query =>
             {
                 string statement = _dialect.GetCommitsFromCheckpoint;
-                query.AddParameter(_dialect.CheckpointNumber, checkpoint);
+                query.AddParameter(_dialect.CheckpointNumber, checkpoint.Value);
                 return query.ExecutePagedQuery(statement, (q, r) => q.SetParameter(_dialect.CheckpointNumber, r.CheckpointNumber())).Select(x => x.GetCommit(_serializer));
             });
         }
@@ -278,7 +291,7 @@ namespace NEventStore.Persistence.SqlPersistence
             _disposed = true;
         }
 
-        private void PersistCommit(ICommit attempt)
+        private ICommit PersistCommit(CommitAttempt attempt)
         {
             Logger.Debug(Messages.AttemptingToCommit, attempt.Events.Count, attempt.StreamId, attempt.CommitSequence, attempt.BucketId);
             string streamId = attempt.StreamId.ToHash();
@@ -296,9 +309,10 @@ namespace NEventStore.Persistence.SqlPersistence
                     cmd.AddParameter(_dialect.Payload, _serializer.Serialize(attempt.Events));
                     return cmd.ExecuteNonQuery(_dialect.PersistCommit);
                 });
+            throw new NotImplementedException("DH return a commit");
         }
 
-        private bool DetectDuplicate(ICommit attempt)
+        private bool DetectDuplicate(CommitAttempt attempt)
         {
             string streamId = attempt.StreamId.ToHash();
             return ExecuteCommand(cmd =>

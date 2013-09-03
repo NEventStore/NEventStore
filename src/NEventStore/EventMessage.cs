@@ -1,14 +1,11 @@
 ﻿namespace NEventStore
 {
-    using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
 
     /// <summary>
     ///     Represents a single element in a stream of events.
     /// </summary>
-    [DataContract]
-    [Serializable]
     public class EventMessage : IEventMessage
     {
         /// <summary>

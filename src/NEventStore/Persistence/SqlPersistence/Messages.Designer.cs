@@ -376,7 +376,16 @@ namespace NEventStore.Persistence.SqlPersistence {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Getting all commits since since checkpoint &apos;{0}&apos;..
+        ///   Looks up a localized string similar to Getting all commits since beginning..
+        /// </summary>
+        internal static string GettingAllCommitsSinceBeginning {
+            get {
+                return ResourceManager.GetString("GettingAllCommitsSinceBeginning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Getting all commits since checkpoint &apos;{0}&apos;..
         /// </summary>
         internal static string GettingAllCommitsSinceCheckpoint {
             get {

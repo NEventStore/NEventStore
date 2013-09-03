@@ -26,7 +26,7 @@
             }
         }
 
-        public static BsonDocument ToMongoCommit(this ICommit commit, Func<int> getNextCheckpointNumber, IDocumentSerializer serializer)
+        public static BsonDocument ToMongoCommit(this CommitAttempt commit, Func<int> getNextCheckpointNumber, IDocumentSerializer serializer)
         {
             int streamRevision = commit.StreamRevision - (commit.Events.Count - 1);
             IEnumerable<BsonDocument> events = commit
@@ -55,7 +55,7 @@
             };
         }
 
-        public static Commit ToCommit(this BsonDocument doc, IDocumentSerializer serializer)
+        public static ICommit ToCommit(this BsonDocument doc, IDocumentSerializer serializer)
         {
             if (doc == null)
             {
@@ -81,11 +81,9 @@
                 doc[MongoFields.CommitId].AsGuid,
                 commitSequence,
                 doc[MongoFields.CommitStamp].ToUniversalTime(),
+                new IntCheckpoint(doc[MongoFields.CheckpointNumber].ToInt32()),
                 doc[MongoFields.Headers].AsDictionary<string, object>(),
-                events)
-            {
-                Checkpoint = doc[MongoFields.CheckpointNumber].ToInt32()
-            };
+                events);
         }
 
         public static BsonDocument ToMongoSnapshot(this ISnapshot snapshot, IDocumentSerializer serializer)
@@ -139,6 +137,15 @@
             string bucketId = id[MongoFields.BucketId].AsString;
             string streamId = id[MongoFields.StreamId].AsString;
             return new StreamHead(bucketId, streamId, doc[MongoFields.HeadRevision].AsInt32, doc[MongoFields.SnapshotRevision].AsInt32);
+        }
+
+        public static IMongoQuery ToMongoCommitIdQuery(this CommitAttempt commit)
+        {
+            return Query.EQ(MongoFields.Id, Query.And(
+                    Query.EQ(MongoFields.BucketId, commit.BucketId),
+                    Query.EQ(MongoFields.StreamId, commit.StreamId),
+                    Query.EQ(MongoFields.CommitSequence, commit.CommitSequence))
+                .ToBsonDocument());
         }
 
         public static IMongoQuery ToMongoCommitIdQuery(this ICommit commit)

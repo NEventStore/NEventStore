@@ -7,12 +7,17 @@ namespace NEventStore.Persistence.RavenPersistence
 
     public static class ExtensionMethods
     {
+        public static string ToRavenCommitId(this CommitAttempt commit)
+        {
+            return string.Format(CultureInfo.InvariantCulture, "{0}/{1}/{2}", commit.BucketId, commit.StreamId, commit.CommitSequence);
+        }
+
         public static string ToRavenCommitId(this ICommit commit)
         {
             return string.Format(CultureInfo.InvariantCulture, "{0}/{1}/{2}", commit.BucketId, commit.StreamId, commit.CommitSequence);
         }
 
-        public static RavenCommit ToRavenCommit(this ICommit commit, IDocumentSerializer serializer)
+        public static RavenCommit ToRavenCommit(this CommitAttempt commit, IDocumentSerializer serializer)
         {
             return new RavenCommit
             {
@@ -29,13 +34,16 @@ namespace NEventStore.Persistence.RavenPersistence
             };
         }
 
-        public static Commit ToCommit(this RavenCommit commit, IDocumentSerializer serializer)
+        public static ICommit ToCommit(this RavenCommit commit, IDocumentSerializer serializer)
         {
-            return new Commit(commit.StreamId,
+            return new Commit(
+                commit.BucketId,
+                commit.StreamId,
                 commit.StreamRevision,
                 commit.CommitId,
                 commit.CommitSequence,
                 commit.CommitStamp,
+                null,
                 commit.Headers,
                 serializer.Deserialize<List<IEventMessage>>(commit.Payload));
         }
@@ -67,7 +75,7 @@ namespace NEventStore.Persistence.RavenPersistence
             return new Snapshot(snapshot.BucketId, snapshot.StreamRevision, serializer.Deserialize<object>(snapshot.Payload));
         }
 
-        public static RavenStreamHead ToRavenStreamHead(this ICommit commit)
+        public static RavenStreamHead ToRavenStreamHead(this CommitAttempt commit)
         {
             return new RavenStreamHead
             {

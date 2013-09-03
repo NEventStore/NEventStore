@@ -3,22 +3,22 @@ namespace NEventStore
     using System.Collections;
     using System.Collections.Generic;
 
-    internal class EnumerableCounter : IEnumerable<Commit>
+    internal class EnumerableCounter<T> : IEnumerable<T>
     {
-        private readonly IEnumerable<Commit> enumerable;
+        private readonly IEnumerable<T> _enumerable;
 
-        public EnumerableCounter(IEnumerable<Commit> enumerable)
+        public EnumerableCounter(IEnumerable<T> enumerable)
         {
-            this.enumerable = enumerable;
+            _enumerable = enumerable;
             GetEnumeratorCallCount = 0;
         }
 
         public int GetEnumeratorCallCount { get; private set; }
 
-        public IEnumerator<Commit> GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
         {
             GetEnumeratorCallCount++;
-            return enumerable.GetEnumerator();
+            return _enumerable.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

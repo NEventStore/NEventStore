@@ -2,9 +2,16 @@ namespace NEventStore
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
 
+    /// <summary>
+    ///     Represents a series of events which have been fully committed as a single unit and which apply to the stream indicated.
+    /// </summary>
     public interface ICommit
     {
+        /// <summary>
+        ///     Gets the value which identifies bucket to which the the stream and the the commit belongs.
+        /// </summary>
         string BucketId { get; }
 
         /// <summary>
@@ -45,6 +52,34 @@ namespace NEventStore
         /// <summary>
         /// The checkpoint that represents the storage level order.
         /// </summary>
-        int Checkpoint { get; set; }
+        ICheckpoint Checkpoint { get; }
+    }
+
+    public interface ICheckpoint : IComparable<ICheckpoint>
+    {
+        string Value { get; }
+    }
+
+    public sealed class IntCheckpoint : ICheckpoint
+    {
+        private readonly int _value;
+
+        public IntCheckpoint(int value)
+        {
+            _value = value;
+        }
+
+        public string Value { get { return _value.ToString(CultureInfo.InvariantCulture); }}
+
+        public int IntValue { get { return _value; } }
+
+        public int CompareTo(ICheckpoint other)
+        {
+            if (other == null)
+            {
+                return 1;
+            }
+            return _value.CompareTo(other);
+        }
     }
 }

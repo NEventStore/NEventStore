@@ -2,15 +2,19 @@ namespace NEventStore
 {
     using System;
     using System.Collections.Generic;
-    using System.Runtime.Serialization;
+    using System.Collections.ObjectModel;
 
-    /// <summary>
-    ///     Represents a series of events which have been fully committed as a single unit and which apply to the stream indicated.
-    /// </summary>
-    [DataContract]
-    [Serializable]
-    public class Commit : ICommit
+    public class CommitAttempt
     {
+        private readonly string _bucketId;
+        private readonly string _streamId;
+        private readonly int _streamRevision;
+        private readonly Guid _commitId;
+        private readonly int _commitSequence;
+        private readonly DateTime _commitStamp;
+        private readonly IDictionary<string, object> _headers;
+        private readonly ICollection<IEventMessage> _events;
+
         /// <summary>
         ///     Initializes a new instance of the Commit class for the default bucket.
         /// </summary>
@@ -21,7 +25,7 @@ namespace NEventStore
         /// <param name="commitStamp">The point in time at which the commit was persisted.</param>
         /// <param name="headers">The metadata which provides additional, unstructured information about this commit.</param>
         /// <param name="events">The collection of event messages to be committed as a single unit.</param>
-        public Commit(
+        public CommitAttempt(
             Guid streamId,
             int streamRevision,
             Guid commitId,
@@ -42,7 +46,7 @@ namespace NEventStore
         /// <param name="commitStamp">The point in time at which the commit was persisted.</param>
         /// <param name="headers">The metadata which provides additional, unstructured information about this commit.</param>
         /// <param name="events">The collection of event messages to be committed as a single unit.</param>
-        public Commit(
+        public CommitAttempt(
             string streamId,
             int streamRevision,
             Guid commitId,
@@ -64,7 +68,7 @@ namespace NEventStore
         /// <param name="commitStamp">The point in time at which the commit was persisted.</param>
         /// <param name="headers">The metadata which provides additional, unstructured information about this commit.</param>
         /// <param name="events">The collection of event messages to be committed as a single unit.</param>
-        public Commit(
+        public CommitAttempt(
             string bucketId,
             string streamId,
             int streamRevision,
@@ -73,93 +77,91 @@ namespace NEventStore
             DateTime commitStamp,
             IDictionary<string, object> headers,
             IEnumerable<IEventMessage> events)
-            : this()
         {
-            BucketId = bucketId;
-            StreamId = streamId;
-            CommitId = commitId;
-            StreamRevision = streamRevision;
-            CommitSequence = commitSequence;
-            CommitStamp = commitStamp;
-            Headers = headers ?? new Dictionary<string, object>();
-            Events = events == null ? new List<IEventMessage>() : new List<IEventMessage>(events);
-        }
+            Guard.NotNullOrWhiteSpace(() => bucketId, bucketId);
+            Guard.NotNullOrWhiteSpace(() => streamId, streamId);
+            Guard.NotLessThanOrEqualTo(() => streamRevision, streamRevision, 0);
+            Guard.NotDefault(() => commitId, commitId);
+            Guard.NotLessThanOrEqualTo(() => commitSequence, commitSequence, 0);
+            Guard.NotEmpty(() => events, events);
 
-        /// <summary>
-        ///     Initializes a new instance of the Commit class.
-        /// </summary>
-        protected Commit()
-        {}
+            _bucketId = bucketId;
+            _streamId = streamId;
+            _streamRevision = streamRevision;
+            _commitId = commitId;
+            _commitSequence = commitSequence;
+            _commitStamp = commitStamp;
+            _headers = headers ?? new Dictionary<string, object>();
+            _events = events == null ?
+                new ReadOnlyCollection<IEventMessage>(new List<IEventMessage>()) :
+                new ReadOnlyCollection<IEventMessage>(new List<IEventMessage>(events));
+        }
 
         /// <summary>
         ///     Gets the value which identifies bucket to which the the stream and the the commit belongs.
         /// </summary>
-        [DataMember]
-        public virtual string BucketId { get; private set; }
+        public string BucketId
+        {
+            get { return _bucketId; }
+        }
 
         /// <summary>
         ///     Gets the value which uniquely identifies the stream to which the commit belongs.
         /// </summary>
-        [DataMember]
-        public virtual string StreamId { get; private set; }
+        public string StreamId
+        {
+            get { return _streamId; }
+        }
 
         /// <summary>
         ///     Gets the value which indicates the revision of the most recent event in the stream to which this commit applies.
         /// </summary>
-        [DataMember]
-        public virtual int StreamRevision { get; private set; }
+        public int StreamRevision
+        {
+            get { return _streamRevision; }
+        }
 
         /// <summary>
         ///     Gets the value which uniquely identifies the commit within the stream.
         /// </summary>
-        [DataMember]
-        public virtual Guid CommitId { get; private set; }
+        public Guid CommitId
+        {
+            get { return _commitId; }
+        }
 
         /// <summary>
         ///     Gets the value which indicates the sequence (or position) in the stream to which this commit applies.
         /// </summary>
-        [DataMember]
-        public virtual int CommitSequence { get; private set; }
+        public int CommitSequence
+        {
+            get { return _commitSequence; }
+        }
 
         /// <summary>
         ///     Gets the point in time at which the commit was persisted.
         /// </summary>
-        [DataMember]
-        public virtual DateTime CommitStamp { get; private set; }
+        public DateTime CommitStamp
+        {
+            get { return _commitStamp; }
+        }
 
         /// <summary>
         ///     Gets the metadata which provides additional, unstructured information about this commit.
         /// </summary>
-        [DataMember]
-        public virtual IDictionary<string, object> Headers { get; private set; }
+        public IDictionary<string, object> Headers 
+        {
+            get { return _headers; }
+        }
 
         /// <summary>
         ///     Gets the collection of event messages to be committed as a single unit.
         /// </summary>
-        [DataMember]
-        public virtual ICollection<IEventMessage> Events { get; private set; }
-
-        [DataMember]
-        public int Checkpoint { get; set; }
-
-        /// <summary>
-        ///     Determines whether the specified object is equal to the current object.
-        /// </summary>
-        /// <param name="obj">The object to compare with the current object.</param>
-        /// <returns>If the two objects are equal, returns true; otherwise false.</returns>
-        public override bool Equals(object obj)
+        public ICollection<IEventMessage> Events
         {
-            var commit = obj as Commit;
-            return commit != null && commit.StreamId == StreamId && commit.CommitId == CommitId;
-        }
-
-        /// <summary>
-        ///     Returns the hash code for this instance.
-        /// </summary>
-        /// <returns>The hash code for this instance.</returns>
-        public override int GetHashCode()
-        {
-            return StreamId.GetHashCode() ^ CommitId.GetHashCode();
+            get
+            {
+                return _events;
+            }
         }
     }
 }

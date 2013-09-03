@@ -133,20 +133,29 @@ namespace NEventStore.Persistence.MongoPersistence {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Getting all commits from beginning..
+        /// </summary>
+        internal static string GettingAllCommitsFromBeginning {
+            get {
+                return ResourceManager.GetString("GettingAllCommitsFromBeginning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Getting all commits since checkpoint &apos;{0}&apos;..
+        /// </summary>
+        internal static string GettingAllCommitsFromCheckpoint {
+            get {
+                return ResourceManager.GetString("GettingAllCommitsFromCheckpoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Getting all commits from &apos;{0}&apos; to &apos;{1}&apos;..
         /// </summary>
         internal static string GettingAllCommitsFromTo {
             get {
                 return ResourceManager.GetString("GettingAllCommitsFromTo", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Getting all commits since since checkpoint &apos;{0}&apos;..
-        /// </summary>
-        internal static string GettingAllCommitsSinceCheckpoint {
-            get {
-                return ResourceManager.GetString("GettingAllCommitsSinceCheckpoint", resourceCulture);
             }
         }
         
@@ -237,6 +246,15 @@ namespace NEventStore.Persistence.MongoPersistence {
         internal static string StorageUnavailable {
             get {
                 return ResourceManager.GetString("StorageUnavailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unsuppored checkpoint type. Expected {0} but got {1}..
+        /// </summary>
+        internal static string UnsupportedCheckpointType {
+            get {
+                return ResourceManager.GetString("UnsupportedCheckpointType", resourceCulture);
             }
         }
     }

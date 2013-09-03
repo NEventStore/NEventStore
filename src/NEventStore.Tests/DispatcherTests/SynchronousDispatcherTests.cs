@@ -1,10 +1,5 @@
-
-#pragma warning disable 169
-// ReSharper disable InconsistentNaming
-
 namespace NEventStore.DispatcherTests
 {
-    using System;
     using System.Linq;
     using Moq;
     using NEventStore.Dispatcher;
@@ -14,114 +9,110 @@ namespace NEventStore.DispatcherTests
 
     public class when_instantiating_the_synchronous_dispatch_scheduler : SpecificationBase
     {
-        private readonly Mock<IDispatchCommits> dispatcher = new Mock<IDispatchCommits>();
-        private readonly Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
-        private readonly string streamId = Guid.NewGuid().ToString();
-        private Commit[] commits;
+        private readonly Mock<IDispatchCommits> _dispatcher = new Mock<IDispatchCommits>();
+        private readonly Mock<IPersistStreams> _persistence = new Mock<IPersistStreams>();
+        private ICommit[] _commits;
 
         protected override void Context()
         {
-            commits = new[]
+            _commits = new[]
             {
-                new Commit(streamId, 0, Guid.NewGuid(), 0, SystemTime.UtcNow, null, null),
-                new Commit(streamId, 0, Guid.NewGuid(), 0, SystemTime.UtcNow, null, null)
+                CommitHelper.Create(),
+                CommitHelper.Create()
             };
 
-            persistence.Setup(x => x.Initialize());
-            persistence.Setup(x => x.GetUndispatchedCommits()).Returns(commits);
-            dispatcher.Setup(x => x.Dispatch(commits.First()));
-            dispatcher.Setup(x => x.Dispatch(commits.Last()));
+            _persistence.Setup(x => x.Initialize());
+            _persistence.Setup(x => x.GetUndispatchedCommits()).Returns(_commits);
+            _dispatcher.Setup(x => x.Dispatch(_commits.First()));
+            _dispatcher.Setup(x => x.Dispatch(_commits.Last()));
         }
 
         protected override void Because()
         {
-            new SynchronousDispatchScheduler(dispatcher.Object, persistence.Object);
+            new SynchronousDispatchScheduler(_dispatcher.Object, _persistence.Object);
         }
 
         [Fact]
         public void should_initialize_the_persistence_engine()
         {
-            persistence.Verify(x => x.Initialize(), Times.Once());
+            _persistence.Verify(x => x.Initialize(), Times.Once());
         }
 
         [Fact]
         public void should_get_the_set_of_undispatched_commits()
         {
-            persistence.Verify(x => x.GetUndispatchedCommits(), Times.Once());
+            _persistence.Verify(x => x.GetUndispatchedCommits(), Times.Once());
         }
 
         [Fact]
         public void should_provide_the_commits_to_the_dispatcher()
         {
-            dispatcher.VerifyAll();
+            _dispatcher.VerifyAll();
         }
     }
 
     public class when_synchronously_scheduling_a_commit_for_dispatch : SpecificationBase
     {
-        private readonly Commit commit = new Commit(Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, SystemTime.UtcNow, null, null);
-        private readonly Mock<IDispatchCommits> dispatcher = new Mock<IDispatchCommits>();
-        private readonly Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
-        private SynchronousDispatchScheduler dispatchScheduler;
+        private readonly ICommit _commitAttempt = CommitHelper.Create();
+        private readonly Mock<IDispatchCommits> _dispatcher = new Mock<IDispatchCommits>();
+        private readonly Mock<IPersistStreams> _persistence = new Mock<IPersistStreams>();
+        private SynchronousDispatchScheduler _dispatchScheduler;
 
         protected override void Context()
         {
-            dispatcher.Setup(x => x.Dispatch(commit));
-            persistence.Setup(x => x.MarkCommitAsDispatched(commit));
+            _dispatcher.Setup(x => x.Dispatch(_commitAttempt));
+            _persistence.Setup(x => x.MarkCommitAsDispatched(_commitAttempt));
 
-            dispatchScheduler = new SynchronousDispatchScheduler(dispatcher.Object, persistence.Object);
+            _dispatchScheduler = new SynchronousDispatchScheduler(_dispatcher.Object, _persistence.Object);
         }
 
         protected override void Because()
         {
-            dispatchScheduler.ScheduleDispatch(commit);
+            _dispatchScheduler.ScheduleDispatch(_commitAttempt);
         }
 
         [Fact]
         public void should_provide_the_commit_to_the_dispatcher()
         {
-            dispatcher.Verify(x => x.Dispatch(commit), Times.Once());
+            _dispatcher.Verify(x => x.Dispatch(_commitAttempt), Times.Once());
         }
 
         [Fact]
         public void should_mark_the_commit_as_dispatched()
         {
-            persistence.Verify(x => x.MarkCommitAsDispatched(commit), Times.Once());
+            _persistence.Verify(x => x.MarkCommitAsDispatched(_commitAttempt), Times.Once());
         }
     }
 
     public class when_disposing_the_synchronous_dispatch_scheduler : SpecificationBase
     {
-        private readonly Mock<IDispatchCommits> dispatcher = new Mock<IDispatchCommits>();
-        private readonly Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
-        private SynchronousDispatchScheduler dispatchScheduler;
+        private readonly Mock<IDispatchCommits> _dispatcher = new Mock<IDispatchCommits>();
+        private readonly Mock<IPersistStreams> _persistence = new Mock<IPersistStreams>();
+        private SynchronousDispatchScheduler _dispatchScheduler;
 
         protected override void Context()
         {
-            dispatcher.Setup(x => x.Dispose());
-            persistence.Setup(x => x.Dispose());
-            dispatchScheduler = new SynchronousDispatchScheduler(dispatcher.Object, persistence.Object);
+            _dispatcher.Setup(x => x.Dispose());
+            _persistence.Setup(x => x.Dispose());
+            _dispatchScheduler = new SynchronousDispatchScheduler(_dispatcher.Object, _persistence.Object);
         }
 
         protected override void Because()
         {
-            dispatchScheduler.Dispose();
-            dispatchScheduler.Dispose();
+            _dispatchScheduler.Dispose();
+            _dispatchScheduler.Dispose();
         }
 
         [Fact]
         public void should_dispose_the_underlying_dispatcher_exactly_once()
         {
-            dispatcher.Verify(x => x.Dispose(), Times.Once());
+            _dispatcher.Verify(x => x.Dispose(), Times.Once());
         }
 
         [Fact]
         public void should_dispose_the_underlying_persistence_infrastructure_exactly_once()
         {
-            dispatcher.Verify(x => x.Dispose(), Times.Once());
+            _dispatcher.Verify(x => x.Dispose(), Times.Once());
         }
     }
 }
-
-// ReSharper enable InconsistentNaming
-#pragma warning restore 169

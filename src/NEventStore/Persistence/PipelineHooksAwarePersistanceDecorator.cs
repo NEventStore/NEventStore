@@ -35,9 +35,9 @@ namespace NEventStore.Persistence
             return _original.GetFrom(bucketId, streamId, minRevision, maxRevision);
         }
 
-        public void Commit(ICommit attempt)
+        public ICommit Commit(CommitAttempt attempt)
         {
-            _original.Commit(attempt);
+            return _original.Commit(attempt);
         }
 
         public ISnapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
@@ -63,6 +63,11 @@ namespace NEventStore.Persistence
         public IEnumerable<ICommit> GetFrom(string bucketId, DateTime start)
         {
             return ExecuteHooks(_original.GetFrom(bucketId, start));
+        }
+
+        public IEnumerable<ICommit> GetFromBeginning()
+        {
+            return _original.GetFromBeginning();
         }
 
         public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
@@ -100,7 +105,7 @@ namespace NEventStore.Persistence
             _original.DeleteStream(bucketId, streamId);
         }
 
-        public IEnumerable<ICommit> GetFrom(int checkpoint)
+        public IEnumerable<ICommit> GetFrom(ICheckpoint checkpoint)
         {
             return _original.GetFrom(checkpoint);
         }

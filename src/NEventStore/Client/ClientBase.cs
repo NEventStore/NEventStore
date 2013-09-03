@@ -16,6 +16,8 @@
             get { return _persistStreams; }
         }
 
-        public abstract IObserveCommits ObserveFrom(int checkpoint);
+        public abstract IObserveCommits ObserveFrom(ICheckpoint checkpoint);
+
+        public abstract IObserveCommits ObserveFromBegininng();
     }
 }

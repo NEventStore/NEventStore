@@ -25,21 +25,26 @@
             _interval = interval;
         }
 
-        public override IObserveCommits ObserveFrom(int checkpoint)
+        public override IObserveCommits ObserveFrom(ICheckpoint checkpoint)
         {
             return new PollingObserveCommits(PersistStreams, checkpoint, _interval);
+        }
+
+        public override IObserveCommits ObserveFromBegininng()
+        {
+            throw new NotImplementedException();
         }
 
         private class PollingObserveCommits : IObserveCommits
         {
             private readonly IPersistStreams _persistStreams;
-            private int _checkpoint;
+            private ICheckpoint _checkpoint;
             private readonly int _interval;
             private readonly Subject<ICommit> _subject = new Subject<ICommit>();
             private readonly CancellationTokenSource _stopRequested = new CancellationTokenSource();
             private TaskCompletionSource<Unit> _runningTaskCompletionSource;
 
-            public PollingObserveCommits(IPersistStreams persistStreams, int checkpoint, int interval)
+            public PollingObserveCommits(IPersistStreams persistStreams, ICheckpoint checkpoint, int interval)
             {
                 _persistStreams = persistStreams;
                 _checkpoint = checkpoint;
@@ -98,7 +103,7 @@
                 IEnumerable<ICommit> commits = _persistStreams.GetFrom(_checkpoint);
                 foreach (var commit in commits)
                 {
-                    if (commit.Checkpoint < _checkpoint)
+                    if (commit.Checkpoint.CompareTo(_checkpoint) < 0)
                     {
                         continue;
                     }
