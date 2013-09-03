@@ -84,6 +84,7 @@ namespace NEventStore
             Guard.NotLessThanOrEqualTo(() => streamRevision, streamRevision, 0);
             Guard.NotDefault(() => commitId, commitId);
             Guard.NotLessThanOrEqualTo(() => commitSequence, commitSequence, 0);
+            Guard.NotLessThan(() => commitSequence, streamRevision, 0);
             Guard.NotEmpty(() => events, events);
 
             _bucketId = bucketId;

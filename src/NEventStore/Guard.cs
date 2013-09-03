@@ -43,6 +43,16 @@
             }
         }
 
+        internal static void NotLessThan<T>(Expression<Func<T>> reference, T value, T compareTo)
+            where T : IComparable
+        {
+            NotNull(reference, value);
+            if (value.CompareTo(compareTo) < 0)
+            {
+                throw new ArgumentOutOfRangeException("{0} has value {1} which is less than {2}".FormatWith(GetParameterName(reference), value, compareTo));
+            }
+        }
+
         internal static void NotDefault<T>(Expression<Func<T>> reference, T value)
             where T : IComparable
         {
