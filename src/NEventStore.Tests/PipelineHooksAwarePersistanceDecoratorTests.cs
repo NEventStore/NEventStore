@@ -119,7 +119,7 @@ namespace NEventStore
 
         protected override void Context()
         {
-            attempt = new CommitAttempt(streamId, 1, Guid.NewGuid(), 1, DateTime.Now, null, null);
+            attempt = new CommitAttempt(streamId, 1, Guid.NewGuid(), 1, DateTime.Now, null, new List<EventMessage>{ new EventMessage() });
         }
 
         protected override void Because()
