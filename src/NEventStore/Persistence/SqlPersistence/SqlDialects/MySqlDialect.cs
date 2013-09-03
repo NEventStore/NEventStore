@@ -14,7 +14,7 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects
 
         public override string PersistCommit
         {
-            get { throw new NotImplementedException(); }
+            get { return MySqlStatements.PersistCommit; }
         }
 
         public override string AppendSnapshotToCommit

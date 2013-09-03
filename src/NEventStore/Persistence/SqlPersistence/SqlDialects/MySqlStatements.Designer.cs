@@ -79,5 +79,18 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
                 return ResourceManager.GetString("InitializeStorage", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to INSERT
+        ///  INTO Commits
+        ///     ( BucketId, StreamId, StreamIdOriginal, CommitId, CommitSequence, StreamRevision, Items, CommitStamp, Headers, Payload )
+        ///VALUES (@BucketId, @StreamId, @StreamIdOriginal, @CommitId, @CommitSequence, @StreamRevision, @Items, @CommitStamp, @Headers, @Payload);
+        ///SELECT LAST_INSERT_ID();.
+        /// </summary>
+        internal static string PersistCommit {
+            get {
+                return ResourceManager.GetString("PersistCommit", resourceCulture);
+            }
+        }
     }
 }

@@ -149,4 +149,11 @@ CREATE TABLE IF NOT EXISTS Snapshots
     CONSTRAINT PK_Snapshots PRIMARY KEY (BucketId, StreamId, StreamRevision)
 );</value>
   </data>
+  <data name="PersistCommit" xml:space="preserve">
+    <value>INSERT
+  INTO Commits
+     ( BucketId, StreamId, StreamIdOriginal, CommitId, CommitSequence, StreamRevision, Items, CommitStamp, Headers, Payload )
+VALUES (@BucketId, @StreamId, @StreamIdOriginal, @CommitId, @CommitSequence, @StreamRevision, @Items, @CommitStamp, @Headers, @Payload);
+SELECT LAST_INSERT_ID();</value>
+  </data>
 </root>
