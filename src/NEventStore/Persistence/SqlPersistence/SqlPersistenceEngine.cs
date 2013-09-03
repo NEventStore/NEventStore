@@ -256,10 +256,13 @@ namespace NEventStore.Persistence.SqlPersistence
         public IEnumerable<ICommit> GetFrom(ICheckpoint checkpoint)
         {
             Logger.Debug(Messages.GettingAllCommitsFromCheckpoint, checkpoint);
+            //Assuming all SqlEngines are using IntCheckpoint, this will break when they don't.
+            //Postgres requires the CheckpointNumber query paramater to be of type int, the others where happy with a string...
+            var intCheckpoint = (IntCheckpoint) checkpoint; 
             return ExecuteQuery(query =>
             {
                 string statement = _dialect.GetCommitsFromCheckpoint;
-                query.AddParameter(_dialect.CheckpointNumber, checkpoint.Value);
+                query.AddParameter(_dialect.CheckpointNumber, intCheckpoint.IntValue);
                 return query.ExecutePagedQuery(statement, (q, r) => q.SetParameter(_dialect.CheckpointNumber, r.CheckpointNumber())).Select(x => x.GetCommit(_serializer));
             });
         }

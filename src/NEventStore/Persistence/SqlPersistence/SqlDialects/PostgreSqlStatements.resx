@@ -148,4 +148,11 @@ CREATE TABLE Snapshots
     CONSTRAINT PK_Snapshots PRIMARY KEY (BucketId, StreamId, StreamRevision)
 );</value>
   </data>
+  <data name="PersistCommits" xml:space="preserve">
+    <value>INSERT
+  INTO Commits
+     ( BucketId, StreamId, StreamIdOriginal, CommitId, CommitSequence, StreamRevision, Items, CommitStamp, Headers, Payload )
+VALUES (@BucketId, @StreamId, @StreamIdOriginal, @CommitId, @CommitSequence, @StreamRevision, @Items, @CommitStamp, @Headers, @Payload)
+RETURNING CheckpointNumber;</value>
+  </data>
 </root>

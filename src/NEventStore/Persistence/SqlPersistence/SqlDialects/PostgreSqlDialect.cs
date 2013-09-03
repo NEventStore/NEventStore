@@ -14,7 +14,7 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects
 
         public override string PersistCommit
         {
-            get { throw new System.NotImplementedException(); }
+            get { return PostgreSqlStatements.PersistCommits; }
         }
 
         public override string GetUndispatchedCommits
