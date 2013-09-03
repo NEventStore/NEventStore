@@ -430,7 +430,16 @@ namespace NEventStore
             _populatedAttempt = BuildCommitAttemptStub(1, 1);
             _populatedCommit = BuildCommitStub(1, 1);
 
-            Persistence.Setup(x => x.Commit(_populatedAttempt));
+            Persistence.Setup(x => x.Commit(_populatedAttempt)).Returns((CommitAttempt attempt) => new Commit(
+                attempt.BucketId,
+                attempt.StreamId,
+                attempt.StreamRevision,
+                attempt.CommitId,
+                attempt.CommitSequence,
+                attempt.CommitStamp,
+                new IntCheckpoint(0),
+                attempt.Headers,
+                attempt.Events));
 
             PipelineHooks.Add(new Mock<IPipelineHook>());
             PipelineHooks[0].Setup(x => x.PreCommit(_populatedAttempt)).Returns(true);
