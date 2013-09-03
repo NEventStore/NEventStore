@@ -245,11 +245,22 @@ namespace NEventStore
         private readonly Guid _commitId = Guid.NewGuid();
         private readonly Dictionary<string, object> _headers = new Dictionary<string, object> {{"key", "value"}};
         private readonly EventMessage _uncommitted = new EventMessage {Body = string.Empty};
-        private ICommit _constructed;
+        private CommitAttempt _constructed;
 
         protected override void Context()
         {
-            Persistence.Setup(x => x.Commit(It.IsAny<CommitAttempt>())).Callback<ICommit>(x => _constructed = x);
+            Persistence
+                .Setup(x => x.Commit(It.IsAny<CommitAttempt>()))
+                .Callback<CommitAttempt>(x => _constructed = x)
+                .Returns((CommitAttempt attempt) => new Commit(
+                    attempt.BucketId, attempt.StreamId,
+                    attempt.StreamRevision,
+                    attempt.CommitId,
+                    attempt.CommitSequence,
+                    attempt.CommitStamp,
+                    new IntCheckpoint(0),
+                    attempt.Headers,
+                    attempt.Events));
             Stream.Add(_uncommitted);
             foreach (var item in _headers)
             {
