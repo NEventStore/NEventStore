@@ -71,8 +71,8 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         ///       CommitId guid NOT NULL CHECK (CommitId != 0),
         ///       CommitSequence int NOT NULL CHECK (CommitSequence &gt; 0),
         ///       CommitStamp datetime NOT NULL,
-        ///       CheckpointNumber int NOT NULL DEFAULT 0,
-        ///       Dispatched bit NOT NULL DEFAULT 0,        /// [rest of string was truncated]&quot;;.
+        ///       CheckpointNumber INTEGER PRIMARY KEY AUTOINCREMENT,
+        ///       Dispatched bit NOT NULL  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {
@@ -90,7 +90,6 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         ///    StreamRevision,
         ///    Items,
         ///    CommitStamp,
-        ///    CheckpointNumber,
         ///    Headers,
         ///    Payload)
         ///VALUES (
@@ -102,9 +101,9 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         ///    @StreamRevision,
         ///    @Items,
         ///    @CommitStamp,
-        ///    (SELECT IFNULL(MAX(CheckpointNumber), 0) + 1 FROM Commits),
         ///    @Headers,
-        ///    @Payload);.
+        ///    @Payload);
+        ///SELECT last_insert_rowid();.
         /// </summary>
         internal static string PersistCommit {
             get {

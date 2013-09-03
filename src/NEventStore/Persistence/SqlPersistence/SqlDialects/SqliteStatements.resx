@@ -128,11 +128,10 @@
        CommitId guid NOT NULL CHECK (CommitId != 0),
        CommitSequence int NOT NULL CHECK (CommitSequence &gt; 0),
        CommitStamp datetime NOT NULL,
-       CheckpointNumber int NOT NULL DEFAULT 0,
+       CheckpointNumber INTEGER PRIMARY KEY AUTOINCREMENT,
        Dispatched bit NOT NULL DEFAULT 0,
        Headers blob NULL,
-       Payload blob NOT NULL,
-       CONSTRAINT PK_Commits PRIMARY KEY (BucketId, StreamId, CommitSequence)
+       Payload blob NOT NULL
 );
 CREATE UNIQUE INDEX IF NOT EXISTS IX_Commits_CommitId ON Commits (BucketId, StreamId, CommitId);
 CREATE UNIQUE INDEX IF NOT EXISTS IX_Commits_Revisions ON Commits (BucketId, StreamId, StreamRevision, Items);
@@ -158,7 +157,6 @@ CREATE TABLE IF NOT EXISTS Snapshots
     StreamRevision,
     Items,
     CommitStamp,
-    CheckpointNumber,
     Headers,
     Payload)
 VALUES (
@@ -170,8 +168,8 @@ VALUES (
     @StreamRevision,
     @Items,
     @CommitStamp,
-    (SELECT IFNULL(MAX(CheckpointNumber), 0) + 1 FROM Commits),
     @Headers,
-    @Payload);</value>
+    @Payload);
+SELECT last_insert_rowid();</value>
   </data>
 </root>
