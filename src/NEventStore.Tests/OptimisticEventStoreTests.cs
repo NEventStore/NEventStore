@@ -613,11 +613,6 @@ namespace NEventStore
             streamId = Guid.NewGuid().ToString();
         }
 
-        protected ICommit BuildCommitStub(Guid commitId)
-        {
-            return new Commit(Bucket.Default, streamId, 1, commitId, 1, SystemTime.UtcNow, new IntCheckpoint(0),  null, null);
-        }
-
         protected CommitAttempt BuildCommitAttemptStub(Guid commitId)
         {
             return new CommitAttempt(Bucket.Default, streamId, 1, commitId, 1, SystemTime.UtcNow, null, null);
