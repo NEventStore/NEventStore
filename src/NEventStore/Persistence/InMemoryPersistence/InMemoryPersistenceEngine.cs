@@ -221,16 +221,12 @@ namespace NEventStore.Persistence.InMemoryPersistence
             {
                 lock (_commits)
                 {
+                    DetectDuplicate(attempt);
                     ICommit commit = attempt.ToCommit(checkpoint);
-                    if (_commits.Contains(commit))
-                    {
-                        throw new DuplicateCommitException();
-                    }
                     if (_commits.Any(c => c.StreamId == commit.StreamId && c.CommitSequence == commit.CommitSequence))
                     {
                         throw new ConcurrencyException();
                     }
-
                     _stamps[commit.CommitId] = commit.CommitStamp;
                     _commits.Add(commit);
                     _undispatched.Add(commit);
@@ -240,6 +236,18 @@ namespace NEventStore.Persistence.InMemoryPersistence
                     int snapshotRevision = head == null ? 0 : head.SnapshotRevision;
                     _heads.Add(new StreamHead(commit.BucketId, commit.StreamId, commit.StreamRevision, snapshotRevision));
                     return commit;
+                }
+            }
+
+            private void DetectDuplicate(CommitAttempt attempt)
+            {
+                if (_commits.Any(c => 
+                    c.BucketId == attempt.BucketId &&
+                    c.StreamId == attempt.StreamId &&
+                    c.CommitId == attempt.CommitId &&
+                    c.CommitSequence == attempt.CommitSequence))
+                {
+                    throw new DuplicateCommitException();
                 }
             }
 

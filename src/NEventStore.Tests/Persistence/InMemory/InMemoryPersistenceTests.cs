@@ -13,20 +13,20 @@
         private readonly DateTime _endDate = new DateTime(2013, 1, 2);
         private readonly DateTime _startDate = new DateTime(2013, 1, 1);
         private ICommit[] _commits;
-        private InMemoryPersistenceEngine engine;
+        private InMemoryPersistenceEngine _engine;
 
         protected override void Context()
         {
-            engine = new InMemoryPersistenceEngine();
-            engine.Initialize();
+            _engine = new InMemoryPersistenceEngine();
+            _engine.Initialize();
             var streamId = Guid.NewGuid().ToString();
-            engine.Commit(new CommitAttempt(streamId, 0, Guid.NewGuid(), 0, _startDate, new Dictionary<string, object>(), new List<EventMessage>()));
-            engine.Commit(new CommitAttempt(streamId, 1, Guid.NewGuid(), 1, _endDate, new Dictionary<string, object>(), new List<EventMessage>()));
+            _engine.Commit(new CommitAttempt(streamId, 1, Guid.NewGuid(), 1, _startDate, new Dictionary<string, object>(), new List<EventMessage>{ new EventMessage()}));
+            _engine.Commit(new CommitAttempt(streamId, 2, Guid.NewGuid(), 2, _endDate, new Dictionary<string, object>(), new List<EventMessage>{ new EventMessage()}));
         }
 
         protected override void Because()
         {
-            _commits = engine.GetFromTo(_startDate, _endDate).ToArray();
+            _commits = _engine.GetFromTo(_startDate, _endDate).ToArray();
         }
 
         [Fact]

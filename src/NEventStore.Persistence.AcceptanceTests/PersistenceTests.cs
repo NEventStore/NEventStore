@@ -55,7 +55,7 @@ namespace NEventStore.Persistence.AcceptanceTests
             _streamId = Guid.NewGuid().ToString();
             _attempt = _streamId.BuildAttempt(_now);
 
-            Persistence.Commit(_streamId.BuildAttempt(_now));
+            Persistence.Commit(_attempt);
         }
 
         protected override void Because()

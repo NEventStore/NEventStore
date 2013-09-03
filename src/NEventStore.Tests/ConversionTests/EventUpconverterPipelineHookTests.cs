@@ -12,13 +12,13 @@
 
     public class when_opening_a_commit_that_does_not_have_convertible_events : using_event_converter
     {
-        private readonly ICommit _commit = CreateCommit();
+        private ICommit _commit;
 
         private ICommit _converted;
 
         protected override void Context()
         {
-            _commit.Events.Add(new EventMessage {Body = new NonConvertingEvent()});
+            _commit =  CreateCommit(new EventMessage {Body = new NonConvertingEvent()});
         }
 
         protected override void Because()
@@ -41,17 +41,14 @@
 
     public class when_opening_a_commit_that_has_convertible_events : using_event_converter
     {
-        private readonly ICommit _commit = CreateCommit();
+        private ICommit _commit;
 
         private readonly Guid _id = Guid.NewGuid();
         private ICommit _converted;
-        private EventMessage _eventMessage;
 
         protected override void Context()
         {
-            _eventMessage = new EventMessage {Body = new ConvertingEvent(_id)};
-
-            _commit.Events.Add(_eventMessage);
+            _commit = CreateCommit(new EventMessage {Body = new ConvertingEvent(_id)});
         }
 
         protected override void Because()
@@ -76,8 +73,7 @@
     public class when_an_event_converter_implements_the_IConvertEvents_interface_explicitly : using_event_converter
 // ReSharper restore InconsistentNaming
     {
-        private readonly ICommit _commit = CreateCommit();
-
+        private ICommit _commit;
         private readonly Guid _id = Guid.NewGuid();
         private ICommit _converted;
         private IEventMessage _eventMessage;
@@ -86,7 +82,7 @@
         {
             _eventMessage = new EventMessage {Body = new ConvertingEvent2(_id, "FooEvent")};
 
-            _commit.Events.Add(_eventMessage);
+            _commit = CreateCommit(_eventMessage);
         }
 
         protected override void Because()
@@ -151,7 +147,7 @@
                 Assembly.GetCallingAssembly().GetReferencedAssemblies().Select(Assembly.Load).Concat(new[] {Assembly.GetCallingAssembly()});
         }
 
-        protected static ICommit CreateCommit()
+        protected static ICommit CreateCommit(IEventMessage eventMessage)
         {
             return new Commit(Bucket.Default,
                 Guid.NewGuid().ToString(),
@@ -161,7 +157,7 @@
                 DateTime.MinValue,
                 new IntCheckpoint(0),
                 null,
-                null);
+                new[] { eventMessage });
         }
     }
 
