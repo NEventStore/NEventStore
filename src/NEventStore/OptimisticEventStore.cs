@@ -47,6 +47,7 @@ namespace NEventStore
 
         public virtual ICommit Commit(CommitAttempt attempt)
         {
+            Guard.NotNull(() => attempt, attempt);
             foreach (var hook in _pipelineHooks)
             {
                 Logger.Debug(Resources.InvokingPreCommitHooks, attempt.CommitId, hook.GetType());
