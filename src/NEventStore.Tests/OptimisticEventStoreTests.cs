@@ -420,30 +420,6 @@ namespace NEventStore
         }
     }
 
-    public class when_committing_with_a_nonpositive_commit_sequence_back_to_the_stream : using_persistence
-    {
-        private const int StreamRevision = 1;
-        private const int InvalidCommitSequence = 0;
-        private CommitAttempt _invalidCommitAttemptSequence;
-        private Exception thrown;
-
-        protected override void Context()
-        {
-            _invalidCommitAttemptSequence = BuildCommitAttemptStub(StreamRevision, InvalidCommitSequence);
-        }
-
-        protected override void Because()
-        {
-            thrown = Catch.Exception(() => ((ICommitEvents) Store).Commit(_invalidCommitAttemptSequence));
-        }
-
-        [Fact]
-        public void should_throw_an_ArgumentException()
-        {
-            thrown.ShouldBeInstanceOf<ArgumentException>();
-        }
-    }
-
     public class when_committing_with_a_valid_and_populated_attempt_to_a_stream : using_persistence
     {
         private CommitAttempt _populatedAttempt;
