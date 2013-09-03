@@ -468,29 +468,6 @@ namespace NEventStore
         }
     }
 
-    public class when_committing_an_empty_attempt_to_a_stream : using_persistence
-    {
-        private CommitAttempt _attemptWithNoEvents;
-
-        protected override void Context()
-        {
-            _attemptWithNoEvents = BuildCommitAttemptStub(Guid.NewGuid());
-
-            Persistence.Setup(x => x.Commit(_attemptWithNoEvents));
-        }
-
-        protected override void Because()
-        {
-            ((ICommitEvents) Store).Commit(_attemptWithNoEvents);
-        }
-
-        [Fact]
-        public void should_drop_the_commit_provided()
-        {
-            Persistence.Verify(x => x.Commit(_attemptWithNoEvents), Times.AtMost(0));
-        }
-    }
-
     public class when_committing_with_a_valid_and_populated_attempt_to_a_stream : using_persistence
     {
         private CommitAttempt _populatedAttempt;

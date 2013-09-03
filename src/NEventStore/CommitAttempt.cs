@@ -78,6 +78,7 @@ namespace NEventStore
             IDictionary<string, object> headers,
             IEnumerable<IEventMessage> events)
         {
+            //TODO write tests for these?
             Guard.NotNullOrWhiteSpace(() => bucketId, bucketId);
             Guard.NotNullOrWhiteSpace(() => streamId, streamId);
             Guard.NotLessThanOrEqualTo(() => streamRevision, streamRevision, 0);
