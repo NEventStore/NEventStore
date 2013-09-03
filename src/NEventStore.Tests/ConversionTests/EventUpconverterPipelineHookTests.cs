@@ -76,7 +76,7 @@
         private ICommit _commit;
         private readonly Guid _id = Guid.NewGuid();
         private ICommit _converted;
-        private IEventMessage _eventMessage;
+        private EventMessage _eventMessage;
 
         protected override void Context()
         {
@@ -147,7 +147,7 @@
                 Assembly.GetCallingAssembly().GetReferencedAssemblies().Select(Assembly.Load).Concat(new[] {Assembly.GetCallingAssembly()});
         }
 
-        protected static ICommit CreateCommit(IEventMessage eventMessage)
+        protected static ICommit CreateCommit(EventMessage eventMessage)
         {
             return new Commit(Bucket.Default,
                 Guid.NewGuid().ToString(),

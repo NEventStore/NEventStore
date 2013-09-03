@@ -86,7 +86,6 @@
     <Compile Include="Guard.cs" />
     <Compile Include="ICheckpoint.cs" />
     <Compile Include="ICommit.cs" />
-    <Compile Include="IEventMessage.cs" />
     <Compile Include="ImmutableCollection.cs" />
     <Compile Include="IntCheckpoint.cs" />
     <Compile Include="ISnapshot.cs" />

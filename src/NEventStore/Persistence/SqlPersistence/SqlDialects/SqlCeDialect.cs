@@ -32,6 +32,11 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects
             get { return RemovePaging(base.GetCommitsFromToInstant); }
         }
 
+        public override string PersistCommit
+        {
+            get { throw new NotImplementedException(); }
+        }
+
         public override string GetCommitsFromCheckpoint
         {
             get { return RemovePaging(base.GetCommitsFromCheckpoint); }

@@ -287,7 +287,7 @@ namespace NEventStore.Persistence.SqlPersistence
         {
             Logger.Debug(Messages.AttemptingToCommit, attempt.Events.Count, attempt.StreamId, attempt.CommitSequence, attempt.BucketId);
             string streamId = attempt.StreamId.ToHash();
-            ExecuteCommand(cmd =>
+            return ExecuteCommand(cmd =>
                 {
                     cmd.AddParameter(_dialect.BucketId, attempt.BucketId);
                     cmd.AddParameter(_dialect.StreamId, streamId);
@@ -298,10 +298,18 @@ namespace NEventStore.Persistence.SqlPersistence
                     cmd.AddParameter(_dialect.CommitSequence, attempt.CommitSequence);
                     cmd.AddParameter(_dialect.CommitStamp, attempt.CommitStamp);
                     cmd.AddParameter(_dialect.Headers, _serializer.Serialize(attempt.Headers));
-                    cmd.AddParameter(_dialect.Payload, _serializer.Serialize(attempt.Events));
-                    return cmd.ExecuteNonQuery(_dialect.PersistCommit);
+                    cmd.AddParameter(_dialect.Payload, _serializer.Serialize(attempt.Events.ToList()));
+                    var checkpointNumber = cmd.ExecuteScalar(_dialect.PersistCommit).ToInt();
+                    return new Commit(attempt.BucketId,
+                        attempt.StreamId,
+                        attempt.StreamRevision,
+                        attempt.CommitId,
+                        attempt.CommitSequence,
+                        attempt.CommitStamp,
+                        new IntCheckpoint(checkpointNumber),
+                        attempt.Headers,
+                        attempt.Events);
                 });
-            throw new NotImplementedException("DH return a commit");
         }
 
         private bool DetectDuplicate(CommitAttempt attempt)

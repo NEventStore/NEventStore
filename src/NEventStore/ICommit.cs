@@ -46,7 +46,7 @@ namespace NEventStore
         /// <summary>
         ///     Gets the collection of event messages to be committed as a single unit.
         /// </summary>
-        ICollection<IEventMessage> Events { get; }
+        ICollection<EventMessage> Events { get; }
 
         /// <summary>
         /// The checkpoint that represents the storage level order.

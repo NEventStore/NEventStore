@@ -237,18 +237,6 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INSERT
-        ///  INTO Commits
-        ///     ( BucketId, StreamId, StreamIdOriginal, CommitId, CommitSequence, StreamRevision, Items, CommitStamp, Headers, Payload )
-        ///VALUES (@BucketId, @StreamId, @StreamIdOriginal, @CommitId, @CommitSequence, @StreamRevision, @Items, @CommitStamp, @Headers, @Payload);.
-        /// </summary>
-        internal static string PersistCommit {
-            get {
-                return ResourceManager.GetString("PersistCommit", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to DELETE FROM Snapshots WHERE BucketId = @BucketId;
         ///DELETE FROM Commits WHERE BucketId = @BucketId;.
         /// </summary>

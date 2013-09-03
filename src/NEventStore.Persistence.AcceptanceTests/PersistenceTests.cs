@@ -218,9 +218,8 @@ namespace NEventStore.Persistence.AcceptanceTests
         {
             string streamId = Guid.NewGuid().ToString();
             CommitAttempt successfulAttempt = streamId.BuildAttempt();
-            _failedAttempt = streamId.BuildAttempt();
-
             Persistence.Commit(successfulAttempt);
+            _failedAttempt = streamId.BuildAttempt();
         }
 
         protected override void Because()

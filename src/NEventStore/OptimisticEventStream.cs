@@ -11,9 +11,9 @@ namespace NEventStore
     public sealed class OptimisticEventStream : IEventStream
     {
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (OptimisticEventStream));
-        private readonly ICollection<IEventMessage> _committed = new LinkedList<IEventMessage>();
+        private readonly ICollection<EventMessage> _committed = new LinkedList<EventMessage>();
         private readonly IDictionary<string, object> _committedHeaders = new Dictionary<string, object>();
-        private readonly ICollection<IEventMessage> _events = new LinkedList<IEventMessage>();
+        private readonly ICollection<EventMessage> _events = new LinkedList<EventMessage>();
         private readonly ICollection<Guid> _identifiers = new HashSet<Guid>();
         private readonly ICommitEvents _persistence;
         private readonly IDictionary<string, object> _uncommittedHeaders = new Dictionary<string, object>();
@@ -59,9 +59,9 @@ namespace NEventStore
         public int StreamRevision { get; private set; }
         public int CommitSequence { get; private set; }
 
-        public ICollection<IEventMessage> CommittedEvents
+        public ICollection<EventMessage> CommittedEvents
         {
-            get { return new ImmutableCollection<IEventMessage>(_committed); }
+            get { return new ImmutableCollection<EventMessage>(_committed); }
         }
 
         public IDictionary<string, object> CommittedHeaders
@@ -69,9 +69,9 @@ namespace NEventStore
             get { return _committedHeaders; }
         }
 
-        public ICollection<IEventMessage> UncommittedEvents
+        public ICollection<EventMessage> UncommittedEvents
         {
-            get { return new ImmutableCollection<IEventMessage>(_events); }
+            get { return new ImmutableCollection<EventMessage>(_events); }
         }
 
         public IDictionary<string, object> UncommittedHeaders
@@ -79,7 +79,7 @@ namespace NEventStore
             get { return _uncommittedHeaders; }
         }
 
-        public void Add(IEventMessage uncommittedEvent)
+        public void Add(EventMessage uncommittedEvent)
         {
             if (uncommittedEvent == null || uncommittedEvent.Body == null)
             {

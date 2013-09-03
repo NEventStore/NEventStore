@@ -12,6 +12,11 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects
             get { return MySqlStatements.InitializeStorage; }
         }
 
+        public override string PersistCommit
+        {
+            get { throw new NotImplementedException(); }
+        }
+
         public override string AppendSnapshotToCommit
         {
             get { return base.AppendSnapshotToCommit.Replace("/*FROM DUAL*/", "FROM DUAL"); }

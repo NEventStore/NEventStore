@@ -159,4 +159,11 @@ SELECT *
  WHERE [row] BETWEEN @Skip + 1
                  AND @Limit + @Skip;</value>
   </data>
+  <data name="PersistCommits" xml:space="preserve">
+    <value>INSERT
+  INTO Commits
+     ( BucketId, StreamId, StreamIdOriginal, CommitId, CommitSequence, StreamRevision, Items, CommitStamp, Headers, Payload )
+OUTPUT INSERTED.CheckpointNumber
+VALUES (@BucketId, @StreamId, @StreamIdOriginal, @CommitId, @CommitSequence, @StreamRevision, @Items, @CommitStamp, @Headers, @Payload);</value>
+  </data>
 </root>

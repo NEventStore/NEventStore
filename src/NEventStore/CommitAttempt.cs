@@ -3,6 +3,7 @@ namespace NEventStore
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Linq;
 
     public class CommitAttempt
     {
@@ -13,7 +14,7 @@ namespace NEventStore
         private readonly int _commitSequence;
         private readonly DateTime _commitStamp;
         private readonly IDictionary<string, object> _headers;
-        private readonly ICollection<IEventMessage> _events;
+        private readonly ICollection<EventMessage> _events;
 
         /// <summary>
         ///     Initializes a new instance of the Commit class for the default bucket.
@@ -32,7 +33,7 @@ namespace NEventStore
             int commitSequence,
             DateTime commitStamp,
             IDictionary<string, object> headers,
-            IEnumerable<IEventMessage> events)
+            IEnumerable<EventMessage> events)
             : this(Bucket.Default, streamId.ToString(), streamRevision, commitId, commitSequence, commitStamp, headers, events)
         { }
 
@@ -53,7 +54,7 @@ namespace NEventStore
             int commitSequence,
             DateTime commitStamp,
             IDictionary<string, object> headers,
-            IEnumerable<IEventMessage> events)
+            IEnumerable<EventMessage> events)
             : this(Bucket.Default, streamId, streamRevision, commitId, commitSequence, commitStamp, headers, events)
         {}
 
@@ -76,7 +77,7 @@ namespace NEventStore
             int commitSequence,
             DateTime commitStamp,
             IDictionary<string, object> headers,
-            IEnumerable<IEventMessage> events)
+            IEnumerable<EventMessage> events)
         {
             //TODO write tests for these?
             Guard.NotNullOrWhiteSpace(() => bucketId, bucketId);
@@ -95,8 +96,8 @@ namespace NEventStore
             _commitStamp = commitStamp;
             _headers = headers ?? new Dictionary<string, object>();
             _events = events == null ?
-                new ReadOnlyCollection<IEventMessage>(new List<IEventMessage>()) :
-                new ReadOnlyCollection<IEventMessage>(new List<IEventMessage>(events));
+                new ReadOnlyCollection<EventMessage>(new List<EventMessage>()) :
+                new ReadOnlyCollection<EventMessage>(events.ToList());
         }
 
         /// <summary>
@@ -158,7 +159,7 @@ namespace NEventStore
         /// <summary>
         ///     Gets the collection of event messages to be committed as a single unit.
         /// </summary>
-        public ICollection<IEventMessage> Events
+        public ICollection<EventMessage> Events
         {
             get
             {

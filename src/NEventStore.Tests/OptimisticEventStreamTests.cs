@@ -408,7 +408,7 @@ namespace NEventStore
     public class when_committing_after_another_thread_or_process_has_moved_the_stream_head : on_the_event_stream
     {
         private const int StreamRevision = 1;
-        private readonly IEventMessage _uncommitted = new EventMessage {Body = string.Empty};
+        private readonly EventMessage _uncommitted = new EventMessage { Body = string.Empty };
         private ICommit[] _committed;
         private ICommit[] _discoveredOnCommit;
         private CommitAttempt _constructed;
@@ -553,7 +553,7 @@ namespace NEventStore
 
         protected ICommit BuildCommitStub(int revision, int sequence, int eventCount)
         {
-            var events = new List<IEventMessage>(eventCount);
+            var events = new List<EventMessage>(eventCount);
             for (int i = 0; i < eventCount; i++)
             {
                 events.Add(new EventMessage());

@@ -12,6 +12,11 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects
             get { return base.MarkCommitAsDispatched.Replace("1", "true"); }
         }
 
+        public override string PersistCommit
+        {
+            get { throw new System.NotImplementedException(); }
+        }
+
         public override string GetUndispatchedCommits
         {
             get { return base.GetUndispatchedCommits.Replace("0", "false"); }

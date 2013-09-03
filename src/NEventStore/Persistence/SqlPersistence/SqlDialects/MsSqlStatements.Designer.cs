@@ -93,5 +93,18 @@ namespace NEventStore.Persistence.SqlPersistence.SqlDialects {
                 return ResourceManager.GetString("PagedQueryFormat", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to INSERT
+        ///  INTO Commits
+        ///     ( BucketId, StreamId, StreamIdOriginal, CommitId, CommitSequence, StreamRevision, Items, CommitStamp, Headers, Payload )
+        ///OUTPUT INSERTED.CheckpointNumber
+        ///VALUES (@BucketId, @StreamId, @StreamIdOriginal, @CommitId, @CommitSequence, @StreamRevision, @Items, @CommitStamp, @Headers, @Payload);.
+        /// </summary>
+        internal static string PersistCommits {
+            get {
+                return ResourceManager.GetString("PersistCommits", resourceCulture);
+            }
+        }
     }
 }

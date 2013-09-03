@@ -206,12 +206,6 @@ HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Thresho
    AND StreamId = @StreamId
    AND CommitSequence = @CommitSequence;</value>
   </data>
-  <data name="PersistCommit" xml:space="preserve">
-    <value>INSERT
-  INTO Commits
-     ( BucketId, StreamId, StreamIdOriginal, CommitId, CommitSequence, StreamRevision, Items, CommitStamp, Headers, Payload )
-VALUES (@BucketId, @StreamId, @StreamIdOriginal, @CommitId, @CommitSequence, @StreamRevision, @Items, @CommitStamp, @Headers, @Payload);</value>
-  </data>
   <data name="PurgeStorage" xml:space="preserve">
     <value>DELETE FROM Snapshots;
 DELETE FROM Commits;</value>
