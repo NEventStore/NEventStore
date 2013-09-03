@@ -373,29 +373,6 @@ namespace NEventStore
         }
     }
 
-    public class when_committing_with_an_unidentified_attempt_back_to_the_stream : using_persistence
-    {
-        private readonly Guid _emptyIdentifier = Guid.Empty;
-        private Exception _thrown;
-        private CommitAttempt _unidentified;
-
-        protected override void Context()
-        {
-            _unidentified = BuildCommitAttemptStub(_emptyIdentifier);
-        }
-
-        protected override void Because()
-        {
-            _thrown = Catch.Exception(() => ((ICommitEvents) Store).Commit(_unidentified));
-        }
-
-        [Fact]
-        public void should_throw_an_ArgumentException()
-        {
-            _thrown.ShouldBeInstanceOf<ArgumentException>();
-        }
-    }
-
     public class when_the_number_of_commits_is_greater_than_the_number_of_revisions : using_persistence
     {
         private const int StreamRevision = 1;
