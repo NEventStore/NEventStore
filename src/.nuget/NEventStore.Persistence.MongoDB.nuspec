@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>NEventStore.Persistence.MongoPersistence</id>
-    <version>4.0</version>
+    <id>NEventStore.Persistence.MongoDB</id>
+    <version>5.0</version>
     <title>NEventStore MongoDB Persistence Plugin</title>
     <authors>NEventStore Dev Team</authors>
     <owners>NEventStore Dev Team</owners>

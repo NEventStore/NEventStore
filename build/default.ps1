@@ -89,12 +89,12 @@ task PackageNEventStore -depends Clean, Compile {
 
 task PackageMongoPersistence -depends Clean, Compile {
 	mkdir $publish_directory\plugins\persistence\mongo | out-null
-	copy "$src_directory\NEventStore.Persistence.MongoPersistence\bin\$target_config\NEventStore.Persistence.MongoPersistence.???" "$publish_directory\plugins\persistence\mongo"
+	copy "$src_directory\NEventStore.Persistence.MongoDB\bin\$target_config\NEventStore.Persistence.MongoDB.???" "$publish_directory\plugins\persistence\mongo"
 }
 
 task PackageRavenPersistence -depends Clean, Compile {
 	mkdir $publish_directory\plugins\persistence\raven | out-null
-	copy "$src_directory\NEventStore.Persistence.RavenPersistence\bin\$target_config\NEventStore.Persistence.RavenPersistence.???" "$publish_directory\plugins\persistence\raven"
+	copy "$src_directory\NEventStore.Persistence.RavenDB\bin\$target_config\NEventStore.Persistence.RavenDB.???" "$publish_directory\plugins\persistence\raven"
 }
 
 task Clean {

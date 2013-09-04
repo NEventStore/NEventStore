@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>NEventStore.Persistence.RavenPersistence</id>
-    <version>4.0</version>
+    <id>NEventStore.Persistence.RavenDB</id>
+    <version>5.0</version>
     <title>NEventStore RavenDB Persistence Plugin</title>
     <authors>NEventStore Dev Team</authors>
     <owners>NEventStore Dev Team</owners>
