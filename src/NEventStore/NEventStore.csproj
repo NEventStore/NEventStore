@@ -162,12 +162,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Persistence\Sql\SqlDialects\SqlCeDialect.cs" />
-    <Compile Include="Persistence\Sql\SqlDialects\SqlCeStatements.Designer.cs">
-      <DependentUpon>SqlCeStatements.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Persistence\Sql\SqlDialects\SqliteDialect.cs" />
     <Compile Include="Persistence\Sql\SqlDialects\SqliteStatements.Designer.cs">
       <DependentUpon>SqliteStatements.resx</DependentUpon>
@@ -294,10 +288,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>PostgreSqlStatements.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Persistence\Sql\SqlDialects\SqlCeStatements.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>SqlCeStatements.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Persistence\Sql\SqlDialects\SqliteStatements.resx">
       <Generator>ResXFileCodeGenerator</Generator>

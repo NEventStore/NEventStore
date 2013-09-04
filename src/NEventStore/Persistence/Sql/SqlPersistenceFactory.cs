@@ -14,27 +14,19 @@ namespace NEventStore.Persistence.Sql
         private readonly TransactionScopeOption _scopeOption;
         private readonly ISerialize _serializer;
 
-        public SqlPersistenceFactory(string connectionName, ISerialize serializer)
-            : this(connectionName, serializer, null)
-        {}
-
-        public SqlPersistenceFactory(string connectionName, ISerialize serializer, ISqlDialect dialect)
+        public SqlPersistenceFactory(string connectionName, ISerialize serializer, ISqlDialect dialect = null)
             : this(serializer, TransactionScopeOption.Suppress, DefaultPageSize)
         {
             _connectionFactory = new ConfigurationConnectionFactory(connectionName);
             _dialect = dialect ?? ResolveDialect(new ConfigurationConnectionFactory(connectionName).Settings);
         }
 
-        public SqlPersistenceFactory(IConnectionFactory factory, ISerialize serializer, ISqlDialect dialect)
-            : this(factory, serializer, dialect, TransactionScopeOption.Suppress, DefaultPageSize)
-        {}
-
         public SqlPersistenceFactory(
             IConnectionFactory factory,
             ISerialize serializer,
             ISqlDialect dialect,
-            TransactionScopeOption scopeOption,
-            int pageSize)
+            TransactionScopeOption scopeOption = TransactionScopeOption.Suppress,
+            int pageSize = DefaultPageSize)
             : this(serializer, scopeOption, pageSize)
         {
             if (dialect == null)
@@ -79,7 +71,6 @@ namespace NEventStore.Persistence.Sql
 
         protected static ISqlDialect ResolveDialect(ConnectionStringSettings settings)
         {
-            string connectionString = settings.ConnectionString.ToUpperInvariant();
             string providerName = settings.ProviderName.ToUpperInvariant();
 
             if (providerName.Contains("MYSQL"))
@@ -90,11 +81,6 @@ namespace NEventStore.Persistence.Sql
             if (providerName.Contains("SQLITE"))
             {
                 return new SqliteDialect();
-            }
-
-            if (providerName.Contains("SQLSERVERCE") || connectionString.Contains(".SDF"))
-            {
-                return new SqlCeDialect();
             }
 
             if (providerName.Contains("POSTGRES") || providerName.Contains("NPGSQL"))
