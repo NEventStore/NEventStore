@@ -58,7 +58,7 @@ task RunUnitTests {
 task RunPersistenceTests -precondition { $runPersistenceTests } {
 	"Persistence Tests"
 	EnsureDirectory $output_directory
-	Invoke-XUnit -Path $src_directory -TestSpec '*Persistence.*.Tests.dll' `
+	Invoke-XUnit -Path $src_directory -TestSpec '*Persistence.MongoPersistence.Tests.dll','*Persistence.MsSql.Tests.dll','*Persistence.MySql.Tests.dll','*Persistence.Oracle.Tests.dll','*Persistence.PostgreSql.Tests.dll','*Persistence.Sqlite.Tests.dll' `
     -SummaryPath $output_directory\persistence_tests.xml `
     -XUnitPath $xunit_path
 }
