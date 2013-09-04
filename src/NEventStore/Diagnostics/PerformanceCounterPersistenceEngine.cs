@@ -36,6 +36,11 @@ namespace NEventStore.Diagnostics
             _counters.CountCommitDispatched();
         }
 
+        public ICheckpoint ParseCheckpoint(string checkpointValue)
+        {
+            return IntCheckpoint.Parse(checkpointValue);
+        }
+
         public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             return _persistence.GetFromTo(bucketId, start, end);

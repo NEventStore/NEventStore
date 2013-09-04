@@ -140,6 +140,11 @@
                 .Select(x => x.ToCommit(_serializer)));
         }
 
+        public ICheckpoint ParseCheckpoint(string checkpointValue)
+        {
+            return IntCheckpoint.Parse(checkpointValue);
+        }
+
         public virtual IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             Logger.Debug(Messages.GettingAllCommitsFromTo, start, end, bucketId);

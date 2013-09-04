@@ -259,4 +259,42 @@
             _onErrorException.ShouldBe(_subscriberException);
         }
     }
+
+    public class when_resuming : using_polling_client
+    {
+        private IObserveCommits _observeCommits;
+        private Task<ICommit> _commitObserved;
+
+        protected override void Context()
+        {
+            base.Context();
+            StoreEvents.Advanced.CommitSingle();
+            _observeCommits = PollingClient.ObserveFromStart();
+            _commitObserved = _observeCommits.FirstAsync().ToTask();
+            _observeCommits.Start();
+            _commitObserved.Wait(PollingInterval * 2);
+            _observeCommits.Dispose();
+
+            StoreEvents.Advanced.CommitSingle();
+            string checkpointValue = _commitObserved.Result.Checkpoint.Value;
+            _observeCommits = PollingClient.ObserveFrom(StoreEvents.Advanced.ParseCheckpoint(checkpointValue));
+        }
+
+        protected override void Because()
+        {
+            _observeCommits.Start();
+            _commitObserved = _observeCommits.FirstAsync().ToTask();
+        }
+
+        protected override void Cleanup()
+        {
+            _observeCommits.Dispose();
+        }
+
+        [Fact]
+        public void should_observe_commit()
+        {
+            _commitObserved.Wait(PollingInterval * 2).ShouldBe(true);
+        }
+    }
 }

@@ -49,6 +49,13 @@ namespace NEventStore.Persistence
         ICheckpoint StartCheckpoint { get; }
 
         /// <summary>
+        /// Tries the parse a checkpoint string value.
+        /// </summary>
+        /// <param name="checkpointValue">The checkpoint value to parse.</param>
+        /// <returns>An <see cref="ICheckpoint"/> instance.</returns>
+        ICheckpoint ParseCheckpoint(string checkpointValue);
+
+        /// <summary>
         ///     Gets all commits on or after from the specified starting time and before the specified end time.
         /// </summary>
         /// <param name="bucketId">The value which uniquely identifies bucket the stream belongs to.</param>

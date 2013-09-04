@@ -65,6 +65,11 @@ namespace NEventStore.Persistence
             return ExecuteHooks(_original.GetFrom(bucketId, start));
         }
 
+        public ICheckpoint ParseCheckpoint(string checkpointValue)
+        {
+            return _original.ParseCheckpoint(checkpointValue);
+        }
+
         public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             return ExecuteHooks(_original.GetFromTo(bucketId, start, end));

@@ -57,6 +57,11 @@ namespace NEventStore.Persistence.InMemory
 
         public ICheckpoint StartCheckpoint { get { return new IntCheckpoint(0); } }
 
+        public ICheckpoint ParseCheckpoint(string checkpointValue)
+        {
+            return IntCheckpoint.Parse(checkpointValue);
+        }
+
         public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             ThrowWhenDisposed();

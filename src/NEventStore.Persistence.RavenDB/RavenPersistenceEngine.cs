@@ -114,6 +114,11 @@
             return QueryCommits<RavenCommitByDate>(x => x.BucketId == bucketId && x.CommitStamp >= start).OrderBy(x => x.CommitStamp);
         }
 
+        public ICheckpoint ParseCheckpoint(string checkpointValue)
+        {
+            throw new NotImplementedException("Engine to be rewritten");
+        }
+
         public virtual IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             Logger.Debug(Messages.GettingAllCommitsFromTo, start, end, bucketId);
