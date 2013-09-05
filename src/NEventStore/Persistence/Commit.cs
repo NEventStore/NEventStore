@@ -14,7 +14,7 @@ namespace NEventStore.Persistence
         private readonly DateTime _commitStamp;
         private readonly IDictionary<string, object> _headers;
         private readonly ICollection<EventMessage> _events;
-        private readonly ICheckpoint _checkpoint;
+        private readonly string _checkpointToken;
 
         public Commit(
             string bucketId,
@@ -23,7 +23,7 @@ namespace NEventStore.Persistence
             Guid commitId,
             int commitSequence,
             DateTime commitStamp,
-            ICheckpoint checkpoint,
+            string checkpointToken,
             IDictionary<string, object> headers,
             IEnumerable<EventMessage> events)
         {
@@ -33,7 +33,7 @@ namespace NEventStore.Persistence
             _commitId = commitId;
             _commitSequence = commitSequence;
             _commitStamp = commitStamp;
-            _checkpoint = checkpoint;
+            _checkpointToken = checkpointToken;
             _headers = headers ?? new Dictionary<string, object>();
             _events = events == null ?
                 new ReadOnlyCollection<EventMessage>(new List<EventMessage>()) :
@@ -83,11 +83,11 @@ namespace NEventStore.Persistence
             }
         }
 
-        public ICheckpoint Checkpoint
+        public string CheckpointToken
         {
             get
             {
-                return _checkpoint;
+                return _checkpointToken;
             }
         }
     }

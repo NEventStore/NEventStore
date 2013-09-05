@@ -155,7 +155,7 @@
                 Guid.NewGuid(),
                 0,
                 DateTime.MinValue,
-                new IntCheckpoint(0),
+                new IntCheckpoint(0).Value,
                 null,
                 new[] { eventMessage });
         }

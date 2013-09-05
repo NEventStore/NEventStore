@@ -34,26 +34,18 @@ namespace NEventStore.Persistence
         IEnumerable<ICommit> GetFrom(string bucketId, DateTime start);
 
         /// <summary>
-        ///     Gets all commits after from the specified checkpoint.
+        ///     Gets all commits after from the specified checkpoint. Use null to get from the beginning.
         /// </summary>
-        /// <param name="checkpoint">The checkpoint.</param>
+        /// <param name="checkpointToken">The checkpoint token.</param>
         /// <returns>An enumerable of Commits.</returns>
-        IEnumerable<ICommit> GetFrom(ICheckpoint checkpoint);
+        IEnumerable<ICommit> GetFrom(string checkpointToken);
 
         /// <summary>
-        /// Gets the start checkpoint.
+        /// Gets a checkpoint object that is comparable with other checkpoints from this storage engine.
         /// </summary>
-        /// <value>
-        /// The start checkpoint.
-        /// </value>
-        ICheckpoint StartCheckpoint { get; }
-
-        /// <summary>
-        /// Tries the parse a checkpoint string value.
-        /// </summary>
-        /// <param name="checkpointValue">The checkpoint value to parse.</param>
-        /// <returns>An <see cref="ICheckpoint"/> instance.</returns>
-        ICheckpoint ParseCheckpoint(string checkpointValue);
+        /// <param name="checkpointToken">The checkpoint token</param>
+        /// <returns>A <see cref="ICheckpoint"/> instance.</returns>
+        ICheckpoint GetCheckpoint(string checkpointToken = null);
 
         /// <summary>
         ///     Gets all commits on or after from the specified starting time and before the specified end time.

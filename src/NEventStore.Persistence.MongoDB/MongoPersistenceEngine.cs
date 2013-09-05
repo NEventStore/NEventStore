@@ -140,9 +140,19 @@
                 .Select(x => x.ToCommit(_serializer)));
         }
 
-        public ICheckpoint ParseCheckpoint(string checkpointValue)
+        public IEnumerable<ICommit> GetFrom(string checkpointToken)
         {
-            return IntCheckpoint.Parse(checkpointValue);
+            var intCheckpoint = IntCheckpoint.Parse(checkpointToken);
+            Logger.Debug(Messages.GettingAllCommitsFromCheckpoint, intCheckpoint.Value);
+            return TryMongo(() => PersistedCommits
+                .Find(Query.GTE(MongoFields.CheckpointNumber, intCheckpoint.IntValue)))
+                .SetSortOrder(MongoFields.CheckpointNumber)
+                .Select(x => x.ToCommit(_serializer));
+        }
+
+        public ICheckpoint GetCheckpoint(string checkpointToken = null)
+        {
+            return IntCheckpoint.Parse(checkpointToken);
         }
 
         public virtual IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
@@ -306,22 +316,6 @@
                 PersistedCommits.Remove(Query.And(Query.EQ("_id.BucketId", bucketId), Query.EQ("_id.StreamId", streamId)));
             });
         }
-
-        public IEnumerable<ICommit> GetFrom(ICheckpoint checkpoint)
-        {
-            var intCheckpoint = checkpoint as IntCheckpoint;
-            if (intCheckpoint == null)
-            {
-                throw new NotSupportedException(Messages.UnsupportedCheckpointType.FormatWith(typeof (IntCheckpoint), checkpoint.GetType()));
-            }
-            Logger.Debug(Messages.GettingAllCommitsFromCheckpoint, checkpoint);
-            return TryMongo(() => PersistedCommits
-                .Find(Query.GTE(MongoFields.CheckpointNumber, intCheckpoint.IntValue)))
-                .SetSortOrder(MongoFields.CheckpointNumber)
-                .Select(x => x.ToCommit(_serializer));
-        }
-
-        public ICheckpoint StartCheckpoint { get { return new IntCheckpoint(0); } }
 
         public bool IsDisposed
         {

@@ -391,7 +391,7 @@ namespace NEventStore
                         attempt.CommitId,
                         attempt.CommitSequence,
                         attempt.CommitStamp,
-                        new IntCheckpoint(0),
+                        new IntCheckpoint(0).Value,
                         attempt.Headers,
                         attempt.Events);
                     return _populatedCommit;
@@ -515,7 +515,7 @@ namespace NEventStore
         protected ICommit BuildCommitStub(int streamRevision, int commitSequence)
         {
             List<EventMessage> events = new[] {new EventMessage()}.ToList();
-            return new Commit(Bucket.Default, streamId, streamRevision, Guid.NewGuid(), commitSequence, SystemTime.UtcNow, new IntCheckpoint(0), null, events);
+            return new Commit(Bucket.Default, streamId, streamRevision, Guid.NewGuid(), commitSequence, SystemTime.UtcNow, new IntCheckpoint(0).Value, null, events);
         }
 
         protected CommitAttempt BuildCommitAttemptStub(int streamRevision, int commitSequence)
@@ -527,7 +527,7 @@ namespace NEventStore
         protected ICommit BuildCommitStub(Guid commitId, int streamRevision, int commitSequence)
         {
             List<EventMessage> events = new[] {new EventMessage()}.ToList();
-            return new Commit(Bucket.Default, streamId, streamRevision, commitId, commitSequence, SystemTime.UtcNow, new IntCheckpoint(0), null, events);
+            return new Commit(Bucket.Default, streamId, streamRevision, commitId, commitSequence, SystemTime.UtcNow, new IntCheckpoint(0).Value, null, events);
         }
     }
 }

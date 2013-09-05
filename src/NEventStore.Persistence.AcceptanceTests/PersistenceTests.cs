@@ -190,7 +190,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         {
             string streamId = Guid.NewGuid().ToString();
             _attempt1 = streamId.BuildAttempt();
-            _attempt2 = streamId.BuildAttempt();
+            _attempt2 = streamId.BuildAttempt(); //TODO mutate a bit
 
             Persistence.Commit(_attempt1);
         }
@@ -721,11 +721,12 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_be_in_order_by_checkpoint()
         {
-            ICheckpoint checkpoint = new IntCheckpoint(0);
+            ICheckpoint checkpoint = Persistence.GetCheckpoint();
             foreach (var commit in _commits)
             {
-                commit.Checkpoint.ShouldBeGreaterThan(checkpoint);
-                checkpoint = commit.Checkpoint;
+                ICheckpoint commitCheckpoint = Persistence.GetCheckpoint(commit.CheckpointToken);
+                commitCheckpoint.ShouldBeGreaterThan(checkpoint);
+                checkpoint = Persistence.GetCheckpoint(commit.CheckpointToken);
             }
         }
     }

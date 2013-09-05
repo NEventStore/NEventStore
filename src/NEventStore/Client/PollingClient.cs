@@ -8,6 +8,9 @@
     using System.Threading.Tasks;
     using NEventStore.Persistence;
 
+    /// <summary>
+    /// Represents a client that poll the storage for latest commits.
+    /// </summary>
     public sealed class PollingClient : ClientBase
     {
         private readonly int _interval;
@@ -25,33 +28,32 @@
             _interval = interval;
         }
 
-        public override IObserveCommits ObserveFrom(ICheckpoint checkpoint)
+        /// <summary>
+        /// Observe commits from the sepecified checkpoint token. If the token is null,
+        /// all commits from the beginning will be observed.
+        /// </summary>
+        /// <param name="checkpointToken">The checkpoint token.</param>
+        /// <returns>
+        /// An <see cref="IObserveCommits" /> instance.
+        /// </returns>
+        public override IObserveCommits ObserveFrom(string checkpointToken = null)
         {
-            return new PollingObserveCommits(PersistStreams, _interval, checkpoint);
-        }
-
-        public override IObserveCommits ObserveFromStart()
-        {
-            return new PollingObserveCommits(PersistStreams, _interval);
+            return new PollingObserveCommits(PersistStreams, _interval, checkpointToken);
         }
 
         private class PollingObserveCommits : IObserveCommits
         {
             private readonly IPersistStreams _persistStreams;
-            private ICheckpoint _checkpoint;
+            private string _checkpointToken;
             private readonly int _interval;
             private readonly Subject<ICommit> _subject = new Subject<ICommit>();
             private readonly CancellationTokenSource _stopRequested = new CancellationTokenSource();
             private TaskCompletionSource<Unit> _runningTaskCompletionSource;
 
-            public PollingObserveCommits(IPersistStreams persistStreams, int interval)
-                : this(persistStreams, interval, persistStreams.StartCheckpoint)
-            {}
-
-            public PollingObserveCommits(IPersistStreams persistStreams, int interval, ICheckpoint checkpoint)
+            public PollingObserveCommits(IPersistStreams persistStreams, int interval, string checkpointToken = null)
             {
                 _persistStreams = persistStreams;
-                _checkpoint = checkpoint;
+                _checkpointToken = checkpointToken;
                 _interval = interval;
             }
 
@@ -104,20 +106,16 @@
 
             private void GetNextCommits(CancellationToken cancellationToken)
             {
-                IEnumerable<ICommit> commits = _persistStreams.GetFrom(_checkpoint);
+                IEnumerable<ICommit> commits = _persistStreams.GetFrom(_checkpointToken);
                 foreach (var commit in commits)
                 {
-                    if (commit.Checkpoint.CompareTo(_checkpoint) < 0)
-                    {
-                        continue;
-                    }
                     if (cancellationToken.IsCancellationRequested)
                     {
                         _subject.OnCompleted();
                         return;
                     }
                     _subject.OnNext(commit);
-                    _checkpoint = commit.Checkpoint;
+                    _checkpointToken = commit.CheckpointToken;
                 }
             }
         }

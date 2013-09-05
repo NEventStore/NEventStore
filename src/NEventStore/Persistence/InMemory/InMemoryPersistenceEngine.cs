@@ -44,9 +44,10 @@ namespace NEventStore.Persistence.InMemory
             return this[bucketId].GetFrom(start);
         }
 
-        public IEnumerable<ICommit> GetFrom(ICheckpoint checkpoint)
+        public IEnumerable<ICommit> GetFrom(string checkpointToken)
         {
-            Logger.Debug(Resources.GettingAllCommitsFromCheckpoint, checkpoint);
+            Logger.Debug(Resources.GettingAllCommitsFromCheckpoint, checkpointToken);
+            ICheckpoint checkpoint = IntCheckpoint.Parse(checkpointToken);
             return _buckets
                 .Values
                 .SelectMany(b => b.GetCommits())
@@ -55,11 +56,9 @@ namespace NEventStore.Persistence.InMemory
                 .ToArray();
         }
 
-        public ICheckpoint StartCheckpoint { get { return new IntCheckpoint(0); } }
-
-        public ICheckpoint ParseCheckpoint(string checkpointValue)
+        public ICheckpoint GetCheckpoint(string checkpointToken = null)
         {
-            return IntCheckpoint.Parse(checkpointValue);
+            return IntCheckpoint.Parse(checkpointToken);
         }
 
         public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
@@ -164,11 +163,37 @@ namespace NEventStore.Persistence.InMemory
             throw new ObjectDisposedException(Resources.AlreadyDisposed);
         }
 
+        private class InMemoryCommit : Commit
+        {
+            private readonly ICheckpoint _checkpoint;
+
+            public InMemoryCommit(
+                string bucketId,
+                string streamId,
+                int streamRevision,
+                Guid commitId,
+                int commitSequence,
+                DateTime commitStamp,
+                string checkpointToken,
+                IDictionary<string, object> headers,
+                IEnumerable<EventMessage> events,
+                ICheckpoint checkpoint)
+                : base(bucketId, streamId, streamRevision, commitId, commitSequence, commitStamp, checkpointToken, headers, events)
+            {
+                _checkpoint = checkpoint;
+            }
+
+            public ICheckpoint Checkpoint
+            {
+                get { return _checkpoint; }
+            }
+        }
+
         private class Bucket
         {
-            private readonly IList<ICommit> _commits = new List<ICommit>();
+            private readonly IList<InMemoryCommit> _commits = new List<InMemoryCommit>();
 
-            public IEnumerable<ICommit> GetCommits()
+            public IEnumerable<InMemoryCommit> GetCommits()
             {
                 lock (_commits)
                 {
@@ -200,7 +225,7 @@ namespace NEventStore.Persistence.InMemory
                     return Enumerable.Empty<ICommit>();
                 }
 
-                ICommit startingCommit = _commits.FirstOrDefault(x => x.CommitId == commitId);
+                InMemoryCommit startingCommit = _commits.FirstOrDefault(x => x.CommitId == commitId);
                 return _commits.Skip(_commits.IndexOf(startingCommit));
             }
 
@@ -213,8 +238,8 @@ namespace NEventStore.Persistence.InMemory
                 {
                     return Enumerable.Empty<ICommit>();
                 }
-                ICommit startingCommit = _commits.FirstOrDefault(x => x.CommitId == firstCommitId);
-                ICommit endingCommit = _commits.FirstOrDefault(x => x.CommitId == lastCommitId);
+                InMemoryCommit startingCommit = _commits.FirstOrDefault(x => x.CommitId == firstCommitId);
+                InMemoryCommit endingCommit = _commits.FirstOrDefault(x => x.CommitId == lastCommitId);
                 int startingCommitIndex = (startingCommit == null) ? 0 : _commits.IndexOf(startingCommit);
                 int endingCommitIndex = (endingCommit == null) ? _commits.Count - 1 : _commits.IndexOf(endingCommit);
                 int numberToTake = endingCommitIndex - startingCommitIndex + 1;
@@ -227,7 +252,16 @@ namespace NEventStore.Persistence.InMemory
                 lock (_commits)
                 {
                     DetectDuplicate(attempt);
-                    ICommit commit = attempt.ToCommit(checkpoint);
+                    var commit = new InMemoryCommit(attempt.BucketId,
+                        attempt.StreamId,
+                        attempt.StreamRevision,
+                        attempt.CommitId,
+                        attempt.CommitSequence,
+                        attempt.CommitStamp,
+                        checkpoint.Value,
+                        attempt.Headers,
+                        attempt.Events,
+                        checkpoint);
                     if (_commits.Any(c => c.StreamId == commit.StreamId && c.CommitSequence == commit.CommitSequence))
                     {
                         throw new ConcurrencyException();
@@ -325,7 +359,7 @@ namespace NEventStore.Persistence.InMemory
             {
                 lock (_commits)
                 {
-                    ICommit[] commits = _commits.Where(c => c.StreamId == streamId).ToArray();
+                    InMemoryCommit[] commits = _commits.Where(c => c.StreamId == streamId).ToArray();
                     foreach (var commit in commits)
                     {
                         _commits.Remove(commit);

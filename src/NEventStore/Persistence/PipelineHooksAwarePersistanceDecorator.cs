@@ -65,9 +65,14 @@ namespace NEventStore.Persistence
             return ExecuteHooks(_original.GetFrom(bucketId, start));
         }
 
-        public ICheckpoint ParseCheckpoint(string checkpointValue)
+        public IEnumerable<ICommit> GetFrom(string checkpointToken)
         {
-            return _original.ParseCheckpoint(checkpointValue);
+            return _original.GetFrom(checkpointToken);
+        }
+
+        public ICheckpoint GetCheckpoint(string checkpointToken)
+        {
+            return _original.GetCheckpoint(checkpointToken);
         }
 
         public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
@@ -104,13 +109,6 @@ namespace NEventStore.Persistence
         {
             _original.DeleteStream(bucketId, streamId);
         }
-
-        public IEnumerable<ICommit> GetFrom(ICheckpoint checkpoint)
-        {
-            return _original.GetFrom(checkpoint);
-        }
-
-        public ICheckpoint StartCheckpoint { get { return _original.StartCheckpoint; } }
 
         public bool IsDisposed
         {

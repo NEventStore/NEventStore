@@ -36,7 +36,7 @@ namespace NEventStore
         protected override void Context()
         {
             date = DateTime.Now;
-            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, new IntCheckpoint(0), null, null);
+            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, new IntCheckpoint(0).Value, null, null);
 
             hook1 = new Mock<IPipelineHook>();
             hook1.Setup(h => h.Select(_commit)).Returns(_commit);
@@ -81,7 +81,7 @@ namespace NEventStore
         {
             start = DateTime.Now;
             end = DateTime.Now;
-            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, new IntCheckpoint(0), null, null);
+            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, new IntCheckpoint(0).Value, null, null);
 
             hook1 = new Mock<IPipelineHook>();
             hook1.Setup(h => h.Select(_commit)).Returns(_commit);

@@ -64,7 +64,7 @@ namespace NEventStore.Persistence
             {
                 throw new ArgumentException("persistStreams is null");
             }
-            return persistStreams.GetFrom(persistStreams.StartCheckpoint);
+            return persistStreams.GetFrom(null);
         }
     }
 }

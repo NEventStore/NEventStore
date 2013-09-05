@@ -41,6 +41,11 @@ namespace NEventStore.Diagnostics
             return IntCheckpoint.Parse(checkpointValue);
         }
 
+        public ICheckpoint GetCheckpoint(string checkpointToken = null)
+        {
+            return _persistence.GetCheckpoint(checkpointToken);
+        }
+
         public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             return _persistence.GetFromTo(bucketId, start, end);
@@ -59,6 +64,11 @@ namespace NEventStore.Diagnostics
         public IEnumerable<ICommit> GetFrom(string bucketId, DateTime start)
         {
             return _persistence.GetFrom(bucketId, start);
+        }
+
+        public IEnumerable<ICommit> GetFrom(string checkpointToken)
+        {
+            return _persistence.GetFrom(checkpointToken);
         }
 
         public bool AddSnapshot(ISnapshot snapshot)
@@ -101,13 +111,6 @@ namespace NEventStore.Diagnostics
         {
             _persistence.DeleteStream(bucketId, streamId);
         }
-
-        public IEnumerable<ICommit> GetFrom(ICheckpoint checkpoint)
-        {
-            return _persistence.GetFrom(checkpoint);
-        }
-
-        public ICheckpoint StartCheckpoint { get { return new IntCheckpoint(0); } }
 
         public bool IsDisposed
         {

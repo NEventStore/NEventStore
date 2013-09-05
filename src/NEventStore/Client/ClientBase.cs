@@ -16,8 +16,13 @@
             get { return _persistStreams; }
         }
 
-        public abstract IObserveCommits ObserveFrom(ICheckpoint checkpoint);
 
-        public abstract IObserveCommits ObserveFromStart();
+        /// <summary>
+        /// Observe commits from the sepecified checkpoint token. If the token is null,
+        ///  all commits from the beginning will be observed.
+        /// </summary>
+        /// <param name="checkpointToken">The checkpoint token.</param>
+        /// <returns>An <see cref="IObserveCommits"/> instance.</returns>
+        public abstract IObserveCommits ObserveFrom(string checkpointToken = null);
     }
 }

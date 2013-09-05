@@ -30,9 +30,9 @@ namespace NEventStore
             return _value.CompareTo(intCheckpoint.IntValue);
         }
 
-        public static ICheckpoint Parse(string checkpointValue)
+        public static IntCheckpoint Parse(string checkpointValue)
         {
-            return new IntCheckpoint(int.Parse(checkpointValue));
+            return string.IsNullOrWhiteSpace(checkpointValue) ? new IntCheckpoint(-1) : new IntCheckpoint(int.Parse(checkpointValue));
         }
     }
 }

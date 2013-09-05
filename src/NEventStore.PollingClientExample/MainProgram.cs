@@ -13,18 +13,14 @@ namespace NEventStore.PollingClientExample
             using (var store = WireupEventStore())
             {
                 var client = new PollingClient(store.Advanced);
-                string checkpointValue = LoadCheckpoint();
-                ICheckpoint checkpoint = string.IsNullOrEmpty(checkpointValue)
-                    ? store.Advanced.StartCheckpoint
-                    : store.Advanced.ParseCheckpoint(checkpointValue);
-
-                using (IObserveCommits observeCommits = client.ObserveFrom(checkpoint))
+                string checkpointToken = LoadCheckpoint();
+                using (IObserveCommits observeCommits = client.ObserveFrom(checkpointToken))
                 using (observeCommits.Subscribe(commit =>
                 {
                     // Project the commit etc
                     Console.WriteLine(Resources.CommitInfo, commit.BucketId, commit.StreamId, commit.CommitSequence);
                     // Track the most recent checkpoint
-                    checkpoint = commit.Checkpoint;
+                    checkpointToken = commit.CheckpointToken;
                 }))
                 {
                     observeCommits.Start();
@@ -32,7 +28,7 @@ namespace NEventStore.PollingClientExample
                     Console.WriteLine(Resources.PressAnyKey);
                     Console.ReadKey();
 
-                    SaveCheckpoint(checkpoint);
+                    SaveCheckpoint(checkpointToken);
                 }
             }
         }
@@ -43,9 +39,8 @@ namespace NEventStore.PollingClientExample
             return null;
         }
 
-        private static void SaveCheckpoint(ICheckpoint checkpoint)
+        private static void SaveCheckpoint(string checkpointToken)
         {
-            string checkpointValue = checkpoint.Value;
             //Save checkpointValue to disk / whatever.
         }
 

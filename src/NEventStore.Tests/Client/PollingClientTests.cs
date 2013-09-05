@@ -69,7 +69,7 @@
         {
             base.Context();
             StoreEvents.Advanced.CommitSingle();
-            _observeCommits = PollingClient.ObserveFromStart();
+            _observeCommits = PollingClient.ObserveFrom();
             _commitObserved = _observeCommits.FirstAsync().ToTask();
         }
 
@@ -99,7 +99,7 @@
         {
             base.Context();
             StoreEvents.Advanced.CommitSingle();
-            _observeCommits = PollingClient.ObserveFromStart();
+            _observeCommits = PollingClient.ObserveFrom();
             _twoCommitsObserved = _observeCommits.Take(2).ToTask();
         }
 
@@ -132,10 +132,10 @@
         {
             base.Context();
             StoreEvents.Advanced.CommitSingle();
-            _observeCommits1 = PollingClient.ObserveFromStart();
+            _observeCommits1 = PollingClient.ObserveFrom();
             _observeCommits1Complete = _observeCommits1.Take(5).ToTask();
 
-            _observeCommits2 = PollingClient.ObserveFromStart();
+            _observeCommits2 = PollingClient.ObserveFrom();
             _observeCommits2Complete = _observeCommits1.Take(10).ToTask();
         }
 
@@ -181,7 +181,7 @@
         {
             base.Context();
             StoreEvents.Advanced.CommitSingle();
-            _observeCommits1 = PollingClient.ObserveFromStart();
+            _observeCommits1 = PollingClient.ObserveFrom();
             _observeCommits1Complete = _observeCommits1.Take(5).ToTask();
             _observeCommits2Complete = _observeCommits1.Take(10).ToTask();
         }
@@ -229,7 +229,7 @@
         {
             base.Context();
             StoreEvents.Advanced.CommitSingle();
-            _observeCommits = PollingClient.ObserveFromStart();
+            _observeCommits = PollingClient.ObserveFrom();
             _subscriberException = new Exception();
             _subscription = _observeCommits.Subscribe(c => { throw _subscriberException; }, ex => _onErrorException = ex);
         }
@@ -269,15 +269,15 @@
         {
             base.Context();
             StoreEvents.Advanced.CommitSingle();
-            _observeCommits = PollingClient.ObserveFromStart();
+            _observeCommits = PollingClient.ObserveFrom();
             _commitObserved = _observeCommits.FirstAsync().ToTask();
             _observeCommits.Start();
             _commitObserved.Wait(PollingInterval * 2);
             _observeCommits.Dispose();
 
             StoreEvents.Advanced.CommitSingle();
-            string checkpointValue = _commitObserved.Result.Checkpoint.Value;
-            _observeCommits = PollingClient.ObserveFrom(StoreEvents.Advanced.ParseCheckpoint(checkpointValue));
+            string checkpointToken = _commitObserved.Result.CheckpointToken;
+            _observeCommits = PollingClient.ObserveFrom(checkpointToken);
         }
 
         protected override void Because()

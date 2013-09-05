@@ -53,7 +53,7 @@ namespace NEventStore.Conversion
                 committed.CommitId,
                 committed.CommitSequence,
                 committed.CommitStamp,
-                committed.Checkpoint,
+                committed.CheckpointToken,
                 committed.Headers,
                 eventMessages);
         }

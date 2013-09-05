@@ -80,7 +80,7 @@
                 doc[MongoFields.CommitId].AsGuid,
                 commitSequence,
                 doc[MongoFields.CommitStamp].ToUniversalTime(),
-                new IntCheckpoint(doc[MongoFields.CheckpointNumber].ToInt32()),
+                new IntCheckpoint(doc[MongoFields.CheckpointNumber].ToInt32()).Value,
                 doc[MongoFields.Headers].AsDictionary<string, object>(),
                 events);
         }

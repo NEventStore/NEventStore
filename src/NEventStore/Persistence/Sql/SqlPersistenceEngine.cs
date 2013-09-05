@@ -3,6 +3,7 @@ namespace NEventStore.Persistence.Sql
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Globalization;
     using System.Linq;
     using System.Security.Cryptography;
     using System.Text;
@@ -110,9 +111,9 @@ namespace NEventStore.Persistence.Sql
                 });
         }
 
-        public ICheckpoint ParseCheckpoint(string checkpointValue)
+        public ICheckpoint GetCheckpoint(string checkpointToken)
         {
-            return IntCheckpoint.Parse(checkpointValue);
+            return string.IsNullOrWhiteSpace(checkpointToken) ? new IntCheckpoint(-1) : IntCheckpoint.Parse(checkpointToken);
         }
 
         public virtual IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
@@ -258,22 +259,18 @@ namespace NEventStore.Persistence.Sql
                 });
         }
 
-        public IEnumerable<ICommit> GetFrom(ICheckpoint checkpoint)
+        public IEnumerable<ICommit> GetFrom(string checkpointToken)
         {
-            Logger.Debug(Messages.GettingAllCommitsFromCheckpoint, checkpoint);
-            //Assuming all SqlEngines are using IntCheckpoint, this will break when they don't.
-            //Postgres requires the CheckpointNumber query paramater to be of type int, the others where happy with a string...
-            var intCheckpoint = (IntCheckpoint) checkpoint; 
+            int checkpoint;
+            Guard.Not(int.TryParse(checkpointToken, out checkpoint), () => new ArgumentException("checkpointToken expected to be parsable to an int"));
+            Logger.Debug(Messages.GettingAllCommitsFromCheckpoint, checkpointToken);
             return ExecuteQuery(query =>
             {
                 string statement = _dialect.GetCommitsFromCheckpoint;
-                query.AddParameter(_dialect.CheckpointNumber, intCheckpoint.IntValue);
+                query.AddParameter(_dialect.CheckpointNumber, checkpoint);
                 return query.ExecutePagedQuery(statement, (q, r) => q.SetParameter(_dialect.CheckpointNumber, r.CheckpointNumber())).Select(x => x.GetCommit(_serializer));
             });
         }
-
-
-        public ICheckpoint StartCheckpoint { get { return new IntCheckpoint(0); } }
 
         public bool IsDisposed
         {
@@ -308,13 +305,14 @@ namespace NEventStore.Persistence.Sql
                     cmd.AddParameter(_dialect.Headers, _serializer.Serialize(attempt.Headers));
                     cmd.AddParameter(_dialect.Payload, _serializer.Serialize(attempt.Events.ToList()));
                     var checkpointNumber = cmd.ExecuteScalar(_dialect.PersistCommit).ToInt();
-                    return new Commit(attempt.BucketId,
+                    return new Commit(
+                        attempt.BucketId,
                         attempt.StreamId,
                         attempt.StreamRevision,
                         attempt.CommitId,
                         attempt.CommitSequence,
                         attempt.CommitStamp,
-                        new IntCheckpoint(checkpointNumber),
+                        checkpointNumber.ToString(CultureInfo.InvariantCulture),
                         attempt.Headers,
                         attempt.Events);
                 });

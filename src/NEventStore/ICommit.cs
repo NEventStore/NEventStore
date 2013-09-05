@@ -51,6 +51,6 @@ namespace NEventStore
         /// <summary>
         /// The checkpoint that represents the storage level order.
         /// </summary>
-        ICheckpoint Checkpoint { get; }
+        string CheckpointToken { get; }
     }
 }
