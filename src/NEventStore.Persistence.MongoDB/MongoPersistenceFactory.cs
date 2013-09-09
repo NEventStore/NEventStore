@@ -25,7 +25,10 @@
 
         protected virtual string GetConnectionString()
         {
-            return ConfigurationManager.ConnectionStrings[_connectionName].ConnectionString;
+          if( _connectionName.StartsWith("mongodb://") )
+            return _connectionName;
+
+          else return ConfigurationManager.ConnectionStrings[_connectionName].ConnectionString;
         }
 
         protected virtual string TransformConnectionString(string connectionString)
