@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>NEventStore.Persistence.RavenPersistence</id>
+    <id>NEventStore.Persistence.RavenPersistence-Signed</id>
     <version>4.0</version>
     <title>NEventStore RavenDB Persistence Plugin</title>
     <authors>NEventStore Dev Team</authors>
@@ -13,12 +13,12 @@
     <language>es-US</language>
     <tags>events, event sourcing, cqrs, storage, persistence, database, ravendb</tags>
     <dependencies>
-      <dependency id="NEventStore" version="4.0" />
+      <dependency id="NEventStore-Signed" version="4.0" />
       <dependency id="RavenDB.Client" version="[2.5, 3.0)" />
     </dependencies>
   </metadata>
   <files>
-    <file src="publish-net40\plugins\persistence\raven\unsigned\NEventStore.Persistence.RavenPersistence.dll" target="lib\net40"/>
-    <file src="publish-net40\plugins\persistence\raven\unsigned\NEventStore.Persistence.RavenPersistence.pdb" target="lib\net40"/>
+    <file src="publish-net40\plugins\persistence\raven\signed\NEventStore.Persistence.RavenPersistence.dll" target="lib\net40"/>
+    <file src="publish-net40\plugins\persistence\raven\signed\NEventStore.Persistence.RavenPersistence.pdb" target="lib\net40"/>
   </files>
 </package>

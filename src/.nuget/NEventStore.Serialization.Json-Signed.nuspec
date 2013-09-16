@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>NEventStore.Serialization.Json</id>
+    <id>NEventStore.Serialization.Json-Signed</id>
     <version>4.0</version>
     <title>EventStore Newtonsoft JSON Serialization Plugin</title>
     <authors>NEventStore Dev Team</authors>
@@ -13,11 +13,11 @@
     <language>es-US</language>
     <tags>events, event sourcing, cqrs, storage, persistence, database, newtonsoft, json, serialization</tags>
     <dependencies>
-      <dependency id="NEventStore" version="4.0" />
+      <dependency id="NEventStore-Signed" version="4.0" />
     </dependencies>
   </metadata>
   <files>
-    <file src="publish-net40\plugins\serialization\json-net\unsigned\NEventStore.Serialization.Json.dll" target="lib\net40"/>
-    <file src="publish-net40\plugins\serialization\json-net\unsigned\NEventStore.Serialization.Json.pdb" target="lib\net40"/>
+    <file src="publish-net40\plugins\serialization\json-net\signed\NEventStore.Serialization.Json.dll" target="lib\net40"/>
+    <file src="publish-net40\plugins\serialization\json-net\signed\NEventStore.Serialization.Json.pdb" target="lib\net40"/>
   </files>
 </package>

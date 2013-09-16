@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>NEventStore.Persistence.MongoPersistence</id>
+    <id>NEventStore.Persistence.MongoPersistence-Signed</id>
     <version>4.0</version>
     <title>NEventStore MongoDB Persistence Plugin</title>
     <authors>NEventStore Dev Team</authors>
@@ -13,12 +13,12 @@
     <language>es-US</language>
     <tags>events, event sourcing, cqrs, storage, persistence, database, mongodb</tags>
     <dependencies>
-      <dependency id="NEventStore" version="4.0" />
+      <dependency id="NEventStore-Signed" version="4.0" />
       <dependency id="mongocsharpdriver" version="[1.8, 1.9)" />
     </dependencies>
   </metadata>
   <files>
-    <file src="publish-net40\plugins\persistence\mongo\unsigned\NEventStore.Persistence.MongoPersistence.dll" target="lib\net40"/>
-    <file src="publish-net40\plugins\persistence\mongo\unsigned\NEventStore.Persistence.MongoPersistence.pdb" target="lib\net40"/>
+    <file src="publish-net40\plugins\persistence\mongo\signed\NEventStore.Persistence.MongoPersistence.dll" target="lib\net40"/>
+    <file src="publish-net40\plugins\persistence\mongo\signed\NEventStore.Persistence.MongoPersistence.pdb" target="lib\net40"/>
   </files>
 </package>
