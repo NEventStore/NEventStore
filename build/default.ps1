@@ -7,6 +7,7 @@ properties {
 	$packages_directory = "$src_directory\packages"
 	$sln_file = "$src_directory\NEventStore.sln"
 	$target_config = "Release"
+	$signed_config = "Release-Signed"
 	$framework_version = "v4.0"
 	$version = "0.0.0.0"
 
@@ -42,7 +43,9 @@ task UpdateVersion {
 
 task Compile {
 	exec { msbuild /nologo /verbosity:quiet $sln_file /p:Configuration=$target_config /t:Clean }
+	exec { msbuild /nologo /verbosity:quiet $sln_file /p:Configuration=$signed_config /t:Clean }
 	exec { msbuild /nologo /verbosity:quiet $sln_file /p:Configuration=$target_config /p:TargetFrameworkVersion=v4.0 }
+	exec { msbuild /nologo /verbosity:quiet $sln_file /p:Configuration=$signed_config /p:TargetFrameworkVersion=v4.0 }
 }
 
 task Test -depends RunUnitTests, RunPersistenceTests, RunSerializationTests
@@ -71,31 +74,47 @@ task RunSerializationTests {
     -XUnitPath $xunit_path
 }
 
-task Package -depends Build, PackageEventStore, PackageMongoPersistence, PackageRavenPersistence, PackageJsonSerialization {
+task Package -depends Build, PackageNEventStore, PackageMongoPersistence, PackageRavenPersistence, PackageJsonSerialization {
 	move $output_directory $publish_directory
 }
 
-task PackageEventStore -depends Clean, Compile {
-	mkdir "$publish_directory\bin" | out-null
-	copy "$src_directory\NEventStore\bin\$target_config\NEventStore.???" "$publish_directory\bin"
+task PackageNEventStore -depends Clean, Compile {
+	mkdir $publish_directory\bin\unsigned | out-null
+	copy "$src_directory\NEventStore\bin\$target_config\NEventStore.???" "$publish_directory\bin\unsigned"
+	
+	mkdir $publish_directory\bin\signed | out-null
+	copy "$src_directory\NEventStore\bin\$signed_config\NEventStore.???" "$publish_directory\bin\signed"
 }
 
-task PackageMongoPersistence -depends Clean, Compile,PackageEventStore {
-	mkdir $publish_directory\plugins\persistence\mongo | out-null
-	copy "$src_directory\NEventStore.Persistence.MongoPersistence\bin\$target_config\NEventStore.Persistence.MongoPersistence.???" "$publish_directory\plugins\persistence\mongo"
+task PackageMongoPersistence -depends Clean, Compile {
+	mkdir $publish_directory\plugins\persistence\mongo\unsigned | out-null
+	copy "$src_directory\NEventStore.Persistence.MongoPersistence\bin\$target_config\NEventStore.Persistence.MongoPersistence.???" "$publish_directory\plugins\persistence\mongo\unsigned"
+
+	mkdir $publish_directory\plugins\persistence\mongo\signed | out-null
+	copy "$src_directory\NEventStore.Persistence.MongoPersistence\bin\$signed_config\NEventStore.Persistence.MongoPersistence.???" "$publish_directory\plugins\persistence\mongo\signed"
 }
 
-task PackageRavenPersistence -depends Clean, Compile, PackageEventStore {
-	mkdir $publish_directory\plugins\persistence\raven | out-null
-	copy "$src_directory\NEventStore.Persistence.RavenPersistence\bin\$target_config\NEventStore.Persistence.RavenPersistence.???" "$publish_directory\plugins\persistence\raven"
+task PackageRavenPersistence -depends Clean, Compile {
+	mkdir $publish_directory\plugins\persistence\raven\unsigned | out-null
+	copy "$src_directory\NEventStore.Persistence.RavenPersistence\bin\$target_config\NEventStore.Persistence.RavenPersistence.???" "$publish_directory\plugins\persistence\raven\unsigned"
+	
+	mkdir $publish_directory\plugins\persistence\raven\signed | out-null
+	copy "$src_directory\NEventStore.Persistence.RavenPersistence\bin\$signed_config\NEventStore.Persistence.RavenPersistence.???" "$publish_directory\plugins\persistence\raven\signed"
 }
 
-task PackageJsonSerialization -depends Clean, Compile, PackageEventStore {
-	mkdir $publish_directory\plugins\serialization\json-net | out-null
+task PackageJsonSerialization -depends Clean, Compile {
+	mkdir $publish_directory\plugins\serialization\json-net\unsigned | out-null
 
-	Merge-Assemblies -outputFile "$publish_directory/plugins/serialization/json-net/NEventStore.Serialization.Json.dll" -exclude "NEventStore.*"  -files @(
+	Merge-Assemblies -outputFile "$publish_directory/plugins/serialization/json-net/unsigned/NEventStore.Serialization.Json.dll" -exclude "NEventStore.*"  -files @(
 		"$src_directory/NEventStore.Serialization.Json/bin/$target_config/NEventStore.Serialization.Json.dll", 
 		"$src_directory/NEventStore.Serialization.Json/bin/$target_config/Newtonsoft.Json*.dll"
+	)
+	
+	mkdir $publish_directory\plugins\serialization\json-net\signed | out-null
+
+	Merge-Assemblies -outputFile "$publish_directory/plugins/serialization/json-net/signed/NEventStore.Serialization.Json.dll" -exclude "NEventStore.*"  -files @(
+		"$src_directory/NEventStore.Serialization.Json/bin/$signed_config/NEventStore.Serialization.Json.dll", 
+		"$src_directory/NEventStore.Serialization.Json/bin/$signed_config/Newtonsoft.Json*.dll"
 	)
 }
 

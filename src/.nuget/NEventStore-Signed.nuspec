@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>NEventStore</id>
+    <id>NEventStore-Signed</id>
     <version>4.0</version>
     <title>NEventStore</title>
     <authors>NEventStore Dev Team</authors>
@@ -14,7 +14,7 @@
     <tags>events, event sourcing, cqrs, storage, persistence, database</tags>
   </metadata>
   <files>
-    <file src="publish-net40\bin\unsigned\NEventStore.dll" target="lib\net40"/>
-    <file src="publish-net40\bin\unsigned\NEventStore.pdb" target="lib\net40"/>
+    <file src="publish-net40\bin\signed\NEventStore.dll" target="lib\net40"/>
+    <file src="publish-net40\bin\signed\NEventStore.pdb" target="lib\net40"/>
   </files>  
 </package>
