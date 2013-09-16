@@ -15,6 +15,7 @@ namespace NEventStore.Persistence.RavenPersistence
         [Obsolete("This will be removed after 3.2")]
         public string DefaultDatabase { get; set; }
 
+        [Obsolete("Raven partition support will be will be removed in 5.0")]
         public string Partition { get; set; }
 
         public IDocumentSerializer Serializer { get; set; }

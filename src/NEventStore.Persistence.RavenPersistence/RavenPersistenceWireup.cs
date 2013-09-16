@@ -87,6 +87,7 @@ namespace NEventStore
             return this;
         }
 
+        [Obsolete("Raven partition support will be will be removed in 5.0")]
         public virtual RavenPersistenceWireup Partition(string name)
         {
             _partition = name;
