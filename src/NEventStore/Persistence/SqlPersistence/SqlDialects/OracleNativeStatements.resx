@@ -159,7 +159,7 @@ WHERE	(
 SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
 FROM Commits 
 WHERE	CommitStamp &gt;= :CommitStamp
-ORDER BY CommitStamp, StreamId, StreamRevision</value>
+ORDER BY CommitStamp, StreamId, CommitSequence</value>
   </data>
   <data name="GetCommitsFromStartingRevision" xml:space="preserve">
     <value>/*GetCommitsFromStartingRevision*/
@@ -170,6 +170,14 @@ WHERE StreamId = :StreamId
    AND (StreamRevision - Items) &lt;= :MaxStreamRevision
    AND CommitSequence &gt; :CommitSequence
 ORDER BY CommitSequence</value>
+  </data>
+  <data name="GetCommitsFromToInstant" xml:space="preserve">
+    <value>/*GetCommitsFromInstant*/
+SELECT StreamId, StreamRevision, CommitId, CommitSequence, CommitStamp, Headers, Payload
+FROM Commits 
+WHERE	CommitStamp &gt;= :CommitStamp
+ AND CommitStamp &lt; :CommitStampEnd
+ORDER BY CommitStamp, StreamId, CommitSequence</value>
   </data>
   <data name="GetSnapshot" xml:space="preserve">
     <value>/*GetSnapshot*/
