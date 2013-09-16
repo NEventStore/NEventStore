@@ -1,8 +1,7 @@
-namespace NEventStore
+namespace NEventStore.Persistence.SqlPersistence
 {
     using System.Transactions;
     using NEventStore.Logging;
-    using NEventStore.Persistence.SqlPersistence;
     using NEventStore.Serialization;
 
     public class SqlPersistenceWireup : PersistenceWireup
@@ -14,9 +13,9 @@ namespace NEventStore
         public SqlPersistenceWireup(Wireup wireup, IConnectionFactory connectionFactory)
             : base(wireup)
         {
-            Logger.Debug(Messages.ConnectionFactorySpecified, connectionFactory);
+            Logger.Debug(NEventStore.Messages.ConnectionFactorySpecified, connectionFactory);
 
-            Logger.Verbose(Messages.AutoDetectDialect);
+            Logger.Verbose(NEventStore.Messages.AutoDetectDialect);
             Container.Register<ISqlDialect>(c => null); // auto-detect
 
             Container.Register(c => new SqlPersistenceFactory(
@@ -29,14 +28,14 @@ namespace NEventStore
 
         public virtual SqlPersistenceWireup WithDialect(ISqlDialect instance)
         {
-            Logger.Debug(Messages.DialectSpecified, instance.GetType());
+            Logger.Debug(NEventStore.Messages.DialectSpecified, instance.GetType());
             Container.Register(instance);
             return this;
         }
 
         public virtual SqlPersistenceWireup PageEvery(int records)
         {
-            Logger.Debug(Messages.PagingSpecified, records);
+            Logger.Debug(NEventStore.Messages.PagingSpecified, records);
             _pageSize = records;
             return this;
         }
