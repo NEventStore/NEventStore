@@ -1,36 +1,26 @@
 ﻿namespace NEventStore.Persistence.MongoPersistence
 {
-    using System.Configuration;
+    using System;
     using MongoDB.Driver;
     using NEventStore.Serialization;
 
     public class MongoPersistenceFactory : IPersistenceFactory
     {
-        private readonly string _connectionName;
+        private readonly Func<string> _connectionStringProvider;
         private readonly IDocumentSerializer _serializer;
 
-        public MongoPersistenceFactory(string connectionName, IDocumentSerializer serializer)
+        public MongoPersistenceFactory(Func<string> connectionStringProvider, IDocumentSerializer serializer)
         {
-            _connectionName = connectionName;
+            _connectionStringProvider = connectionStringProvider;
             _serializer = serializer;
         }
 
         public virtual IPersistStreams Build()
         {
-            string connectionString = TransformConnectionString(GetConnectionString());
+            string connectionString = _connectionStringProvider();
             var builder = new MongoUrlBuilder(connectionString);
             MongoDatabase database = (new MongoClient(connectionString)).GetServer().GetDatabase(builder.DatabaseName);
             return new MongoPersistenceEngine(database, _serializer);
-        }
-
-        protected virtual string GetConnectionString()
-        {
-            return ConfigurationManager.ConnectionStrings[_connectionName].ConnectionString;
-        }
-
-        protected virtual string TransformConnectionString(string connectionString)
-        {
-            return connectionString;
         }
     }
 }
