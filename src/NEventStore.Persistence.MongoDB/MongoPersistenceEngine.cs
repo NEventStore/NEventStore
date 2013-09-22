@@ -49,9 +49,9 @@
 
             _getNextCheckpointNumber = () => TryMongo(() =>
             {
-                IMongoQuery query = Query.And(Query.EQ("_id", "CheckpointNumber"));
+                IMongoQuery query = Query.EQ("_id", "CheckpointNumber");
                 IMongoUpdate update = Update.Inc("seq", 1);
-                FindAndModifyResult result = Counters.FindAndModify(query, null, update, true);
+                FindAndModifyResult result = Counters.FindAndModify(query, null, update, true, true);
                 return result.ModifiedDocument["seq"].ToInt32();
             });
         }
