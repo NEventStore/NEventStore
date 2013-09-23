@@ -3,7 +3,7 @@
   <metadata>
     <id>NEventStore.Serialization.Json</id>
     <version>4.0</version>
-    <title>EventStore Newtonsoft JSON Serialization Plugin</title>
+    <title>NEventStore Newtonsoft JSON Serialization Plugin</title>
     <authors>NEventStore Dev Team</authors>
     <owners>NEventStore Dev Team</owners>
     <projectUrl>http://neventstore.org</projectUrl>
