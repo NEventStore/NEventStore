@@ -113,7 +113,7 @@ namespace NEventStore.Persistence.Sql
 
         public ICheckpoint GetCheckpoint(string checkpointToken)
         {
-            return string.IsNullOrWhiteSpace(checkpointToken) ? new IntCheckpoint(-1) : IntCheckpoint.Parse(checkpointToken);
+            return string.IsNullOrWhiteSpace(checkpointToken) ? new LongCheckpoint(-1) : LongCheckpoint.Parse(checkpointToken);
         }
 
         public virtual IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
@@ -304,7 +304,7 @@ namespace NEventStore.Persistence.Sql
                     cmd.AddParameter(_dialect.CommitStamp, attempt.CommitStamp);
                     cmd.AddParameter(_dialect.Headers, _serializer.Serialize(attempt.Headers));
                     cmd.AddParameter(_dialect.Payload, _serializer.Serialize(attempt.Events.ToList()));
-                    var checkpointNumber = cmd.ExecuteScalar(_dialect.PersistCommit).ToInt();
+                    var checkpointNumber = cmd.ExecuteScalar(_dialect.PersistCommit).ToLong();
                     return new Commit(
                         attempt.BucketId,
                         attempt.StreamId,

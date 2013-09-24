@@ -22,7 +22,7 @@
         private readonly MongoCollectionSettings _countersSettings;
         private bool _disposed;
         private int _initialized;
-        private readonly Func<int> _getNextCheckpointNumber;
+        private readonly Func<long> _getNextCheckpointNumber;
 
         public MongoPersistenceEngine(MongoDatabase store, IDocumentSerializer serializer)
         {
@@ -50,9 +50,9 @@
             _getNextCheckpointNumber = () => TryMongo(() =>
             {
                 IMongoQuery query = Query.EQ("_id", "CheckpointNumber");
-                IMongoUpdate update = Update.Inc("seq", 1);
+                IMongoUpdate update = Update.Inc("seq", 1L);
                 FindAndModifyResult result = Counters.FindAndModify(query, null, update, true, true);
-                return result.ModifiedDocument["seq"].ToInt32();
+                return result.ModifiedDocument["seq"].ToInt64();
             });
         }
 
@@ -106,7 +106,7 @@
                     IndexOptions.SetName("Unsnapshotted_Index").SetUnique(false));
 
                 IMongoQuery query = Query.EQ("_id", MongoFields.CheckpointNumber);
-                IMongoUpdate update = Update.Replace(new BsonDocument {{"_id", "CheckpointNumber"}, {"seq", 0}});
+                IMongoUpdate update = Update.Replace(new BsonDocument {{"_id", "CheckpointNumber"}, {"seq", 0L}});
                 Counters.Update(query, update, UpdateFlags.Upsert, WriteConcern.Acknowledged);
             });
         }
@@ -142,17 +142,17 @@
 
         public IEnumerable<ICommit> GetFrom(string checkpointToken)
         {
-            var intCheckpoint = IntCheckpoint.Parse(checkpointToken);
+            var intCheckpoint = LongCheckpoint.Parse(checkpointToken);
             Logger.Debug(Messages.GettingAllCommitsFromCheckpoint, intCheckpoint.Value);
             return TryMongo(() => PersistedCommits
-                .Find(Query.GTE(MongoFields.CheckpointNumber, intCheckpoint.IntValue)))
+                .Find(Query.GTE(MongoFields.CheckpointNumber, intCheckpoint.LongValue)))
                 .SetSortOrder(MongoFields.CheckpointNumber)
                 .Select(x => x.ToCommit(_serializer));
         }
 
         public ICheckpoint GetCheckpoint(string checkpointToken = null)
         {
-            return IntCheckpoint.Parse(checkpointToken);
+            return LongCheckpoint.Parse(checkpointToken);
         }
 
         public virtual IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)

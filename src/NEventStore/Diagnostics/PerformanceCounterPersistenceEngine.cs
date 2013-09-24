@@ -38,7 +38,7 @@ namespace NEventStore.Diagnostics
 
         public ICheckpoint ParseCheckpoint(string checkpointValue)
         {
-            return IntCheckpoint.Parse(checkpointValue);
+            return LongCheckpoint.Parse(checkpointValue);
         }
 
         public ICheckpoint GetCheckpoint(string checkpointToken = null)

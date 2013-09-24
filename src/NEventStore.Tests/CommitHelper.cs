@@ -7,7 +7,7 @@ namespace NEventStore
     {
         public static ICommit Create()
         {
-            return new Commit(Bucket.Default, "defaultstream", 0, Guid.NewGuid(), 0, DateTime.MinValue, new IntCheckpoint(0).Value, null, null);
+            return new Commit(Bucket.Default, "defaultstream", 0, Guid.NewGuid(), 0, DateTime.MinValue, new LongCheckpoint(0).Value, null, null);
         }
     }
 }

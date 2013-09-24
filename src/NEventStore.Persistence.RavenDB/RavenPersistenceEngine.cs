@@ -293,7 +293,7 @@
             throw new NotImplementedException("Engine to be rewritten");
         }
 
-        public ICheckpoint StartCheckpoint { get { return new IntCheckpoint(0); } }
+        public ICheckpoint StartCheckpoint { get { return new LongCheckpoint(0); } }
 
         public bool IsDisposed
         {

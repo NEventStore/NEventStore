@@ -87,7 +87,7 @@
     <Compile Include="ICheckpoint.cs" />
     <Compile Include="ICommit.cs" />
     <Compile Include="ImmutableCollection.cs" />
-    <Compile Include="IntCheckpoint.cs" />
+    <Compile Include="LongCheckpoint.cs" />
     <Compile Include="ISnapshot.cs" />
     <Compile Include="LoggingWireupExtensions.cs" />
     <Compile Include="Logging\ConsoleWindowLogger.cs" />

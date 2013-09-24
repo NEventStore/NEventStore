@@ -26,7 +26,7 @@
             }
         }
 
-        public static BsonDocument ToMongoCommit(this CommitAttempt commit, Func<int> getNextCheckpointNumber, IDocumentSerializer serializer)
+        public static BsonDocument ToMongoCommit(this CommitAttempt commit, Func<long> getNextCheckpointNumber, IDocumentSerializer serializer)
         {
             int streamRevision = commit.StreamRevision - (commit.Events.Count - 1);
             IEnumerable<BsonDocument> events = commit
@@ -80,7 +80,7 @@
                 doc[MongoFields.CommitId].AsGuid,
                 commitSequence,
                 doc[MongoFields.CommitStamp].ToUniversalTime(),
-                new IntCheckpoint(doc[MongoFields.CheckpointNumber].ToInt32()).Value,
+                new LongCheckpoint(doc[MongoFields.CheckpointNumber].ToInt64()).Value,
                 doc[MongoFields.Headers].AsDictionary<string, object>(),
                 events);
         }

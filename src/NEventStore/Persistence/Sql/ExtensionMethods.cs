@@ -28,6 +28,15 @@ namespace NEventStore.Persistence.Sql
                     : value is decimal ? (int) (decimal) value : Convert.ToInt32(value);
         }
 
+        public static long ToLong(this object value)
+        {
+            return value is long
+                ? (long) value
+                : value is int
+                    ? (int) value
+                    : value is decimal ? (long) (decimal) value : Convert.ToInt32(value);
+        }
+
         public static DateTime ToDateTime(this object value)
         {
             value = value is decimal ? (long) (decimal) value : value;

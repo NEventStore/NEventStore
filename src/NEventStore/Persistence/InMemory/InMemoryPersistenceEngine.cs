@@ -47,7 +47,7 @@ namespace NEventStore.Persistence.InMemory
         public IEnumerable<ICommit> GetFrom(string checkpointToken)
         {
             Logger.Debug(Resources.GettingAllCommitsFromCheckpoint, checkpointToken);
-            ICheckpoint checkpoint = IntCheckpoint.Parse(checkpointToken);
+            ICheckpoint checkpoint = LongCheckpoint.Parse(checkpointToken);
             return _buckets
                 .Values
                 .SelectMany(b => b.GetCommits())
@@ -58,7 +58,7 @@ namespace NEventStore.Persistence.InMemory
 
         public ICheckpoint GetCheckpoint(string checkpointToken = null)
         {
-            return IntCheckpoint.Parse(checkpointToken);
+            return LongCheckpoint.Parse(checkpointToken);
         }
 
         public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
@@ -72,7 +72,7 @@ namespace NEventStore.Persistence.InMemory
         {
             ThrowWhenDisposed();
             Logger.Debug(Resources.AttemptingToCommit, attempt.CommitId, attempt.StreamId, attempt.CommitSequence);
-            return this[attempt.BucketId].Commit(attempt, new IntCheckpoint(Interlocked.Increment(ref _checkpoint)));
+            return this[attempt.BucketId].Commit(attempt, new LongCheckpoint(Interlocked.Increment(ref _checkpoint)));
         }
 
         public IEnumerable<ICommit> GetUndispatchedCommits()

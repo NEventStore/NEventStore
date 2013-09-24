@@ -3,18 +3,18 @@ namespace NEventStore
     using System;
     using System.Globalization;
 
-    public sealed class IntCheckpoint : ICheckpoint
+    public sealed class LongCheckpoint : ICheckpoint
     {
-        private readonly int _value;
+        private readonly long _value;
 
-        public IntCheckpoint(int value)
+        public LongCheckpoint(long value)
         {
             _value = value;
         }
 
         public string Value { get { return _value.ToString(CultureInfo.InvariantCulture); }}
 
-        public int IntValue { get { return _value; } }
+        public long LongValue { get { return _value; } }
 
         public int CompareTo(ICheckpoint other)
         {
@@ -22,17 +22,17 @@ namespace NEventStore
             {
                 return 1;
             }
-            var intCheckpoint = other as IntCheckpoint;
+            var intCheckpoint = other as LongCheckpoint;
             if (intCheckpoint == null)
             {
                 throw new InvalidOperationException("Can only compare with {0} but compared with {1}".FormatWith());
             }
-            return _value.CompareTo(intCheckpoint.IntValue);
+            return _value.CompareTo(intCheckpoint.LongValue);
         }
 
-        public static IntCheckpoint Parse(string checkpointValue)
+        public static LongCheckpoint Parse(string checkpointValue)
         {
-            return string.IsNullOrWhiteSpace(checkpointValue) ? new IntCheckpoint(-1) : new IntCheckpoint(int.Parse(checkpointValue));
+            return string.IsNullOrWhiteSpace(checkpointValue) ? new LongCheckpoint(-1) : new LongCheckpoint(long.Parse(checkpointValue));
         }
     }
 }

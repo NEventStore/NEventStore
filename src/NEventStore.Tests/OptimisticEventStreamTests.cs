@@ -263,7 +263,7 @@ namespace NEventStore
                     attempt.CommitId,
                     attempt.CommitSequence,
                     attempt.CommitStamp,
-                    new IntCheckpoint(0).Value,
+                    new LongCheckpoint(0).Value,
                     attempt.Headers,
                     attempt.Events));
             Stream.Add(_uncommitted);
@@ -570,7 +570,7 @@ namespace NEventStore
                 events.Add(new EventMessage());
             }
 
-            return new Commit(Bucket.Default, StreamId, revision, Guid.NewGuid(), sequence, SystemTime.UtcNow, new IntCheckpoint(0).Value, null, events);
+            return new Commit(Bucket.Default, StreamId, revision, Guid.NewGuid(), sequence, SystemTime.UtcNow, new LongCheckpoint(0).Value, null, events);
         }
     }
 
