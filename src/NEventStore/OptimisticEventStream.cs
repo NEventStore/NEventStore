@@ -196,6 +196,7 @@ namespace NEventStore
         {
             Logger.Debug(Resources.BuildingCommitAttempt, commitId, StreamId);
             return new CommitAttempt(
+                BucketId,
                 StreamId,
                 StreamRevision + _events.Count,
                 commitId,
