@@ -19,20 +19,12 @@ namespace NEventStore
         private readonly IDictionary<string, object> _uncommittedHeaders = new Dictionary<string, object>();
         private bool _disposed;
 
-        public OptimisticEventStream(string streamId, ICommitEvents persistence)
-            : this(Bucket.Default, streamId, persistence)
-        {}
-
         public OptimisticEventStream(string bucketId, string streamId, ICommitEvents persistence)
         {
             BucketId = bucketId;
             StreamId = streamId;
             _persistence = persistence;
         }
-
-        public OptimisticEventStream(string streamId, ICommitEvents persistence, int minRevision, int maxRevision)
-            : this(Bucket.Default, streamId, persistence, minRevision, maxRevision)
-        {}
 
         public OptimisticEventStream(string bucketId, string streamId, ICommitEvents persistence, int minRevision, int maxRevision)
             : this(bucketId, streamId, persistence)
