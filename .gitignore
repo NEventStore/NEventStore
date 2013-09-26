@@ -14,3 +14,4 @@ _dotCover.*
 ~$*
 [Pp]ublish
 *.ide
+*nunit.TestResult.*.xml
