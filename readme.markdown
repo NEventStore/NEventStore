@@ -145,7 +145,11 @@ TransactionScopeOption of 'Required'.  Simply indicate this using the following 
 * Fluent builder
 
 ## Building
-Simply run **build.cmd** from the command line.  Once built, the files will be placed in the "publish-net40" subdirectory.
+To build the solution and execute all tests, run **Build.RunTask.bat** from the command line.
+
+If you would also like to package the solution for distribution, pass in the 'package' command by running **Build.RunTask.bat package** from the command line. Once built, the files will be placed in the "publish-net40" subdirectory.
+
+*Note:* You may need to run the build with Administrator rights the first time. This is because NEventStore will attempt to create several performance counters and that action requires admin rights. If you would prefer to manually create the performance counters yourself, refer to NEventStore.Diagnostics.PerformanceCounters. 
 
 ## Using NEventStore
 
