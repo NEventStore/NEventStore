@@ -113,7 +113,7 @@ namespace NEventStore.Persistence.Sql
 
         public ICheckpoint GetCheckpoint(string checkpointToken)
         {
-            return string.IsNullOrWhiteSpace(checkpointToken) ? new LongCheckpoint(-1) : LongCheckpoint.Parse(checkpointToken);
+            return string.IsNullOrWhiteSpace(checkpointToken) ? null : LongCheckpoint.Parse(checkpointToken);
         }
 
         public virtual IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)

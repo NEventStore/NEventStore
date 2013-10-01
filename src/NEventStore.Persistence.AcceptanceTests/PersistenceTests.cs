@@ -6,7 +6,11 @@ namespace NEventStore.Persistence.AcceptanceTests
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using System.Transactions;
     using NEventStore.Diagnostics;
     using NEventStore.Persistence.AcceptanceTests.BDD;
     using Xunit;
@@ -731,7 +735,6 @@ namespace NEventStore.Persistence.AcceptanceTests
         }
     }
 
-
     public class when_purging_all_commits_and_there_are_streams_in_multiple_buckets : PersistenceEngineConcern
     {
         const string _bucketAId = "a";
@@ -778,6 +781,139 @@ namespace NEventStore.Persistence.AcceptanceTests
         public void should_purge_all_undispatched_commits()
         {
             Persistence.GetUndispatchedCommits().Count().ShouldBe(0);
+        }
+    }
+
+    public class TransactionConcern : SpecificationBase, IUseFixture<PersistenceEngineFixture>
+    {
+        private ICommit[] _commits;
+        private PersistenceEngineFixture _fixture;
+        private const int Loop = 2;
+        private const int StreamsPerTransaction = 20;
+
+        protected override void Because()
+        {
+            Parallel.For(0, Loop, i =>
+            {
+                var eventStore = new OptimisticEventStore(_fixture.Persistence, null);
+                using (var scope = new TransactionScope(TransactionScopeOption.Required,
+                    new TransactionOptions {IsolationLevel = IsolationLevel.Serializable}))
+                {
+                    int j;
+                    for (j = 0; j < StreamsPerTransaction; j++)
+                    {
+                        using (var stream = eventStore.OpenStream(i.ToString() + "-" + j.ToString()))
+                        {
+                            for (int k = 0; k < 10; k++)
+                            {
+                                stream.Add(new EventMessage {Body = "body" + k});
+                            }
+                            stream.CommitChanges(Guid.NewGuid());
+                        }
+                    }
+                    scope.Complete();
+                }
+            });
+            _commits = _fixture.Persistence.GetFrom(null).ToArray();
+        }
+
+        [Fact]
+        public void Should_have_expected_number_of_commits()
+        {
+            _commits.Length.ShouldBe(Loop * StreamsPerTransaction);
+        }
+
+        /* [Fact]
+        public void ScopeCompleteAndSerializable()
+        {
+            int loop = 10;
+            using (var scope = new TransactionScope(
+                TransactionScopeOption.Required,
+                new TransactionOptions
+                {
+                    IsolationLevel = IsolationLevel.Serializable
+                }))
+            {
+                Parallel.For(0, loop, i =>
+                {
+                    Console.WriteLine("Creating stream {0} on thread {1}", i, Thread.CurrentThread.ManagedThreadId);
+                    var eventStore = new OptimisticEventStore(_fixture.Persistence, null);
+                    string streamId = i.ToString(CultureInfo.InvariantCulture);
+                    using (var stream = eventStore.OpenStream(streamId))
+                    {
+                        stream.Add(new EventMessage { Body = "body1" });
+                        stream.Add(new EventMessage { Body = "body2" });
+                        stream.CommitChanges(Guid.NewGuid());
+                    }
+                });
+                scope.Complete();
+            }
+            ICheckpoint checkpoint = _fixture.Persistence.GetCheckpoint();
+            ICommit[] commits = _fixture.Persistence.GetFrom(checkpoint.Value).ToArray();
+            commits.Length.ShouldBe(loop);
+        }
+
+        [Fact]
+        public void ScopeNotCompleteAndReadCommitted()
+        {
+            int loop = 10;
+            using (var scope = new TransactionScope(
+                TransactionScopeOption.Required,
+                new TransactionOptions
+                {
+                    IsolationLevel = IsolationLevel.ReadCommitted
+                }))
+            {
+                Parallel.For(0, loop, i =>
+                {
+                    Console.WriteLine("Creating stream {0} on thread {1}", i, Thread.CurrentThread.ManagedThreadId);
+                    var eventStore = new OptimisticEventStore(_fixture.Persistence, null);
+                    string streamId = i.ToString(CultureInfo.InvariantCulture);
+                    using (var stream = eventStore.OpenStream(streamId))
+                    {
+                        stream.Add(new EventMessage { Body = "body1" });
+                        stream.Add(new EventMessage { Body = "body2" });
+                        stream.CommitChanges(Guid.NewGuid());
+                    }
+                });
+            }
+            ICheckpoint checkpoint = _fixture.Persistence.GetCheckpoint();
+            ICommit[] commits = _fixture.Persistence.GetFrom(checkpoint.Value).ToArray();
+            commits.Length.ShouldBe(0);
+        }
+
+        [Fact]
+        public void ScopeNotCompleteAndSerializable()
+        {
+            int loop = 10;
+            using (var scope = new TransactionScope(
+                TransactionScopeOption.Required,
+                new TransactionOptions
+                {
+                    IsolationLevel = IsolationLevel.ReadCommitted
+                }))
+            {
+                Parallel.For(0, loop, i =>
+                {
+                    Console.WriteLine("Creating stream {0} on thread {1}", i, Thread.CurrentThread.ManagedThreadId);
+                    var eventStore = new OptimisticEventStore(_fixture.Persistence, null);
+                    string streamId = i.ToString(CultureInfo.InvariantCulture);
+                    using (var stream = eventStore.OpenStream(streamId))
+                    {
+                        stream.Add(new EventMessage { Body = "body1" });
+                        stream.Add(new EventMessage { Body = "body2" });
+                        stream.CommitChanges(Guid.NewGuid());
+                    }
+                });
+            }
+            ICheckpoint checkpoint = _fixture.Persistence.GetCheckpoint();
+            ICommit[] commits = _fixture.Persistence.GetFrom(checkpoint.Value).ToArray();
+            commits.Length.ShouldBe(0);
+        }*/
+
+        public void SetFixture(PersistenceEngineFixture data)
+        {
+            _fixture = data;
         }
     }
 

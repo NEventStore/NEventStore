@@ -20,7 +20,7 @@ namespace NEventStore
             }
 
             _pipelineHooks = pipelineHooks ?? new IPipelineHook[0];
-            _persistence = new PipelineHooksAwarePersistanceDecorator(persistence, pipelineHooks);
+            _persistence = new PipelineHooksAwarePersistanceDecorator(persistence, _pipelineHooks);
         }
 
         public virtual IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
