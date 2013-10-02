@@ -229,7 +229,8 @@ IF table_count = 0 THEN DBMS_OUTPUT.PUT_LINE ('Creating the Commits table');
       Dispatched NUMBER(1) DEFAULT(0) NOT NULL,
       Headers BLOB CHECK (Headers IS NULL OR LENGTH(Headers) &gt; 0) NULL,
       Payload BLOB CHECK (LENGTH(Payload) &gt; 0) NOT NULL,
-      CONSTRAINT PK_Commits PRIMARY KEY (BucketId, StreamId, CommitSequence))');
+      CONSTRAINT PK_Commits PRIMARY KEY (CheckpointNumber))');
+  EXECUTE IMMEDIATE ('CREATE UNIQUE INDEX IX_Commits_CommitSequence ON Commits (BucketId, StreamId,  CommitSequence)');
   EXECUTE IMMEDIATE ('CREATE UNIQUE INDEX IX_Commits ON Commits (BucketId, StreamId, CommitId)');
   EXECUTE IMMEDIATE ('CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (BucketId, StreamId, StreamRevision, Items)');
   EXECUTE IMMEDIATE ('CREATE INDEX IX_Commits_Dispatched ON Commits (Dispatched)');
