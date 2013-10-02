@@ -132,8 +132,9 @@
     Dispatched boolean NOT NULL DEFAULT false,
     Headers bytea NULL,
     Payload bytea NOT NULL,
-    CONSTRAINT PK_Commits PRIMARY KEY (BucketId, StreamId, CommitSequence)
+    CONSTRAINT PK_Commits PRIMARY KEY (CheckpointNumber )
 );
+CREATE UNIQUE INDEX IX_Commits_CommitSequence ON Commits (BucketId, StreamId, CommitSequence);
 CREATE UNIQUE INDEX IX_Commits_CommitId ON Commits (BucketId, StreamId, CommitId);
 CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (BucketId, StreamId, StreamRevision, Items);
 CREATE INDEX IX_Commits_Dispatched ON Commits (Dispatched);
