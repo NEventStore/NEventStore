@@ -7,13 +7,12 @@
 
     internal static class Guard
     {
-        internal static void Not(bool condition, Func<Exception> createException)
+        internal static void NotFalse(bool condition, Func<Exception> createException)
         {
             if (!condition)
             {
-                return;
+                throw createException();
             }
-            throw createException();
         }
 
         internal static void NotNullOrWhiteSpace(Expression<Func<string>> reference, string value)
