@@ -5,7 +5,9 @@ namespace NEventStore
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Moq;
+
+    using FakeItEasy;
+
     using NEventStore.Persistence;
     using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
@@ -35,13 +37,12 @@ namespace NEventStore
             _committed[3].Headers["Common"] = string.Empty;
             _committed[0].Headers["Unique"] = string.Empty;
 
-
-            Persistence.Setup(x => x.GetFrom(BucketId, StreamId, MinRevision, MaxRevision)).Returns(_committed);
+            A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, MinRevision, MaxRevision)).Returns(_committed);
         }
 
         protected override void Because()
         {
-            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence.Object, MinRevision, MaxRevision);
+            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, MinRevision, MaxRevision);
         }
 
         [Fact]
@@ -85,9 +86,6 @@ namespace NEventStore
         {
             Stream.CommittedHeaders.Count.ShouldBe(2);
         }
-
-       /* [Fact]
-        public void */
     }
 
     public class when_the_head_event_revision_is_less_than_the_max_desired_revision : on_the_event_stream
@@ -105,12 +103,12 @@ namespace NEventStore
                 BuildCommitStub(8, 3, _eventsPerCommit) // 7-8
             };
 
-            Persistence.Setup(x => x.GetFrom(BucketId, StreamId, 0, int.MaxValue)).Returns(_committed);
+            A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, 0, int.MaxValue)).Returns(_committed);
         }
 
         protected override void Because()
         {
-            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence.Object, 0, int.MaxValue);
+            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, 0, int.MaxValue);
         }
 
         [Fact]
@@ -228,7 +226,7 @@ namespace NEventStore
         [Fact]
         public void should_not_call_the_underlying_infrastructure()
         {
-            Persistence.Verify(x => x.Commit(It.IsAny<CommitAttempt>()), Times.Never());
+            A.CallTo(() => Persistence.Commit(A<CommitAttempt>._)).MustNotHaveHappened();
         }
 
         [Fact]
@@ -253,10 +251,9 @@ namespace NEventStore
 
         protected override void Context()
         {
-            Persistence
-                .Setup(x => x.Commit(It.IsAny<CommitAttempt>()))
-                .Callback<CommitAttempt>(x => _constructed = x)
-                .Returns((CommitAttempt attempt) => new Commit(
+            A.CallTo(() => Persistence.Commit(A<CommitAttempt>._))
+                .Invokes((CommitAttempt _) => _constructed = _)
+                .ReturnsLazily((CommitAttempt attempt) => new Commit(
                     attempt.BucketId,
                     attempt.StreamId,
                     attempt.StreamRevision,
@@ -281,7 +278,7 @@ namespace NEventStore
         [Fact]
         public void should_provide_a_commit_to_the_underlying_infrastructure()
         {
-            Persistence.Verify(x => x.Commit(It.IsAny<CommitAttempt>()), Times.Once());
+            A.CallTo(() => Persistence.Commit(A<CommitAttempt>._)).MustHaveHappened(Repeated.Exactly.Once);
         }
 
         [Fact]
@@ -396,11 +393,9 @@ namespace NEventStore
             _committed = new[] {BuildCommitStub(1, 1, 1)};
             _dupliateCommitId = _committed[0].CommitId;
 
-            Persistence
-                .Setup(x => x.GetFrom(BucketId, StreamId, 0, int.MaxValue))
-                .Returns(_committed);
+            A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, 0, int.MaxValue)).Returns(_committed);
 
-            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence.Object, 0, int.MaxValue);
+            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, 0, int.MaxValue);
         }
 
         protected override void Because()
@@ -429,17 +424,11 @@ namespace NEventStore
             _committed = new[] {BuildCommitStub(1, 1, 1)};
             _discoveredOnCommit = new[] {BuildCommitStub(3, 2, 2)};
 
-            Persistence
-                .Setup(x => x.Commit(It.IsAny<CommitAttempt>()))
-                .Throws(new ConcurrencyException());
-            Persistence
-                .Setup(x => x.GetFrom(BucketId, StreamId, StreamRevision, int.MaxValue))
-                .Returns(_committed);
-            Persistence
-                .Setup(x => x.GetFrom(BucketId, StreamId, StreamRevision + 1, int.MaxValue))
-                .Returns(_discoveredOnCommit);
+            A.CallTo(() => Persistence.Commit(A<CommitAttempt>._)).Throws(new ConcurrencyException());
+            A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, StreamRevision, int.MaxValue)).Returns(_committed);
+            A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, StreamRevision + 1, int.MaxValue)).Returns(_discoveredOnCommit);
 
-            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence.Object, StreamRevision, int.MaxValue);
+            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, StreamRevision, int.MaxValue);
             Stream.Add(_uncommitted);
         }
 
@@ -457,7 +446,7 @@ namespace NEventStore
         [Fact]
         public void should_query_the_underlying_storage_to_discover_the_new_commits()
         {
-            Persistence.Verify(x => x.GetFrom(BucketId, StreamId, StreamRevision + 1, int.MaxValue), Times.Once());
+            A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, StreamRevision + 1, int.MaxValue)).MustHaveHappened(Repeated.Exactly.Once);
         }
 
         [Fact]
@@ -543,19 +532,19 @@ namespace NEventStore
     {
         protected const int DefaultStreamRevision = 1;
         protected const int DefaultCommitSequence = 1;
-        private Mock<ICommitEvents> _persistence;
+        private ICommitEvents _persistence;
         private OptimisticEventStream _stream;
         protected const string BucketId = "bucket";
         protected readonly string StreamId = Guid.NewGuid().ToString();
 
-        protected Mock<ICommitEvents> Persistence
+        protected ICommitEvents Persistence
         {
-            get { return _persistence ?? (_persistence = new Mock<ICommitEvents>()); }
+            get { return _persistence ?? (_persistence = A.Fake<ICommitEvents>()); }
         }
 
         protected OptimisticEventStream Stream
         {
-            get { return _stream ?? (_stream = new OptimisticEventStream(BucketId, StreamId, Persistence.Object)); }
+            get { return _stream ?? (_stream = new OptimisticEventStream(BucketId, StreamId, Persistence)); }
             set { _stream = value; }
         }
 
