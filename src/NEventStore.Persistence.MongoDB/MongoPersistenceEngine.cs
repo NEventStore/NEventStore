@@ -102,6 +102,9 @@
                 PersistedCommits.EnsureIndex(IndexKeys.Ascending(MongoFields.CommitStamp),
                     IndexOptions.SetName("CommitStamp_Index").SetUnique(false));
 
+                PersistedCommits.EnsureIndex(IndexKeys.Ascending(MongoFields.CheckpointNumber),
+                    IndexOptions.SetName(MongoFields.CheckpointNumber + "_Index").SetUnique(true));
+
                 PersistedStreamHeads.EnsureIndex(IndexKeys.Ascending("Unsnapshotted"),
                     IndexOptions.SetName("Unsnapshotted_Index").SetUnique(false));
             });
