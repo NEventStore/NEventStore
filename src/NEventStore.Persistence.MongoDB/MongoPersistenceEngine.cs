@@ -104,10 +104,6 @@
 
                 PersistedStreamHeads.EnsureIndex(IndexKeys.Ascending("Unsnapshotted"),
                     IndexOptions.SetName("Unsnapshotted_Index").SetUnique(false));
-
-                IMongoQuery query = Query.EQ("_id", MongoFields.CheckpointNumber);
-                IMongoUpdate update = Update.Replace(new BsonDocument {{"_id", "CheckpointNumber"}, {"seq", 0L}});
-                Counters.Update(query, update, UpdateFlags.Upsert, WriteConcern.Acknowledged);
             });
         }
 

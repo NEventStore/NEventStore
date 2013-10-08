@@ -48,6 +48,7 @@ namespace NEventStore.Persistence.MongoDB.Tests.AcceptanceTests
         {
             _process1.Drop();
             _process1.Dispose();
+            _process2.Dispose();
         }
     }
 }
