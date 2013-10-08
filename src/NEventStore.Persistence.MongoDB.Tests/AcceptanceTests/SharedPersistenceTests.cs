@@ -38,8 +38,8 @@ namespace NEventStore.Persistence.MongoDB.Tests.AcceptanceTests
         [Fact]
         public void should_have_a_checkpoint_greater_than_the_previous_commit_on_the_other_process()
         {
-            var chkNum1 = LongCheckpoint.Parse(_commit1.CheckpointToken);
-            var chkNum2 = LongCheckpoint.Parse(_commit2.CheckpointToken);
+            var chkNum1 = LongCheckpoint.Parse(_commit1.CheckpointToken).LongValue;
+			var chkNum2 = LongCheckpoint.Parse(_commit2.CheckpointToken).LongValue;
                 
             chkNum2.ShouldBeGreaterThan(chkNum1);
         }
