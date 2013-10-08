@@ -47,7 +47,7 @@ namespace NEventStore.Persistence.MongoDB.Tests.AcceptanceTests
     public class when_a_reader_observe_commits_from_multiple_parallel_writers : SpecificationBase
     {
         private const int Iterations = 10000;
-        private int ParallelWriters = 2;
+        private const int ParallelWriters = 4;
         private const int PollingInterval = 1;
         readonly IList<IPersistStreams> _writers = new List<IPersistStreams>();
         private PollingClient _client;
@@ -56,8 +56,6 @@ namespace NEventStore.Persistence.MongoDB.Tests.AcceptanceTests
 
         protected override void Context()
         {
-            ParallelWriters = Environment.ProcessorCount;
-
             for (int c = 1; c <= ParallelWriters; c++)
             {
                 var client = new AcceptanceTestMongoPersistenceFactory().Build();
@@ -85,6 +83,7 @@ namespace NEventStore.Persistence.MongoDB.Tests.AcceptanceTests
         {
             Parallel.ForEach(
                 Enumerable.Range(1, Iterations),
+                new ParallelOptions(){MaxDegreeOfParallelism = ParallelWriters},
                 i => _writers[i % ParallelWriters].Commit(Guid.NewGuid().ToString().BuildAttempt())
             );
 
