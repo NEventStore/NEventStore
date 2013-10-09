@@ -3,11 +3,8 @@ namespace NEventStore.Persistence.MongoDB.Tests.AcceptanceTests
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
 	using System.Text;
 	using System.Threading;
-	using System.Threading.Tasks;
-
 	using System.Diagnostics;
 	using NEventStore.Client;
 	using NEventStore.Diagnostics;
@@ -44,17 +41,18 @@ namespace NEventStore.Persistence.MongoDB.Tests.AcceptanceTests
 		}
 	}
 
-	public class when_a_reader_observe_commits_from_multiple_parallel_writers : SpecificationBase
+    public class when_a_reader_observe_commits_from_a_lot_of_writers : SpecificationBase
 	{
-		private const int Iterations = 10000;
-		private const int ParallelWriters = 4;
+		private const int IterationPerWriter = 10;
+		private const int ParallelWriters = 100;
 		private const int PollingInterval = 1;
 		readonly IList<IPersistStreams> _writers = new List<IPersistStreams>();
 		private PollingClient _client;
 		private Observer _observer;
 		private IObserveCommits _observeCommits;
+        IDisposable _subscription;
 
-		protected override void Context()
+        protected override void Context()
 		{
 			for (int c = 1; c <= ParallelWriters; c++)
 			{
@@ -75,72 +73,7 @@ namespace NEventStore.Persistence.MongoDB.Tests.AcceptanceTests
 			_client = new PollingClient(reader, PollingInterval);
 
 			_observeCommits = _client.ObserveFrom(null);
-			_observeCommits.Subscribe(_observer);
-			_observeCommits.Start();
-		}
-
-		protected override void Because()
-		{
-			Parallel.ForEach(
-				Enumerable.Range(1, Iterations),
-				new ParallelOptions() { MaxDegreeOfParallelism = ParallelWriters },
-				i => _writers[i % ParallelWriters].Commit(Guid.NewGuid().ToString().BuildAttempt())
-			);
-
-			Thread.Sleep(1000);
-			_observeCommits.Dispose();
-		}
-
-		[Fact]
-		public void should_never_miss_a_commit()
-		{
-			_observer.Counter.ShouldBe(Iterations);
-		}
-
-		protected override void Cleanup()
-		{
-			for (int c = 0; c < ParallelWriters; c++)
-			{
-				if (c == ParallelWriters - 1)
-					_writers[c].Drop();
-
-				_writers[c].Dispose();
-			}
-		}
-	}
-
-	public class when_a_reader_observe_commits_from_a_lot_of_writers : SpecificationBase
-	{
-		private const int IterationPerWriter = 5;
-		private const int ParallelWriters = 200;
-		private const int PollingInterval = 1;
-		readonly IList<IPersistStreams> _writers = new List<IPersistStreams>();
-		private PollingClient _client;
-		private Observer _observer;
-		private IObserveCommits _observeCommits;
-
-		protected override void Context()
-		{
-			for (int c = 1; c <= ParallelWriters; c++)
-			{
-				var client = new AcceptanceTestMongoPersistenceFactory().Build();
-
-				if (c == 1)
-				{
-					client.Drop();
-					client.Initialize();
-				}
-
-				_writers.Add(client);
-			}
-
-			_observer = new Observer();
-
-			var reader = new AcceptanceTestMongoPersistenceFactory().Build();
-			_client = new PollingClient(reader, PollingInterval);
-
-			_observeCommits = _client.ObserveFrom(null);
-			_observeCommits.Subscribe(_observer);
+			_subscription = _observeCommits.Subscribe(_observer);
 			_observeCommits.Start();
 		}
 
@@ -156,7 +89,15 @@ namespace NEventStore.Persistence.MongoDB.Tests.AcceptanceTests
 					start.Wait();
 					for (int c = 0; c < IterationPerWriter; c++)
 					{
-						_writers[t1].Commit(Guid.NewGuid().ToString().BuildAttempt());
+					    try
+					    {
+                            _writers[t1].Commit(Guid.NewGuid().ToString().BuildAttempt());
+					    }
+					    catch (Exception ex)
+					    {
+					        Debug.WriteLine(ex.Message);
+					        throw;
+					    }
 						Thread.Sleep(1);
 					}
 					Interlocked.Increment(ref counter);
@@ -170,9 +111,8 @@ namespace NEventStore.Persistence.MongoDB.Tests.AcceptanceTests
 			}
 			start.Set();
 			stop.Wait();
-
-			Thread.Sleep(500);
-			_observeCommits.Dispose();
+            Thread.Sleep(500);
+            _subscription.Dispose();
 		}
 
 		[Fact]
@@ -192,4 +132,48 @@ namespace NEventStore.Persistence.MongoDB.Tests.AcceptanceTests
 			}
 		}
 	}
+
+    public class when_first_commit_is_persisted : PersistenceEngineConcern
+    {
+        ICommit _commit;
+        protected override void Context()
+        {
+            Persistence.Drop();
+            Persistence.Initialize();
+        }
+
+        protected override void Because()
+        {
+            _commit = Persistence.Commit(Guid.NewGuid().ToString().BuildAttempt());
+        }
+
+        [Fact]
+        public void should_have_checkpoint_equal_to_one()
+        {
+            LongCheckpoint.Parse(_commit.CheckpointToken).LongValue.ShouldBe(1);
+        }
+    }
+
+    public class when_secondo_commit_is_persisted : PersistenceEngineConcern
+    {
+        ICommit _commit;
+        protected override void Context()
+        {
+            Persistence.Drop();
+            Persistence.Initialize();
+            Persistence.Commit(Guid.NewGuid().ToString().BuildAttempt());
+        }
+
+        protected override void Because()
+        {
+            _commit = Persistence.Commit(Guid.NewGuid().ToString().BuildAttempt());
+        }
+
+        [Fact]
+        public void should_have_checkpoint_equal_to_two()
+        {
+            LongCheckpoint.Parse(_commit.CheckpointToken).LongValue.ShouldBe(2);
+        }
+        
+    }
 }
