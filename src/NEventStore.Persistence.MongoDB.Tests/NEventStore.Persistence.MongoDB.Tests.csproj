@@ -56,6 +56,7 @@
       <Link>AcceptanceTests\PersistenceTests.cs</Link>
     </Compile>
     <Compile Include="AcceptanceTestMongoPersistenceFactory.cs" />
+    <Compile Include="AcceptanceTests\OptimisticLoopTests.cs" />
     <Compile Include="AcceptanceTests\PersistenceEngineFixture.cs" />
     <Compile Include="AcceptanceTests\SharedPersistenceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

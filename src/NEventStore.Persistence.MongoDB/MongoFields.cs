@@ -18,4 +18,17 @@
         public const string StreamRevision = "StreamRevision";
         public const string Unsnapshotted = "Unsnapshotted";
     }
+
+    public static class MongoCommitIndexes
+    {
+        public const string CheckpointNumber = "CheckpointNumber_Index";
+        public const string CommitStamp = "CommitStamp_Index";
+        public const string GetFrom = "GetFrom_Index";
+        public const string Dispatched = "Dispatched_Index";
+    }
+    public static class MongoStreamIndexes
+    {
+        public const string Unsnapshotted = "Unsnapshotted_Index";
+    }
+
 }
