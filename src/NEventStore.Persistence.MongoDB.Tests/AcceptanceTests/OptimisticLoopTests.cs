@@ -157,6 +157,7 @@ namespace NEventStore.Persistence.MongoDB.Tests.AcceptanceTests
 					for (int c = 0; c < IterationPerWriter; c++)
 					{
 						_writers[t1].Commit(Guid.NewGuid().ToString().BuildAttempt());
+						Thread.Sleep(1);
 					}
 					Interlocked.Increment(ref counter);
 					if (counter == ParallelWriters)
