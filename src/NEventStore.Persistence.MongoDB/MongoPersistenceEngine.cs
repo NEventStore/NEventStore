@@ -46,15 +46,6 @@
             _streamSettings = new MongoCollectionSettings { AssignIdOnInsert = false, WriteConcern = WriteConcern.Unacknowledged };
 
             _countersSettings = new MongoCollectionSettings { AssignIdOnInsert = false, WriteConcern = WriteConcern.Acknowledged };
-            /*
-                        _getNextCheckpointNumber = () => TryMongo(() =>
-                        {
-                            IMongoQuery query = Query.EQ("_id", "CheckpointNumber");
-                            IMongoUpdate update = Update.Inc("seq", 1L);
-                            FindAndModifyResult result = Counters.FindAndModify(query, null, update, true, true);
-                            return result.ModifiedDocument["seq"].ToInt64();
-                        });
-             */
 
             _getNextCheckpointNumber = () => TryMongo(() =>
             {
