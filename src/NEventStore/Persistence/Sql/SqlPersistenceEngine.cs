@@ -259,10 +259,11 @@ namespace NEventStore.Persistence.Sql
                 });
         }
 
-        public IEnumerable<ICommit> GetFrom(string checkpointToken)
+        public IEnumerable<ICommit> GetFrom(string checkpointToken = null)
         {
             int checkpoint;
-            Guard.NotFalse(int.TryParse(checkpointToken, out checkpoint), () => new ArgumentException("checkpointToken expected to be parsable to an int"));
+            bool b = int.TryParse(checkpointToken, out checkpoint);
+            Guard.NotFalse(b, () => new ArgumentException("checkpointToken expected to be parsable to an int"));
             Logger.Debug(Messages.GettingAllCommitsFromCheckpoint, checkpointToken);
             return ExecuteQuery(query =>
             {
