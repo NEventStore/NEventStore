@@ -134,6 +134,90 @@ namespace NEventStore
         }
     }
 
+    public class when_reading_the_all_events_from_checkpoint : using_underlying_persistence
+    {
+        private ICommit _commit;
+        private DateTime date;
+        private Mock<IPipelineHook> hook1;
+        private Mock<IPipelineHook> hook2;
+
+        protected override void Context()
+        {
+            date = DateTime.Now;
+            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, new LongCheckpoint(0).Value, null, null);
+
+            hook1 = new Mock<IPipelineHook>();
+            hook1.Setup(h => h.Select(_commit)).Returns(_commit);
+            pipelineHooks.Add(hook1);
+
+            hook2 = new Mock<IPipelineHook>();
+            hook2.Setup(h => h.Select(_commit)).Returns(_commit);
+            pipelineHooks.Add(hook2);
+
+            persistence.Setup(p => p.GetFrom(null)).Returns(new List<ICommit> { _commit });
+        }
+
+        protected override void Because()
+        {
+            Decorator.GetFrom(null).ToList();
+        }
+
+        [Fact]
+        public void should_call_the_underlying_persistence_to_get_events()
+        {
+            persistence.Verify(x => x.GetFrom(null), Times.Once());
+        }
+
+        [Fact]
+        public void should_pass_all_events_through_the_pipeline_hooks()
+        {
+            hook1.Verify(h => h.Select(_commit), Times.Once());
+            hook2.Verify(h => h.Select(_commit), Times.Once());
+        }
+    }
+
+    public class when_reading_the_all_events_get_undispatched : using_underlying_persistence
+    {
+        private ICommit _commit;
+        private DateTime date;
+        private Mock<IPipelineHook> hook1;
+        private Mock<IPipelineHook> hook2;
+
+        protected override void Context()
+        {
+            date = DateTime.Now;
+            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, new LongCheckpoint(0).Value, null, null);
+
+            hook1 = new Mock<IPipelineHook>();
+            hook1.Setup(h => h.Select(_commit)).Returns(_commit);
+            pipelineHooks.Add(hook1);
+
+            hook2 = new Mock<IPipelineHook>();
+            hook2.Setup(h => h.Select(_commit)).Returns(_commit);
+            pipelineHooks.Add(hook2);
+
+            persistence.Setup(p => p.GetUndispatchedCommits()).Returns(new List<ICommit> { _commit });
+        }
+
+        protected override void Because()
+        {
+            Decorator.GetUndispatchedCommits().ToList();
+        }
+
+        [Fact]
+        public void should_call_the_underlying_persistence_to_get_events()
+        {
+            persistence.Verify(x => x.GetUndispatchedCommits(), Times.Once());
+        }
+
+        [Fact]
+        public void should_pass_all_events_through_the_pipeline_hooks()
+        {
+            hook1.Verify(h => h.Select(_commit), Times.Once());
+            hook2.Verify(h => h.Select(_commit), Times.Once());
+        }
+    }
+
     public abstract class using_underlying_persistence : SpecificationBase
     {
         private PipelineHooksAwarePersistanceDecorator decorator;
