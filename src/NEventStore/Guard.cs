@@ -9,7 +9,7 @@
     {
         internal static void NotFalse(bool condition, Func<Exception> createException)
         {
-            if (condition)
+            if (!condition)
             {
                 throw createException();
             }
