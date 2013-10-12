@@ -516,6 +516,36 @@ namespace NEventStore.Persistence.AcceptanceTests
         }
     }
 
+    public class when_paging_over_all_commits_from_a_particular_checkpoint : PersistenceEngineConcern
+    {
+        private HashSet<Guid> _committed;
+        private ICollection<Guid> _loaded;
+        private Guid _streamId;
+        private const int checkPoint = 2;
+
+        protected override void Context()
+        {
+            _committed = Persistence.CommitMany(ConfiguredPageSizeForTesting + 1).Select(c => c.CommitId).ToHashSet();
+        }
+
+        protected override void Because()
+        {
+            _loaded = Persistence.GetFrom(checkPoint.ToString()).Select(c => c.CommitId).ToLinkedList();
+        }
+
+        [Fact]
+        public void should_load_the_same_number_of_commits_which_have_been_persisted_starting_from_the_checkpoint()
+        {
+            _loaded.Count.ShouldBe(_committed.Count - checkPoint + 1);
+        }
+
+        [Fact]
+        public void should_load_only_the_commits_starting_from_the_checkpoint()
+        {
+            _committed.Skip(checkPoint-1).All(x => _loaded.Contains(x)).ShouldBeTrue(); // all commits should be found in loaded collection
+        }
+    }
+
     public class when_reading_all_commits_from_the_year_1_AD : PersistenceEngineConcern
     {
         private Exception _thrown;
