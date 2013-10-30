@@ -848,7 +848,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         }
     }
     
-    public class TransactionConcern : SpecificationBase, IUseFixture<PersistenceEngineFixture>
+    /*public class TransactionConcern : SpecificationBase, IUseFixture<PersistenceEngineFixture>
     {
         private ICommit[] _commits;
         private PersistenceEngineFixture _fixture;
@@ -973,13 +973,13 @@ namespace NEventStore.Persistence.AcceptanceTests
             ICheckpoint checkpoint = _fixture.Persistence.GetCheckpoint();
             ICommit[] commits = _fixture.Persistence.GetFrom(checkpoint.Value).ToArray();
             commits.Length.ShouldBe(0);
-        }*/
+        }#1#
 
         public void SetFixture(PersistenceEngineFixture data)
         {
             _fixture = data;
         }
-    }
+    }*/
 
     public class PersistenceEngineConcern : SpecificationBase, IUseFixture<PersistenceEngineFixture>
     {
