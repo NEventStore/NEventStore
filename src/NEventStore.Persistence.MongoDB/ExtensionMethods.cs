@@ -20,9 +20,9 @@
             {
                 var dictionarySerializer = new DictionarySerializer<Tkey, Tvalue>();
                 object result = dictionarySerializer.Deserialize(reader,
-                    typeof (Dictionary<Tkey, Tvalue>),
+                    typeof(Dictionary<Tkey, Tvalue>),
                     new DictionarySerializationOptions());
-                return (Dictionary<Tkey, Tvalue>) result;
+                return (Dictionary<Tkey, Tvalue>)result;
             }
         }
 
@@ -140,20 +140,24 @@
 
         public static IMongoQuery ToMongoCommitIdQuery(this CommitAttempt commit)
         {
-            return Query.EQ(MongoCommitFields.LogicalId, Query.And(
-                    Query.EQ(MongoCommitFields.BucketId, commit.BucketId),
-                    Query.EQ(MongoCommitFields.StreamId, commit.StreamId),
-                    Query.EQ(MongoCommitFields.CommitSequence, commit.CommitSequence))
-                .ToBsonDocument());
+            return Query.EQ(MongoCommitFields.LogicalId,
+                    Query.And(
+                        Query.EQ(MongoCommitFields.BucketId, commit.BucketId),
+                        Query.EQ(MongoCommitFields.StreamId, commit.StreamId),
+                        Query.EQ(MongoCommitFields.CommitSequence, commit.CommitSequence)
+                    ).ToBsonDocument()
+            );
         }
 
         public static IMongoQuery ToMongoCommitIdQuery(this ICommit commit)
         {
-            return Query.EQ(MongoCommitFields.LogicalId, Query.And(
-                    Query.EQ(MongoCommitFields.BucketId, commit.BucketId),
-                    Query.EQ(MongoCommitFields.StreamId, commit.StreamId),
-                    Query.EQ(MongoCommitFields.CommitSequence, commit.CommitSequence))
-                .ToBsonDocument());
+            return Query.EQ(MongoCommitFields.LogicalId,
+                    Query.And(
+                        Query.EQ(MongoCommitFields.BucketId, commit.BucketId),
+                        Query.EQ(MongoCommitFields.StreamId, commit.StreamId),
+                        Query.EQ(MongoCommitFields.CommitSequence, commit.CommitSequence)
+                    ).ToBsonDocument()
+            );
         }
 
         public static IMongoQuery GetSnapshotQuery(string bucketId, string streamId, int maxRevision)
@@ -173,6 +177,6 @@
                             Query.EQ(MongoShapshotFields.StreamRevision, maxRevision)
                          ).ToBsonDocument())
                     );
-                }
         }
+    }
 }

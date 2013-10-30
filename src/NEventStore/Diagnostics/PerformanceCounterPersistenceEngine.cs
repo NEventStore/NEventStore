@@ -138,5 +138,10 @@ namespace NEventStore.Diagnostics
             _counters.Dispose();
             _persistence.Dispose();
         }
+
+        public IPersistStreams UnwrapPersistenceEngine()
+        {
+            return _persistence;
+        }
     }
 }
