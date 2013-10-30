@@ -34,24 +34,24 @@
                 .Select(e =>
                     new BsonDocument
                     {
-                        {"StreamRevision", streamRevision++},
-                        {"Payload", new BsonDocumentWrapper(typeof (EventMessage), serializer.Serialize(e))}
+                        {MongoCommitFields.StreamRevision, streamRevision++},
+                        {MongoCommitFields.Payload, new BsonDocumentWrapper(typeof (EventMessage), serializer.Serialize(e))}
                     });
             return new BsonDocument
             {
-                {MongoCommitFields.Id, new BsonDocument
+                {MongoCommitFields.CheckpointNumber, getNextCheckpointNumber()},
+                {MongoCommitFields.CommitId, commit.CommitId},
+                {MongoCommitFields.CommitStamp, commit.CommitStamp},
+                {MongoCommitFields.Headers, BsonDocumentWrapper.Create(commit.Headers)},
+                {MongoCommitFields.Events, new BsonArray(events)},
+                {MongoCommitFields.Dispatched, false},
+                {MongoCommitFields.LogicalId, new BsonDocument
                     {
                         {MongoCommitFields.BucketId, commit.BucketId},
                         {MongoCommitFields.StreamId, commit.StreamId},
                         {MongoCommitFields.CommitSequence, commit.CommitSequence}
                     }
-                 },
-                {MongoCommitFields.CommitId, commit.CommitId},
-                {MongoCommitFields.CommitStamp, commit.CommitStamp},
-                {MongoCommitFields.CheckpointNumber, getNextCheckpointNumber()},
-                {MongoCommitFields.Headers, BsonDocumentWrapper.Create(commit.Headers)},
-                {MongoCommitFields.Events, new BsonArray(events)},
-                {MongoCommitFields.Dispatched, false}
+                 }
             };
         }
 
@@ -62,10 +62,10 @@
                 return null;
             }
 
-            BsonDocument id = doc[MongoCommitFields.Id].AsBsonDocument;
-            string bucketId = id[MongoCommitFields.BucketId].AsString;
-            string streamId = id[MongoCommitFields.StreamId].AsString;
-            int commitSequence = id[MongoCommitFields.CommitSequence].AsInt32;
+            BsonDocument lid = doc[MongoCommitFields.LogicalId].AsBsonDocument;
+            string bucketId = lid[MongoCommitFields.BucketId].AsString;
+            string streamId = lid[MongoCommitFields.StreamId].AsString;
+            int commitSequence = lid[MongoCommitFields.CommitSequence].AsInt32;
 
             List<EventMessage> events = doc[MongoCommitFields.Events]
                 .AsBsonArray
@@ -140,7 +140,7 @@
 
         public static IMongoQuery ToMongoCommitIdQuery(this CommitAttempt commit)
         {
-            return Query.EQ(MongoCommitFields.Id, Query.And(
+            return Query.EQ(MongoCommitFields.LogicalId, Query.And(
                     Query.EQ(MongoCommitFields.BucketId, commit.BucketId),
                     Query.EQ(MongoCommitFields.StreamId, commit.StreamId),
                     Query.EQ(MongoCommitFields.CommitSequence, commit.CommitSequence))
@@ -149,7 +149,7 @@
 
         public static IMongoQuery ToMongoCommitIdQuery(this ICommit commit)
         {
-            return Query.EQ(MongoCommitFields.Id, Query.And(
+            return Query.EQ(MongoCommitFields.LogicalId, Query.And(
                     Query.EQ(MongoCommitFields.BucketId, commit.BucketId),
                     Query.EQ(MongoCommitFields.StreamId, commit.StreamId),
                     Query.EQ(MongoCommitFields.CommitSequence, commit.CommitSequence))

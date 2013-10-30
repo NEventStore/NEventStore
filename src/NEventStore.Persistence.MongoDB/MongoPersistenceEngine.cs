@@ -96,14 +96,15 @@
                 PersistedCommits.EnsureIndex(IndexKeys.Ascending("Dispatched").Ascending(MongoCommitFields.CommitStamp),
                     IndexOptions.SetName("Dispatched_Index").SetUnique(false));
 
-                PersistedCommits.EnsureIndex(IndexKeys.Ascending("_id.BucketId", "_id.StreamId", "Events.StreamRevision"),
+                PersistedCommits.EnsureIndex(IndexKeys.Ascending(
+                      MongoCommitFields.FullQualifiedBucketId,
+                      MongoCommitFields.FullQualifiedStreamId,
+                      MongoCommitFields.FullqualifiedStreamRevision
+                    ),
                     IndexOptions.SetName("GetFrom_Index").SetUnique(true));
 
                 PersistedCommits.EnsureIndex(IndexKeys.Ascending(MongoCommitFields.CommitStamp),
                     IndexOptions.SetName("CommitStamp_Index").SetUnique(false));
-
-                PersistedCommits.EnsureIndex(IndexKeys.Ascending(MongoCommitFields.CheckpointNumber),
-                    IndexOptions.SetName(MongoCommitFields.CheckpointNumber + "_Index").SetUnique(true));
 
                 PersistedStreamHeads.EnsureIndex(IndexKeys.Ascending("Unsnapshotted"),
                     IndexOptions.SetName("Unsnapshotted_Index").SetUnique(false));
@@ -117,14 +118,14 @@
             return TryMongo(() =>
             {
                 IMongoQuery query = Query.And(
-                    Query.EQ("_id.BucketId", bucketId),
-                    Query.EQ("_id.StreamId", streamId),
-                    Query.GTE("Events.StreamRevision", minRevision),
-                    Query.LTE("Events.StreamRevision", maxRevision));
+                    Query.EQ(MongoCommitFields.FullQualifiedBucketId, bucketId),
+                    Query.EQ(MongoCommitFields.FullQualifiedStreamId, streamId),
+                    Query.GTE(MongoCommitFields.FullqualifiedStreamRevision, minRevision),
+                    Query.LTE(MongoCommitFields.FullqualifiedStreamRevision, maxRevision));
 
                 return PersistedCommits
                     .Find(query)
-                    .SetSortOrder("Events.StreamRevision")
+                    .SetSortOrder(MongoCommitFields.FullqualifiedStreamRevision)
                     .Select(mc => mc.ToCommit(_serializer));
             });
         }
@@ -134,7 +135,7 @@
             Logger.Debug(Messages.GettingAllCommitsFrom, start, bucketId);
 
             return TryMongo(() => PersistedCommits
-                .Find(Query.And(Query.EQ("_id.BucketId", bucketId), Query.GTE(MongoCommitFields.CommitStamp, start)))
+                .Find(Query.And(Query.EQ(MongoCommitFields.FullQualifiedBucketId, bucketId), Query.GTE(MongoCommitFields.CommitStamp, start)))
                 .SetSortOrder(MongoCommitFields.CheckpointNumber)
                 .Select(x => x.ToCommit(_serializer)));
         }
@@ -159,7 +160,11 @@
             Logger.Debug(Messages.GettingAllCommitsFromTo, start, end, bucketId);
 
             return TryMongo(() => PersistedCommits
-                .Find(Query.And(Query.EQ("_id.BucketId", bucketId), Query.GTE(MongoCommitFields.CommitStamp, start), Query.LT(MongoCommitFields.CommitStamp, end)))
+                .Find(Query.And(
+                    Query.EQ(MongoCommitFields.FullQualifiedBucketId, bucketId), 
+                    Query.GTE(MongoCommitFields.CommitStamp, start), 
+                    Query.LT(MongoCommitFields.CommitStamp, end))
+                )
                 .SetSortOrder(MongoCommitFields.CheckpointNumber)
                 .Select(x => x.ToCommit(_serializer)));
         }
@@ -202,7 +207,7 @@
 
             return TryMongo(() => PersistedCommits
                     .Find(Query.EQ("Dispatched", false))
-                    .SetSortOrder(MongoCommitFields.Id)
+                    .SetSortOrder(MongoCommitFields.CheckpointNumber)
                     .Select(mc => mc.ToCommit(_serializer)));
         }
 
@@ -293,9 +298,9 @@
             Logger.Warn(Messages.PurgingBucket, bucketId);
             TryMongo(() =>
             {
-                PersistedStreamHeads.Remove(Query.EQ("_id.BucketId", bucketId));
-                PersistedSnapshots.Remove(Query.EQ("_id.BucketId", bucketId));
-                PersistedCommits.Remove(Query.EQ("_id.BucketId", bucketId));
+                PersistedStreamHeads.Remove(Query.EQ(MongoStreamHeadFields.FullQualifiedBucketId, bucketId));
+                PersistedSnapshots.Remove(Query.EQ(MongoShapshotFields.FullQualifiedBucketId, bucketId));
+                PersistedCommits.Remove(Query.EQ(MongoStreamHeadFields.FullQualifiedBucketId, bucketId));
             });
 
         }
@@ -310,9 +315,20 @@
             Logger.Warn(Messages.DeletingStream, streamId, bucketId);
             TryMongo(() =>
             {
-                PersistedStreamHeads.Remove(Query.And(Query.EQ("_id.BucketId", bucketId), Query.EQ("_id.StreamId", streamId)));
-                PersistedSnapshots.Remove(Query.And(Query.EQ("_id.BucketId", bucketId), Query.EQ("_id.StreamId", streamId)));
-                PersistedCommits.Remove(Query.And(Query.EQ("_id.BucketId", bucketId), Query.EQ("_id.StreamId", streamId)));
+                PersistedStreamHeads.Remove(Query.And(
+                    Query.EQ(MongoStreamHeadFields.FullQualifiedBucketId, bucketId), 
+                    Query.EQ(MongoStreamHeadFields.FullQualifiedStreamId, streamId)
+                ));
+                
+                PersistedSnapshots.Remove(Query.And(
+                    Query.EQ(MongoShapshotFields.FullQualifiedBucketId, bucketId), 
+                    Query.EQ(MongoShapshotFields.FullQualifiedStreamId, streamId)
+                ));
+                
+                PersistedCommits.Remove(Query.And(
+                    Query.EQ(MongoCommitFields.FullQualifiedBucketId, bucketId),
+                    Query.EQ(MongoCommitFields.FullQualifiedStreamId, streamId)
+                ));
             });
         }
 
