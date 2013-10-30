@@ -93,17 +93,17 @@
 
             TryMongo(() =>
             {
-                PersistedCommits.EnsureIndex(IndexKeys.Ascending("Dispatched").Ascending(MongoFields.CommitStamp),
+                PersistedCommits.EnsureIndex(IndexKeys.Ascending("Dispatched").Ascending(MongoCommitFields.CommitStamp),
                     IndexOptions.SetName("Dispatched_Index").SetUnique(false));
 
                 PersistedCommits.EnsureIndex(IndexKeys.Ascending("_id.BucketId", "_id.StreamId", "Events.StreamRevision"),
                     IndexOptions.SetName("GetFrom_Index").SetUnique(true));
 
-                PersistedCommits.EnsureIndex(IndexKeys.Ascending(MongoFields.CommitStamp),
+                PersistedCommits.EnsureIndex(IndexKeys.Ascending(MongoCommitFields.CommitStamp),
                     IndexOptions.SetName("CommitStamp_Index").SetUnique(false));
 
-                PersistedCommits.EnsureIndex(IndexKeys.Ascending(MongoFields.CheckpointNumber),
-                    IndexOptions.SetName(MongoFields.CheckpointNumber + "_Index").SetUnique(true));
+                PersistedCommits.EnsureIndex(IndexKeys.Ascending(MongoCommitFields.CheckpointNumber),
+                    IndexOptions.SetName(MongoCommitFields.CheckpointNumber + "_Index").SetUnique(true));
 
                 PersistedStreamHeads.EnsureIndex(IndexKeys.Ascending("Unsnapshotted"),
                     IndexOptions.SetName("Unsnapshotted_Index").SetUnique(false));
@@ -134,8 +134,8 @@
             Logger.Debug(Messages.GettingAllCommitsFrom, start, bucketId);
 
             return TryMongo(() => PersistedCommits
-                .Find(Query.And(Query.EQ("_id.BucketId", bucketId), Query.GTE(MongoFields.CommitStamp, start)))
-                .SetSortOrder(MongoFields.CheckpointNumber)
+                .Find(Query.And(Query.EQ("_id.BucketId", bucketId), Query.GTE(MongoCommitFields.CommitStamp, start)))
+                .SetSortOrder(MongoCommitFields.CheckpointNumber)
                 .Select(x => x.ToCommit(_serializer)));
         }
 
@@ -144,8 +144,8 @@
             var intCheckpoint = LongCheckpoint.Parse(checkpointToken);
             Logger.Debug(Messages.GettingAllCommitsFromCheckpoint, intCheckpoint.Value);
             return TryMongo(() => PersistedCommits
-                .Find(Query.GTE(MongoFields.CheckpointNumber, intCheckpoint.LongValue)))
-                .SetSortOrder(MongoFields.CheckpointNumber)
+                .Find(Query.GTE(MongoCommitFields.CheckpointNumber, intCheckpoint.LongValue)))
+                .SetSortOrder(MongoCommitFields.CheckpointNumber)
                 .Select(x => x.ToCommit(_serializer));
         }
 
@@ -159,8 +159,8 @@
             Logger.Debug(Messages.GettingAllCommitsFromTo, start, end, bucketId);
 
             return TryMongo(() => PersistedCommits
-                .Find(Query.And(Query.EQ("_id.BucketId", bucketId), Query.GTE(MongoFields.CommitStamp, start), Query.LT(MongoFields.CommitStamp, end)))
-                .SetSortOrder(MongoFields.CheckpointNumber)
+                .Find(Query.And(Query.EQ("_id.BucketId", bucketId), Query.GTE(MongoCommitFields.CommitStamp, start), Query.LT(MongoCommitFields.CommitStamp, end)))
+                .SetSortOrder(MongoCommitFields.CheckpointNumber)
                 .Select(x => x.ToCommit(_serializer)));
         }
 
@@ -202,7 +202,7 @@
 
             return TryMongo(() => PersistedCommits
                     .Find(Query.EQ("Dispatched", false))
-                    .SetSortOrder(MongoFields.Id)
+                    .SetSortOrder(MongoCommitFields.Id)
                     .Select(mc => mc.ToCommit(_serializer)));
         }
 
@@ -213,7 +213,7 @@
             TryMongo(() =>
             {
                 IMongoQuery query = commit.ToMongoCommitIdQuery();
-                UpdateBuilder update = Update.Set(MongoFields.Dispatched, true);
+                UpdateBuilder update = Update.Set(MongoCommitFields.Dispatched, true);
                 PersistedCommits.Update(query, update);
             });
         }
@@ -224,10 +224,10 @@
 
             return TryMongo(() =>
             {
-                IMongoQuery query = Query.GTE(MongoFields.Unsnapshotted, maxThreshold);
+                IMongoQuery query = Query.GTE(MongoStreamHeadFields.Unsnapshotted, maxThreshold);
                 return PersistedStreamHeads
                     .Find(query)
-                    .SetSortOrder(SortBy.Descending(MongoFields.Unsnapshotted))
+                    .SetSortOrder(SortBy.Descending(MongoStreamHeadFields.Unsnapshotted))
                     .Select(x => x.ToStreamHead());
             });
         }
@@ -238,7 +238,7 @@
 
             return TryMongo(() =>PersistedSnapshots
                 .Find(ExtensionMethods.GetSnapshotQuery(bucketId, streamId, maxRevision))
-                .SetSortOrder(SortBy.Descending(MongoFields.Id))
+                .SetSortOrder(SortBy.Descending(MongoShapshotFields.Id))
                 .SetLimit(1)
                 .Select(mc => mc.ToSnapshot(_serializer))
                 .FirstOrDefault());
@@ -254,8 +254,8 @@
             try
             {
                 BsonDocument mongoSnapshot = snapshot.ToMongoSnapshot(_serializer);
-                IMongoQuery query = Query.EQ(MongoFields.Id, mongoSnapshot[MongoFields.Id]);
-                UpdateBuilder update = Update.Set(MongoFields.Payload, mongoSnapshot[MongoFields.Payload]);
+                IMongoQuery query = Query.EQ(MongoShapshotFields.Id, mongoSnapshot[MongoShapshotFields.Id]);
+                UpdateBuilder update = Update.Set(MongoShapshotFields.Payload, mongoSnapshot[MongoShapshotFields.Payload]);
 
                 // Doing an upsert instead of an insert allows us to overwrite an existing snapshot and not get stuck with a
                 // stream that needs to be snapshotted because the insert fails and the SnapshotRevision isn't being updated.
@@ -268,8 +268,8 @@
                 StreamHead streamHead = PersistedStreamHeads.FindOneById(streamHeadId).ToStreamHead();
                 int unsnapshotted = streamHead.HeadRevision - snapshot.StreamRevision;
                 PersistedStreamHeads.Update(
-                    Query.EQ(MongoFields.Id, streamHeadId),
-                    Update.Set(MongoFields.SnapshotRevision, snapshot.StreamRevision).Set(MongoFields.Unsnapshotted, unsnapshotted));
+                    Query.EQ(MongoStreamHeadFields.Id, streamHeadId),
+                    Update.Set(MongoStreamHeadFields.SnapshotRevision, snapshot.StreamRevision).Set(MongoStreamHeadFields.Unsnapshotted, unsnapshotted));
 
                 return true;
             }
@@ -339,7 +339,7 @@
                 {
                     BsonDocument streamHeadId = GetStreamHeadId(bucketId, streamId);
                     PersistedStreamHeads.Update(
-                        Query.EQ(MongoFields.Id, streamHeadId),
+                        Query.EQ(MongoStreamHeadFields.Id, streamHeadId),
                         Update
                             .Set("HeadRevision", streamRevision)
                             .Inc("SnapshotRevision", 0)
@@ -380,8 +380,8 @@
         private static BsonDocument GetStreamHeadId(string bucketId, string streamId)
         {
             var id = new BsonDocument();
-            id[MongoFields.BucketId] = bucketId;
-            id[MongoFields.StreamId] = streamId;
+            id[MongoStreamHeadFields.BucketId] = bucketId;
+            id[MongoStreamHeadFields.StreamId] = streamId;
             return id;
         }
     }

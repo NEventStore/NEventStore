@@ -3,7 +3,7 @@ namespace NEventStore
     using System;
     using System.Globalization;
 
-    public sealed class LongCheckpoint : ICheckpoint
+    public sealed class LongCheckpoint : ICheckpoint, IComparable<LongCheckpoint>
     {
         private readonly long _value;
 
@@ -33,6 +33,11 @@ namespace NEventStore
         public static LongCheckpoint Parse(string checkpointValue)
         {
             return string.IsNullOrWhiteSpace(checkpointValue) ? new LongCheckpoint(-1) : new LongCheckpoint(long.Parse(checkpointValue));
+        }
+
+        public int CompareTo(LongCheckpoint other)
+        {
+            return this.LongValue.CompareTo(other.LongValue);
         }
     }
 }
