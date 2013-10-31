@@ -72,7 +72,7 @@ namespace CommonDomain.Persistence.EventStore
 			while (true)
 			{
 				IEventStream stream = this.PrepareStream(bucketId, aggregate, headers);
-				int commitEventCount = stream.CommittedEvents.Count;
+				int commitEventCount = stream.CommittedEvents.Count();
 
 				try
 				{

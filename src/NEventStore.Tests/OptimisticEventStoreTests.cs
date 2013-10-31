@@ -261,7 +261,7 @@ namespace NEventStore
         [Fact]
         public void should_return_a_stream_with_no_committed_events()
         {
-            _stream.CommittedEvents.Count.ShouldBe(0);
+            _stream.CommittedEvents.Count().ShouldBe(0);
         }
 
         [Fact]

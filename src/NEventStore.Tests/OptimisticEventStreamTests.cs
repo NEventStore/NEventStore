@@ -78,13 +78,13 @@ namespace NEventStore
         [Fact]
         public void should_have_all_of_the_committed_events_up_to_the_stream_revision_specified()
         {
-            Stream.CommittedEvents.Count.ShouldBe(MaxRevision - MinRevision + 1);
+            Stream.CommittedEvents.Count().ShouldBe(MaxRevision - MinRevision + 1);
         }
 
         [Fact]
         public void should_contain_the_headers_from_the_underlying_commits()
         {
-            Stream.CommittedHeaders.Count.ShouldBe(2);
+            Stream.CommittedHeaders.Count().ShouldBe(2);
         }
     }
 
@@ -374,7 +374,7 @@ namespace NEventStore
         [Fact]
         public void should_copy_the_uncommitted_headers_to_the_committed_stream_headers()
         {
-            Stream.CommittedHeaders.Count.ShouldBe(_headers.Count);
+            Stream.CommittedHeaders.Count().ShouldBe(_headers.Count);
         }
     }
 
@@ -464,7 +464,7 @@ namespace NEventStore
         [Fact]
         public void should_add_the_newly_discovered_committed_events_to_the_set_of_committed_events_accordingly()
         {
-            Stream.CommittedEvents.Count.ShouldBe(_discoveredOnCommit[0].Events.Count + 1);
+            Stream.CommittedEvents.Count().ShouldBe(_discoveredOnCommit[0].Events.Count + 1);
         }
     }
 
@@ -492,33 +492,15 @@ namespace NEventStore
     public class when_attempting_to_modify_the_event_collections : on_the_event_stream
     {
         [Fact]
-        public void should_throw_an_exception_when_adding_to_the_committed_collection()
-        {
-            Catch.Exception(() => Stream.CommittedEvents.Add(null)).ShouldBeInstanceOf<NotSupportedException>();
-        }
-
-        [Fact]
         public void should_throw_an_exception_when_adding_to_the_uncommitted_collection()
         {
             Catch.Exception(() => Stream.UncommittedEvents.Add(null)).ShouldBeInstanceOf<NotSupportedException>();
         }
 
         [Fact]
-        public void should_throw_an_exception_when_clearing_the_committed_collection()
-        {
-            Catch.Exception(() => Stream.CommittedEvents.Clear()).ShouldBeInstanceOf<NotSupportedException>();
-        }
-
-        [Fact]
         public void should_throw_an_exception_when_clearing_the_uncommitted_collection()
         {
             Catch.Exception(() => Stream.UncommittedEvents.Clear()).ShouldBeInstanceOf<NotSupportedException>();
-        }
-
-        [Fact]
-        public void should_throw_an_exception_when_removing_from_the_committed_collection()
-        {
-            Catch.Exception(() => Stream.CommittedEvents.Remove(null)).ShouldBeInstanceOf<NotSupportedException>();
         }
 
         [Fact]

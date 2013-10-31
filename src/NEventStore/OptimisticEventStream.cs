@@ -51,12 +51,12 @@ namespace NEventStore
         public int StreamRevision { get; private set; }
         public int CommitSequence { get; private set; }
 
-        public ICollection<EventMessage> CommittedEvents
+        public IEnumerable<EventMessage> CommittedEvents
         {
             get { return new ImmutableCollection<EventMessage>(_committed); }
         }
 
-        public IDictionary<string, object> CommittedHeaders
+        public IEnumerable<KeyValuePair<string, object>> CommittedHeaders
         {
             get { return _committedHeaders; }
         }
