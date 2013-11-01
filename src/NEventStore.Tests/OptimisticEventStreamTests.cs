@@ -156,7 +156,7 @@ namespace NEventStore
         [Fact]
         public void should_add_the_event_to_the_set_of_uncommitted_events()
         {
-            Stream.UncommittedEvents.Count.ShouldBe(1);
+            Stream.UncommittedEvents.Count().ShouldBe(1);
         }
     }
 
@@ -171,7 +171,7 @@ namespace NEventStore
         [Fact]
         public void should_add_all_of_the_events_provided_to_the_set_of_uncommitted_events()
         {
-            Stream.UncommittedEvents.Count.ShouldBe(2);
+            Stream.UncommittedEvents.Count().ShouldBe(2);
         }
     }
 
@@ -187,7 +187,7 @@ namespace NEventStore
         [Fact]
         public void should_add_the_uncommited_event_to_the_set_of_uncommitted_events()
         {
-            Stream.UncommittedEvents.Count.ShouldBe(1);
+            Stream.UncommittedEvents.Count().ShouldBe(1);
         }
 
         [Fact]
@@ -212,7 +212,7 @@ namespace NEventStore
         [Fact]
         public void should_clear_all_uncommitted_events()
         {
-            Stream.UncommittedEvents.Count.ShouldBe(0);
+            Stream.UncommittedEvents.Count().ShouldBe(0);
         }
     }
 
@@ -486,27 +486,6 @@ namespace NEventStore
         public void should_throw_a_ObjectDisposedException()
         {
             _thrown.ShouldBeInstanceOf<ObjectDisposedException>();
-        }
-    }
-
-    public class when_attempting_to_modify_the_event_collections : on_the_event_stream
-    {
-        [Fact]
-        public void should_throw_an_exception_when_adding_to_the_uncommitted_collection()
-        {
-            Catch.Exception(() => Stream.UncommittedEvents.Add(null)).ShouldBeInstanceOf<NotSupportedException>();
-        }
-
-        [Fact]
-        public void should_throw_an_exception_when_clearing_the_uncommitted_collection()
-        {
-            Catch.Exception(() => Stream.UncommittedEvents.Clear()).ShouldBeInstanceOf<NotSupportedException>();
-        }
-
-        [Fact]
-        public void should_throw_an_exception_when_removing_from_the_uncommitted_collection()
-        {
-            Catch.Exception(() => Stream.UncommittedEvents.Remove(null)).ShouldBeInstanceOf<NotSupportedException>();
         }
     }
 

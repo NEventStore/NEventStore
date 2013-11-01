@@ -40,7 +40,7 @@ namespace NEventStore
         /// <summary>
         ///     Gets the collection of yet-to-be-committed events that have not yet been persisted to durable storage.
         /// </summary>
-        ICollection<EventMessage> UncommittedEvents { get; }
+		IEnumerable<EventMessage> UncommittedEvents { get; }
 
         /// <summary>
         ///     Gets the collection of yet-to-be-committed headers associated with the uncommitted events.

@@ -61,7 +61,7 @@ namespace NEventStore
             get { return _committedHeaders; }
         }
 
-        public ICollection<EventMessage> UncommittedEvents
+		public IEnumerable<EventMessage> UncommittedEvents
         {
             get { return new ImmutableCollection<EventMessage>(_events); }
         }
