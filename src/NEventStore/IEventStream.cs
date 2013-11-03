@@ -30,17 +30,17 @@ namespace NEventStore
         /// <summary>
         ///     Gets the collection of events which have been successfully persisted to durable storage.
         /// </summary>
-        ICollection<EventMessage> CommittedEvents { get; }
+		IEnumerable<EventMessage> CommittedEvents { get; }
 
         /// <summary>
         ///     Gets the collection of committed headers associated with the stream.
         /// </summary>
-        IDictionary<string, object> CommittedHeaders { get; }
+		IEnumerable<KeyValuePair<string, object>> CommittedHeaders { get; }
 
         /// <summary>
         ///     Gets the collection of yet-to-be-committed events that have not yet been persisted to durable storage.
         /// </summary>
-        ICollection<EventMessage> UncommittedEvents { get; }
+		IEnumerable<EventMessage> UncommittedEvents { get; }
 
         /// <summary>
         ///     Gets the collection of yet-to-be-committed headers associated with the uncommitted events.
