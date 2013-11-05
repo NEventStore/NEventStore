@@ -103,7 +103,9 @@
                     IndexKeys.Ascending(
                             MongoCommitFields.FullQualifiedBucketId,
                             MongoCommitFields.FullQualifiedStreamId,
-                            MongoCommitFields.FullqualifiedStreamRevision
+                            MongoCommitFields.StreamRevisionStart,
+                            MongoCommitFields.StreamRevisionEnd
+                            //,MongoCommitFields.FullqualifiedStreamRevision
                     ),
                     IndexOptions.SetName(MongoCommitIndexes.GetFrom).SetUnique(true)
                 );
@@ -131,12 +133,15 @@
                 IMongoQuery query = Query.And(
                     Query.EQ(MongoCommitFields.FullQualifiedBucketId, bucketId),
                     Query.EQ(MongoCommitFields.FullQualifiedStreamId, streamId),
-                    Query.GTE(MongoCommitFields.FullqualifiedStreamRevision, minRevision),
-                    Query.LTE(MongoCommitFields.FullqualifiedStreamRevision, maxRevision));
+                    Query.GTE(MongoCommitFields.FullqualifiedStreamRevisionStart, minRevision),
+                    Query.LTE(MongoCommitFields.FullqualifiedStreamRevisionEnd, maxRevision));
+                    //Query.GTE(MongoCommitFields.FullqualifiedStreamRevision, minRevision),
+                    //Query.LTE(MongoCommitFields.FullqualifiedStreamRevision, maxRevision));
 
                 return PersistedCommits
                     .Find(query)
-                    .SetSortOrder(MongoCommitFields.FullqualifiedStreamRevision)
+                    .SetSortOrder(MongoCommitFields.CheckpointNumber)
+                    //.SetSortOrder(MongoCommitFields.FullqualifiedStreamRevision)
                     .Select(mc => mc.ToCommit(_serializer));
             });
         }

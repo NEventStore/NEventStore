@@ -37,6 +37,8 @@
         public const string BucketId = "BucketId";
         public const string StreamId = "StreamId";
         public const string StreamRevision = "StreamRevision";
+        public const string StreamRevisionStart = "StreamRevisionStart";
+        public const string StreamRevisionEnd = "StreamRevisionEnd";
 
         public const string CommitId = "CommitId";
         public const string CommitStamp = "CommitStamp";
@@ -49,6 +51,8 @@
         public const string FullQualifiedBucketId = LogicalId + "." + BucketId;
         public const string FullQualifiedStreamId = LogicalId + "." + StreamId;
         public const string FullqualifiedStreamRevision = Events + "." + StreamRevision;
+        public const string FullqualifiedStreamRevisionStart = LogicalId + "." + StreamRevisionStart;
+        public const string FullqualifiedStreamRevisionEnd = LogicalId + "." + StreamRevisionEnd;
     }
 
     public static class MongoCommitIndexes
