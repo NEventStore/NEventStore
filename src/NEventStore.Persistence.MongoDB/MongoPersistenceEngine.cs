@@ -133,8 +133,8 @@
                 IMongoQuery query = Query.And(
                     Query.EQ(MongoCommitFields.FullQualifiedBucketId, bucketId),
                     Query.EQ(MongoCommitFields.FullQualifiedStreamId, streamId),
-                    Query.GTE(MongoCommitFields.FullqualifiedStreamRevisionStart, minRevision),
-                    Query.LTE(MongoCommitFields.FullqualifiedStreamRevisionEnd, maxRevision));
+                    Query.GTE(MongoCommitFields.StreamRevisionEnd, minRevision),
+                    Query.LTE(MongoCommitFields.StreamRevisionStart, maxRevision));
                     //Query.GTE(MongoCommitFields.FullqualifiedStreamRevision, minRevision),
                     //Query.LTE(MongoCommitFields.FullqualifiedStreamRevision, maxRevision));
 

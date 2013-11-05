@@ -29,7 +29,7 @@
         public static BsonDocument ToMongoCommit(this CommitAttempt commit, Func<long> getNextCheckpointNumber, IDocumentSerializer serializer)
         {
             int streamRevision = commit.StreamRevision - (commit.Events.Count - 1);
-            int streamRevisionStart = streamRevision + 1;
+            int streamRevisionStart = streamRevision;
             IEnumerable<BsonDocument> events = commit
                 .Events
                 .Select(e =>
@@ -46,13 +46,13 @@
                 {MongoCommitFields.Headers, BsonDocumentWrapper.Create(commit.Headers)},
                 {MongoCommitFields.Events, new BsonArray(events)},
                 {MongoCommitFields.Dispatched, false},
+                {MongoCommitFields.StreamRevisionStart, streamRevisionStart},
+                {MongoCommitFields.StreamRevisionEnd, streamRevision-1},
                 {MongoCommitFields.LogicalId, new BsonDocument
                     {
                         {MongoCommitFields.BucketId, commit.BucketId},
                         {MongoCommitFields.StreamId, commit.StreamId},
                         {MongoCommitFields.CommitSequence, commit.CommitSequence},
-                        {MongoCommitFields.StreamRevisionStart, streamRevisionStart},
-                        {MongoCommitFields.StreamRevisionEnd, streamRevision}
                     }
                  }
             };

@@ -51,8 +51,6 @@
         public const string FullQualifiedBucketId = LogicalId + "." + BucketId;
         public const string FullQualifiedStreamId = LogicalId + "." + StreamId;
         public const string FullqualifiedStreamRevision = Events + "." + StreamRevision;
-        public const string FullqualifiedStreamRevisionStart = LogicalId + "." + StreamRevisionStart;
-        public const string FullqualifiedStreamRevisionEnd = LogicalId + "." + StreamRevisionEnd;
     }
 
     public static class MongoCommitIndexes
