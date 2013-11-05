@@ -101,8 +101,8 @@
 
                 PersistedCommits.EnsureIndex(
                     IndexKeys.Ascending(
-                            MongoCommitFields.FullQualifiedBucketId,
-                            MongoCommitFields.FullQualifiedStreamId,
+                            MongoCommitFields.BucketId,
+                            MongoCommitFields.StreamId,
                             MongoCommitFields.StreamRevisionStart,
                             MongoCommitFields.StreamRevisionEnd
                             //,MongoCommitFields.FullqualifiedStreamRevision
@@ -131,8 +131,8 @@
             return TryMongo(() =>
             {
                 IMongoQuery query = Query.And(
-                    Query.EQ(MongoCommitFields.FullQualifiedBucketId, bucketId),
-                    Query.EQ(MongoCommitFields.FullQualifiedStreamId, streamId),
+                    Query.EQ(MongoCommitFields.BucketId, bucketId),
+                    Query.EQ(MongoCommitFields.StreamId, streamId),
                     Query.GTE(MongoCommitFields.StreamRevisionEnd, minRevision),
                     Query.LTE(MongoCommitFields.StreamRevisionStart, maxRevision));
                     //Query.GTE(MongoCommitFields.FullqualifiedStreamRevision, minRevision),
@@ -153,7 +153,7 @@
             return TryMongo(() => PersistedCommits
                 .Find(
                     Query.And(
-                        Query.EQ(MongoCommitFields.FullQualifiedBucketId, bucketId), 
+                        Query.EQ(MongoCommitFields.BucketId, bucketId), 
                         Query.GTE(MongoCommitFields.CommitStamp, start)
                     )
                 )
@@ -169,7 +169,7 @@
             return TryMongo(() => PersistedCommits
                 .Find(
                     Query.And(
-                        Query.NE(MongoCommitFields.FullQualifiedBucketId, MongoSystemBuckets.RecycleBin),
+                        Query.NE(MongoCommitFields.BucketId, MongoSystemBuckets.RecycleBin),
                         Query.GTE(MongoCommitFields.CheckpointNumber, intCheckpoint.LongValue)
                     )
                 )
@@ -189,7 +189,7 @@
 
             return TryMongo(() => PersistedCommits
                 .Find(Query.And(
-                    Query.EQ(MongoCommitFields.FullQualifiedBucketId, bucketId), 
+                    Query.EQ(MongoCommitFields.BucketId, bucketId), 
                     Query.GTE(MongoCommitFields.CommitStamp, start), 
                     Query.LT(MongoCommitFields.CommitStamp, end))
                 )
@@ -369,9 +369,9 @@
                 ));
                 
                 PersistedCommits.Update(Query.And(
-                    Query.EQ(MongoCommitFields.FullQualifiedBucketId, bucketId),
-                    Query.EQ(MongoCommitFields.FullQualifiedStreamId, streamId)
-                ), Update.Set(MongoCommitFields.FullQualifiedBucketId, MongoSystemBuckets.RecycleBin));
+                    Query.EQ(MongoCommitFields.BucketId, bucketId),
+                    Query.EQ(MongoCommitFields.StreamId, streamId)
+                ), Update.Set(MongoCommitFields.BucketId, MongoSystemBuckets.RecycleBin));
             });
         }
 
@@ -450,7 +450,7 @@
             TryMongo(() =>
             {
                 PersistedCommits.Remove(Query.And(
-                    Query.EQ(MongoCommitFields.FullQualifiedBucketId, MongoSystemBuckets.RecycleBin),
+                    Query.EQ(MongoCommitFields.BucketId, MongoSystemBuckets.RecycleBin),
                     Query.LT(MongoCommitFields.CheckpointNumber, lastCheckpointNumber)
                 ));
             });
@@ -459,7 +459,7 @@
         public IEnumerable<ICommit> GetDeletedCommits()
         {
             return TryMongo(() => PersistedCommits
-                                      .Find(Query.EQ(MongoCommitFields.FullQualifiedBucketId, MongoSystemBuckets.RecycleBin))
+                                      .Find(Query.EQ(MongoCommitFields.BucketId, MongoSystemBuckets.RecycleBin))
                                       .SetSortOrder(MongoCommitFields.CheckpointNumber)
                                       .Select(mc => mc.ToCommit(_serializer)));
         }

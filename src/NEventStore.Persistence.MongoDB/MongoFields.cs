@@ -33,7 +33,6 @@
     {
         public const string CheckpointNumber = "_id";
 
-        public const string LogicalId = "lid";
         public const string BucketId = "BucketId";
         public const string StreamId = "StreamId";
         public const string StreamRevision = "StreamRevision";
@@ -47,10 +46,6 @@
         public const string Headers = "Headers";
         public const string Dispatched = "Dispatched";
         public const string Payload = "Payload";
-
-        public const string FullQualifiedBucketId = LogicalId + "." + BucketId;
-        public const string FullQualifiedStreamId = LogicalId + "." + StreamId;
-        public const string FullqualifiedStreamRevision = Events + "." + StreamRevision;
     }
 
     public static class MongoCommitIndexes

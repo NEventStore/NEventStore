@@ -47,14 +47,10 @@
                 {MongoCommitFields.Events, new BsonArray(events)},
                 {MongoCommitFields.Dispatched, false},
                 {MongoCommitFields.StreamRevisionStart, streamRevisionStart},
-                {MongoCommitFields.StreamRevisionEnd, streamRevision-1},
-                {MongoCommitFields.LogicalId, new BsonDocument
-                    {
-                        {MongoCommitFields.BucketId, commit.BucketId},
-                        {MongoCommitFields.StreamId, commit.StreamId},
-                        {MongoCommitFields.CommitSequence, commit.CommitSequence},
-                    }
-                 }
+                {MongoCommitFields.StreamRevisionEnd, streamRevision - 1},
+                {MongoCommitFields.BucketId, commit.BucketId},
+                {MongoCommitFields.StreamId, commit.StreamId},
+                {MongoCommitFields.CommitSequence, commit.CommitSequence}
             };
         }
 
@@ -65,10 +61,9 @@
                 return null;
             }
 
-            BsonDocument lid = doc[MongoCommitFields.LogicalId].AsBsonDocument;
-            string bucketId = lid[MongoCommitFields.BucketId].AsString;
-            string streamId = lid[MongoCommitFields.StreamId].AsString;
-            int commitSequence = lid[MongoCommitFields.CommitSequence].AsInt32;
+            string bucketId = doc[MongoCommitFields.BucketId].AsString;
+            string streamId = doc[MongoCommitFields.StreamId].AsString;
+            int commitSequence = doc[MongoCommitFields.CommitSequence].AsInt32;
 
             List<EventMessage> events = doc[MongoCommitFields.Events]
                 .AsBsonArray
@@ -76,7 +71,8 @@
                     ? BsonSerializer.Deserialize<EventMessage>(e.AsBsonDocument[MongoCommitFields.Payload].ToBsonDocument())
                     : serializer.Deserialize<EventMessage>(e.AsBsonDocument[MongoCommitFields.Payload].AsByteArray))
                 .ToList();
-            int streamRevision = doc[MongoCommitFields.Events].AsBsonArray.Last().AsBsonDocument[MongoCommitFields.StreamRevision].AsInt32;
+            //int streamRevision = doc[MongoCommitFields.Events].AsBsonArray.Last().AsBsonDocument[MongoCommitFields.StreamRevision].AsInt32;
+            int streamRevision = doc[MongoCommitFields.StreamRevisionEnd].AsInt32;
             return new Commit(bucketId,
                 streamId,
                 streamRevision,
@@ -143,24 +139,20 @@
 
         public static IMongoQuery ToMongoCommitIdQuery(this CommitAttempt commit)
         {
-            return Query.EQ(MongoCommitFields.LogicalId,
-                    Query.And(
-                        Query.EQ(MongoCommitFields.BucketId, commit.BucketId),
-                        Query.EQ(MongoCommitFields.StreamId, commit.StreamId),
-                        Query.EQ(MongoCommitFields.CommitSequence, commit.CommitSequence)
-                    ).ToBsonDocument()
-            );
+            return Query.And(
+                Query.EQ(MongoCommitFields.BucketId, commit.BucketId),
+                Query.EQ(MongoCommitFields.StreamId, commit.StreamId),
+                Query.EQ(MongoCommitFields.CommitSequence, commit.CommitSequence)
+                );
         }
 
         public static IMongoQuery ToMongoCommitIdQuery(this ICommit commit)
         {
-            return Query.EQ(MongoCommitFields.LogicalId,
-                    Query.And(
-                        Query.EQ(MongoCommitFields.BucketId, commit.BucketId),
-                        Query.EQ(MongoCommitFields.StreamId, commit.StreamId),
-                        Query.EQ(MongoCommitFields.CommitSequence, commit.CommitSequence)
-                    ).ToBsonDocument()
-            );
+            return Query.And(
+                Query.EQ(MongoCommitFields.BucketId, commit.BucketId),
+                Query.EQ(MongoCommitFields.StreamId, commit.StreamId),
+                Query.EQ(MongoCommitFields.CommitSequence, commit.CommitSequence)
+                );
         }
 
         public static IMongoQuery GetSnapshotQuery(string bucketId, string streamId, int maxRevision)
