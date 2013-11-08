@@ -261,13 +261,12 @@ namespace NEventStore.Persistence.Sql
 
         public IEnumerable<ICommit> GetFrom(string checkpointToken)
         {
-            int checkpoint;
-            Guard.NotFalse(int.TryParse(checkpointToken, out checkpoint), () => new ArgumentException("checkpointToken expected to be parsable to an int"));
+            LongCheckpoint checkpoint = LongCheckpoint.Parse(checkpointToken);
             Logger.Debug(Messages.GettingAllCommitsFromCheckpoint, checkpointToken);
             return ExecuteQuery(query =>
             {
                 string statement = _dialect.GetCommitsFromCheckpoint;
-                query.AddParameter(_dialect.CheckpointNumber, checkpoint);
+                query.AddParameter(_dialect.CheckpointNumber, checkpoint.Value);
                 return query.ExecutePagedQuery(statement, (q, r) => q.SetParameter(_dialect.CheckpointNumber, r.CheckpointNumber())).Select(x => x.GetCommit(_serializer));
             });
         }
