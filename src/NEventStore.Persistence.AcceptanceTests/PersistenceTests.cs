@@ -6,11 +6,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using System.Transactions;
     using NEventStore.Diagnostics;
     using NEventStore.Persistence.AcceptanceTests.BDD;
     using Xunit;
@@ -980,6 +976,28 @@ namespace NEventStore.Persistence.AcceptanceTests
             _fixture = data;
         }
     }*/
+
+    public class when_a_payload_is_large : PersistenceEngineConcern
+    {
+        [Fact]
+        public void can_commit()
+        {
+            const int bodyLength = 10000;
+            var attempt = new CommitAttempt(
+                Bucket.Default,
+                Guid.NewGuid().ToString(),
+                1,
+                Guid.NewGuid(),
+                1,
+                DateTime.UtcNow,
+                new Dictionary<string, object>(),
+                new List<EventMessage> {new EventMessage { Body = new string('a', bodyLength) } });
+            Persistence.Commit(attempt);
+
+            ICommit commits = Persistence.GetFrom().Single();
+            commits.Events.Single().Body.ToString().Length.ShouldBe(bodyLength);
+        }
+    }
 
     public class PersistenceEngineConcern : SpecificationBase, IUseFixture<PersistenceEngineFixture>
     {
