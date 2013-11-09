@@ -14,6 +14,11 @@ namespace NEventStore.Persistence.Sql.SqlDialects
             get { return OracleNativeStatements.AppendSnapshotToCommit; }
         }
 
+        public override string CheckpointNumber
+        {
+            get { return MakeOracleParameter(base.CheckpointNumber); }
+        }
+
         public override string CommitId
         {
             get { return MakeOracleParameter(base.CommitId); }
