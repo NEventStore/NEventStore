@@ -7,7 +7,7 @@ namespace NEventStore.Persistence.AcceptanceTests
     {
         public PersistenceEngineFixture()
         {
-            _createPersistence = () => new InMemoryRavenPersistenceFactory(TestRavenConfig.GetDefaultConfig()).Build();
+            _createPersistence = _ => new InMemoryRavenPersistenceFactory(TestRavenConfig.GetDefaultConfig()).Build();
         }
     }
 }
