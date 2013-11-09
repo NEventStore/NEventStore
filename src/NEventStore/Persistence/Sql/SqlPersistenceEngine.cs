@@ -268,7 +268,6 @@ namespace NEventStore.Persistence.Sql
             {
                 string statement = _dialect.GetCommitsFromCheckpoint;
                 query.AddParameter(_dialect.CheckpointNumber, checkpoint.LongValue);
-                //return query.ExecutePagedQuery(statement, (q, r) => q.SetParameter(_dialect.CheckpointNumber, r.CheckpointNumber()))
                 return query.ExecutePagedQuery(statement, (q, r) => { })
                     .Select(x => x.GetCommit(_serializer));
             });
