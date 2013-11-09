@@ -812,14 +812,14 @@ namespace NEventStore.Persistence.AcceptanceTests
     public class when_gettingfromcheckpoint_amount_of_commits_exceeds_pagesize : PersistenceEngineConcern
     {
         private ICommit[] _commits;
-        private const int PageSize = 512;
-        private const int MoreThanPageSize = PageSize + 1;
+        private int _moreThanPageSize;
 
         protected override void Because()
         {
+            _moreThanPageSize = ConfiguredPageSizeForTesting + 1;
             var eventStore = new OptimisticEventStore(Persistence, null);
             // TODO: Not sure how to set the actual pagesize to the const defined above
-            for (int i = 0; i < 128; i++)
+            for (int i = 0; i < _moreThanPageSize; i++)
             {
                 using (IEventStream stream = eventStore.OpenStream(Guid.NewGuid()))
                 {
@@ -834,7 +834,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void Should_have_expected_number_of_commits()
         {
-            _commits.Length.ShouldBe(MoreThanPageSize);
+            _commits.Length.ShouldBe(_moreThanPageSize);
         }
     }
     
