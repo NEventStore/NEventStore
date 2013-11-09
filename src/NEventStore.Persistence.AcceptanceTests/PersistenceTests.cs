@@ -1021,8 +1021,9 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         public void Initialize(int pageSize)
         {
-            if (_persistence != null)
+            if (_persistence != null && !_persistence.IsDisposed)
             {
+                _persistence.Drop();
                 _persistence.Dispose();
             }
             _persistence = new PerformanceCounterPersistenceEngine(_createPersistence(pageSize), "tests");
@@ -1036,8 +1037,9 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         public void Dispose()
         {
-            if (_persistence != null)
+            if (_persistence != null && !_persistence.IsDisposed)
             {
+                _persistence.Drop();
                 _persistence.Dispose();
             }
         }
