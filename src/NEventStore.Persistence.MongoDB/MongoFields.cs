@@ -36,8 +36,8 @@
         public const string BucketId = "BucketId";
         public const string StreamId = "StreamId";
         public const string StreamRevision = "StreamRevision";
-        public const string StreamRevisionStart = "StreamRevisionStart";
-        public const string StreamRevisionEnd = "StreamRevisionEnd";
+        public const string StreamRevisionFrom = "StreamRevisionFrom";
+        public const string StreamRevisionTo = "StreamRevisionTo";
 
         public const string CommitId = "CommitId";
         public const string CommitStamp = "CommitStamp";

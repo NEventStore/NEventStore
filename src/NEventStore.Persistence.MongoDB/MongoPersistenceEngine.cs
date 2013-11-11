@@ -103,8 +103,8 @@
                     IndexKeys.Ascending(
                             MongoCommitFields.BucketId,
                             MongoCommitFields.StreamId,
-                            MongoCommitFields.StreamRevisionStart,
-                            MongoCommitFields.StreamRevisionEnd
+                            MongoCommitFields.StreamRevisionFrom,
+                            MongoCommitFields.StreamRevisionTo
                             //,MongoCommitFields.FullqualifiedStreamRevision
                     ),
                     IndexOptions.SetName(MongoCommitIndexes.GetFrom).SetUnique(true)
@@ -133,8 +133,8 @@
                 IMongoQuery query = Query.And(
                     Query.EQ(MongoCommitFields.BucketId, bucketId),
                     Query.EQ(MongoCommitFields.StreamId, streamId),
-                    Query.GTE(MongoCommitFields.StreamRevisionEnd, minRevision),
-                    Query.LTE(MongoCommitFields.StreamRevisionStart, maxRevision));
+                    Query.GTE(MongoCommitFields.StreamRevisionTo, minRevision),
+                    Query.LTE(MongoCommitFields.StreamRevisionFrom, maxRevision));
                     //Query.GTE(MongoCommitFields.FullqualifiedStreamRevision, minRevision),
                     //Query.LTE(MongoCommitFields.FullqualifiedStreamRevision, maxRevision));
 

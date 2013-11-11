@@ -46,8 +46,8 @@
                 {MongoCommitFields.Headers, BsonDocumentWrapper.Create(commit.Headers)},
                 {MongoCommitFields.Events, new BsonArray(events)},
                 {MongoCommitFields.Dispatched, false},
-                {MongoCommitFields.StreamRevisionStart, streamRevisionStart},
-                {MongoCommitFields.StreamRevisionEnd, streamRevision - 1},
+                {MongoCommitFields.StreamRevisionFrom, streamRevisionStart},
+                {MongoCommitFields.StreamRevisionTo, streamRevision - 1},
                 {MongoCommitFields.BucketId, commit.BucketId},
                 {MongoCommitFields.StreamId, commit.StreamId},
                 {MongoCommitFields.CommitSequence, commit.CommitSequence}
@@ -72,7 +72,7 @@
                     : serializer.Deserialize<EventMessage>(e.AsBsonDocument[MongoCommitFields.Payload].AsByteArray))
                 .ToList();
             //int streamRevision = doc[MongoCommitFields.Events].AsBsonArray.Last().AsBsonDocument[MongoCommitFields.StreamRevision].AsInt32;
-            int streamRevision = doc[MongoCommitFields.StreamRevisionEnd].AsInt32;
+            int streamRevision = doc[MongoCommitFields.StreamRevisionTo].AsInt32;
             return new Commit(bucketId,
                 streamId,
                 streamRevision,
