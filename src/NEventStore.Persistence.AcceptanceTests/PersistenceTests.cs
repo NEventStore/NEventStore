@@ -525,13 +525,13 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Because()
         {
-            _loaded = Persistence.GetFrom(checkPoint.ToString()).Select(c => c.CommitId).ToLinkedList();
+            _loaded = Persistence.GetFrom(checkPoint.ToString()).Select(c => c.CommitId).ToList();
         }
 
         [Fact]
         public void should_load_the_same_number_of_commits_which_have_been_persisted_starting_from_the_checkpoint()
         {
-            _loaded.Count.ShouldBe(_committed.Count - checkPoint + 1);
+            _loaded.Count.ShouldBe(_committed.Count - checkPoint);
         }
 
         [Fact]
