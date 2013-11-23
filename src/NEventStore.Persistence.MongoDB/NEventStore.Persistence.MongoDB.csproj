@@ -72,6 +72,7 @@
       <DependentUpon>Messages.resx</DependentUpon>
     </Compile>
     <Compile Include="MongoFields.cs" />
+    <Compile Include="MongoPersistenceOptions.cs" />
     <Compile Include="MongoPersistenceEngine.cs" />
     <Compile Include="MongoPersistenceFactory.cs" />
     <Compile Include="MongoPersistenceWireup.cs" />

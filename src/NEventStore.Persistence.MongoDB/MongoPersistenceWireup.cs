@@ -12,7 +12,7 @@ namespace NEventStore // ReSharper restore CheckNamespace
     {
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (MongoPersistenceWireup));
 
-        public MongoPersistenceWireup(Wireup inner, Func<string> connectionStringProvider, IDocumentSerializer serializer)
+        public MongoPersistenceWireup(Wireup inner, Func<string> connectionStringProvider, IDocumentSerializer serializer, MongoPersistenceOptions persistenceOptions)
             : base(inner)
         {
             Logger.Debug("Configuring Mongo persistence engine.");
@@ -23,7 +23,7 @@ namespace NEventStore // ReSharper restore CheckNamespace
                 Logger.Warn("MongoDB does not participate in transactions using TransactionScope.");
             }
 
-            Container.Register(c => new MongoPersistenceFactory(connectionStringProvider, serializer).Build());
+			Container.Register(c => new MongoPersistenceFactory(connectionStringProvider, serializer, persistenceOptions).Build());
         }
     }
 }
