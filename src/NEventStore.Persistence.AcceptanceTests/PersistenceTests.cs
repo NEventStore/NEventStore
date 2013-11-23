@@ -1,4 +1,3 @@
-
 #pragma warning disable 169
 // ReSharper disable InconsistentNaming
 
@@ -6,11 +5,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using System.Transactions;
     using NEventStore.Diagnostics;
     using NEventStore.Persistence.AcceptanceTests.BDD;
     using Xunit;
@@ -304,7 +299,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Because()
         {
-            _loaded = Persistence.GetFrom(_streamId, 0, int.MaxValue).Select(c => c.CommitId).ToLinkedList();
+            _loaded = Persistence.GetFrom(_streamId, 0, int.MaxValue).Select(c => c.CommitId).ToList();
         }
 
         [Fact]
@@ -500,7 +495,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Because()
         {
-            _loaded = Persistence.GetFrom(_start).Select(c => c.CommitId).ToLinkedList();
+            _loaded = Persistence.GetFrom(_start).Select(c => c.CommitId).ToList();
         }
 
         [Fact]
@@ -530,13 +525,13 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Because()
         {
-            _loaded = Persistence.GetFrom(checkPoint.ToString()).Select(c => c.CommitId).ToLinkedList();
+            _loaded = Persistence.GetFrom(checkPoint.ToString()).Select(c => c.CommitId).ToList();
         }
 
         [Fact]
         public void should_load_the_same_number_of_commits_which_have_been_persisted_starting_from_the_checkpoint()
         {
-            _loaded.Count.ShouldBe(_committed.Count - checkPoint + 1);
+            _loaded.Count.ShouldBe(_committed.Count - checkPoint);
         }
 
         [Fact]
@@ -814,18 +809,17 @@ namespace NEventStore.Persistence.AcceptanceTests
         }
     }
 
-    public class when_gettingfromcheckpoint_amount_of_commits_exceeds_pagesize : SpecificationBase, IUseFixture<PersistenceEngineFixture>
+    public class when_gettingfromcheckpoint_amount_of_commits_exceeds_pagesize : PersistenceEngineConcern
     {
         private ICommit[] _commits;
-        private PersistenceEngineFixture _fixture;
-        private const int PageSize = 512;
-        private const int MoreThanPageSize = PageSize + 1;
+        private int _moreThanPageSize;
 
         protected override void Because()
         {
-            var eventStore = new OptimisticEventStore(_fixture.Persistence, null);
+            _moreThanPageSize = ConfiguredPageSizeForTesting + 1;
+            var eventStore = new OptimisticEventStore(Persistence, null);
             // TODO: Not sure how to set the actual pagesize to the const defined above
-            for (int i = 0; i < MoreThanPageSize; i++)
+            for (int i = 0; i < _moreThanPageSize; i++)
             {
                 using (IEventStream stream = eventStore.OpenStream(Guid.NewGuid()))
                 {
@@ -833,18 +827,14 @@ namespace NEventStore.Persistence.AcceptanceTests
                     stream.CommitChanges(Guid.NewGuid());
                 }
             }
-            _commits = _fixture.Persistence.GetFrom(null).ToArray();
+            ICommit[] commits = Persistence.GetFrom(DateTime.MinValue).ToArray();
+            _commits = Persistence.GetFrom().ToArray();
         }
 
         [Fact]
         public void Should_have_expected_number_of_commits()
         {
-            _commits.Length.ShouldBe(MoreThanPageSize);
-        }
-
-        public void SetFixture(PersistenceEngineFixture data)
-        {
-            _fixture = data;
+            _commits.Length.ShouldBe(_moreThanPageSize);
         }
     }
     
@@ -981,43 +971,68 @@ namespace NEventStore.Persistence.AcceptanceTests
         }
     }*/
 
+    public class when_a_payload_is_large : PersistenceEngineConcern
+    {
+        [Fact]
+        public void can_commit()
+        {
+            const int bodyLength = 10000;
+            var attempt = new CommitAttempt(
+                Bucket.Default,
+                Guid.NewGuid().ToString(),
+                1,
+                Guid.NewGuid(),
+                1,
+                DateTime.UtcNow,
+                new Dictionary<string, object>(),
+                new List<EventMessage> {new EventMessage { Body = new string('a', bodyLength) } });
+            Persistence.Commit(attempt);
+
+            ICommit commits = Persistence.GetFrom().Single();
+            commits.Events.Single().Body.ToString().Length.ShouldBe(bodyLength);
+        }
+    }
+
     public class PersistenceEngineConcern : SpecificationBase, IUseFixture<PersistenceEngineFixture>
     {
-        private PersistenceEngineFixture _data;
+        private PersistenceEngineFixture _fixture;
 
         protected IPersistStreams Persistence
         {
-            get { return _data.Persistence; }
+            get { return _fixture.Persistence; ; }
         }
 
         protected int ConfiguredPageSizeForTesting
         {
-            get { return int.Parse("pageSize".GetSetting() ?? "0"); }
+            get { return 128; }
         }
 
         public void SetFixture(PersistenceEngineFixture data)
         {
-            _data = data;
+            _fixture = data;
+            _fixture.Initialize(ConfiguredPageSizeForTesting);
         }
     }
 
     public partial class PersistenceEngineFixture : IDisposable
     {
-        private readonly Func<IPersistStreams> _createPersistence;
+        private readonly Func<int, IPersistStreams> _createPersistence;
         private IPersistStreams _persistence;
+
+        public void Initialize(int pageSize)
+        {
+            if (_persistence != null && !_persistence.IsDisposed)
+            {
+                _persistence.Drop();
+                _persistence.Dispose();
+            }
+            _persistence = new PerformanceCounterPersistenceEngine(_createPersistence(pageSize), "tests");
+            _persistence.Initialize();
+        }
 
         public IPersistStreams Persistence
         {
-            get
-            {
-                if (_persistence == null)
-                {
-                    _persistence = new PerformanceCounterPersistenceEngine(_createPersistence(), "tests");
-                    _persistence.Initialize();
-                }
-
-                return _persistence;
-            }
+            get { return _persistence; }
         }
 
         public void Dispose()
@@ -1025,11 +1040,9 @@ namespace NEventStore.Persistence.AcceptanceTests
             if (_persistence != null && !_persistence.IsDisposed)
             {
                 _persistence.Drop();
+                _persistence.Dispose();
             }
-
-            Persistence.Dispose();
         }
     }
     // ReSharper restore InconsistentNaming
-
 }

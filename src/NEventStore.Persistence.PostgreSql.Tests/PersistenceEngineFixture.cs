@@ -8,11 +8,12 @@
     {
         public PersistenceEngineFixture()
         {
-            _createPersistence = () =>
+            _createPersistence = pageSize =>
                 new SqlPersistenceFactory(
                     new EnviromentConnectionFactory("PostgreSql", "Npgsql"),
                     new BinarySerializer(),
-                    new PostgreSqlDialect()).Build();
+                    new PostgreSqlDialect(),
+                    pageSize: pageSize).Build();
         }
     }
 }

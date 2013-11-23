@@ -8,11 +8,12 @@
     {
         public PersistenceEngineFixture()
         {
-            _createPersistence = () =>
+            _createPersistence = pageSize =>
                 new SqlPersistenceFactory(
                     new EnviromentConnectionFactory("Oracle", "Oracle.DataAccess.Client"),
                     new BinarySerializer(),
-                    new OracleNativeDialect()).Build();
+                    new OracleNativeDialect(),
+                    pageSize: pageSize).Build();
         }
     }
 }

@@ -1,6 +1,5 @@
-﻿// ReSharper disable CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace NEventStore.Persistence.AcceptanceTests
-// ReSharper restore CheckNamespace
 {
     using NEventStore.Persistence.InMemory;
 
@@ -8,7 +7,7 @@ namespace NEventStore.Persistence.AcceptanceTests
     {
         public PersistenceEngineFixture()
         {
-            _createPersistence = () =>
+            _createPersistence = _ =>
                 new InMemoryPersistenceEngine();
         }
     }

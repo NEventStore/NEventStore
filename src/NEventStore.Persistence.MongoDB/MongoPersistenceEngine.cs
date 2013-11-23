@@ -144,7 +144,7 @@
             var intCheckpoint = LongCheckpoint.Parse(checkpointToken);
             Logger.Debug(Messages.GettingAllCommitsFromCheckpoint, intCheckpoint.Value);
             return TryMongo(() => PersistedCommits
-                .Find(Query.GTE(MongoFields.CheckpointNumber, intCheckpoint.LongValue)))
+                .Find(Query.GT(MongoFields.CheckpointNumber, intCheckpoint.LongValue)))
                 .SetSortOrder(MongoFields.CheckpointNumber)
                 .Select(x => x.ToCommit(_serializer));
         }

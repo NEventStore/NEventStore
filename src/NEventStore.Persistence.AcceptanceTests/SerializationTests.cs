@@ -173,11 +173,6 @@
             get { return _data.Serializer; }
         }
 
-        public int ConfiguredPageSizeForTesting
-        {
-            get { return int.Parse("pageSize".GetSetting() ?? "0"); }
-        }
-
         public void SetFixture(SerializerFixture data)
         {
             _data = data;
