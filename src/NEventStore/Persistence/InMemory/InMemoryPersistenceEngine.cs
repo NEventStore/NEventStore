@@ -189,9 +189,115 @@ namespace NEventStore.Persistence.InMemory
             }
         }
 
+        private class IdentityForDuplicationDetection
+        {
+            protected bool Equals(IdentityForDuplicationDetection other)
+            {
+                return string.Equals(this.streamId, other.streamId) && string.Equals(this.bucketId, other.bucketId) && this.commitSequence == other.commitSequence && this.commitId.Equals(other.commitId);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj))
+                {
+                    return false;
+                }
+                if (ReferenceEquals(this, obj))
+                {
+                    return true;
+                }
+                if (obj.GetType() != this.GetType())
+                {
+                    return false;
+                }
+                return Equals((IdentityForDuplicationDetection)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hashCode = this.streamId.GetHashCode();
+                    hashCode = (hashCode * 397) ^ this.bucketId.GetHashCode();
+                    hashCode = (hashCode * 397) ^ this.commitSequence;
+                    hashCode = (hashCode * 397) ^ this.commitId.GetHashCode();
+                    return hashCode;
+                }
+            }
+
+            private int commitSequence;
+
+            private Guid commitId;
+
+            private string bucketId;
+
+            private string streamId;
+
+            public IdentityForDuplicationDetection(CommitAttempt commitAttempt)
+            {
+                bucketId = commitAttempt.BucketId;
+                streamId = commitAttempt.StreamId;
+                commitId = commitAttempt.CommitId;
+                commitSequence = commitAttempt.CommitSequence;
+            }
+
+            public IdentityForDuplicationDetection(Commit commit)
+            {
+                bucketId = commit.BucketId;
+                streamId = commit.StreamId;
+                commitId = commit.CommitId;
+                commitSequence = commit.CommitSequence;
+            }
+        }
+
+        private class IdentityForConcurrencyConflictDetection
+        {
+            protected bool Equals(IdentityForConcurrencyConflictDetection other)
+            {
+                return this.commitSequence == other.commitSequence && string.Equals(this.streamId, other.streamId);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj))
+                {
+                    return false;
+                }
+                if (ReferenceEquals(this, obj))
+                {
+                    return true;
+                }
+                if (obj.GetType() != this.GetType())
+                {
+                    return false;
+                }
+                return Equals((IdentityForConcurrencyConflictDetection)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return (this.commitSequence * 397) ^ this.streamId.GetHashCode();
+                }
+            }
+
+            private int commitSequence;
+
+            private string streamId;
+
+            public IdentityForConcurrencyConflictDetection(Commit commit)
+            {
+                streamId = commit.StreamId;
+                commitSequence = commit.CommitSequence;
+            }
+        }
+
         private class Bucket
         {
             private readonly IList<InMemoryCommit> _commits = new List<InMemoryCommit>();
+            private readonly ICollection<IdentityForDuplicationDetection> _potentialDuplicates = new HashSet<IdentityForDuplicationDetection>();
+            private readonly ICollection<IdentityForConcurrencyConflictDetection> _potentialConflicts = new HashSet<IdentityForConcurrencyConflictDetection>(); 
 
             public IEnumerable<InMemoryCommit> GetCommits()
             {
@@ -262,12 +368,14 @@ namespace NEventStore.Persistence.InMemory
                         attempt.Headers,
                         attempt.Events,
                         checkpoint);
-                    if (_commits.Any(c => c.StreamId == commit.StreamId && c.CommitSequence == commit.CommitSequence))
+                    if (_potentialConflicts.Contains(new IdentityForConcurrencyConflictDetection(commit)))
                     {
                         throw new ConcurrencyException();
                     }
                     _stamps[commit.CommitId] = commit.CommitStamp;
                     _commits.Add(commit);
+                    _potentialDuplicates.Add(new IdentityForDuplicationDetection(commit));
+                    _potentialConflicts.Add(new IdentityForConcurrencyConflictDetection(commit));
                     _undispatched.Add(commit);
                     IStreamHead head = _heads.FirstOrDefault(x => x.StreamId == commit.StreamId);
                     _heads.Remove(head);
@@ -280,11 +388,7 @@ namespace NEventStore.Persistence.InMemory
 
             private void DetectDuplicate(CommitAttempt attempt)
             {
-                if (_commits.Any(c => 
-                    c.BucketId == attempt.BucketId &&
-                    c.StreamId == attempt.StreamId &&
-                    c.CommitId == attempt.CommitId &&
-                    c.CommitSequence == attempt.CommitSequence))
+                if (_potentialDuplicates.Contains(new IdentityForDuplicationDetection(attempt)))
                 {
                     throw new DuplicateCommitException();
                 }
@@ -352,6 +456,8 @@ namespace NEventStore.Persistence.InMemory
                     _commits.Clear();
                     _snapshots.Clear();
                     _heads.Clear();
+                    _potentialConflicts.Clear();
+                    _potentialDuplicates.Clear();
                 }
             }
 

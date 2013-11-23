@@ -7,7 +7,9 @@ namespace NEventStore
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Moq;
+
+    using FakeItEasy;
+
     using NEventStore.Persistence;
     using NEventStore.Persistence.AcceptanceTests.BDD;
     using Xunit;
@@ -22,7 +24,7 @@ namespace NEventStore
         [Fact]
         public void should_dispose_the_underlying_persistence()
         {
-            persistence.Verify(x => x.Dispose(), Times.Once());
+            A.CallTo(() => persistence.Dispose()).MustHaveHappened(Repeated.Exactly.Once);
         }
     }
 
@@ -30,41 +32,43 @@ namespace NEventStore
     {
         private ICommit _commit;
         private DateTime date;
-        private Mock<IPipelineHook> hook1;
-        private Mock<IPipelineHook> hook2;
+        private IPipelineHook hook1;
+        private IPipelineHook hook2;
 
         protected override void Context()
         {
             date = DateTime.Now;
             _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, new LongCheckpoint(0).Value, null, null);
 
-            hook1 = new Mock<IPipelineHook>();
-            hook1.Setup(h => h.Select(_commit)).Returns(_commit);
+            hook1 = A.Fake<IPipelineHook>();
+            A.CallTo(() => hook1.Select(_commit)).Returns(_commit);
             pipelineHooks.Add(hook1);
 
-            hook2 = new Mock<IPipelineHook>();
-            hook2.Setup(h => h.Select(_commit)).Returns(_commit);
+            hook2 = A.Fake<IPipelineHook>();
+            A.CallTo(() => hook2.Select(_commit)).Returns(_commit);
             pipelineHooks.Add(hook2);
 
-            persistence.Setup(p => p.GetFrom(Bucket.Default, date)).Returns(new List<ICommit> { _commit });
+            A.CallTo(() => persistence.GetFrom(Bucket.Default, date)).Returns(new List<ICommit> { _commit });
         }
 
         protected override void Because()
         {
+            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+            // Forces enumeration of commits.
             Decorator.GetFrom(date).ToList();
         }
 
         [Fact]
         public void should_call_the_underlying_persistence_to_get_events()
         {
-            persistence.Verify(x => x.GetFrom(Bucket.Default, date), Times.Once());
+            A.CallTo(() => persistence.GetFrom(Bucket.Default, date)).MustHaveHappened(Repeated.Exactly.Once);
         }
 
         [Fact]
         public void should_pass_all_events_through_the_pipeline_hooks()
         {
-            hook1.Verify(h => h.Select(_commit), Times.Once());
-            hook2.Verify(h => h.Select(_commit), Times.Once());
+            A.CallTo(() => hook1.Select(_commit)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => hook2.Select(_commit)).MustHaveHappened(Repeated.Exactly.Once);
         }
     }
 
@@ -72,9 +76,8 @@ namespace NEventStore
     {
         private ICommit _commit;
         private DateTime end;
-        private Mock<IPipelineHook> hook1;
-        private Mock<IPipelineHook> hook2;
-
+        private IPipelineHook hook1;
+        private IPipelineHook hook2;
         private DateTime start;
 
         protected override void Context()
@@ -83,33 +86,35 @@ namespace NEventStore
             end = DateTime.Now;
             _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, new LongCheckpoint(0).Value, null, null);
 
-            hook1 = new Mock<IPipelineHook>();
-            hook1.Setup(h => h.Select(_commit)).Returns(_commit);
+            hook1 = A.Fake<IPipelineHook>();
+            A.CallTo(() => hook1.Select(_commit)).Returns(_commit);
             pipelineHooks.Add(hook1);
 
-            hook2 = new Mock<IPipelineHook>();
-            hook2.Setup(h => h.Select(_commit)).Returns(_commit);
+            hook2 = A.Fake<IPipelineHook>();
+            A.CallTo(() => hook2.Select(_commit)).Returns(_commit);
             pipelineHooks.Add(hook2);
 
-            persistence.Setup(p => p.GetFromTo(Bucket.Default, start, end)).Returns(new List<ICommit> { _commit });
+            A.CallTo(() => persistence.GetFromTo(Bucket.Default, start, end)).Returns(new List<ICommit> { _commit });
         }
 
         protected override void Because()
         {
+            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+            // Forces enumeration of commits
             Decorator.GetFromTo(start, end).ToList();
         }
 
         [Fact]
         public void should_call_the_underlying_persistence_to_get_events()
         {
-            persistence.Verify(x => x.GetFromTo(Bucket.Default, start, end), Times.Once());
+            A.CallTo(() => persistence.GetFromTo(Bucket.Default, start, end)).MustHaveHappened(Repeated.Exactly.Once);
         }
 
         [Fact]
         public void should_pass_all_events_through_the_pipeline_hooks()
         {
-            hook1.Verify(h => h.Select(_commit), Times.Once());
-            hook2.Verify(h => h.Select(_commit), Times.Once());
+            A.CallTo(() => hook1.Select(_commit)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => hook2.Select(_commit)).MustHaveHappened(Repeated.Exactly.Once);
         }
     }
 
@@ -130,20 +135,104 @@ namespace NEventStore
         [Fact]
         public void should_dispose_the_underlying_persistence()
         {
-            persistence.Verify(x => x.Commit(attempt), Times.Once());
+            A.CallTo(() => persistence.Commit(attempt)).MustHaveHappened(Repeated.Exactly.Once);
+        }
+    }
+
+    public class when_reading_the_all_events_from_checkpoint : using_underlying_persistence
+    {
+        private ICommit _commit;
+        private DateTime date;
+        private IPipelineHook hook1;
+        private IPipelineHook hook2;
+
+        protected override void Context()
+        {
+            date = DateTime.Now;
+            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, new LongCheckpoint(0).Value, null, null);
+
+            hook1 = A.Fake<IPipelineHook>();
+            A.CallTo(() => hook1.Select(_commit)).Returns(_commit);
+            pipelineHooks.Add(hook1);
+
+            hook2 = A.Fake<IPipelineHook>();
+            A.CallTo(() => hook2.Select(_commit)).Returns(_commit);
+            pipelineHooks.Add(hook2);
+
+            A.CallTo(() => persistence.GetFrom(null)).Returns(new List<ICommit> { _commit });
+        }
+
+        protected override void Because()
+        {
+            Decorator.GetFrom(null).ToList();
+        }
+
+        [Fact]
+        public void should_call_the_underlying_persistence_to_get_events()
+        {
+            A.CallTo(() => persistence.GetFrom(null)).MustHaveHappened(Repeated.Exactly.Once);
+        }
+
+        [Fact]
+        public void should_pass_all_events_through_the_pipeline_hooks()
+        {
+            A.CallTo(() => hook1.Select(_commit)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => hook2.Select(_commit)).MustHaveHappened(Repeated.Exactly.Once);
+        }
+    }
+
+    public class when_reading_the_all_events_get_undispatched : using_underlying_persistence
+    {
+        private ICommit _commit;
+        private DateTime date;
+        private IPipelineHook hook1;
+        private IPipelineHook hook2;
+
+        protected override void Context()
+        {
+            date = DateTime.Now;
+            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, new LongCheckpoint(0).Value, null, null);
+
+            hook1 = A.Fake<IPipelineHook>();
+            A.CallTo(() => hook1.Select(_commit)).Returns(_commit);
+            pipelineHooks.Add(hook1);
+
+            hook2 = A.Fake<IPipelineHook>();
+            A.CallTo(() => hook2.Select(_commit)).Returns(_commit);
+            pipelineHooks.Add(hook2);
+
+            A.CallTo(() => persistence.GetUndispatchedCommits()).Returns(new List<ICommit> { _commit });
+        }
+
+        protected override void Because()
+        {
+            Decorator.GetUndispatchedCommits().ToList();
+        }
+
+        [Fact]
+        public void should_call_the_underlying_persistence_to_get_events()
+        {
+            A.CallTo(() => persistence.GetUndispatchedCommits()).MustHaveHappened(Repeated.Exactly.Once);
+        }
+
+        [Fact]
+        public void should_pass_all_events_through_the_pipeline_hooks()
+        {
+            A.CallTo(() => hook1.Select(_commit)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => hook2.Select(_commit)).MustHaveHappened(Repeated.Exactly.Once);
         }
     }
 
     public abstract class using_underlying_persistence : SpecificationBase
     {
         private PipelineHooksAwarePersistanceDecorator decorator;
-        protected readonly Mock<IPersistStreams> persistence = new Mock<IPersistStreams>();
-        protected readonly List<Mock<IPipelineHook>> pipelineHooks = new List<Mock<IPipelineHook>>();
+        protected readonly IPersistStreams persistence = A.Fake<IPersistStreams>();
+        protected readonly List<IPipelineHook> pipelineHooks = new List<IPipelineHook>();
         protected string streamId = Guid.NewGuid().ToString();
 
         public PipelineHooksAwarePersistanceDecorator Decorator
         {
-            get { return decorator ?? (decorator = new PipelineHooksAwarePersistanceDecorator(persistence.Object, pipelineHooks.Select(x => x.Object))); }
+            get { return decorator ?? (decorator = new PipelineHooksAwarePersistanceDecorator(persistence, pipelineHooks.Select(x => x))); }
             set { decorator = value; }
         }
     }

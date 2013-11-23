@@ -4,7 +4,9 @@
 namespace NEventStore
 {
     using System;
-    using Moq;
+
+    using FakeItEasy;
+
     using NEventStore.Dispatcher;
     using NEventStore.Persistence;
     using NEventStore.Persistence.AcceptanceTests;
@@ -15,14 +17,14 @@ namespace NEventStore
     public class when_a_commit_has_been_persisted : SpecificationBase
     {
         private readonly ICommit _commit = new Commit(Bucket.Default, Guid.NewGuid().ToString(), 0, Guid.NewGuid(), 0, DateTime.MinValue, new LongCheckpoint(0).Value, null, null);
+        
+        private readonly IScheduleDispatches _dispatcher = A.Fake<IScheduleDispatches>();
 
-        private readonly Mock<IScheduleDispatches> _dispatcher = new Mock<IScheduleDispatches>();
         private DispatchSchedulerPipelineHook _dispatchSchedulerHook;
 
         protected override void Context()
         {
-            _dispatchSchedulerHook = new DispatchSchedulerPipelineHook(_dispatcher.Object);
-            _dispatcher.Setup(x => x.ScheduleDispatch(null));
+            _dispatchSchedulerHook = new DispatchSchedulerPipelineHook(_dispatcher);
         }
 
         protected override void Because()
@@ -33,7 +35,7 @@ namespace NEventStore
         [Fact]
         public void should_invoke_the_configured_dispatcher()
         {
-            _dispatcher.Verify(x => x.ScheduleDispatch(_commit), Times.Once());
+            A.CallTo(() => _dispatcher.ScheduleDispatch(_commit)).MustHaveHappened(Repeated.Exactly.Once);
         }
     }
 

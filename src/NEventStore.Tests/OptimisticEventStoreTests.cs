@@ -7,7 +7,9 @@ namespace NEventStore
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Moq;
+
+    using FakeItEasy;
+
     using NEventStore.Persistence;
     using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
@@ -72,7 +74,7 @@ namespace NEventStore
 
         protected override void Context()
         {
-            Persistence.Setup(x => x.GetFrom(Bucket.Default, streamId, 0, 0)).Returns(new ICommit[0]);
+            A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, 0, 0)).Returns(new ICommit[0]);
         }
 
         protected override void Because()
@@ -130,7 +132,8 @@ namespace NEventStore
 
         protected override void Context()
         {
-            Persistence.Setup(x => x.GetFrom(Bucket.Default, streamId, MinRevision, int.MaxValue)).Returns(Enumerable.Empty<ICommit>());
+            A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, MinRevision, int.MaxValue))
+                .Returns(Enumerable.Empty<ICommit>());
         }
 
         protected override void Because()
@@ -156,9 +159,12 @@ namespace NEventStore
         {
             _committed = BuildCommitStub(MinRevision, 1);
 
-            Persistence.Setup(x => x.GetFrom(Bucket.Default, streamId, MinRevision, MaxRevision)).Returns(new[] {_committed});
-            PipelineHooks.Add(new Mock<IPipelineHook>());
-            PipelineHooks[0].Setup(x => x.Select(_committed)).Returns(_committed);
+            A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, MinRevision, MaxRevision))
+                .Returns(new[] { _committed });
+
+            var hook = A.Fake<IPipelineHook>();
+            A.CallTo(() => hook.Select(_committed)).Returns(_committed);
+            PipelineHooks.Add(hook);
         }
 
         protected override void Because()
@@ -169,13 +175,13 @@ namespace NEventStore
         [Fact]
         public void should_invoke_the_underlying_infrastructure_with_the_values_provided()
         {
-            Persistence.Verify(x => x.GetFrom(Bucket.Default, streamId, MinRevision, MaxRevision), Times.Once());
+            A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, MinRevision, MaxRevision)).MustHaveHappened(Repeated.Exactly.Once);
         }
 
         [Fact]
         public void should_provide_the_commits_to_the_selection_hooks()
         {
-            PipelineHooks.ForEach(x => x.Verify(hook => hook.Select(_committed), Times.Once()));
+            PipelineHooks.ForEach(x => A.CallTo(() => x.Select(_committed)).MustHaveHappened(Repeated.Exactly.Once));
         }
 
         [Fact]
@@ -196,7 +202,7 @@ namespace NEventStore
             _snapshot = new Snapshot(streamId, 42, "snapshot");
             _committed = new[] { BuildCommitStub(42, 0)};
 
-            Persistence.Setup(x => x.GetFrom(Bucket.Default, streamId, 42, MaxRevision)).Returns(_committed);
+            A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, 42, MaxRevision)).Returns(_committed);
         }
 
         protected override void Because()
@@ -207,7 +213,7 @@ namespace NEventStore
         [Fact]
         public void should_query_the_underlying_storage_using_the_revision_of_the_snapshot()
         {
-            Persistence.Verify(x => x.GetFrom(Bucket.Default, streamId, 42, MaxRevision), Times.Once());
+            A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, 42, MaxRevision)).MustHaveHappened(Repeated.Exactly.Once);
         }
     }
 
@@ -225,7 +231,8 @@ namespace NEventStore
             _committed = new EnumerableCounter<ICommit>(
                 new[] { BuildCommitStub(HeadStreamRevision, HeadCommitSequence)});
 
-            Persistence.Setup(x => x.GetFrom(Bucket.Default, streamId, HeadStreamRevision, int.MaxValue)).Returns(_committed);
+            A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, HeadStreamRevision, int.MaxValue))
+                .Returns(_committed);
         }
 
         protected override void Because()
@@ -274,18 +281,21 @@ namespace NEventStore
     {
         protected override void Context()
         {
-            Persistence.Setup(x => x.GetFrom(Bucket.Default, streamId, 0, int.MaxValue)).Returns(Enumerable.Empty<ICommit>());
+            A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, 0, int.MaxValue))
+                .Returns(Enumerable.Empty<ICommit>());
         }
 
         protected override void Because()
         {
+            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+            // This forces the enumeration of the commits.
             Store.GetFrom(streamId, 0, int.MaxValue).ToList();
         }
 
         [Fact]
         public void should_pass_a_revision_range_to_the_persistence_infrastructure()
         {
-            Persistence.Verify(x => x.GetFrom(Bucket.Default, streamId, 0, int.MaxValue), Times.Once());
+            A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, 0, int.MaxValue)).MustHaveHappened(Repeated.Exactly.Once);
         }
     }
 
@@ -297,9 +307,7 @@ namespace NEventStore
         {
             _committed = BuildCommitStub(1, 1);
 
-            Persistence
-                .Setup(x => x.GetFrom(Bucket.Default, streamId, 0, int.MaxValue))
-                .Returns(new[] {_committed});
+            A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, 0, int.MaxValue)).Returns(new[] { _committed });
         }
 
         protected override void Because()
@@ -310,7 +318,7 @@ namespace NEventStore
         [Fact]
         public void should_pass_the_maximum_possible_revision_to_the_persistence_infrastructure()
         {
-            Persistence.Verify(x => x.GetFrom(Bucket.Default, streamId, 0, int.MaxValue), Times.Once());
+            A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, 0, int.MaxValue)).MustHaveHappened(Repeated.Exactly.Once);
         }
     }
 
@@ -340,9 +348,8 @@ namespace NEventStore
             snapshot = new Snapshot(streamId, 1, "snapshot");
             _committed = BuildCommitStub(1, 1);
 
-            Persistence
-                .Setup(x => x.GetFrom(Bucket.Default, streamId, snapshot.StreamRevision, int.MaxValue))
-                .Returns(new[] {_committed});
+            A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, snapshot.StreamRevision, int.MaxValue))
+                .Returns(new[] { _committed });
         }
 
         protected override void Because()
@@ -353,7 +360,7 @@ namespace NEventStore
         [Fact]
         public void should_pass_the_maximum_possible_revision_to_the_persistence_infrastructure()
         {
-            Persistence.Verify(x => x.GetFrom(Bucket.Default, streamId, snapshot.StreamRevision, int.MaxValue), Times.Once());
+            A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, snapshot.StreamRevision, int.MaxValue)).MustHaveHappened(Repeated.Exactly.Once);
         }
     }
 
@@ -382,8 +389,8 @@ namespace NEventStore
         {
             _populatedAttempt = BuildCommitAttemptStub(1, 1);
 
-            Persistence.Setup(x => x.Commit(_populatedAttempt))
-                .Returns((CommitAttempt attempt) =>
+            A.CallTo(() => Persistence.Commit(_populatedAttempt))
+                .ReturnsLazily((CommitAttempt attempt) =>
                 {
                     _populatedCommit = new Commit(attempt.BucketId,
                         attempt.StreamId,
@@ -397,9 +404,10 @@ namespace NEventStore
                     return _populatedCommit;
                 });
 
-            PipelineHooks.Add(new Mock<IPipelineHook>());
-            PipelineHooks[0].Setup(x => x.PreCommit(_populatedAttempt)).Returns(true);
-            PipelineHooks[0].Setup(x => x.PostCommit(_populatedCommit));
+            var hook = A.Fake<IPipelineHook>();
+            A.CallTo(() => hook.PreCommit(_populatedAttempt)).Returns(true);
+
+            PipelineHooks.Add(hook);
         }
 
         protected override void Because()
@@ -410,19 +418,19 @@ namespace NEventStore
         [Fact]
         public void should_provide_the_commit_to_the_precommit_hooks()
         {
-            PipelineHooks.ForEach(x => x.Verify(hook => hook.PreCommit(_populatedAttempt), Times.Once()));
+            PipelineHooks.ForEach(x => A.CallTo(() => x.PreCommit(_populatedAttempt)).MustHaveHappened(Repeated.Exactly.Once));
         }
 
         [Fact]
         public void should_provide_the_commit_attempt_to_the_configured_persistence_mechanism()
         {
-            Persistence.Verify(x => x.Commit(_populatedAttempt), Times.Once());
+            A.CallTo(() => Persistence.Commit(_populatedAttempt)).MustHaveHappened(Repeated.Exactly.Once);
         }
 
         [Fact]
         public void should_provide_the_commit_to_the_postcommit_hooks()
         {
-            PipelineHooks.ForEach(x => x.Verify(hook => hook.PostCommit(_populatedCommit), Times.Once()));
+            PipelineHooks.ForEach(x => A.CallTo(() => x.PostCommit(_populatedCommit)).MustHaveHappened(Repeated.Exactly.Once));
         }
     }
 
@@ -436,8 +444,10 @@ namespace NEventStore
             _attempt = BuildCommitAttemptStub(1, 1);
             _commit = BuildCommitStub(1, 1);
 
-            PipelineHooks.Add(new Mock<IPipelineHook>());
-            PipelineHooks[0].Setup(x => x.PreCommit(_attempt)).Returns(false);
+            var hook = A.Fake<IPipelineHook>();
+            A.CallTo(() => hook.PreCommit(_attempt)).Returns(false);
+
+            PipelineHooks.Add(hook);
         }
 
         protected override void Because()
@@ -448,13 +458,13 @@ namespace NEventStore
         [Fact]
         public void should_not_call_the_underlying_infrastructure()
         {
-            Persistence.Verify(x => x.Commit(_attempt), Times.Never());
+            A.CallTo(() => Persistence.Commit(_attempt)).MustNotHaveHappened();
         }
 
         [Fact]
         public void should_not_provide_the_commit_to_the_postcommit_hooks()
         {
-            PipelineHooks.ForEach(x => x.Verify(y => y.PostCommit(_commit), Times.Never()));
+            PipelineHooks.ForEach(x => A.CallTo(() => x.PostCommit(_commit)).MustNotHaveHappened());
         }
     }
 
@@ -476,30 +486,31 @@ namespace NEventStore
         [Fact]
         public void should_dispose_the_underlying_persistence()
         {
-            Persistence.Verify(x => x.Dispose(), Times.Once());
+            A.CallTo(() => Persistence.Dispose()).MustHaveHappened(Repeated.Exactly.Once);
         }
     }
 
     public abstract class using_persistence : SpecificationBase
     {
-        private Mock<IPersistStreams> persistence;
-        private List<Mock<IPipelineHook>> pipelineHooks;
+        private IPersistStreams persistence;
+
+        private List<IPipelineHook> pipelineHooks;
         private OptimisticEventStore store;
         protected string streamId = Guid.NewGuid().ToString();
 
-        protected Mock<IPersistStreams> Persistence
+        protected IPersistStreams Persistence
         {
-            get { return persistence ?? (persistence = new Mock<IPersistStreams>()); }
+            get { return persistence ?? (persistence = A.Fake<IPersistStreams>()); }
         }
 
-        protected List<Mock<IPipelineHook>> PipelineHooks
+        protected List<IPipelineHook> PipelineHooks
         {
-            get { return pipelineHooks ?? (pipelineHooks = new List<Mock<IPipelineHook>>()); }
+            get { return pipelineHooks ?? (pipelineHooks = new List<IPipelineHook>()); }
         }
 
         protected OptimisticEventStore Store
         {
-            get { return store ?? (store = new OptimisticEventStore(Persistence.Object, PipelineHooks.Select(x => x.Object))); }
+            get { return store ?? (store = new OptimisticEventStore(Persistence, PipelineHooks.Select(x => x))); }
         }
 
         protected override void Cleanup()

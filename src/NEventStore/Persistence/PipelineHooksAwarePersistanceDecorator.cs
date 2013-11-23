@@ -67,7 +67,7 @@ namespace NEventStore.Persistence
 
         public IEnumerable<ICommit> GetFrom(string checkpointToken)
         {
-            return _original.GetFrom(checkpointToken);
+            return ExecuteHooks(_original.GetFrom(checkpointToken));
         }
 
         public ICheckpoint GetCheckpoint(string checkpointToken)
@@ -82,7 +82,7 @@ namespace NEventStore.Persistence
 
         public IEnumerable<ICommit> GetUndispatchedCommits()
         {
-            return _original.GetUndispatchedCommits();
+            return ExecuteHooks(_original.GetUndispatchedCommits());
         }
 
         public void MarkCommitAsDispatched(ICommit commit)

@@ -4,7 +4,9 @@
     using System.Reactive.Linq;
     using System.Reactive.Threading.Tasks;
     using System.Threading.Tasks;
-    using Moq;
+
+    using FakeItEasy;
+
     using NEventStore.Persistence;
     using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
@@ -22,13 +24,13 @@
         [Fact]
         public void When_interval_less_than_zero_then_should_throw()
         {
-            Catch.Exception(() => new PollingClient(new Mock<IPersistStreams>().Object,-1)).ShouldBeInstanceOf<ArgumentException>();
+            Catch.Exception(() => new PollingClient(A.Fake<IPersistStreams>(),-1)).ShouldBeInstanceOf<ArgumentException>();
         }
 
         [Fact]
         public void When_interval_is_zero_then_should_throw()
         {
-            Catch.Exception(() => new PollingClient(new Mock<IPersistStreams>().Object, 0)).ShouldBeInstanceOf<ArgumentException>();
+            Catch.Exception(() => new PollingClient(A.Fake<IPersistStreams>(), 0)).ShouldBeInstanceOf<ArgumentException>();
         }
     }
 
