@@ -182,7 +182,7 @@ ORDER BY CheckpointNumber</value>
     <value>/*GetCommitsFromInstant*/
 SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
 FROM Commits 
-WHERE  CheckpointNumber &gt;= :CheckpointNumber
+WHERE  CheckpointNumber &gt; :CheckpointNumber
 ORDER BY  CheckpointNumber
 WHERE ROWNUM &lt;= :Limit;</value>
   </data>

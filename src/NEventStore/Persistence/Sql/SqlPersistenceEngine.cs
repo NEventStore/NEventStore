@@ -105,7 +105,7 @@ namespace NEventStore.Persistence.Sql
                     string statement = _dialect.GetCommitsFromInstant;
                     query.AddParameter(_dialect.BucketId, bucketId);
                     query.AddParameter(_dialect.CommitStamp, start);
-                    return query.ExecutePagedQuery(statement, (q, r) => q.SetParameter(_dialect.CommitSequence, r.CommitSequence()))
+                    return query.ExecutePagedQuery(statement, (q, r) => { })
                             .Select(x => x.GetCommit(_serializer));
 
                 });
@@ -129,7 +129,8 @@ namespace NEventStore.Persistence.Sql
                     query.AddParameter(_dialect.BucketId, bucketId);
                     query.AddParameter(_dialect.CommitStampStart, start);
                     query.AddParameter(_dialect.CommitStampEnd, end);
-                    return query.ExecutePagedQuery(statement, (q, r) => { }).Select(x => x.GetCommit(_serializer));
+                    return query.ExecutePagedQuery(statement, (q, r) => { })
+                        .Select(x => x.GetCommit(_serializer));
                 });
         }
 
@@ -261,14 +262,14 @@ namespace NEventStore.Persistence.Sql
 
         public IEnumerable<ICommit> GetFrom(string checkpointToken)
         {
-            int checkpoint;
-            Guard.NotFalse(int.TryParse(checkpointToken, out checkpoint), () => new ArgumentException("checkpointToken expected to be parsable to an int"));
+            LongCheckpoint checkpoint = LongCheckpoint.Parse(checkpointToken);
             Logger.Debug(Messages.GettingAllCommitsFromCheckpoint, checkpointToken);
             return ExecuteQuery(query =>
             {
                 string statement = _dialect.GetCommitsFromCheckpoint;
-                query.AddParameter(_dialect.CheckpointNumber, checkpoint);
-                return query.ExecutePagedQuery(statement, (q, r) => q.SetParameter(_dialect.CheckpointNumber, r.CheckpointNumber())).Select(x => x.GetCommit(_serializer));
+                query.AddParameter(_dialect.CheckpointNumber, checkpoint.LongValue);
+                return query.ExecutePagedQuery(statement, (q, r) => { })
+                    .Select(x => x.GetCommit(_serializer));
             });
         }
 

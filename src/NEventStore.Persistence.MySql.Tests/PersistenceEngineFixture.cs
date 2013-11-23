@@ -8,10 +8,12 @@
     {
         public PersistenceEngineFixture()
         {
-            _createPersistence = () =>
-                    new SqlPersistenceFactory(new EnviromentConnectionFactory("MySql", "MySql.Data.MySqlClient"),
+            _createPersistence = pageSize =>
+                    new SqlPersistenceFactory(
+                        new EnviromentConnectionFactory("MySql", "MySql.Data.MySqlClient"),
                         new BinarySerializer(),
-                        new MySqlDialect()).Build();
+                        new MySqlDialect(),
+                        pageSize: pageSize).Build();
         }
     }
 }

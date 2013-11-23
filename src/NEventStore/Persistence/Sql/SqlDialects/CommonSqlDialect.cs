@@ -161,7 +161,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects
             get { return true; }
         }
 
-        public string CheckpointNumber
+        public virtual string CheckpointNumber
         {
             get { return "@CheckpointNumber"; }
         }

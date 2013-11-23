@@ -221,7 +221,7 @@ DROP TABLE Commits;</value>
   <data name="GetCommitsFromCheckpoint" xml:space="preserve">
     <value>SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
 FROM Commits
-WHERE  CheckpointNumber &gt;= @CheckpointNumber
+WHERE  CheckpointNumber &gt; @CheckpointNumber
 ORDER BY CheckpointNumber
  LIMIT @Limit OFFSET @Skip;</value>
   </data>

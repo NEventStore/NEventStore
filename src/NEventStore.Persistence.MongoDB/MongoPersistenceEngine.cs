@@ -170,7 +170,7 @@
                 .Find(
                     Query.And(
                         Query.NE(MongoCommitFields.BucketId, MongoSystemBuckets.RecycleBin),
-                        Query.GTE(MongoCommitFields.CheckpointNumber, intCheckpoint.LongValue)
+                        Query.GT(MongoCommitFields.CheckpointNumber, intCheckpoint.LongValue)
                     )
                 )
                 .SetSortOrder(MongoCommitFields.CheckpointNumber)

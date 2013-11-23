@@ -8,11 +8,12 @@
     {
         public PersistenceEngineFixture()
         {
-            _createPersistence = () => 
+            _createPersistence = pageSize => 
                 new SqlPersistenceFactory(
                     new ConfigurationConnectionFactory("NEventStore.Persistence.AcceptanceTests.Properties.Settings.SQLite"),
                     new BinarySerializer(),
-                    new SqliteDialect()).Build();
+                    new SqliteDialect(),
+                    pageSize: pageSize).Build();
         }
     }
 }
