@@ -513,14 +513,14 @@ namespace NEventStore.Persistence.AcceptanceTests
 
     public class when_paging_over_all_commits_from_a_particular_checkpoint : PersistenceEngineConcern
     {
-        private HashSet<Guid> _committed;
+        private List<Guid> _committed;
         private ICollection<Guid> _loaded;
         private Guid _streamId;
         private const int checkPoint = 2;
 
         protected override void Context()
         {
-            _committed = Persistence.CommitMany(ConfiguredPageSizeForTesting + 1).Select(c => c.CommitId).ToHashSet();
+            _committed = Persistence.CommitMany(ConfiguredPageSizeForTesting + 1).Select(c => c.CommitId).ToList();
         }
 
         protected override void Because()
@@ -537,7 +537,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_load_only_the_commits_starting_from_the_checkpoint()
         {
-            _committed.Skip(checkPoint-1).All(x => _loaded.Contains(x)).ShouldBeTrue(); // all commits should be found in loaded collection
+            _committed.Skip(checkPoint).All(x => _loaded.Contains(x)).ShouldBeTrue(); // all commits should be found in loaded collection
         }
     }
 
