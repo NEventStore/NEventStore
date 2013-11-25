@@ -976,7 +976,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void can_commit()
         {
-            const int bodyLength = 10000;
+            const int bodyLength = 100000;
             var attempt = new CommitAttempt(
                 Bucket.Default,
                 Guid.NewGuid().ToString(),
