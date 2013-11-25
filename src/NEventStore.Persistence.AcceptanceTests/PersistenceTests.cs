@@ -630,6 +630,27 @@ namespace NEventStore.Persistence.AcceptanceTests
         }
     }
 
+    public class when_a_payload_is_large : PersistenceEngineConcern
+    {
+        [Fact]
+        public void can_commit()
+        {
+            const int bodyLength = 1000000;
+            var attempt = new Commit(
+                Guid.NewGuid(),
+                1,
+                Guid.NewGuid(),
+                1,
+                DateTime.UtcNow,
+                new Dictionary<string, object>(),
+                new List<EventMessage> { new EventMessage { Body = new string('a', bodyLength) } });
+            Persistence.Commit(attempt);
+
+            var commit = Persistence.GetFrom(DateTime.MinValue).Single();
+            commit.Events.Single().Body.ToString().Length.ShouldBe(bodyLength);
+        }
+    }
+
     public class PersistenceEngineConcern : SpecificationBase, IUseFixture<PersistenceEngineFixture>
     {
         private PersistenceEngineFixture _data;
