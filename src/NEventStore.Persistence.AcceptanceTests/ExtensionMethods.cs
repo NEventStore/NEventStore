@@ -79,7 +79,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
             return new CommitAttempt(commit.BucketId,
                 commit.StreamId,
-                commit.StreamRevision + 2,
+                commit.StreamRevision + messages.Count,
                 Guid.NewGuid(),
                 commit.CommitSequence + 1,
                 commit.CommitStamp.AddSeconds(1),

@@ -154,6 +154,42 @@ namespace NEventStore.Persistence.AcceptanceTests
         }
     }
 
+    public class when_reading_from_a_given_revision_to_commit_revision : PersistenceEngineConcern
+    {
+        private const int LoadFromCommitContainingRevision = 3;
+        private const int UpToCommitWithContainingRevision = 6;
+        private ICommit[] _committed;
+        private ICommit _oldest, _oldest2, _oldest3;
+        private string _streamId;
+
+        protected override void Context()
+        {
+            _oldest = Persistence.CommitSingle(); // 2 events, revision 1-2
+            _oldest2 = Persistence.CommitNext(_oldest); // 2 events, revision 3-4
+            _oldest3 = Persistence.CommitNext(_oldest2); // 2 events, revision 5-6
+            Persistence.CommitNext(_oldest3); // 2 events, revision 7-8
+
+            _streamId = _oldest.StreamId;
+        }
+
+        protected override void Because()
+        {
+            _committed = Persistence.GetFrom(_streamId, LoadFromCommitContainingRevision, UpToCommitWithContainingRevision).ToArray();
+        }
+
+        [Fact]
+        public void should_start_from_the_commit_which_contains_the_min_stream_revision_specified()
+        {
+            _committed.First().CommitId.ShouldBe(_oldest2.CommitId); // contains revision 3
+        }
+
+        [Fact]
+        public void should_read_up_to_the_commit_which_contains_the_max_stream_revision_specified()
+        {
+            _committed.Last().CommitId.ShouldBe(_oldest3.CommitId); // contains revision 6
+        }
+    }
+
     public class when_committing_a_stream_with_the_same_revision : PersistenceEngineConcern
 
     {
