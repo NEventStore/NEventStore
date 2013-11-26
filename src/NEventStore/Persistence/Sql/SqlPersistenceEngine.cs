@@ -61,7 +61,8 @@ namespace NEventStore.Persistence.Sql
             _scopeOption = scopeOption;
             _pageSize = pageSize;
 
-            _addPayloadParamater = _dialect is OracleNativeDialect
+            // Oracle needs special handling to store payloads (blob) > 32KB https://github.com/NEventStore/NEventStore/issues/292
+            _addPayloadParamater = (_dialect is OracleNativeDialect && OracleAddPayloadParamater.OracleManageDataAccessIsReferenced())
                 ? new OracleAddPayloadParamater(_dialect)
                 : new AddPayloadParamater(_dialect);
 
@@ -497,11 +498,12 @@ namespace NEventStore.Persistence.Sql
             private readonly PropertyInfo _oracleParamaterValueProperty;
             private readonly MethodInfo _oracleBlobWriteMethod;
             private readonly Type _oracleBlobType;
+            private const string AssemblyName = "Oracle.ManagedDataAccess";
 
             public OracleAddPayloadParamater(ISqlDialect dialect)
                 : base(dialect)
             {
-                Assembly assembly = Assembly.Load("Oracle.ManagedDataAccess");
+                Assembly assembly = Assembly.Load(AssemblyName);
                 _oracleParamaterType = assembly.GetType("Oracle.ManagedDataAccess.Client.OracleParameter", true);
                 _oracleParamaterValueProperty = _oracleParamaterType.GetProperty("Value");
                 _oracleBlobType = assembly.GetType("Oracle.ManagedDataAccess.Types.OracleBlob", true);
@@ -509,6 +511,11 @@ namespace NEventStore.Persistence.Sql
                 Type oracleParamapterType = assembly.GetType("Oracle.ManagedDataAccess.Client.OracleDbType", true);
                 FieldInfo blobField = oracleParamapterType.GetField("Blob");
                 _blobDbType = blobField.GetValue(null);
+            }
+
+            public static bool OracleManageDataAccessIsReferenced()
+            {
+                return Assembly.Load(AssemblyName) != null;
             }
 
             public override void WritePayload(IDbConnection connection, IDbStatement cmd, byte[] payload)
