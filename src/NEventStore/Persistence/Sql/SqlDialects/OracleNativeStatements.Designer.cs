@@ -153,7 +153,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects {
         ///FROM Commits
         ///WHERE BucketId = :BucketId AND StreamId = :StreamId
         ///   AND StreamRevision &gt;= :StreamRevision
-        ///   AND (StreamRevision - Items) &lt;= :MaxStreamRevision
+        ///   AND (StreamRevision - Items) &lt; :MaxStreamRevision
         ///   AND CommitSequence &gt; :CommitSequence
         ///ORDER BY CheckpointNumber.
         /// </summary>
