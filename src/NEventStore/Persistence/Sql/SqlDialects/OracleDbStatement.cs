@@ -8,9 +8,13 @@ namespace NEventStore.Persistence.Sql.SqlDialects
 
     public class OracleDbStatement : CommonDbStatement
     {
+        private readonly ISqlDialect _dialect;
+
         public OracleDbStatement(ISqlDialect dialect, TransactionScope scope, IDbConnection connection, IDbTransaction transaction)
             : base(dialect, scope, connection, transaction)
-        {}
+        {
+            _dialect = dialect;
+        }
 
         public override void AddParameter(string name, object value)
         {
@@ -53,6 +57,17 @@ namespace NEventStore.Persistence.Sql.SqlDialects
                 pi.SetValue(command, true, null);
             }
             return command;
+        }
+
+        protected override void BuildParameter(IDbCommand command, string name, object value)
+        {
+            //HACK
+            if (name == _dialect.Payload)
+            {
+                command.Parameters.Add(value);
+                return;
+            }
+            base.BuildParameter(command, name, value);
         }
     }
 }

@@ -129,6 +129,11 @@ namespace NEventStore.Persistence.Sql.SqlDialects
             get { return MakeOracleParameter(base.Threshold); }
         }
 
+        public override string Payload
+        {
+            get { return MakeOracleParameter(base.Payload); }
+        }
+
         private string AddOuterTrailingCommitSequence(string query)
         {
             return (query.TrimEnd(new[] {';'}) + "\r\n" + OracleNativeStatements.AddCommitSequence);
