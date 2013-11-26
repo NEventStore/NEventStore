@@ -185,7 +185,7 @@ If you would also like to package the solution for distribution, pass in the 'pa
 		}
 	}
 
-For a more complete example, please see [NEventStore.Example](https://github.com/joliver/EventStore/blob/master/doc/NEventStore.Example/MainProgram.cs) project in the doc subdirectory.
+For a more complete example, please see [NEventStore.Example](https://github.com/NEventStore/NEventStore/blob/master/src/NEventStore.Example/MainProgram.cs) project in the doc subdirectory.
 
 ## Running the Example
 The NEventStore.Example project is configured by default to use a SQL event store. To run the example 
