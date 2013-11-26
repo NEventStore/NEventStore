@@ -16,6 +16,7 @@ namespace NEventStore.Persistence.Sql
 
     public class SqlPersistenceEngine : IPersistStreams
     {
+        
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (SqlPersistenceEngine));
         private static readonly DateTime EpochTime = new DateTime(1970, 1, 1);
         private readonly IConnectionFactory _connectionFactory;
@@ -25,7 +26,6 @@ namespace NEventStore.Persistence.Sql
         private readonly ISerialize _serializer;
         private bool _disposed;
         private int _initialized;
-        private Action<IDbConnection, IDbStatement, ISerialize, CommitAttempt> _writePayload;
         private readonly AddPayloadParamater _addPayloadParamater;
 
         public SqlPersistenceEngine(
@@ -297,6 +297,9 @@ namespace NEventStore.Persistence.Sql
             _disposed = true;
         }
 
+        protected virtual void OnPersistCommit(IDbStatement cmd, CommitAttempt attempt)
+        {}
+
         private ICommit PersistCommit(CommitAttempt attempt)
         {
             Logger.Debug(Messages.AttemptingToCommit, attempt.Events.Count, attempt.StreamId, attempt.CommitSequence, attempt.BucketId);
@@ -313,6 +316,7 @@ namespace NEventStore.Persistence.Sql
                 cmd.AddParameter(_dialect.CommitStamp, attempt.CommitStamp);
                 cmd.AddParameter(_dialect.Headers, _serializer.Serialize(attempt.Headers));
                 _addPayloadParamater.WritePayload(connection, cmd, _serializer.Serialize(attempt.Events.ToList()));
+                OnPersistCommit(cmd, attempt);
                 var checkpointNumber = cmd.ExecuteScalar(_dialect.PersistCommit).ToLong();
                 return new Commit(
                     attempt.BucketId,
