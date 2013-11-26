@@ -838,7 +838,8 @@ namespace NEventStore.Persistence.AcceptanceTests
         }
     }
     
-    /*public class TransactionConcern : SpecificationBase, IUseFixture<PersistenceEngineFixture>
+    /* Commented out because it's not a scenario we're supporting
+     * public class TransactionConcern : SpecificationBase, IUseFixture<PersistenceEngineFixture>
     {
         private ICommit[] _commits;
         private PersistenceEngineFixture _fixture;
