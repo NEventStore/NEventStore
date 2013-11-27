@@ -4,6 +4,7 @@ namespace NEventStore.Persistence.Sql
     using System.Collections.Generic;
     using System.Data;
     using System.Globalization;
+    using System.IO;
     using System.Linq;
     using System.Reflection;
     using System.Security.Cryptography;
@@ -515,7 +516,15 @@ namespace NEventStore.Persistence.Sql
 
             public static bool OracleManageDataAccessIsReferenced()
             {
-                return Assembly.Load(AssemblyName) != null;
+                try
+                {
+                    Assembly.Load(AssemblyName);
+                    return true;
+                }
+                catch (FileNotFoundException)
+                {
+                    return false;
+                }
             }
 
             public override void WritePayload(IDbConnection connection, IDbStatement cmd, byte[] payload)

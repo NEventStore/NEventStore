@@ -88,6 +88,7 @@
     <Compile Include="Persistence\InMemory\InMemoryPersistenceTests.cs" />
     <Compile Include="Persistence\InMemory\PersistenceEngineFixture.cs" />
     <Compile Include="Persistence\Sql\SqlPersistenceEngineTests.cs" />
+    <Compile Include="Persistence\Sql\SqlPersistenceFactoryTests.cs" />
     <Compile Include="PipelineHooksAwarePersistanceDecoratorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
