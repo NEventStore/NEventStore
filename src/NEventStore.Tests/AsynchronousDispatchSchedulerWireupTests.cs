@@ -57,7 +57,7 @@
                 _eventStore = Wireup
                     .Init()
                     .UsingInMemoryPersistence()
-                    .UsingAsynchronousDispatchScheduler(_dummyDispatchCommits, DispatcherStartup.Explicit)
+                    .UsingAsynchronousDispatchScheduler(_dummyDispatchCommits, DispatcherSchedulerStartup.Explicit)
                     .Build();
             }
 
@@ -93,7 +93,7 @@
                 _eventStore = Wireup
                     .Init()
                     .UsingInMemoryPersistence()
-                    .UsingAsynchronousDispatchScheduler(_dummyDispatchCommits, DispatcherStartup.Explicit)
+                    .UsingAsynchronousDispatchScheduler(_dummyDispatchCommits, DispatcherSchedulerStartup.Explicit)
                     .Build();
             }
 

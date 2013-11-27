@@ -8,7 +8,7 @@ namespace NEventStore
     {
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (SynchronousDispatchSchedulerWireup));
 
-        public SynchronousDispatchSchedulerWireup(Wireup wireup, IDispatchCommits dispatcher, DispatcherStartup startup)
+        public SynchronousDispatchSchedulerWireup(Wireup wireup, IDispatchCommits dispatcher, DispatcherSchedulerStartup schedulerStartup)
             : base(wireup)
         {
             Logger.Debug(Messages.SyncDispatchSchedulerRegistered);
@@ -18,7 +18,7 @@ namespace NEventStore
                 var dispatchScheduler = new SynchronousDispatchScheduler(
                     c.Resolve<IDispatchCommits>(),
                     c.Resolve<IPersistStreams>());
-                if (startup == DispatcherStartup.Auto)
+                if (schedulerStartup == DispatcherSchedulerStartup.Auto)
                 {
                     dispatchScheduler.Start();
                 }

@@ -3,7 +3,7 @@ namespace NEventStore
     /// <summary>
     /// Dispatcher startup types.
     /// </summary>
-    public enum DispatcherStartup
+    public enum DispatcherSchedulerStartup
     {
         /// <summary>
         /// Dispatcher will be started automatically.

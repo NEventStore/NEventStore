@@ -6,17 +6,17 @@ namespace NEventStore
     {
         public static SynchronousDispatchSchedulerWireup UsingSynchronousDispatchScheduler(
             this Wireup wireup,
-            DispatcherStartup startup = DispatcherStartup.Auto)
+            DispatcherSchedulerStartup schedulerStartup = DispatcherSchedulerStartup.Auto)
         {
-            return wireup.UsingSynchronousDispatchScheduler(null, startup);
+            return wireup.UsingSynchronousDispatchScheduler(null, schedulerStartup);
         }
 
         public static SynchronousDispatchSchedulerWireup UsingSynchronousDispatchScheduler(
             this Wireup wireup,
             IDispatchCommits dispatcher,
-            DispatcherStartup startup = DispatcherStartup.Auto)
+            DispatcherSchedulerStartup schedulerStartup = DispatcherSchedulerStartup.Auto)
         {
-            return new SynchronousDispatchSchedulerWireup(wireup, dispatcher, startup);
+            return new SynchronousDispatchSchedulerWireup(wireup, dispatcher, schedulerStartup);
         }
     }
 }

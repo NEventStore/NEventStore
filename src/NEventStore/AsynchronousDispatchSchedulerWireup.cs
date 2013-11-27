@@ -9,7 +9,7 @@ namespace NEventStore
     {
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (AsynchronousDispatchSchedulerWireup));
 
-        public AsynchronousDispatchSchedulerWireup(Wireup wireup, IDispatchCommits dispatcher, DispatcherStartup startup)
+        public AsynchronousDispatchSchedulerWireup(Wireup wireup, IDispatchCommits dispatcher, DispatcherSchedulerStartup schedulerStartup)
             : base(wireup)
         {
             var option = Container.Resolve<TransactionScopeOption>();
@@ -25,7 +25,7 @@ namespace NEventStore
                 var dispatchScheduler = new AsynchronousDispatchScheduler(
                     c.Resolve<IDispatchCommits>(),
                     c.Resolve<IPersistStreams>());
-                if (startup == DispatcherStartup.Auto)
+                if (schedulerStartup == DispatcherSchedulerStartup.Auto)
                 {
                     dispatchScheduler.Start();
                 }
