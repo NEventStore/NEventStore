@@ -1,6 +1,7 @@
 // ReSharper disable once CheckNamespace
 namespace NEventStore
 {
+    using System;
     using System.Transactions;
     using NEventStore.Logging;
     using NEventStore.Persistence.Sql;
@@ -49,6 +50,11 @@ namespace NEventStore
             Logger.Debug(Messages.StreamIdHasherSpecified, instance.GetType());
             Container.Register(instance);
             return this;
+        }
+
+        public virtual SqlPersistenceWireup WithStreamIdHasher(Func<string, string> getStreamIdHash)
+        {
+            return WithStreamIdHasher(new DelegateStreamIdHasher(getStreamIdHash));
         }
     }
 }

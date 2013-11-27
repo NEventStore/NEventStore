@@ -18,11 +18,11 @@
                 .Init()
                 .UsingSqlPersistence(new EnviromentConnectionFactory("MsSql", "System.Data.SqlClient"))
                 .WithDialect(new MsSqlDialect())
-                .WithStreamIdHasher(new DelegateStreamIdHasher(streamId =>
+                .WithStreamIdHasher(streamId =>
                 {
                     _hasherInvoked = true;
                     return new Sha1StreamIdHasher().GetHash(streamId);
-                }))
+                })
                 .InitializeStorageEngine()
                 .UsingBinarySerialization()
                 .Build();
