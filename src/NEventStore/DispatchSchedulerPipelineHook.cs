@@ -6,11 +6,7 @@ namespace NEventStore
     {
         private readonly IScheduleDispatches _scheduler;
 
-        public DispatchSchedulerPipelineHook()
-            : this(null)
-        {}
-
-        public DispatchSchedulerPipelineHook(IScheduleDispatches scheduler)
+        public DispatchSchedulerPipelineHook(IScheduleDispatches scheduler = null)
         {
             _scheduler = scheduler ?? new NullDispatcher(); // serves as a scheduler also
         }

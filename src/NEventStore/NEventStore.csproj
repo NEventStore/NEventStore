@@ -95,6 +95,7 @@
     <Compile Include="Conversion\EventUpconverterPipelineHook.cs" />
     <Compile Include="Diagnostics\PerformanceCounterPersistenceEngine.cs" />
     <Compile Include="Diagnostics\PerformanceCounters.cs" />
+    <Compile Include="DispatcherStartup.cs" />
     <Compile Include="Dispatcher\AsynchronousDispatchScheduler.cs" />
     <Compile Include="Dispatcher\DelegateMessageDispatcher.cs" />
     <Compile Include="Dispatcher\IDispatchCommits.cs" />

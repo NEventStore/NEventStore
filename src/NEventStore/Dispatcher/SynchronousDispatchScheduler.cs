@@ -17,7 +17,6 @@ namespace NEventStore.Dispatcher
             _persistence = persistence;
 
             Logger.Info(Resources.StartingDispatchScheduler);
-            Start();
         }
 
         public void Dispose()
@@ -45,7 +44,7 @@ namespace NEventStore.Dispatcher
             _persistence.Dispose();
         }
 
-        protected virtual void Start()
+        public virtual void Start()
         {
             Logger.Debug(Resources.InitializingPersistence);
             _persistence.Initialize();

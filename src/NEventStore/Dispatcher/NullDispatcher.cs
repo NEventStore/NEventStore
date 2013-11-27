@@ -23,5 +23,10 @@ namespace NEventStore.Dispatcher
             Logger.Info(Resources.SchedulingDispatch, commit.CommitId);
             Dispatch(commit);
         }
+
+        public void Start()
+        {
+            //No-op
+        }
     }
 }

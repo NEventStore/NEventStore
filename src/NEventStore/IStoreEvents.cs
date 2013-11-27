@@ -47,5 +47,10 @@ namespace NEventStore
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
         IEventStream OpenStream(ISnapshot snapshot, int maxRevision);
+
+        /// <summary>
+        ///    Starts the dispatch scheduler. If the dispatch scheduler is set to startup automatically, this will not have any affect.
+        /// </summary>
+        void StartDispatchScheduler();
     }
 }
