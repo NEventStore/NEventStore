@@ -219,4 +219,7 @@
   <data name="FailedToCompareCheckpoint" xml:space="preserve">
     <value>Cannot only compare {0} with {1}.</value>
   </data>
+  <data name="StreamIdHasherSpecified" xml:space="preserve">
+    <value>Registering stream ID hasher of type '{0}'</value>
+  </data>
 </root>

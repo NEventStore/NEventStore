@@ -19,11 +19,13 @@ namespace NEventStore
 
             Logger.Verbose(Messages.AutoDetectDialect);
             Container.Register<ISqlDialect>(c => null); // auto-detect
+            Container.Register<IStreamIdHasher>(c => new Sha1StreamIdHasher());
 
             Container.Register(c => new SqlPersistenceFactory(
                 connectionFactory,
                 c.Resolve<ISerialize>(),
                 c.Resolve<ISqlDialect>(),
+                c.Resolve<IStreamIdHasher>(),
                 c.Resolve<TransactionScopeOption>(),
                 _pageSize).Build());
         }
@@ -39,6 +41,13 @@ namespace NEventStore
         {
             Logger.Debug(Messages.PagingSpecified, records);
             _pageSize = records;
+            return this;
+        }
+
+        public virtual SqlPersistenceWireup WithStreamIdHasher(IStreamIdHasher instance)
+        {
+            Logger.Debug(Messages.StreamIdHasherSpecified, instance.GetType());
+            Container.Register(instance);
             return this;
         }
     }

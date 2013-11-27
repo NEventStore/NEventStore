@@ -14,6 +14,8 @@
                         new BinarySerializer(),
                         new MySqlDialect(),
                         pageSize: pageSize).Build();
+
+            Wireup.Init().UsingSqlPersistence("test");
         }
     }
 }

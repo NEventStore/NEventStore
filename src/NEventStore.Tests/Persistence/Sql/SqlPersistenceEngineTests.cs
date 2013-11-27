@@ -6,7 +6,6 @@
     using FakeItEasy;
     using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
-    using NEventStore.Persistence.Sql.SqlDialects;
     using NEventStore.Serialization;
     using Xunit;
     using Xunit.Should;
@@ -71,6 +70,122 @@
                 _raisedCommand = cmd;
                 _raisedCommitAttempt = attempt;
             }
+        }
+    }
+
+    public class when_hasher_returns_null : SpecificationBase
+    {
+        private SqlPersistenceEngine _sqlPersistenceEngine;
+        private Exception _exception;
+
+        protected override void Context()
+        {
+            _sqlPersistenceEngine = new SqlPersistenceEngine(
+                A.Fake<IConnectionFactory>(),
+                A.Fake<ISqlDialect>(),
+                A.Fake<ISerialize>(),
+                TransactionScopeOption.Suppress,
+                128,
+                new DelegateStreamIdHasher(streamId => null));
+        }
+
+        protected override void Because()
+        {
+            _exception = Catch.Exception(() => _sqlPersistenceEngine.Commit(
+                new CommitAttempt("streamId", 1, Guid.NewGuid(), 1, SystemTime.UtcNow, null, new[] {new EventMessage()})));
+        }
+
+        [Fact]
+        public void should_raise_invalid_operation_exception()
+        {
+            _exception.ShouldBeInstanceOf<InvalidOperationException>();
+        }
+    }
+
+    public class when_hasher_returns_whitespace: SpecificationBase
+    {
+        private SqlPersistenceEngine _sqlPersistenceEngine;
+        private Exception _exception;
+
+        protected override void Context()
+        {
+            _sqlPersistenceEngine = new SqlPersistenceEngine(
+                A.Fake<IConnectionFactory>(),
+                A.Fake<ISqlDialect>(),
+                A.Fake<ISerialize>(),
+                TransactionScopeOption.Suppress,
+                128,
+                new DelegateStreamIdHasher(streamId => " "));
+        }
+
+        protected override void Because()
+        {
+            _exception = Catch.Exception(() => _sqlPersistenceEngine.Commit(
+                new CommitAttempt("streamId", 1, Guid.NewGuid(), 1, SystemTime.UtcNow, null, new[] { new EventMessage() })));
+        }
+
+        [Fact]
+        public void should_raise_invalid_operation_exception()
+        {
+            _exception.ShouldBeInstanceOf<InvalidOperationException>();
+        }
+    }
+
+    public class when_hasher_returns_empty : SpecificationBase
+    {
+        private SqlPersistenceEngine _sqlPersistenceEngine;
+        private Exception _exception;
+
+        protected override void Context()
+        {
+            _sqlPersistenceEngine = new SqlPersistenceEngine(
+                A.Fake<IConnectionFactory>(),
+                A.Fake<ISqlDialect>(),
+                A.Fake<ISerialize>(),
+                TransactionScopeOption.Suppress,
+                128,
+                new DelegateStreamIdHasher(streamId => string.Empty));
+        }
+
+        protected override void Because()
+        {
+            _exception = Catch.Exception(() => _sqlPersistenceEngine.Commit(
+                new CommitAttempt("streamId", 1, Guid.NewGuid(), 1, SystemTime.UtcNow, null, new[] { new EventMessage() })));
+        }
+
+        [Fact]
+        public void should_raise_invalid_operation_exception()
+        {
+            _exception.ShouldBeInstanceOf<InvalidOperationException>();
+        }
+    }
+
+    public class when_hasher_returns_string_longer_than_40_characters : SpecificationBase
+    {
+        private SqlPersistenceEngine _sqlPersistenceEngine;
+        private Exception _exception;
+
+        protected override void Context()
+        {
+            _sqlPersistenceEngine = new SqlPersistenceEngine(
+                A.Fake<IConnectionFactory>(),
+                A.Fake<ISqlDialect>(),
+                A.Fake<ISerialize>(),
+                TransactionScopeOption.Suppress,
+                128,
+                new DelegateStreamIdHasher(streamId => "0123456789012345678901234567890123456789X"));
+        }
+
+        protected override void Because()
+        {
+            _exception = Catch.Exception(() => _sqlPersistenceEngine.Commit(
+                new CommitAttempt("streamId", 1, Guid.NewGuid(), 1, SystemTime.UtcNow, null, new[] { new EventMessage() })));
+        }
+
+        [Fact]
+        public void should_raise_invalid_operation_exception()
+        {
+            _exception.ShouldBeInstanceOf<InvalidOperationException>();
         }
     }
 }

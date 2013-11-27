@@ -60,6 +60,7 @@
     </Compile>
     <Compile Include="PersistenceEngineFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WireupTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NEventStore\NEventStore.csproj">
