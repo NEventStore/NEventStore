@@ -285,4 +285,13 @@
   <data name="DeletingStream" xml:space="preserve">
     <value>Deleting stream '{0}' from bucket '{1}'.</value>
   </data>
+  <data name="StreamIdHashIsNullEmptyOrWhiteSpace" xml:space="preserve">
+    <value>The Stream ID hash function returned is null, empty or whitespace.</value>
+  </data>
+  <data name="StreamIdHashTooLong" xml:space="preserve">
+    <value>The Stream ID hash function returned as string of invalid length. The StreamId supplied was '{0}'. The hash was '{1}', whose length is {2}. The maxium length allowed is {3}.</value>
+  </data>
+  <data name="StreamIdIsNullEmptyOrWhiteSpace" xml:space="preserve">
+    <value>streamId is null, empty, or whitespace.</value>
+  </data>
 </root>

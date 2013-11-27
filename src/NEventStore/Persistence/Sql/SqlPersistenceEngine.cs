@@ -7,8 +7,6 @@ namespace NEventStore.Persistence.Sql
     using System.IO;
     using System.Linq;
     using System.Reflection;
-    using System.Security.Cryptography;
-    using System.Text;
     using System.Threading;
     using System.Transactions;
     using NEventStore.Logging;
@@ -28,6 +26,7 @@ namespace NEventStore.Persistence.Sql
         private bool _disposed;
         private int _initialized;
         private readonly AddPayloadParamater _addPayloadParamater;
+        private readonly IStreamIdHasher _streamIdHasher;
 
         public SqlPersistenceEngine(
             IConnectionFactory connectionFactory,
@@ -35,6 +34,16 @@ namespace NEventStore.Persistence.Sql
             ISerialize serializer,
             TransactionScopeOption scopeOption,
             int pageSize)
+            : this(connectionFactory, dialect, serializer, scopeOption, pageSize, new Sha1StreamIdHasher())
+        {}
+
+        public SqlPersistenceEngine(
+            IConnectionFactory connectionFactory,
+            ISqlDialect dialect,
+            ISerialize serializer,
+            TransactionScopeOption scopeOption,
+            int pageSize,
+            IStreamIdHasher streamIdHasher)
         {
             if (connectionFactory == null)
             {
@@ -56,11 +65,17 @@ namespace NEventStore.Persistence.Sql
                 throw new ArgumentException("pageSize");
             }
 
+            if (streamIdHasher == null)
+            {
+                throw new ArgumentNullException("streamIdHasher");
+            }
+
             _connectionFactory = connectionFactory;
             _dialect = dialect;
             _serializer = serializer;
             _scopeOption = scopeOption;
             _pageSize = pageSize;
+            _streamIdHasher = new StreamIdHasherValidator(streamIdHasher);
 
             // Oracle needs special handling to store payloads (blob) > 32KB https://github.com/NEventStore/NEventStore/issues/292
             _addPayloadParamater = (_dialect is OracleNativeDialect && OracleAddPayloadParamater.OracleManageDataAccessIsReferenced())
@@ -90,7 +105,7 @@ namespace NEventStore.Persistence.Sql
         public virtual IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
         {
             Logger.Debug(Messages.GettingAllCommitsBetween, streamId, minRevision, maxRevision);
-            streamId = streamId.ToHash();
+            streamId = _streamIdHasher.GetHash(streamId);
             return ExecuteQuery(query =>
                 {
                     string statement = _dialect.GetCommitsFromStartingRevision;
@@ -183,7 +198,7 @@ namespace NEventStore.Persistence.Sql
         public virtual void MarkCommitAsDispatched(ICommit commit)
         {
             Logger.Debug(Messages.MarkingCommitAsDispatched, commit.CommitId);
-            string streamId = commit.StreamId.ToHash();
+            string streamId = _streamIdHasher.GetHash(commit.StreamId);
             ExecuteCommand(cmd =>
                 {
                     cmd.AddParameter(_dialect.BucketId, commit.BucketId);
@@ -211,7 +226,7 @@ namespace NEventStore.Persistence.Sql
         public virtual ISnapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
         {
             Logger.Debug(Messages.GettingRevision, streamId, maxRevision);
-            streamId = streamId.ToHash();
+            streamId = _streamIdHasher.GetHash(streamId);
             return ExecuteQuery(query =>
                 {
                     string statement = _dialect.GetSnapshot;
@@ -225,7 +240,7 @@ namespace NEventStore.Persistence.Sql
         public virtual bool AddSnapshot(ISnapshot snapshot)
         {
             Logger.Debug(Messages.AddingSnapshot, snapshot.StreamId, snapshot.StreamRevision);
-            string streamId = snapshot.StreamId.ToHash();
+            string streamId = _streamIdHasher.GetHash(snapshot.StreamId);
             return ExecuteCommand((connection, cmd) =>
                 {
                     cmd.AddParameter(_dialect.BucketId, snapshot.BucketId);
@@ -261,7 +276,7 @@ namespace NEventStore.Persistence.Sql
         public void DeleteStream(string bucketId, string streamId)
         {
             Logger.Warn(Messages.DeletingStream, streamId, bucketId);
-            streamId = streamId.ToHash();
+            streamId = _streamIdHasher.GetHash(streamId);
             ExecuteCommand(cmd =>
                 {
                     cmd.AddParameter(_dialect.BucketId, bucketId);
@@ -305,7 +320,7 @@ namespace NEventStore.Persistence.Sql
         private ICommit PersistCommit(CommitAttempt attempt)
         {
             Logger.Debug(Messages.AttemptingToCommit, attempt.Events.Count, attempt.StreamId, attempt.CommitSequence, attempt.BucketId);
-            string streamId = attempt.StreamId.ToHash();
+            string streamId = _streamIdHasher.GetHash(attempt.StreamId);
             return ExecuteCommand((connection, cmd) =>
             {
                 cmd.AddParameter(_dialect.BucketId, attempt.BucketId);
@@ -335,7 +350,7 @@ namespace NEventStore.Persistence.Sql
 
         private bool DetectDuplicate(CommitAttempt attempt)
         {
-            string streamId = attempt.StreamId.ToHash();
+            string streamId = _streamIdHasher.GetHash(attempt.StreamId);
             return ExecuteCommand(cmd =>
                 {
                     cmd.AddParameter(_dialect.BucketId, attempt.BucketId);
@@ -539,14 +554,37 @@ namespace NEventStore.Persistence.Sql
                 _oracleParamaterValueProperty.SetValue(payloadParam, oracleBlob, null);
             }
         }
-    }
 
-    internal static class StreamIdHashExtensions
-    {
-        internal static string ToHash(this string streamId)
+        private class StreamIdHasherValidator : IStreamIdHasher
         {
-            byte[] hashBytes = SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes(streamId));
-            return BitConverter.ToString(hashBytes).Replace("-", "");
+            private readonly IStreamIdHasher _streamIdHasher;
+            private const int MaxStreamIdHashLength = 40;
+
+            public StreamIdHasherValidator(IStreamIdHasher streamIdHasher)
+            {
+                if (streamIdHasher == null)
+                {
+                    throw new ArgumentNullException("streamIdHasher");
+                }
+                _streamIdHasher = streamIdHasher;
+            }
+            public string GetHash(string streamId)
+            {
+                if (string.IsNullOrWhiteSpace(streamId))
+                {
+                    throw new ArgumentException(Messages.StreamIdIsNullEmptyOrWhiteSpace);
+                }
+                string streamIdHash = _streamIdHasher.GetHash(streamId);
+                if (string.IsNullOrWhiteSpace(streamIdHash))
+                {
+                    throw new InvalidOperationException(Messages.StreamIdHashIsNullEmptyOrWhiteSpace);
+                }
+                if (streamIdHash.Length > MaxStreamIdHashLength)
+                {
+                    throw new InvalidOperationException(Messages.StreamIdHashTooLong.FormatWith(streamId, streamIdHash, streamIdHash.Length, MaxStreamIdHashLength));
+                }
+                return streamIdHash;
+            }
         }
     }
 }
