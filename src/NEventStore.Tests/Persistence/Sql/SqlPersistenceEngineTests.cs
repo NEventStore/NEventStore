@@ -73,33 +73,4 @@
             }
         }
     }
-
-    public class when_initializing_with_oracle_dialect_and_ManagedDataAccess_is_not_found : SpecificationBase
-    {
-        private SqlPersistenceEngine _sqlPersistenceEngine;
-        private Exception _exception;
-
-        protected override void Context()
-        {
-            _sqlPersistenceEngine = new SqlPersistenceEngine(
-                A.Fake<IConnectionFactory>(),
-                new OracleNativeDialect(),
-                A.Fake<ISerialize>(),
-                TransactionScopeOption.Suppress,
-                128);
-        }
-
-        protected override void Because()
-        {
-            _exception = Catch.Exception(() => new SqlPersistenceFactory("Connection",
-                new BinarySerializer(),
-                new OracleNativeDialect()).Build());
-        }
-
-        [Fact]
-        public void should_not_throw()
-        {
-            _exception.ShouldBeNull();
-        }
-    }
 }
