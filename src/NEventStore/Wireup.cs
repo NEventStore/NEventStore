@@ -34,6 +34,7 @@ namespace NEventStore
 
             container.Register(TransactionScopeOption.Suppress);
             container.Register<IPersistStreams>(new InMemoryPersistenceEngine());
+            container.Register<IScheduleDispatches>(new NullDispatcher());
             container.Register(BuildEventStore);
 
             return new Wireup(container);
@@ -71,16 +72,17 @@ namespace NEventStore
         {
             var scopeOption = context.Resolve<TransactionScopeOption>();
             OptimisticPipelineHook concurrency = scopeOption == TransactionScopeOption.Suppress ? new OptimisticPipelineHook() : null;
-            var scheduler = new DispatchSchedulerPipelineHook(context.Resolve<IScheduleDispatches>());
+            var dispatchScheduler = context.Resolve<IScheduleDispatches>();
+            var dispatchSchedulerHook = new DispatchSchedulerPipelineHook(dispatchScheduler);
             var upconverter = context.Resolve<EventUpconverterPipelineHook>();
 
             ICollection<IPipelineHook> hooks = context.Resolve<ICollection<IPipelineHook>>() ?? new IPipelineHook[0];
-            hooks = new IPipelineHook[] {concurrency, scheduler, upconverter}
+            hooks = new IPipelineHook[] {concurrency, dispatchSchedulerHook, upconverter}
                 .Concat(hooks)
                 .Where(x => x != null)
                 .ToArray();
 
-            return new OptimisticEventStore(context.Resolve<IPersistStreams>(), hooks);
+            return new OptimisticEventStore(context.Resolve<IPersistStreams>(), hooks, dispatchScheduler.Start);
         }
     }
 }

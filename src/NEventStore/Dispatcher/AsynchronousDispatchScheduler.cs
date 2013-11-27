@@ -1,5 +1,6 @@
 namespace NEventStore.Dispatcher
 {
+    using System;
     using System.Collections.Concurrent;
     using System.Threading.Tasks;
     using NEventStore.Logging;
@@ -9,21 +10,18 @@ namespace NEventStore.Dispatcher
     {
         private const int BoundedCapacity = 1024;
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (AsynchronousDispatchScheduler));
-        private BlockingCollection<ICommit> _queue;
+        private readonly BlockingCollection<ICommit> _queue;
         private Task _worker;
-        private bool _working;
 
         public AsynchronousDispatchScheduler(IDispatchCommits dispatcher, IPersistStreams persistence)
             : base(dispatcher, persistence)
-        {}
-
-        protected override void Start()
         {
             _queue = new BlockingCollection<ICommit>(new ConcurrentQueue<ICommit>(), BoundedCapacity);
-            _worker = new Task(Working);
-            _working = true;
-            _worker.Start();
+        }
 
+        public override void Start()
+        {
+            _worker = Task.Factory.StartNew(Working);
             base.Start();
         }
 
@@ -35,20 +33,20 @@ namespace NEventStore.Dispatcher
 
         private void Working()
         {
-            while (_working)
+            foreach (var commit in _queue.GetConsumingEnumerable())
             {
-                ICommit commit;
-                if (_queue.TryTake(out commit, 100))
-                {
-                    base.ScheduleDispatch(commit);
-                }
+                base.ScheduleDispatch(commit);
             }
         }
 
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            _working = false;
+            _queue.CompleteAdding();
+            if (_worker != null)
+            {
+                _worker.Wait(TimeSpan.FromSeconds(30));
+            }
         }
     }
 }

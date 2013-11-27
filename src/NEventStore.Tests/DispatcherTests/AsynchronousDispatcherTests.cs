@@ -19,6 +19,7 @@ namespace NEventStore.DispatcherTests
         private readonly IPersistStreams persistence = A.Fake<IPersistStreams>();
         private ICommit[] _commits;
         private ICommit firstCommit, lastCommit;
+        private AsynchronousDispatchScheduler _dispatchScheduler;
 
         protected override void Context()
         {
@@ -33,7 +34,13 @@ namespace NEventStore.DispatcherTests
 
         protected override void Because()
         {
-            new AsynchronousDispatchScheduler(dispatcher, persistence);
+            _dispatchScheduler = new AsynchronousDispatchScheduler(dispatcher, persistence);
+            _dispatchScheduler.Start();
+        }
+
+        protected override void Cleanup()
+        {
+            _dispatchScheduler.Dispose();
         }
 
         [Fact]
@@ -67,16 +74,22 @@ namespace NEventStore.DispatcherTests
         private readonly ICommit _commit = CommitHelper.Create();
         private readonly IDispatchCommits dispatcher = A.Fake<IDispatchCommits>();
         private readonly IPersistStreams persistence = A.Fake<IPersistStreams>();
-        private AsynchronousDispatchScheduler dispatchScheduler;
+        private AsynchronousDispatchScheduler _dispatchScheduler;
 
         protected override void Context()
         {
-            dispatchScheduler = new AsynchronousDispatchScheduler(dispatcher, persistence);
+            _dispatchScheduler = new AsynchronousDispatchScheduler(dispatcher, persistence);
+            _dispatchScheduler.Start();
         }
 
         protected override void Because()
         {
-            dispatchScheduler.ScheduleDispatch(_commit);
+            _dispatchScheduler.ScheduleDispatch(_commit);
+        }
+
+        protected override void Cleanup()
+        {
+            _dispatchScheduler.Dispose();
         }
 
         [Fact]
@@ -102,17 +115,17 @@ namespace NEventStore.DispatcherTests
     {
         private readonly IDispatchCommits dispatcher = A.Fake<IDispatchCommits>();
         private readonly IPersistStreams persistence = A.Fake<IPersistStreams>();
-        private AsynchronousDispatchScheduler dispatchScheduler;
+        private AsynchronousDispatchScheduler _dispatchScheduler;
 
         protected override void Context()
         {
-            dispatchScheduler = new AsynchronousDispatchScheduler(dispatcher, persistence);
+            _dispatchScheduler = new AsynchronousDispatchScheduler(dispatcher, persistence);
         }
 
         protected override void Because()
         {
-            dispatchScheduler.Dispose();
-            dispatchScheduler.Dispose();
+            _dispatchScheduler.Dispose();
+            _dispatchScheduler.Dispose();
         }
 
         [Fact]

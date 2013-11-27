@@ -1,7 +1,6 @@
 namespace NEventStore.DispatcherTests
 {
     using FakeItEasy;
-
     using NEventStore.Dispatcher;
     using NEventStore.Persistence;
     using NEventStore.Persistence.AcceptanceTests.BDD;
@@ -9,57 +8,59 @@ namespace NEventStore.DispatcherTests
 
     public class when_instantiating_the_synchronous_dispatch_scheduler : SpecificationBase
     {
-        private readonly IDispatchCommits dispatcher = A.Fake<IDispatchCommits>();
-        private readonly IPersistStreams persistence = A.Fake<IPersistStreams>();
+        private readonly IDispatchCommits _dispatcher = A.Fake<IDispatchCommits>();
+        private readonly IPersistStreams _persistence = A.Fake<IPersistStreams>();
         private ICommit[] _commits;
-        private ICommit firstCommit, lastCommit;
+        private ICommit _firstCommit, _lastCommit;
+        private SynchronousDispatchScheduler _dispatchScheduler;
 
         protected override void Context()
         {
             _commits = new[]
             {
-                firstCommit = CommitHelper.Create(),
-                lastCommit = CommitHelper.Create()
+                _firstCommit = CommitHelper.Create(),
+                _lastCommit = CommitHelper.Create()
             };
 
-            A.CallTo(() => persistence.GetUndispatchedCommits()).Returns(_commits);
+            A.CallTo(() => _persistence.GetUndispatchedCommits()).Returns(_commits);
         }
 
         protected override void Because()
         {
-            new SynchronousDispatchScheduler(dispatcher, persistence);
+            _dispatchScheduler = new SynchronousDispatchScheduler(_dispatcher, _persistence);
+            _dispatchScheduler.Start();
         }
 
         [Fact]
         public void should_initialize_the_persistence_engine()
         {
-            A.CallTo(() => persistence.Initialize()).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => _persistence.Initialize()).MustHaveHappened(Repeated.Exactly.Once);
         }
 
         [Fact]
         public void should_get_the_set_of_undispatched_commits()
         {
-            A.CallTo(() => persistence.GetUndispatchedCommits()).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => _persistence.GetUndispatchedCommits()).MustHaveHappened(Repeated.Exactly.Once);
         }
 
         [Fact]
         public void should_provide_the_commits_to_the_dispatcher()
         {
-            A.CallTo(() => dispatcher.Dispatch(firstCommit)).MustHaveHappened();
-            A.CallTo(() => dispatcher.Dispatch(lastCommit)).MustHaveHappened();
+            A.CallTo(() => _dispatcher.Dispatch(_firstCommit)).MustHaveHappened();
+            A.CallTo(() => _dispatcher.Dispatch(_lastCommit)).MustHaveHappened();
         }
     }
 
     public class when_synchronously_scheduling_a_commit_for_dispatch : SpecificationBase
     {
         private readonly ICommit _commit = CommitHelper.Create();
-        private readonly IDispatchCommits dispatcher = A.Fake<IDispatchCommits>();
-        private readonly IPersistStreams persistence = A.Fake<IPersistStreams>();
+        private readonly IDispatchCommits _dispatchCommits = A.Fake<IDispatchCommits>();
+        private readonly IPersistStreams _persistStreams = A.Fake<IPersistStreams>();
         private SynchronousDispatchScheduler _dispatchScheduler;
 
         protected override void Context()
         {
-            _dispatchScheduler = new SynchronousDispatchScheduler(dispatcher, persistence);
+            _dispatchScheduler = new SynchronousDispatchScheduler(_dispatchCommits, _persistStreams);
         }
 
         protected override void Because()
@@ -70,25 +71,25 @@ namespace NEventStore.DispatcherTests
         [Fact]
         public void should_provide_the_commit_to_the_dispatcher()
         {
-            A.CallTo(() => dispatcher.Dispatch(_commit)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => _dispatchCommits.Dispatch(_commit)).MustHaveHappened(Repeated.Exactly.Once);
         }
 
         [Fact]
         public void should_mark_the_commit_as_dispatched()
         {
-            A.CallTo(() => persistence.MarkCommitAsDispatched(_commit)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => _persistStreams.MarkCommitAsDispatched(_commit)).MustHaveHappened(Repeated.Exactly.Once);
         }
     }
 
     public class when_disposing_the_synchronous_dispatch_scheduler : SpecificationBase
     {
-        private readonly IDispatchCommits dispatcher = A.Fake<IDispatchCommits>();
-        private readonly IPersistStreams persistence = A.Fake<IPersistStreams>();
+        private readonly IDispatchCommits _dispatchCommits = A.Fake<IDispatchCommits>();
+        private readonly IPersistStreams _persistStreams = A.Fake<IPersistStreams>();
         private SynchronousDispatchScheduler _dispatchScheduler;
 
         protected override void Context()
         {
-            _dispatchScheduler = new SynchronousDispatchScheduler(dispatcher, persistence);
+            _dispatchScheduler = new SynchronousDispatchScheduler(_dispatchCommits, _persistStreams);
         }
 
         protected override void Because()
@@ -100,13 +101,13 @@ namespace NEventStore.DispatcherTests
         [Fact]
         public void should_dispose_the_underlying_dispatcher_exactly_once()
         {
-            A.CallTo(() => dispatcher.Dispose()).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => _dispatchCommits.Dispose()).MustHaveHappened(Repeated.Exactly.Once);
         }
 
         [Fact]
         public void should_dispose_the_underlying_persistence_infrastructure_exactly_once()
         {
-            A.CallTo(() => persistence.Dispose()).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => _persistStreams.Dispose()).MustHaveHappened(Repeated.Exactly.Once);
         }
     }
 }

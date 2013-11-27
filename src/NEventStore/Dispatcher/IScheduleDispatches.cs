@@ -15,5 +15,10 @@ namespace NEventStore.Dispatcher
         /// </summary>
         /// <param name="commit">The commit representing the series of messages to be dispatched.</param>
         void ScheduleDispatch(ICommit commit);
+
+        /// <summary>
+        /// Start the dispatcher.
+        /// </summary>
+        void Start();
     }
 }
