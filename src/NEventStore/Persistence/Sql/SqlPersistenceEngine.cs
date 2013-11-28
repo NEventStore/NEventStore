@@ -15,7 +15,6 @@ namespace NEventStore.Persistence.Sql
 
     public class SqlPersistenceEngine : IPersistStreams
     {
-        
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (SqlPersistenceEngine));
         private static readonly DateTime EpochTime = new DateTime(1970, 1, 1);
         private readonly IConnectionFactory _connectionFactory;
@@ -78,7 +77,7 @@ namespace NEventStore.Persistence.Sql
             _streamIdHasher = new StreamIdHasherValidator(streamIdHasher);
 
             // Oracle needs special handling to store payloads (blob) > 32KB https://github.com/NEventStore/NEventStore/issues/292
-            _addPayloadParamater = (_dialect is OracleNativeDialect && OracleAddPayloadParamater.OracleManageDataAccessIsReferenced())
+            _addPayloadParamater = (_dialect.GetType().IsAssignableFrom(typeof(OracleNativeDialect)) && OracleAddPayloadParamater.OracleManageDataAccessIsReferenced())
                 ? new OracleAddPayloadParamater(_dialect)
                 : new AddPayloadParamater(_dialect);
 
