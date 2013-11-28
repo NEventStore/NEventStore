@@ -25,7 +25,6 @@ namespace NEventStore.Persistence.Sql
         private readonly ISerialize _serializer;
         private bool _disposed;
         private int _initialized;
-        private Action<IDbConnection, IDbStatement, ISerialize, CommitAttempt> _writePayload;
         private readonly AddPayloadParamater _addPayloadParamater;
 
         public SqlPersistenceEngine(
