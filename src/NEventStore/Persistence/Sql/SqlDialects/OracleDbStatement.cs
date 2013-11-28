@@ -2,6 +2,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects
 {
     using System;
     using System.Data;
+    using System.Data.Common;
     using System.Reflection;
     using System.Transactions;
     using NEventStore.Persistence.Sql;
@@ -62,7 +63,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects
         protected override void BuildParameter(IDbCommand command, string name, object value)
         {
             //HACK
-            if (name == _dialect.Payload)
+            if (name == _dialect.Payload && value is DbParameter)
             {
                 command.Parameters.Add(value);
                 return;
