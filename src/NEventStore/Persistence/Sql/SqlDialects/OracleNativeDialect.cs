@@ -9,7 +9,6 @@ namespace NEventStore.Persistence.Sql.SqlDialects
     public class OracleNativeDialect : CommonSqlDialect
     {
         private const int UniqueKeyViolation = -2146232008;
-        private const string OracleManagedDataAcccessAssemblyName = "Oracle.ManagedDataAccess";
         Action<IConnectionFactory, IDbConnection, IDbStatement, byte[]> _addPayloadParamater;
 
         public override string AppendSnapshotToCommit
@@ -175,10 +174,11 @@ namespace NEventStore.Persistence.Sql.SqlDialects
         {
             if (_addPayloadParamater == null)
             {
+                const string oracleManagedDataAcccessAssemblyName = "Oracle.ManagedDataAccess";
                 string dbProviderAssemblyName = connectionFactory.GetDbProviderFactoryType().Assembly.GetName().Name;
-                if (dbProviderAssemblyName.Equals(OracleManagedDataAcccessAssemblyName, StringComparison.Ordinal))
+                if (dbProviderAssemblyName.Equals(oracleManagedDataAcccessAssemblyName, StringComparison.Ordinal))
                 {
-                    Assembly assembly = Assembly.Load(OracleManagedDataAcccessAssemblyName);
+                    Assembly assembly = Assembly.Load(oracleManagedDataAcccessAssemblyName);
                     var oracleParamaterType = assembly.GetType("Oracle.ManagedDataAccess.Client.OracleParameter", true);
                     var oracleParamaterValueProperty = oracleParamaterType.GetProperty("Value");
                     var oracleBlobType = assembly.GetType("Oracle.ManagedDataAccess.Types.OracleBlob", true);
@@ -187,19 +187,20 @@ namespace NEventStore.Persistence.Sql.SqlDialects
                     FieldInfo blobField = oracleParamapterType.GetField("Blob");
                     var blobDbType = blobField.GetValue(null);
 
-                    _addPayloadParamater = (connectionFactory2, connection2, cmd2, payload2) =>
+                    _addPayloadParamater = (_, connection2, cmd2, payload2) =>
                     {
                         object payloadParam = Activator.CreateInstance(oracleParamaterType, new[] {Payload, blobDbType});
-                        ((OracleDbStatement) cmd).AddParameter(Payload, payloadParam);
-                        object oracleConnection = ((ConnectionScope) connection).Current;
+                        ((OracleDbStatement)cmd2).AddParameter(Payload, payloadParam);
+                        object oracleConnection = ((ConnectionScope)connection2).Current;
                         object oracleBlob = Activator.CreateInstance(oracleBlobType, new[] {oracleConnection});
-                        oracleBlobWriteMethod.Invoke(oracleBlob, new object[] {payload, 0, payload.Length});
+                        oracleBlobWriteMethod.Invoke(oracleBlob, new object[] { payload2, 0, payload2.Length });
                         oracleParamaterValueProperty.SetValue(payloadParam, oracleBlob, null);
                     };
                 }
                 else
                 {
-                    _addPayloadParamater = (connectionFactory2, connection2, cmd2, payload2) => base.AddPayloadParamater(connectionFactory, connection, cmd, payload);
+                    _addPayloadParamater = (connectionFactory2, connection2, cmd2, payload2) 
+                        => base.AddPayloadParamater(connectionFactory2, connection2, cmd2, payload2);
                 }
             }
             _addPayloadParamater(connectionFactory, connection, cmd, payload);
