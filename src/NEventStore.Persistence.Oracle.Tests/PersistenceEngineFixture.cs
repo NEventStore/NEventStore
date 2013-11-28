@@ -10,7 +10,7 @@
         {
             _createPersistence = pageSize =>
                 new SqlPersistenceFactory(
-                    new EnviromentConnectionFactory("Oracle", "Oracle.DataAccess.Client"),
+                    new EnviromentConnectionFactory("Oracle", "Oracle.ManagedDataAccess.Client"),
                     new BinarySerializer(),
                     new OracleNativeDialect(),
                     pageSize: pageSize).Build();
