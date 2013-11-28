@@ -55,5 +55,7 @@ namespace NEventStore.Persistence.Sql
             TransactionScope scope, IDbConnection connection, IDbTransaction transaction);
 
         bool IsDuplicate(Exception exception);
+
+        void AddPayloadParamater(IConnectionFactory connectionFactory, IDbConnection connection, IDbStatement cmd, byte[] payload);
     }
 }

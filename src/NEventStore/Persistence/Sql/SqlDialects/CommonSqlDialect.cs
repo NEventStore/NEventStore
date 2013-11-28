@@ -182,6 +182,11 @@ namespace NEventStore.Persistence.Sql.SqlDialects
             return message.Contains("DUPLICATE") || message.Contains("UNIQUE") || message.Contains("CONSTRAINT");
         }
 
+        public virtual void AddPayloadParamater(IConnectionFactory connectionFactory, IDbConnection connection, IDbStatement cmd, byte[] payload)
+        {
+            cmd.AddParameter(Payload, payload);
+        }
+
         public virtual IDbTransaction OpenTransaction(IDbConnection connection)
         {
             return null;

@@ -2,12 +2,15 @@ namespace NEventStore.Persistence.Sql.SqlDialects
 {
     using System;
     using System.Data;
+    using System.Reflection;
     using System.Transactions;
     using NEventStore.Persistence.Sql;
 
     public class OracleNativeDialect : CommonSqlDialect
     {
         private const int UniqueKeyViolation = -2146232008;
+        private const string OracleManagedDataAcccessAssemblyName = "Oracle.ManagedDataAccess";
+        Action<IConnectionFactory, IDbConnection, IDbStatement, byte[]> _addPayloadParamater;
 
         public override string AppendSnapshotToCommit
         {
@@ -166,6 +169,40 @@ namespace NEventStore.Persistence.Sql.SqlDialects
         public override bool IsDuplicate(Exception exception)
         {
             return exception.Message.Contains("ORA-00001");
+        }
+
+        public override void AddPayloadParamater(IConnectionFactory connectionFactory, IDbConnection connection, IDbStatement cmd, byte[] payload)
+        {
+            if (_addPayloadParamater == null)
+            {
+                string dbProviderAssemblyName = connectionFactory.GetDbProviderFactoryType().Assembly.GetName().Name;
+                if (dbProviderAssemblyName.Equals(OracleManagedDataAcccessAssemblyName, StringComparison.Ordinal))
+                {
+                    Assembly assembly = Assembly.Load(OracleManagedDataAcccessAssemblyName);
+                    var oracleParamaterType = assembly.GetType("Oracle.ManagedDataAccess.Client.OracleParameter", true);
+                    var oracleParamaterValueProperty = oracleParamaterType.GetProperty("Value");
+                    var oracleBlobType = assembly.GetType("Oracle.ManagedDataAccess.Types.OracleBlob", true);
+                    var oracleBlobWriteMethod = oracleBlobType.GetMethod("Write");
+                    Type oracleParamapterType = assembly.GetType("Oracle.ManagedDataAccess.Client.OracleDbType", true);
+                    FieldInfo blobField = oracleParamapterType.GetField("Blob");
+                    var blobDbType = blobField.GetValue(null);
+
+                    _addPayloadParamater = (connectionFactory2, connection2, cmd2, payload2) =>
+                    {
+                        object payloadParam = Activator.CreateInstance(oracleParamaterType, new[] {Payload, blobDbType});
+                        ((OracleDbStatement) cmd).AddParameter(Payload, payloadParam);
+                        object oracleConnection = ((ConnectionScope) connection).Current;
+                        object oracleBlob = Activator.CreateInstance(oracleBlobType, new[] {oracleConnection});
+                        oracleBlobWriteMethod.Invoke(oracleBlob, new object[] {payload, 0, payload.Length});
+                        oracleParamaterValueProperty.SetValue(payloadParam, oracleBlob, null);
+                    };
+                }
+                else
+                {
+                    _addPayloadParamater = (connectionFactory2, connection2, cmd2, payload2) => base.AddPayloadParamater(connectionFactory, connection, cmd, payload);
+                }
+            }
+            _addPayloadParamater(connectionFactory, connection, cmd, payload);
         }
 
         private static string LimitedQuery(string query)

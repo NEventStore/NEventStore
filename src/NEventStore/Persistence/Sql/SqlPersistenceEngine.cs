@@ -4,13 +4,10 @@ namespace NEventStore.Persistence.Sql
     using System.Collections.Generic;
     using System.Data;
     using System.Globalization;
-    using System.IO;
     using System.Linq;
-    using System.Reflection;
     using System.Threading;
     using System.Transactions;
     using NEventStore.Logging;
-    using NEventStore.Persistence.Sql.SqlDialects;
     using NEventStore.Serialization;
 
     public class SqlPersistenceEngine : IPersistStreams
@@ -24,7 +21,6 @@ namespace NEventStore.Persistence.Sql
         private readonly ISerialize _serializer;
         private bool _disposed;
         private int _initialized;
-        private readonly AddPayloadParamater _addPayloadParamater;
         private readonly IStreamIdHasher _streamIdHasher;
 
         public SqlPersistenceEngine(
@@ -75,13 +71,6 @@ namespace NEventStore.Persistence.Sql
             _scopeOption = scopeOption;
             _pageSize = pageSize;
             _streamIdHasher = new StreamIdHasherValidator(streamIdHasher);
-
-            // Oracle needs special handling to store payloads (blob) > 32KB https://github.com/NEventStore/NEventStore/issues/292
-            string dbProviderAssemblyName = connectionFactory.GetDbProviderFactoryType().Assembly.GetName().Name;
-            _addPayloadParamater = (_dialect.GetType().IsAssignableFrom(typeof(OracleNativeDialect))
-                && dbProviderAssemblyName.Equals(OracleAddPayloadParamater.AssemblyName, StringComparison.Ordinal))
-                ? new OracleAddPayloadParamater(_dialect)
-                : new AddPayloadParamater(_dialect);
 
             Logger.Debug(Messages.UsingScope, _scopeOption.ToString());
         }
@@ -247,7 +236,7 @@ namespace NEventStore.Persistence.Sql
                     cmd.AddParameter(_dialect.BucketId, snapshot.BucketId);
                     cmd.AddParameter(_dialect.StreamId, streamId);
                     cmd.AddParameter(_dialect.StreamRevision, snapshot.StreamRevision);
-                    _addPayloadParamater.WritePayload(connection, cmd, _serializer.Serialize(snapshot.Payload));
+                    _dialect.AddPayloadParamater(_connectionFactory, connection, cmd, _serializer.Serialize(snapshot.Payload));
                     return cmd.ExecuteWithoutExceptions(_dialect.AppendSnapshotToCommit);
                 }) > 0;
         }
@@ -333,7 +322,7 @@ namespace NEventStore.Persistence.Sql
                 cmd.AddParameter(_dialect.CommitSequence, attempt.CommitSequence);
                 cmd.AddParameter(_dialect.CommitStamp, attempt.CommitStamp);
                 cmd.AddParameter(_dialect.Headers, _serializer.Serialize(attempt.Headers));
-                _addPayloadParamater.WritePayload(connection, cmd, _serializer.Serialize(attempt.Events.ToList()));
+                _dialect.AddPayloadParamater(_connectionFactory, connection, cmd, _serializer.Serialize(attempt.Events.ToList()));
                 OnPersistCommit(cmd, attempt);
                 var checkpointNumber = cmd.ExecuteScalar(_dialect.PersistCommit).ToLong();
                 return new Commit(
@@ -486,62 +475,7 @@ namespace NEventStore.Persistence.Sql
         private static bool RecoverableException(Exception e)
         {
             return e is UniqueKeyViolationException || e is StorageUnavailableException;
-        }
-
-        private class AddPayloadParamater
-        {
-            private readonly ISqlDialect _dialect;
-
-            protected ISqlDialect Dialect
-            {
-                get { return _dialect; }
-            }
-
-            public AddPayloadParamater(ISqlDialect dialect)
-            {
-                _dialect = dialect;
-            }
-
-            public virtual void WritePayload(IDbConnection connection, IDbStatement cmd, byte[] payload)
-            {
-                cmd.AddParameter(_dialect.Payload, payload);
-            }
-        }
-
-        private class OracleAddPayloadParamater : AddPayloadParamater
-        {
-            private readonly Type _oracleParamaterType;
-            private readonly object _blobDbType;
-            private readonly PropertyInfo _oracleParamaterValueProperty;
-            private readonly MethodInfo _oracleBlobWriteMethod;
-            private readonly Type _oracleBlobType;
-            internal const string AssemblyName = "Oracle.ManagedDataAccess";
-
-            public OracleAddPayloadParamater(ISqlDialect dialect)
-                : base(dialect)
-            {
-                Assembly assembly = Assembly.Load(AssemblyName);
-                _oracleParamaterType = assembly.GetType("Oracle.ManagedDataAccess.Client.OracleParameter", true);
-                _oracleParamaterValueProperty = _oracleParamaterType.GetProperty("Value");
-                _oracleBlobType = assembly.GetType("Oracle.ManagedDataAccess.Types.OracleBlob", true);
-                _oracleBlobWriteMethod = _oracleBlobType.GetMethod("Write");
-                Type oracleParamapterType = assembly.GetType("Oracle.ManagedDataAccess.Client.OracleDbType", true);
-                FieldInfo blobField = oracleParamapterType.GetField("Blob");
-                _blobDbType = blobField.GetValue(null);
-            }
-
-            public override void WritePayload(IDbConnection connection, IDbStatement cmd, byte[] payload)
-            {
-                object payloadParam = Activator.CreateInstance(
-                    _oracleParamaterType,
-                    new[] {Dialect.Payload, _blobDbType});
-                ((OracleDbStatement) cmd).AddParameter(Dialect.Payload, payloadParam);
-                object oracleConnection = ((ConnectionScope) connection).Current;
-                object oracleBlob = Activator.CreateInstance(_oracleBlobType, new[] {oracleConnection});
-                _oracleBlobWriteMethod.Invoke(oracleBlob, new object[] { payload, 0, payload.Length });
-                _oracleParamaterValueProperty.SetValue(payloadParam, oracleBlob, null);
-            }
-        }
+        }     
 
         private class StreamIdHasherValidator : IStreamIdHasher
         {
