@@ -77,7 +77,9 @@ namespace NEventStore.Persistence.Sql
             _streamIdHasher = new StreamIdHasherValidator(streamIdHasher);
 
             // Oracle needs special handling to store payloads (blob) > 32KB https://github.com/NEventStore/NEventStore/issues/292
-            _addPayloadParamater = (_dialect.GetType().IsAssignableFrom(typeof(OracleNativeDialect)) && OracleAddPayloadParamater.OracleManageDataAccessIsReferenced())
+            string dbProviderAssemblyName = connectionFactory.GetDbProviderFactoryType().Assembly.GetName().Name;
+            _addPayloadParamater = (_dialect.GetType().IsAssignableFrom(typeof(OracleNativeDialect))
+                && dbProviderAssemblyName.Equals(OracleAddPayloadParamater.AssemblyName, StringComparison.Ordinal))
                 ? new OracleAddPayloadParamater(_dialect)
                 : new AddPayloadParamater(_dialect);
 
@@ -513,7 +515,7 @@ namespace NEventStore.Persistence.Sql
             private readonly PropertyInfo _oracleParamaterValueProperty;
             private readonly MethodInfo _oracleBlobWriteMethod;
             private readonly Type _oracleBlobType;
-            private const string AssemblyName = "Oracle.ManagedDataAccess";
+            internal const string AssemblyName = "Oracle.ManagedDataAccess";
 
             public OracleAddPayloadParamater(ISqlDialect dialect)
                 : base(dialect)
@@ -526,19 +528,6 @@ namespace NEventStore.Persistence.Sql
                 Type oracleParamapterType = assembly.GetType("Oracle.ManagedDataAccess.Client.OracleDbType", true);
                 FieldInfo blobField = oracleParamapterType.GetField("Blob");
                 _blobDbType = blobField.GetValue(null);
-            }
-
-            public static bool OracleManageDataAccessIsReferenced()
-            {
-                try
-                {
-                    Assembly.Load(AssemblyName);
-                    return true;
-                }
-                catch (FileNotFoundException)
-                {
-                    return false;
-                }
             }
 
             public override void WritePayload(IDbConnection connection, IDbStatement cmd, byte[] payload)
