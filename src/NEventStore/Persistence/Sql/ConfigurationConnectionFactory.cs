@@ -39,6 +39,13 @@ namespace NEventStore.Persistence.Sql
             return Open(_connectionName);
         }
 
+        public Type GetDbProviderFactoryType()
+        {
+            ConnectionStringSettings settings = GetSetting(_connectionName);
+            DbProviderFactory factory = GetFactory(settings);
+            return factory.GetType();
+        }
+
         protected virtual IDbConnection Open(string connectionName)
         {
             ConnectionStringSettings setting = GetSetting(connectionName);
@@ -95,7 +102,6 @@ namespace NEventStore.Persistence.Sql
                 {
                     return factory;
                 }
-
                 factory = DbProviderFactories.GetFactory(setting.ProviderName);
                 Logger.Debug(Messages.DiscoveredConnectionProvider, setting.Name, factory.GetType());
                 return CachedFactories[setting.Name] = factory;

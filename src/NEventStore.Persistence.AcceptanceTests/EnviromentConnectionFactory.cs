@@ -9,12 +9,12 @@ namespace NEventStore.Persistence.AcceptanceTests
     public class EnviromentConnectionFactory : IConnectionFactory
     {
         private readonly string _envVarKey;
-        private readonly string _providerInvariantName;
+        private readonly DbProviderFactory _dbProviderFactory;
 
         public EnviromentConnectionFactory(string envDatabaseName, string providerInvariantName)
         {
             _envVarKey = "NEventStore.{0}".FormatWith(envDatabaseName);
-            _providerInvariantName = providerInvariantName;
+            _dbProviderFactory = DbProviderFactories.GetFactory(providerInvariantName);
         }
 
         public IDbConnection Open()
@@ -22,9 +22,13 @@ namespace NEventStore.Persistence.AcceptanceTests
             return new ConnectionScope("master", OpenInternal);
         }
 
+        public Type GetDbProviderFactoryType()
+        {
+            return _dbProviderFactory.GetType();
+        }
+
         private IDbConnection OpenInternal()
         {
-            DbProviderFactory dbProviderFactory = DbProviderFactories.GetFactory(_providerInvariantName);
             string connectionString = Environment.GetEnvironmentVariable(_envVarKey, EnvironmentVariableTarget.Process);
             if (connectionString == null)
             {
@@ -37,7 +41,7 @@ namespace NEventStore.Persistence.AcceptanceTests
                 throw new InvalidOperationException(message);
             }
             connectionString = connectionString.TrimStart('"').TrimEnd('"');
-            DbConnection connection = dbProviderFactory.CreateConnection();
+            DbConnection connection = _dbProviderFactory.CreateConnection();
             Debug.Assert(connection != null, "connection != null");
             connection.ConnectionString = connectionString;
             try
