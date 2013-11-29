@@ -41,8 +41,7 @@ namespace NEventStore.Persistence.Sql
 
         public Type GetDbProviderFactoryType()
         {
-            ConnectionStringSettings settings = GetSetting(_connectionName);
-            DbProviderFactory factory = GetFactory(settings);
+            DbProviderFactory factory = GetFactory(Settings);
             return factory.GetType();
         }
 
