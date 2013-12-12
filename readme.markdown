@@ -62,74 +62,7 @@ TransactionScopeOption of 'Required'.  Simply indicate this using the following 
 
 ## Supported Storage Engines
 
-### Relational Databases
-[Complete] Microsoft SQL Server 2005 (or later)  
-[Complete] MySQL 5.0 (or later)  
-
-* [Complete] InnoDB  
-* [Complete] NDB/MySQL Cluster  
-* [Complete] Drizzle  
-* [Complete] MariaDB  
-* [Complete] XtraDB  
-* [Complete] PBXT  
-* [Complete] Xeround  
-* [Complete] Galera  
-* [Complete] Percona  
-* [Complete] OurDelta  
-* [Untested] MyISAM  
-* [Untested] BerkleyDB  
-
-[Complete] PostgreSQL 8.0 (or later)  
-[Complete] Firebird 2.0 (or later)  
-[In progress] Sybase (ASE)  
-[In progress] Sybase (SQL Anywhere)  
-[Complete] Oracle 8.0 (or later)  
-[TBA] IBM DB2  
-[TBA] Informix  
-
-### Embedded Relational Databases
-[Complete] SQLite 3.0 (or later)  
-[Complete] Microsoft SQL Server Compact Edition 3.5 (or later)  
-[Complete] Microsoft Access 2000 (or later)  
-
-### Cloud-based Databases (relational or otherwise)
-[Complete] Microsoft SQL Azure  
-[Complete] Amazon RDS (MySQL)  
-[Planned] Amazon RDS (Oracle)  
-[In progress] Azure Tables/Blobs  
-[In progress] Amazon SimpleDB/S3  
-
-### Document Databases
-[Complete] RavenDB r322 (or later)  
-[Complete] MongoDB 1.6 (or later)  
-[Planned] CouchDB 1.0 (or later)  
-[TBA] OrientDB  
-
-### File System
-[Planned] .NET Managed System.IO APIs  
-
-### Dynamo Clones
-[Planned] Cassandra  
-[Planned] Riak  
-[TBA] Voldemort  
-[TBA] Dynomite  
-
-### KV Stores / NoSQL
-[Planned] Redis  
-[Planned] Memcached (Membase, Gear6, etc.)  
-[Planned] HBase  
-[TBA] HyperTable  
-[TBA] Tokyo Cabinet  
-[TBA] Microsoft Velocity  
-[TBA] SharedCache  
-[TBA] Hibari  
-[TBA] Scalaris  
-[TBA] Keyspace  
-[TBA] OrientKV  
-[TBA] VoltDB  
-[TBA] BerkleyDB  
-[TBA] Hazelcast  
-[TBA] HampsterDB  
+See [supported persistence engines](https://github.com/NEventStore/NEventStore/wiki/Supported-Persistence-Engines) in wiki.
 
 ## Project Goals
 * Mono 2.4 support  
