@@ -11,9 +11,7 @@ when using event sourcing as storage mechanism.  Event sourcing is most closely 
 with a concept known as [CQRS](http://cqrsinfo.com).
 
 ### Need Help? Have a Question?
-Ask your question on [Stack Overflow](http://stackoverflow.com/search?q=[cqrs]+neventstore) and tag your question with
-the CQRS tag and the word "NEventStore" in the title.
-
+Ask your question on the [mailing list](http://stackoverflow.com/search?q=[cqrs]+neventstore) or pop by the [jabbr room](https://jabbr.net/#/rooms/NEventStore).
 ### Purpose and Theory
 The purpose of an event store is to represent a series of events as a stream.  Furthermore,
 it provides hooks whereby any events committed to the stream can be dispatched to interested
