@@ -339,9 +339,9 @@
         public virtual void Purge()
         {
             Logger.Warn(Messages.PurgingStorage);
-            PersistedCommits.Drop();
-            PersistedStreamHeads.Drop();
-            PersistedSnapshots.Drop();
+            PersistedCommits.RemoveAll();
+            PersistedStreamHeads.RemoveAll();
+            PersistedSnapshots.RemoveAll();
         }
 
         public void Purge(string bucketId)
