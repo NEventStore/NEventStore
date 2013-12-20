@@ -23,8 +23,10 @@
         private int _initialized;
         private readonly Func<long> _getNextCheckpointNumber;
         private readonly Func<long> _getLastCheckPointNumber;
+		private readonly MongoPersistenceOptions _options;
+	    private readonly WriteConcern _insertCommitWriteConcern;
 
-        public MongoPersistenceEngine(MongoDatabase store, IDocumentSerializer serializer)
+	    public MongoPersistenceEngine(MongoDatabase store, IDocumentSerializer serializer, MongoPersistenceOptions options)
         {
             if (store == null)
             {
@@ -36,14 +38,20 @@
                 throw new ArgumentNullException("serializer");
             }
 
-            _store = store;
+		    if (options == null)
+		    {
+			    throw new ArgumentNullException("options");
+		    }
+
+		    _store = store;
             _serializer = serializer;
+			_options = options;
 
-            _commitSettings = new MongoCollectionSettings {AssignIdOnInsert = false, WriteConcern = WriteConcern.Acknowledged};
-
-            _snapshotSettings = new MongoCollectionSettings {AssignIdOnInsert = false, WriteConcern = WriteConcern.Unacknowledged};
-
-            _streamSettings = new MongoCollectionSettings {AssignIdOnInsert = false, WriteConcern = WriteConcern.Unacknowledged};
+			// set config options
+			_commitSettings = _options.GetCommitSettings();
+		    _snapshotSettings = _options.GetSnapshotSettings();
+		    _streamSettings = _options.GetStreamSettings();
+		    _insertCommitWriteConcern = _options.GetInsertCommitWriteConcern();
 
             _getLastCheckPointNumber = () => TryMongo(() =>
             {
@@ -210,7 +218,7 @@
                     try
                     {
                         // for concurrency / duplicate commit detection safe mode is required
-                        PersistedCommits.Insert(commitDoc, WriteConcern.Acknowledged);
+	                    PersistedCommits.Insert(commitDoc, _insertCommitWriteConcern);
                         retry = false;
                         UpdateStreamHeadAsync(attempt.BucketId, attempt.StreamId, attempt.StreamRevision, attempt.Events.Count);
                         Logger.Debug(Messages.CommitPersisted, attempt.CommitId);
@@ -331,9 +339,9 @@
         public virtual void Purge()
         {
             Logger.Warn(Messages.PurgingStorage);
-            PersistedCommits.Drop();
-            PersistedStreamHeads.Drop();
-            PersistedSnapshots.Drop();
+            PersistedCommits.RemoveAll();
+            PersistedStreamHeads.RemoveAll();
+            PersistedSnapshots.RemoveAll();
         }
 
         public void Purge(string bucketId)

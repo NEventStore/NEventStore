@@ -8,19 +8,20 @@
     {
         private readonly Func<string> _connectionStringProvider;
         private readonly IDocumentSerializer _serializer;
+		private readonly MongoPersistenceOptions _options;
 
-        public MongoPersistenceFactory(Func<string> connectionStringProvider, IDocumentSerializer serializer)
+	    public MongoPersistenceFactory(Func<string> connectionStringProvider, IDocumentSerializer serializer, MongoPersistenceOptions options = null)
         {
             _connectionStringProvider = connectionStringProvider;
             _serializer = serializer;
+	        _options = options ?? new MongoPersistenceOptions();
         }
 
         public virtual IPersistStreams Build()
         {
             string connectionString = _connectionStringProvider();
-            var builder = new MongoUrlBuilder(connectionString);
-            MongoDatabase database = (new MongoClient(connectionString)).GetServer().GetDatabase(builder.DatabaseName);
-            return new MongoPersistenceEngine(database, _serializer);
+	        MongoDatabase database = _options.ConnectToDatabase(connectionString);
+            return new MongoPersistenceEngine(database, _serializer, _options);
         }
     }
 }
