@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".test", ".test", "{D3C17830-A461-4BA5-A672-461B19B33936}"
 	ProjectSection(SolutionItems) = preProject
 		NEventStore.Persistence.AcceptanceTests\PersistenceTests.cs = NEventStore.Persistence.AcceptanceTests\PersistenceTests.cs
@@ -69,8 +71,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Example", "NEventStore.Example\NEventStore.Example.csproj", "{0143B48E-25AF-4CE0-BD49-A52267D359D3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.PollingClientExample", "NEventStore.PollingClientExample\NEventStore.PollingClientExample.csproj", "{49705881-56D3-447A-92D8-D11CA6085DBD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEventStore.Persistence.OracleDevart.Tests", "NEventStore.Persistence.OracleDevart.Tests\NEventStore.Persistence.OracleDevart.Tests.csproj", "{BB2756B2-AC11-4638-B2AE-603F2F0D3CF1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -154,10 +154,6 @@ Global
 		{49705881-56D3-447A-92D8-D11CA6085DBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49705881-56D3-447A-92D8-D11CA6085DBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49705881-56D3-447A-92D8-D11CA6085DBD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BB2756B2-AC11-4638-B2AE-603F2F0D3CF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BB2756B2-AC11-4638-B2AE-603F2F0D3CF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BB2756B2-AC11-4638-B2AE-603F2F0D3CF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BB2756B2-AC11-4638-B2AE-603F2F0D3CF1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -182,6 +178,5 @@ Global
 		{770FE444-6CC3-44D0-950E-EAF6B7CF7382} = {302E416E-456F-49D4-A1A4-42323FCD38AD}
 		{DE2428C7-5F47-4541-9727-B3AACB14DCD6} = {302E416E-456F-49D4-A1A4-42323FCD38AD}
 		{79D255F6-B001-425E-B3BF-CBF1E9A884B9} = {302E416E-456F-49D4-A1A4-42323FCD38AD}
-		{BB2756B2-AC11-4638-B2AE-603F2F0D3CF1} = {302E416E-456F-49D4-A1A4-42323FCD38AD}
 	EndGlobalSection
 EndGlobal
