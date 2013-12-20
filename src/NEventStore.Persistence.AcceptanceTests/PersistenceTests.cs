@@ -662,7 +662,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         public int ConfiguredPageSizeForTesting
         {
-            get { return int.Parse("pageSize".GetSetting() ?? "0"); }
+            get { return 128; }
         }
 
         public void SetFixture(PersistenceEngineFixture data)
