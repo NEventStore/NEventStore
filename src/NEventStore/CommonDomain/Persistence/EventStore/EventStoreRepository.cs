@@ -87,12 +87,12 @@ namespace CommonDomain.Persistence.EventStore
 				}
 				catch (ConcurrencyException e)
 				{
-					if (this.ThrowOnConflict(stream, commitEventCount))
+                    stream.ClearChanges();
+                    
+                    if (this.ThrowOnConflict(stream, commitEventCount))
 					{
 						throw new ConflictingCommandException(e.Message, e);
 					}
-
-					stream.ClearChanges();
 				}
 				catch (StorageException e)
 				{
@@ -152,7 +152,7 @@ namespace CommonDomain.Persistence.EventStore
 		private IEventStream OpenStream(string bucketId, Guid id, int version, ISnapshot snapshot)
 		{
 			IEventStream stream;
-			var streamsId = bucketId + id;
+			var streamsId = bucketId + "+" + id;
 			if (this.streams.TryGetValue(streamsId, out stream))
 			{
 				return stream;
@@ -168,7 +168,7 @@ namespace CommonDomain.Persistence.EventStore
 		private IEventStream PrepareStream(string bucketId, IAggregate aggregate, Dictionary<string, object> headers)
 		{
 			IEventStream stream;
-			var streamsId = bucketId + aggregate.Id;
+			var streamsId = bucketId + "+" + aggregate.Id;
 			if (!this.streams.TryGetValue(streamsId, out stream))
 			{
 				this.streams[streamsId] = stream = this.eventStore.CreateStream(bucketId, aggregate.Id);
