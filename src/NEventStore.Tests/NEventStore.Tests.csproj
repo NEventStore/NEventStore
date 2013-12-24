@@ -70,6 +70,7 @@
     <Compile Include="..\NEventStore.Persistence.AcceptanceTests\PersistenceTests.cs">
       <Link>Persistence\InMemoryPersistence\PersistenceTests.cs</Link>
     </Compile>
+    <Compile Include="NoopDispatchSchedulerWireupTests.cs" />
     <Compile Include="SynchronousDispatchSchedulerWireupTests.cs" />
     <Compile Include="AsynchronousDispatchSchedulerWireupTests.cs" />
     <Compile Include="Client\PollingClientTests.cs" />
