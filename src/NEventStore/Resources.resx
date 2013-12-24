@@ -123,9 +123,6 @@
   <data name="AlreadyDisposed" xml:space="preserve">
     <value>The object has already been disposed.</value>
   </data>
-  <data name="CommitsMustBeUniquelyIdentified" xml:space="preserve">
-    <value>The commit must be uniquely identified.</value>
-  </data>
   <data name="NonPositiveSequenceNumber" xml:space="preserve">
     <value>The commit sequence must be a positive number.</value>
   </data>
