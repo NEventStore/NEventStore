@@ -53,7 +53,6 @@
     </Compile>
     <Compile Include="AccessSnapshotsExtensions.cs" />
     <Compile Include="AsynchronousDispatchSchedulerWireup.cs" />
-    <Compile Include="AsynchronousDispatchSchedulerWireupExtensions.cs" />
     <Compile Include="Bucket.cs" />
     <Compile Include="Client\Messages.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -99,6 +98,7 @@
     <Compile Include="Dispatcher\AsynchronousDispatchScheduler.cs" />
     <Compile Include="Dispatcher\DelegateMessageDispatcher.cs" />
     <Compile Include="Dispatcher\IDispatchCommits.cs" />
+    <Compile Include="Dispatcher\NoopDispatcherScheduler.cs" />
     <Compile Include="Dispatcher\NullDispatcher.cs" />
     <Compile Include="Dispatcher\SynchronousDispatchScheduler.cs" />
     <Compile Include="DispatchSchedulerPipelineHook.cs" />
@@ -126,6 +126,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="NanoContainer.cs" />
+    <Compile Include="NoopDispatchSchedulerWireup.cs" />
     <Compile Include="OptimisticEventStore.cs" />
     <Compile Include="OptimisticEventStream.cs" />
     <Compile Include="OptimisticPipelineHook.cs" />
@@ -242,7 +243,7 @@
     <Compile Include="Serialization\SerializationExtensions.cs" />
     <Compile Include="Persistence\StreamHead.cs" />
     <Compile Include="Snapshot.cs" />
-    <Compile Include="SynchronousDispatcherWireupExtensions.cs" />
+    <Compile Include="DispatcherWireupExtensions.cs" />
     <Compile Include="SynchronousDispatchSchedulerWireup.cs" />
     <Compile Include="SystemTime.cs" />
     <Compile Include="Wireup.cs" />
