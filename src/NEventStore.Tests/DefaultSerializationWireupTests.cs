@@ -27,10 +27,6 @@
 				exception = Catch.Exception(() => { wireup.Build(); });
 			}
 
-			protected override void Cleanup()
-			{
-			}
-
 			[Fact]
 			public void should_not_throw_an_argument_null_exception()
 			{
