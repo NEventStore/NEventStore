@@ -7,6 +7,7 @@ namespace NEventStore
     using NEventStore.Dispatcher;
     using NEventStore.Persistence;
     using NEventStore.Persistence.InMemory;
+    using NEventStore.Serialization;
 
     public class Wireup
     {
@@ -35,6 +36,7 @@ namespace NEventStore
             container.Register(TransactionScopeOption.Suppress);
             container.Register<IPersistStreams>(new InMemoryPersistenceEngine());
             container.Register<IScheduleDispatches>(new NullDispatcher());
+            container.Register<ISerialize>(new JsonSerializer());
             container.Register(BuildEventStore);
 
             return new Wireup(container);
@@ -53,7 +55,7 @@ namespace NEventStore
 
         public virtual Wireup HookIntoPipelineUsing(params IPipelineHook[] hooks)
         {
-            ICollection<IPipelineHook> collection = (hooks ?? new IPipelineHook[] {}).Where(x => x != null).ToArray();
+            ICollection<IPipelineHook> collection = (hooks ?? new IPipelineHook[] { }).Where(x => x != null).ToArray();
             Container.Register(collection);
             return this;
         }
@@ -77,7 +79,7 @@ namespace NEventStore
             var upconverter = context.Resolve<EventUpconverterPipelineHook>();
 
             ICollection<IPipelineHook> hooks = context.Resolve<ICollection<IPipelineHook>>() ?? new IPipelineHook[0];
-            hooks = new IPipelineHook[] {concurrency, dispatchSchedulerHook, upconverter}
+            hooks = new IPipelineHook[] { concurrency, dispatchSchedulerHook, upconverter }
                 .Concat(hooks)
                 .Where(x => x != null)
                 .ToArray();
