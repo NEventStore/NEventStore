@@ -15,6 +15,7 @@
 		{
 			private Wireup wireup;
 			private Exception exception;
+			private IStoreEvents eventStore;
 			protected override void Context()
 			{
 				wireup = Wireup.Init()
@@ -24,7 +25,12 @@
 
 			protected override void Because()
 			{
-				exception = Catch.Exception(() => { wireup.Build(); });
+				exception = Catch.Exception(() => { eventStore = wireup.Build(); });
+			}
+
+			protected override void Cleanup()
+			{
+				eventStore.Dispose();
 			}
 
 			[Fact]
