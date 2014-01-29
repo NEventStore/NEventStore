@@ -377,4 +377,32 @@ namespace NEventStore.Persistence.MongoDB.Tests.AcceptanceTests
             _checkpointAfterPurge.ShouldBeGreaterThan(_checkpointBeforePurge);
         }
     }
+
+    public class when_a_stream_with_two_or_more_commits_is_deleted : PersistenceEngineConcern
+    {
+        private string _streamId;
+        private string _bucketId;
+
+        protected override void Context()
+        {
+            _streamId = Guid.NewGuid().ToString();
+            var commit = Persistence.Commit(_streamId.BuildAttempt());
+            _bucketId = commit.BucketId;
+
+            Persistence.Commit(commit.BuildNextAttempt());
+        }
+
+        protected override void Because()
+        {
+            Persistence.DeleteStream(_bucketId, _streamId);
+        }
+
+        [Fact]
+        public void all_commits_are_deleted()
+        {
+            var commits = Persistence.GetFrom(_bucketId, _streamId, int.MinValue, int.MaxValue).ToArray();
+
+            Assert.Equal(0, commits.Length);
+        }
+    }
 }

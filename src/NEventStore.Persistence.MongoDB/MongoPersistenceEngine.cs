@@ -376,10 +376,14 @@
                     Query.EQ(MongoShapshotFields.FullQualifiedStreamId, streamId)
                 ));
                 
-                PersistedCommits.Update(Query.And(
-                    Query.EQ(MongoCommitFields.BucketId, bucketId),
-                    Query.EQ(MongoCommitFields.StreamId, streamId)
-                ), Update.Set(MongoCommitFields.BucketId, MongoSystemBuckets.RecycleBin));
+                PersistedCommits.Update(
+                    Query.And(
+                        Query.EQ(MongoCommitFields.BucketId, bucketId),
+                        Query.EQ(MongoCommitFields.StreamId, streamId)
+                    ), 
+                    Update.Set(MongoCommitFields.BucketId, MongoSystemBuckets.RecycleBin),
+                    UpdateFlags.Multi
+                );
             });
         }
 
