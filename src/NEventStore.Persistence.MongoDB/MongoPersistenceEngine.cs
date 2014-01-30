@@ -366,16 +366,20 @@
             Logger.Warn(Messages.DeletingStream, streamId, bucketId);
             TryMongo(() =>
             {
-                PersistedStreamHeads.Remove(Query.And(
-                    Query.EQ(MongoStreamHeadFields.FullQualifiedBucketId, bucketId), 
-                    Query.EQ(MongoStreamHeadFields.FullQualifiedStreamId, streamId)
-                ));
+                PersistedStreamHeads.Remove(
+                    Query.EQ(MongoStreamHeadFields.Id, new BsonDocument{   
+                        {MongoStreamHeadFields.BucketId, bucketId},
+                        {MongoStreamHeadFields.StreamId, streamId}
+                    })
+                );
                 
-                PersistedSnapshots.Remove(Query.And(
-                    Query.EQ(MongoShapshotFields.FullQualifiedBucketId, bucketId), 
-                    Query.EQ(MongoShapshotFields.FullQualifiedStreamId, streamId)
-                ));
-                
+                PersistedSnapshots.Remove(
+                    Query.EQ(MongoShapshotFields.Id, new BsonDocument{   
+                        {MongoShapshotFields.BucketId, bucketId},
+                        {MongoShapshotFields.StreamId, streamId}
+                    })
+                );
+
                 PersistedCommits.Update(
                     Query.And(
                         Query.EQ(MongoCommitFields.BucketId, bucketId),

@@ -14,7 +14,6 @@
         public const string SnapshotRevision = "SnapshotRevision";
         public const string Unsnapshotted = "Unsnapshotted";
         public const string FullQualifiedBucketId = Id + "." + BucketId;
-        public const string FullQualifiedStreamId = Id + "." + StreamId;
     }
 
 
@@ -26,7 +25,6 @@
         public const string Payload = "Payload";
         public const string StreamRevision = "StreamRevision";
         public const string FullQualifiedBucketId = Id + "." + BucketId;
-        public const string FullQualifiedStreamId = Id + "." + StreamId;
     }
 
     public static class MongoCommitFields
