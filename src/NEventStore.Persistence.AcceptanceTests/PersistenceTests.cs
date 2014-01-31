@@ -90,7 +90,11 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_correctly_persist_the_commit_stamp()
         {
-            _persisted.CommitStamp.Subtract(_now).ShouldBeLessThanOrEqualTo(TimeSpan.FromSeconds(1));
+            var difference = _persisted.CommitStamp.Subtract(_now);
+            difference.Days.ShouldBe(0);
+            difference.Hours.ShouldBe(0);
+            difference.Minutes.ShouldBe(0);
+            difference.ShouldBeLessThanOrEqualTo(TimeSpan.FromSeconds(1));
         }
 
         [Fact]

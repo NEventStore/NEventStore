@@ -40,7 +40,7 @@ namespace NEventStore.Persistence.Sql
         public static DateTime ToDateTime(this object value)
         {
             value = value is decimal ? (long) (decimal) value : value;
-            return value is long ? new DateTime((long) value) : ((DateTime) value).ToUniversalTime();
+            return value is long ? new DateTime((long) value) : DateTime.SpecifyKind((DateTime) value, DateTimeKind.Utc);
         }
 
         public static IDbCommand SetParameter(this IDbCommand command, string name, object value)
