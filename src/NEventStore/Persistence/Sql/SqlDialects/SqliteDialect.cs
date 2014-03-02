@@ -1,5 +1,7 @@
 namespace NEventStore.Persistence.Sql.SqlDialects
 {
+    using System;
+
     public class SqliteDialect : CommonSqlDialect
     {
         public override string InitializeStorage
@@ -16,6 +18,11 @@ namespace NEventStore.Persistence.Sql.SqlDialects
         public override string PersistCommit
         {
             get { return SqliteStatements.PersistCommit; }
+        }
+
+        public override DateTime ToDateTime(object value)
+        {
+            return ((DateTime) value).ToUniversalTime();
         }
     }
 }

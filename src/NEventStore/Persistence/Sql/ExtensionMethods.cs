@@ -37,12 +37,6 @@ namespace NEventStore.Persistence.Sql
                     : value is decimal ? (long) (decimal) value : Convert.ToInt32(value);
         }
 
-        public static DateTime ToDateTime(this object value)
-        {
-            value = value is decimal ? (long) (decimal) value : value;
-            return value is long ? new DateTime((long) value) : DateTime.SpecifyKind((DateTime) value, DateTimeKind.Utc);
-        }
-
         public static IDbCommand SetParameter(this IDbCommand command, string name, object value)
         {
             Logger.Verbose("Rebinding parameter '{0}' with value: {1}", name, value);

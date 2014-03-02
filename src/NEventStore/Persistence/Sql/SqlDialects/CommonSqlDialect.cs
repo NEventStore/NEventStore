@@ -187,6 +187,12 @@ namespace NEventStore.Persistence.Sql.SqlDialects
             cmd.AddParameter(Payload, payload);
         }
 
+        public virtual DateTime ToDateTime(object value)
+        {
+            value = value is decimal ? (long) (decimal) value : value;
+            return value is long ? new DateTime((long) value) : DateTime.SpecifyKind((DateTime) value, DateTimeKind.Utc);
+        }
+
         public virtual IDbTransaction OpenTransaction(IDbConnection connection)
         {
             return null;

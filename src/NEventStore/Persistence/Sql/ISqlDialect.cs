@@ -57,5 +57,7 @@ namespace NEventStore.Persistence.Sql
         bool IsDuplicate(Exception exception);
 
         void AddPayloadParamater(IConnectionFactory connectionFactory, IDbConnection connection, IDbStatement cmd, byte[] payload);
+
+        DateTime ToDateTime(object value);
     }
 }

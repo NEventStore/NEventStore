@@ -20,7 +20,7 @@ namespace NEventStore.Persistence.Sql
         private const int PayloadIndex = 9;
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (CommitExtensions));
 
-        public static ICommit GetCommit(this IDataRecord record, ISerialize serializer)
+        public static ICommit GetCommit(this IDataRecord record, ISerialize serializer, ISqlDialect sqlDialect)
         {
             Logger.Verbose(Messages.DeserializingCommit, serializer.GetType());
             var headers = serializer.Deserialize<Dictionary<string, object>>(record, HeadersIndex);
@@ -31,7 +31,7 @@ namespace NEventStore.Persistence.Sql
                 record[StreamRevisionIndex].ToInt(),
                 record[CommitIdIndex].ToGuid(),
                 record[CommitSequenceIndex].ToInt(),
-                record[CommitStampIndex].ToDateTime(),
+                sqlDialect.ToDateTime(record[CommitStampIndex]),
                 new LongCheckpoint(record[CheckpointIndex].ToLong()).Value,
                 headers,
                 events);
