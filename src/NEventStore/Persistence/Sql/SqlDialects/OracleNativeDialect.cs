@@ -58,7 +58,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects
 
         public override string GetCommitsFromStartingRevision
         {
-            get { return AddOuterTrailingCommitSequence(LimitedQuery(OracleNativeStatements.GetCommitsFromStartingRevision)); }
+            get { return LimitedQuery(OracleNativeStatements.GetCommitsFromStartingRevision); }
         }
 
         public override string GetCommitsFromInstant
@@ -154,11 +154,6 @@ namespace NEventStore.Persistence.Sql.SqlDialects
         public override string MaxStreamRevision
         {
             get { return MakeOracleParameter(base.MaxStreamRevision); }
-        }
-
-        private string AddOuterTrailingCommitSequence(string query)
-        {
-            return (query.TrimEnd(new[] {';'}) + "\r\n" + OracleNativeStatements.AddCommitSequence);
         }
 
         public override IDbStatement BuildStatement(TransactionScope scope, IDbConnection connection, IDbTransaction transaction)

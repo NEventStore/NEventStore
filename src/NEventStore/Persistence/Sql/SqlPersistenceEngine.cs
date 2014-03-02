@@ -104,8 +104,9 @@ namespace NEventStore.Persistence.Sql
                     query.AddParameter(_dialect.StreamRevision, minRevision);
                     query.AddParameter(_dialect.MaxStreamRevision, maxRevision);
                     query.AddParameter(_dialect.CommitSequence, 0);
-                    return query.ExecutePagedQuery(statement, (q, r) => q.SetParameter(_dialect.CommitSequence, r.CommitSequence()))
-                            .Select(x => x.GetCommit(_serializer, _dialect));
+                    return query
+                        .ExecutePagedQuery(statement, (q, r) => {})
+                        .Select(x => x.GetCommit(_serializer, _dialect));
                 });
         }
 
