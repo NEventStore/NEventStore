@@ -5,6 +5,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects
 
     public class MsSqlDialect : CommonSqlDialect
     {
+        private const int UniqueIndexViolation = 2601;
         private const int UniqueKeyViolation = 2627;
 
         public override string InitializeStorage
@@ -82,7 +83,8 @@ namespace NEventStore.Persistence.Sql.SqlDialects
         public override bool IsDuplicate(Exception exception)
         {
             var dbException = exception as SqlException;
-            return dbException != null && dbException.Number == UniqueKeyViolation;
+            return dbException != null &&
+                   (dbException.Number == UniqueIndexViolation || dbException.Number == UniqueKeyViolation);
         }
     }
 }

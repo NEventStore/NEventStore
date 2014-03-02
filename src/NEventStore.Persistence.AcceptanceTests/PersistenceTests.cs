@@ -248,7 +248,6 @@ namespace NEventStore.Persistence.AcceptanceTests
 
     //TODO:This test looks exactly like the one above. What are we trying to prove?
     public class when_attempting_to_overwrite_a_committed_sequence : PersistenceEngineConcern
-
     {
         private CommitAttempt _failedAttempt;
         private Exception _thrown;
