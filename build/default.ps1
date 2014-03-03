@@ -58,7 +58,7 @@ task RunUnitTests {
 task RunPersistenceTests -precondition { $runPersistenceTests } {
 	"Persistence Tests"
 	EnsureDirectory $output_directory
-	Invoke-XUnit -Path $src_directory -TestSpec '*Persistence.MongoPersistence.Tests.dll','*Persistence.MsSql.Tests.dll','*Persistence.MySql.Tests.dll','*Persistence.Oracle.Tests.dll','*Persistence.PostgreSql.Tests.dll','*Persistence.Sqlite.Tests.dll' `
+	Invoke-XUnit -Path $src_directory -TestSpec '*Persistence.MsSql.Tests.dll','*Persistence.MySql.Tests.dll','*Persistence.Oracle.Tests.dll','*Persistence.PostgreSql.Tests.dll','*Persistence.Sqlite.Tests.dll' `
     -SummaryPath $output_directory\persistence_tests.xml `
     -XUnitPath $xunit_path
 }
@@ -71,7 +71,7 @@ task RunSerializationTests {
     -XUnitPath $xunit_path
 }
 
-task Package -depends Build, PackageNEventStore, PackageMongoPersistence {
+task Package -depends Build, PackageNEventStore {
 	move $output_directory $publish_directory
 }
 
@@ -85,11 +85,6 @@ task PackageNEventStore -depends Clean, Compile {
 		"$src_directory/NEventStore/bin/$target_config/Newtonsoft.Json.dll"
 	)
 	#copy "$src_directory\NEventStore\bin\$target_config\NEventStore.???" "$publish_directory\bin"
-}
-
-task PackageMongoPersistence -depends Clean, Compile {
-	mkdir $publish_directory\plugins\persistence\mongo | out-null
-	copy "$src_directory\NEventStore.Persistence.MongoDB\bin\$target_config\NEventStore.Persistence.MongoDB.???" "$publish_directory\plugins\persistence\mongo"
 }
 
 task Clean {
