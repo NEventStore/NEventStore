@@ -12,7 +12,7 @@ namespace NEventStore
     {
         private const int MaxStreamsToTrack = 100;
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (OptimisticPipelineHook));
-        private readonly IDictionary<string, ICommit> _heads = new Dictionary<string, ICommit>();
+        private readonly Dictionary<string, Dictionary<string, ICommit>> _headsByBucket = new Dictionary<string, Dictionary<string, ICommit>>();
         private readonly LinkedList<string> _maxItemsToTrack = new LinkedList<string>();
         private readonly int _maxStreamsToTrack;
 
@@ -42,7 +42,7 @@ namespace NEventStore
         {
             Logger.Debug(Resources.OptimisticConcurrencyCheck, attempt.StreamId);
 
-            ICommit head = GetStreamHead(attempt.StreamId);
+            ICommit head = GetStreamHead(attempt.BucketId, attempt.StreamId);
             if (head == null)
             {
                 return true;
@@ -79,7 +79,7 @@ namespace NEventStore
 
         protected virtual void Dispose(bool disposing)
         {
-            _heads.Clear();
+            _headsByBucket.Clear();
             _maxItemsToTrack.Clear();
         }
 
@@ -99,7 +99,7 @@ namespace NEventStore
 
         private void UpdateStreamHead(ICommit committed)
         {
-            ICommit head = GetStreamHead(committed.StreamId);
+            ICommit head = GetStreamHead(committed.BucketId, committed.StreamId);
             if (AlreadyTracked(head))
             {
                 _maxItemsToTrack.Remove(committed.StreamId);
@@ -108,7 +108,11 @@ namespace NEventStore
             head = head ?? committed;
             head = head.StreamRevision > committed.StreamRevision ? head : committed;
 
-            _heads[committed.StreamId] = head;
+            if (!_headsByBucket.ContainsKey(committed.BucketId))
+            {
+                _headsByBucket.Add(committed.BucketId, new Dictionary<string, ICommit>());
+            }
+            _headsByBucket[committed.BucketId][committed.StreamId] = head;
         }
 
         private static bool AlreadyTracked(ICommit head)
@@ -128,21 +132,25 @@ namespace NEventStore
             string expired = _maxItemsToTrack.Last.Value;
             Logger.Verbose(Resources.NoLongerTrackingStream, expired);
 
-            _heads.Remove(expired);
+            _headsByBucket.Remove(expired);
             _maxItemsToTrack.RemoveLast();
         }
 
         public virtual bool Contains(ICommit attempt)
         {
-            return GetStreamHead(attempt.StreamId) != null;
+            return GetStreamHead(attempt.BucketId, attempt.StreamId) != null;
         }
 
-        private ICommit GetStreamHead(string streamId)
+        private ICommit GetStreamHead(string bucketId, string streamId)
         {
             lock (_maxItemsToTrack)
             {
-                ICommit head;
-                _heads.TryGetValue(streamId, out head);
+                ICommit head = null;
+                Dictionary<string, ICommit> bucketHeads;
+                if (_headsByBucket.TryGetValue(bucketId, out bucketHeads))
+                {
+                    bucketHeads.TryGetValue(streamId, out head);
+                }
                 return head;
             }
         }
