@@ -71,7 +71,7 @@ task RunSerializationTests {
     -XUnitPath $xunit_path
 }
 
-task Package -depends Build, PackageNEventStore, PackageMongoPersistence, PackageRavenPersistence {
+task Package -depends Build, PackageNEventStore, PackageMongoPersistence {
 	move $output_directory $publish_directory
 }
 
@@ -90,11 +90,6 @@ task PackageNEventStore -depends Clean, Compile {
 task PackageMongoPersistence -depends Clean, Compile {
 	mkdir $publish_directory\plugins\persistence\mongo | out-null
 	copy "$src_directory\NEventStore.Persistence.MongoDB\bin\$target_config\NEventStore.Persistence.MongoDB.???" "$publish_directory\plugins\persistence\mongo"
-}
-
-task PackageRavenPersistence -depends Clean, Compile {
-	mkdir $publish_directory\plugins\persistence\raven | out-null
-	copy "$src_directory\NEventStore.Persistence.RavenDB\bin\$target_config\NEventStore.Persistence.RavenDB.???" "$publish_directory\plugins\persistence\raven"
 }
 
 task Clean {
