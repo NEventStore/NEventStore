@@ -12,8 +12,8 @@ namespace NEventStore
     {
         private const int MaxStreamsToTrack = 100;
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (OptimisticPipelineHook));
-        private readonly Dictionary<string, Dictionary<string, ICommit>> _headsByBucket = new Dictionary<string, Dictionary<string, ICommit>>();
-        private readonly LinkedList<string> _maxItemsToTrack = new LinkedList<string>();
+        private readonly Dictionary<HeadKey, ICommit> _heads = new Dictionary<HeadKey, ICommit>();
+        private readonly LinkedList<HeadKey> _maxItemsToTrack = new LinkedList<HeadKey>();
         private readonly int _maxStreamsToTrack;
 
         public OptimisticPipelineHook()
@@ -42,7 +42,7 @@ namespace NEventStore
         {
             Logger.Debug(Resources.OptimisticConcurrencyCheck, attempt.StreamId);
 
-            ICommit head = GetStreamHead(attempt.BucketId, attempt.StreamId);
+            ICommit head = GetStreamHead(GetHeadKey(attempt));
             if (head == null)
             {
                 return true;
@@ -79,7 +79,7 @@ namespace NEventStore
 
         protected virtual void Dispose(bool disposing)
         {
-            _headsByBucket.Clear();
+            _heads.Clear();
             _maxItemsToTrack.Clear();
         }
 
@@ -99,20 +99,17 @@ namespace NEventStore
 
         private void UpdateStreamHead(ICommit committed)
         {
-            ICommit head = GetStreamHead(committed.BucketId, committed.StreamId);
+            HeadKey headKey = GetHeadKey(committed);
+            ICommit head = GetStreamHead(headKey);
             if (AlreadyTracked(head))
             {
-                _maxItemsToTrack.Remove(committed.StreamId);
+                _maxItemsToTrack.Remove(headKey);
             }
 
             head = head ?? committed;
             head = head.StreamRevision > committed.StreamRevision ? head : committed;
 
-            if (!_headsByBucket.ContainsKey(committed.BucketId))
-            {
-                _headsByBucket.Add(committed.BucketId, new Dictionary<string, ICommit>());
-            }
-            _headsByBucket[committed.BucketId][committed.StreamId] = head;
+            _heads[headKey] = head;
         }
 
         private static bool AlreadyTracked(ICommit head)
@@ -123,35 +120,87 @@ namespace NEventStore
         private void TrackUpToCapacity(ICommit committed)
         {
             Logger.Verbose(Resources.TrackingCommit, committed.CommitSequence, committed.StreamId);
-            _maxItemsToTrack.AddFirst(committed.StreamId);
+            _maxItemsToTrack.AddFirst(GetHeadKey(committed));
             if (_maxItemsToTrack.Count <= _maxStreamsToTrack)
             {
                 return;
             }
 
-            string expired = _maxItemsToTrack.Last.Value;
+            HeadKey expired = _maxItemsToTrack.Last.Value;
             Logger.Verbose(Resources.NoLongerTrackingStream, expired);
 
-            _headsByBucket.Remove(expired);
+            _heads.Remove(expired);
             _maxItemsToTrack.RemoveLast();
         }
 
         public virtual bool Contains(ICommit attempt)
         {
-            return GetStreamHead(attempt.BucketId, attempt.StreamId) != null;
+            return GetStreamHead(GetHeadKey(attempt)) != null;
         }
 
-        private ICommit GetStreamHead(string bucketId, string streamId)
+        private ICommit GetStreamHead(HeadKey headKey)
         {
             lock (_maxItemsToTrack)
             {
-                ICommit head = null;
-                Dictionary<string, ICommit> bucketHeads;
-                if (_headsByBucket.TryGetValue(bucketId, out bucketHeads))
-                {
-                    bucketHeads.TryGetValue(streamId, out head);
-                }
+                ICommit head;
+                _heads.TryGetValue(headKey, out head);
                 return head;
+            }
+        }
+
+        private static HeadKey GetHeadKey(ICommit commit)
+        {
+            return new HeadKey(commit.BucketId, commit.StreamId);
+        }
+
+        private static HeadKey GetHeadKey(CommitAttempt commitAttempt)
+        {
+            return new HeadKey(commitAttempt.BucketId, commitAttempt.StreamId);
+        }
+
+        private sealed class HeadKey : IEquatable<HeadKey>
+        {
+            private readonly string _bucketId;
+            private readonly string _streamId;
+
+            public HeadKey(string bucketId, string streamId)
+            {
+                _bucketId = bucketId;
+                _streamId = streamId;
+            }
+
+            public bool Equals(HeadKey other)
+            {
+                if (ReferenceEquals(null, other))
+                {
+                    return false;
+                }
+                if (ReferenceEquals(this, other))
+                {
+                    return true;
+                }
+                return String.Equals(_bucketId, other._bucketId) && String.Equals(_streamId, other._streamId);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj))
+                {
+                    return false;
+                }
+                if (ReferenceEquals(this, obj))
+                {
+                    return true;
+                }
+                return obj is HeadKey && Equals((HeadKey)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return (_bucketId.GetHashCode() * 397) ^ _streamId.GetHashCode();
+                }
             }
         }
     }
