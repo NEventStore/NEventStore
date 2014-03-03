@@ -61,6 +61,7 @@ namespace NEventStore.DispatcherTests
         protected override void Context()
         {
             _dispatchScheduler = new SynchronousDispatchScheduler(_dispatchCommits, _persistStreams);
+            _dispatchScheduler.Start();
         }
 
         protected override void Because()

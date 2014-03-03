@@ -58,13 +58,12 @@ namespace NEventStore.Dispatcher
         {
             Logger.Debug(Resources.InitializingPersistence);
             _persistence.Initialize();
-
+            _started = true;
             Logger.Debug(Resources.GettingUndispatchedCommits);
             foreach (var commit in _persistence.GetUndispatchedCommits())
             {
                 ScheduleDispatch(commit);
             }
-            _started = true;
         }
 
         private void DispatchImmediately(ICommit commit)
