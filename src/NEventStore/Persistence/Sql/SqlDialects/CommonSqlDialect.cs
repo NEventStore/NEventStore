@@ -193,6 +193,11 @@ namespace NEventStore.Persistence.Sql.SqlDialects
             return value is long ? new DateTime((long) value) : DateTime.SpecifyKind((DateTime) value, DateTimeKind.Utc);
         }
 
+        public virtual NextPageDelegate NextPageDelegate
+        {
+            get { return (q, r) => q.SetParameter(CommitSequence, r.CommitSequence()); }
+        }
+
         public virtual IDbTransaction OpenTransaction(IDbConnection connection)
         {
             return null;

@@ -185,6 +185,11 @@ namespace NEventStore.Persistence.Sql.SqlDialects
             return exception.Message.Contains("ORA-00001");
         }
 
+        public override NextPageDelegate NextPageDelegate
+        {
+            get { return (q, r) => { } ; }
+        }
+
         public override void AddPayloadParamater(IConnectionFactory connectionFactory, IDbConnection connection, IDbStatement cmd, byte[] payload)
         {
             if (_addPayloadParamater == null)

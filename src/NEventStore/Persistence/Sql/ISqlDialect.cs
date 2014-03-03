@@ -3,6 +3,7 @@ namespace NEventStore.Persistence.Sql
     using System;
     using System.Data;
     using System.Transactions;
+    using NEventStore.Persistence.Sql.SqlDialects;
 
     public interface ISqlDialect
     {
@@ -59,5 +60,7 @@ namespace NEventStore.Persistence.Sql
         void AddPayloadParamater(IConnectionFactory connectionFactory, IDbConnection connection, IDbStatement cmd, byte[] payload);
 
         DateTime ToDateTime(object value);
+
+        NextPageDelegate NextPageDelegate { get; }
     }
 }
