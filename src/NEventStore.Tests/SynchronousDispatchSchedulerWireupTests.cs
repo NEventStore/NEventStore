@@ -2,6 +2,7 @@
 {
     using System;
     using NEventStore.Dispatcher;
+    using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
     using Xunit;
     using Xunit.Should;
@@ -19,7 +20,8 @@
                 _eventStore = Wireup
                     .Init()
                     .UsingInMemoryPersistence()
-                    .UsingAsynchronousDispatchScheduler(_dummyDispatchCommits)
+                    .UsingSynchronousDispatchScheduler()
+                        .DispatchTo(_dummyDispatchCommits)
                     .Build();
             }
 
@@ -44,10 +46,11 @@
             }
         }
 
-        public class when_configured_to_auto_start_explicitly_and_not_started : SpecificationBase
+        public class when_configured_to_start_explicitly_and_not_started : SpecificationBase
         {
             private IStoreEvents _eventStore;
             private DummyDispatchCommits _dummyDispatchCommits;
+            private Exception _exception;
 
             protected override void Context()
             {
@@ -55,17 +58,22 @@
                 _eventStore = Wireup
                     .Init()
                     .UsingInMemoryPersistence()
-                    .UsingAsynchronousDispatchScheduler(_dummyDispatchCommits, DispatcherSchedulerStartup.Explicit)
+                    .UsingSynchronousDispatchScheduler()
+                        .DispatchTo(_dummyDispatchCommits)
+                        .Startup(DispatcherSchedulerStartup.Explicit)
                     .Build();
             }
 
             protected override void Because()
             {
-                using (var stream = _eventStore.OpenStream(Guid.NewGuid()))
+                _exception = Catch.Exception(() =>
                 {
-                    stream.Add(new EventMessage {Body = "Body"});
-                    stream.CommitChanges(Guid.NewGuid());
-                }
+                    using (var stream = _eventStore.OpenStream(Guid.NewGuid()))
+                    {
+                        stream.Add(new EventMessage {Body = "Body"});
+                        stream.CommitChanges(Guid.NewGuid());
+                    }
+                });
             }
 
             protected override void Cleanup()
@@ -74,13 +82,19 @@
             }
 
             [Fact]
-            public void should_not_dispatch_event()
+            public void should_throw()
             {
-                _dummyDispatchCommits.Dispatched.ShouldBeFalse();
+                _exception.ShouldNotBeNull();
+            }
+
+            [Fact]
+            public void should_be_invalid_operation()
+            {
+                _exception.ShouldBeInstanceOf<InvalidOperationException>();
             }
         }
 
-        public class when_configured_to_auto_start_explicitly_and_started : SpecificationBase
+        public class when_configured_to_start_explicitly_and_started : SpecificationBase
         {
             private IStoreEvents _eventStore;
             private DummyDispatchCommits _dummyDispatchCommits;
@@ -91,18 +105,20 @@
                 _eventStore = Wireup
                     .Init()
                     .UsingInMemoryPersistence()
-                    .UsingAsynchronousDispatchScheduler(_dummyDispatchCommits, DispatcherSchedulerStartup.Explicit)
+                    .UsingSynchronousDispatchScheduler()
+                        .DispatchTo(_dummyDispatchCommits)
+                        .Startup(DispatcherSchedulerStartup.Explicit)
                     .Build();
             }
 
             protected override void Because()
             {
+                _eventStore.StartDispatchScheduler();
                 using (var stream = _eventStore.OpenStream(Guid.NewGuid()))
                 {
                     stream.Add(new EventMessage {Body = "Body"});
                     stream.CommitChanges(Guid.NewGuid());
                 }
-                _eventStore.StartDispatchScheduler();
             }
 
             protected override void Cleanup()

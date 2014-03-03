@@ -10,6 +10,12 @@ namespace NEventStore.Dispatcher
         private readonly IDispatchCommits _dispatcher;
         private readonly IPersistStreams _persistence;
         private bool _disposed;
+        private bool _started;
+
+        protected bool Started
+        {
+            get { return _started; }
+        }
 
         public SynchronousDispatchScheduler(IDispatchCommits dispatcher, IPersistStreams persistence)
         {
@@ -27,6 +33,10 @@ namespace NEventStore.Dispatcher
 
         public virtual void ScheduleDispatch(ICommit commit)
         {
+            if (!Started)
+            {
+                throw new InvalidOperationException(Messages.SchedulerNotStarted);
+            }
             DispatchImmediately(commit);
             MarkAsDispatched(commit);
         }
@@ -54,6 +64,7 @@ namespace NEventStore.Dispatcher
             {
                 ScheduleDispatch(commit);
             }
+            _started = true;
         }
 
         private void DispatchImmediately(ICommit commit)

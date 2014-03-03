@@ -222,4 +222,7 @@
   <data name="StreamIdHasherSpecified" xml:space="preserve">
     <value>Registering stream ID hasher of type '{0}'</value>
   </data>
+  <data name="SchedulerNotStarted" xml:space="preserve">
+    <value>Scheduler not started.</value>
+  </data>
 </root>

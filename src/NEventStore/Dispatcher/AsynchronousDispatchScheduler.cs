@@ -27,6 +27,10 @@ namespace NEventStore.Dispatcher
 
         public override void ScheduleDispatch(ICommit commit)
         {
+            if (!Started)
+            {
+                throw new InvalidOperationException(Messages.SchedulerNotStarted);
+            }
             Logger.Info(Resources.SchedulingDelivery, commit.CommitId);
             _queue.Add(commit);
         }
