@@ -126,35 +126,35 @@ SELECT @BucketId, @StreamId, @StreamRevision, @Payload
 WHERE EXISTS
  ( SELECT *
      FROM Commits
-    WHERE BucketId = @BucketId
-      AND StreamId = @StreamId
+    WHERE BucketId = CAST(@BucketId AS varchar(40))
+      AND StreamId = CAST(@StreamId AS char(40))
       AND (StreamRevision - Items) &lt;= @StreamRevision )
 AND NOT EXISTS
  ( SELECT *
      FROM Snapshots
-    WHERE BucketId = @BucketId
-      AND StreamId = @StreamId
+    WHERE BucketId = CAST(@BucketId AS varchar(40))
+      AND StreamId = CAST(@StreamId AS char(40))
       AND StreamRevision = @StreamRevision );</value>
   </data>
   <data name="DuplicateCommit" xml:space="preserve">
     <value>SELECT COUNT(*)
   FROM Commits
- WHERE BucketId = @BucketId 
-   AND StreamId = @StreamId
+ WHERE BucketId = CAST(@BucketId AS varchar(40))
+   AND StreamId = CAST(@StreamId AS char(40))
    AND CommitSequence = @CommitSequence
    AND CommitId = @CommitId;</value>
   </data>
   <data name="GetCommitsFromInstant" xml:space="preserve">
     <value>SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
   FROM Commits
- WHERE BucketId = @BucketId AND CommitStamp &gt;= @CommitStamp
+ WHERE BucketId = CAST(@BucketId AS varchar(40)) AND CommitStamp &gt;= @CommitStamp
  ORDER BY CheckpointNumber
  LIMIT @Limit OFFSET @Skip;</value>
   </data>
   <data name="GetCommitsFromToInstant" xml:space="preserve">
     <value>SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
   FROM Commits
- WHERE BucketId = @BucketId
+ WHERE BucketId = CAST(@BucketId AS varchar(40))
    AND CommitStamp &gt;= @CommitStampStart
    AND CommitStamp &lt; @CommitStampEnd
  ORDER BY CheckpointNumber
@@ -163,8 +163,8 @@ AND NOT EXISTS
   <data name="GetCommitsFromStartingRevision" xml:space="preserve">
     <value>SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp,  CheckpointNumber, Headers, Payload
   FROM Commits
- WHERE BucketId = @BucketId
-   AND StreamId = @StreamId
+ WHERE BucketId = CAST(@BucketId AS varchar(40))
+   AND StreamId = CAST(@StreamId AS char(40))
    AND StreamRevision &gt;= @StreamRevision
    AND (StreamRevision - Items) &lt; @MaxStreamRevision
    AND CommitSequence &gt; @CommitSequence
@@ -174,8 +174,8 @@ AND NOT EXISTS
   <data name="GetSnapshot" xml:space="preserve">
     <value>SELECT *
   FROM Snapshots
- WHERE BucketId = @BucketId
-   AND StreamId = @StreamId
+ WHERE BucketId = CAST(@BucketId AS varchar(40))
+   AND StreamId = CAST(@StreamId AS char(40))
    AND StreamRevision &lt;= @StreamRevision
  ORDER BY StreamRevision DESC
  LIMIT 1;</value>
@@ -184,7 +184,7 @@ AND NOT EXISTS
     <value>SELECT C.BucketId, C.StreamId, C.StreamIdOriginal, MAX(C.StreamRevision) AS StreamRevision, MAX(COALESCE(S.StreamRevision, 0)) AS SnapshotRevision
   FROM Commits AS C
  LEFT OUTER JOIN Snapshots AS S
-    ON C.BucketId = @BucketId
+    ON C.BucketId = CAST(@BucketId AS varchar(40))
    AND C.StreamId = S.StreamId
    AND C.StreamRevision &gt;= S.StreamRevision
  GROUP BY C.StreamId, C.BucketId, C.StreamIdOriginal
@@ -202,8 +202,8 @@ HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Thresho
   <data name="MarkCommitAsDispatched" xml:space="preserve">
     <value>UPDATE Commits
    SET Dispatched = 1
- WHERE BucketId = @BucketId
-   AND StreamId = @StreamId
+ WHERE BucketId = CAST(@BucketId AS varchar(40))
+   AND StreamId = CAST(@StreamId AS char(40))
    AND CommitSequence = @CommitSequence;</value>
   </data>
   <data name="PurgeStorage" xml:space="preserve">
@@ -211,8 +211,8 @@ HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Thresho
 DELETE FROM Commits;</value>
   </data>
   <data name="PurgeBucket" xml:space="preserve">
-    <value>DELETE FROM Snapshots WHERE BucketId = @BucketId;
-DELETE FROM Commits WHERE BucketId = @BucketId;</value>
+    <value>DELETE FROM Snapshots WHERE BucketId = CAST(@BucketId AS varchar(40));
+DELETE FROM Commits WHERE BucketId = CAST(@BucketId AS varchar(40));</value>
   </data>
   <data name="DropTables" xml:space="preserve">
     <value>DROP TABLE Snapshots;
@@ -226,7 +226,7 @@ ORDER BY CheckpointNumber
  LIMIT @Limit OFFSET @Skip;</value>
   </data>
   <data name="DeleteStream" xml:space="preserve">
-    <value>DELETE FROM Snapshots WHERE BucketId =@BucketId AND StreamId = @StreamId;
-DELETE FROM Commits WHERE BucketId = @BucketId AND StreamId = @StreamId;</value>
+    <value>DELETE FROM Snapshots WHERE BucketId = CAST(@BucketId AS varchar(40)) AND StreamId = CAST(@StreamId AS char(40));
+DELETE FROM Commits WHERE BucketId = CAST(@BucketId AS varchar(40)) AND StreamId = CAST(@StreamId AS char(40));</value>
   </data>
 </root>
