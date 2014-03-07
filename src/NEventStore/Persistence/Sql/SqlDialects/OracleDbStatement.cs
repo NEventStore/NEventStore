@@ -17,17 +17,17 @@ namespace NEventStore.Persistence.Sql.SqlDialects
             _dialect = dialect;
         }
 
-        public override void AddParameter(string name, object value)
+        public override void AddParameter(string name, object value, DbType? dbType = null)
         {
             name = name.Replace('@', ':');
 
             if (value is Guid)
             {
-                base.AddParameter(name, ((Guid) value).ToByteArray());
+                base.AddParameter(name, ((Guid) value).ToByteArray(), null);
             }
             else
             {
-                base.AddParameter(name, value);
+                base.AddParameter(name, value, dbType);
             }
         }
 
@@ -60,7 +60,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects
             return command;
         }
 
-        protected override void BuildParameter(IDbCommand command, string name, object value)
+        protected override void BuildParameter(IDbCommand command, string name, object value, DbType? dbType)
         {
             //HACK
             if (name == _dialect.Payload && value is DbParameter)
@@ -68,7 +68,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects
                 command.Parameters.Add(value);
                 return;
             }
-            base.BuildParameter(command, name, value);
+            base.BuildParameter(command, name, value, dbType);
         }
     }
 }
