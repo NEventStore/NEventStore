@@ -9,7 +9,7 @@ namespace NEventStore.Persistence.Sql
     {
         int PageSize { get; set; }
 
-        void AddParameter(string name, object value);
+        void AddParameter(string name, object value, DbType? parameterType = null);
 
         int ExecuteNonQuery(string commandText);
 
