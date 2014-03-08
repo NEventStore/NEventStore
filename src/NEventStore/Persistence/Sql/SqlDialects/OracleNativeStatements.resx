@@ -166,7 +166,7 @@ WHERE	(
 SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
 FROM Commits 
 WHERE BucketId = :BucketId AND CommitStamp &gt;= :CommitStamp
-ORDER BY CheckpointNumber</value>
+ORDER BY CommitStamp, StreamId, CommitSequence</value>
   </data>
   <data name="GetCommitsFromStartingRevision" xml:space="preserve">
     <value>/*GetCommitsFromStartingRevision*/
@@ -176,14 +176,14 @@ WHERE BucketId = :BucketId AND StreamId = :StreamId
    AND StreamRevision &gt;= :StreamRevision
    AND (StreamRevision - Items) &lt; :MaxStreamRevision
    AND CommitSequence &gt; :CommitSequence
-ORDER BY CheckpointNumber</value>
+ORDER BY CommitStamp, StreamId, CommitSequence</value>
   </data>
   <data name="GetCommitsSinceCheckpoint" xml:space="preserve">
     <value>/*GetCommitsFromInstant*/
 SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
 FROM Commits 
 WHERE  CheckpointNumber &gt; :CheckpointNumber
-ORDER BY  CheckpointNumber
+ORDER BY CommitStamp, StreamId, CommitSequence
 WHERE ROWNUM &lt;= :Limit;</value>
   </data>
   <data name="GetSnapshot" xml:space="preserve">
