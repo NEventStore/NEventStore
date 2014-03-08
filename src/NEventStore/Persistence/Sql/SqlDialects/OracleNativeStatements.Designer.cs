@@ -155,7 +155,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects {
         ///   AND StreamRevision &gt;= :StreamRevision
         ///   AND (StreamRevision - Items) &lt; :MaxStreamRevision
         ///   AND CommitSequence &gt; :CommitSequence
-        ///ORDER BY CommitStamp, StreamId, CommitSequence.
+        ///ORDER BY CommitSequence.
         /// </summary>
         internal static string GetCommitsFromStartingRevision {
             get {

@@ -176,7 +176,7 @@ WHERE BucketId = :BucketId AND StreamId = :StreamId
    AND StreamRevision &gt;= :StreamRevision
    AND (StreamRevision - Items) &lt; :MaxStreamRevision
    AND CommitSequence &gt; :CommitSequence
-ORDER BY CommitStamp, StreamId, CommitSequence</value>
+ORDER BY CommitSequence</value>
   </data>
   <data name="GetCommitsSinceCheckpoint" xml:space="preserve">
     <value>/*GetCommitsFromInstant*/
