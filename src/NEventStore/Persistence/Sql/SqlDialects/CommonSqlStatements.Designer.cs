@@ -69,15 +69,15 @@ namespace NEventStore.Persistence.Sql.SqlDialects {
         ///WHERE EXISTS
         /// ( SELECT *
         ///     FROM Commits
-        ///    WHERE BucketId = @BucketId
-        ///      AND StreamId = @StreamId
+        ///    WHERE BucketId = CAST(@BucketId AS varchar(40))
+        ///      AND StreamId = CAST(@StreamId AS char(40))
         ///      AND (StreamRevision - Items) &lt;= @StreamRevision )
         ///AND NOT EXISTS
         /// ( SELECT *
         ///     FROM Snapshots
-        ///    WHERE BucketId = @BucketId
-        ///      AND StreamId = @StreamId
-        ///      AND StreamRevision = @StreamRevision );.
+        ///    WHERE BucketId = CAST(@BucketId AS varchar(40))
+        ///      AND StreamId = CAST(@StreamId AS char(40))
+        ///      AN [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string AppendSnapshotToCommit {
             get {
@@ -86,8 +86,8 @@ namespace NEventStore.Persistence.Sql.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DELETE FROM Snapshots WHERE BucketId =@BucketId AND StreamId = @StreamId;
-        ///DELETE FROM Commits WHERE BucketId = @BucketId AND StreamId = @StreamId;.
+        ///   Looks up a localized string similar to DELETE FROM Snapshots WHERE BucketId =CAST(@BucketId AS varchar(40)) AND StreamId = CAST(@StreamId AS char(40));
+        ///DELETE FROM Commits WHERE BucketId = CAST(@BucketId AS varchar(40)) AND StreamId = CAST(@StreamId AS char(40));.
         /// </summary>
         internal static string DeleteStream {
             get {
@@ -108,8 +108,8 @@ namespace NEventStore.Persistence.Sql.SqlDialects {
         /// <summary>
         ///   Looks up a localized string similar to SELECT COUNT(*)
         ///  FROM Commits
-        /// WHERE BucketId = @BucketId 
-        ///   AND StreamId = @StreamId
+        /// WHERE BucketId = CAST(@BucketId AS varchar(40))
+        ///   AND StreamId = CAST(@StreamId AS char(40))
         ///   AND CommitSequence = @CommitSequence
         ///   AND CommitId = @CommitId;.
         /// </summary>
@@ -135,7 +135,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects {
         /// <summary>
         ///   Looks up a localized string similar to SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
         ///  FROM Commits
-        /// WHERE BucketId = @BucketId AND CommitStamp &gt;= @CommitStamp
+        /// WHERE BucketId = CAST(@BucketId AS varchar(40)) AND CommitStamp &gt;= @CommitStamp
         /// ORDER BY CheckpointNumber
         /// LIMIT @Limit OFFSET @Skip;.
         /// </summary>
@@ -148,8 +148,8 @@ namespace NEventStore.Persistence.Sql.SqlDialects {
         /// <summary>
         ///   Looks up a localized string similar to SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp,  CheckpointNumber, Headers, Payload
         ///  FROM Commits
-        /// WHERE BucketId = @BucketId
-        ///   AND StreamId = @StreamId
+        /// WHERE BucketId = CAST(@BucketId AS varchar(40))
+        ///   AND StreamId = CAST(@StreamId AS char(40))
         ///   AND StreamRevision &gt;= @StreamRevision
         ///   AND (StreamRevision - Items) &lt; @MaxStreamRevision
         ///   AND CommitSequence &gt; @CommitSequence
@@ -165,7 +165,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects {
         /// <summary>
         ///   Looks up a localized string similar to SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
         ///  FROM Commits
-        /// WHERE BucketId = @BucketId
+        /// WHERE BucketId = CAST(@BucketId AS varchar(40))
         ///   AND CommitStamp &gt;= @CommitStampStart
         ///   AND CommitStamp &lt; @CommitStampEnd
         /// ORDER BY CheckpointNumber
@@ -180,8 +180,8 @@ namespace NEventStore.Persistence.Sql.SqlDialects {
         /// <summary>
         ///   Looks up a localized string similar to SELECT *
         ///  FROM Snapshots
-        /// WHERE BucketId = @BucketId
-        ///   AND StreamId = @StreamId
+        /// WHERE BucketId = CAST(@BucketId AS varchar(40))
+        ///   AND StreamId = CAST(@StreamId AS char(40))
         ///   AND StreamRevision &lt;= @StreamRevision
         /// ORDER BY StreamRevision DESC
         /// LIMIT 1;.
@@ -196,7 +196,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects {
         ///   Looks up a localized string similar to SELECT C.BucketId, C.StreamId, C.StreamIdOriginal, MAX(C.StreamRevision) AS StreamRevision, MAX(COALESCE(S.StreamRevision, 0)) AS SnapshotRevision
         ///  FROM Commits AS C
         /// LEFT OUTER JOIN Snapshots AS S
-        ///    ON C.BucketId = @BucketId
+        ///    ON C.BucketId = CAST(@BucketId AS varchar(40))
         ///   AND C.StreamId = S.StreamId
         ///   AND C.StreamRevision &gt;= S.StreamRevision
         /// GROUP BY C.StreamId, C.BucketId, C.StreamIdOriginal
@@ -226,8 +226,8 @@ namespace NEventStore.Persistence.Sql.SqlDialects {
         /// <summary>
         ///   Looks up a localized string similar to UPDATE Commits
         ///   SET Dispatched = 1
-        /// WHERE BucketId = @BucketId
-        ///   AND StreamId = @StreamId
+        /// WHERE BucketId = CAST(@BucketId AS varchar(40))
+        ///   AND StreamId = CAST(@StreamId AS char(40))
         ///   AND CommitSequence = @CommitSequence;.
         /// </summary>
         internal static string MarkCommitAsDispatched {
@@ -237,8 +237,8 @@ namespace NEventStore.Persistence.Sql.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DELETE FROM Snapshots WHERE BucketId = @BucketId;
-        ///DELETE FROM Commits WHERE BucketId = @BucketId;.
+        ///   Looks up a localized string similar to DELETE FROM Snapshots WHERE BucketId = CAST(@BucketId AS varchar(40));
+        ///DELETE FROM Commits WHERE BucketId = CAST(@BucketId AS varchar(40));.
         /// </summary>
         internal static string PurgeBucket {
             get {
