@@ -168,7 +168,7 @@ AND NOT EXISTS
    AND StreamRevision &gt;= @StreamRevision
    AND (StreamRevision - Items) &lt; @MaxStreamRevision
    AND CommitSequence &gt; @CommitSequence
- ORDER BY CommitStamp, StreamId, CommitSequence
+ ORDER BY CommitSequence
  LIMIT @Limit;</value>
   </data>
   <data name="GetSnapshot" xml:space="preserve">
