@@ -183,7 +183,7 @@ ORDER BY CommitSequence</value>
 SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
 FROM Commits 
 WHERE  CheckpointNumber &gt; :CheckpointNumber
-ORDER BY CommitStamp, StreamId, CommitSequence
+ORDER BY CheckpointNumber
 WHERE ROWNUM &lt;= :Limit;</value>
   </data>
   <data name="GetSnapshot" xml:space="preserve">
