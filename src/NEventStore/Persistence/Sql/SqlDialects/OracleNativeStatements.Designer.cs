@@ -168,7 +168,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects {
         ///SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
         ///FROM Commits 
         ///WHERE  CheckpointNumber &gt; :CheckpointNumber
-        ///ORDER BY CommitStamp, StreamId, CommitSequence
+        ///ORDER BY CheckpointNumber
         ///WHERE ROWNUM &lt;= :Limit;.
         /// </summary>
         internal static string GetCommitsSinceCheckpoint {
