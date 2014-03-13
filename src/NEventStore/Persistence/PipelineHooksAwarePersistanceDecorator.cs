@@ -93,11 +93,19 @@ namespace NEventStore.Persistence
         public void Purge()
         {
             _original.Purge();
+            foreach (var pipelineHook in _pipelineHooks)
+            {
+                pipelineHook.OnPurge();
+            }
         }
 
         public void Purge(string bucketId)
         {
             _original.Purge(bucketId);
+            foreach (var pipelineHook in _pipelineHooks)
+            {
+                pipelineHook.OnPurge(bucketId);
+            }
         }
 
         public void Drop()
@@ -108,6 +116,10 @@ namespace NEventStore.Persistence
         public void DeleteStream(string bucketId, string streamId)
         {
             _original.DeleteStream(bucketId, streamId);
+            foreach (var pipelineHook in _pipelineHooks)
+            {
+                pipelineHook.OnDeleteStream(bucketId, streamId);
+            }
         }
 
         public bool IsDisposed
