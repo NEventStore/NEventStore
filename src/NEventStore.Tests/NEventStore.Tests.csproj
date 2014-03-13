@@ -86,7 +86,7 @@
     <Compile Include="DispatcherTests\SynchronousDispatcherTests.cs" />
     <Compile Include="EnumerableCounter.cs" />
     <Compile Include="IntExtensions.cs" />
-    <Compile Include="OptimisticCommitHookTests.cs" />
+    <Compile Include="OptimisticPipelineHookTests.cs" />
     <Compile Include="OptimisticEventStoreTests.cs" />
     <Compile Include="OptimisticEventStreamTests.cs" />
     <Compile Include="Persistence\InMemory\InMemoryPersistenceTests.cs" />
