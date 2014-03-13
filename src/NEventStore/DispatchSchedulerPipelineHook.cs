@@ -2,7 +2,7 @@ namespace NEventStore
 {
     using NEventStore.Dispatcher;
 
-    public sealed class DispatchSchedulerPipelineHook : IPipelineHook
+    public sealed class DispatchSchedulerPipelineHook : PipelineHookBase
     {
         private readonly IScheduleDispatches _scheduler;
 
@@ -11,22 +11,12 @@ namespace NEventStore
             _scheduler = scheduler ?? new NullDispatcher(); // serves as a scheduler also
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             _scheduler.Dispose();
         }
 
-        public ICommit Select(ICommit committed)
-        {
-            return committed;
-        }
-
-        public bool PreCommit(CommitAttempt attempt)
-        {
-            return true;
-        }
-
-        public void PostCommit(ICommit committed)
+        public override void PostCommit(ICommit committed)
         {
             if (committed != null)
             {
