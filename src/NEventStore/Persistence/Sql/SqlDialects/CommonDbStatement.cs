@@ -22,7 +22,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects
             IDbConnection connection,
             IDbTransaction transaction)
         {
-            Parameters = new Dictionary<string, object>();
+            Parameters = new Dictionary<string, Tuple<object, DbType?>>();
 
             _dialect = dialect;
             _scope = scope;
@@ -30,7 +30,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects
             _transaction = transaction;
         }
 
-        protected IDictionary<string, object> Parameters { get; private set; }
+        protected IDictionary<string, Tuple<object, DbType?>> Parameters { get; private set; }
 
         protected ISqlDialect Dialect
         {
@@ -45,10 +45,10 @@ namespace NEventStore.Persistence.Sql.SqlDialects
 
         public virtual int PageSize { get; set; }
 
-        public virtual void AddParameter(string name, object value)
+        public virtual void AddParameter(string name, object value, DbType? parameterType = null)
         {
             Logger.Debug(Messages.AddingParameter, name);
-            Parameters[name] = _dialect.CoalesceParameterValue(value);
+            Parameters[name] = Tuple.Create(_dialect.CoalesceParameterValue(value), parameterType);
         }
 
         public virtual int ExecuteWithoutExceptions(string commandText)
@@ -114,7 +114,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects
             if (pageSize > 0)
             {
                 Logger.Verbose(Messages.MaxPageSize, pageSize);
-                Parameters.Add(_dialect.Limit, pageSize);
+                Parameters.Add(_dialect.Limit, Tuple.Create((object) pageSize, (DbType?) null));
             }
 
             return ExecuteQuery(queryText, nextpage, pageSize);
@@ -142,7 +142,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects
 
         protected virtual IEnumerable<IDataRecord> ExecuteQuery(string queryText, NextPageDelegate nextpage, int pageSize)
         {
-            Parameters.Add(_dialect.Skip, 0);
+            Parameters.Add(_dialect.Skip, Tuple.Create((object) 0, (DbType?) null));
             IDbCommand command = BuildCommand(queryText);
 
             try
@@ -175,15 +175,15 @@ namespace NEventStore.Persistence.Sql.SqlDialects
         {
             foreach (var item in Parameters)
             {
-                BuildParameter(command, item.Key, item.Value);
+                BuildParameter(command, item.Key, item.Value.Item1, item.Value.Item2);
             }
         }
 
-        protected virtual void BuildParameter(IDbCommand command, string name, object value)
+        protected virtual void BuildParameter(IDbCommand command, string name, object value, DbType? dbType)
         {
             IDbDataParameter parameter = command.CreateParameter();
             parameter.ParameterName = name;
-            SetParameterValue(parameter, value, null);
+            SetParameterValue(parameter, value, dbType);
 
             Logger.Verbose(Messages.BindingParameter, name, parameter.Value);
             command.Parameters.Add(parameter);

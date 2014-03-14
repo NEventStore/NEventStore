@@ -193,7 +193,7 @@ namespace NEventStore
         private const int MaxStreamsToTrack = 2;
         private ICommit[] _trackedCommitAttempts;
 
-        private OptimisticPipelineHook hook;
+        private OptimisticPipelineHook _hook;
 
         protected override void Context()
         {
@@ -204,14 +204,14 @@ namespace NEventStore
                 BuildCommit(Guid.NewGuid(), Guid.NewGuid())
             };
 
-            hook = new OptimisticPipelineHook(MaxStreamsToTrack);
+            _hook = new OptimisticPipelineHook(MaxStreamsToTrack);
         }
 
         protected override void Because()
         {
             foreach (var commit in _trackedCommitAttempts)
             {
-                hook.Track(commit);
+                _hook.Track(commit);
             }
         }
 
@@ -219,14 +219,14 @@ namespace NEventStore
         public void should_only_contain_streams_explicitly_tracked()
         {
             ICommit untracked = BuildCommit(Guid.Empty, _trackedCommitAttempts[0].CommitId);
-            hook.Contains(untracked).ShouldBeFalse();
+            _hook.Contains(untracked).ShouldBeFalse();
         }
 
         [Fact]
         public void should_find_tracked_streams()
         {
             ICommit stillTracked = BuildCommit(_trackedCommitAttempts.Last().StreamId, _trackedCommitAttempts.Last().CommitId);
-            hook.Contains(stillTracked).ShouldBeTrue();
+            _hook.Contains(stillTracked).ShouldBeTrue();
         }
 
         [Fact]
@@ -234,7 +234,7 @@ namespace NEventStore
         {
             ICommit droppedFromTracking = BuildCommit(
                 _trackedCommitAttempts.First().StreamId, _trackedCommitAttempts.First().CommitId);
-            hook.Contains(droppedFromTracking).ShouldBeFalse();
+            _hook.Contains(droppedFromTracking).ShouldBeFalse();
         }
 
         private ICommit BuildCommit(Guid streamId, Guid commitId)
