@@ -2,17 +2,18 @@ namespace NEventStore
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using NEventStore.Logging;
     using NEventStore.Persistence;
 
     /// <summary>
     ///     Tracks the heads of streams to reduce latency by avoiding roundtrips to storage.
     /// </summary>
-    public class OptimisticPipelineHook : IPipelineHook
+    public class OptimisticPipelineHook : PipelineHookBase
     {
         private const int MaxStreamsToTrack = 100;
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (OptimisticPipelineHook));
-        private readonly Dictionary<HeadKey, ICommit> _heads = new Dictionary<HeadKey, ICommit>();
+        private readonly Dictionary<HeadKey, ICommit> _heads = new Dictionary<HeadKey, ICommit>(); //TODO use concurrent collections
         private readonly LinkedList<HeadKey> _maxItemsToTrack = new LinkedList<HeadKey>();
         private readonly int _maxStreamsToTrack;
 
@@ -26,19 +27,19 @@ namespace NEventStore
             _maxStreamsToTrack = maxStreamsToTrack;
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        public virtual ICommit Select(ICommit committed)
+        public override ICommit Select(ICommit committed)
         {
             Track(committed);
             return committed;
         }
 
-        public virtual bool PreCommit(CommitAttempt attempt)
+        public override bool PreCommit(CommitAttempt attempt)
         {
             Logger.Debug(Resources.OptimisticConcurrencyCheck, attempt.StreamId);
 
@@ -72,9 +73,35 @@ namespace NEventStore
             return true;
         }
 
-        public virtual void PostCommit(ICommit committed)
+        public override void PostCommit(ICommit committed)
         {
             Track(committed);
+        }
+
+        public override void OnPurge(string bucketId)
+        {
+            lock (_maxItemsToTrack)
+            {
+                if (bucketId == null)
+                {
+                    _heads.Clear();
+                    _maxItemsToTrack.Clear();
+                    return;
+                }
+                HeadKey[] headsInBucket = _heads.Keys.Where(k => k.BucketId == bucketId).ToArray();
+                foreach (var head in headsInBucket)
+                {
+                    RemoveHead(head);
+                }
+            }
+        }
+
+        public override void OnDeleteStream(string bucketId, string streamId)
+        {
+            lock (_maxItemsToTrack)
+            {
+                RemoveHead(new HeadKey(bucketId, streamId));
+            }
         }
 
         protected virtual void Dispose(bool disposing)
@@ -110,6 +137,16 @@ namespace NEventStore
             head = head.StreamRevision > committed.StreamRevision ? head : committed;
 
             _heads[headKey] = head;
+        }
+
+        private void RemoveHead(HeadKey head)
+        {
+            _heads.Remove(head);
+            LinkedListNode<HeadKey> node = _maxItemsToTrack.Find(head); // There should only be ever one or none
+            if (node != null)
+            {
+                _maxItemsToTrack.Remove(node);
+            }
         }
 
         private static bool AlreadyTracked(ICommit head)
@@ -161,12 +198,23 @@ namespace NEventStore
         private sealed class HeadKey : IEquatable<HeadKey>
         {
             private readonly string _bucketId;
+
             private readonly string _streamId;
 
             public HeadKey(string bucketId, string streamId)
             {
                 _bucketId = bucketId;
                 _streamId = streamId;
+            }
+
+            public string BucketId
+            {
+                get { return _bucketId; }
+            }
+
+            public string StreamId
+            {
+                get { return _streamId; }
             }
 
             public bool Equals(HeadKey other)
@@ -192,14 +240,14 @@ namespace NEventStore
                 {
                     return true;
                 }
-                return obj is HeadKey && Equals((HeadKey)obj);
+                return obj is HeadKey && Equals((HeadKey) obj);
             }
 
             public override int GetHashCode()
             {
                 unchecked
                 {
-                    return (_bucketId.GetHashCode() * 397) ^ _streamId.GetHashCode();
+                    return (_bucketId.GetHashCode()*397) ^ _streamId.GetHashCode();
                 }
             }
         }

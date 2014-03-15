@@ -6,7 +6,7 @@ namespace NEventStore.Conversion
     using NEventStore.Logging;
     using NEventStore.Persistence;
 
-    public class EventUpconverterPipelineHook : IPipelineHook
+    public class EventUpconverterPipelineHook : PipelineHookBase
     {
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (EventUpconverterPipelineHook));
         private readonly IDictionary<Type, Func<object, object>> _converters;
@@ -21,13 +21,13 @@ namespace NEventStore.Conversion
             _converters = converters;
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        public virtual ICommit Select(ICommit committed)
+        public override ICommit Select(ICommit committed)
         {
             bool converted = false;
             var eventMessages = committed
@@ -57,14 +57,6 @@ namespace NEventStore.Conversion
                 committed.Headers,
                 eventMessages);
         }
-
-        public virtual bool PreCommit(CommitAttempt attempt)
-        {
-            return true;
-        }
-
-        public virtual void PostCommit(ICommit committed)
-        {}
 
         protected virtual void Dispose(bool disposing)
         {
