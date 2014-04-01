@@ -32,7 +32,7 @@ namespace NEventStore.Persistence
 
         public IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
         {
-            return _original.GetFrom(bucketId, streamId, minRevision, maxRevision);
+            return ExecuteHooks(_original.GetFrom(bucketId, streamId, minRevision, maxRevision));
         }
 
         public ICommit Commit(CommitAttempt attempt)
