@@ -2,7 +2,6 @@ namespace NEventStore
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using NEventStore.Logging;
     using NEventStore.Persistence;
 
@@ -27,24 +26,7 @@ namespace NEventStore
 
         public virtual IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
         {
-            foreach (var commit in _persistence.GetFrom(bucketId, streamId, minRevision, maxRevision))
-            {
-                ICommit filtered = commit;
-                foreach (var hook in _pipelineHooks.Where(x => (filtered = x.Select(filtered)) == null))
-                {
-                    Logger.Info(Resources.PipelineHookSkippedCommit, hook.GetType(), commit.CommitId);
-                    break;
-                }
-
-                if (filtered == null)
-                {
-                    Logger.Info(Resources.PipelineHookFilteredCommit);
-                }
-                else
-                {
-                    yield return filtered;
-                }
-            }
+            return _persistence.GetFrom(bucketId, streamId, minRevision, maxRevision);
         }
 
         public virtual ICommit Commit(CommitAttempt attempt)
