@@ -24,8 +24,8 @@ namespace NEventStore.Persistence.AcceptanceTests
                 Guid.NewGuid(),
                 1,
                 DateTime.Now,
-                new Dictionary<string, object> {{"key.1", "value"}},
-                new List<EventMessage> {new EventMessage {Body = new ExtensionMethods.SomeDomainEvent {SomeProperty = "Test"}}});
+                new Dictionary<string, object> { { "key.1", "value" } },
+                new List<EventMessage> { new EventMessage { Body = new ExtensionMethods.SomeDomainEvent { SomeProperty = "Test" } } });
             Persistence.Commit(attempt);
         }
 
@@ -195,7 +195,6 @@ namespace NEventStore.Persistence.AcceptanceTests
     }
 
     public class when_committing_a_stream_with_the_same_revision : PersistenceEngineConcern
-
     {
         private CommitAttempt _attemptWithSameRevision;
         private Exception _thrown;
@@ -218,9 +217,9 @@ namespace NEventStore.Persistence.AcceptanceTests
         }
     }
 
-    //TODO:This test looks exactly like the one above. What are we trying to prove?
+    // This test ensure the uniqueness of BucketId+StreamId+CommitSequence 
+    // to avoid concurrency issues
     public class when_committing_a_stream_with_the_same_sequence : PersistenceEngineConcern
-
     {
         private CommitAttempt _attempt1, _attempt2;
         private Exception _thrown;
@@ -229,7 +228,19 @@ namespace NEventStore.Persistence.AcceptanceTests
         {
             string streamId = Guid.NewGuid().ToString();
             _attempt1 = streamId.BuildAttempt();
-            _attempt2 = streamId.BuildAttempt(); //TODO mutate a bit
+            _attempt2 = new CommitAttempt(
+                _attempt1.BucketId,         // <--- Same bucket
+                _attempt1.StreamId,         // <--- Same stream it
+                _attempt1.StreamRevision +10,
+                Guid.NewGuid(),
+                _attempt1.CommitSequence,   // <--- Same commit seq
+                DateTime.UtcNow,
+                _attempt1.Headers,
+                new[]
+                {
+                    new EventMessage(){ Body = new ExtensionMethods.SomeDomainEvent {SomeProperty = "Test 3"}}
+                }
+            );
 
             Persistence.Commit(_attempt1);
         }
@@ -532,7 +543,7 @@ namespace NEventStore.Persistence.AcceptanceTests
             _start = SystemTime.UtcNow;
             // Due to loss in precision in various storage engines, we're rounding down to the
             // nearest second to ensure include all commits from the 'start'.
-            _start = _start.AddSeconds(-1); 
+            _start = _start.AddSeconds(-1);
             _committed = Persistence.CommitMany(ConfiguredPageSizeForTesting + 2).ToArray();
         }
 
@@ -592,7 +603,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Because()
         {
-// ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
             _thrown = Catch.Exception(() => Persistence.GetFrom(DateTime.MinValue).FirstOrDefault());
         }
 
@@ -670,7 +681,7 @@ namespace NEventStore.Persistence.AcceptanceTests
             DateTime now = SystemTime.UtcNow;
             Persistence.Commit(_streamId.BuildAttempt(now, _bucketAId));
             _attemptACommitStamp = Persistence.GetFrom(_bucketAId, _streamId, 0, int.MaxValue).First().CommitStamp;
-            _attemptForBucketB = _streamId.BuildAttempt(now.Subtract(TimeSpan.FromDays(1)),_bucketBId);
+            _attemptForBucketB = _streamId.BuildAttempt(now.Subtract(TimeSpan.FromDays(1)), _bucketBId);
         }
 
         protected override void Because()
@@ -708,7 +719,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         const string _bucketBId = "b";
 
         string _streamId;
-        
+
         private static Snapshot _snapshot;
 
         protected override void Context()
@@ -760,7 +771,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         {
             _returnedCommits = Persistence.GetFrom(_bucketAId, _now).ToArray();
         }
-        
+
         [Fact]
         public void should_not_return_commits_from_other_buckets()
         {
@@ -882,7 +893,7 @@ namespace NEventStore.Persistence.AcceptanceTests
             _commits.Length.ShouldBe(_moreThanPageSize);
         }
     }
-    
+
     /* Commented out because it's not a scenario we're supporting
      * public class TransactionConcern : SpecificationBase, IUseFixture<PersistenceEngineFixture>
     {
@@ -1031,7 +1042,7 @@ namespace NEventStore.Persistence.AcceptanceTests
                 1,
                 DateTime.UtcNow,
                 new Dictionary<string, object>(),
-                new List<EventMessage> {new EventMessage { Body = new string('a', bodyLength) } });
+                new List<EventMessage> { new EventMessage { Body = new string('a', bodyLength) } });
             Persistence.Commit(attempt);
 
             ICommit commits = Persistence.GetFrom().Single();
