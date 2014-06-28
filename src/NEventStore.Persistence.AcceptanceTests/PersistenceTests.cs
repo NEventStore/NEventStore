@@ -666,6 +666,36 @@ namespace NEventStore.Persistence.AcceptanceTests
         }
     }
 
+    public class when_committing_a_stream_with_the_same_id_as_a_stream_same_bucket : PersistenceEngineConcern
+    {
+        private string _streamId;
+        private static Exception _thrown;
+        private DateTime _attemptACommitStamp;
+
+        protected override void Context()
+        {
+            _streamId = Guid.NewGuid().ToString();
+            Persistence.Commit(_streamId.BuildAttempt());
+        }
+
+        protected override void Because()
+        {
+            _thrown = Catch.Exception(() => Persistence.Commit(_streamId.BuildAttempt()));
+        }
+
+        [Fact]
+        public void should_throw()
+        {
+            _thrown.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public void should_be_duplicate_commit_exception()
+        {
+            _thrown.ShouldBeInstanceOf<ConcurrencyException>();
+        }
+    }
+
     public class when_committing_a_stream_with_the_same_id_as_a_stream_in_another_bucket : PersistenceEngineConcern
     {
         const string _bucketAId = "a";
