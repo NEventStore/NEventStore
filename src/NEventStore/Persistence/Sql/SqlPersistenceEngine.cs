@@ -106,12 +106,13 @@ namespace NEventStore.Persistence.Sql
                     query.AddParameter(_dialect.CommitSequence, 0);
                     return query
                         .ExecutePagedQuery(statement, _dialect.NextPageDelegate)
-                        .Select(x => x.GetCommit(_serializer, _dialect));
-
-                   /* return query
-                        .ExecutePagedQuery(statement, (q, r) => {})
-                        .Select(x => x.GetCommit(_serializer, _dialect));*/
+                        .Select(x => GetCommit(x, _serializer, _dialect));
                 });
+        }
+
+        protected virtual ICommit GetCommit(IDataRecord dataRecord, ISerialize serialize, ISqlDialect sqlDialect)
+        {
+            return dataRecord.GetCommit(serialize, sqlDialect);
         }
 
         public virtual IEnumerable<ICommit> GetFrom(string bucketId, DateTime start)
@@ -126,7 +127,7 @@ namespace NEventStore.Persistence.Sql
                     query.AddParameter(_dialect.BucketId, bucketId, DbType.AnsiString);
                     query.AddParameter(_dialect.CommitStamp, start);
                     return query.ExecutePagedQuery(statement, (q, r) => { })
-                            .Select(x => x.GetCommit(_serializer, _dialect));
+                            .Select(x => GetCommit(x, _serializer, _dialect));
 
                 });
         }
@@ -150,7 +151,7 @@ namespace NEventStore.Persistence.Sql
                     query.AddParameter(_dialect.CommitStampStart, start);
                     query.AddParameter(_dialect.CommitStampEnd, end);
                     return query.ExecutePagedQuery(statement, (q, r) => { })
-                        .Select(x => x.GetCommit(_serializer, _dialect));
+                        .Select(x => GetCommit(x, _serializer, _dialect));
                 });
         }
 
@@ -186,7 +187,7 @@ namespace NEventStore.Persistence.Sql
             Logger.Debug(Messages.GettingUndispatchedCommits);
             return
                 ExecuteQuery(query => query.ExecutePagedQuery(_dialect.GetUndispatchedCommits, (q, r) => { }))
-                    .Select(x => x.GetCommit(_serializer, _dialect))
+                    .Select(x => GetCommit(x, _serializer, _dialect))
                     .ToArray(); // avoid paging
         }
 
@@ -289,7 +290,7 @@ namespace NEventStore.Persistence.Sql
                 string statement = _dialect.GetCommitsFromCheckpoint;
                 query.AddParameter(_dialect.CheckpointNumber, checkpoint.LongValue);
                 return query.ExecutePagedQuery(statement, (q, r) => { })
-                    .Select(x => x.GetCommit(_serializer, _dialect));
+                    .Select(x => GetCommit(x, _serializer, _dialect));
             });
         }
 
