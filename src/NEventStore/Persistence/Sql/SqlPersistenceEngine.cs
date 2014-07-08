@@ -313,7 +313,7 @@ namespace NEventStore.Persistence.Sql
         protected virtual void OnPersistCommit(IDbStatement cmd, CommitAttempt attempt)
         {}
 
-        private ICommit PersistCommit(CommitAttempt attempt)
+        protected virtual ICommit PersistCommit(CommitAttempt attempt)
         {
             Logger.Debug(Messages.AttemptingToCommit, attempt.Events.Count, attempt.StreamId, attempt.CommitSequence, attempt.BucketId);
             string streamId = _streamIdHasher.GetHash(attempt.StreamId);
