@@ -130,7 +130,7 @@
     <value>A connection could not be created for the specified named connection.</value>
   </data>
   <data name="ConfiguringConnections" xml:space="preserve">
-    <value>Configuring connections: master '{0}'; replica '{1}', shards: {2}.</value>
+    <value>Configuring connections: master '{0}'.</value>
   </data>
   <data name="OpeningMasterConnection" xml:space="preserve">
     <value>Opening master connection '{0}'</value>
