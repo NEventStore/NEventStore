@@ -129,13 +129,19 @@ CREATE TABLE [dbo].[Commits]
        [Items] [tinyint] NOT NULL CHECK ([Items] &gt; 0),
        [CommitId] [uniqueidentifier] NOT NULL CHECK ([CommitId] != 0x0),
        [CommitSequence] [int] NOT NULL CHECK ([CommitSequence] &gt; 0),
-       [CommitStamp] [datetime2] NOT NULL,
        [CheckpointNumber] [bigint] IDENTITY NOT NULL,
        [Dispatched] [bit] NOT NULL DEFAULT (0),
        [Headers] [varbinary](MAX) NULL CHECK ([Headers] IS NULL OR DATALENGTH([Headers]) &gt; 0),
        [Payload] [varbinary](MAX) NOT NULL CHECK (DATALENGTH([Payload]) &gt; 0),
        CONSTRAINT [PK_Commits] PRIMARY KEY CLUSTERED ([CheckpointNumber])
 );
+
+--datetime2 is supported starting from MSSQL 2008. For MSSQL 2005 datetime has to be used
+IF EXISTS(SELECT * FROM SYS.types WHERE NAME = 'datetime2')
+	ALTER TABLE [dbo].[Commits] ADD [CommitStamp] [datetime2] NOT NULL
+ELSE
+	ALTER TABLE [dbo].[Commits] ADD [CommitStamp] [datetime] NOT NULL
+
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Commits_CommitSequence] ON Commits (BucketId, StreamId, CommitSequence);
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Commits_CommitId] ON [dbo].[Commits] ([BucketId], [StreamId], [CommitId]);
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Commits_Revisions] ON [dbo].[Commits] ([BucketId], [StreamId], [StreamRevision], [Items]);
