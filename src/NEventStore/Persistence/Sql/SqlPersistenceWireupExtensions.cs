@@ -11,6 +11,12 @@ namespace NEventStore
             return wireup.UsingSqlPersistence(factory);
         }
 
+        public static SqlPersistenceWireup UsingSqlPersistence(this Wireup wireup, string connectionName, string providerName, string connectionString)
+        {
+            var factory = new ConfigurationConnectionFactory(connectionName, providerName, connectionString);
+            return wireup.UsingSqlPersistence(factory);
+        }
+
         public static SqlPersistenceWireup UsingSqlPersistence(this Wireup wireup, IConnectionFactory factory)
         {
             return new SqlPersistenceWireup(wireup, factory);
