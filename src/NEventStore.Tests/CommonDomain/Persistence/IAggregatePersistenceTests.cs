@@ -3,6 +3,7 @@
 	using System;
 
 	using NEventStore;
+	using NEventStore.Persistence.AcceptanceTests;
 	using NEventStore.Persistence.AcceptanceTests.BDD;
 
 	using Xunit;
@@ -139,4 +140,46 @@
 			_repository.GetById<TestAggregate>(_bucket, _id).Name.ShouldBe(_testAggregate.Name);
 		}
 	}
+
+
+    public class when_an_aggregate_is_persisted_concurrently_by_two_clients : SpecificationBase
+    {
+        protected IRepository _repository1;
+        protected IRepository _repository2;
+
+        protected IStoreEvents _storeEvents;
+        private Guid _aggregateId;
+        private Exception _thrown;
+
+        protected override void Context()
+        {
+            base.Context();
+
+            this._storeEvents = Wireup.Init().UsingInMemoryPersistence().Build();
+            this._repository1 = new EventStoreRepository(this._storeEvents, new AggregateFactory(), new ConflictDetector());
+            this._repository2 = new EventStoreRepository(this._storeEvents, new AggregateFactory(), new ConflictDetector());
+
+            _aggregateId = Guid.NewGuid();
+            var aggregate = new TestAggregate(_aggregateId, "my name is..");
+            _repository1.Save(aggregate, Guid.NewGuid());
+        }
+
+        protected override void Because()
+        {
+            var agg1 = _repository1.GetById<TestAggregate>(_aggregateId);
+            var agg2 = _repository2.GetById<TestAggregate>(_aggregateId);
+            agg1.ChangeName("one");
+            agg2.ChangeName("two");
+
+            _repository1.Save(agg1, Guid.NewGuid());
+
+            _thrown = Catch.Exception(() => _repository2.Save(agg2, Guid.NewGuid()));
+        }
+
+        [Fact]
+        public void should_throw_a_ConflictingCommandException()
+        {
+            _thrown.ShouldBeInstanceOf<ConflictingCommandException>();
+        }        
+    }
 }

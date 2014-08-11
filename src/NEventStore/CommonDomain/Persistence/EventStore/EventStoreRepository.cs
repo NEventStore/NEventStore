@@ -87,9 +87,10 @@ namespace CommonDomain.Persistence.EventStore
 				}
 				catch (ConcurrencyException e)
 				{
+                    var conflict = this.ThrowOnConflict(stream, commitEventCount);
                     stream.ClearChanges();
-                    
-                    if (this.ThrowOnConflict(stream, commitEventCount))
+
+                    if (conflict)
 					{
 						throw new ConflictingCommandException(e.Message, e);
 					}
