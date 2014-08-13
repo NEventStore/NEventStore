@@ -15,10 +15,10 @@ namespace CommonDomain.Core
 
 		public virtual bool Equals(ISaga other)
 		{
-			return null != other && other.Id == this.Id;
+			return null != other && other.Id == Id;
 		}
 
-		public Guid Id { get; protected set; }
+		public string Id { get; protected set; }
 
 		public int Version { get; private set; }
 

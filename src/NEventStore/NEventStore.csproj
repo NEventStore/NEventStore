@@ -87,6 +87,7 @@
     <Compile Include="CommonDomain\Persistence\ISagaRepository.cs" />
     <Compile Include="CommonDomain\Persistence\PersistenceException.cs" />
     <Compile Include="CommonDomain\Persistence\RepositoryExtensions.cs" />
+    <Compile Include="CommonDomain\Persistence\SagaRepositoryExtensions.cs" />
     <Compile Include="CommonDomain\StringExtensions.cs" />
     <Compile Include="ConcurrencyException.cs">
       <SubType>Code</SubType>

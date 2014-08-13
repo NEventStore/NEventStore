@@ -5,7 +5,7 @@ namespace CommonDomain
 
 	public interface ISaga
 	{
-		Guid Id { get; }
+		string Id { get; }
 
 		int Version { get; }
 

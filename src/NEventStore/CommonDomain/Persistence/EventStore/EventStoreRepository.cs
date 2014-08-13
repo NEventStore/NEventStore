@@ -7,53 +7,53 @@ namespace CommonDomain.Persistence.EventStore
 	using NEventStore;
 	using NEventStore.Persistence;
 
-	public class EventStoreRepository : IRepository, IDisposable
+    public class EventStoreRepository : IRepository
 	{
 		private const string AggregateTypeHeader = "AggregateType";
 
-		private readonly IDetectConflicts conflictDetector;
+		private readonly IDetectConflicts _conflictDetector;
 
-		private readonly IStoreEvents eventStore;
+		private readonly IStoreEvents _eventStore;
 
-		private readonly IConstructAggregates factory;
+		private readonly IConstructAggregates _factory;
 
-		private readonly IDictionary<string, ISnapshot> snapshots = new Dictionary<string, ISnapshot>();
+		private readonly IDictionary<string, ISnapshot> _snapshots = new Dictionary<string, ISnapshot>();
 
-		private readonly IDictionary<string, IEventStream> streams = new Dictionary<string, IEventStream>();
+		private readonly IDictionary<string, IEventStream> _streams = new Dictionary<string, IEventStream>();
 
 		public EventStoreRepository(IStoreEvents eventStore, IConstructAggregates factory, IDetectConflicts conflictDetector)
 		{
-			this.eventStore = eventStore;
-			this.factory = factory;
-			this.conflictDetector = conflictDetector;
+			_eventStore = eventStore;
+			_factory = factory;
+			_conflictDetector = conflictDetector;
 		}
 
 		public void Dispose()
 		{
-			this.Dispose(true);
+			Dispose(true);
 			GC.SuppressFinalize(this);
 		}
 
 		public virtual TAggregate GetById<TAggregate>(Guid id) where TAggregate : class, IAggregate
 		{
-			return this.GetById<TAggregate>(Bucket.Default, id);
+			return GetById<TAggregate>(Bucket.Default, id);
 		}
 
 		public virtual TAggregate GetById<TAggregate>(Guid id, int versionToLoad) where TAggregate : class, IAggregate
 		{
-			return this.GetById<TAggregate>(Bucket.Default, id, versionToLoad);
+			return GetById<TAggregate>(Bucket.Default, id, versionToLoad);
 		}
 
 		public TAggregate GetById<TAggregate>(string bucketId, Guid id) where TAggregate : class, IAggregate
 		{
-			return this.GetById<TAggregate>(bucketId, id, int.MaxValue);
+			return GetById<TAggregate>(bucketId, id, int.MaxValue);
 		}
 
 		public TAggregate GetById<TAggregate>(string bucketId, Guid id, int versionToLoad) where TAggregate : class, IAggregate
 		{
-			ISnapshot snapshot = this.GetSnapshot(bucketId, id, versionToLoad);
-			IEventStream stream = this.OpenStream(bucketId, id, versionToLoad, snapshot);
-			IAggregate aggregate = this.GetAggregate<TAggregate>(snapshot, stream);
+			ISnapshot snapshot = GetSnapshot(bucketId, id, versionToLoad);
+			IEventStream stream = OpenStream(bucketId, id, versionToLoad, snapshot);
+			IAggregate aggregate = GetAggregate<TAggregate>(snapshot, stream);
 
 			ApplyEventsToAggregate(versionToLoad, stream, aggregate);
 
@@ -71,7 +71,7 @@ namespace CommonDomain.Persistence.EventStore
 			Dictionary<string, object> headers = PrepareHeaders(aggregate, updateHeaders);
 			while (true)
 			{
-				IEventStream stream = this.PrepareStream(bucketId, aggregate, headers);
+				IEventStream stream = PrepareStream(bucketId, aggregate, headers);
 				int commitEventCount = stream.CommittedEvents.Count;
 
 				try
@@ -87,7 +87,7 @@ namespace CommonDomain.Persistence.EventStore
 				}
 				catch (ConcurrencyException e)
 				{
-                    var conflict = this.ThrowOnConflict(stream, commitEventCount);
+                    var conflict = ThrowOnConflict(stream, commitEventCount);
                     stream.ClearChanges();
 
                     if (conflict)
@@ -109,15 +109,15 @@ namespace CommonDomain.Persistence.EventStore
 				return;
 			}
 
-			lock (this.streams)
+			lock (_streams)
 			{
-				foreach (var stream in this.streams)
+				foreach (var stream in _streams)
 				{
 					stream.Value.Dispose();
 				}
 
-				this.snapshots.Clear();
-				this.streams.Clear();
+				_snapshots.Clear();
+				_streams.Clear();
 			}
 		}
 
@@ -135,16 +135,16 @@ namespace CommonDomain.Persistence.EventStore
 		private IAggregate GetAggregate<TAggregate>(ISnapshot snapshot, IEventStream stream)
 		{
 			IMemento memento = snapshot == null ? null : snapshot.Payload as IMemento;
-			return this.factory.Build(typeof(TAggregate), stream.StreamId.ToGuid(), memento);
+			return _factory.Build(typeof(TAggregate), stream.StreamId.ToGuid(), memento);
 		}
 
 		private ISnapshot GetSnapshot(string bucketId, Guid id, int version)
 		{
 			ISnapshot snapshot;
 			var snapshotId = bucketId + id;
-			if (!this.snapshots.TryGetValue(snapshotId, out snapshot))
+			if (!_snapshots.TryGetValue(snapshotId, out snapshot))
 			{
-				this.snapshots[snapshotId] = snapshot = this.eventStore.Advanced.GetSnapshot(bucketId, id, version);
+				_snapshots[snapshotId] = snapshot = _eventStore.Advanced.GetSnapshot(bucketId, id, version);
 			}
 
 			return snapshot;
@@ -153,26 +153,26 @@ namespace CommonDomain.Persistence.EventStore
 		private IEventStream OpenStream(string bucketId, Guid id, int version, ISnapshot snapshot)
 		{
 			IEventStream stream;
-			var streamsId = bucketId + "+" + id;
-			if (this.streams.TryGetValue(streamsId, out stream))
+			var streamId = bucketId + "+" + id;
+			if (_streams.TryGetValue(streamId, out stream))
 			{
 				return stream;
 			}
 
-			stream = snapshot == null
-								 ? this.eventStore.OpenStream(bucketId, id, 0, version)
-				         : this.eventStore.OpenStream(snapshot, version);
+			stream = snapshot == null 
+                ? _eventStore.OpenStream(bucketId, id, 0, version)
+				: _eventStore.OpenStream(snapshot, version);
 
-			return this.streams[streamsId] = stream;
+			return _streams[streamId] = stream;
 		}
 
 		private IEventStream PrepareStream(string bucketId, IAggregate aggregate, Dictionary<string, object> headers)
 		{
 			IEventStream stream;
-			var streamsId = bucketId + "+" + aggregate.Id;
-			if (!this.streams.TryGetValue(streamsId, out stream))
+			var streamId = bucketId + "+" + aggregate.Id;
+			if (!_streams.TryGetValue(streamId, out stream))
 			{
-				this.streams[streamsId] = stream = this.eventStore.CreateStream(bucketId, aggregate.Id);
+				_streams[streamId] = stream = _eventStore.CreateStream(bucketId, aggregate.Id);
 			}
 
 			foreach (var item in headers)
@@ -207,7 +207,7 @@ namespace CommonDomain.Persistence.EventStore
 		{
 			IEnumerable<object> committed = stream.CommittedEvents.Skip(skip).Select(x => x.Body);
 			IEnumerable<object> uncommitted = stream.UncommittedEvents.Select(x => x.Body);
-			return this.conflictDetector.ConflictsWith(uncommitted, committed);
+			return _conflictDetector.ConflictsWith(uncommitted, committed);
 		}
 	}
 }
