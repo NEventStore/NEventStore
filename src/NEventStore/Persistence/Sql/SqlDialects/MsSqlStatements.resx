@@ -148,7 +148,7 @@ CREATE INDEX [IX_Commits_Stamp] ON Commits ([CommitStamp]);
 
 CREATE TABLE [dbo].[Snapshots]
 (
-       [BucketId] [char](40) NOT NULL,
+       [BucketId] [varchar](40) NOT NULL,
        [StreamId] [char](40) NOT NULL,
        [StreamRevision] [int] NOT NULL CHECK ([StreamRevision] &gt; 0),
        [Payload] [varbinary](MAX) NOT NULL CHECK (DATALENGTH([Payload]) &gt; 0),

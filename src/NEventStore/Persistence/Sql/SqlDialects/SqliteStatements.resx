@@ -141,7 +141,7 @@ CREATE INDEX IF NOT EXISTS IX_Commits_Stamp ON Commits (CommitStamp);
 
 CREATE TABLE IF NOT EXISTS Snapshots
 (
-       BucketId char(40) NOT NULL,
+       BucketId varchar(40) NOT NULL,
        StreamId char(40) NOT NULL,
        StreamRevision int NOT NULL CHECK (StreamRevision &gt; 0),
        Payload blob NOT NULL,
