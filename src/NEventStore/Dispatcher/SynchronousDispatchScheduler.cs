@@ -4,6 +4,7 @@ namespace NEventStore.Dispatcher
     using NEventStore.Logging;
     using NEventStore.Persistence;
 
+    [Obsolete("This will be removed in v6 https://github.com/NEventStore/NEventStore/issues/360", false)]
     public class SynchronousDispatchScheduler : IScheduleDispatches
     {
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (SynchronousDispatchScheduler));

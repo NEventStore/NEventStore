@@ -1,7 +1,9 @@
 namespace NEventStore
 {
+    using System;
     using NEventStore.Dispatcher;
 
+    [Obsolete("This will be removed in v6 https://github.com/NEventStore/NEventStore/issues/360", false)]
     public sealed class DispatchSchedulerPipelineHook : PipelineHookBase
     {
         private readonly IScheduleDispatches _scheduler;

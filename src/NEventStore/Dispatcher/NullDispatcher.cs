@@ -3,6 +3,7 @@ namespace NEventStore.Dispatcher
     using System;
     using NEventStore.Logging;
 
+    [Obsolete("This will be removed in v6 https://github.com/NEventStore/NEventStore/issues/360", false)]
     public sealed class NullDispatcher : IScheduleDispatches, IDispatchCommits
     {
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (NullDispatcher));

@@ -8,6 +8,7 @@ namespace NEventStore.Dispatcher
     /// <remarks>
     ///     Instances of this class must be designed to be multi-thread safe such that they can be shared between threads.
     /// </remarks>
+    [Obsolete("This will be removed in v6 https://github.com/NEventStore/NEventStore/issues/360", false)]
     public interface IScheduleDispatches : IDisposable
     {
         /// <summary>
