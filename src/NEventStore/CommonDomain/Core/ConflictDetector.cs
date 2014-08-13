@@ -15,16 +15,20 @@ namespace CommonDomain.Core
 	/// </remarks>
 	public class ConflictDetector : IDetectConflicts
 	{
-		private readonly IDictionary<Type, IDictionary<Type, ConflictDelegate>> actions =
-			new Dictionary<Type, IDictionary<Type, ConflictDelegate>>();
+		//declaring different delegate so that ConflictDelegate(object, object) can be marked obsolete
+		private delegate bool ConflictPredicate(object uncommitted, object committed);
 
-		public void Register<TUncommitted, TCommitted>(ConflictDelegate handler) where TUncommitted : class
+		private readonly IDictionary<Type, IDictionary<Type, ConflictPredicate>> actions =
+			new Dictionary<Type, IDictionary<Type, ConflictPredicate>>();
+
+		public void Register<TUncommitted, TCommitted>(ConflictDelegate<TUncommitted, TCommitted> handler)
+			where TUncommitted : class
 			where TCommitted : class
 		{
-			IDictionary<Type, ConflictDelegate> inner;
+			IDictionary<Type, ConflictPredicate> inner;
 			if (!this.actions.TryGetValue(typeof(TUncommitted), out inner))
 			{
-				this.actions[typeof(TUncommitted)] = inner = new Dictionary<Type, ConflictDelegate>();
+				this.actions[typeof(TUncommitted)] = inner = new Dictionary<Type, ConflictPredicate>();
 			}
 
 			inner[typeof(TCommitted)] = (uncommitted, committed) => handler(uncommitted as TUncommitted, committed as TCommitted);
@@ -40,13 +44,13 @@ namespace CommonDomain.Core
 
 		private bool Conflicts(object uncommitted, object committed)
 		{
-			IDictionary<Type, ConflictDelegate> registration;
+			IDictionary<Type, ConflictPredicate> registration;
 			if (!this.actions.TryGetValue(uncommitted.GetType(), out registration))
 			{
 				return uncommitted.GetType() == committed.GetType(); // no reg, only conflict if the events are the same time
 			}
 
-			ConflictDelegate callback;
+			ConflictPredicate callback;
 			if (!registration.TryGetValue(committed.GetType(), out callback))
 			{
 				return true;
