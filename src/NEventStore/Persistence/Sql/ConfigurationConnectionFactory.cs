@@ -21,11 +21,18 @@ namespace NEventStore.Persistence.Sql
             new Dictionary<string, DbProviderFactory>();
 
         private readonly string _connectionName;
+        private readonly ConnectionStringSettings _connectionStringSettings;
 
         public ConfigurationConnectionFactory(string connectionName)
         {
             _connectionName = connectionName ?? DefaultConnectionName;
             Logger.Debug(Messages.ConfiguringConnections, _connectionName);
+        }
+
+        public ConfigurationConnectionFactory(string connectionName, string providerName, string connectionString)
+            : this(connectionName)
+        {
+            _connectionStringSettings = new ConnectionStringSettings(_connectionName, connectionString, providerName);
         }
 
         public virtual ConnectionStringSettings Settings
@@ -111,7 +118,7 @@ namespace NEventStore.Persistence.Sql
         {
             Logger.Debug(Messages.DiscoveringConnectionSettings, connectionName);
 
-            ConnectionStringSettings settings = ConfigurationManager.ConnectionStrings
+            ConnectionStringSettings settings = _connectionStringSettings ?? ConfigurationManager.ConnectionStrings
                                                                     .Cast<ConnectionStringSettings>()
                                                                     .FirstOrDefault(x => x.Name == connectionName);
 
