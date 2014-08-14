@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyCompany("NEventStore")]
 [assembly: AssemblyProduct("NEventStore")]
-[assembly: AssemblyCopyright("Copyright © Jonathan Oliver, Jonathan Mathius, Damian Hickey and Contributors 2011-2013")]
+[assembly: AssemblyCopyright("Copyright ï¿½ Jonathan Oliver, Jonathan Mathius, Damian Hickey and Contributors 2011-2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCulture("")]

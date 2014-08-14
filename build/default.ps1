@@ -1,22 +1,23 @@
 properties {
-    $base_directory = Resolve-Path .. 
-	$publish_directory = "$base_directory\publish-net40"
-	$build_directory = "$base_directory\build"
-	$src_directory = "$base_directory\src"
-	$output_directory = "$base_directory\output"
-	$packages_directory = "$src_directory\packages"
-	$sln_file = "$src_directory\NEventStore.sln"
-	$target_config = "Release"
-	$framework_version = "v4.0"
-	$version = "0.0.0.0"
+    $base_directory = Resolve-Path ..
+    $publish_directory = "$base_directory\publish-net40"
+    $build_directory = "$base_directory\build"
+    $src_directory = "$base_directory\src"
+    $output_directory = "$base_directory\output"
+    $packages_directory = "$src_directory\packages"
+    $sln_file = "$src_directory\NEventStore.sln"
+    $target_config = "Release"
+    $framework_version = "v4.0"
+    $build_number = 0
+    $assemblyInfoFilePath = "$src_directory\VersionAssemblyInfo.cs"
 
-	$xunit_path = "$base_directory\bin\xunit.runners.1.9.1\tools\xunit.console.clr4.exe"
-	$ilMergeModule.ilMergePath = "$base_directory\bin\ilmerge-bin\ILMerge.exe"
-	$nuget_dir = "$src_directory\.nuget"
+    $xunit_path = "$base_directory\bin\xunit.runners.1.9.1\tools\xunit.console.clr4.exe"
+    $ilMergeModule.ilMergePath = "$base_directory\bin\ilmerge-bin\ILMerge.exe"
+    $nuget_dir = "$src_directory\.nuget"
 
-	if($runPersistenceTests -eq $null) {
-		$runPersistenceTests = $false
-	}
+    if($runPersistenceTests -eq $null) {
+    	$runPersistenceTests = $false
+    }
 }
 
 task default -depends Build
@@ -24,20 +25,11 @@ task default -depends Build
 task Build -depends Clean, UpdateVersion, Compile, Test
 
 task UpdateVersion {
-	$vSplit = $version.Split('.')
-	if($vSplit.Length -ne 4)
-	{
-		throw "Version number is invalid. Must be in the form of 0.0.0.0"
-	}
-	$major = $vSplit[0]
-	$minor = $vSplit[1]
-	$assemblyFileVersion = $version
-	$assemblyVersion = "$major.$minor.0.0"
-	$versionAssemblyInfoFile = "$src_directory/VersionAssemblyInfo.cs"
-	"using System.Reflection;" > $versionAssemblyInfoFile
-	"" >> $versionAssemblyInfoFile
-	"[assembly: AssemblyVersion(""$assemblyVersion"")]" >> $versionAssemblyInfoFile
-	"[assembly: AssemblyFileVersion(""$assemblyFileVersion"")]" >> $versionAssemblyInfoFile
+    $version = Get-Version $assemblyInfoFilePath
+    "Version: $version"
+	$oldVersion = New-Object Version $version
+	$newVersion = New-Object Version ($oldVersion.Major, $oldVersion.Minor, $oldVersion.Build, $buildNumber)
+	Update-Version $newVersion $assemblyInfoFilePath
 }
 
 task Compile {
@@ -78,13 +70,12 @@ task Package -depends Build, PackageNEventStore {
 task PackageNEventStore -depends Clean, Compile {
 	mkdir "$publish_directory\bin" | out-null
 	Merge-Assemblies -outputFile "$publish_directory/bin/NEventStore.dll" -files @(
-		"$src_directory/NEventStore/bin/$target_config/NEventStore.dll", 
+		"$src_directory/NEventStore/bin/$target_config/NEventStore.dll",
 		"$src_directory/NEventStore/bin/$target_config/System.Reactive.Interfaces.dll",
 		"$src_directory/NEventStore/bin/$target_config/System.Reactive.Core.dll",
 		"$src_directory/NEventStore/bin/$target_config/System.Reactive.Linq.dll",
 		"$src_directory/NEventStore/bin/$target_config/Newtonsoft.Json.dll"
 	)
-	#copy "$src_directory\NEventStore\bin\$target_config\NEventStore.???" "$publish_directory\bin"
 }
 
 task Clean {
@@ -93,7 +84,10 @@ task Clean {
 }
 
 task NuGetPack -depends Package {
-	gci -r -i *.nuspec "$nuget_dir" |% { .$nuget_dir\nuget.exe pack $_ -basepath $base_directory -o $publish_directory -version $version }
+    $versionString = Get-Version $assemblyInfoFilePath
+	$version = New-Object Version $versionString
+	$packageVersion = $version.Major.ToString() + "." + $version.Minor.ToString() + "." + $version.Build.ToString() + "-build" + $build_number.ToString().PadLeft(5,'0')
+	gci -r -i *.nuspec "$nuget_dir" |% { .$nuget_dir\nuget.exe pack $_ -basepath $base_directory -o $publish_directory -version $packageVersion }
 }
 
 function EnsureDirectory {
