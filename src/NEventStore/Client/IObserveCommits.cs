@@ -6,5 +6,7 @@
     public interface IObserveCommits : IObservable<ICommit>, IDisposable
     {
         Task Start();
+
+        void PollNow();
     }
 }

@@ -218,50 +218,6 @@
         }
     }
 
-    public class with_exception_when_handling_commit : using_polling_client
-    {
-        private IObserveCommits _observeCommits;
-        private IDisposable _subscription;
-        private Task _observingCommits;
-        private Exception _subscriberException;
-        private Exception _exception;
-        private Exception _onErrorException;
-
-        protected override void Context()
-        {
-            base.Context();
-            StoreEvents.Advanced.CommitSingle();
-            _observeCommits = PollingClient.ObserveFrom();
-            _subscriberException = new Exception();
-            _subscription = _observeCommits.Subscribe(c => { throw _subscriberException; }, ex => _onErrorException = ex);
-        }
-
-        protected override void Because()
-        {
-            _observingCommits = _observeCommits.Start();
-            StoreEvents.Advanced.CommitSingle();
-            _exception = Catch.Exception(() => _observingCommits.Wait(1000));
-        }
-
-        protected override void Cleanup()
-        {
-            _subscription.Dispose();
-            _observeCommits.Dispose();
-        }
-
-        [Fact]
-        public void should_observe_exception_from_start_task()
-        {
-            _exception.InnerException.ShouldBe(_subscriberException);
-        }
-
-        [Fact]
-        public void should_observe_exception_on_subscription()
-        {
-            _onErrorException.ShouldBe(_subscriberException);
-        }
-    }
-
     public class when_resuming : using_polling_client
     {
         private IObserveCommits _observeCommits;
@@ -286,6 +242,36 @@
         {
             _observeCommits.Start();
             _commitObserved = _observeCommits.FirstAsync().ToTask();
+        }
+
+        protected override void Cleanup()
+        {
+            _observeCommits.Dispose();
+        }
+
+        [Fact]
+        public void should_observe_commit()
+        {
+            _commitObserved.Wait(PollingInterval * 2).ShouldBe(true);
+        }
+    }
+
+    public class when_polling_now : using_polling_client
+    {
+        private IObserveCommits _observeCommits;
+        private Task<ICommit> _commitObserved;
+
+        protected override void Context()
+        {
+            base.Context();
+            StoreEvents.Advanced.CommitSingle();
+            _observeCommits = PollingClient.ObserveFrom();
+            _commitObserved = _observeCommits.FirstAsync().ToTask();
+        }
+
+        protected override void Because()
+        {
+            _observeCommits.PollNow();
         }
 
         protected override void Cleanup()

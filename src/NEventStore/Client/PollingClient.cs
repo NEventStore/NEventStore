@@ -6,6 +6,7 @@
     using System.Reactive.Subjects;
     using System.Threading;
     using System.Threading.Tasks;
+    using NEventStore.Logging;
     using NEventStore.Persistence;
 
     /// <summary>
@@ -43,12 +44,14 @@
 
         private class PollingObserveCommits : IObserveCommits
         {
+            private ILog Logger = LogFactory.BuildLogger(typeof (PollingClient));
             private readonly IPersistStreams _persistStreams;
             private string _checkpointToken;
             private readonly int _interval;
             private readonly Subject<ICommit> _subject = new Subject<ICommit>();
             private readonly CancellationTokenSource _stopRequested = new CancellationTokenSource();
             private TaskCompletionSource<Unit> _runningTaskCompletionSource;
+            private int _isPolling = 0;
 
             public PollingObserveCommits(IPersistStreams persistStreams, int interval, string checkpointToken = null)
             {
@@ -66,7 +69,10 @@
             {
                 _stopRequested.Cancel();
                 _subject.Dispose();
-                _runningTaskCompletionSource.TrySetResult(new Unit());
+                if (_runningTaskCompletionSource != null)
+                {
+                    _runningTaskCompletionSource.TrySetResult(new Unit());
+                }
             }
 
             public Task Start()
@@ -76,49 +82,56 @@
                     return _runningTaskCompletionSource.Task;
                 }
                 _runningTaskCompletionSource = new TaskCompletionSource<Unit>();
-                Poll();
+                PollLoop();
                 return _runningTaskCompletionSource.Task;
             }
 
-            private void Poll()
+            public void PollNow()
+            {
+                DoPoll();
+            }
+
+            private void PollLoop()
             {
                 if (_stopRequested.IsCancellationRequested)
                 {
                     Dispose();
                     return;
                 }
-                TaskHelpers.Delay(_interval, _stopRequested.Token).WhenCompleted(_ =>
+                TaskHelpers.Delay(_interval, _stopRequested.Token)
+                    .WhenCompleted(_ =>
+                    {
+                        DoPoll();
+                        PollLoop();
+                    },_ => Dispose());
+            }
+
+            private void DoPoll()
+            {
+                if (Interlocked.CompareExchange(ref _isPolling, 1, 0) == 0)
                 {
                     try
                     {
-                        GetNextCommits(_stopRequested.Token);
+                        IEnumerable<ICommit> commits = _persistStreams.GetFrom(_checkpointToken);
+                        foreach (var commit in commits)
+                        {
+                            if (_stopRequested.IsCancellationRequested)
+                            {
+                                _subject.OnCompleted();
+                                return;
+                            }
+                            _subject.OnNext(commit);
+                            _checkpointToken = commit.CheckpointToken;
+                        }
                     }
                     catch (Exception ex)
                     {
-                        _subject.OnError(ex);
-                        _runningTaskCompletionSource.TrySetException(ex);
-                        return;
+                        // These exceptions are expected to be transient
+                        Logger.Error(ex.ToString());
                     }
-                    Poll();
-                },
-                    _ => Dispose());
-            }
-
-            private void GetNextCommits(CancellationToken cancellationToken)
-            {
-                IEnumerable<ICommit> commits = _persistStreams.GetFrom(_checkpointToken);
-                foreach (var commit in commits)
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        _subject.OnCompleted();
-                        return;
-                    }
-                    _subject.OnNext(commit);
-                    _checkpointToken = commit.CheckpointToken;
+                    Interlocked.Exchange(ref _isPolling, 0);
                 }
             }
         }
-
     }
 }
