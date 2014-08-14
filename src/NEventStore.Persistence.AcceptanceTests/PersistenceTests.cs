@@ -433,6 +433,12 @@ namespace NEventStore.Persistence.AcceptanceTests
         {
             _snapshot.Payload.ShouldBe(_correct.Payload);
         }
+
+        [Fact]
+        public void should_have_the_correct_stream_id()
+        {
+            _snapshot.StreamId.ShouldBe(_correct.StreamId);
+        }
     }
 
     public class when_a_snapshot_has_been_added_to_the_most_recent_commit_of_a_stream : PersistenceEngineConcern
