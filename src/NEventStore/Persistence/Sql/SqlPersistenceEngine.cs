@@ -221,14 +221,14 @@ namespace NEventStore.Persistence.Sql
         public virtual ISnapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
         {
             Logger.Debug(Messages.GettingRevision, streamId, maxRevision);
-            streamId = _streamIdHasher.GetHash(streamId);
+            var streamIdHash = _streamIdHasher.GetHash(streamId);
             return ExecuteQuery(query =>
                 {
                     string statement = _dialect.GetSnapshot;
                     query.AddParameter(_dialect.BucketId, bucketId, DbType.AnsiString);
-                    query.AddParameter(_dialect.StreamId, streamId, DbType.AnsiString);
+                    query.AddParameter(_dialect.StreamId, streamIdHash, DbType.AnsiString);
                     query.AddParameter(_dialect.StreamRevision, maxRevision);
-                    return query.ExecuteWithQuery(statement).Select(x => x.GetSnapshot(_serializer));
+                    return query.ExecuteWithQuery(statement).Select(x => x.GetSnapshot(_serializer, streamId));
                 }).FirstOrDefault();
         }
 
