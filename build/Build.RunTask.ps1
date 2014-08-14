@@ -1,6 +1,6 @@
 Param(
 	[string]$task,
-	[string]$version = "0.0.0.0",
+	[string]$buildNumber = 0,
 	[bool]$runPersistenceTests = $false)
 
 if($task -eq $null) {
@@ -9,4 +9,4 @@ if($task -eq $null) {
 
 $scriptPath = $(Split-Path -parent $MyInvocation.MyCommand.path)
 
-. .\build\psake.ps1 -scriptPath $scriptPath -t $task -properties @{ version=$version;runPersistenceTests=$runPersistenceTests }
+. .\build\psake.ps1 -scriptPath $scriptPath -t $task -properties @{ build_number=$buildNumber;runPersistenceTests=$runPersistenceTests }
