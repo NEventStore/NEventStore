@@ -1,2 +1,2 @@
-﻿$config.modules=(".\build\modules\*.psm1")
+﻿$config.modules=(".\modules\*.psm1")
 $config.moduleScope="global"
