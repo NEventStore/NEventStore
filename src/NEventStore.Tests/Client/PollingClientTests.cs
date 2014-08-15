@@ -4,33 +4,31 @@
     using System.Reactive.Linq;
     using System.Reactive.Threading.Tasks;
     using System.Threading.Tasks;
-
     using FakeItEasy;
-
+    using FluentAssertions;
     using NEventStore.Persistence;
     using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
     using Xunit;
-    using Xunit.Should;
 
     public class CreatingPollingClientTests
     {
         [Fact]
         public void When_persist_streams_is_null_then_should_throw()
         {
-            Catch.Exception(() => new PollingClient(null)).ShouldBeInstanceOf<ArgumentNullException>();
+            Catch.Exception(() => new PollingClient(null)).Should().BeOfType<ArgumentNullException>();
         }
 
         [Fact]
         public void When_interval_less_than_zero_then_should_throw()
         {
-            Catch.Exception(() => new PollingClient(A.Fake<IPersistStreams>(),-1)).ShouldBeInstanceOf<ArgumentException>();
+            Catch.Exception(() => new PollingClient(A.Fake<IPersistStreams>(),-1)).Should().BeOfType<ArgumentException>();
         }
 
         [Fact]
         public void When_interval_is_zero_then_should_throw()
         {
-            Catch.Exception(() => new PollingClient(A.Fake<IPersistStreams>(), 0)).ShouldBeInstanceOf<ArgumentException>();
+            Catch.Exception(() => new PollingClient(A.Fake<IPersistStreams>(), 0)).Should().BeOfType<ArgumentException>();
         }
     }
 
@@ -88,7 +86,7 @@
         [Fact]
         public void should_observe_commit()
         {
-            _commitObserved.Wait(PollingInterval * 2).ShouldBe(true);
+            _commitObserved.Wait(PollingInterval * 2).Should().BeTrue();
         }
     }
 
@@ -119,7 +117,7 @@
         [Fact]
         public void should_observe_two_commits()
         {
-            _twoCommitsObserved.Wait(PollingInterval * 2).ShouldBe(true);
+            _twoCommitsObserved.Wait(PollingInterval * 2).Should().BeTrue();
         }
     }
 
@@ -163,13 +161,13 @@
         [Fact]
         public void should_observe_commits_on_first_observer()
         {
-            _observeCommits1Complete.Wait(PollingInterval * 10).ShouldBe(true);
+            _observeCommits1Complete.Wait(PollingInterval * 10).Should().BeTrue();
         }
 
         [Fact]
         public void should_observe_commits_on_second_observer()
         {
-            _observeCommits2Complete.Wait(PollingInterval * 10).ShouldBe(true);
+            _observeCommits2Complete.Wait(PollingInterval * 10).Should().BeTrue();
         }
     }
 
@@ -208,13 +206,13 @@
         [Fact]
         public void should_observe_commits_on_first_observer()
         {
-            _observeCommits1Complete.Wait(PollingInterval * 10).ShouldBe(true);
+            _observeCommits1Complete.Wait(PollingInterval * 10).Should().BeTrue();
         }
 
         [Fact]
         public void should_observe_commits_on_second_observer()
         {
-            _observeCommits2Complete.Wait(PollingInterval * 10).ShouldBe(true);
+            _observeCommits2Complete.Wait(PollingInterval * 10).Should().BeTrue();
         }
     }
 
@@ -252,7 +250,7 @@
         [Fact]
         public void should_observe_commit()
         {
-            _commitObserved.Wait(PollingInterval * 2).ShouldBe(true);
+            _commitObserved.Wait(PollingInterval * 2).Should().BeTrue();
         }
     }
 
@@ -282,7 +280,7 @@
         [Fact]
         public void should_observe_commit()
         {
-            _commitObserved.Wait(PollingInterval * 2).ShouldBe(true);
+            _commitObserved.Wait(PollingInterval * 2).Should().BeTrue();
         }
     }
 }

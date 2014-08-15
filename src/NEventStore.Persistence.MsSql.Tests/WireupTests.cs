@@ -1,11 +1,11 @@
 ﻿namespace NEventStore.Persistence.AcceptanceTests
 {
     using System;
+    using FluentAssertions;
     using NEventStore.Persistence.AcceptanceTests.BDD;
     using NEventStore.Persistence.Sql;
     using NEventStore.Persistence.Sql.SqlDialects;
     using Xunit;
-    using Xunit.Should;
 
     public class when_specifying_a_hasher : SpecificationBase
     {
@@ -49,7 +49,7 @@
         [Fact]
         public void should_invoke_hasher()
         {
-            _hasherInvoked.ShouldBeTrue();
+            _hasherInvoked.Should().BeTrue();
         }
     }
 }

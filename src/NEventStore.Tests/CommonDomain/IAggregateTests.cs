@@ -1,58 +1,56 @@
 ﻿namespace CommonDomain
 {
-	using System;
+    using System;
+    using FluentAssertions;
+    using NEventStore.Persistence.AcceptanceTests.BDD;
+    using Xunit;
 
-	using NEventStore.Persistence.AcceptanceTests.BDD;
+    public class when_an_aggregate_is_created : SpecificationBase
+    {
+        private TestAggregate _testAggregate;
 
-	using Xunit;
-	using Xunit.Should;
+        protected override void Because()
+        {
+            _testAggregate = new TestAggregate(Guid.NewGuid(), "Test");
+        }
 
-	public class when_an_aggregate_is_created : SpecificationBase
-	{
-		private TestAggregate _testAggregate;
+        [Fact]
+        public void should_have_name()
+        {
+            _testAggregate.Name.Should().Be("Test");
+        }
 
-		protected override void Because()
-		{
-			this._testAggregate = new TestAggregate(Guid.NewGuid(), "Test");
-		}
+        [Fact]
+        public void aggregate_version_should_be_one()
+        {
+            _testAggregate.Version.Should().Be(1);
+        }
+    }
 
-		[Fact]
-		public void should_have_name()
-		{
-			this._testAggregate.Name.ShouldBe("Test");
-		}
+    public class when_updating_an_aggregate : SpecificationBase
+    {
+        private TestAggregate _testAggregate;
 
-		[Fact]
-		public void aggregate_version_should_be_one()
-		{
-			this._testAggregate.Version.ShouldBe(1);
-		}
-	}
+        protected override void Context()
+        {
+            _testAggregate = new TestAggregate(Guid.NewGuid(), "Test");
+        }
 
-	public class when_updating_an_aggregate : SpecificationBase
-	{
-		private TestAggregate _testAggregate;
+        protected override void Because()
+        {
+            _testAggregate.ChangeName("UpdatedTest");
+        }
 
-		protected override void Context()
-		{
-			this._testAggregate = new TestAggregate(Guid.NewGuid(), "Test");
-		}
+        [Fact]
+        public void name_change_should_be_applied()
+        {
+            _testAggregate.Name.Should().Be("UpdatedTest");
+        }
 
-		protected override void Because()
-		{
-			_testAggregate.ChangeName("UpdatedTest");
-		}
-
-		[Fact]
-		public void name_change_should_be_applied()
-		{
-			this._testAggregate.Name.ShouldBe("UpdatedTest");
-		}
-
-		[Fact]
-		public void applying_events_automatically_increments_version()
-		{
-			this._testAggregate.Version.ShouldBe(2);
-		}
-	}
+        [Fact]
+        public void applying_events_automatically_increments_version()
+        {
+            _testAggregate.Version.Should().Be(2);
+        }
+    }
 }

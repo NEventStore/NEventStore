@@ -4,11 +4,11 @@
     using System.Data;
     using System.Transactions;
     using FakeItEasy;
+    using FluentAssertions;
     using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
     using NEventStore.Serialization;
     using Xunit;
-    using Xunit.Should;
 
     public class when_persisting_a_commit : SpecificationBase
     {
@@ -38,8 +38,8 @@
         [Fact]
         public void should_raise_BeforePersistCommit_event()
         {
-            _sqlPersistenceEngine.RaisedCommand.ShouldNotBeNull();
-            _sqlPersistenceEngine.RaisedCommitAttempt.ShouldNotBeNull();
+            _sqlPersistenceEngine.RaisedCommand.Should().NotBeNull();
+            _sqlPersistenceEngine.RaisedCommitAttempt.Should().NotBeNull();
         }
 
         private class InheritedSqlPersistenceEngine : SqlPersistenceEngine
@@ -98,7 +98,7 @@
         [Fact]
         public void should_raise_invalid_operation_exception()
         {
-            _exception.ShouldBeInstanceOf<InvalidOperationException>();
+            _exception.Should().BeOfType<InvalidOperationException>();
         }
     }
 
@@ -127,7 +127,7 @@
         [Fact]
         public void should_raise_invalid_operation_exception()
         {
-            _exception.ShouldBeInstanceOf<InvalidOperationException>();
+            _exception.Should().BeOfType<InvalidOperationException>();
         }
     }
 
@@ -156,7 +156,7 @@
         [Fact]
         public void should_raise_invalid_operation_exception()
         {
-            _exception.ShouldBeInstanceOf<InvalidOperationException>();
+            _exception.Should().BeOfType<InvalidOperationException>();
         }
     }
 
@@ -185,7 +185,7 @@
         [Fact]
         public void should_raise_invalid_operation_exception()
         {
-            _exception.ShouldBeInstanceOf<InvalidOperationException>();
+            _exception.Should().BeOfType<InvalidOperationException>();
         }
     }
 }

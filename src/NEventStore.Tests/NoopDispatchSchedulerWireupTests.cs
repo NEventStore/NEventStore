@@ -1,10 +1,10 @@
 ﻿namespace NEventStore
 {
     using System;
+    using FluentAssertions;
     using NEventStore.Dispatcher;
     using NEventStore.Persistence.AcceptanceTests.BDD;
     using Xunit;
-    using Xunit.Should;
 
     public class NoopDispatcherSchedulerWireupTests
     {
@@ -40,7 +40,7 @@
             [Fact]
             public void should_not_dispatch_event()
             {
-                _dummyDispatchCommits.Dispatched.ShouldBeFalse();
+                _dummyDispatchCommits.Dispatched.Should().BeFalse();
             }
         }
 

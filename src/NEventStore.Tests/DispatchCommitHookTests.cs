@@ -4,15 +4,13 @@
 namespace NEventStore
 {
     using System;
-
     using FakeItEasy;
-
+    using FluentAssertions;
     using NEventStore.Dispatcher;
     using NEventStore.Persistence;
     using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
     using Xunit;
-    using Xunit.Should;
 
     public class when_a_commit_has_been_persisted : SpecificationBase
     {
@@ -55,7 +53,7 @@ namespace NEventStore
         [Fact]
         public void should_not_throw_an_exception()
         {
-            _thrown.ShouldBeNull();
+            _thrown.Should().BeNull();
         }
     }
 
@@ -75,7 +73,7 @@ namespace NEventStore
         [Fact]
         public void should_always_return_the_exact_same_commit()
         {
-            ReferenceEquals(_selected, _commit).ShouldBeTrue();
+            ReferenceEquals(_selected, _commit).Should().BeTrue();
         }
     }
 }

@@ -7,12 +7,11 @@ namespace NEventStore
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using FluentAssertions;
     using NEventStore.Persistence;
     using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
     using Xunit;
-    using Xunit.Should;
-
     public class OptimisticPipelineHookTests
     {
         public class when_committing_with_a_sequence_beyond_the_known_end_of_a_stream : using_commit_hooks
@@ -41,7 +40,7 @@ namespace NEventStore
             [Fact]
             public void should_throw_a_PersistenceException()
             {
-                _thrown.ShouldBeInstanceOf<StorageException>();
+                _thrown.Should().BeOfType<StorageException>();
             }
         }
 
@@ -72,7 +71,7 @@ namespace NEventStore
             [Fact]
             public void should_throw_a_PersistenceException()
             {
-                _thrown.ShouldBeInstanceOf<StorageException>();
+                _thrown.Should().BeOfType<StorageException>();
             }
         }
 
@@ -102,7 +101,7 @@ namespace NEventStore
             [Fact]
             public void should_throw_a_ConcurrencyException()
             {
-                thrown.ShouldBeInstanceOf<ConcurrencyException>();
+                thrown.Should().BeOfType<ConcurrencyException>();
             }
         }
 
@@ -131,7 +130,7 @@ namespace NEventStore
             [Fact]
             public void should_throw_a_ConcurrencyException()
             {
-                _thrown.ShouldBeInstanceOf<ConcurrencyException>();
+                _thrown.Should().BeOfType<ConcurrencyException>();
             }
         }
 
@@ -158,7 +157,7 @@ namespace NEventStore
             [Fact]
             public void should_throw_a_ConcurrencyException()
             {
-                _thrown.ShouldBeInstanceOf<ConcurrencyException>();
+                _thrown.Should().BeOfType<ConcurrencyException>();
             }
         }
 
@@ -186,7 +185,7 @@ namespace NEventStore
             [Fact]
             public void should_throw_a_ConcurrencyException()
             {
-                _thrown.ShouldBeInstanceOf<ConcurrencyException>();
+                _thrown.Should().BeOfType<ConcurrencyException>();
             }
         }
 
@@ -221,14 +220,14 @@ namespace NEventStore
             public void should_only_contain_streams_explicitly_tracked()
             {
                 ICommit untracked = BuildCommit(Guid.Empty, _trackedCommitAttempts[0].CommitId);
-                _hook.Contains(untracked).ShouldBeFalse();
+                _hook.Contains(untracked).Should().BeFalse();
             }
 
             [Fact]
             public void should_find_tracked_streams()
             {
                 ICommit stillTracked = BuildCommit(_trackedCommitAttempts.Last().StreamId, _trackedCommitAttempts.Last().CommitId);
-                _hook.Contains(stillTracked).ShouldBeTrue();
+                _hook.Contains(stillTracked).Should().BeTrue();
             }
 
             [Fact]
@@ -236,7 +235,7 @@ namespace NEventStore
             {
                 ICommit droppedFromTracking = BuildCommit(
                     _trackedCommitAttempts.First().StreamId, _trackedCommitAttempts.First().CommitId);
-                _hook.Contains(droppedFromTracking).ShouldBeFalse();
+                _hook.Contains(droppedFromTracking).Should().BeFalse();
             }
 
             private ICommit BuildCommit(Guid streamId, Guid commitId)
@@ -270,7 +269,7 @@ namespace NEventStore
             [Fact]
             public void should_not_track_commit()
             {
-                _hook.Contains(_trackedCommit).ShouldBeFalse();
+                _hook.Contains(_trackedCommit).Should().BeFalse();
             }
 
             private ICommit BuildCommit(Guid bucketId, Guid streamId, Guid commitId)
@@ -303,13 +302,13 @@ namespace NEventStore
             [Fact]
             public void should_not_track_the_commit_in_bucket()
             {
-                _hook.Contains(_trackedCommitBucket1).ShouldBeFalse();
+                _hook.Contains(_trackedCommitBucket1).Should().BeFalse();
             }
 
             [Fact]
             public void should_track_the_commit_in_other_bucket()
             {
-                _hook.Contains(_trackedCommitBucket2).ShouldBeTrue();
+                _hook.Contains(_trackedCommitBucket2).Should().BeTrue();
             }
 
             private ICommit BuildCommit(Guid bucketId, Guid streamId, Guid commitId)
@@ -344,13 +343,13 @@ namespace NEventStore
             [Fact]
             public void should_not_track_the_commit_in_the_deleted_stream()
             {
-                _hook.Contains(_trackedCommitDeleted).ShouldBeFalse();
+                _hook.Contains(_trackedCommitDeleted).Should().BeFalse();
             }
 
             [Fact]
             public void should_track_the_commit_that_is_not_in_the_deleted_stream()
             {
-                _hook.Contains(_trackedCommit).ShouldBeTrue();
+                _hook.Contains(_trackedCommit).Should().BeTrue();
             }
 
             private ICommit BuildCommit(Guid bucketId, Guid streamId, Guid commitId)

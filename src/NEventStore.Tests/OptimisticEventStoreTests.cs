@@ -7,14 +7,12 @@ namespace NEventStore
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
     using FakeItEasy;
-
+    using FluentAssertions;
     using NEventStore.Persistence;
     using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
     using Xunit;
-    using Xunit.Should;
 
     public class when_creating_a_new_stream : using_persistence
     {
@@ -28,43 +26,43 @@ namespace NEventStore
         [Fact]
         public void should_return_a_new_stream()
         {
-            _stream.ShouldNotBeNull();
+            _stream.Should().NotBeNull();
         }
 
         [Fact]
         public void should_return_a_stream_with_the_correct_stream_identifier()
         {
-            _stream.StreamId.ShouldBe(streamId);
+            _stream.StreamId.Should().Be(streamId);
         }
 
         [Fact]
         public void should_return_a_stream_with_a_zero_stream_revision()
         {
-            _stream.StreamRevision.ShouldBe(0);
+            _stream.StreamRevision.Should().Be(0);
         }
 
         [Fact]
         public void should_return_a_stream_with_a_zero_commit_sequence()
         {
-            _stream.CommitSequence.ShouldBe(0);
+            _stream.CommitSequence.Should().Be(0);
         }
 
         [Fact]
         public void should_return_a_stream_with_no_uncommitted_events()
         {
-            _stream.UncommittedEvents.ShouldBeEmpty();
+            _stream.UncommittedEvents.Should().BeEmpty();
         }
 
         [Fact]
         public void should_return_a_stream_with_no_committed_events()
         {
-            _stream.CommittedEvents.ShouldBeEmpty();
+            _stream.CommittedEvents.Should().BeEmpty();
         }
 
         [Fact]
         public void should_return_a_stream_with_empty_headers()
         {
-            _stream.UncommittedHeaders.ShouldBeEmpty();
+            _stream.UncommittedHeaders.Should().BeEmpty();
         }
     }
 
@@ -85,43 +83,43 @@ namespace NEventStore
         [Fact]
         public void should_return_a_new_stream()
         {
-            _stream.ShouldNotBeNull();
+            _stream.Should().NotBeNull();
         }
 
         [Fact]
         public void should_return_a_stream_with_the_correct_stream_identifier()
         {
-            _stream.StreamId.ShouldBe(streamId);
+            _stream.StreamId.Should().Be(streamId);
         }
 
         [Fact]
         public void should_return_a_stream_with_a_zero_stream_revision()
         {
-            _stream.StreamRevision.ShouldBe(0);
+            _stream.StreamRevision.Should().Be(0);
         }
 
         [Fact]
         public void should_return_a_stream_with_a_zero_commit_sequence()
         {
-            _stream.CommitSequence.ShouldBe(0);
+            _stream.CommitSequence.Should().Be(0);
         }
 
         [Fact]
         public void should_return_a_stream_with_no_uncommitted_events()
         {
-            _stream.UncommittedEvents.ShouldBeEmpty();
+            _stream.UncommittedEvents.Should().BeEmpty();
         }
 
         [Fact]
         public void should_return_a_stream_with_no_committed_events()
         {
-            _stream.CommittedEvents.ShouldBeEmpty();
+            _stream.CommittedEvents.Should().BeEmpty();
         }
 
         [Fact]
         public void should_return_a_stream_with_empty_headers()
         {
-            _stream.UncommittedHeaders.ShouldBeEmpty();
+            _stream.UncommittedHeaders.Should().BeEmpty();
         }
     }
 
@@ -144,7 +142,7 @@ namespace NEventStore
         [Fact]
         public void should_throw_a_StreamNotFoundException()
         {
-            _thrown.ShouldBeInstanceOf<StreamNotFoundException>();
+            _thrown.Should().BeOfType<StreamNotFoundException>();
         }
     }
 
@@ -187,7 +185,7 @@ namespace NEventStore
         [Fact]
         public void should_return_an_event_stream_containing_the_correct_stream_identifer()
         {
-            _stream.StreamId.ShouldBe(streamId);
+            _stream.StreamId.Should().Be(streamId);
         }
     }
 
@@ -243,37 +241,37 @@ namespace NEventStore
         [Fact]
         public void should_return_a_stream_with_the_correct_stream_identifier()
         {
-            _stream.StreamId.ShouldBe(streamId);
+            _stream.StreamId.Should().Be(streamId);
         }
 
         [Fact]
         public void should_return_a_stream_with_revision_of_the_stream_head()
         {
-            _stream.StreamRevision.ShouldBe(HeadStreamRevision);
+            _stream.StreamRevision.Should().Be(HeadStreamRevision);
         }
 
         [Fact]
         public void should_return_a_stream_with_a_commit_sequence_of_the_stream_head()
         {
-            _stream.CommitSequence.ShouldBe(HeadCommitSequence);
+            _stream.CommitSequence.Should().Be(HeadCommitSequence);
         }
 
         [Fact]
         public void should_return_a_stream_with_no_committed_events()
         {
-            _stream.CommittedEvents.Count.ShouldBe(0);
+            _stream.CommittedEvents.Count.Should().Be(0);
         }
 
         [Fact]
         public void should_return_a_stream_with_no_uncommitted_events()
         {
-            _stream.UncommittedEvents.Count.ShouldBe(0);
+            _stream.UncommittedEvents.Count.Should().Be(0);
         }
 
         [Fact]
         public void should_only_enumerate_the_set_of_commits_once()
         {
-            _committed.GetEnumeratorCallCount.ShouldBe(1);
+            _committed.GetEnumeratorCallCount.Should().Be(1);
         }
     }
 
@@ -334,7 +332,7 @@ namespace NEventStore
         [Fact]
         public void should_throw_an_ArgumentNullException()
         {
-            thrown.ShouldBeInstanceOf<ArgumentNullException>();
+            thrown.Should().BeOfType<ArgumentNullException>();
         }
     }
 
@@ -376,7 +374,7 @@ namespace NEventStore
         [Fact]
         public void should_throw_an_ArgumentNullException()
         {
-            thrown.ShouldBeInstanceOf<ArgumentNullException>();
+            thrown.Should().BeOfType<ArgumentNullException>();
         }
     }
 
@@ -472,7 +470,7 @@ namespace NEventStore
     {
         public void should_return_a_reference_to_the_underlying_persistence_infrastructure_decorator()
         {
-            Store.Advanced.ShouldBeInstanceOf<PipelineHooksAwarePersistanceDecorator>();
+            Store.Advanced.Should().BeOfType<PipelineHooksAwarePersistanceDecorator>();
         }
     }
 

@@ -4,11 +4,11 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using FluentAssertions;
     using NEventStore.Conversion;
     using NEventStore.Persistence;
     using NEventStore.Persistence.AcceptanceTests.BDD;
     using Xunit;
-    using Xunit.Should;
 
     public class when_opening_a_commit_that_does_not_have_convertible_events : using_event_converter
     {
@@ -29,13 +29,13 @@
         [Fact]
         public void should_not_be_converted()
         {
-            _converted.ShouldBeSameAs(_commit);
+            _converted.Should().BeSameAs(_commit);
         }
 
         [Fact]
         public void should_have_the_same_instance_of_the_event()
         {
-            _converted.Events.Single().ShouldBe(_commit.Events.Single());
+            _converted.Events.Single().Should().Be(_commit.Events.Single());
         }
     }
 
@@ -59,13 +59,13 @@
         [Fact]
         public void should_be_of_the_converted_type()
         {
-            _converted.Events.Single().Body.GetType().ShouldBe(typeof (ConvertingEvent3));
+            _converted.Events.Single().Body.GetType().Should().Be(typeof (ConvertingEvent3));
         }
 
         [Fact]
         public void should_have_the_same_id_of_the_commited_event()
         {
-            ((ConvertingEvent3) _converted.Events.Single().Body).Id.ShouldBe(_id);
+            ((ConvertingEvent3) _converted.Events.Single().Body).Id.Should().Be(_id);
         }
     }
 
@@ -93,13 +93,13 @@
         [Fact]
         public void should_be_of_the_converted_type()
         {
-            _converted.Events.Single().Body.GetType().ShouldBe(typeof (ConvertingEvent3));
+            _converted.Events.Single().Body.GetType().Should().Be(typeof (ConvertingEvent3));
         }
 
         [Fact]
         public void should_have_the_same_id_of_the_commited_event()
         {
-            ((ConvertingEvent3) _converted.Events.Single().Body).Id.ShouldBe(_id);
+            ((ConvertingEvent3) _converted.Events.Single().Body).Id.Should().Be(_id);
         }
     }
 

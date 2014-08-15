@@ -1,11 +1,11 @@
 ﻿namespace NEventStore
 {
     using System;
+    using FluentAssertions;
     using NEventStore.Dispatcher;
     using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
     using Xunit;
-    using Xunit.Should;
 
     public class SynchrounousDispatcherSchedulerWireupTests
     {
@@ -42,7 +42,7 @@
             [Fact]
             public void should_dispatch_event()
             {
-                _dummyDispatchCommits.Dispatched.ShouldBeTrue();
+                _dummyDispatchCommits.Dispatched.Should().BeTrue();
             }
         }
 
@@ -84,13 +84,13 @@
             [Fact]
             public void should_throw()
             {
-                _exception.ShouldNotBeNull();
+                _exception.Should().NotBeNull();
             }
 
             [Fact]
             public void should_be_invalid_operation()
             {
-                _exception.ShouldBeInstanceOf<InvalidOperationException>();
+                _exception.Should().BeOfType<InvalidOperationException>();
             }
         }
 
@@ -129,7 +129,7 @@
             [Fact]
             public void should_dispatch_event()
             {
-                _dummyDispatchCommits.Dispatched.ShouldBeTrue();
+                _dummyDispatchCommits.Dispatched.Should().BeTrue();
             }
         }
 
