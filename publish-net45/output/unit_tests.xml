@@ -1,0 +1,710 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<test-results name="Merged results" total="231" errors="0" failures="0" not-run="0" inconclusive="0" skipped="0" invalid="0" date="2014-08-15" time="11:25:26">
+  <test-suite type="Test Project" name="" executed="True" result="Success" time="1.311" asserts="0">
+    <results>
+      <test-suite name="C:\dev\NEventStore\src\NEventStore.Tests\bin\Debug\NEventStore.Tests.dll" success="True" time="1.311">
+        <results>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_a_commit_header_has_a_name_that_contains_a_period" success="True" time="0.047">
+            <results>
+              <test-case name="when a commit header has a name that contains a period, it should correctly deserialize headers" executed="True" success="True" time="0.047" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_a_commit_is_successfully_persisted" success="True" time="0.022">
+            <results>
+              <test-case name="when a commit is successfully persisted, it should correctly persist the stream identifier" executed="True" success="True" time="0.001" />
+              <test-case name="when a commit is successfully persisted, it should correctly persist the stream stream revision" executed="True" success="True" time="0.003" />
+              <test-case name="when a commit is successfully persisted, it should correctly persist the commit identifier" executed="True" success="True" time="0.003" />
+              <test-case name="when a commit is successfully persisted, it should correctly persist the commit sequence" executed="True" success="True" time="0.000" />
+              <test-case name="when a commit is successfully persisted, it should correctly persist the commit stamp" executed="True" success="True" time="0.000" />
+              <test-case name="when a commit is successfully persisted, it should correctly persist the headers" executed="True" success="True" time="0.000" />
+              <test-case name="when a commit is successfully persisted, it should correctly persist the events" executed="True" success="True" time="0.000" />
+              <test-case name="when a commit is successfully persisted, it should add the commit to the set of undispatched commits" executed="True" success="True" time="0.007" />
+              <test-case name="when a commit is successfully persisted, it should cause the stream to be found in the list of streams to snapshot" executed="True" success="True" time="0.008" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_reading_from_a_given_revision" success="True" time="0.001">
+            <results>
+              <test-case name="when reading from a given revision, it should start from the commit which contains the min stream revision specified" executed="True" success="True" time="0.000" />
+              <test-case name="when reading from a given revision, it should read up to the commit which contains the max stream revision specified" executed="True" success="True" time="0.001" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_reading_from_a_given_revision_to_commit_revision" success="True" time="0.000">
+            <results>
+              <test-case name="when reading from a given revision to commit revision, it should start from the commit which contains the min stream revision specified" executed="True" success="True" time="0.000" />
+              <test-case name="when reading from a given revision to commit revision, it should read up to the commit which contains the max stream revision specified" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_committing_a_stream_with_the_same_revision" success="True" time="0.000">
+            <results>
+              <test-case name="when committing a stream with the same revision, it should throw a ConcurrencyException" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_committing_a_stream_with_the_same_sequence" success="True" time="0.000">
+            <results>
+              <test-case name="when committing a stream with the same sequence, it should throw a ConcurrencyException" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_attempting_to_overwrite_a_committed_sequence" success="True" time="0.000">
+            <results>
+              <test-case name="when attempting to overwrite a committed sequence, it should throw a ConcurrencyException" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_attempting_to_persist_a_commit_twice" success="True" time="0.000">
+            <results>
+              <test-case name="when attempting to persist a commit twice, it should throw a DuplicateCommitException" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_a_commit_has_been_marked_as_dispatched" success="True" time="0.000">
+            <results>
+              <test-case name="when a commit has been marked as dispatched, it should no longer be found in the set of undispatched commits" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_committing_more_events_than_the_configured_page_size" success="True" time="0.003">
+            <results>
+              <test-case name="when committing more events than the configured page size, it should load the same number of commits which have been persisted" executed="True" success="True" time="0.000" />
+              <test-case name="when committing more events than the configured page size, it should load the same commits which have been persisted" executed="True" success="True" time="0.003" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_saving_a_snapshot" success="True" time="0.006">
+            <results>
+              <test-case name="when saving a snapshot, it should indicate the snapshot was added" executed="True" success="True" time="0.000" />
+              <test-case name="when saving a snapshot, it should be able to retrieve the snapshot" executed="True" success="True" time="0.006" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_retrieving_a_snapshot" success="True" time="0.000">
+            <results>
+              <test-case name="when retrieving a snapshot, it should load the most recent prior snapshot" executed="True" success="True" time="0.000" />
+              <test-case name="when retrieving a snapshot, it should have the correct snapshot payload" executed="True" success="True" time="0.000" />
+              <test-case name="when retrieving a snapshot, it should have the correct stream id" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_a_snapshot_has_been_added_to_the_most_recent_commit_of_a_stream" success="True" time="0.001">
+            <results>
+              <test-case name="when a snapshot has been added to the most recent commit of a stream, it should no longer find the stream in the set of streams to be snapshot" executed="True" success="True" time="0.001" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_adding_a_commit_after_a_snapshot" success="True" time="0.000">
+            <results>
+              <test-case name="when adding a commit after a snapshot, it should find the stream in the set of streams to be snapshot when within the threshold" executed="True" success="True" time="0.000" />
+              <test-case name="when adding a commit after a snapshot, it should not find the stream in the set of streams to be snapshot when over the threshold" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_reading_all_commits_from_a_particular_point_in_time" success="True" time="0.000">
+            <results>
+              <test-case name="when reading all commits from a particular point in time, it should return all commits on or after the point in time specified" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_paging_over_all_commits_from_a_particular_point_in_time" success="True" time="0.000">
+            <results>
+              <test-case name="when paging over all commits from a particular point in time, it should load the same number of commits which have been persisted" executed="True" success="True" time="0.000" />
+              <test-case name="when paging over all commits from a particular point in time, it should load the same commits which have been persisted" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_paging_over_all_commits_from_a_particular_checkpoint" success="True" time="0.003">
+            <results>
+              <test-case name="when paging over all commits from a particular checkpoint, it should load the same number of commits which have been persisted starting from the checkpoint" executed="True" success="True" time="0.000" />
+              <test-case name="when paging over all commits from a particular checkpoint, it should load only the commits starting from the checkpoint" executed="True" success="True" time="0.003" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_reading_all_commits_from_the_year_1_AD" success="True" time="0.000">
+            <results>
+              <test-case name="when reading all commits from the year 1 AD, it should NOT throw an exception" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_purging_all_commits" success="True" time="0.001">
+            <results>
+              <test-case name="when purging all commits, it should not find any commits stored" executed="True" success="True" time="0.001" />
+              <test-case name="when purging all commits, it should not find any streams to snapshot" executed="True" success="True" time="0.000" />
+              <test-case name="when purging all commits, it should not find any undispatched commits" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_invoking_after_disposal" success="True" time="0.000">
+            <results>
+              <test-case name="when invoking after disposal, it should throw an ObjectDisposedException" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_committing_a_stream_with_the_same_id_as_a_stream_same_bucket" success="True" time="0.000">
+            <results>
+              <test-case name="when committing a stream with the same id as a stream same bucket, it should throw" executed="True" success="True" time="0.000" />
+              <test-case name="when committing a stream with the same id as a stream same bucket, it should be duplicate commit exception" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_committing_a_stream_with_the_same_id_as_a_stream_in_another_bucket" success="True" time="0.003">
+            <results>
+              <test-case name="when committing a stream with the same id as a stream in another bucket, it should succeed" executed="True" success="True" time="0.000" />
+              <test-case name="when committing a stream with the same id as a stream in another bucket, it should persist to the correct bucket" executed="True" success="True" time="0.000" />
+              <test-case name="when committing a stream with the same id as a stream in another bucket, it should not affect the stream from the other bucket" executed="True" success="True" time="0.003" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_saving_a_snapshot_for_a_stream_with_the_same_id_as_a_stream_in_another_bucket" success="True" time="0.000">
+            <results>
+              <test-case name="when saving a snapshot for a stream with the same id as a stream in another bucket, it should affect snapshots from another bucket" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_reading_all_commits_from_a_particular_point_in_time_and_there_are_streams_in_multiple_buckets" success="True" time="0.000">
+            <results>
+              <test-case name="when reading all commits from a particular point in time and there are streams in multiple buckets, it should not return commits from other buckets" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_getting_all_commits_since_checkpoint_and_there_are_streams_in_multiple_buckets" success="True" time="0.002">
+            <results>
+              <test-case name="when getting all commits since checkpoint and there are streams in multiple buckets, it should not be empty" executed="True" success="True" time="0.001" />
+              <test-case name="when getting all commits since checkpoint and there are streams in multiple buckets, it should be in order by checkpoint" executed="True" success="True" time="0.001" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_purging_all_commits_and_there_are_streams_in_multiple_buckets" success="True" time="0.000">
+            <results>
+              <test-case name="when purging all commits and there are streams in multiple buckets, it should purge all commits stored in bucket a" executed="True" success="True" time="0.000" />
+              <test-case name="when purging all commits and there are streams in multiple buckets, it should purge all commits stored in bucket b" executed="True" success="True" time="0.000" />
+              <test-case name="when purging all commits and there are streams in multiple buckets, it should purge all streams to snapshot in bucket a" executed="True" success="True" time="0.000" />
+              <test-case name="when purging all commits and there are streams in multiple buckets, it should purge all streams to snapshot in bucket b" executed="True" success="True" time="0.000" />
+              <test-case name="when purging all commits and there are streams in multiple buckets, it should purge all undispatched commits" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_gettingfromcheckpoint_amount_of_commits_exceeds_pagesize" success="True" time="0.000">
+            <results>
+              <test-case name="when gettingfromcheckpoint amount of commits exceeds pagesize, it Should have expected number of commits" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.AcceptanceTests.when_a_payload_is_large" success="True" time="0.002">
+            <results>
+              <test-case name="when a payload is large, it can commit" executed="True" success="True" time="0.002" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.DefaultSerializationWireupTests+when_building_an_event_store_without_an_explicit_serializer" success="True" time="0.000">
+            <results>
+              <test-case name="when building an event store without an explicit serializer, it should not throw an argument null exception" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.NoopDispatcherSchedulerWireupTests+when_configured_to_auto_start_by_default" success="True" time="0.000">
+            <results>
+              <test-case name="when configured to auto start by default, it should not dispatch event" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.SynchrounousDispatcherSchedulerWireupTests+when_configured_to_auto_start_by_default" success="True" time="0.000">
+            <results>
+              <test-case name="when configured to auto start by default, it should dispatch event" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.SynchrounousDispatcherSchedulerWireupTests+when_configured_to_start_explicitly_and_not_started" success="True" time="0.000">
+            <results>
+              <test-case name="when configured to start explicitly and not started, it should throw" executed="True" success="True" time="0.000" />
+              <test-case name="when configured to start explicitly and not started, it should be invalid operation" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.SynchrounousDispatcherSchedulerWireupTests+when_configured_to_start_explicitly_and_started" success="True" time="0.000">
+            <results>
+              <test-case name="when configured to start explicitly and started, it should dispatch event" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.AsynchronousDispatcherSchedulerWireupTests+when_configured_to_auto_start_by_default" success="True" time="0.003">
+            <results>
+              <test-case name="when configured to auto start by default, it should dispatch event" executed="True" success="True" time="0.003" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.AsynchronousDispatcherSchedulerWireupTests+when_configured_to_start_explicitly_and_not_started" success="True" time="0.000">
+            <results>
+              <test-case name="when configured to start explicitly and not started, it should throw" executed="True" success="True" time="0.000" />
+              <test-case name="when configured to start explicitly and not started, it should be invalid operation" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.AsynchronousDispatcherSchedulerWireupTests+when_configured_to_start_explicitly_and_started" success="True" time="0.000">
+            <results>
+              <test-case name="when configured to start explicitly and started, it should dispatch event" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Client.CreatingPollingClientTests" success="True" time="0.396">
+            <results>
+              <test-case name="NEventStore.Client.CreatingPollingClientTests.When_interval_less_than_zero_then_should_throw" executed="True" success="True" time="0.395" />
+              <test-case name="NEventStore.Client.CreatingPollingClientTests.When_persist_streams_is_null_then_should_throw" executed="True" success="True" time="0.000" />
+              <test-case name="NEventStore.Client.CreatingPollingClientTests.When_interval_is_zero_then_should_throw" executed="True" success="True" time="0.001" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Client.when_commit_is_comitted_before_subscribing" success="True" time="0.131">
+            <results>
+              <test-case name="when commit is comitted before subscribing, it should observe commit" executed="True" success="True" time="0.131" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Client.when_commit_is_comitted_before_and_after_subscribing" success="True" time="0.101">
+            <results>
+              <test-case name="when commit is comitted before and after subscribing, it should observe two commits" executed="True" success="True" time="0.101" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Client.with_two_observers_and_multiple_commits" success="True" time="0.101">
+            <results>
+              <test-case name="with two observers and multiple commits, it should observe commits on first observer" executed="True" success="True" time="0.101" />
+              <test-case name="with two observers and multiple commits, it should observe commits on second observer" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Client.with_two_subscriptions_on_a_single_observer_and_multiple_commits" success="True" time="0.100">
+            <results>
+              <test-case name="with two subscriptions on a single observer and multiple commits, it should observe commits on first observer" executed="True" success="True" time="0.100" />
+              <test-case name="with two subscriptions on a single observer and multiple commits, it should observe commits on second observer" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Client.when_resuming" success="True" time="0.106">
+            <results>
+              <test-case name="when resuming, it should observe commit" executed="True" success="True" time="0.106" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Client.when_polling_now" success="True" time="0.000">
+            <results>
+              <test-case name="when polling now, it should observe commit" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="CommonDomain.when_an_aggregate_is_created" success="True" time="0.001">
+            <results>
+              <test-case name="when an aggregate is created, it should have name" executed="True" success="True" time="0.001" />
+              <test-case name="when an aggregate is created, it aggregate version should be one" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="CommonDomain.when_updating_an_aggregate" success="True" time="0.000">
+            <results>
+              <test-case name="when updating an aggregate, it name change should be applied" executed="True" success="True" time="0.000" />
+              <test-case name="when updating an aggregate, it applying events automatically increments version" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="CommonDomain.when_an_aggregate_is_persisted" success="True" time="0.016">
+            <results>
+              <test-case name="when an aggregate is persisted, it should be returned when loaded by id" executed="True" success="True" time="0.016" />
+            </results>
+          </test-suite>
+          <test-suite name="CommonDomain.when_a_persisted_aggregate_is_updated" success="True" time="0.002">
+            <results>
+              <test-case name="when a persisted aggregate is updated, it should have updated name" executed="True" success="True" time="0.001" />
+              <test-case name="when a persisted aggregate is updated, it should have updated version" executed="True" success="True" time="0.001" />
+            </results>
+          </test-suite>
+          <test-suite name="CommonDomain.when_a_loading_a_specific_aggregate_version" success="True" time="0.002">
+            <results>
+              <test-case name="when a loading a specific aggregate version, it should be able to load initial version" executed="True" success="True" time="0.002" />
+            </results>
+          </test-suite>
+          <test-suite name="CommonDomain.when_an_aggregate_is_persisted_to_specific_bucket" success="True" time="0.001">
+            <results>
+              <test-case name="when an aggregate is persisted to specific bucket, it should be returned when loaded by id" executed="True" success="True" time="0.001" />
+            </results>
+          </test-suite>
+          <test-suite name="CommonDomain.when_an_aggregate_is_persisted_concurrently_by_two_clients" success="True" time="0.000">
+            <results>
+              <test-case name="when an aggregate is persisted concurrently by two clients, it should throw a ConflictingCommandException" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.ConversionTests.when_opening_a_commit_that_does_not_have_convertible_events" success="True" time="0.000">
+            <results>
+              <test-case name="when opening a commit that does not have convertible events, it should not be converted" executed="True" success="True" time="0.000" />
+              <test-case name="when opening a commit that does not have convertible events, it should have the same instance of the event" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.ConversionTests.when_opening_a_commit_that_has_convertible_events" success="True" time="0.000">
+            <results>
+              <test-case name="when opening a commit that has convertible events, it should be of the converted type" executed="True" success="True" time="0.000" />
+              <test-case name="when opening a commit that has convertible events, it should have the same id of the commited event" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.ConversionTests.when_an_event_converter_implements_the_IConvertEvents_interface_explicitly" success="True" time="0.000">
+            <results>
+              <test-case name="when an event converter implements the IConvertEvents interface explicitly, it should be of the converted type" executed="True" success="True" time="0.000" />
+              <test-case name="when an event converter implements the IConvertEvents interface explicitly, it should have the same id of the commited event" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_a_commit_has_been_persisted" success="True" time="0.137">
+            <results>
+              <test-case name="when a commit has been persisted, it should invoke the configured dispatcher" executed="True" success="True" time="0.137" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_the_hook_has_no_dispatcher_configured" success="True" time="0.000">
+            <results>
+              <test-case name="when the hook has no dispatcher configured, it should not throw an exception" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_a_commit_is_selected" success="True" time="0.000">
+            <results>
+              <test-case name="when a commit is selected, it should always return the exact same commit" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.DispatcherTests.when_instantiating_the_asynchronous_dispatch_scheduler" success="True" time="0.031">
+            <results>
+              <test-case name="when instantiating the asynchronous dispatch scheduler, it should take a few milliseconds for the other thread to execute" executed="True" success="True" time="0.026" />
+              <test-case name="when instantiating the asynchronous dispatch scheduler, it should initialize the persistence engine" executed="True" success="True" time="0.001" />
+              <test-case name="when instantiating the asynchronous dispatch scheduler, it should get the set of undispatched commits" executed="True" success="True" time="0.001" />
+              <test-case name="when instantiating the asynchronous dispatch scheduler, it should provide the commits to the dispatcher" executed="True" success="True" time="0.003" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.DispatcherTests.when_asynchronously_scheduling_a_commit_for_dispatch" success="True" time="0.028">
+            <results>
+              <test-case name="when asynchronously scheduling a commit for dispatch, it should take a few milliseconds for the other thread to execute" executed="True" success="True" time="0.025" />
+              <test-case name="when asynchronously scheduling a commit for dispatch, it should provide the commit to the dispatcher" executed="True" success="True" time="0.002" />
+              <test-case name="when asynchronously scheduling a commit for dispatch, it should mark the commit as dispatched" executed="True" success="True" time="0.001" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.DispatcherTests.when_disposing_the_async_dispatch_scheduler" success="True" time="0.002">
+            <results>
+              <test-case name="when disposing the async dispatch scheduler, it should dispose the underlying dispatcher exactly once" executed="True" success="True" time="0.001" />
+              <test-case name="when disposing the async dispatch scheduler, it should dispose the underlying persistence infrastructure exactly once" executed="True" success="True" time="0.001" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.DispatcherTests.when_instantiating_the_synchronous_dispatch_scheduler" success="True" time="0.005">
+            <results>
+              <test-case name="when instantiating the synchronous dispatch scheduler, it should initialize the persistence engine" executed="True" success="True" time="0.001" />
+              <test-case name="when instantiating the synchronous dispatch scheduler, it should get the set of undispatched commits" executed="True" success="True" time="0.001" />
+              <test-case name="when instantiating the synchronous dispatch scheduler, it should provide the commits to the dispatcher" executed="True" success="True" time="0.003" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.DispatcherTests.when_synchronously_scheduling_a_commit_for_dispatch" success="True" time="0.002">
+            <results>
+              <test-case name="when synchronously scheduling a commit for dispatch, it should provide the commit to the dispatcher" executed="True" success="True" time="0.001" />
+              <test-case name="when synchronously scheduling a commit for dispatch, it should mark the commit as dispatched" executed="True" success="True" time="0.001" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.DispatcherTests.when_disposing_the_synchronous_dispatch_scheduler" success="True" time="0.002">
+            <results>
+              <test-case name="when disposing the synchronous dispatch scheduler, it should dispose the underlying dispatcher exactly once" executed="True" success="True" time="0.001" />
+              <test-case name="when disposing the synchronous dispatch scheduler, it should dispose the underlying persistence infrastructure exactly once" executed="True" success="True" time="0.001" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.OptimisticPipelineHookTests+when_committing_with_a_sequence_beyond_the_known_end_of_a_stream" success="True" time="0.000">
+            <results>
+              <test-case name="when committing with a sequence beyond the known end of a stream, it should throw a PersistenceException" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.OptimisticPipelineHookTests+when_committing_with_a_revision_beyond_the_known_end_of_a_stream" success="True" time="0.000">
+            <results>
+              <test-case name="when committing with a revision beyond the known end of a stream, it should throw a PersistenceException" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.OptimisticPipelineHookTests+when_committing_with_a_sequence_less_or_equal_to_the_most_recent_sequence_for_the_stream" success="True" time="0.000">
+            <results>
+              <test-case name="when committing with a sequence less or equal to the most recent sequence for the stream, it should throw a ConcurrencyException" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.OptimisticPipelineHookTests+when_committing_with_a_revision_less_or_equal_to_than_the_most_recent_revision_read_for_the_stream" success="True" time="0.000">
+            <results>
+              <test-case name="when committing with a revision less or equal to than the most recent revision read for the stream, it should throw a ConcurrencyException" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.OptimisticPipelineHookTests+when_committing_with_a_commit_sequence_less_than_or_equal_to_the_most_recent_commit_for_the_stream" success="True" time="0.000">
+            <results>
+              <test-case name="when committing with a commit sequence less than or equal to the most recent commit for the stream, it should throw a ConcurrencyException" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.OptimisticPipelineHookTests+when_committing_with_a_stream_revision_less_than_or_equal_to_the_most_recent_commit_for_the_stream" success="True" time="0.000">
+            <results>
+              <test-case name="when committing with a stream revision less than or equal to the most recent commit for the stream, it should throw a ConcurrencyException" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.OptimisticPipelineHookTests+when_tracking_commits" success="True" time="0.000">
+            <results>
+              <test-case name="when tracking commits, it should only contain streams explicitly tracked" executed="True" success="True" time="0.000" />
+              <test-case name="when tracking commits, it should find tracked streams" executed="True" success="True" time="0.000" />
+              <test-case name="when tracking commits, it should only track the specified number of streams" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.OptimisticPipelineHookTests+when_purging" success="True" time="0.000">
+            <results>
+              <test-case name="when purging, it should not track commit" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.OptimisticPipelineHookTests+when_purging_a_bucket" success="True" time="0.000">
+            <results>
+              <test-case name="when purging a bucket, it should not track the commit in bucket" executed="True" success="True" time="0.000" />
+              <test-case name="when purging a bucket, it should track the commit in other bucket" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.OptimisticPipelineHookTests+when_deleting_a_stream" success="True" time="0.000">
+            <results>
+              <test-case name="when deleting a stream, it should not track the commit in the deleted stream" executed="True" success="True" time="0.000" />
+              <test-case name="when deleting a stream, it should track the commit that is not in the deleted stream" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_creating_a_new_stream" success="True" time="0.001">
+            <results>
+              <test-case name="when creating a new stream, it should return a new stream" executed="True" success="True" time="0.000" />
+              <test-case name="when creating a new stream, it should return a stream with the correct stream identifier" executed="True" success="True" time="0.000" />
+              <test-case name="when creating a new stream, it should return a stream with a zero stream revision" executed="True" success="True" time="0.000" />
+              <test-case name="when creating a new stream, it should return a stream with a zero commit sequence" executed="True" success="True" time="0.000" />
+              <test-case name="when creating a new stream, it should return a stream with no uncommitted events" executed="True" success="True" time="0.001" />
+              <test-case name="when creating a new stream, it should return a stream with no committed events" executed="True" success="True" time="0.000" />
+              <test-case name="when creating a new stream, it should return a stream with empty headers" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_opening_an_empty_stream_starting_at_revision_zero" success="True" time="0.000">
+            <results>
+              <test-case name="when opening an empty stream starting at revision zero, it should return a new stream" executed="True" success="True" time="0.000" />
+              <test-case name="when opening an empty stream starting at revision zero, it should return a stream with the correct stream identifier" executed="True" success="True" time="0.000" />
+              <test-case name="when opening an empty stream starting at revision zero, it should return a stream with a zero stream revision" executed="True" success="True" time="0.000" />
+              <test-case name="when opening an empty stream starting at revision zero, it should return a stream with a zero commit sequence" executed="True" success="True" time="0.000" />
+              <test-case name="when opening an empty stream starting at revision zero, it should return a stream with no uncommitted events" executed="True" success="True" time="0.000" />
+              <test-case name="when opening an empty stream starting at revision zero, it should return a stream with no committed events" executed="True" success="True" time="0.000" />
+              <test-case name="when opening an empty stream starting at revision zero, it should return a stream with empty headers" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_opening_an_empty_stream_starting_above_revision_zero" success="True" time="0.000">
+            <results>
+              <test-case name="when opening an empty stream starting above revision zero, it should throw a StreamNotFoundException" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_opening_a_populated_stream" success="True" time="0.004">
+            <results>
+              <test-case name="when opening a populated stream, it should invoke the underlying infrastructure with the values provided" executed="True" success="True" time="0.002" />
+              <test-case name="when opening a populated stream, it should provide the commits to the selection hooks" executed="True" success="True" time="0.002" />
+              <test-case name="when opening a populated stream, it should return an event stream containing the correct stream identifer" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_opening_a_populated_stream_from_a_snapshot" success="True" time="0.002">
+            <results>
+              <test-case name="when opening a populated stream from a snapshot, it should query the underlying storage using the revision of the snapshot" executed="True" success="True" time="0.002" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_opening_a_stream_from_a_snapshot_that_is_at_the_revision_of_the_stream_head" success="True" time="0.000">
+            <results>
+              <test-case name="when opening a stream from a snapshot that is at the revision of the stream head, it should return a stream with the correct stream identifier" executed="True" success="True" time="0.000" />
+              <test-case name="when opening a stream from a snapshot that is at the revision of the stream head, it should return a stream with revision of the stream head" executed="True" success="True" time="0.000" />
+              <test-case name="when opening a stream from a snapshot that is at the revision of the stream head, it should return a stream with a commit sequence of the stream head" executed="True" success="True" time="0.000" />
+              <test-case name="when opening a stream from a snapshot that is at the revision of the stream head, it should return a stream with no committed events" executed="True" success="True" time="0.000" />
+              <test-case name="when opening a stream from a snapshot that is at the revision of the stream head, it should return a stream with no uncommitted events" executed="True" success="True" time="0.000" />
+              <test-case name="when opening a stream from a snapshot that is at the revision of the stream head, it should only enumerate the set of commits once" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_reading_from_revision_zero" success="True" time="0.002">
+            <results>
+              <test-case name="when reading from revision zero, it should pass a revision range to the persistence infrastructure" executed="True" success="True" time="0.002" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_reading_up_to_revision_revision_zero" success="True" time="0.002">
+            <results>
+              <test-case name="when reading up to revision revision zero, it should pass the maximum possible revision to the persistence infrastructure" executed="True" success="True" time="0.002" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_reading_from_a_null_snapshot" success="True" time="0.000">
+            <results>
+              <test-case name="when reading from a null snapshot, it should throw an ArgumentNullException" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_reading_from_a_snapshot_up_to_revision_revision_zero" success="True" time="0.002">
+            <results>
+              <test-case name="when reading from a snapshot up to revision revision zero, it should pass the maximum possible revision to the persistence infrastructure" executed="True" success="True" time="0.002" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_committing_a_null_attempt_back_to_the_stream" success="True" time="0.000">
+            <results>
+              <test-case name="when committing a null attempt back to the stream, it should throw an ArgumentNullException" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_committing_with_a_valid_and_populated_attempt_to_a_stream" success="True" time="0.004">
+            <results>
+              <test-case name="when committing with a valid and populated attempt to a stream, it should provide the commit to the precommit hooks" executed="True" success="True" time="0.002" />
+              <test-case name="when committing with a valid and populated attempt to a stream, it should provide the commit attempt to the configured persistence mechanism" executed="True" success="True" time="0.001" />
+              <test-case name="when committing with a valid and populated attempt to a stream, it should provide the commit to the postcommit hooks" executed="True" success="True" time="0.001" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_a_precommit_hook_rejects_a_commit" success="True" time="0.002">
+            <results>
+              <test-case name="when a precommit hook rejects a commit, it should not call the underlying infrastructure" executed="True" success="True" time="0.001" />
+              <test-case name="when a precommit hook rejects a commit, it should not provide the commit to the postcommit hooks" executed="True" success="True" time="0.001" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_disposing_the_event_store" success="True" time="0.001">
+            <results>
+              <test-case name="when disposing the event store, it should dispose the underlying persistence" executed="True" success="True" time="0.001" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_building_a_stream" success="True" time="0.000">
+            <results>
+              <test-case name="when building a stream, it should have the correct stream identifier" executed="True" success="True" time="0.000" />
+              <test-case name="when building a stream, it should have the correct head stream revision" executed="True" success="True" time="0.000" />
+              <test-case name="when building a stream, it should have the correct head commit sequence" executed="True" success="True" time="0.000" />
+              <test-case name="when building a stream, it should not include events below the minimum revision indicated" executed="True" success="True" time="0.000" />
+              <test-case name="when building a stream, it should not include events above the maximum revision indicated" executed="True" success="True" time="0.000" />
+              <test-case name="when building a stream, it should have all of the committed events up to the stream revision specified" executed="True" success="True" time="0.000" />
+              <test-case name="when building a stream, it should contain the headers from the underlying commits" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_the_head_event_revision_is_less_than_the_max_desired_revision" success="True" time="0.000">
+            <results>
+              <test-case name="when the head event revision is less than the max desired revision, it should set the stream revision to the revision of the most recent event" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_adding_a_null_event_message" success="True" time="0.000">
+            <results>
+              <test-case name="when adding a null event message, it should be ignored" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_adding_an_unpopulated_event_message" success="True" time="0.000">
+            <results>
+              <test-case name="when adding an unpopulated event message, it should be ignored" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_adding_a_fully_populated_event_message" success="True" time="0.000">
+            <results>
+              <test-case name="when adding a fully populated event message, it should add the event to the set of uncommitted events" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_adding_multiple_populated_event_messages" success="True" time="0.000">
+            <results>
+              <test-case name="when adding multiple populated event messages, it should add all of the events provided to the set of uncommitted events" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_adding_a_simple_object_as_an_event_message" success="True" time="0.000">
+            <results>
+              <test-case name="when adding a simple object as an event message, it should add the uncommited event to the set of uncommitted events" executed="True" success="True" time="0.000" />
+              <test-case name="when adding a simple object as an event message, it should wrap the uncommited event in an EventMessage object" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_clearing_any_uncommitted_changes" success="True" time="0.000">
+            <results>
+              <test-case name="when clearing any uncommitted changes, it should clear all uncommitted events" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_committing_an_empty_changeset" success="True" time="0.004">
+            <results>
+              <test-case name="when committing an empty changeset, it should not call the underlying infrastructure" executed="True" success="True" time="0.004" />
+              <test-case name="when committing an empty changeset, it should not increment the current stream revision" executed="True" success="True" time="0.000" />
+              <test-case name="when committing an empty changeset, it should not increment the current commit sequence" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_committing_any_uncommitted_changes" success="True" time="0.003">
+            <results>
+              <test-case name="when committing any uncommitted changes, it should provide a commit to the underlying infrastructure" executed="True" success="True" time="0.001" />
+              <test-case name="when committing any uncommitted changes, it should build the commit with the correct bucket identifier" executed="True" success="True" time="0.000" />
+              <test-case name="when committing any uncommitted changes, it should build the commit with the correct stream identifier" executed="True" success="True" time="0.000" />
+              <test-case name="when committing any uncommitted changes, it should build the commit with the correct stream revision" executed="True" success="True" time="0.000" />
+              <test-case name="when committing any uncommitted changes, it should build the commit with the correct commit identifier" executed="True" success="True" time="0.000" />
+              <test-case name="when committing any uncommitted changes, it should build the commit with an incremented commit sequence" executed="True" success="True" time="0.000" />
+              <test-case name="when committing any uncommitted changes, it should build the commit with the correct commit stamp" executed="True" success="True" time="0.000" />
+              <test-case name="when committing any uncommitted changes, it should build the commit with the headers provided" executed="True" success="True" time="0.002" />
+              <test-case name="when committing any uncommitted changes, it should build the commit containing all uncommitted events" executed="True" success="True" time="0.000" />
+              <test-case name="when committing any uncommitted changes, it should build the commit using the event messages provided" executed="True" success="True" time="0.000" />
+              <test-case name="when committing any uncommitted changes, it should contain a copy of the headers provided" executed="True" success="True" time="0.000" />
+              <test-case name="when committing any uncommitted changes, it should update the stream revision" executed="True" success="True" time="0.000" />
+              <test-case name="when committing any uncommitted changes, it should update the commit sequence" executed="True" success="True" time="0.000" />
+              <test-case name="when committing any uncommitted changes, it should add the uncommitted events the committed events" executed="True" success="True" time="0.000" />
+              <test-case name="when committing any uncommitted changes, it should clear the uncommitted events on the stream" executed="True" success="True" time="0.000" />
+              <test-case name="when committing any uncommitted changes, it should clear the uncommitted headers on the stream" executed="True" success="True" time="0.000" />
+              <test-case name="when committing any uncommitted changes, it should copy the uncommitted headers to the committed stream headers" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_committing_with_an_identifier_that_was_previously_read" success="True" time="0.000">
+            <results>
+              <test-case name="when committing with an identifier that was previously read, it should throw a DuplicateCommitException" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_committing_after_another_thread_or_process_has_moved_the_stream_head" success="True" time="0.002">
+            <results>
+              <test-case name="when committing after another thread or process has moved the stream head, it should throw a ConcurrencyException" executed="True" success="True" time="0.000" />
+              <test-case name="when committing after another thread or process has moved the stream head, it should query the underlying storage to discover the new commits" executed="True" success="True" time="0.002" />
+              <test-case name="when committing after another thread or process has moved the stream head, it should update the stream revision accordingly" executed="True" success="True" time="0.000" />
+              <test-case name="when committing after another thread or process has moved the stream head, it should update the commit sequence accordingly" executed="True" success="True" time="0.000" />
+              <test-case name="when committing after another thread or process has moved the stream head, it should add the newly discovered committed events to the set of committed events accordingly" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_attempting_to_invoke_behavior_on_a_disposed_stream" success="True" time="0.000">
+            <results>
+              <test-case name="when attempting to invoke behavior on a disposed stream, it should throw a ObjectDisposedException" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.when_attempting_to_modify_the_event_collections" success="True" time="0.000">
+            <results>
+              <test-case name="when attempting to modify the event collections, it should throw an exception when adding to the committed collection" executed="True" success="True" time="0.000" />
+              <test-case name="when attempting to modify the event collections, it should throw an exception when adding to the uncommitted collection" executed="True" success="True" time="0.000" />
+              <test-case name="when attempting to modify the event collections, it should throw an exception when clearing the committed collection" executed="True" success="True" time="0.000" />
+              <test-case name="when attempting to modify the event collections, it should throw an exception when clearing the uncommitted collection" executed="True" success="True" time="0.000" />
+              <test-case name="when attempting to modify the event collections, it should throw an exception when removing from the committed collection" executed="True" success="True" time="0.000" />
+              <test-case name="when attempting to modify the event collections, it should throw an exception when removing from the uncommitted collection" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.InMemory.when_getting_from_to_then_should_not_get_later_commits" success="True" time="0.000">
+            <results>
+              <test-case name="when getting from to then should not get later commits, it should return two commits" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.Sql.when_persisting_a_commit" success="True" time="0.003">
+            <results>
+              <test-case name="when persisting a commit, it should raise BeforePersistCommit event" executed="True" success="True" time="0.003" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.Sql.when_hasher_returns_null" success="True" time="0.000">
+            <results>
+              <test-case name="when hasher returns null, it should raise invalid operation exception" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.Sql.when_hasher_returns_whitespace" success="True" time="0.000">
+            <results>
+              <test-case name="when hasher returns whitespace, it should raise invalid operation exception" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.Sql.when_hasher_returns_empty" success="True" time="0.000">
+            <results>
+              <test-case name="when hasher returns empty, it should raise invalid operation exception" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.Sql.when_hasher_returns_string_longer_than_40_characters" success="True" time="0.000">
+            <results>
+              <test-case name="when hasher returns string longer than 40 characters, it should raise invalid operation exception" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.Persistence.Sql.when_creating_sql_persistence_factory_with_oracle_native_dialect" success="True" time="0.000">
+            <results>
+              <test-case name="when creating sql persistence factory with oracle native dialect, it should not throw" executed="True" success="True" time="0.000" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.PipelineHooksAwarePersistenceDecoratorTests+when_disposing_the_decorator" success="True" time="0.001">
+            <results>
+              <test-case name="when disposing the decorator, it should dispose the underlying persistence" executed="True" success="True" time="0.001" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.PipelineHooksAwarePersistenceDecoratorTests+when_reading_the_all_events_from_date" success="True" time="0.003">
+            <results>
+              <test-case name="when reading the all events from date, it should call the underlying persistence to get events" executed="True" success="True" time="0.001" />
+              <test-case name="when reading the all events from date, it should pass all events through the pipeline hooks" executed="True" success="True" time="0.002" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.PipelineHooksAwarePersistenceDecoratorTests+when_getting_the_all_events_from_min_to_max_revision" success="True" time="0.004">
+            <results>
+              <test-case name="when getting the all events from min to max revision, it should call the underlying persistence to get events" executed="True" success="True" time="0.002" />
+              <test-case name="when getting the all events from min to max revision, it should pass all events through the pipeline hooks" executed="True" success="True" time="0.002" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.PipelineHooksAwarePersistenceDecoratorTests+when_getting_all_events_from_to" success="True" time="0.003">
+            <results>
+              <test-case name="when getting all events from to, it should call the underlying persistence to get events" executed="True" success="True" time="0.001" />
+              <test-case name="when getting all events from to, it should pass all events through the pipeline hooks" executed="True" success="True" time="0.002" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.PipelineHooksAwarePersistenceDecoratorTests+when_committing" success="True" time="0.001">
+            <results>
+              <test-case name="when committing, it should dispose the underlying persistence" executed="True" success="True" time="0.001" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.PipelineHooksAwarePersistenceDecoratorTests+when_reading_the_all_events_from_checkpoint" success="True" time="0.003">
+            <results>
+              <test-case name="when reading the all events from checkpoint, it should call the underlying persistence to get events" executed="True" success="True" time="0.001" />
+              <test-case name="when reading the all events from checkpoint, it should pass all events through the pipeline hooks" executed="True" success="True" time="0.002" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.PipelineHooksAwarePersistenceDecoratorTests+when_reading_the_all_events_get_undispatched" success="True" time="0.003">
+            <results>
+              <test-case name="when reading the all events get undispatched, it should call the underlying persistence to get events" executed="True" success="True" time="0.001" />
+              <test-case name="when reading the all events get undispatched, it should pass all events through the pipeline hooks" executed="True" success="True" time="0.002" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.PipelineHooksAwarePersistenceDecoratorTests+when_purging" success="True" time="0.001">
+            <results>
+              <test-case name="when purging, it should call the pipeline hook purge" executed="True" success="True" time="0.001" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.PipelineHooksAwarePersistenceDecoratorTests+when_purging_a_bucket" success="True" time="0.001">
+            <results>
+              <test-case name="when purging a bucket, it should call the pipeline hook purge" executed="True" success="True" time="0.001" />
+            </results>
+          </test-suite>
+          <test-suite name="NEventStore.PipelineHooksAwarePersistenceDecoratorTests+when_deleting_a_stream" success="True" time="0.001">
+            <results>
+              <test-case name="when deleting a stream, it should call the pipeline hook purge" executed="True" success="True" time="0.001" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>
