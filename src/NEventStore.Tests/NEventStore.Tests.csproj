@@ -74,9 +74,6 @@
       <Link>Persistence\InMemoryPersistence\PersistenceTests.cs</Link>
     </Compile>
     <Compile Include="DefaultSerializationWireupTests.cs" />
-    <Compile Include="NoopDispatchSchedulerWireupTests.cs" />
-    <Compile Include="SynchronousDispatchSchedulerWireupTests.cs" />
-    <Compile Include="AsynchronousDispatchSchedulerWireupTests.cs" />
     <Compile Include="Client\PollingClientTests.cs" />
     <Compile Include="CommitHelper.cs" />
     <Compile Include="CommonDomain\IAggregateTests.cs" />
@@ -84,9 +81,6 @@
     <Compile Include="CommonDomain\Persistence\IAggregatePersistenceTests.cs" />
     <Compile Include="CommonDomain\TestAggregate.cs" />
     <Compile Include="ConversionTests\EventUpconverterPipelineHookTests.cs" />
-    <Compile Include="DispatchCommitHookTests.cs" />
-    <Compile Include="DispatcherTests\AsynchronousDispatcherTests.cs" />
-    <Compile Include="DispatcherTests\SynchronousDispatcherTests.cs" />
     <Compile Include="EnumerableCounter.cs" />
     <Compile Include="IntExtensions.cs" />
     <Compile Include="OptimisticPipelineHookTests.cs" />

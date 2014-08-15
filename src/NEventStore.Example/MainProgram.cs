@@ -3,7 +3,6 @@ namespace NEventStore.Example
     using System;
     using System.Transactions;
     using NEventStore;
-    using NEventStore.Dispatcher;
     using NEventStore.Persistence.Sql.SqlDialects;
 
     internal static class MainProgram
@@ -45,26 +44,9 @@ namespace NEventStore.Example
 						.Compress()
 						.EncryptWith(EncryptionKey)
 				.HookIntoPipelineUsing(new[] { new AuthorizationPipelineHook() })
-				.UsingSynchronousDispatchScheduler()
-					.DispatchTo(new DelegateMessageDispatcher(DispatchCommit))
 				.Build();
 		}
-		private static void DispatchCommit(ICommit commit)
-		{
-			// This is where we'd hook into our messaging infrastructure, such as NServiceBus,
-			// MassTransit, WCF, or some other communications infrastructure.
-			// This can be a class as well--just implement IDispatchCommits.
-			try
-			{
-				foreach (var @event in commit.Events)
-					Console.WriteLine(Resources.MessagesDispatched + ((SomeDomainEvent)@event.Body).Value);
-			}
-			catch (Exception)
-			{
-				Console.WriteLine(Resources.UnableToDispatch);
-			}
-		}
-
+		
 		private static void OpenOrCreateStream()
 		{
 			// we can call CreateStream(StreamId) if we know there isn't going to be any data.

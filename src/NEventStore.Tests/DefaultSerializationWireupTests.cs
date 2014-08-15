@@ -13,6 +13,7 @@
             private Wireup _wireup;
             private Exception _exception;
             private IStoreEvents _eventStore;
+
             protected override void Context()
             {
                 _wireup = Wireup.Init()
