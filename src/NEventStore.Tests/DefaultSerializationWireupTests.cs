@@ -33,7 +33,10 @@
             [Fact]
             public void should_not_throw_an_argument_null_exception()
             {
-                _exception.GetType().Should().NotBe(typeof(ArgumentNullException));
+                if (_exception != null)
+                {
+                    _exception.GetType().Should().NotBe<ArgumentNullException>();
+                }
             }
         }
     }
