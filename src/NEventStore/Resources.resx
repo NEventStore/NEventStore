@@ -132,23 +132,11 @@
   <data name="RevisionTooSmall" xml:space="preserve">
     <value>The stream revision must always be greater than or equal to the commit sequence.</value>
   </data>
-  <data name="StartingDispatchScheduler" xml:space="preserve">
-    <value>Starting dispatch scheduler.</value>
-  </data>
   <data name="InitializingPersistence" xml:space="preserve">
     <value>Initializing persistence engine.</value>
   </data>
-  <data name="GettingUndispatchedCommits" xml:space="preserve">
-    <value>Getting undispatched commits from persistence engine.</value>
-  </data>
   <data name="SchedulingDelivery" xml:space="preserve">
     <value>Scheduling commit '{0}' for delivery.</value>
-  </data>
-  <data name="SchedulingDispatch" xml:space="preserve">
-    <value>Scheduling commit '{0}' to be dispatched.</value>
-  </data>
-  <data name="MarkingCommitAsDispatched" xml:space="preserve">
-    <value>Marking commit '{0}' as dispatched.</value>
   </data>
   <data name="DisposingEngine" xml:space="preserve">
     <value>Disposing engine.</value>
@@ -170,12 +158,6 @@
   </data>
   <data name="UpdatingStreamHead" xml:space="preserve">
     <value>Updating stream head for stream '{0}'.</value>
-  </data>
-  <data name="RetrievingUndispatchedCommits" xml:space="preserve">
-    <value>Retrieving all {0} undispatched commits.</value>
-  </data>
-  <data name="MarkingAsDispatched" xml:space="preserve">
-    <value>Marking commit '{0}' as dispatched.</value>
   </data>
   <data name="GettingStreamsToSnapshot" xml:space="preserve">
     <value>Getting the set of all streams to be snapshot from bucket '{0}' which exceed {1} revisions without a snapshot.</value>
@@ -264,20 +246,8 @@
   <data name="ShuttingDownStore" xml:space="preserve">
     <value>Shutting down event store.</value>
   </data>
-  <data name="ShuttingDownDispatchScheduler" xml:space="preserve">
-    <value>Shutting down dispatch scheduler.</value>
-  </data>
-  <data name="ShuttingDownDispatcher" xml:space="preserve">
-    <value>Shutting down dispatcher.</value>
-  </data>
   <data name="DispatchingToDevNull" xml:space="preserve">
     <value>Dispatching message to /dev/null.</value>
-  </data>
-  <data name="UnableToDispatch" xml:space="preserve">
-    <value>Configured dispatcher of type '{0}' was unable to dispatch commit '{1}'.</value>
-  </data>
-  <data name="UnableToMarkDispatched" xml:space="preserve">
-    <value>Unable to mark commit '{0}' as dispatched, the underlying storage has already been disposed</value>
   </data>
   <data name="ConvertingEvent" xml:space="preserve">
     <value>Converting an Event from '{0}' to '{1}'.</value>

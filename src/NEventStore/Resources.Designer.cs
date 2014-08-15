@@ -250,15 +250,6 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Getting undispatched commits from persistence engine..
-        /// </summary>
-        internal static string GettingUndispatchedCommits {
-            get {
-                return ResourceManager.GetString("GettingUndispatchedCommits", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Ignoring some events on commit &apos;{0}&apos; of stream &apos;{1}&apos; because they starting before revision {2}..
         /// </summary>
         internal static string IgnoringBeforeRevision {
@@ -309,24 +300,6 @@ namespace NEventStore {
         internal static string InvokingPreCommitHooks {
             get {
                 return ResourceManager.GetString("InvokingPreCommitHooks", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Marking commit &apos;{0}&apos; as dispatched..
-        /// </summary>
-        internal static string MarkingAsDispatched {
-            get {
-                return ResourceManager.GetString("MarkingAsDispatched", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Marking commit &apos;{0}&apos; as dispatched..
-        /// </summary>
-        internal static string MarkingCommitAsDispatched {
-            get {
-                return ResourceManager.GetString("MarkingCommitAsDispatched", resourceCulture);
             }
         }
         
@@ -448,15 +421,6 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Retrieving all {0} undispatched commits..
-        /// </summary>
-        internal static string RetrievingUndispatchedCommits {
-            get {
-                return ResourceManager.GetString("RetrievingUndispatchedCommits", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The stream revision must always be greater than or equal to the commit sequence..
         /// </summary>
         internal static string RevisionTooSmall {
@@ -475,47 +439,11 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Scheduling commit &apos;{0}&apos; to be dispatched..
-        /// </summary>
-        internal static string SchedulingDispatch {
-            get {
-                return ResourceManager.GetString("SchedulingDispatch", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Shutting down dispatcher..
-        /// </summary>
-        internal static string ShuttingDownDispatcher {
-            get {
-                return ResourceManager.GetString("ShuttingDownDispatcher", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Shutting down dispatch scheduler..
-        /// </summary>
-        internal static string ShuttingDownDispatchScheduler {
-            get {
-                return ResourceManager.GetString("ShuttingDownDispatchScheduler", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Shutting down event store..
         /// </summary>
         internal static string ShuttingDownStore {
             get {
                 return ResourceManager.GetString("ShuttingDownStore", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Starting dispatch scheduler..
-        /// </summary>
-        internal static string StartingDispatchScheduler {
-            get {
-                return ResourceManager.GetString("StartingDispatchScheduler", resourceCulture);
             }
         }
         
@@ -534,24 +462,6 @@ namespace NEventStore {
         internal static string TrackingStreams {
             get {
                 return ResourceManager.GetString("TrackingStreams", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Configured dispatcher of type &apos;{0}&apos; was unable to dispatch commit &apos;{1}&apos;..
-        /// </summary>
-        internal static string UnableToDispatch {
-            get {
-                return ResourceManager.GetString("UnableToDispatch", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to mark commit &apos;{0}&apos; as dispatched, the underlying storage has already been disposed.
-        /// </summary>
-        internal static string UnableToMarkDispatched {
-            get {
-                return ResourceManager.GetString("UnableToMarkDispatched", resourceCulture);
             }
         }
         
