@@ -22,16 +22,6 @@ namespace NEventStore.Persistence.Sql.SqlDialects
             get { return base.AppendSnapshotToCommit.Replace("/*FROM DUAL*/", "FROM DUAL"); }
         }
 
-        public override string MarkCommitAsDispatched
-        {
-            get { return base.MarkCommitAsDispatched.Replace("1", "true"); }
-        }
-
-        public override string GetUndispatchedCommits
-        {
-            get { return base.GetUndispatchedCommits.Replace("0", "false"); }
-        }
-
         public override object CoalesceParameterValue(object value)
         {
             if (value is Guid)

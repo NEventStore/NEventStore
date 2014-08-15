@@ -211,32 +211,6 @@ namespace NEventStore.Persistence.Sql.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
-        ///  FROM Commits
-        /// WHERE Dispatched = 0
-        /// ORDER BY CheckpointNumber
-        /// LIMIT @Limit OFFSET @Skip;.
-        /// </summary>
-        internal static string GetUndispatchedCommits {
-            get {
-                return ResourceManager.GetString("GetUndispatchedCommits", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to UPDATE Commits
-        ///   SET Dispatched = 1
-        /// WHERE BucketId = @BucketId
-        ///   AND StreamId = @StreamId
-        ///   AND CommitSequence = @CommitSequence;.
-        /// </summary>
-        internal static string MarkCommitAsDispatched {
-            get {
-                return ResourceManager.GetString("MarkCommitAsDispatched", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to DELETE FROM Snapshots WHERE BucketId = @BucketId;
         ///DELETE FROM Commits WHERE BucketId = @BucketId;.
         /// </summary>

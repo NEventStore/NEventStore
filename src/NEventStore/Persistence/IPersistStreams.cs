@@ -59,22 +59,6 @@ namespace NEventStore.Persistence
         IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end);
 
         /// <summary>
-        ///     Gets a set of commits that has not yet been dispatched.
-        /// </summary>
-        /// <returns>The set of commits to be dispatched.</returns>
-        /// <exception cref="StorageException" />
-        /// <exception cref="StorageUnavailableException" />
-        IEnumerable<ICommit> GetUndispatchedCommits();
-
-        /// <summary>
-        ///     Marks the commit specified as dispatched.
-        /// </summary>
-        /// <param name="commit">The commit to be marked as dispatched.</param>
-        /// <exception cref="StorageException" />
-        /// <exception cref="StorageUnavailableException" />
-        void MarkCommitAsDispatched(ICommit commit);
-
-        /// <summary>
         ///     Completely DESTROYS the contents of ANY and ALL streams that have been successfully persisted.  Use with caution.
         /// </summary>
         void Purge();

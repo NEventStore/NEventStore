@@ -226,14 +226,12 @@ IF table_count = 0 THEN DBMS_OUTPUT.PUT_LINE ('Creating the Commits table');
       CommitSequence NUMBER(8) CHECK (CommitSequence &gt; 0) NOT NULL,
       CommitStamp timestamp NOT NULL,
       CheckpointNumber NUMBER(19) NOT NULL,
-      Dispatched NUMBER(1) DEFAULT(0) NOT NULL,
       Headers BLOB CHECK (Headers IS NULL OR LENGTH(Headers) &gt; 0) NULL,
       Payload BLOB CHECK (LENGTH(Payload) &gt; 0) NOT NULL,
       CONSTRAINT PK_Commits PRIMARY KEY (CheckpointNumber))');
   EXECUTE IMMEDIATE ('CREATE UNIQUE INDEX IX_Commits_CommitSequence ON Commits (BucketId, StreamId,  CommitSequence)');
   EXECUTE IMMEDIATE ('CREATE UNIQUE INDEX IX_Commits ON Commits (BucketId, StreamId, CommitId)');
   EXECUTE IMMEDIATE ('CREATE UNIQUE INDEX IX_Commits_Revisions ON Commits (BucketId, StreamId, StreamRevision, Items)');
-  EXECUTE IMMEDIATE ('CREATE INDEX IX_Commits_Dispatched ON Commits (Dispatched)');
   EXECUTE IMMEDIATE ('CREATE INDEX IX_Commits_Stamp ON Commits (CommitStamp)');
   EXECUTE IMMEDIATE ('CREATE SEQUENCE Commit_CheckpointNumber');
   EXECUTE IMMEDIATE ('
@@ -273,14 +271,6 @@ SELECT OuterQuery.* FROM (
   ) InnerQuery
 ) OuterQuery
 WHERE ROW_NUMBER_VAL &gt; :Skip AND ROW_NUMBER_VAL &lt;= (:Limit + :Skip)</value>
-  </data>
-  <data name="MarkCommitAsDispatched" xml:space="preserve">
-    <value>/*MarkCommitAsDispatched*/
-UPDATE Commits   
-SET Dispatched = 1
-WHERE CAST(BucketId AS NVARCHAR2(40)) = :BucketId
- AND StreamId  = :StreamId
- AND CommitSequence  = :CommitSequence</value>
   </data>
   <data name="PagedQueryFormat" xml:space="preserve">
     <value>/*PagedQueryFormat*/

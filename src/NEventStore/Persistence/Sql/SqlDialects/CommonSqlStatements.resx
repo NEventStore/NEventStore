@@ -192,20 +192,6 @@ HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Thresho
  ORDER BY C.StreamId
  LIMIT @Limit;</value>
   </data>
-  <data name="GetUndispatchedCommits" xml:space="preserve">
-    <value>SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
-  FROM Commits
- WHERE Dispatched = 0
- ORDER BY CheckpointNumber
- LIMIT @Limit OFFSET @Skip;</value>
-  </data>
-  <data name="MarkCommitAsDispatched" xml:space="preserve">
-    <value>UPDATE Commits
-   SET Dispatched = 1
- WHERE BucketId = @BucketId
-   AND StreamId = @StreamId
-   AND CommitSequence = @CommitSequence;</value>
-  </data>
   <data name="PurgeStorage" xml:space="preserve">
     <value>DELETE FROM Snapshots;
 DELETE FROM Commits;</value>

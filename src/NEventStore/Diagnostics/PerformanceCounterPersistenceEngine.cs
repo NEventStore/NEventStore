@@ -30,12 +30,6 @@ namespace NEventStore.Diagnostics
             return commit;
         }
 
-        public void MarkCommitAsDispatched(ICommit commit)
-        {
-            _persistence.MarkCommitAsDispatched(commit);
-            _counters.CountCommitDispatched();
-        }
-
         public ICheckpoint ParseCheckpoint(string checkpointValue)
         {
             return LongCheckpoint.Parse(checkpointValue);
@@ -49,11 +43,6 @@ namespace NEventStore.Diagnostics
         public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             return _persistence.GetFromTo(bucketId, start, end);
-        }
-
-        public IEnumerable<ICommit> GetUndispatchedCommits()
-        {
-            return _persistence.GetUndispatchedCommits();
         }
 
         public IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)

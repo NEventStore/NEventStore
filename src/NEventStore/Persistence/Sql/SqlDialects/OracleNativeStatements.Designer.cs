@@ -244,20 +244,6 @@ namespace NEventStore.Persistence.Sql.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /*MarkCommitAsDispatched*/
-        ///UPDATE Commits   
-        ///SET Dispatched = 1
-        ///WHERE CAST(BucketId AS NVARCHAR2(40)) = :BucketId
-        /// AND StreamId  = :StreamId
-        /// AND CommitSequence  = :CommitSequence.
-        /// </summary>
-        internal static string MarkCommitAsDispatched {
-            get {
-                return ResourceManager.GetString("MarkCommitAsDispatched", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to /*PagedQueryFormat*/
         ///SELECT *
         ///FROM ( {0},

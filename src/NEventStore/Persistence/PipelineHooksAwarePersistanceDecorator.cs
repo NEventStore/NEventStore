@@ -80,16 +80,6 @@ namespace NEventStore.Persistence
             return ExecuteHooks(_original.GetFromTo(bucketId, start, end));
         }
 
-        public IEnumerable<ICommit> GetUndispatchedCommits()
-        {
-            return ExecuteHooks(_original.GetUndispatchedCommits());
-        }
-
-        public void MarkCommitAsDispatched(ICommit commit)
-        {
-            _original.MarkCommitAsDispatched(commit);
-        }
-
         public void Purge()
         {
             _original.Purge();

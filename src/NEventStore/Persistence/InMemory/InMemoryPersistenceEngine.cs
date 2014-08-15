@@ -75,19 +75,6 @@ namespace NEventStore.Persistence.InMemory
             return this[attempt.BucketId].Commit(attempt, new LongCheckpoint(Interlocked.Increment(ref _checkpoint)));
         }
 
-        public IEnumerable<ICommit> GetUndispatchedCommits()
-        {
-            ThrowWhenDisposed();
-            return _buckets.Values.SelectMany(b => b.GetUndispatchedCommits());
-        }
-
-        public void MarkCommitAsDispatched(ICommit commit)
-        {
-            ThrowWhenDisposed();
-            Logger.Debug(Resources.MarkingAsDispatched, commit.CommitId);
-            this[commit.BucketId].MarkCommitAsDispatched(commit);
-        }
-
         public IEnumerable<IStreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
         {
             ThrowWhenDisposed();

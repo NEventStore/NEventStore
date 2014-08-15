@@ -181,28 +181,6 @@ namespace NEventStore.Persistence.Sql
             return commit;
         }
 
-        public virtual IEnumerable<ICommit> GetUndispatchedCommits()
-        {
-            Logger.Debug(Messages.GettingUndispatchedCommits);
-            return
-                ExecuteQuery(query => query.ExecutePagedQuery(_dialect.GetUndispatchedCommits, (q, r) => { }))
-                    .Select(x => x.GetCommit(_serializer, _dialect))
-                    .ToArray(); // avoid paging
-        }
-
-        public virtual void MarkCommitAsDispatched(ICommit commit)
-        {
-            Logger.Debug(Messages.MarkingCommitAsDispatched, commit.CommitId);
-            string streamId = _streamIdHasher.GetHash(commit.StreamId);
-            ExecuteCommand(cmd =>
-                {
-                    cmd.AddParameter(_dialect.BucketId, commit.BucketId, DbType.AnsiString);
-                    cmd.AddParameter(_dialect.StreamId, streamId, DbType.AnsiString);
-                    cmd.AddParameter(_dialect.CommitSequence, commit.CommitSequence);
-                    return cmd.ExecuteWithoutExceptions(_dialect.MarkCommitAsDispatched);
-                });
-        }
-
         public virtual IEnumerable<IStreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
         {
             Logger.Debug(Messages.GettingStreamsToSnapshot);

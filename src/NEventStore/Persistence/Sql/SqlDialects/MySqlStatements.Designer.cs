@@ -72,7 +72,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects {
         ///    CommitSequence int NOT NULL CHECK (CommitSequence &gt; 0),
         ///    CommitStamp bigint NOT NULL,
         ///    CheckpointNumber bigint AUTO_INCREMENT,
-        ///    Dispatc [rest of string was truncated]&quot;;.
+        ///    Headers [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string InitializeStorage {
             get {

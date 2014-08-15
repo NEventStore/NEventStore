@@ -129,14 +129,12 @@
        CommitSequence int NOT NULL CHECK (CommitSequence &gt; 0),
        CommitStamp datetime NOT NULL,
        CheckpointNumber INTEGER PRIMARY KEY AUTOINCREMENT,
-       Dispatched bit NOT NULL DEFAULT 0,
        Headers blob NULL,
        Payload blob NOT NULL
 );
 CREATE UNIQUE INDEX IF NOT EXISTS IX_Commits_CommitSequence ON Commits (BucketId, StreamId, CommitSequence);
 CREATE UNIQUE INDEX IF NOT EXISTS IX_Commits_CommitId ON Commits (BucketId, StreamId, CommitId);
 CREATE UNIQUE INDEX IF NOT EXISTS IX_Commits_Revisions ON Commits (BucketId, StreamId, StreamRevision, Items);
-CREATE INDEX IF NOT EXISTS IX_Commits_Dispatched ON Commits (Dispatched);
 CREATE INDEX IF NOT EXISTS IX_Commits_Stamp ON Commits (CommitStamp);
 
 CREATE TABLE IF NOT EXISTS Snapshots

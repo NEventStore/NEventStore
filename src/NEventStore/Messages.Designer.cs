@@ -205,15 +205,6 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Registering dispatcher of type &apos;{0}&apos;..
-        /// </summary>
-        internal static string DispatcherRegistered {
-            get {
-                return ResourceManager.GetString("DispatcherRegistered", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Configuring the store to upconvert events when fetched..
         /// </summary>
         internal static string EventUpconverterRegistered {
