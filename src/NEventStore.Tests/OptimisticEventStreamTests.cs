@@ -526,6 +526,29 @@ namespace NEventStore
         }
     }
 
+    public class when_persistance_store_commit_returns_null : on_the_event_stream
+    {
+        protected override void Context()
+        {
+            // simulates pipeline pre-commit hook returning a false
+            A.CallTo(() => Persistence.Commit(A<CommitAttempt>.Ignored)).Returns(null);
+        }
+
+        protected override void Because()
+        {
+            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence);
+            Stream.Add(new EventMessage() { Body = "body" });
+            Stream.CommitChanges(Guid.NewGuid());
+        }
+
+        [Fact]
+        public void should_not_contain_commited_events()
+        {
+            Stream.CommittedEvents.Count().Should().Be(0);
+        }
+
+    }
+
     public abstract class on_the_event_stream : SpecificationBase, IUseFixture<FakeTimeFixture>
     {
         protected const int DefaultStreamRevision = 1;
