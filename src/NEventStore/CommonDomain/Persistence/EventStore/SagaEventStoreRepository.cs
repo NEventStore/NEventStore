@@ -85,7 +85,7 @@ namespace CommonDomain.Persistence.EventStore
                 stream = _eventStore.CreateStream(bucketId, sagaId);
 			}
 
-			return _streams[sagaId] = stream;
+			return _streams[sagaKey] = stream;
 		}
 
 		private static TSaga BuildSaga<TSaga>(IEventStream stream) where TSaga : class, ISaga, new()
@@ -128,7 +128,7 @@ namespace CommonDomain.Persistence.EventStore
             var sagaKey = bucketId + "+" + saga.Id;
             if (!_streams.TryGetValue(sagaKey, out stream))
 			{
-                _streams[saga.Id] = stream = _eventStore.CreateStream(bucketId, saga.Id);
+                _streams[sagaKey] = stream = _eventStore.CreateStream(bucketId, saga.Id);
 			}
 
 			foreach (var item in headers)
