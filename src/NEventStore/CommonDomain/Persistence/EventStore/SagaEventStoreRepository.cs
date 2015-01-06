@@ -15,14 +15,30 @@ namespace CommonDomain.Persistence.EventStore
 
 		private readonly IStoreEvents _eventStore;
 
+	    private readonly IConstructSagas _factory;
+
 		private readonly IDictionary<string, IEventStream> _streams = new Dictionary<string, IEventStream>();
 
-		public SagaEventStoreRepository(IStoreEvents eventStore)
+	    private class SagaFactory : IConstructSagas
+	    {
+	        public ISaga Build(Type type)
+	        {
+	            return Activator.CreateInstance(type) as ISaga;
+	        }
+	    }
+
+	    public SagaEventStoreRepository(IStoreEvents eventStore)
+            :this(eventStore, new SagaFactory())
 		{
-			_eventStore = eventStore;
 		}
 
-		public void Dispose()
+	    public SagaEventStoreRepository(IStoreEvents eventStore, IConstructSagas factory)
+	    {
+	        _factory = factory;
+            _eventStore = eventStore;
+        }
+
+        public void Dispose()
 		{
 			Dispose(true);
 			GC.SuppressFinalize(this);
@@ -30,7 +46,7 @@ namespace CommonDomain.Persistence.EventStore
 
 		public TSaga GetById<TSaga>(string bucketId, string sagaId) where TSaga : class, ISaga, new()
 		{
-            return BuildSaga<TSaga>(OpenStream(bucketId, sagaId));
+            return BuildSaga<TSaga>(OpenStream(bucketId, sagaId), _factory);
 		}
 
         public void Save(string bucketId, ISaga saga, Guid commitId, Action<IDictionary<string, object>> updateHeaders)
@@ -88,10 +104,15 @@ namespace CommonDomain.Persistence.EventStore
 			return _streams[sagaId] = stream;
 		}
 
-		private static TSaga BuildSaga<TSaga>(IEventStream stream) where TSaga : class, ISaga, new()
+		private static TSaga BuildSaga<TSaga>(IEventStream stream, IConstructSagas factory) where TSaga : class, ISaga, new()
 		{
-			var saga = new TSaga();
-			foreach (var @event in stream.CommittedEvents.Select(x => x.Body))
+		    var saga = factory.Build(typeof (TSaga)) as TSaga;
+		    if (saga == null)
+		    {
+		        throw new InvalidOperationException("The saga factory did not return a factory instance.");
+		    }
+
+		    foreach (var @event in stream.CommittedEvents.Select(x => x.Body))
 			{
 				saga.Transition(@event);
 			}

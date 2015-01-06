@@ -72,6 +72,7 @@
     <Compile Include="CommonDomain\Core\RegistrationEventRouter.cs" />
     <Compile Include="CommonDomain\Core\SagaBase.cs" />
     <Compile Include="CommonDomain\IAggregate.cs" />
+    <Compile Include="CommonDomain\Persistence\IConstructSagas.cs" />
     <Compile Include="CommonDomain\IDetectConflicts.cs" />
     <Compile Include="CommonDomain\IMemento.cs" />
     <Compile Include="CommonDomain\IRouteEvents.cs" />
