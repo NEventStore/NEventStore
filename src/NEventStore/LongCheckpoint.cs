@@ -37,7 +37,7 @@ namespace NEventStore
 
         public int CompareTo(LongCheckpoint other)
         {
-            return this.LongValue.CompareTo(other.LongValue);
+            return LongValue.CompareTo(other.LongValue);
         }
     }
 }
