@@ -131,7 +131,7 @@ namespace NEventStore.Persistence.Sql
         {
             if(string.IsNullOrWhiteSpace(checkpointToken))
             {
-                return new NullCheckpointToken();
+                return new LongCheckpoint(-1);
             }
             return LongCheckpoint.Parse(checkpointToken);
         }
@@ -511,23 +511,6 @@ namespace NEventStore.Persistence.Sql
                     throw new InvalidOperationException(Messages.StreamIdHashTooLong.FormatWith(streamId, streamIdHash, streamIdHash.Length, MaxStreamIdHashLength));
                 }
                 return streamIdHash;
-            }
-        }
-
-        private class NullCheckpointToken : ICheckpoint
-        {
-            public int CompareTo(ICheckpoint other)
-            {
-                if(other == null || other.Value == null)
-                {
-                    return 0;
-                }
-                return -1;
-            }
-
-            public string Value
-            {
-                get { return null; }
             }
         }
     }

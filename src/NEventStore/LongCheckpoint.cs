@@ -22,12 +22,13 @@ namespace NEventStore
             {
                 return 1;
             }
-            var intCheckpoint = other as LongCheckpoint;
-            if (intCheckpoint == null)
+            var longCheckpoint = other as LongCheckpoint;
+            if (longCheckpoint == null)
             {
-                throw new InvalidOperationException("Can only compare with {0} but compared with {1}".FormatWith());
+                throw new InvalidOperationException("Can only compare with {0} but compared with {1}"
+                    .FormatWith(typeof(LongCheckpoint).Name, other.GetType()));
             }
-            return _value.CompareTo(intCheckpoint.LongValue);
+            return _value.CompareTo(longCheckpoint.LongValue);
         }
 
         public static LongCheckpoint Parse(string checkpointValue)
