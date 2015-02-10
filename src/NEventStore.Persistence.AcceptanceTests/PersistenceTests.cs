@@ -5,7 +5,11 @@ namespace NEventStore.Persistence.AcceptanceTests
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using System.Transactions;
     using NEventStore.Diagnostics;
     using NEventStore.Persistence.AcceptanceTests.BDD;
     using Xunit;
@@ -930,11 +934,9 @@ namespace NEventStore.Persistence.AcceptanceTests
         }
     }
 
-    /* Commented out because it's not a scenario we're supporting
-     * public class TransactionConcern : SpecificationBase, IUseFixture<PersistenceEngineFixture>
+    public class TransactionConcern : PersistenceEngineConcern
     {
         private ICommit[] _commits;
-        private PersistenceEngineFixture _fixture;
         private const int Loop = 2;
         private const int StreamsPerTransaction = 20;
 
@@ -942,7 +944,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         {
             Parallel.For(0, Loop, i =>
             {
-                var eventStore = new OptimisticEventStore(_fixture.Persistence, null);
+                var eventStore = new OptimisticEventStore(Persistence, null);
                 using (var scope = new TransactionScope(TransactionScopeOption.Required,
                     new TransactionOptions {IsolationLevel = IsolationLevel.Serializable}))
                 {
@@ -961,7 +963,7 @@ namespace NEventStore.Persistence.AcceptanceTests
                     scope.Complete();
                 }
             });
-            _commits = _fixture.Persistence.GetFrom(null).ToArray();
+            _commits = Persistence.GetFrom().ToArray();
         }
 
         [Fact]
@@ -970,10 +972,11 @@ namespace NEventStore.Persistence.AcceptanceTests
             _commits.Length.ShouldBe(Loop * StreamsPerTransaction);
         }
 
-        /* [Fact]
+        [Fact]
         public void ScopeCompleteAndSerializable()
         {
-            int loop = 10;
+            Reinitialize();
+            const int loop = 10;
             using (var scope = new TransactionScope(
                 TransactionScopeOption.Required,
                 new TransactionOptions
@@ -984,7 +987,7 @@ namespace NEventStore.Persistence.AcceptanceTests
                 Parallel.For(0, loop, i =>
                 {
                     Console.WriteLine("Creating stream {0} on thread {1}", i, Thread.CurrentThread.ManagedThreadId);
-                    var eventStore = new OptimisticEventStore(_fixture.Persistence, null);
+                    var eventStore = new OptimisticEventStore(Persistence, null);
                     string streamId = i.ToString(CultureInfo.InvariantCulture);
                     using (var stream = eventStore.OpenStream(streamId))
                     {
@@ -995,16 +998,17 @@ namespace NEventStore.Persistence.AcceptanceTests
                 });
                 scope.Complete();
             }
-            ICheckpoint checkpoint = _fixture.Persistence.GetCheckpoint();
-            ICommit[] commits = _fixture.Persistence.GetFrom(checkpoint.Value).ToArray();
+            ICheckpoint checkpoint = Persistence.GetCheckpoint();
+            ICommit[] commits = Persistence.GetFrom(checkpoint.Value).ToArray();
             commits.Length.ShouldBe(loop);
         }
 
         [Fact]
         public void ScopeNotCompleteAndReadCommitted()
         {
-            int loop = 10;
-            using (var scope = new TransactionScope(
+            Reinitialize();
+            const int loop = 10;
+            using(new TransactionScope(
                 TransactionScopeOption.Required,
                 new TransactionOptions
                 {
@@ -1013,8 +1017,8 @@ namespace NEventStore.Persistence.AcceptanceTests
             {
                 Parallel.For(0, loop, i =>
                 {
-                    Console.WriteLine("Creating stream {0} on thread {1}", i, Thread.CurrentThread.ManagedThreadId);
-                    var eventStore = new OptimisticEventStore(_fixture.Persistence, null);
+                    Console.WriteLine(@"Creating stream {0} on thread {1}", i, Thread.CurrentThread.ManagedThreadId);
+                    var eventStore = new OptimisticEventStore(Persistence, null);
                     string streamId = i.ToString(CultureInfo.InvariantCulture);
                     using (var stream = eventStore.OpenStream(streamId))
                     {
@@ -1024,16 +1028,17 @@ namespace NEventStore.Persistence.AcceptanceTests
                     }
                 });
             }
-            ICheckpoint checkpoint = _fixture.Persistence.GetCheckpoint();
-            ICommit[] commits = _fixture.Persistence.GetFrom(checkpoint.Value).ToArray();
+            ICheckpoint checkpoint = Persistence.GetCheckpoint();
+            ICommit[] commits = Persistence.GetFrom(checkpoint.Value).ToArray();
             commits.Length.ShouldBe(0);
         }
 
         [Fact]
         public void ScopeNotCompleteAndSerializable()
         {
-            int loop = 10;
-            using (var scope = new TransactionScope(
+            Reinitialize();
+            const int loop = 10;
+            using(new TransactionScope(
                 TransactionScopeOption.Required,
                 new TransactionOptions
                 {
@@ -1042,8 +1047,8 @@ namespace NEventStore.Persistence.AcceptanceTests
             {
                 Parallel.For(0, loop, i =>
                 {
-                    Console.WriteLine("Creating stream {0} on thread {1}", i, Thread.CurrentThread.ManagedThreadId);
-                    var eventStore = new OptimisticEventStore(_fixture.Persistence, null);
+                    Console.WriteLine(@"Creating stream {0} on thread {1}", i, Thread.CurrentThread.ManagedThreadId);
+                    var eventStore = new OptimisticEventStore(Persistence, null);
                     string streamId = i.ToString(CultureInfo.InvariantCulture);
                     using (var stream = eventStore.OpenStream(streamId))
                     {
@@ -1053,16 +1058,11 @@ namespace NEventStore.Persistence.AcceptanceTests
                     }
                 });
             }
-            ICheckpoint checkpoint = _fixture.Persistence.GetCheckpoint();
-            ICommit[] commits = _fixture.Persistence.GetFrom(checkpoint.Value).ToArray();
+            ICheckpoint checkpoint = Persistence.GetCheckpoint();
+            ICommit[] commits = Persistence.GetFrom(checkpoint.Value).ToArray();
             commits.Length.ShouldBe(0);
-        }#1#
-
-        public void SetFixture(PersistenceEngineFixture data)
-        {
-            _fixture = data;
         }
-    }*/
+    }
 
     public class when_a_payload_is_large : PersistenceEngineConcern
     {
@@ -1098,6 +1098,11 @@ namespace NEventStore.Persistence.AcceptanceTests
         protected int ConfiguredPageSizeForTesting
         {
             get { return 2; }
+        }
+
+        protected void Reinitialize()
+        {
+            _fixture.Initialize(ConfiguredPageSizeForTesting);
         }
 
         public void SetFixture(PersistenceEngineFixture data)
