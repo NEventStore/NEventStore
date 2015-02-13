@@ -141,7 +141,6 @@
 		}
 	}
 
-
     public class when_an_aggregate_is_persisted_concurrently_by_two_clients : SpecificationBase
     {
         protected IRepository _repository1;

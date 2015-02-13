@@ -70,6 +70,9 @@
     <Compile Include="..\NEventStore.Persistence.AcceptanceTests\PersistenceTests.cs">
       <Link>Persistence\InMemoryPersistence\PersistenceTests.cs</Link>
     </Compile>
+    <Compile Include="CommonDomain\Persistence\EventStore\SagaEventStoreRepositoryTests.cs" />
+    <Compile Include="CommonDomain\Persistence\SagaFactory.cs" />
+    <Compile Include="CommonDomain\TestSaga.cs" />
     <Compile Include="DefaultSerializationWireupTests.cs" />
     <Compile Include="NoopDispatchSchedulerWireupTests.cs" />
     <Compile Include="SynchronousDispatchSchedulerWireupTests.cs" />
@@ -112,6 +115,7 @@
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
