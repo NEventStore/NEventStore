@@ -15,11 +15,14 @@ namespace CommonDomain.Persistence.EventStore
 
 		private readonly IStoreEvents _eventStore;
 
+		private readonly IConstructSagas _factory;
+
 		private readonly IDictionary<string, IEventStream> _streams = new Dictionary<string, IEventStream>();
 
-		public SagaEventStoreRepository(IStoreEvents eventStore)
+		public SagaEventStoreRepository(IStoreEvents eventStore, IConstructSagas factory)
 		{
 			_eventStore = eventStore;
+			_factory = factory;
 		}
 
 		public void Dispose()
@@ -28,12 +31,12 @@ namespace CommonDomain.Persistence.EventStore
 			GC.SuppressFinalize(this);
 		}
 
-		public TSaga GetById<TSaga>(string bucketId, string sagaId) where TSaga : class, ISaga, new()
+		public TSaga GetById<TSaga>(string bucketId, string sagaId) where TSaga : class, ISaga
 		{
-            return BuildSaga<TSaga>(OpenStream(bucketId, sagaId));
+			return BuildSaga<TSaga>(sagaId, OpenStream(bucketId, sagaId));
 		}
 
-        public void Save(string bucketId, ISaga saga, Guid commitId, Action<IDictionary<string, object>> updateHeaders)
+		public void Save(string bucketId, ISaga saga, Guid commitId, Action<IDictionary<string, object>> updateHeaders)
 		{
 			if (saga == null)
 			{
@@ -41,9 +44,9 @@ namespace CommonDomain.Persistence.EventStore
 			}
 
 			Dictionary<string, object> headers = PrepareHeaders(saga, updateHeaders);
-            IEventStream stream = PrepareStream(bucketId, saga, headers);
+			IEventStream stream = PrepareStream(bucketId, saga, headers);
 
-            Persist(stream, commitId);
+			Persist(stream, commitId);
 
 			saga.ClearUncommittedEvents();
 			saga.ClearUndispatchedMessages();
@@ -70,27 +73,27 @@ namespace CommonDomain.Persistence.EventStore
 		private IEventStream OpenStream(string bucketId, string sagaId)
 		{
 			IEventStream stream;
-            var sagaKey = bucketId + "+" + sagaId;
-            if (_streams.TryGetValue(sagaKey, out stream))
+			var sagaKey = bucketId + "+" + sagaId;
+			if (_streams.TryGetValue(sagaKey, out stream))
 			{
 				return stream;
 			}
 
 			try
 			{
-                stream = _eventStore.OpenStream(bucketId, sagaId, 0, int.MaxValue);
+				stream = _eventStore.OpenStream(bucketId, sagaId, 0, int.MaxValue);
 			}
 			catch (StreamNotFoundException)
 			{
-                stream = _eventStore.CreateStream(bucketId, sagaId);
+				stream = _eventStore.CreateStream(bucketId, sagaId);
 			}
 
 			return _streams[sagaKey] = stream;
 		}
 
-		private static TSaga BuildSaga<TSaga>(IEventStream stream) where TSaga : class, ISaga, new()
+		private TSaga BuildSaga<TSaga>(string sagaId, IEventStream stream) where TSaga : class, ISaga
 		{
-			var saga = new TSaga();
+			var saga = (TSaga)_factory.Build(typeof(TSaga), sagaId);
 			foreach (var @event in stream.CommittedEvents.Select(x => x.Body))
 			{
 				saga.Transition(@event);
@@ -125,8 +128,8 @@ namespace CommonDomain.Persistence.EventStore
 		private IEventStream PrepareStream(string bucketId, ISaga saga, Dictionary<string, object> headers)
 		{
 			IEventStream stream;
-            var sagaKey = bucketId + "+" + saga.Id;
-            if (!_streams.TryGetValue(sagaKey, out stream))
+			var sagaKey = bucketId + "+" + saga.Id;
+			if (!_streams.TryGetValue(sagaKey, out stream))
 			{
 				_streams[sagaKey] = stream = _eventStore.CreateStream(bucketId, saga.Id);
 			}

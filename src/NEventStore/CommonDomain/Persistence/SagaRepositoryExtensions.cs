@@ -7,7 +7,7 @@ namespace CommonDomain.Persistence
     public static class SagaRepositoryExtensions
     {
         public static TSaga GetById<TSaga>(this ISagaRepository sagaRepository, Guid sagaId)
-            where TSaga : class, ISaga, new()
+            where TSaga : class, ISaga
         {
             return sagaRepository.GetById<TSaga>(Bucket.Default, sagaId.ToString());
         }
@@ -22,7 +22,7 @@ namespace CommonDomain.Persistence
         }
 
         public static TSaga GetById<TSaga>(this ISagaRepository sagaRepository, string sagaId)
-            where TSaga : class, ISaga, new()
+            where TSaga : class, ISaga
         {
             return sagaRepository.GetById<TSaga>(Bucket.Default, sagaId);
         }

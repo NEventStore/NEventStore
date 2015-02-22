@@ -83,6 +83,7 @@
     <Compile Include="CommonDomain\Persistence\EventStore\ExceptionMessages.Designer.cs" />
     <Compile Include="CommonDomain\Persistence\EventStore\SagaEventStoreRepository.cs" />
     <Compile Include="CommonDomain\Persistence\IConstructAggregates.cs" />
+    <Compile Include="CommonDomain\Persistence\IConstructSagas.cs" />
     <Compile Include="CommonDomain\Persistence\IRepository.cs" />
     <Compile Include="CommonDomain\Persistence\ISagaRepository.cs" />
     <Compile Include="CommonDomain\Persistence\PersistenceException.cs" />
