@@ -3,9 +3,6 @@
     using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using Xunit;
     using Xunit.Should;
 
