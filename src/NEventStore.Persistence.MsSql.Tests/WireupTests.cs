@@ -24,6 +24,7 @@
                     return new Sha1StreamIdHasher().GetHash(streamId);
                 })
                 .InitializeStorageEngine()
+                .EnlistInAmbientTransaction()
                 .UsingBinarySerialization()
                 .Build();
         }

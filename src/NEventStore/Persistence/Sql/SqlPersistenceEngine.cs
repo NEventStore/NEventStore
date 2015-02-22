@@ -107,10 +107,6 @@ namespace NEventStore.Persistence.Sql
                     return query
                         .ExecutePagedQuery(statement, _dialect.NextPageDelegate)
                         .Select(x => x.GetCommit(_serializer, _dialect));
-
-                   /* return query
-                        .ExecutePagedQuery(statement, (q, r) => {})
-                        .Select(x => x.GetCommit(_serializer, _dialect));*/
                 });
         }
 
@@ -133,7 +129,11 @@ namespace NEventStore.Persistence.Sql
 
         public ICheckpoint GetCheckpoint(string checkpointToken)
         {
-            return string.IsNullOrWhiteSpace(checkpointToken) ? null : LongCheckpoint.Parse(checkpointToken);
+            if(string.IsNullOrWhiteSpace(checkpointToken))
+            {
+                return new LongCheckpoint(-1);
+            }
+            return LongCheckpoint.Parse(checkpointToken);
         }
 
         public virtual IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)

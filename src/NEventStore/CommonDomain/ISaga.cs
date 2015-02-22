@@ -1,6 +1,5 @@
 namespace CommonDomain
 {
-	using System;
 	using System.Collections;
 
 	public interface ISaga

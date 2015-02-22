@@ -2,7 +2,6 @@ namespace NEventStore.Persistence.Sql
 {
     using System;
     using System.Configuration;
-    using System.Runtime.InteropServices.ComTypes;
     using System.Transactions;
     using NEventStore.Persistence.Sql.SqlDialects;
     using NEventStore.Serialization;
