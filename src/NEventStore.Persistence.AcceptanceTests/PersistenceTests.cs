@@ -934,7 +934,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         }
     }
 
-    public class TransactionConcern : PersistenceEngineConcern
+    /*public class TransactionConcern : PersistenceEngineConcern
     {
         private ICommit[] _commits;
         private const int Loop = 2;
@@ -1062,7 +1062,7 @@ namespace NEventStore.Persistence.AcceptanceTests
             ICommit[] commits = Persistence.GetFrom(checkpoint.Value).ToArray();
             commits.Length.ShouldBe(0);
         }
-    }
+    }*/
 
     public class when_a_payload_is_large : PersistenceEngineConcern
     {
