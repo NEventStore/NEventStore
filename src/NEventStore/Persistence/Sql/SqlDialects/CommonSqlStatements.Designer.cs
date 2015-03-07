@@ -193,14 +193,14 @@ namespace NEventStore.Persistence.Sql.SqlDialects {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT C.BucketId, C.StreamId, C.StreamIdOriginal, MAX(C.StreamRevision) AS StreamRevision, MAX(COALESCE(S.StreamRevision, 0)) AS SnapshotRevision
-        ///  FROM Commits AS C
-        /// LEFT OUTER JOIN Snapshots AS S
+        ///   Looks up a localized string similar to SELECT C.BucketId, C.StreamId, C.StreamIdOriginal, C.MaxStreamRevision AS StreamRevision, MAX(COALESCE(S.MaxStreamRevision, 0)) AS SnapshotRevision
+        ///  FROM (SELECT BucketId, StreamId, StreamIdOriginal, MAX(StreamRevision) AS MaxStreamRevision FROM Commits GROUP BY BucketId, StreamId, StreamIdOriginal) AS C
+        /// LEFT OUTER JOIN (SELECT StreamID, MAX(StreamRevision) AS MaxStreamRevision FROM Snapshots GROUP BY StreamID) AS S
         ///    ON C.BucketId = @BucketId
         ///   AND C.StreamId = S.StreamId
-        ///   AND C.StreamRevision &gt;= S.StreamRevision
-        /// GROUP BY C.StreamId, C.BucketId, C.StreamIdOriginal
-        ///HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Threshold
+        ///   AND C.MaxStreamRevision &gt;= S.MaxStreamRevision
+        /// GROUP BY C.StreamId, C.BucketId, C.StreamIdOriginal, C.MaxStreamRevision
+        ///HAVING C.MaxStreamRevision &gt;= MAX(COALESCE(S.MaxStreamRevision, 0)) + @Threshold
         /// ORDER BY C.StreamId
         /// LIMIT @Limit;.
         /// </summary>
