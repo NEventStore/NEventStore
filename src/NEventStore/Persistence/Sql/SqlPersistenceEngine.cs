@@ -325,7 +325,7 @@ namespace NEventStore.Persistence.Sql
                 cmd.AddParameter(_dialect.Items, attempt.Events.Count);
                 cmd.AddParameter(_dialect.CommitId, attempt.CommitId);
                 cmd.AddParameter(_dialect.CommitSequence, attempt.CommitSequence);
-                cmd.AddParameter(_dialect.CommitStamp, attempt.CommitStamp);
+                cmd.AddParameter(_dialect.CommitStamp, attempt.CommitStamp, DbType.DateTime2);
                 cmd.AddParameter(_dialect.Headers, _serializer.Serialize(attempt.Headers));
                 _dialect.AddPayloadParamater(_connectionFactory, connection, cmd, _serializer.Serialize(attempt.Events.ToList()));
                 OnPersistCommit(cmd, attempt);
