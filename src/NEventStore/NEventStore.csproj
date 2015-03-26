@@ -78,6 +78,7 @@
     <Compile Include="CommonDomain\IMemento.cs" />
     <Compile Include="CommonDomain\IRouteEvents.cs" />
     <Compile Include="CommonDomain\ISaga.cs" />
+    <Compile Include="CommonDomain\Persistence\AggregateFactory.cs" />
     <Compile Include="CommonDomain\Persistence\ConflictingCommandException.cs" />
     <Compile Include="CommonDomain\Persistence\EventStore\EventStoreRepository.cs" />
     <Compile Include="CommonDomain\Persistence\EventStore\ExceptionMessages.Designer.cs" />
