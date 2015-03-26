@@ -3,8 +3,9 @@ namespace CommonDomain.Core
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
+	using NEventStore;
 
-	public abstract class AggregateBase : IAggregate, IEquatable<IAggregate>
+    public abstract class AggregateBase : IAggregate, IEquatable<IAggregate>
 	{
 		private readonly ICollection<object> uncommittedEvents = new LinkedList<object>();
 
@@ -29,7 +30,7 @@ namespace CommonDomain.Core
 		{
 			get
 			{
-				return this.registeredRoutes ?? (this.registeredRoutes = new ConventionEventRouter(true, this));
+				return this.registeredRoutes ?? (this.registeredRoutes = ConventionEventRouterBuilder.Build(this));
 			}
 			set
 			{
