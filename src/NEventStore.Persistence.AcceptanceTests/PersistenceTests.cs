@@ -371,6 +371,33 @@ namespace NEventStore.Persistence.AcceptanceTests
         }
     }
 
+
+	public class when_committing_more_streams_than_the_configured_page_size : PersistenceEngineConcern
+	{
+		private IStreamHead[] _loaded;
+		private int _numberOfCommits;
+
+		protected override void Context()
+		{
+			_numberOfCommits = ConfiguredPageSizeForTesting + 2;
+			for (int i = 0; i < _numberOfCommits; i++)
+			{
+				Persistence.Commit(Guid.NewGuid().ToString().BuildAttempt());
+			}
+		}
+
+		protected override void Because()
+		{
+			_loaded = Persistence.GetStreamsToSnapshot(0).ToArray();
+		}
+
+		[Fact]
+		public void should_load_the_same_number_of_streams_which_have_been_persisted()
+		{
+			_loaded.Length.ShouldBe(_numberOfCommits);
+		}
+	}
+
     public class when_saving_a_snapshot : PersistenceEngineConcern
     {
         private bool _added;
