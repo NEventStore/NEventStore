@@ -211,7 +211,8 @@ namespace NEventStore.Persistence.Sql
                     string statement = _dialect.GetStreamsRequiringSnapshots;
                     query.AddParameter(_dialect.BucketId, bucketId, DbType.AnsiString);
                     query.AddParameter(_dialect.Threshold, maxThreshold);
-                    return
+					query.AddParameter(_dialect.StreamId, null, DbType.AnsiString);
+					return
                         query.ExecutePagedQuery(statement,
                             (q, s) => q.SetParameter(_dialect.StreamId, _dialect.CoalesceParameterValue(s.StreamId()), DbType.AnsiString))
                             .Select(x => x.GetStreamToSnapshot());
