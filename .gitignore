@@ -109,3 +109,4 @@ Backup*/
 UpgradeLog*.XML
 publish-net40/
 nunit.TestResult.*
+/output
