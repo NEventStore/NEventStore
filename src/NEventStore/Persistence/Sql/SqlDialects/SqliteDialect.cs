@@ -20,6 +20,13 @@ namespace NEventStore.Persistence.Sql.SqlDialects
             get { return SqliteStatements.PersistCommit; }
         }
 
+        public override bool IsDuplicate(Exception exception)
+        {
+            string message = exception.Message.ToUpperInvariant();
+            return message.Contains("DUPLICATE") || message.Contains("UNIQUE") || message.Contains("CONSTRAINT");
+
+        }
+
         public override DateTime ToDateTime(object value)
         {
             return ((DateTime) value).ToUniversalTime();

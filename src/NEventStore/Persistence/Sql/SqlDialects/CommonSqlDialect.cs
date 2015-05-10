@@ -176,11 +176,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects
             return value;
         }
 
-        public virtual bool IsDuplicate(Exception exception)
-        {
-            string message = exception.Message.ToUpperInvariant();
-            return message.Contains("DUPLICATE") || message.Contains("UNIQUE") || message.Contains("CONSTRAINT");
-        }
+        public abstract bool IsDuplicate(Exception exception);
 
         public virtual void AddPayloadParamater(IConnectionFactory connectionFactory, IDbConnection connection, IDbStatement cmd, byte[] payload)
         {
