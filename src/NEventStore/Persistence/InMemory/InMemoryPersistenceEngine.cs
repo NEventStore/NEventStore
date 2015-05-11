@@ -44,6 +44,13 @@ namespace NEventStore.Persistence.InMemory
             return this[bucketId].GetFrom(start);
         }
 
+        public IEnumerable<ICommit> GetFrom(string bucketId, string checkpointToken)
+        {
+            ThrowWhenDisposed();
+            Logger.Debug(Resources.GettingAllCommitsFromBucketAndCheckpoint, bucketId, checkpointToken);
+            return this[bucketId].GetFrom(GetCheckpoint(checkpointToken));
+        }
+
         public IEnumerable<ICommit> GetFrom(string checkpointToken)
         {
             Logger.Debug(Resources.GettingAllCommitsFromCheckpoint, checkpointToken);
@@ -333,6 +340,12 @@ namespace NEventStore.Persistence.InMemory
 
                 InMemoryCommit startingCommit = _commits.FirstOrDefault(x => x.CommitId == commitId);
                 return _commits.Skip(_commits.IndexOf(startingCommit));
+            }
+
+            public IEnumerable<ICommit> GetFrom(ICheckpoint checkpoint)
+            {
+                InMemoryCommit startingCommit = _commits.FirstOrDefault(x => x.Checkpoint.CompareTo(checkpoint) == 0);
+                return _commits.Skip(_commits.IndexOf(startingCommit) + 1 /* GetFrom => after the checkpoint*/);
             }
 
             public IEnumerable<ICommit> GetFromTo(DateTime start, DateTime end)

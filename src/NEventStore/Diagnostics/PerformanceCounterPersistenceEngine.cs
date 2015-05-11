@@ -71,6 +71,11 @@ namespace NEventStore.Diagnostics
             return _persistence.GetFrom(checkpointToken);
         }
 
+        public IEnumerable<ICommit> GetFrom(string bucketId, string checkpointToken)
+        {
+            return _persistence.GetFrom(bucketId,checkpointToken);
+        }
+
         public bool AddSnapshot(ISnapshot snapshot)
         {
             bool result = _persistence.AddSnapshot(snapshot);

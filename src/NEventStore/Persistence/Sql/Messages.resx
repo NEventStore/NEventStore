@@ -281,6 +281,9 @@
   </data>
   <data name="GettingAllCommitsFromCheckpoint" xml:space="preserve">
     <value>Getting all commits from checkpoint '{0}'.</value>
+  </data>  
+  <data name="GettingAllCommitsFromBucketAndCheckpoint" xml:space="preserve">
+    <value>Getting all commits from Bucket '{0}' and checkpoint '{1}'.</value>
   </data>
   <data name="DeletingStream" xml:space="preserve">
     <value>Deleting stream '{0}' from bucket '{1}'.</value>

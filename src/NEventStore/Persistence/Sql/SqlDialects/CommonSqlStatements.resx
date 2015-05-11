@@ -224,6 +224,14 @@ FROM Commits
 WHERE  CheckpointNumber &gt; @CheckpointNumber
 ORDER BY CheckpointNumber
  LIMIT @Limit OFFSET @Skip;</value>
+  </data>  
+  <data name="GetCommitsFromBucketAndCheckpoint" xml:space="preserve">
+    <value>SELECT BucketId, StreamId, StreamIdOriginal, StreamRevision, CommitId, CommitSequence, CommitStamp, CheckpointNumber, Headers, Payload
+  FROM Commits
+ WHERE BucketId = @BucketId 
+   AND CheckpointNumber &gt; @CheckpointNumber
+ ORDER BY CheckpointNumber 
+ LIMIT @Limit OFFSET @Skip;</value>
   </data>
   <data name="DeleteStream" xml:space="preserve">
     <value>DELETE FROM Snapshots WHERE BucketId =@BucketId AND StreamId = @StreamId;

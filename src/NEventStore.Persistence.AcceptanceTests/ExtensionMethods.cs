@@ -34,20 +34,20 @@ namespace NEventStore.Persistence.AcceptanceTests
             return persistence.Commit(nextAttempt);
         }
 
-        public static IEnumerable<CommitAttempt> CommitMany(this IPersistStreams persistence, int numberOfCommits, string streamId = null)
+        public static IEnumerable<CommitAttempt> CommitMany(this IPersistStreams persistence, int numberOfCommits, string streamId = null, string bucketId = null)
         {
             var commits = new List<CommitAttempt>();
             CommitAttempt attempt = null;
 
             for (int i = 0; i < numberOfCommits; i++)
             {
-                attempt = attempt == null ? (streamId ?? Guid.NewGuid().ToString()).BuildAttempt() : attempt.BuildNextAttempt();
+                attempt = attempt == null ? (streamId ?? Guid.NewGuid().ToString()).BuildAttempt(null, bucketId) : attempt.BuildNextAttempt();
                 persistence.Commit(attempt);
                 commits.Add(attempt);
             }
 
             return commits;
-        }
+        }   
 
         public static CommitAttempt BuildAttempt(this string streamId, DateTime? now = null, string bucketId = null)
         {

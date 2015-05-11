@@ -1,6 +1,7 @@
 ﻿namespace NEventStore.Client
 {
     using System;
+    using System.Collections.Generic;
     using System.Reactive.Linq;
     using System.Reactive.Threading.Tasks;
     using System.Threading.Tasks;
@@ -283,6 +284,38 @@
         public void should_observe_commit()
         {
             _commitObserved.Wait(PollingInterval * 2).ShouldBe(true);
+        }
+    }
+    
+    
+    public class when_polling_from_bucket1 : using_polling_client
+    {
+        private IObserveCommits _observeCommits;
+        private Task<ICommit> _commitObserved;
+        protected override void Context()
+        {
+            base.Context();
+            StoreEvents.Advanced.CommitMany(4, null, "bucket_2");
+            StoreEvents.Advanced.CommitMany(4, null, "bucket_1");
+            _observeCommits = PollingClient.ObserveFromBucket("bucket_1");
+            _commitObserved = _observeCommits.FirstAsync().ToTask();
+        }
+
+        protected override void Because()
+        {
+            _observeCommits.PollNow();
+        }
+
+        protected override void Cleanup()
+        {
+            _observeCommits.Dispose();
+        }
+
+        [Fact]
+        public void should_observe_commit_from_bucket1()
+        {
+            _commitObserved.Wait(PollingInterval * 2).ShouldBe(true);
+            _commitObserved.Result.BucketId.ShouldBe("bucket_1");
         }
     }
 }

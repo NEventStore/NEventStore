@@ -605,6 +605,45 @@ namespace NEventStore.Persistence.AcceptanceTests
         {
             _committed.Skip(checkPoint).All(x => _loaded.Contains(x)).ShouldBeTrue(); // all commits should be found in loaded collection
         }
+
+    }
+    public class when_paging_over_all_commits_of_a_bucket_from_a_particular_checkpoint : PersistenceEngineConcern
+    {
+        private List<Guid> _committedOnBucket1;
+        private List<Guid> _committedOnBucket2;
+        private ICollection<Guid> _loaded;
+        private Guid _streamId;
+        private const int checkPoint = 2;
+
+        protected override void Context()
+        {
+            _committedOnBucket1 = Persistence.CommitMany(ConfiguredPageSizeForTesting + 1,null, "b1").Select(c => c.CommitId).ToList();
+            _committedOnBucket2 = Persistence.CommitMany(ConfiguredPageSizeForTesting + 1, null, "b2").Select(c => c.CommitId).ToList();
+            _committedOnBucket1.AddRange(Persistence.CommitMany(4, null, "b1").Select(c => c.CommitId));
+        }
+
+        protected override void Because()
+        {
+            _loaded = Persistence.GetFrom("b1", checkPoint.ToString()).Select(c => c.CommitId).ToList();
+        }
+
+        [Fact]
+        public void should_load_the_same_number_of_commits_which_have_been_persisted_starting_from_the_checkpoint()
+        {
+            _loaded.Count.ShouldBe(_committedOnBucket1.Count - checkPoint);
+        }
+
+        [Fact]
+        public void should_load_only_the_commits_on_bucket1_starting_from_the_checkpoint()
+        {
+            _committedOnBucket1.Skip(checkPoint).All(x => _loaded.Contains(x)).ShouldBeTrue(); // all commits should be found in loaded collection
+        } 
+        
+        [Fact]
+        public void should_not_load_the_commits_from_bucket2()
+        {
+            _committedOnBucket2.All(x => !_loaded.Contains(x)).ShouldBeTrue(); 
+        }
     }
 
     public class when_reading_all_commits_from_the_year_1_AD : PersistenceEngineConcern

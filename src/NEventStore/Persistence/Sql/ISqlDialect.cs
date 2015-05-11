@@ -47,6 +47,7 @@ namespace NEventStore.Persistence.Sql
         bool CanPage { get; }
         string CheckpointNumber { get; }
         string GetCommitsFromCheckpoint { get; }
+        string GetCommitsFromBucketAndCheckpoint { get; }
 
         object CoalesceParameterValue(object value);
 

@@ -70,6 +70,11 @@ namespace NEventStore.Persistence
             return ExecuteHooks(_original.GetFrom(checkpointToken));
         }
 
+        public IEnumerable<ICommit> GetFrom(string bucketId, string checkpointToken)
+        {
+            return ExecuteHooks(_original.GetFrom(bucketId, checkpointToken));
+        }
+
         public ICheckpoint GetCheckpoint(string checkpointToken)
         {
             return _original.GetCheckpoint(checkpointToken);

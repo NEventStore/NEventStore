@@ -171,6 +171,11 @@ namespace NEventStore.Persistence.Sql.SqlDialects
             get { return CommonSqlStatements.GetCommitsFromCheckpoint; }
         }
 
+        public virtual string GetCommitsFromBucketAndCheckpoint
+        {
+            get { return CommonSqlStatements.GetCommitsFromBucketAndCheckpoint; }
+        }
+
         public virtual object CoalesceParameterValue(object value)
         {
             return value;

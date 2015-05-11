@@ -24,5 +24,14 @@
         /// <param name="checkpointToken">The checkpoint token.</param>
         /// <returns>An <see cref="IObserveCommits"/> instance.</returns>
         public abstract IObserveCommits ObserveFrom(string checkpointToken = null);
+
+        /// <summary>
+        /// Observe commits from a bucket after the sepecified checkpoint token. If the token is null,
+        ///  all commits from the beginning will be observed.
+        /// </summary>
+        /// <param name="bucketId">The bucket id</param>
+        /// <param name="checkpointToken">The checkpoint token.</param>
+        /// <returns>An <see cref="IObserveCommits"/> instance.</returns>
+        public abstract IObserveCommits ObserveFromBucket(string bucketId, string checkpointToken = null);
     }
 }

@@ -39,7 +39,12 @@
         /// </returns>
         public override IObserveCommits ObserveFrom(string checkpointToken = null)
         {
-            return new PollingObserveCommits(PersistStreams, _interval, checkpointToken);
+            return new PollingObserveCommits(PersistStreams, _interval, null, checkpointToken);
+        }
+
+        public override IObserveCommits ObserveFromBucket(string bucketId, string checkpointToken = null)
+        {
+            return new PollingObserveCommits(PersistStreams, _interval, bucketId, checkpointToken);
         }
 
         private class PollingObserveCommits : IObserveCommits
@@ -48,16 +53,18 @@
             private readonly IPersistStreams _persistStreams;
             private string _checkpointToken;
             private readonly int _interval;
+            private readonly string _bucketId;
             private readonly Subject<ICommit> _subject = new Subject<ICommit>();
             private readonly CancellationTokenSource _stopRequested = new CancellationTokenSource();
             private TaskCompletionSource<Unit> _runningTaskCompletionSource;
             private int _isPolling = 0;
 
-            public PollingObserveCommits(IPersistStreams persistStreams, int interval, string checkpointToken = null)
+            public PollingObserveCommits(IPersistStreams persistStreams, int interval, string bucketId, string checkpointToken = null)
             {
                 _persistStreams = persistStreams;
                 _checkpointToken = checkpointToken;
                 _interval = interval;
+                _bucketId = bucketId;
             }
 
             public IDisposable Subscribe(IObserver<ICommit> observer)
@@ -112,7 +119,10 @@
                 {
                     try
                     {
-                        IEnumerable<ICommit> commits = _persistStreams.GetFrom(_checkpointToken);
+                        var commits = _bucketId == null ? 
+                            _persistStreams.GetFrom(_checkpointToken) :
+                            _persistStreams.GetFrom(_bucketId, _checkpointToken);
+
                         foreach (var commit in commits)
                         {
                             if (_stopRequested.IsCancellationRequested)
