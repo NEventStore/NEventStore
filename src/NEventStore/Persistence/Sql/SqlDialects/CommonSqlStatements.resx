@@ -187,6 +187,7 @@ AND NOT EXISTS
     ON C.BucketId = @BucketId
    AND C.StreamId = S.StreamId
    AND C.StreamRevision &gt;= S.StreamRevision
+ WHERE C.StreamId &gt; COALESCE(@StreamId, '0')
  GROUP BY C.StreamId, C.BucketId, C.StreamIdOriginal
 HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Threshold
  ORDER BY C.StreamId

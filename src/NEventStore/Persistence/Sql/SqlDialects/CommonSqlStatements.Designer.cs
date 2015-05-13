@@ -214,6 +214,7 @@ namespace NEventStore.Persistence.Sql.SqlDialects {
         ///   AND C.StreamId = S.StreamId
         ///   AND C.StreamRevision &gt;= S.StreamRevision
         /// GROUP BY C.StreamId, C.BucketId, C.StreamIdOriginal
+        /// WHERE C.StreamId &gt; COALESCE(@StreamId, '0')
         ///HAVING MAX(C.StreamRevision) &gt;= MAX(COALESCE(S.StreamRevision, 0)) + @Threshold
         /// ORDER BY C.StreamId
         /// LIMIT @Limit;.
