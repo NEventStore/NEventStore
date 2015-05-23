@@ -14,10 +14,6 @@ properties {
     $xunit_path = "$base_directory\bin\xunit.runners.1.9.1\tools\xunit.console.clr4.exe"
     $ilMergeModule.ilMergePath = "$base_directory\bin\ilmerge-bin\ILMerge.exe"
     $nuget_dir = "$src_directory\.nuget"
-
-    if($runPersistenceTests -eq $null) {
-    	$runPersistenceTests = $false
-    }
 }
 
 task default -depends Build
@@ -37,21 +33,13 @@ task Compile {
 	exec { msbuild /nologo /verbosity:quiet $sln_file /p:Configuration=$target_config /p:TargetFrameworkVersion=v4.0 }
 }
 
-task Test -depends RunUnitTests, RunPersistenceTests, RunSerializationTests
+task Test -depends RunUnitTests, RunSerializationTests
 
 task RunUnitTests {
 	"Unit Tests"
 	EnsureDirectory $output_directory
 	Invoke-XUnit -Path $src_directory -TestSpec '*NEventStore.Tests.dll' `
     -SummaryPath $output_directory\unit_tests.xml `
-    -XUnitPath $xunit_path
-}
-
-task RunPersistenceTests -precondition { $runPersistenceTests } {
-	"Persistence Tests"
-	EnsureDirectory $output_directory
-	Invoke-XUnit -Path $src_directory -TestSpec '*Persistence.MsSql.Tests.dll','*Persistence.MySql.Tests.dll','*Persistence.Oracle.Tests.dll','*Persistence.PostgreSql.Tests.dll','*Persistence.Sqlite.Tests.dll' `
-    -SummaryPath $output_directory\persistence_tests.xml `
     -XUnitPath $xunit_path
 }
 

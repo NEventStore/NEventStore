@@ -16,8 +16,7 @@
             protected override void Context()
             {
                 _wireup = Wireup.Init()
-                    .UsingSqlPersistence("fakeConnectionString")
-                        .WithDialect(new Persistence.Sql.SqlDialects.MsSqlDialect());
+                    .UsingInMemoryPersistence();
             }
 
             protected override void Because()
