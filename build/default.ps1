@@ -22,6 +22,7 @@ properties {
     if($runPersistenceTests -eq $null) {
     	$runPersistenceTests = $false
     }
+}
 
 task default -depends Build
 
