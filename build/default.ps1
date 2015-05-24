@@ -8,13 +8,20 @@ properties {
     $sln_file = "$src_directory\NEventStore.sln"
     $target_config = "Release"
     $framework_version = "v4.0"
-    $build_number = 0
+
     $assemblyInfoFilePath = "$src_directory\VersionAssemblyInfo.cs"
 
     $xunit_path = "$base_directory\bin\xunit.runners.1.9.1\tools\xunit.console.clr4.exe"
     $ilMergeModule.ilMergePath = "$base_directory\bin\ilmerge-bin\ILMerge.exe"
     $nuget_dir = "$src_directory\.nuget"
-}
+
+    if($build_number -eq $null) {
+		$build_number = 0
+	}
+
+    if($runPersistenceTests -eq $null) {
+    	$runPersistenceTests = $false
+    }
 
 task default -depends Build
 
@@ -22,9 +29,10 @@ task Build -depends Clean, UpdateVersion, Compile, Test
 
 task UpdateVersion {
     $version = Get-Version $assemblyInfoFilePath
-    "Version: $version"
+    "Base Version: $version - Build Number:$build_number"
 	$oldVersion = New-Object Version $version
-	$newVersion = New-Object Version ($oldVersion.Major, $oldVersion.Minor, $oldVersion.Build, $buildNumber)
+	$newVersion = New-Object Version ($oldVersion.Major, $oldVersion.Minor, $oldVersion.Build, $build_number)
+    "New Version: $newVersion"
 	Update-Version $newVersion $assemblyInfoFilePath
 }
 
