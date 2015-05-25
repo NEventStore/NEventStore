@@ -76,19 +76,12 @@
     <Compile Include="..\NEventStore.Persistence.AcceptanceTests\PersistenceTests.cs">
       <Link>Persistence\InMemoryPersistence\PersistenceTests.cs</Link>
     </Compile>
-    <Compile Include="CommonDomain\Persistence\EventStore\SagaEventStoreRepositoryTests.cs" />
-    <Compile Include="CommonDomain\Persistence\SagaFactory.cs" />
-    <Compile Include="CommonDomain\TestSaga.cs" />
     <Compile Include="DefaultSerializationWireupTests.cs" />
     <Compile Include="NoopDispatchSchedulerWireupTests.cs" />
     <Compile Include="SynchronousDispatchSchedulerWireupTests.cs" />
     <Compile Include="AsynchronousDispatchSchedulerWireupTests.cs" />
     <Compile Include="Client\PollingClientTests.cs" />
     <Compile Include="CommitHelper.cs" />
-    <Compile Include="CommonDomain\IAggregateTests.cs" />
-    <Compile Include="CommonDomain\Persistence\IAggregatePersistenceTestHelpers.cs" />
-    <Compile Include="CommonDomain\Persistence\IAggregatePersistenceTests.cs" />
-    <Compile Include="CommonDomain\TestAggregate.cs" />
     <Compile Include="ConversionTests\EventUpconverterPipelineHookTests.cs" />
     <Compile Include="DispatchCommitHookTests.cs" />
     <Compile Include="DispatcherTests\AsynchronousDispatcherTests.cs" />
