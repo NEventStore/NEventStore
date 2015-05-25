@@ -66,30 +66,6 @@
     <Compile Include="CommitAttemptExtensions.cs" />
     <Compile Include="CommitEqualityComparer.cs" />
     <Compile Include="CommitEventsExtensions.cs" />
-    <Compile Include="CommonDomain\Core\AggregateBase.cs" />
-    <Compile Include="CommonDomain\Core\ConflictDetector.cs" />
-    <Compile Include="CommonDomain\Core\ConventionEventRouter.cs" />
-    <Compile Include="CommonDomain\Core\ExtensionMethods.cs" />
-    <Compile Include="CommonDomain\Core\HandlerForDomainEventNotFoundException.cs" />
-    <Compile Include="CommonDomain\Core\RegistrationEventRouter.cs" />
-    <Compile Include="CommonDomain\Core\SagaBase.cs" />
-    <Compile Include="CommonDomain\IAggregate.cs" />
-    <Compile Include="CommonDomain\IDetectConflicts.cs" />
-    <Compile Include="CommonDomain\IMemento.cs" />
-    <Compile Include="CommonDomain\IRouteEvents.cs" />
-    <Compile Include="CommonDomain\ISaga.cs" />
-    <Compile Include="CommonDomain\Persistence\ConflictingCommandException.cs" />
-    <Compile Include="CommonDomain\Persistence\EventStore\EventStoreRepository.cs" />
-    <Compile Include="CommonDomain\Persistence\EventStore\ExceptionMessages.Designer.cs" />
-    <Compile Include="CommonDomain\Persistence\EventStore\SagaEventStoreRepository.cs" />
-    <Compile Include="CommonDomain\Persistence\IConstructAggregates.cs" />
-    <Compile Include="CommonDomain\Persistence\IConstructSagas.cs" />
-    <Compile Include="CommonDomain\Persistence\IRepository.cs" />
-    <Compile Include="CommonDomain\Persistence\ISagaRepository.cs" />
-    <Compile Include="CommonDomain\Persistence\PersistenceException.cs" />
-    <Compile Include="CommonDomain\Persistence\RepositoryExtensions.cs" />
-    <Compile Include="CommonDomain\Persistence\SagaRepositoryExtensions.cs" />
-    <Compile Include="CommonDomain\StringExtensions.cs" />
     <Compile Include="ConcurrencyException.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -222,7 +198,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="CommonDomain\Persistence\EventStore\ExceptionMessages.resx" />
     <EmbeddedResource Include="Messages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
