@@ -48,8 +48,8 @@
     <Compile Include="..\GlobalSuppressions.cs">
       <Link>Properties\GlobalSuppressions.cs</Link>
     </Compile>
-    <Compile Include="..\VersionAssemblyInfo.cs">
-      <Link>Properties\VersionAssemblyInfo.cs</Link>
+    <Compile Include="..\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AccessSnapshotsExtensions.cs" />
     <Compile Include="AsynchronousDispatchSchedulerWireup.cs" />
@@ -152,7 +152,7 @@
     <Compile Include="IAccessSnapshots.cs" />
     <Compile Include="Persistence\IPersistenceFactory.cs" />
     <Compile Include="Serialization\ISerialize.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\ProjectAssemblyInfo.cs" />
     <Compile Include="DuplicateCommitException.cs" />
     <Compile Include="Persistence\IPersistStreams.cs" />
     <Compile Include="Persistence\StorageException.cs" />
