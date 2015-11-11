@@ -235,7 +235,7 @@ namespace NEventStore.Persistence.AcceptanceTests
             _attempt2 = new CommitAttempt(
                 _attempt1.BucketId,         // <--- Same bucket
                 _attempt1.StreamId,         // <--- Same stream it
-                _attempt1.StreamRevision +10,
+                _attempt1.StreamRevision + 10,
                 Guid.NewGuid(),
                 _attempt1.CommitSequence,   // <--- Same commit seq
                 DateTime.UtcNow,
@@ -304,6 +304,38 @@ namespace NEventStore.Persistence.AcceptanceTests
                 commit.CommitStamp,
                 commit.Headers,
                 commit.Events);
+        }
+
+        protected override void Because()
+        {
+            _thrown = Catch.Exception(() => Persistence.Commit(_attemptTwice));
+        }
+
+        [Fact]
+        public void should_throw_a_DuplicateCommitException()
+        {
+            _thrown.ShouldBeInstanceOf<DuplicateCommitException>();
+        }
+    }
+
+    public class when_attempting_to_persist_a_commitId_twice_on_same_stream : PersistenceEngineConcern
+    {
+        private CommitAttempt _attemptTwice;
+        private Exception _thrown;
+
+        protected override void Context()
+        {
+            var commit = Persistence.CommitSingle();
+            _attemptTwice = new CommitAttempt(
+                commit.BucketId,
+                commit.StreamId,
+                commit.StreamRevision + 1,
+                commit.CommitId,
+                commit.CommitSequence + 1,
+                commit.CommitStamp,
+                commit.Headers,
+                commit.Events
+            );
         }
 
         protected override void Because()
@@ -617,7 +649,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Context()
         {
-            _committedOnBucket1 = Persistence.CommitMany(ConfiguredPageSizeForTesting + 1,null, "b1").Select(c => c.CommitId).ToList();
+            _committedOnBucket1 = Persistence.CommitMany(ConfiguredPageSizeForTesting + 1, null, "b1").Select(c => c.CommitId).ToList();
             _committedOnBucket2 = Persistence.CommitMany(ConfiguredPageSizeForTesting + 1, null, "b2").Select(c => c.CommitId).ToList();
             _committedOnBucket1.AddRange(Persistence.CommitMany(4, null, "b1").Select(c => c.CommitId));
         }
@@ -637,12 +669,12 @@ namespace NEventStore.Persistence.AcceptanceTests
         public void should_load_only_the_commits_on_bucket1_starting_from_the_checkpoint()
         {
             _committedOnBucket1.Skip(checkPoint).All(x => _loaded.Contains(x)).ShouldBeTrue(); // all commits should be found in loaded collection
-        } 
-        
+        }
+
         [Fact]
         public void should_not_load_the_commits_from_bucket2()
         {
-            _committedOnBucket2.All(x => !_loaded.Contains(x)).ShouldBeTrue(); 
+            _committedOnBucket2.All(x => !_loaded.Contains(x)).ShouldBeTrue();
         }
     }
 
