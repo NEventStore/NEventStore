@@ -60,13 +60,16 @@ namespace NEventStore.Persistence.AcceptanceTests
                 new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Test2"}},
             };
 
-            return new CommitAttempt(bucketId, streamId,
-                2,
-                Guid.NewGuid(),
-                1,
-                now.Value,
-                new Dictionary<string, object> {{"A header", "A string value"}, {"Another header", 2}},
-                messages);
+            return new CommitAttempt(
+                bucketId: bucketId, 
+                streamId: streamId, 
+                streamRevision: 2, 
+                commitId: Guid.NewGuid(), 
+                commitSequence: 1, 
+                commitStamp: now.Value, 
+                headers: new Dictionary<string, object> {{"A header", "A string value"}, {"Another header", 2}}, 
+                events: messages
+            );
         }
 
         public static CommitAttempt BuildNextAttempt(this ICommit commit)

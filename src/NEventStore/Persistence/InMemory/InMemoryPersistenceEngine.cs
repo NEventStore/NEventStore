@@ -196,11 +196,71 @@ namespace NEventStore.Persistence.InMemory
             }
         }
 
+        private class IdentityForConcurrencyConflictDetection
+        {
+            protected bool Equals(IdentityForConcurrencyConflictDetection other)
+            {
+                return  string.Equals(this.streamId, other.streamId) && 
+                        string.Equals(this.bucketId, other.bucketId) && 
+                        this.commitSequence == other.commitSequence;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj))
+                {
+                    return false;
+                }
+                if (ReferenceEquals(this, obj))
+                {
+                    return true;
+                }
+                if (obj.GetType() != this.GetType())
+                {
+                    return false;
+                }
+                return Equals((IdentityForConcurrencyConflictDetection)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hashCode = this.streamId.GetHashCode();
+                    hashCode = (hashCode * 397) ^ this.bucketId.GetHashCode();
+                    hashCode = (hashCode * 397) ^ this.commitSequence;
+                    return hashCode;
+                }
+            }
+
+            private int commitSequence;
+
+            private string bucketId;
+
+            private string streamId;
+
+            public IdentityForConcurrencyConflictDetection(CommitAttempt commitAttempt)
+            {
+                bucketId = commitAttempt.BucketId;
+                streamId = commitAttempt.StreamId;
+                commitSequence = commitAttempt.CommitSequence;
+            }
+
+            public IdentityForConcurrencyConflictDetection(Commit commit)
+            {
+                bucketId = commit.BucketId;
+                streamId = commit.StreamId;
+                commitSequence = commit.CommitSequence;
+            }
+        }
+
         private class IdentityForDuplicationDetection
         {
             protected bool Equals(IdentityForDuplicationDetection other)
             {
-                return string.Equals(this.streamId, other.streamId) && string.Equals(this.bucketId, other.bucketId) && this.commitSequence == other.commitSequence && this.commitId.Equals(other.commitId);
+                return  string.Equals(this.streamId, other.streamId) && 
+                        string.Equals(this.bucketId, other.bucketId) && 
+                        this.commitId.Equals(other.commitId);
             }
 
             public override bool Equals(object obj)
@@ -226,13 +286,10 @@ namespace NEventStore.Persistence.InMemory
                 {
                     int hashCode = this.streamId.GetHashCode();
                     hashCode = (hashCode * 397) ^ this.bucketId.GetHashCode();
-                    hashCode = (hashCode * 397) ^ this.commitSequence;
                     hashCode = (hashCode * 397) ^ this.commitId.GetHashCode();
                     return hashCode;
                 }
             }
-
-            private int commitSequence;
 
             private Guid commitId;
 
@@ -245,7 +302,6 @@ namespace NEventStore.Persistence.InMemory
                 bucketId = commitAttempt.BucketId;
                 streamId = commitAttempt.StreamId;
                 commitId = commitAttempt.CommitId;
-                commitSequence = commitAttempt.CommitSequence;
             }
 
             public IdentityForDuplicationDetection(Commit commit)
@@ -253,57 +309,13 @@ namespace NEventStore.Persistence.InMemory
                 bucketId = commit.BucketId;
                 streamId = commit.StreamId;
                 commitId = commit.CommitId;
-                commitSequence = commit.CommitSequence;
-            }
-        }
-
-        private class IdentityForConcurrencyConflictDetection
-        {
-            protected bool Equals(IdentityForConcurrencyConflictDetection other)
-            {
-                return this.commitSequence == other.commitSequence && string.Equals(this.streamId, other.streamId);
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (ReferenceEquals(null, obj))
-                {
-                    return false;
-                }
-                if (ReferenceEquals(this, obj))
-                {
-                    return true;
-                }
-                if (obj.GetType() != this.GetType())
-                {
-                    return false;
-                }
-                return Equals((IdentityForConcurrencyConflictDetection)obj);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    return (this.commitSequence * 397) ^ this.streamId.GetHashCode();
-                }
-            }
-
-            private int commitSequence;
-
-            private string streamId;
-
-            public IdentityForConcurrencyConflictDetection(Commit commit)
-            {
-                streamId = commit.StreamId;
-                commitSequence = commit.CommitSequence;
             }
         }
 
         private class Bucket
         {
             private readonly IList<InMemoryCommit> _commits = new List<InMemoryCommit>();
-            private readonly ICollection<IdentityForDuplicationDetection> _potentialDuplicates = new HashSet<IdentityForDuplicationDetection>();
+            private readonly ICollection<IdentityForDuplicationDetection> _potentialDuplicates= new HashSet<IdentityForDuplicationDetection>();
             private readonly ICollection<IdentityForConcurrencyConflictDetection> _potentialConflicts = new HashSet<IdentityForConcurrencyConflictDetection>(); 
 
             public IEnumerable<InMemoryCommit> GetCommits()
