@@ -28,7 +28,7 @@ namespace NEventStore
             protected override void Context()
             {
                 _alreadyCommitted = BuildCommitStub(HeadStreamRevision, HeadCommitSequence);
-                _beyondEndOfStream = BuildCommitAttemptStub(HeadStreamRevision + 1, BeyondEndOfStreamCommitSequence);
+                _beyondEndOfStream = BuildCommitAttemptStub(HeadStreamRevision + 2, BeyondEndOfStreamCommitSequence);
 
                 Hook.PostCommit(_alreadyCommitted);
             }
@@ -176,6 +176,32 @@ namespace NEventStore
                 _failedAttempt = BuildCommitAttemptStub(DuplicateStreamRevision, 2);
 
                 Hook.PostCommit(_successfulAttempt);
+            }
+
+            protected override void Because()
+            {
+                _thrown = Catch.Exception(() => Hook.PreCommit(_failedAttempt));
+            }
+
+            [Fact]
+            public void should_throw_a_ConcurrencyException()
+            {
+                _thrown.ShouldBeInstanceOf<ConcurrencyException>();
+            }
+        }
+
+        public class when_committing_a_stream_with_multiple_events_that_was_modified_from_the_middle_of_a_commit_with_multiple_events : using_commit_hooks
+        {
+            private Exception _thrown;
+            private ICommit _succesfulAttempt;
+            private CommitAttempt _failedAttempt;
+
+            protected override void Context()
+            {
+                _succesfulAttempt = BuildCommitStub(3, 1);
+                _failedAttempt = BuildCommitAttemptStub(4, 2, 2);
+
+                Hook.PostCommit(_succesfulAttempt);
             }
 
             protected override void Because()
@@ -386,6 +412,18 @@ namespace NEventStore
             {
                 List<EventMessage> events = new[] {new EventMessage()}.ToList();
                 return new Commit(Bucket.Default, _streamId, streamRevision, commitId, commitSequence, SystemTime.UtcNow, new LongCheckpoint(0).Value, null, events);
+            }
+
+            protected CommitAttempt BuildCommitAttemptStub(int streamRevision, int commitSequence, int numberOfEvents)
+            {
+                List<EventMessage> events = new List<EventMessage>();
+
+                for (int i = 0; i < numberOfEvents; ++i)
+                {
+                    events.Add(new EventMessage());
+                }
+
+                return new CommitAttempt(Bucket.Default, _streamId, streamRevision, Guid.NewGuid(), commitSequence, SystemTime.UtcNow, null, events);
             }
         }
     }
