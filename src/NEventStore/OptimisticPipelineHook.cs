@@ -54,7 +54,7 @@ namespace NEventStore
                 throw new ConcurrencyException();
             }
 
-            if (head.StreamRevision >= attempt.StreamRevision)
+            if (head.StreamRevision >= attempt.StreamRevision - attempt.Events.Count)
             {
                 throw new ConcurrencyException();
             }
