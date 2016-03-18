@@ -14,7 +14,6 @@ namespace NEventStore.Diagnostics
         private const string EventsRateName = "Events/Sec";
         private const string TotalSnapshotsName = "Total Snapshots";
         private const string SnapshotsRateName = "Snapshots/Sec";
-        private const string UndispatchedQueue = "Undispatched Queue Length";
         private readonly PerformanceCounter _avgCommitDuration;
         private readonly PerformanceCounter _avgCommitDurationBase;
         private readonly PerformanceCounter _commitsRate;
@@ -23,7 +22,6 @@ namespace NEventStore.Diagnostics
         private readonly PerformanceCounter _totalCommits;
         private readonly PerformanceCounter _totalEvents;
         private readonly PerformanceCounter _totalSnapshots;
-        private readonly PerformanceCounter _undispatchedCommits;
 
         static PerformanceCounters()
         {
@@ -42,7 +40,6 @@ namespace NEventStore.Diagnostics
                 new CounterCreationData(EventsRateName, "Rate of events persisted per second", PerformanceCounterType.RateOfCountsPerSecond32),
                 new CounterCreationData(TotalSnapshotsName, "Total number of snapshots persisted", PerformanceCounterType.NumberOfItems32),
                 new CounterCreationData(SnapshotsRateName, "Rate of snapshots persisted per second", PerformanceCounterType.RateOfCountsPerSecond32),
-                new CounterCreationData(UndispatchedQueue, "Undispatched commit queue length", PerformanceCounterType.CountPerTimeInterval32)
             };
 
             // TODO: add other useful counts such as:
@@ -70,7 +67,6 @@ namespace NEventStore.Diagnostics
             _eventsRate = new PerformanceCounter(CategoryName, EventsRateName, instanceName, false);
             _totalSnapshots = new PerformanceCounter(CategoryName, TotalSnapshotsName, instanceName, false);
             _snapshotsRate = new PerformanceCounter(CategoryName, SnapshotsRateName, instanceName, false);
-            _undispatchedCommits = new PerformanceCounter(CategoryName, UndispatchedQueue, instanceName, false);
         }
 
         public void Dispose()
@@ -87,18 +83,12 @@ namespace NEventStore.Diagnostics
             _avgCommitDurationBase.Increment();
             _totalEvents.IncrementBy(eventsCount);
             _eventsRate.IncrementBy(eventsCount);
-            _undispatchedCommits.Increment();
         }
 
         public void CountSnapshot()
         {
             _totalSnapshots.Increment();
             _snapshotsRate.Increment();
-        }
-
-        public void CountCommitDispatched()
-        {
-            _undispatchedCommits.Decrement();
         }
 
         ~PerformanceCounters()
@@ -116,7 +106,6 @@ namespace NEventStore.Diagnostics
             _eventsRate.Dispose();
             _totalSnapshots.Dispose();
             _snapshotsRate.Dispose();
-            _undispatchedCommits.Dispose();
         }
     }
 }
