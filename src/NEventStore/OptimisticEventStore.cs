@@ -7,12 +7,11 @@ namespace NEventStore
 
     public class OptimisticEventStore : IStoreEvents, ICommitEvents
     {
-        private readonly Action _startScheduler;
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (OptimisticEventStore));
         private readonly IPersistStreams _persistence;
         private readonly IEnumerable<IPipelineHook> _pipelineHooks;
 
-        public OptimisticEventStore(IPersistStreams persistence, IEnumerable<IPipelineHook> pipelineHooks, Action startScheduler = null)
+        public OptimisticEventStore(IPersistStreams persistence, IEnumerable<IPipelineHook> pipelineHooks)
         {
             if (persistence == null)
             {
@@ -20,7 +19,6 @@ namespace NEventStore
             }
 
             _pipelineHooks = pipelineHooks ?? new IPipelineHook[0];
-            _startScheduler = startScheduler ?? (() => { });
             _persistence = new PipelineHooksAwarePersistanceDecorator(persistence, _pipelineHooks);
         }
 
@@ -85,11 +83,6 @@ namespace NEventStore
             Logger.Debug(Resources.OpeningStreamWithSnapshot, snapshot.StreamId, snapshot.StreamRevision, maxRevision);
             maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
             return new OptimisticEventStream(snapshot, this, maxRevision);
-        }
-
-        public virtual void StartDispatchScheduler()
-        {
-            _startScheduler();
         }
 
         public virtual IPersistStreams Advanced

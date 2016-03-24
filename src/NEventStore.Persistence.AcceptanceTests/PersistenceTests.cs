@@ -114,12 +114,6 @@ namespace NEventStore.Persistence.AcceptanceTests
         }
 
         [Fact]
-        public void should_add_the_commit_to_the_set_of_undispatched_commits()
-        {
-            Persistence.GetUndispatchedCommits().FirstOrDefault(x => x.CommitId == _attempt.CommitId).ShouldNotBeNull();
-        }
-
-        [Fact]
         public void should_cause_the_stream_to_be_found_in_the_list_of_streams_to_snapshot()
         {
             Persistence.GetStreamsToSnapshot(1).FirstOrDefault(x => x.StreamId == _streamId).ShouldNotBeNull();
@@ -347,27 +341,6 @@ namespace NEventStore.Persistence.AcceptanceTests
         public void should_throw_a_DuplicateCommitException()
         {
             _thrown.ShouldBeInstanceOf<DuplicateCommitException>();
-        }
-    }
-
-    public class when_a_commit_has_been_marked_as_dispatched : PersistenceEngineConcern
-    {
-        private ICommit _commit;
-
-        protected override void Context()
-        {
-            _commit = Persistence.CommitSingle();
-        }
-
-        protected override void Because()
-        {
-            Persistence.MarkCommitAsDispatched(_commit);
-        }
-
-        [Fact]
-        public void should_no_longer_be_found_in_the_set_of_undispatched_commits()
-        {
-            Persistence.GetUndispatchedCommits().FirstOrDefault(x => x.CommitId == _commit.CommitId).ShouldBeNull();
         }
     }
 
@@ -718,12 +691,6 @@ namespace NEventStore.Persistence.AcceptanceTests
         {
             Persistence.GetStreamsToSnapshot(0).Count().ShouldBe(0);
         }
-
-        [Fact]
-        public void should_not_find_any_undispatched_commits()
-        {
-            Persistence.GetUndispatchedCommits().Count().ShouldBe(0);
-        }
     }
 
     public class when_invoking_after_disposal : PersistenceEngineConcern
@@ -967,12 +934,6 @@ namespace NEventStore.Persistence.AcceptanceTests
         public void should_purge_all_streams_to_snapshot_in_bucket_b()
         {
             Persistence.GetStreamsToSnapshot(_bucketBId, 0).Count().ShouldBe(0);
-        }
-
-        [Fact]
-        public void should_purge_all_undispatched_commits()
-        {
-            Persistence.GetUndispatchedCommits().Count().ShouldBe(0);
         }
     }
 
