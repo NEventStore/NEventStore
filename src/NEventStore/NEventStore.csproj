@@ -61,6 +61,7 @@
     <Compile Include="Client\PollingClient.cs" />
     <Compile Include="Client\ClientBase.cs" />
     <Compile Include="Client\IObserveCommits.cs" />
+    <Compile Include="Client\PollingClient2.cs" />
     <Compile Include="Client\TaskHelpers.cs" />
     <Compile Include="CommitAttemptExtensions.cs" />
     <Compile Include="CommitEqualityComparer.cs" />
