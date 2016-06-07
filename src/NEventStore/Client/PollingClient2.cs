@@ -35,10 +35,14 @@ namespace NEventStore.Client
         /// return no more commit and the next request</param>
         public PollingClient2(IPersistStreams persistStreams, Func<ICommit, HandlingResult> callback, Int32 waitInterval = 100)
         {
+            if (persistStreams == null)
+                throw new ArgumentNullException("PersistStreams cannot be null", "persistStreams");
+            if (callback == null)
+                throw new ArgumentNullException("Cannot use polling client without callback", "callback");
+
             _logger = LogFactory.BuildLogger(GetType());
             _waitInterval = waitInterval;
-            if (callback == null)
-                throw new ArgumentException("Cannot use polling client without callback", "callback");
+           
             _commitCallback = callback;
             _persistStreams = persistStreams;
         }
@@ -56,6 +60,7 @@ namespace NEventStore.Client
             _checkpointToken = checkpointToken;
             _pollingFunc = () => _persistStreams.GetFrom(_checkpointToken);
             _pollingThread = new Thread(InnerPollingLoop);
+            _pollingThread.Start();
         }
 
         public virtual void StartFromBucket(string bucketId, string checkpointToken = null)
@@ -65,6 +70,7 @@ namespace NEventStore.Client
             _checkpointToken = checkpointToken;
             _pollingFunc = () => _persistStreams.GetFrom(_checkpointToken, bucketId);
             _pollingThread = new Thread(InnerPollingLoop);
+            _pollingThread.Start();
         }
 
         public virtual void Stop()

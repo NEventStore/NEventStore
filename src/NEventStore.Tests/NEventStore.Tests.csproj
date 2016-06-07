@@ -77,6 +77,7 @@
       <Link>Persistence\InMemoryPersistence\PersistenceTests.cs</Link>
     </Compile>
     <Compile Include="Client\CommitSequencerTests.cs" />
+    <Compile Include="Client\PollingClient2Tests.cs" />
     <Compile Include="DefaultSerializationWireupTests.cs" />
     <Compile Include="Client\PollingClientTests.cs" />
     <Compile Include="CommitHelper.cs" />
