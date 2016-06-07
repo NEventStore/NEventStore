@@ -40,7 +40,7 @@ namespace NEventStore.Client
             if (callback == null)
                 throw new ArgumentException("Cannot use polling client without callback", "callback");
             _commitCallback = callback;
-             _persistStreams = persistStreams;
+            _persistStreams = persistStreams;
         }
 
         private Thread _pollingThread;
@@ -51,8 +51,8 @@ namespace NEventStore.Client
 
         public virtual void StartFrom(string checkpointToken = null)
         {
-            if (_pollingThread != null) 
-                throw  new ApplicationException("Polling client already started");
+            if (_pollingThread != null)
+                throw new ApplicationException("Polling client already started");
             _checkpointToken = checkpointToken;
             _pollingFunc = () => _persistStreams.GetFrom(_checkpointToken);
             _pollingThread = new Thread(InnerPollingLoop);
@@ -67,12 +67,38 @@ namespace NEventStore.Client
             _pollingThread = new Thread(InnerPollingLoop);
         }
 
+        public virtual void Stop()
+        {
+            _stopRequest = true;
+        }
+
+        public virtual void PollNow()
+        {
+            if (_pollingThread == null)
+                throw new ArgumentException("You cannot call PollNow on a poller that is not started");
+            InnerPoll();
+        }
+
         private int _isPolling = 0;
 
         private Boolean _stopRequest = false;
+
         private void InnerPollingLoop(object obj)
         {
             while (_stopRequest == false)
+            {
+                if (InnerPoll()) return;
+                Thread.Sleep(_waitInterval);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>Returns true if we need to stop the outer cycle.</returns>
+        private bool InnerPoll()
+        {
+            if (Interlocked.CompareExchange(ref _isPolling, 1, 0) == 0)
             {
                 try
                 {
@@ -82,7 +108,7 @@ namespace NEventStore.Client
                     {
                         if (_stopRequest)
                         {
-                            return;
+                            return true;
                         }
                         var result = _commitCallback(commit);
                         if (result == HandlingResult.Retry)
@@ -92,24 +118,19 @@ namespace NEventStore.Client
                         else if (result == HandlingResult.Stop)
                         {
                             Stop();
-                            return;
+                            return true;
                         }
                         _checkpointToken = commit.CheckpointToken;
                     }
-
-                    Thread.Sleep(_waitInterval);
                 }
                 catch (Exception ex)
                 {
                     // These exceptions are expected to be transient
                     _logger.Error(String.Format("Error during polling client {0}", ex.ToString()));
-                }
+                } 
+                Interlocked.Exchange(ref _isPolling, 0);
             }
-        }
-
-        public virtual void Stop()
-        {
-            _stopRequest = true;
+            return false;
         }
 
         private Boolean _isDisposed;
