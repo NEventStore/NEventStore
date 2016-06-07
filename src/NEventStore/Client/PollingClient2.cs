@@ -13,56 +13,14 @@ namespace NEventStore.Client
     {
         public enum HandlingResult
         {
-            Handled = 0,
+            MoveToNext = 0,
             Retry = 1,
             Stop = 2,
         }
 
-        public class CommitHandlingResult
-        {
-            private static CommitHandlingResult _success;
-
-            public static CommitHandlingResult Success
-            {
-                get { return _success; }
-            }
-
-            private static CommitHandlingResult _retry;
-
-            public static CommitHandlingResult Retry
-            {
-                get { return _retry; }
-            }
-
-            private static CommitHandlingResult _stop;
-
-            public static CommitHandlingResult Stop
-            {
-                get { return _stop; }
-            }
-
-            static CommitHandlingResult()
-            {
-                _success = new CommitHandlingResult(HandlingResult.Handled);
-                _retry = new CommitHandlingResult(HandlingResult.Retry);
-                _stop = new CommitHandlingResult(HandlingResult.Stop);
-            }
-
-            /// <summary>
-            /// True if the client handled the request, false if the 
-            /// request was not handled for same reason.
-            /// </summary>
-            public HandlingResult Result { get; private set; }
-
-            public CommitHandlingResult(HandlingResult result)
-            {
-                Result = result;
-            }
-        }
-
         private readonly ILog _logger;
 
-        private Func<ICommit, CommitHandlingResult> _commitCallback;
+        private readonly Func<ICommit, HandlingResult> _commitCallback;
 
         private readonly IPersistStreams _persistStreams;
 
@@ -75,7 +33,7 @@ namespace NEventStore.Client
         /// <param name="callback"></param>
         /// <param name="waitInterval">Interval in Milliseconds to wait when the provider
         /// return no more commit and the next request</param>
-        public PollingClient2(IPersistStreams persistStreams, Func<ICommit, CommitHandlingResult> callback, Int32 waitInterval = 100)
+        public PollingClient2(IPersistStreams persistStreams, Func<ICommit, HandlingResult> callback, Int32 waitInterval = 100)
         {
             _logger = LogFactory.BuildLogger(GetType());
             _waitInterval = waitInterval;
@@ -127,11 +85,11 @@ namespace NEventStore.Client
                             return;
                         }
                         var result = _commitCallback(commit);
-                        if (result.Result == HandlingResult.Retry)
+                        if (result == HandlingResult.Retry)
                         {
                             break;
                         }
-                        else if (result.Result == HandlingResult.Stop)
+                        else if (result == HandlingResult.Stop)
                         {
                             Stop();
                             return;
