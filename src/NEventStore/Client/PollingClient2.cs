@@ -58,9 +58,19 @@ namespace NEventStore.Client
             if (_pollingThread != null)
                 throw new ApplicationException("Polling client already started");
             _checkpointToken = checkpointToken;
-            _pollingFunc = () => _persistStreams.GetFrom(_checkpointToken);
+            ConfigurePollingFunction();
             _pollingThread = new Thread(InnerPollingLoop);
             _pollingThread.Start();
+        }
+
+        public void ConfigurePollingFunction(string bucketId = null)
+        {
+            if (_pollingThread != null)
+                throw new ApplicationException("Cannot configure when polling client already started polling");
+            if (bucketId == null)
+                _pollingFunc = () => _persistStreams.GetFrom(_checkpointToken);
+            else
+                _pollingFunc = () => _persistStreams.GetFrom(_checkpointToken, bucketId);
         }
 
         public virtual void StartFromBucket(string bucketId, string checkpointToken = null)
@@ -68,7 +78,7 @@ namespace NEventStore.Client
             if (_pollingThread != null)
                 throw new ApplicationException("Polling client already started");
             _checkpointToken = checkpointToken;
-            _pollingFunc = () => _persistStreams.GetFrom(_checkpointToken, bucketId);
+            ConfigurePollingFunction(bucketId);
             _pollingThread = new Thread(InnerPollingLoop);
             _pollingThread.Start();
         }
@@ -80,9 +90,9 @@ namespace NEventStore.Client
 
         public virtual void PollNow()
         {
-            if (_pollingThread == null)
-                throw new ArgumentException("You cannot call PollNow on a poller that is not started");
-            InnerPoll();
+            //if (_pollingThread == null)
+            //    throw new ArgumentException("You cannot call PollNow on a poller that is not started");
+            Task<Boolean>.Factory.StartNew(InnerPoll);
         }
 
         private int _isPolling = 0;

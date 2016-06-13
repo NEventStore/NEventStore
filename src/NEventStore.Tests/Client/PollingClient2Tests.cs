@@ -231,4 +231,37 @@ namespace NEventStore.Client
         }
     }
 
+    public class verify_manual_plling : using_polling_client2
+    {
+        private List<ICommit> commits = new List<ICommit>();
+
+        protected override void Context()
+        {
+            base.Context();
+            HandleFunction = c =>
+            {
+                commits.Add(c);
+                return PollingClient2.HandlingResult.MoveToNext;
+            };
+            StoreEvents.Advanced.CommitSingle();
+            StoreEvents.Advanced.CommitSingle();
+        }
+
+        protected override void Because()
+        {
+            Sut.ConfigurePollingFunction();
+            Sut.PollNow();
+        }
+
+        [Fact]
+        public void commits_are_retried_then_move_next()
+        {
+            WaitForCondition(() => commits.Count >= 2, timeoutInSeconds: 3);
+            commits.Count.ShouldBe(2);
+            commits
+                .Select(c => c.CheckpointToken)
+                .SequenceEqual(new[] { "1", "2" })
+                .ShouldBeTrue();
+        }
+    }
 }
