@@ -596,7 +596,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Because()
         {
-            _loaded = Persistence.GetFrom(checkPoint.ToString()).Select(c => c.CommitId).ToList();
+            _loaded = Persistence.GetFrom(checkPoint).Select(c => c.CommitId).ToList();
         }
 
         [Fact]
@@ -629,7 +629,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Because()
         {
-            _loaded = Persistence.GetFrom("b1", checkPoint.ToString()).Select(c => c.CommitId).ToList();
+            _loaded = Persistence.GetFrom("b1", checkPoint).Select(c => c.CommitId).ToList();
         }
 
         [Fact]
@@ -884,12 +884,12 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_be_in_order_by_checkpoint()
         {
-            ICheckpoint checkpoint = Persistence.GetCheckpoint();
+            Int64 checkpoint = 0;
             foreach (var commit in _commits)
             {
-                ICheckpoint commitCheckpoint = Persistence.GetCheckpoint(commit.CheckpointToken);
+                Int64 commitCheckpoint = commit.CheckpointToken;
                 commitCheckpoint.ShouldBeGreaterThan(checkpoint);
-                checkpoint = Persistence.GetCheckpoint(commit.CheckpointToken);
+                checkpoint = commit.CheckpointToken;
             }
         }
     }

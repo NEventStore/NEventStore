@@ -37,12 +37,12 @@
         /// <returns>
         /// An <see cref="IObserveCommits" /> instance.
         /// </returns>
-        public override IObserveCommits ObserveFrom(string checkpointToken = null)
+        public override IObserveCommits ObserveFrom(Int64 checkpointToken = 0)
         {
             return new PollingObserveCommits(PersistStreams, _interval, null, checkpointToken);
         }
 
-        public override IObserveCommits ObserveFromBucket(string bucketId, string checkpointToken = null)
+        public override IObserveCommits ObserveFromBucket(string bucketId, Int64 checkpointToken = 0)
         {
             return new PollingObserveCommits(PersistStreams, _interval, bucketId, checkpointToken);
         }
@@ -51,7 +51,7 @@
         {
             private ILog Logger = LogFactory.BuildLogger(typeof (PollingClient));
             private readonly IPersistStreams _persistStreams;
-            private string _checkpointToken;
+            private Int64 _checkpointToken;
             private readonly int _interval;
             private readonly string _bucketId;
             private readonly Subject<ICommit> _subject = new Subject<ICommit>();
@@ -59,7 +59,7 @@
             private TaskCompletionSource<Unit> _runningTaskCompletionSource;
             private int _isPolling = 0;
 
-            public PollingObserveCommits(IPersistStreams persistStreams, int interval, string bucketId, string checkpointToken = null)
+            public PollingObserveCommits(IPersistStreams persistStreams, int interval, string bucketId, Int64 checkpointToken = 0)
             {
                 _persistStreams = persistStreams;
                 _checkpointToken = checkpointToken;

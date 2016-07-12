@@ -44,28 +44,22 @@ namespace NEventStore.Persistence.InMemory
             return this[bucketId].GetFrom(start);
         }
 
-        public IEnumerable<ICommit> GetFrom(string bucketId, string checkpointToken)
+        public IEnumerable<ICommit> GetFrom(string bucketId, Int64 checkpointToken)
         {
             ThrowWhenDisposed();
             Logger.Debug(Resources.GettingAllCommitsFromBucketAndCheckpoint, bucketId, checkpointToken);
-            return this[bucketId].GetFrom(GetCheckpoint(checkpointToken));
+            return this[bucketId].GetFrom(checkpointToken);
         }
 
-        public IEnumerable<ICommit> GetFrom(string checkpointToken)
+        public IEnumerable<ICommit> GetFrom(Int64 checkpointToken)
         {
             Logger.Debug(Resources.GettingAllCommitsFromCheckpoint, checkpointToken);
-            ICheckpoint checkpoint = LongCheckpoint.Parse(checkpointToken);
             return _buckets
                 .Values
                 .SelectMany(b => b.GetCommits())
-                .Where(c => c.Checkpoint.CompareTo(checkpoint) > 0)
-                .OrderBy(c => c.Checkpoint)
+                .Where(c => c.CheckpointToken.CompareTo(checkpointToken) > 0)
+                .OrderBy(c => c.CheckpointToken)
                 .ToArray();
-        }
-
-        public ICheckpoint GetCheckpoint(string checkpointToken = null)
-        {
-            return LongCheckpoint.Parse(checkpointToken);
         }
 
         public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
@@ -79,7 +73,7 @@ namespace NEventStore.Persistence.InMemory
         {
             ThrowWhenDisposed();
             Logger.Debug(Resources.AttemptingToCommit, attempt.CommitId, attempt.StreamId, attempt.CommitSequence);
-            return this[attempt.BucketId].Commit(attempt, new LongCheckpoint(Interlocked.Increment(ref _checkpoint)));
+            return this[attempt.BucketId].Commit(attempt, Interlocked.Increment(ref _checkpoint));
         }
 
         public IEnumerable<IStreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
@@ -159,8 +153,7 @@ namespace NEventStore.Persistence.InMemory
 
         private class InMemoryCommit : Commit
         {
-            private readonly ICheckpoint _checkpoint;
-
+            
             public InMemoryCommit(
                 string bucketId,
                 string streamId,
@@ -168,19 +161,14 @@ namespace NEventStore.Persistence.InMemory
                 Guid commitId,
                 int commitSequence,
                 DateTime commitStamp,
-                string checkpointToken,
+                Int64 checkpointToken,
                 IDictionary<string, object> headers,
-                IEnumerable<EventMessage> events,
-                ICheckpoint checkpoint)
+                IEnumerable<EventMessage> events)
                 : base(bucketId, streamId, streamRevision, commitId, commitSequence, commitStamp, checkpointToken, headers, events)
             {
-                _checkpoint = checkpoint;
+                
             }
 
-            public ICheckpoint Checkpoint
-            {
-                get { return _checkpoint; }
-            }
         }
 
         private class IdentityForConcurrencyConflictDetection
@@ -340,9 +328,9 @@ namespace NEventStore.Persistence.InMemory
                 return _commits.Skip(_commits.IndexOf(startingCommit));
             }
 
-            public IEnumerable<ICommit> GetFrom(ICheckpoint checkpoint)
+            public IEnumerable<ICommit> GetFrom(Int64 checkpoint)
             {
-                InMemoryCommit startingCommit = _commits.FirstOrDefault(x => x.Checkpoint.CompareTo(checkpoint) == 0);
+                InMemoryCommit startingCommit = _commits.FirstOrDefault(x => x.CheckpointToken.CompareTo(checkpoint) == 0);
                 return _commits.Skip(_commits.IndexOf(startingCommit) + 1 /* GetFrom => after the checkpoint*/);
             }
 
@@ -364,7 +352,7 @@ namespace NEventStore.Persistence.InMemory
                 return _commits.Skip(_commits.IndexOf(startingCommit)).Take(numberToTake);
             }
 
-            public ICommit Commit(CommitAttempt attempt, ICheckpoint checkpoint)
+            public ICommit Commit(CommitAttempt attempt, Int64 checkpoint)
             {
                 lock (_commits)
                 {
@@ -375,10 +363,9 @@ namespace NEventStore.Persistence.InMemory
                         attempt.CommitId,
                         attempt.CommitSequence,
                         attempt.CommitStamp,
-                        checkpoint.Value,
+                        checkpoint,
                         attempt.Headers,
-                        attempt.Events,
-                        checkpoint);
+                        attempt.Events );
                     if (_potentialConflicts.Contains(new IdentityForConcurrencyConflictDetection(commit)))
                     {
                         throw new ConcurrencyException();

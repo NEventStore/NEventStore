@@ -90,7 +90,7 @@ namespace NEventStore.Client
 
         protected override void Because()
         {
-            Sut.StartFrom("0");
+            Sut.StartFrom(0);
         }
 
         [Fact]
@@ -118,7 +118,7 @@ namespace NEventStore.Client
 
         protected override void Because()
         {
-            Sut.StartFrom("0");
+            Sut.StartFrom(0);
             for (int i = 0; i < 15; i++)
             {
                 StoreEvents.Advanced.CommitSingle();
@@ -152,7 +152,7 @@ namespace NEventStore.Client
 
         protected override void Because()
         {
-            Sut.StartFrom("0");
+            Sut.StartFrom(0);
         }
 
         [Fact]
@@ -183,7 +183,7 @@ namespace NEventStore.Client
 
         protected override void Because()
         {
-            Sut.StartFrom("0");
+            Sut.StartFrom(0);
         }
 
         [Fact]
@@ -191,7 +191,7 @@ namespace NEventStore.Client
         {
             WaitForCondition(() => commits.Count >= 3, timeoutInSeconds: 1);
             commits.Count.ShouldBe(3);
-            commits.All(c => c.CheckpointToken == "1").ShouldBeTrue();
+            commits.All(c => c.CheckpointToken == 1).ShouldBeTrue();
         }
     }
 
@@ -205,7 +205,7 @@ namespace NEventStore.Client
             HandleFunction = c =>
             {
                 commits.Add(c);
-                if (commits.Count < 3 && c.CheckpointToken == "1")
+                if (commits.Count < 3 && c.CheckpointToken == 1)
                     return PollingClient2.HandlingResult.Retry;
 
                 return PollingClient2.HandlingResult.MoveToNext;
@@ -216,7 +216,7 @@ namespace NEventStore.Client
 
         protected override void Because()
         {
-            Sut.StartFrom("0");
+            Sut.StartFrom(0);
         }
 
         [Fact]
@@ -226,7 +226,7 @@ namespace NEventStore.Client
             commits.Count.ShouldBe(4);
             commits
                 .Select(c => c.CheckpointToken)
-                .SequenceEqual(new [] {"1", "1", "1", "2"})
+                .SequenceEqual(new [] {1L, 1L, 1, 2})
                 .ShouldBeTrue();
         }
     }
@@ -260,7 +260,7 @@ namespace NEventStore.Client
             commits.Count.ShouldBe(2);
             commits
                 .Select(c => c.CheckpointToken)
-                .SequenceEqual(new[] { "1", "2" })
+                .SequenceEqual(new[] { 1L, 2L })
                 .ShouldBeTrue();
         }
     }

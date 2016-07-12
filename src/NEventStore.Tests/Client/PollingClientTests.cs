@@ -235,7 +235,7 @@
             _observeCommits.Dispose();
 
             StoreEvents.Advanced.CommitSingle();
-            string checkpointToken = _commitObserved.Result.CheckpointToken;
+            Int64 checkpointToken = _commitObserved.Result.CheckpointToken;
             _observeCommits = PollingClient.ObserveFrom(checkpointToken);
         }
 

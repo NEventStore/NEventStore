@@ -1,5 +1,6 @@
 ﻿namespace NEventStore.Client
 {
+    using System;
     using NEventStore.Persistence;
 
     public abstract class ClientBase
@@ -23,7 +24,7 @@
         /// </summary>
         /// <param name="checkpointToken">The checkpoint token.</param>
         /// <returns>An <see cref="IObserveCommits"/> instance.</returns>
-        public abstract IObserveCommits ObserveFrom(string checkpointToken = null);
+        public abstract IObserveCommits ObserveFrom(Int64 checkpointToken = 0);
 
         /// <summary>
         /// Observe commits from a bucket after the sepecified checkpoint token. If the token is null,
@@ -32,6 +33,6 @@
         /// <param name="bucketId">The bucket id</param>
         /// <param name="checkpointToken">The checkpoint token.</param>
         /// <returns>An <see cref="IObserveCommits"/> instance.</returns>
-        public abstract IObserveCommits ObserveFromBucket(string bucketId, string checkpointToken = null);
+        public abstract IObserveCommits ObserveFromBucket(string bucketId, Int64 checkpointToken = 0);
     }
 }

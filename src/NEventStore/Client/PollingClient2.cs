@@ -51,9 +51,9 @@ namespace NEventStore.Client
 
         private Func<IEnumerable<ICommit>> _pollingFunc;
 
-        private String _checkpointToken;
+        private Int64 _checkpointToken;
 
-        public virtual void StartFrom(string checkpointToken = null)
+        public virtual void StartFrom(Int64 checkpointToken = 0)
         {
             if (_pollingThread != null)
                 throw new ApplicationException("Polling client already started");
@@ -70,10 +70,10 @@ namespace NEventStore.Client
             if (bucketId == null)
                 _pollingFunc = () => _persistStreams.GetFrom(_checkpointToken);
             else
-                _pollingFunc = () => _persistStreams.GetFrom(_checkpointToken, bucketId);
+                _pollingFunc = () => _persistStreams.GetFrom(bucketId, _checkpointToken);
         }
 
-        public virtual void StartFromBucket(string bucketId, string checkpointToken = null)
+        public virtual void StartFromBucket(string bucketId, Int64 checkpointToken = 0)
         {
             if (_pollingThread != null)
                 throw new ApplicationException("Polling client already started");

@@ -12,7 +12,7 @@ namespace NEventStore.PollingClientExample
             using (var store = WireupEventStore())
             {
                 var client = new PollingClient(store.Advanced);
-                string checkpointToken = LoadCheckpoint();
+                Int64 checkpointToken = LoadCheckpoint();
                 using (IObserveCommits observeCommits = client.ObserveFrom(checkpointToken))
                 using (observeCommits.Subscribe(commit =>
                 {
@@ -32,13 +32,13 @@ namespace NEventStore.PollingClientExample
             }
         }
 
-        private static string LoadCheckpoint()
+        private static Int64 LoadCheckpoint()
         {
             // Load the checkpoint value from disk / local db/ etc
-            return null;
+            return 0;
         }
 
-        private static void SaveCheckpoint(string checkpointToken)
+        private static void SaveCheckpoint(Int64 checkpointToken)
         {
             //Save checkpointValue to disk / whatever.
         }

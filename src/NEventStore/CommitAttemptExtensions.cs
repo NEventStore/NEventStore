@@ -1,10 +1,11 @@
 namespace NEventStore
 {
+    using System;
     using NEventStore.Persistence;
 
     internal static class CommitAttemptExtensions
     {
-        public static ICommit ToCommit(this CommitAttempt attempt, string checkpointToken)
+        public static ICommit ToCommit(this CommitAttempt attempt, Int64 checkpointToken)
         {
             return new Commit(
                 attempt.BucketId,

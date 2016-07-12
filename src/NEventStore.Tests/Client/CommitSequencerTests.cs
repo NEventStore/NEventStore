@@ -27,9 +27,9 @@ namespace NEventStore.Client
         [Fact]
         public void verify_check_sequential_missing_commit()
         {
-            var result = sut.Handle(new TestICommit() {CheckpointToken = "1"});
+            var result = sut.Handle(new TestICommit() { CheckpointToken = 1L });
             result.ShouldBe(PollingClient2.HandlingResult.MoveToNext);
-            result = sut.Handle(new TestICommit() { CheckpointToken = "3" });
+            result = sut.Handle(new TestICommit() { CheckpointToken = 3L });
             result.ShouldBe(PollingClient2.HandlingResult.Retry);
         }
 
@@ -37,16 +37,16 @@ namespace NEventStore.Client
         public void verify_timeout_on_missing_commit_not_elapsed()
         {
             DateTime start = DateTime.Now;
-            var result = sut.Handle(new TestICommit() { CheckpointToken = "1" });
+            var result = sut.Handle(new TestICommit() { CheckpointToken = 1L });
             result.ShouldBe(PollingClient2.HandlingResult.MoveToNext);
             using (DateTimeService.Override(start))
             {
-                result = sut.Handle(new TestICommit() {CheckpointToken = "3"});
+                result = sut.Handle(new TestICommit() { CheckpointToken = 3 });
                 result.ShouldBe(PollingClient2.HandlingResult.Retry);
             }
-            using (DateTimeService.Override(start.AddMilliseconds(_outOfSequenceTimeoutInMilliseconds -100)))
+            using (DateTimeService.Override(start.AddMilliseconds(_outOfSequenceTimeoutInMilliseconds - 100)))
             {
-                result = sut.Handle(new TestICommit() { CheckpointToken = "3" });
+                result = sut.Handle(new TestICommit() { CheckpointToken = 3 });
                 result.ShouldBe(PollingClient2.HandlingResult.Retry);
             }
         }
@@ -60,10 +60,10 @@ namespace NEventStore.Client
                 callBackCount++;
                 return PollingClient2.HandlingResult.MoveToNext;
             };
-            var result = sut.Handle(new TestICommit() { CheckpointToken = "1" });
+            var result = sut.Handle(new TestICommit() { CheckpointToken = 1 });
             result.ShouldBe(PollingClient2.HandlingResult.MoveToNext);
             callBackCount.ShouldBe(1);
-            result = sut.Handle(new TestICommit() { CheckpointToken = "1" });
+            result = sut.Handle(new TestICommit() { CheckpointToken = 1 });
             result.ShouldBe(PollingClient2.HandlingResult.MoveToNext);
             callBackCount.ShouldBe(1);
         }
@@ -72,18 +72,18 @@ namespace NEventStore.Client
         public void verify_timeout_on_missing_commit_then_next_commit()
         {
             DateTime start = DateTime.Now;
-            var result = sut.Handle(new TestICommit() { CheckpointToken = "1" });
+            var result = sut.Handle(new TestICommit() { CheckpointToken = 1 });
             result.ShouldBe(PollingClient2.HandlingResult.MoveToNext);
             using (DateTimeService.Override(start))
             {
-                result = sut.Handle(new TestICommit() { CheckpointToken = "3" });
+                result = sut.Handle(new TestICommit() { CheckpointToken = 3 });
                 result.ShouldBe(PollingClient2.HandlingResult.Retry);
             }
             using (DateTimeService.Override(start.AddMilliseconds(_outOfSequenceTimeoutInMilliseconds - 100)))
             {
-                result = sut.Handle(new TestICommit() { CheckpointToken = "2" });
+                result = sut.Handle(new TestICommit() { CheckpointToken = 2 });
                 result.ShouldBe(PollingClient2.HandlingResult.MoveToNext);
-                result = sut.Handle(new TestICommit() { CheckpointToken = "3" });
+                result = sut.Handle(new TestICommit() { CheckpointToken = 3 });
                 result.ShouldBe(PollingClient2.HandlingResult.MoveToNext);
             }
 
@@ -93,16 +93,16 @@ namespace NEventStore.Client
         public void verify_timeout_on_missing_commit_elapsed()
         {
             DateTime start = DateTime.Now;
-            var result = sut.Handle(new TestICommit() { CheckpointToken = "1" });
+            var result = sut.Handle(new TestICommit() { CheckpointToken = 1 });
             result.ShouldBe(PollingClient2.HandlingResult.MoveToNext);
             using (DateTimeService.Override(start))
             {
-                result = sut.Handle(new TestICommit() { CheckpointToken = "3" });
+                result = sut.Handle(new TestICommit() { CheckpointToken = 3 });
                 result.ShouldBe(PollingClient2.HandlingResult.Retry);
             }
             using (DateTimeService.Override(start.AddMilliseconds(_outOfSequenceTimeoutInMilliseconds + 100)))
             {
-                result = sut.Handle(new TestICommit() { CheckpointToken = "3" });
+                result = sut.Handle(new TestICommit() { CheckpointToken = 3 });
                 result.ShouldBe(PollingClient2.HandlingResult.MoveToNext);
             }
         }
@@ -150,7 +150,7 @@ namespace NEventStore.Client
             }
 
 
-            public string CheckpointToken { get; set; }
+            public Int64 CheckpointToken { get; set; }
         }
     }
 }

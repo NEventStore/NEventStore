@@ -38,7 +38,7 @@ namespace NEventStore
             protected override void Context()
             {
                 _date = DateTime.Now;
-                _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, new LongCheckpoint(0).Value, null, null);
+                _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, 0, null, null);
 
                 _hook1 = A.Fake<IPipelineHook>();
                 A.CallTo(() => _hook1.Select(_commit)).Returns(_commit);
@@ -82,7 +82,7 @@ namespace NEventStore
             protected override void Context()
             {
                 _date = DateTime.Now;
-                _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, new LongCheckpoint(0).Value, null, null);
+                _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, 0, null, null);
 
                 _hook1 = A.Fake<IPipelineHook>();
                 A.CallTo(() => _hook1.Select(_commit)).Returns(_commit);
@@ -129,7 +129,7 @@ namespace NEventStore
             {
                 _start = DateTime.Now;
                 _end = DateTime.Now;
-                _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, new LongCheckpoint(0).Value, null, null);
+                _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, 0, null, null);
 
                 _hook1 = A.Fake<IPipelineHook>();
                 A.CallTo(() => _hook1.Select(_commit)).Returns(_commit);
@@ -192,7 +192,7 @@ namespace NEventStore
 
             protected override void Context()
             {
-                _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, new LongCheckpoint(0).Value, null, null);
+                _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, 0, null, null);
 
                 _hook1 = A.Fake<IPipelineHook>();
                 A.CallTo(() => _hook1.Select(_commit)).Returns(_commit);
@@ -202,18 +202,18 @@ namespace NEventStore
                 A.CallTo(() => _hook2.Select(_commit)).Returns(_commit);
                 pipelineHooks.Add(_hook2);
 
-                A.CallTo(() => persistence.GetFrom(null)).Returns(new List<ICommit> {_commit});
+                A.CallTo(() => persistence.GetFrom(0)).Returns(new List<ICommit> {_commit});
             }
 
             protected override void Because()
             {
-                Decorator.GetFrom(null).ToList();
+                Decorator.GetFrom(0).ToList();
             }
 
             [Fact]
             public void should_call_the_underlying_persistence_to_get_events()
             {
-                A.CallTo(() => persistence.GetFrom(null)).MustHaveHappened(Repeated.Exactly.Once);
+                A.CallTo(() => persistence.GetFrom(0)).MustHaveHappened(Repeated.Exactly.Once);
             }
 
             [Fact]

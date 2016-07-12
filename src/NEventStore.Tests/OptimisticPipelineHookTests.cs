@@ -246,7 +246,7 @@ namespace NEventStore
 
             private ICommit BuildCommit(string streamId, Guid commitId)
             {
-                return new Commit(Bucket.Default, streamId, 0, commitId, 0, SystemTime.UtcNow, new LongCheckpoint(0).Value, null, null);
+                return new Commit(Bucket.Default, streamId, 0, commitId, 0, SystemTime.UtcNow, 0, null, null);
             }
         }
 
@@ -276,7 +276,7 @@ namespace NEventStore
             private ICommit BuildCommit(Guid bucketId, Guid streamId, Guid commitId)
             {
                 return new Commit(bucketId.ToString(), streamId.ToString(), 0, commitId, 0, SystemTime.UtcNow,
-                    new LongCheckpoint(0).Value, null, null);
+                    0, null, null);
             }
         }
 
@@ -315,7 +315,7 @@ namespace NEventStore
             private ICommit BuildCommit(Guid bucketId, Guid streamId, Guid commitId)
             {
                 return new Commit(bucketId.ToString(), streamId.ToString(), 0, commitId, 0, SystemTime.UtcNow,
-                    new LongCheckpoint(0).Value, null, null);
+                    0, null, null);
             }
         }
 
@@ -356,7 +356,7 @@ namespace NEventStore
             private ICommit BuildCommit(Guid bucketId, Guid streamId, Guid commitId)
             {
                 return new Commit(bucketId.ToString(), streamId.ToString(), 0, commitId, 0, SystemTime.UtcNow,
-                    new LongCheckpoint(0).Value, null, null);
+                    0, null, null);
             }
         }
 
@@ -373,7 +373,7 @@ namespace NEventStore
             protected ICommit BuildCommitStub(int streamRevision, int commitSequence)
             {
                 List<EventMessage> events = new[] {new EventMessage()}.ToList();
-                return new Commit(Bucket.Default, _streamId, streamRevision, Guid.NewGuid(), commitSequence, SystemTime.UtcNow, new LongCheckpoint(0).Value, null, events);
+                return new Commit(Bucket.Default, _streamId, streamRevision, Guid.NewGuid(), commitSequence, SystemTime.UtcNow, 0, null, events);
             }
 
             protected CommitAttempt BuildCommitAttemptStub(int streamRevision, int commitSequence)
@@ -385,7 +385,7 @@ namespace NEventStore
             protected ICommit BuildCommitStub(Guid commitId, int streamRevision, int commitSequence)
             {
                 List<EventMessage> events = new[] {new EventMessage()}.ToList();
-                return new Commit(Bucket.Default, _streamId, streamRevision, commitId, commitSequence, SystemTime.UtcNow, new LongCheckpoint(0).Value, null, events);
+                return new Commit(Bucket.Default, _streamId, streamRevision, commitId, commitSequence, SystemTime.UtcNow, 0, null, events);
             }
         }
     }
