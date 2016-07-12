@@ -53,6 +53,7 @@
     </Compile>
     <Compile Include="AccessSnapshotsExtensions.cs" />
     <Compile Include="Bucket.cs" />
+    <Compile Include="Client\CommitSequencer.cs" />
     <Compile Include="Client\Messages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -61,6 +62,7 @@
     <Compile Include="Client\PollingClient.cs" />
     <Compile Include="Client\ClientBase.cs" />
     <Compile Include="Client\IObserveCommits.cs" />
+    <Compile Include="Client\PollingClient2.cs" />
     <Compile Include="Client\TaskHelpers.cs" />
     <Compile Include="CommitAttemptExtensions.cs" />
     <Compile Include="CommitEqualityComparer.cs" />
@@ -76,6 +78,8 @@
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Conversion\IUpconvertEvents.cs" />
     <Compile Include="Guard.cs" />
+    <Compile Include="Helpers\DateTimeService.cs" />
+    <Compile Include="Helpers\DisposableAction.cs" />
     <Compile Include="ICheckpoint.cs" />
     <Compile Include="ICommit.cs" />
     <Compile Include="ImmutableCollection.cs" />
