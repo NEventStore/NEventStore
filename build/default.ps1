@@ -69,13 +69,15 @@ task Package -depends Build, PackageNEventStore {
 
 task PackageNEventStore -depends Clean, Compile {
 	mkdir "$publish_directory\bin" | out-null
-	Merge-Assemblies -outputFile "$publish_directory/bin/NEventStore.dll" -files @(
-		"$src_directory/NEventStore/bin/$target_config/NEventStore.dll",
-		"$src_directory/NEventStore/bin/$target_config/System.Reactive.Interfaces.dll",
-		"$src_directory/NEventStore/bin/$target_config/System.Reactive.Core.dll",
-		"$src_directory/NEventStore/bin/$target_config/System.Reactive.Linq.dll",
-		"$src_directory/NEventStore/bin/$target_config/Newtonsoft.Json.dll"
-	)
+	###Merge-Assemblies -outputFile "$publish_directory/bin/NEventStore.dll" -files @(
+	###	"$src_directory/NEventStore/bin/$target_config/NEventStore.dll",
+	###	"$src_directory/NEventStore/bin/$target_config/System.Reactive.Interfaces.dll",
+	###	"$src_directory/NEventStore/bin/$target_config/System.Reactive.Core.dll",
+	###	"$src_directory/NEventStore/bin/$target_config/System.Reactive.Linq.dll",
+	###	"$src_directory/NEventStore/bin/$target_config/Newtonsoft.Json.dll"
+	###)
+
+    Copy-Item -Path $src_directory/NEventStore/bin/$target_config/NEventStore.dll -Destination "$publish_directory\bin"
 }
 
 task Clean {

@@ -5,30 +5,28 @@ namespace NEventStore.PollingClientExample
 
     internal static class MainProgram
     {
-        private static readonly byte[] EncryptionKey = {0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf};
+        private static readonly byte[] EncryptionKey = { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf };
 
         private static void Main()
         {
             using (var store = WireupEventStore())
             {
-                var client = new PollingClient(store.Advanced);
                 Int64 checkpointToken = LoadCheckpoint();
-                using (IObserveCommits observeCommits = client.ObserveFrom(checkpointToken))
-                using (observeCommits.Subscribe(commit =>
+                var client = new PollingClient2(store.Advanced, commit =>
                 {
                     // Project the commit etc
                     Console.WriteLine(Resources.CommitInfo, commit.BucketId, commit.StreamId, commit.CommitSequence);
                     // Track the most recent checkpoint
                     checkpointToken = commit.CheckpointToken;
-                }))
-                {
-                    observeCommits.Start();
+                    return PollingClient2.HandlingResult.MoveToNext;
+                });
 
-                    Console.WriteLine(Resources.PressAnyKey);
-                    Console.ReadKey();
+                client.StartFrom(checkpointToken);
 
-                    SaveCheckpoint(checkpointToken);
-                }
+                Console.WriteLine(Resources.PressAnyKey);
+                Console.ReadKey();
+                client.Stop();
+                SaveCheckpoint(checkpointToken);
             }
         }
 
@@ -51,9 +49,6 @@ namespace NEventStore.PollingClientExample
                     .UsingInMemoryPersistence()
                         .InitializeStorageEngine()
                         .TrackPerformanceInstance("example")
-                        .UsingJsonSerialization()
-                        .Compress()
-                        .EncryptWith(EncryptionKey)
                     .Build();
         }
     }

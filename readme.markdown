@@ -6,6 +6,8 @@ when using event sourcing as storage mechanism. This library is developed with a
 
 Please see the [documentation](https://github.com/NEventStore/NEventStore/wiki) to get started and for more information.
 
+Version tracking can be [found here](/doc/Versions.MD)
+
 ##### Developed with:
 
 [![Resharper](http://neventstore.org/images/logo_resharper_small.gif)](http://www.jetbrains.com/resharper/)

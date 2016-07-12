@@ -1,10 +1,10 @@
-namespace NEventStore.Serialization
+namespace NEventStore.Serialization.Json
 {
     using System;
     using System.Collections;
     using System.IO;
-    using NEventStore.Logging;
     using Newtonsoft.Json.Bson;
+    using NEventStore.Logging;
 
     public class BsonSerializer : JsonSerializer
     {

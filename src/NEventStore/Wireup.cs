@@ -6,7 +6,6 @@ namespace NEventStore
     using NEventStore.Conversion;
     using NEventStore.Persistence;
     using NEventStore.Persistence.InMemory;
-    using NEventStore.Serialization;
 
     public class Wireup
     {
@@ -34,7 +33,6 @@ namespace NEventStore
 
             container.Register(TransactionScopeOption.Suppress);
             container.Register<IPersistStreams>(new InMemoryPersistenceEngine());
-            container.Register<ISerialize>(new JsonSerializer());
             container.Register(BuildEventStore);
 
             return new Wireup(container);

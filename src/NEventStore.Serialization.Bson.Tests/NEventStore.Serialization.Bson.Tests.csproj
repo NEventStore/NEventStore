@@ -61,6 +61,10 @@
     <Compile Include="SerializerFixture.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NEventStore.Serialization.Json\NEventStore.Serialization.Json.csproj">
+      <Project>{70f9df9c-c1c4-42db-976f-a36a8e3021b6}</Project>
+      <Name>NEventStore.Serialization.Json</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NEventStore\NEventStore.csproj">
       <Project>{03946843-F343-419C-88EF-3E446D08DFA6}</Project>
       <Name>NEventStore</Name>

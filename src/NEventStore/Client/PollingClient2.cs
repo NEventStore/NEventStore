@@ -9,6 +9,9 @@ using NEventStore.Persistence;
 
 namespace NEventStore.Client
 {
+    /// <summary>
+    /// This is the new polling client that does not depends on RX.
+    /// </summary>
     public class PollingClient2 : IDisposable
     {
         public enum HandlingResult
@@ -53,7 +56,7 @@ namespace NEventStore.Client
 
         private Int64 _checkpointToken;
 
-        public virtual void StartFrom(Int64 checkpointToken = 0)
+        public void StartFrom(Int64 checkpointToken = 0)
         {
             if (_pollingThread != null)
                 throw new ApplicationException("Polling client already started");
@@ -73,7 +76,7 @@ namespace NEventStore.Client
                 _pollingFunc = () => _persistStreams.GetFrom(bucketId, _checkpointToken);
         }
 
-        public virtual void StartFromBucket(string bucketId, Int64 checkpointToken = 0)
+        public void StartFromBucket(string bucketId, Int64 checkpointToken = 0)
         {
             if (_pollingThread != null)
                 throw new ApplicationException("Polling client already started");
@@ -83,16 +86,16 @@ namespace NEventStore.Client
             _pollingThread.Start();
         }
 
-        public virtual void Stop()
+        public void Stop()
         {
             _stopRequest = true;
         }
 
-        public virtual void PollNow()
+        public Task PollNow()
         {
             //if (_pollingThread == null)
             //    throw new ArgumentException("You cannot call PollNow on a poller that is not started");
-            Task<Boolean>.Factory.StartNew(InnerPoll);
+            return Task<Boolean>.Factory.StartNew(InnerPoll);
         }
 
         private int _isPolling = 0;
@@ -156,7 +159,7 @@ namespace NEventStore.Client
             Dispose(true);
         }
 
-        public virtual void Dispose(Boolean isDisposing)
+        public void Dispose(Boolean isDisposing)
         {
             if (_isDisposed) return;
             if (isDisposing)

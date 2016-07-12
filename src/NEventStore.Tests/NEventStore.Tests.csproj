@@ -80,8 +80,9 @@
     </Compile>
     <Compile Include="Client\CommitSequencerTests.cs" />
     <Compile Include="Client\PollingClient2Tests.cs" />
+    <Compile Include="Client\PollingClientRx.cs" />
+    <Compile Include="Client\PollingClientRxTests.cs" />
     <Compile Include="DefaultSerializationWireupTests.cs" />
-    <Compile Include="Client\PollingClientTests.cs" />
     <Compile Include="CommitHelper.cs" />
     <Compile Include="ConversionTests\EventUpconverterPipelineHookTests.cs" />
     <Compile Include="EnumerableCounter.cs" />

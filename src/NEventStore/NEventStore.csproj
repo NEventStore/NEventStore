@@ -59,9 +59,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Messages.resx</DependentUpon>
     </Compile>
-    <Compile Include="Client\PollingClient.cs" />
-    <Compile Include="Client\ClientBase.cs" />
-    <Compile Include="Client\IObserveCommits.cs" />
     <Compile Include="Client\PollingClient2.cs" />
     <Compile Include="Client\TaskHelpers.cs" />
     <Compile Include="CommitAttemptExtensions.cs" />
@@ -125,14 +122,14 @@
     <Compile Include="Serialization\GzipSerializer.cs" />
     <Compile Include="Serialization\IDocumentSerializer.cs" />
     <Compile Include="Serialization\IndisposableStream.cs" />
-    <Compile Include="Serialization\BsonSerializer.cs" />
-    <Compile Include="Serialization\JsonSerializer.cs" />
+    <Compile Include="Serialization\ISerialize.cs" />
     <Compile Include="Serialization\Messages.Designer.cs">
       <DependentUpon>Messages.resx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Serialization\RijndaelSerializer.cs" />
+    <Compile Include="Serialization\SerializationExtensions.cs" />
     <Compile Include="StoreEventsExtensions.cs" />
     <Compile Include="StreamNotFoundException.cs" />
     <Compile Include="ICommitEvents.cs" />
@@ -142,12 +139,10 @@
     <Compile Include="CommitAttempt.cs" />
     <Compile Include="IAccessSnapshots.cs" />
     <Compile Include="Persistence\IPersistenceFactory.cs" />
-    <Compile Include="Serialization\ISerialize.cs" />
     <Compile Include="Properties\ProjectAssemblyInfo.cs" />
     <Compile Include="DuplicateCommitException.cs" />
     <Compile Include="Persistence\IPersistStreams.cs" />
     <Compile Include="Persistence\StorageException.cs" />
-    <Compile Include="Serialization\SerializationExtensions.cs" />
     <Compile Include="Persistence\StreamHead.cs" />
     <Compile Include="Snapshot.cs" />
     <Compile Include="SystemTime.cs" />
@@ -159,23 +154,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Reactive.Core, Version=2.1.30214.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Rx-Core.2.1.30214.0\lib\Net40\System.Reactive.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Interfaces, Version=2.1.30214.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Rx-Interfaces.2.1.30214.0\lib\Net40\System.Reactive.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Linq, Version=2.1.30214.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Rx-Linq.2.1.30214.0\lib\Net40\System.Reactive.Linq.dll</HintPath>
-    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Transactions" />
   </ItemGroup>
@@ -201,7 +180,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="Client\README.MD" />
+    <None Include="Serialization\packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Dispatcher\" />

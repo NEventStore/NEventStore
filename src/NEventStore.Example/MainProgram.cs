@@ -36,9 +36,6 @@ namespace NEventStore.Example
 				.UsingInMemoryPersistence()
 					.InitializeStorageEngine()
 					.TrackPerformanceInstance("example")
-					.UsingJsonSerialization()
-						.Compress()
-						.EncryptWith(EncryptionKey)
 				.HookIntoPipelineUsing(new[] { new AuthorizationPipelineHook() })
 				.Build();
 		}
