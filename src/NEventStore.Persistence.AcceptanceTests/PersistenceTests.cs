@@ -937,6 +937,12 @@ namespace NEventStore.Persistence.AcceptanceTests
         }
     }
 
+    [Serializable]
+    public class Pippo
+    {
+        public String S { get; set; }
+    }
+
     public class when_gettingfromcheckpoint_amount_of_commits_exceeds_pagesize : PersistenceEngineConcern
     {
         private ICommit[] _commits;
@@ -951,7 +957,7 @@ namespace NEventStore.Persistence.AcceptanceTests
             {
                 using (IEventStream stream = eventStore.OpenStream(Guid.NewGuid()))
                 {
-                    stream.Add(new EventMessage { Body = i });
+                    stream.Add(new EventMessage { Body = new Pippo() {S = "Hi " + i} });
                     stream.CommitChanges(Guid.NewGuid());
                 }
             }
