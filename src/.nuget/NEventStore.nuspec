@@ -15,6 +15,6 @@
 	<releaseNotes>v6.x is not backwards compatible with v5.x. Please check the release notes on github.</releaseNotes>
   </metadata>
   <files>
-    <file src="publish-net40\bin\**" target="lib\net40"/>
+    <file src="publish-net40\NEventStore\bin\**" target="lib\net40"/>
   </files>  
 </package>
