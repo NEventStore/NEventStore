@@ -5,14 +5,14 @@ namespace NEventStore
 
     public static class LoggingWireupExtensions
     {
-        public static Wireup LogToConsoleWindow(this Wireup wireup)
+        public static Wireup LogToConsoleWindow(this Wireup wireup, LogLevel logLevel = LogLevel.Info)
         {
-            return wireup.LogTo(type => new ConsoleWindowLogger(type));
+            return wireup.LogTo(type => new ConsoleWindowLogger(type, logLevel));
         }
 
-        public static Wireup LogToOutputWindow(this Wireup wireup)
+        public static Wireup LogToOutputWindow(this Wireup wireup, LogLevel logLevel = LogLevel.Info)
         {
-            return wireup.LogTo(type => new OutputWindowLogger(type));
+            return wireup.LogTo(type => new OutputWindowLogger(type, logLevel));
         }
 
         public static Wireup LogTo(this Wireup wireup, Func<Type, ILog> logger)

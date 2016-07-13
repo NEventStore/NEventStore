@@ -41,7 +41,7 @@ namespace NEventStore
 
         public override bool PreCommit(CommitAttempt attempt)
         {
-            Logger.Debug(Resources.OptimisticConcurrencyCheck, attempt.StreamId);
+            Logger.Verbose(Resources.OptimisticConcurrencyCheck, attempt.StreamId);
 
             ICommit head = GetStreamHead(GetHeadKey(attempt));
             if (head == null)
@@ -69,7 +69,7 @@ namespace NEventStore
                 throw new StorageException(); // beyond the end of the stream
             }
 
-            Logger.Debug(Resources.NoConflicts, attempt.StreamId);
+            Logger.Verbose(Resources.NoConflicts, attempt.StreamId);
             return true;
         }
 

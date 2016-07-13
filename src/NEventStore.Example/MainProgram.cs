@@ -3,6 +3,7 @@ namespace NEventStore.Example
     using System;
     using System.Transactions;
     using NEventStore;
+    using Logging;
 
     internal static class MainProgram
 	{
@@ -15,7 +16,9 @@ namespace NEventStore.Example
 
 		private static void Main()
 		{
-			using (var scope = new TransactionScope())
+            Console.WindowWidth = Console.LargestWindowWidth - 20;
+
+            using (var scope = new TransactionScope())
 			using (store = WireupEventStore())
 			{
 				OpenOrCreateStream();
@@ -32,7 +35,8 @@ namespace NEventStore.Example
 		private static IStoreEvents WireupEventStore()
 		{
 			 return Wireup.Init()
-				.LogToOutputWindow()
+				.LogToOutputWindow(LogLevel.Info)
+                .LogToConsoleWindow(LogLevel.Info)
 				.UsingInMemoryPersistence()
 					.InitializeStorageEngine()
 					.TrackPerformanceInstance("example")

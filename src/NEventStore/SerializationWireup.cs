@@ -18,7 +18,7 @@ namespace NEventStore
             Logger.Debug(Messages.ConfiguringCompression);
             var wrapped = Container.Resolve<ISerialize>();
 
-            Logger.Debug(Messages.WrappingSerializerGZip, wrapped.GetType());
+            Logger.Info(Messages.WrappingSerializerGZip, wrapped.GetType());
             Container.Register<ISerialize>(new GzipSerializer(wrapped));
             return this;
         }
@@ -28,7 +28,7 @@ namespace NEventStore
             Logger.Debug(Messages.ConfiguringEncryption);
             var wrapped = Container.Resolve<ISerialize>();
 
-            Logger.Debug(Messages.WrappingSerializerEncryption, wrapped.GetType());
+            Logger.Info(Messages.WrappingSerializerEncryption, wrapped.GetType());
             Container.Register<ISerialize>(new RijndaelSerializer(wrapped, encryptionKey));
             return this;
         }

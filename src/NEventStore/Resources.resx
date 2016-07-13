@@ -211,7 +211,7 @@
     <value>Pushing commit '{0}' to post-commit hook of type '{1}'.</value>
   </data>
   <data name="AddingCommitsToStream" xml:space="preserve">
-    <value>Adding commit '{0} with {1} events to stream '{2}'.</value>
+    <value>Adding commit '{0}' with {1} events to stream '{2}'.</value>
   </data>
   <data name="IgnoringBeyondRevision" xml:space="preserve">
     <value>Ignoring some events on commit '{0}' of stream '{1}' because they go beyond revision {2}.</value>
@@ -220,7 +220,7 @@
     <value>Ignoring some events on commit '{0}' of stream '{1}' because they starting before revision {2}.</value>
   </data>
   <data name="AppendingUncommittedToStream" xml:space="preserve">
-    <value>Appending uncommitted event to stream '{0}'</value>
+    <value>Appending uncommitted event '{0}' to stream '{1}'</value>
   </data>
   <data name="AttemptingToCommitChanges" xml:space="preserve">
     <value>Attempting to commit all changes on stream '{0}' to the underlying store.</value>
@@ -232,7 +232,7 @@
     <value>The underlying stream '{0}' has changed since the last known commit, refreshing the stream.</value>
   </data>
   <data name="PersistingCommit" xml:space="preserve">
-    <value>Pushing attempt '{0}' on stream '{1}' to the underlying store.</value>
+    <value>Pushing attempt '{0}' on stream '{1}' with '{2}' events to the underlying store.</value>
   </data>
   <data name="BuildingCommitAttempt" xml:space="preserve">
     <value>Building a commit attempt '{0}' on stream '{1}'.</value>
@@ -254,5 +254,14 @@
   </data>
   <data name="DeletingStream" xml:space="preserve">
     <value>Deleting stream '{0}' from bucket '{1}'.</value>
+  </data>
+  <data name="WireupHookIntoPipeline" xml:space="preserve">
+    <value>Hook into pipeline with hooks: {0}</value>
+  </data>
+  <data name="WireupSetPersistenceEngine" xml:space="preserve">
+    <value>Configured Persistence Engine: {0}</value>
+  </data>
+  <data name="WireupSetSerializer" xml:space="preserve">
+    <value>Configured serializer: {0}</value>
   </data>
 </root>

@@ -22,7 +22,7 @@ namespace NEventStore
 
         public virtual PersistenceWireup WithPersistence(IPersistStreams instance)
         {
-            Logger.Debug(Messages.RegisteringPersistenceEngine, instance.GetType());
+            Logger.Info(Messages.RegisteringPersistenceEngine, instance.GetType());
             With(instance);
             return this;
         }
@@ -34,7 +34,7 @@ namespace NEventStore
 
         public virtual PersistenceWireup InitializeStorageEngine()
         {
-            Logger.Debug(Messages.ConfiguringEngineInitialization);
+            Logger.Info(Messages.ConfiguringEngineInitialization);
             _initialize = true;
             return this;
         }
@@ -46,7 +46,7 @@ namespace NEventStore
                 throw new ArgumentNullException("instanceName", Messages.InstanceCannotBeNull);
             }
 
-            Logger.Debug(Messages.ConfiguringEnginePerformanceTracking);
+            Logger.Info(Messages.ConfiguringEnginePerformanceTracking);
             _tracking = true;
             _trackingInstanceName = instanceName;
             return this;
@@ -54,14 +54,14 @@ namespace NEventStore
 
         public virtual PersistenceWireup EnlistInAmbientTransaction()
         {
-            Logger.Debug(Messages.ConfiguringEngineEnlistment);
+            Logger.Info(Messages.ConfiguringEngineEnlistment);
             Container.Register(TransactionScopeOption.Required);
             return this;
         }
 
         public override IStoreEvents Build()
         {
-            Logger.Debug(Messages.BuildingEngine);
+            Logger.Info(Messages.BuildingEngine);
             var engine = Container.Resolve<IPersistStreams>();
 
             if (_initialize)

@@ -32,7 +32,7 @@ namespace NEventStore
             Guard.NotNull(() => attempt, attempt);
             foreach (var hook in _pipelineHooks)
             {
-                Logger.Debug(Resources.InvokingPreCommitHooks, attempt.CommitId, hook.GetType());
+                Logger.Verbose(Resources.InvokingPreCommitHooks, attempt.CommitId, hook.GetType());
                 if (hook.PreCommit(attempt))
                 {
                     continue;
@@ -42,12 +42,12 @@ namespace NEventStore
                 return null;
             }
 
-            Logger.Info(Resources.CommittingAttempt, attempt.CommitId, attempt.Events.Count);
+            Logger.Verbose(Resources.CommittingAttempt, attempt.CommitId, attempt.Events == null ? 0 : attempt.Events.Count);
             ICommit commit = _persistence.Commit(attempt);
 
             foreach (var hook in _pipelineHooks)
             {
-                Logger.Debug(Resources.InvokingPostCommitPipelineHooks, attempt.CommitId, hook.GetType());
+                Logger.Verbose(Resources.InvokingPostCommitPipelineHooks, attempt.CommitId, hook.GetType());
                 hook.PostCommit(commit);
             }
             return commit;
@@ -61,7 +61,7 @@ namespace NEventStore
 
         public virtual IEventStream CreateStream(string bucketId, string streamId)
         {
-            Logger.Info(Resources.CreatingStream, streamId, bucketId);
+            Logger.Debug(Resources.CreatingStream, streamId, bucketId);
             return new OptimisticEventStream(bucketId, streamId, this);
         }
 
@@ -69,7 +69,7 @@ namespace NEventStore
         {
             maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
 
-            Logger.Debug(Resources.OpeningStreamAtRevision, streamId, bucketId, minRevision, maxRevision);
+            Logger.Verbose(Resources.OpeningStreamAtRevision, streamId, bucketId, minRevision, maxRevision);
             return new OptimisticEventStream(bucketId, streamId, this, minRevision, maxRevision);
         }
 
@@ -80,7 +80,7 @@ namespace NEventStore
                 throw new ArgumentNullException("snapshot");
             }
 
-            Logger.Debug(Resources.OpeningStreamWithSnapshot, snapshot.StreamId, snapshot.StreamRevision, maxRevision);
+            Logger.Verbose(Resources.OpeningStreamWithSnapshot, snapshot.StreamId, snapshot.StreamRevision, maxRevision);
             maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
             return new OptimisticEventStream(snapshot, this, maxRevision);
         }
