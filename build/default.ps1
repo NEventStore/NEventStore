@@ -1,13 +1,13 @@
 properties {
     $base_directory = Resolve-Path ..
     $publish_directory = "$base_directory\publish-net40"
-    $build_directory = "$base_directory\build"
+    #$build_directory = "$base_directory\build"
     $src_directory = "$base_directory\src"
     $output_directory = "$base_directory\output"
-    $packages_directory = "$src_directory\packages"
+    #$packages_directory = "$src_directory\packages"
     $sln_file = "$src_directory\NEventStore.sln"
     $target_config = "Release"
-    $framework_version = "v4.0"
+    #$framework_version = "v4.0"
     $build_number = 0
     $assemblyInfoFilePath = "$src_directory\AssemblyInfo.cs"
 
