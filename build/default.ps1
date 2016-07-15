@@ -25,11 +25,16 @@ task default -depends Build
 task Build -depends Clean, UpdateVersion, Compile, Test
 
 task UpdateVersion {
-    $version = Get-Version $assemblyInfoFilePath
-    "Version: $version"
-	$oldVersion = New-Object Version $version
-	$newVersion = New-Object Version ($oldVersion.Major, $oldVersion.Minor, $oldVersion.Build, $buildNumber)
-	Update-Version $newVersion $assemblyInfoFilePath
+	# a task to invoke GitVersion using the configuration file found in the 
+	# root of the repository (GitVersionConfig.yaml)
+	& ..\src\packages\GitVersion.CommandLine.3.5.4\tools\GitVersion.exe $base_directory /nofetch /updateassemblyinfo
+
+	# outdated code that was using parameters passed to the build script
+	#$version = Get-Version $assemblyInfoFilePath
+    #"Version: $version"
+	#$oldVersion = New-Object Version $version
+	#$newVersion = New-Object Version ($oldVersion.Major, $oldVersion.Minor, $oldVersion.Build, $buildNumber)
+	#Update-Version $newVersion $assemblyInfoFilePath
 }
 
 task Compile {

@@ -14,3 +14,13 @@ Version tracking can be [found here](/doc/Versions.MD)
 [![TeamCity](http://neventstore.org/images/logo_teamcity_small.gif)](http://www.jetbrains.com/teamcity/)
 [![dotCover](http://neventstore.org/images/logo_dotcover_small.gif)](http://www.jetbrains.com/dotcover/)
 [![dotTrace](http://neventstore.org/images/logo_dottrace_small.gif)](http://www.jetbrains.com/dottrace/)
+
+# How to build
+
+To build the project locally use the following scripts:
+
+"RestorePackages.bat": let NuGet download all the packages it needs, you need to do this at least once to download all the tools needed to compile the library outside Visual Studio.
+
+"Build.RunTask.bat TaskName": executes the specified Task, available tasks are:
+- 
+
