@@ -8,12 +8,12 @@ properties {
     $sln_file = "$src_directory\NEventStore.sln"
     $target_config = "Release"
     #$framework_version = "v4.0"
-    $build_number = 0
-    $assemblyInfoFilePath = "$src_directory\AssemblyInfo.cs"
+    #$assemblyInfoFilePath = "$src_directory\AssemblyInfo.cs"
 
     $xunit_path = "$base_directory\bin\xunit.runners.1.9.1\tools\xunit.console.clr4.exe"
     $ilMergeModule.ilMergePath = "$base_directory\bin\ilmerge-bin\ILMerge.exe"
-    $nuget_dir = "$src_directory\.nuget"
+    
+	#$nuget_dir = "$src_directory\.nuget"
 
     if($runPersistenceTests -eq $null) {
     	$runPersistenceTests = $false
@@ -83,6 +83,7 @@ task PackageNEventStore -depends Clean, Compile {
 	###)
 
     Copy-Item -Path $src_directory/NEventStore/bin/$target_config/NEventStore.dll -Destination "$publish_directory\bin"
+	Copy-Item -Path $src_directory/NEventStore.Serialization.Json/bin/$target_config/NEventStore.Serialization.Json.dll -Destination "$publish_directory\bin"
 }
 
 task Clean {
@@ -90,12 +91,13 @@ task Clean {
     Clean-Item $output_directory -ea SilentlyContinue
 }
 
-task NuGetPack -depends Package {
-    $versionString = Get-Version $assemblyInfoFilePath
-	$version = New-Object Version $versionString
-	$packageVersion = $version.Major.ToString() + "." + $version.Minor.ToString() + "." + $version.Build.ToString() + "-build" + $build_number.ToString().PadLeft(5,'0')
-	gci -r -i *.nuspec "$nuget_dir" |% { .$nuget_dir\nuget.exe pack $_ -basepath $base_directory -o $publish_directory -version $packageVersion }
-}
+# todo: review this action, this is not going to work
+#task NuGetPack -depends Package {
+#    $versionString = Get-Version $assemblyInfoFilePath
+#	$version = New-Object Version $versionString
+#	$packageVersion = $version.Major.ToString() + "." + $version.Minor.ToString() + "." + $version.Build.ToString() + "-build" + $build_number.ToString().PadLeft(5,'0')
+#	gci -r -i *.nuspec "$nuget_dir" |% { .$nuget_dir\nuget.exe pack $_ -basepath $base_directory -o $publish_directory -version $packageVersion }
+#}
 
 function EnsureDirectory {
 	param($directory)
