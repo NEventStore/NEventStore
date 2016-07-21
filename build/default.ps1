@@ -1,19 +1,19 @@
 properties {
     $base_directory = Resolve-Path ..
     $publish_directory = "$base_directory\publish-net40"
-    $build_directory = "$base_directory\build"
+    #$build_directory = "$base_directory\build"
     $src_directory = "$base_directory\src"
     $output_directory = "$base_directory\output"
-    $packages_directory = "$src_directory\packages"
+    #$packages_directory = "$src_directory\packages"
     $sln_file = "$src_directory\NEventStore.sln"
     $target_config = "Release"
-    $framework_version = "v4.0"
-    $build_number = 0
-    $assemblyInfoFilePath = "$src_directory\AssemblyInfo.cs"
+    #$framework_version = "v4.0"
+    #$assemblyInfoFilePath = "$src_directory\AssemblyInfo.cs"
 
     $xunit_path = "$base_directory\bin\xunit.runners.1.9.1\tools\xunit.console.clr4.exe"
     $ilMergeModule.ilMergePath = "$base_directory\bin\ilmerge-bin\ILMerge.exe"
-    $nuget_dir = "$src_directory\.nuget"
+    
+	#$nuget_dir = "$src_directory\.nuget"
 
     if($runPersistenceTests -eq $null) {
     	$runPersistenceTests = $false
@@ -25,11 +25,16 @@ task default -depends Build
 task Build -depends Clean, UpdateVersion, Compile, Test
 
 task UpdateVersion {
-    $version = Get-Version $assemblyInfoFilePath
-    "Version: $version"
-	$oldVersion = New-Object Version $version
-	$newVersion = New-Object Version ($oldVersion.Major, $oldVersion.Minor, $oldVersion.Build, $buildNumber)
-	Update-Version $newVersion $assemblyInfoFilePath
+	# a task to invoke GitVersion using the configuration file found in the 
+	# root of the repository (GitVersionConfig.yaml)
+	& ..\src\packages\GitVersion.CommandLine.3.5.4\tools\GitVersion.exe $base_directory /nofetch /updateassemblyinfo
+
+	# outdated code that was using parameters passed to the build script
+	#$version = Get-Version $assemblyInfoFilePath
+    #"Version: $version"
+	#$oldVersion = New-Object Version $version
+	#$newVersion = New-Object Version ($oldVersion.Major, $oldVersion.Minor, $oldVersion.Build, $buildNumber)
+	#Update-Version $newVersion $assemblyInfoFilePath
 }
 
 task Compile {
@@ -78,6 +83,7 @@ task PackageNEventStore -depends Clean, Compile {
 	###)
 
     Copy-Item -Path $src_directory/NEventStore/bin/$target_config/NEventStore.dll -Destination "$publish_directory\bin"
+	Copy-Item -Path $src_directory/NEventStore.Serialization.Json/bin/$target_config/NEventStore.Serialization.Json.dll -Destination "$publish_directory\bin"
 }
 
 task Clean {
@@ -85,12 +91,13 @@ task Clean {
     Clean-Item $output_directory -ea SilentlyContinue
 }
 
-task NuGetPack -depends Package {
-    $versionString = Get-Version $assemblyInfoFilePath
-	$version = New-Object Version $versionString
-	$packageVersion = $version.Major.ToString() + "." + $version.Minor.ToString() + "." + $version.Build.ToString() + "-build" + $build_number.ToString().PadLeft(5,'0')
-	gci -r -i *.nuspec "$nuget_dir" |% { .$nuget_dir\nuget.exe pack $_ -basepath $base_directory -o $publish_directory -version $packageVersion }
-}
+# todo: review this action, this is not going to work
+#task NuGetPack -depends Package {
+#    $versionString = Get-Version $assemblyInfoFilePath
+#	$version = New-Object Version $versionString
+#	$packageVersion = $version.Major.ToString() + "." + $version.Minor.ToString() + "." + $version.Build.ToString() + "-build" + $build_number.ToString().PadLeft(5,'0')
+#	gci -r -i *.nuspec "$nuget_dir" |% { .$nuget_dir\nuget.exe pack $_ -basepath $base_directory -o $publish_directory -version $packageVersion }
+#}
 
 function EnsureDirectory {
 	param($directory)
