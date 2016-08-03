@@ -91,12 +91,13 @@ namespace NEventStore.Client
             _stopRequest = true;
         }
 
-        public Task PollNow()
+        public void PollNow()
         {
             //if (_pollingThread == null)
             //    throw new ArgumentException("You cannot call PollNow on a poller that is not started");
-            return Task<Boolean>.Factory.StartNew(InnerPoll);
-        }
+            //return Task<Boolean>.Factory.StartNew(InnerPoll);	 
+			InnerPoll();
+		}
 
         private int _isPolling = 0;
 
