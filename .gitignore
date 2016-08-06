@@ -110,3 +110,7 @@ UpgradeLog*.XML
 publish-net40/
 nunit.TestResult.*
 /output
+
+# Visual Studio options and artifacts
+.vs/
+*.lock.json
