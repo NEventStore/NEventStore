@@ -29,6 +29,14 @@ namespace NEventStore.Client
 
         private readonly Int32 _waitInterval;
 
+        private DateTime _lastActivityTimestamp;
+
+        private Thread _pollingThread;
+
+        private Func<IEnumerable<ICommit>> _pollingFunc;
+
+        private Int64 _checkpointToken;
+
         /// <summary>
         /// 
         /// </summary>
@@ -48,13 +56,15 @@ namespace NEventStore.Client
            
             _commitCallback = callback;
             _persistStreams = persistStreams;
+            _lastActivityTimestamp = DateTime.UtcNow;
         }
 
-        private Thread _pollingThread;
-
-        private Func<IEnumerable<ICommit>> _pollingFunc;
-
-        private Int64 _checkpointToken;
+        /// <summary>
+        /// Tells the caller the last tick count when the last activity occurred. This is useful for the caller
+        /// to setup Health check that verify if the poller is really active and it is really loading new commits.
+        /// This value is obtained with DateTime.UtcNow
+        /// </summary>
+        public DateTime LastActivityTimestamp { get { return _lastActivityTimestamp; } }
 
         public void StartFrom(Int64 checkpointToken = 0)
         {
@@ -120,12 +130,14 @@ namespace NEventStore.Client
         {
             if (Interlocked.CompareExchange(ref _isPolling, 1, 0) == 0)
             {
+                _lastActivityTimestamp = DateTime.UtcNow;
                 try
                 {
                     var commits = _pollingFunc();
 
                     foreach (var commit in commits)
                     {
+                        _lastActivityTimestamp = DateTime.UtcNow;
                         if (_stopRequest)
                         {
                             return true;
