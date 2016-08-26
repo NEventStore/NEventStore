@@ -145,6 +145,7 @@ namespace NEventStore.Client
                         var result = _commitCallback(commit);
                         if (result == HandlingResult.Retry)
                         {
+                            _logger.Verbose("Commit callback ask retry for checkpointToken {0} - last dispatched {1}", commit.CheckpointToken, _checkpointToken);
                             break;
                         }
                         else if (result == HandlingResult.Stop)

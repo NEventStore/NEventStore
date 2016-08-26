@@ -26,11 +26,13 @@ namespace NEventStore.Client
         }
 
         private DateTime? outOfSequenceTimestamp = null;
+
         public PollingClient2.HandlingResult Handle(ICommit commit)
         {
             var lc = commit.CheckpointToken;
             if (lc == _lastCommitRead + 1)
             {
+                //is ok no need to resequence.
                 return InnerHandleResult(commit, lc);
             }
             else if (_lastCommitRead >= lc)
@@ -41,6 +43,7 @@ namespace NEventStore.Client
 
             if (outOfSequenceTimestamp == null)
             {
+                _logger.Debug("Sequencer found out of sequence, last dispatched {0} now dispatching {1}", _lastCommitRead, lc);
                 outOfSequenceTimestamp = DateTimeService.Now;
             }
             else
@@ -48,8 +51,10 @@ namespace NEventStore.Client
                 var interval = DateTimeService.Now.Subtract(outOfSequenceTimestamp.Value);
                 if (interval.TotalMilliseconds > _outOfSequenceTimeoutInMilliseconds)
                 {
+                    _logger.Debug("Sequencer out of sequence timeout after {0} ms, last dispatched {1} now dispatching {2}", interval.TotalMilliseconds, _lastCommitRead, lc);
                     return InnerHandleResult(commit, lc);
                 }
+                _logger.Debug("Sequencer still out of sequence from {0} ms, last dispatched {1} now dispatching {2}", interval.TotalMilliseconds, _lastCommitRead, lc);
             }
 
             return PollingClient2.HandlingResult.Retry;
