@@ -9,7 +9,7 @@
     /// </summary>
     [Serializable]
     [DataContract]
-    public class EventMessage
+    public sealed class EventMessage
     {
         /// <summary>
         ///     Initializes a new instance of the EventMessage class.

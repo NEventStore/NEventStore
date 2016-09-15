@@ -120,29 +120,34 @@ namespace NEventStore
 
     public class when_adding_a_null_event_message : on_the_event_stream
     {
+        private Exception _thrown;
+
         protected override void Because()
         {
-            Stream.Add(null);
+            _thrown = Catch.Exception(() => Stream.Add(null));  
         }
 
         [Fact]
-        public void should_be_ignored()
+        public void should_throw()
         {
-            Stream.UncommittedEvents.ShouldBeEmpty();
+            _thrown.ShouldBeInstanceOf<ArgumentNullException>();
         }
     }
 
+
     public class when_adding_an_unpopulated_event_message : on_the_event_stream
     {
+        private Exception _thrown;
+
         protected override void Because()
         {
-            Stream.Add(new EventMessage {Body = null});
+            _thrown = Catch.Exception(() => Stream.Add(new EventMessage { Body = null }));
         }
 
         [Fact]
-        public void should_be_ignored()
+        public void should_throw()
         {
-            Stream.UncommittedEvents.ShouldBeEmpty();
+            _thrown.ShouldBeInstanceOf<ArgumentNullException>();
         }
     }
 

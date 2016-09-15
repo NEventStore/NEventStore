@@ -73,9 +73,14 @@ namespace NEventStore
 
         public void Add(EventMessage uncommittedEvent)
         {
-            if (uncommittedEvent == null || uncommittedEvent.Body == null)
+            if (uncommittedEvent == null)
             {
-                return;
+                throw new ArgumentNullException("uncommittedEvent");
+            }
+
+            if (uncommittedEvent.Body == null)
+            {
+                throw new ArgumentNullException("uncommittedEvent.Body");
             }
 
             Logger.Debug(Resources.AppendingUncommittedToStream, StreamId);

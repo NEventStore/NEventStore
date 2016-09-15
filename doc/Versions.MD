@@ -4,10 +4,12 @@
 
 ###Breaking changes
 
-- Removed Dispatcher (if was obsolete in the 5 version), you should dispatch with other mechanism, ex with a PollingClient.
-- Removed LongCheckpoint, checkpoint now is a plain Int64, there is no need to keep a LongCheckpoint class anymore. 
-- PollingClient was removed because it depends on Rx, you can [read more information here](/src/NEventStore/Client/README.MD). The new polling client is called PollingClient2.
-- JsonSerializer and BsonSerializer are now in a different assembly, if you need them you should reference the NEventStore.Serialization.Json assembly or implementing your serializer to avoid to depend to the same Json.Net version of the serializers.
+- **Removed Dispatcher** (if was obsolete in the 5 version), you should dispatch with other mechanism, ex with a PollingClient.
+- **Removed LongCheckpoint**, checkpoint now is a plain Int64, there is no need to keep a LongCheckpoint class anymore. 
+- **PollingClient was removed because it depends on Rx**, you can [read more information here](/src/NEventStore/Client/README.MD). The new polling client is called PollingClient2.
+- **JsonSerializer and BsonSerializer are now in a different assembly**, if you need them you should reference the NEventStore.Serialization.Json assembly or implementing your serializer to avoid to depend to the same Json.Net version of the serializers.
+- **EventMessage** class is now sealed, there is no need to have them to be inherited.
+- **OptimistcEventStream throws if null message or message with null body is added**. Previously if you called Add with null event message or add with an eventmessage with null body, the add is ignored without any warnings or errors. 
 
 ###Other Notes
 
