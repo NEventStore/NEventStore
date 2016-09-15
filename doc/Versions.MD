@@ -4,14 +4,19 @@
 
 ###Breaking changes
 
-- Removed Dispatcher, you should dispatch with other mechanism, ex with a PollingClient
+- Removed Dispatcher (if was obsolete in the 5 version), you should dispatch with other mechanism, ex with a PollingClient.
 - Removed LongCheckpoint, checkpoint now is a plain Int64, there is no need to keep a LongCheckpoint class anymore. 
-- Removed PollingClient because it depends on Rx, you can [read more information here](/src/NEventStore/Client/README.MD)
-- JsonSerializer and BsonSerializer are now in a different assembly, if you need them you should reference the NEventStore.Serialization.Json assembly or implementing your serializer to avoid to depend to the same Json.Net version of the serializers
+- PollingClient was removed because it depends on Rx, you can [read more information here](/src/NEventStore/Client/README.MD). The new polling client is called PollingClient2.
+- JsonSerializer and BsonSerializer are now in a different assembly, if you need them you should reference the NEventStore.Serialization.Json assembly or implementing your serializer to avoid to depend to the same Json.Net version of the serializers.
+
+###Other Notes
+
+All persistence providers: [MongoDb](https://github.com/NEventStore/NEventStore.Persistence.MongoDB), [RavenDb](https://github.com/NEventStore/NEventStore.Persistence.RavenDB), [Sql](https://github.com/NEventStore/NEventStore.Persistence.SQL), are now hosted in their own project. 
+Common Domain is now moved in its [own repository](https://github.com/NEventStore/NEventStore.Domain).
 
 ##v.5.x.x
 
-Note: Version 5 is not backwards compatible with v4. Updating to v5 without doing some preparation work will result in problems
+Note: Version 5 is not backwards compatible with v4. Updating to v5 without doing some preparation work will result in problems.
 
 ###Breaking Changes
 
