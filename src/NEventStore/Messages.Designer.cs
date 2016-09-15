@@ -124,6 +124,24 @@ namespace NEventStore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Head CommitSequence [{0}] greater or equal than Attempt CommitSequence [{1}] - StreamId {2} - StreamRevision {3} - Events Count {4}.
+        /// </summary>
+        internal static string ConcurrencyExceptionCommitSequence {
+            get {
+                return ResourceManager.GetString("ConcurrencyExceptionCommitSequence", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Head StreamRevision [{0}] greater or equal than Attempt StreamRevision [{1}] - StreamId {2} - StreamRevision {3} - Events Count {4}.
+        /// </summary>
+        internal static string ConcurrencyExceptionStreamRevision {
+            get {
+                return ResourceManager.GetString("ConcurrencyExceptionStreamRevision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Configuring serializer to compress the serialized payload..
         /// </summary>
         internal static string ConfiguringCompression {
@@ -192,6 +210,15 @@ namespace NEventStore {
         internal static string DialectSpecified {
             get {
                 return ResourceManager.GetString("DialectSpecified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duplicate commit id {0}..
+        /// </summary>
+        internal static string DuplicateCommitIdException {
+            get {
+                return ResourceManager.GetString("DuplicateCommitIdException", resourceCulture);
             }
         }
         
@@ -295,11 +322,38 @@ namespace NEventStore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Head CommitSequence [{0}] lesser than Attempt CommitSequence - 1 [{1}] - StreamId {2} - StreamRevision {3} - Events Count {4}.
+        /// </summary>
+        internal static string StorageExceptionCommitSequence {
+            get {
+                return ResourceManager.GetString("StorageExceptionCommitSequence", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stream EOF: head.StreamRevision [{0}] &lt; attempt.StreamRevision [{1}] - attempt.Events.Count [{2}] - StreamId {3} - StreamRevision {4} .
+        /// </summary>
+        internal static string StorageExceptionEndOfStream {
+            get {
+                return ResourceManager.GetString("StorageExceptionEndOfStream", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Registering stream ID hasher of type &apos;{0}&apos;.
         /// </summary>
         internal static string StreamIdHasherSpecified {
             get {
                 return ResourceManager.GetString("StreamIdHasherSpecified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stream not found: StreamId {0} bucket {1}..
+        /// </summary>
+        internal static string StreamNotFoundException {
+            get {
+                return ResourceManager.GetString("StreamNotFoundException", resourceCulture);
             }
         }
         

@@ -51,7 +51,7 @@ namespace NEventStore.Logging
             {
                 get
                 {
-                    throw new NotImplementedException();
+                    return LogLevel.Fatal;
                 }
             }
 

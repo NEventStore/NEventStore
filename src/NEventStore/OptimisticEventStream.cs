@@ -34,7 +34,7 @@ namespace NEventStore
 
             if (minRevision > 0 && _committed.Count == 0)
             {
-                throw new StreamNotFoundException();
+                throw new StreamNotFoundException(String.Format(Messages.StreamNotFoundException, streamId, BucketId));
             }
         }
 
@@ -88,7 +88,7 @@ namespace NEventStore
 
             if (_identifiers.Contains(commitId))
             {
-                throw new DuplicateCommitException();
+                throw new DuplicateCommitException(String.Format(Messages.DuplicateCommitIdException, commitId));
             }
 
             if (!HasChanges())
