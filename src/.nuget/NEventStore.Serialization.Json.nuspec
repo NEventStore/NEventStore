@@ -21,5 +21,6 @@
 
 	<files>
 		<file src="publish-net40\NEventStore.Serialization.Json\bin\**" target="lib\net40"/>
+		<file src="src\NEventStore.Serialization.Json\**\*.cs" target="src\NEventStore.Serialization.Json" />
 	</files>  
 </package>

@@ -16,5 +16,6 @@
   </metadata>
   <files>
     <file src="publish-net40\NEventStore\bin\**" target="lib\net40"/>
+	<file src="src\NEventStore\**\*.cs" target="src\NEventStore" />
   </files>  
 </package>
