@@ -61,7 +61,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Adding commit &apos;{0} with {1} events to stream &apos;{2}&apos;..
+        ///   Looks up a localized string similar to Adding commit &apos;{0}&apos; with {1} events to stream &apos;{2}&apos;..
         /// </summary>
         internal static string AddingCommitsToStream {
             get {
@@ -88,7 +88,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Appending uncommitted event to stream &apos;{0}&apos;.
+        ///   Looks up a localized string similar to Appending uncommitted event &apos;{0}&apos; to stream &apos;{1}&apos;.
         /// </summary>
         internal static string AppendingUncommittedToStream {
             get {
@@ -376,7 +376,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Pushing attempt &apos;{0}&apos; on stream &apos;{1}&apos; to the underlying store..
+        ///   Looks up a localized string similar to Pushing attempt &apos;{0}&apos; on stream &apos;{1}&apos; with &apos;{2}&apos; events to the underlying store..
         /// </summary>
         internal static string PersistingCommit {
             get {
@@ -457,7 +457,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The underlying stream &apos;{0}&apos; has changed since the last known commit, refreshing the stream..
+        ///   Looks up a localized string similar to The underlying stream &apos;{0}&apos; has changed since the last known commit, refreshing the stream. Exception Message: {1}.
         /// </summary>
         internal static string UnderlyingStreamHasChanged {
             get {
@@ -471,6 +471,33 @@ namespace NEventStore {
         internal static string UpdatingStreamHead {
             get {
                 return ResourceManager.GetString("UpdatingStreamHead", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hook into pipeline with hooks: {0}.
+        /// </summary>
+        internal static string WireupHookIntoPipeline {
+            get {
+                return ResourceManager.GetString("WireupHookIntoPipeline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configured Persistence Engine: {0}.
+        /// </summary>
+        internal static string WireupSetPersistenceEngine {
+            get {
+                return ResourceManager.GetString("WireupSetPersistenceEngine", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configured serializer: {0}.
+        /// </summary>
+        internal static string WireupSetSerializer {
+            get {
+                return ResourceManager.GetString("WireupSetSerializer", resourceCulture);
             }
         }
     }

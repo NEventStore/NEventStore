@@ -213,6 +213,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         {
             _thrown.ShouldBeInstanceOf<ConcurrencyException>();
         }
+
     }
 
     // This test ensure the uniqueness of BucketId+StreamId+CommitSequence 

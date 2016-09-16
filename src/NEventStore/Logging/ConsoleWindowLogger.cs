@@ -2,43 +2,45 @@ namespace NEventStore.Logging
 {
     using System;
 
-    public class ConsoleWindowLogger : ILog
+    public class ConsoleWindowLogger : NEventStoreBaseLogger
     {
         private static readonly object Sync = new object();
         private readonly ConsoleColor _originalColor = Console.ForegroundColor;
         private readonly Type _typeToLog;
 
-        public ConsoleWindowLogger(Type typeToLog)
+        public int MyProperty { get; set; }
+
+        public ConsoleWindowLogger(Type typeToLog, LogLevel logLevel = LogLevel.Info) : base (logLevel)
         {
             _typeToLog = typeToLog;
         }
 
-        public virtual void Verbose(string message, params object[] values)
+        public override void OnVerbose(string message, params object[] values)
         {
             Log(ConsoleColor.DarkGreen, message, values);
         }
 
-        public virtual void Debug(string message, params object[] values)
+        public override void OnDebug(string message, params object[] values)
         {
             Log(ConsoleColor.Green, message, values);
         }
 
-        public virtual void Info(string message, params object[] values)
+        public override void OnInfo(string message, params object[] values)
         {
             Log(ConsoleColor.White, message, values);
         }
 
-        public virtual void Warn(string message, params object[] values)
+        public override void OnWarn(string message, params object[] values)
         {
             Log(ConsoleColor.Yellow, message, values);
         }
 
-        public virtual void Error(string message, params object[] values)
+        public override void OnError(string message, params object[] values)
         {
             Log(ConsoleColor.DarkRed, message, values);
         }
 
-        public virtual void Fatal(string message, params object[] values)
+        public override void OnFatal(string message, params object[] values)
         {
             Log(ConsoleColor.Red, message, values);
         }

@@ -104,6 +104,14 @@ namespace NEventStore
             {
                 thrown.ShouldBeInstanceOf<ConcurrencyException>();
             }
+
+
+            [Fact]
+            public void ConcurrencyException_should_have_good_message()
+            {
+                thrown.Message.ShouldContain(Attempt.StreamId);
+                thrown.Message.ShouldContain("CommitSequence [" + Attempt.CommitSequence);
+            }
         }
 
     public class when_committing_with_a_revision_less_or_equal_to_than_the_most_recent_revision_read_for_the_stream : using_commit_hooks
@@ -133,6 +141,13 @@ namespace NEventStore
             {
                 _thrown.ShouldBeInstanceOf<ConcurrencyException>();
             }
+
+            [Fact]
+            public void ConcurrencyException_should_have_good_message()
+            {
+                _thrown.Message.ShouldContain(_failedAttempt.StreamId);
+                _thrown.Message.ShouldContain("StreamRevision [" + _failedAttempt.CommitSequence);
+            }
         }
 
     public class when_committing_with_a_commit_sequence_less_than_or_equal_to_the_most_recent_commit_for_the_stream : using_commit_hooks
@@ -159,6 +174,13 @@ namespace NEventStore
             public void should_throw_a_ConcurrencyException()
             {
                 _thrown.ShouldBeInstanceOf<ConcurrencyException>();
+            }
+
+            [Fact]
+            public void ConcurrencyException_should_have_good_message()
+            {
+                _thrown.Message.ShouldContain(_failedAttempt.StreamId);
+                _thrown.Message.ShouldContain("CommitSequence [" + _failedAttempt.CommitSequence);
             }
         }
 
@@ -187,6 +209,13 @@ namespace NEventStore
             public void should_throw_a_ConcurrencyException()
             {
                 _thrown.ShouldBeInstanceOf<ConcurrencyException>();
+            }
+
+            [Fact]
+            public void Concurrency_exception_should_have_good_message()
+            {
+                _thrown.Message.ShouldContain(_failedAttempt.StreamId);
+                _thrown.Message.ShouldContain(_failedAttempt.StreamRevision.ToString());
             }
         }
 

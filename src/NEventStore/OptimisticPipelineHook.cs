@@ -41,7 +41,7 @@ namespace NEventStore
 
         public override bool PreCommit(CommitAttempt attempt)
         {
-            Logger.Debug(Resources.OptimisticConcurrencyCheck, attempt.StreamId);
+            Logger.Verbose(Resources.OptimisticConcurrencyCheck, attempt.StreamId);
 
             ICommit head = GetStreamHead(GetHeadKey(attempt));
             if (head == null)
@@ -51,25 +51,53 @@ namespace NEventStore
 
             if (head.CommitSequence >= attempt.CommitSequence)
             {
-                throw new ConcurrencyException();
+                throw new ConcurrencyException(String.Format(
+                    Messages.ConcurrencyExceptionCommitSequence,
+                    head.CommitSequence,
+                    attempt.CommitSequence,
+                    attempt.StreamId,
+                    attempt.StreamRevision,
+                    attempt.Events.Count
+                ));
             }
 
             if (head.StreamRevision >= attempt.StreamRevision)
             {
-                throw new ConcurrencyException();
+                throw new ConcurrencyException(String.Format(
+                    Messages.ConcurrencyExceptionStreamRevision,
+                    head.StreamRevision,
+                    attempt.StreamRevision,
+                    attempt.StreamId,
+                    attempt.StreamRevision,
+                    attempt.Events.Count
+                ));
             }
 
             if (head.CommitSequence < attempt.CommitSequence - 1)
             {
-                throw new StorageException(); // beyond the end of the stream
+                throw new StorageException(String.Format(
+                     Messages.StorageExceptionCommitSequence,
+                     head.CommitSequence,
+                     attempt.CommitSequence,
+                     attempt.StreamId,
+                     attempt.StreamRevision,
+                     attempt.Events.Count
+                 )); // beyond the end of the stream
             }
 
             if (head.StreamRevision < attempt.StreamRevision - attempt.Events.Count)
             {
-                throw new StorageException(); // beyond the end of the stream
+                throw new StorageException(String.Format(
+                     Messages.StorageExceptionEndOfStream,
+                     head.StreamRevision,
+                     attempt.StreamRevision,
+                     attempt.Events.Count,
+                     attempt.StreamId,
+                     attempt.StreamRevision
+                 )); // beyond the end of the stream
             }
 
-            Logger.Debug(Resources.NoConflicts, attempt.StreamId);
+            Logger.Verbose(Resources.NoConflicts, attempt.StreamId);
             return true;
         }
 
