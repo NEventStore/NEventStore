@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.25920.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".test", ".test", "{D3C17830-A461-4BA5-A672-461B19B33936}"
+	ProjectSection(SolutionItems) = preProject
+		NEventStore.Persistence.AcceptanceTests\PersistenceTests.cs = NEventStore.Persistence.AcceptanceTests\PersistenceTests.cs
+		NEventStore.Persistence.AcceptanceTests\SerializationTests.cs = NEventStore.Persistence.AcceptanceTests\SerializationTests.cs
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".doc", ".doc", "{CD37080A-F48D-4E5D-B7C6-B9F86BB05A38}"
+	ProjectSection(SolutionItems) = preProject
+		..\readme.markdown = ..\readme.markdown
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "serialization", "serialization", "{52F7988F-452D-46C2-A144-D85E0CF371C6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{08A28C69-B04C-4622-8BF7-C9C4C410E64C}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NEventStore.nuspec = .nuget\NEventStore.nuspec
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "core", "core", "{D35087BF-941A-49EA-96A8-B10457C4D169}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEventStore.Core", "NEventStore\NEventStore.Core.csproj", "{EB3ABF3B-295C-4BDD-8EA2-B60F30BC5E6C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EB3ABF3B-295C-4BDD-8EA2-B60F30BC5E6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB3ABF3B-295C-4BDD-8EA2-B60F30BC5E6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB3ABF3B-295C-4BDD-8EA2-B60F30BC5E6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB3ABF3B-295C-4BDD-8EA2-B60F30BC5E6C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EB3ABF3B-295C-4BDD-8EA2-B60F30BC5E6C} = {D35087BF-941A-49EA-96A8-B10457C4D169}
+	EndGlobalSection
+EndGlobal

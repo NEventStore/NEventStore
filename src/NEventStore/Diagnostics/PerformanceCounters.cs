@@ -3,6 +3,7 @@ namespace NEventStore.Diagnostics
     using System;
     using System.Diagnostics;
 
+#if !NETCORE
     internal class PerformanceCounters : IDisposable
     {
         private const string CategoryName = "NEventStore";
@@ -108,4 +109,5 @@ namespace NEventStore.Diagnostics
             _snapshotsRate.Dispose();
         }
     }
+#endif
 }

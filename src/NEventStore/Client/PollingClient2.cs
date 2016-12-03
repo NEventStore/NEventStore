@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NEventStore.Logging;
@@ -69,7 +67,7 @@ namespace NEventStore.Client
         public void StartFrom(Int64 checkpointToken = 0)
         {
             if (_pollingThread != null)
-                throw new ApplicationException("Polling client already started");
+                throw new PollingClientException("Polling client already started");
             _checkpointToken = checkpointToken;
             ConfigurePollingFunction();
             _pollingThread = new Thread(InnerPollingLoop);
@@ -79,7 +77,7 @@ namespace NEventStore.Client
         public void ConfigurePollingFunction(string bucketId = null)
         {
             if (_pollingThread != null)
-                throw new ApplicationException("Cannot configure when polling client already started polling");
+                throw new PollingClientException("Cannot configure when polling client already started polling");
             if (bucketId == null)
                 _pollingFunc = () => _persistStreams.GetFrom(_checkpointToken);
             else
@@ -89,7 +87,7 @@ namespace NEventStore.Client
         public void StartFromBucket(string bucketId, Int64 checkpointToken = 0)
         {
             if (_pollingThread != null)
-                throw new ApplicationException("Polling client already started");
+                throw new PollingClientException("Polling client already started");
             _checkpointToken = checkpointToken;
             ConfigurePollingFunction(bucketId);
             _pollingThread = new Thread(InnerPollingLoop);

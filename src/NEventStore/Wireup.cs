@@ -2,7 +2,9 @@ namespace NEventStore
 {
     using System.Collections.Generic;
     using System.Linq;
+#if !NETCORE
     using System.Transactions;
+#endif
     using NEventStore.Conversion;
     using NEventStore.Persistence;
     using NEventStore.Persistence.InMemory;
@@ -33,8 +35,9 @@ namespace NEventStore
         public static Wireup Init()
         {
             var container = new NanoContainer();
-
+#if !NETCORE
             container.Register(TransactionScopeOption.Suppress);
+#endif
             container.Register<IPersistStreams>(new InMemoryPersistenceEngine());
             container.Register(BuildEventStore);
 
@@ -72,8 +75,12 @@ namespace NEventStore
 
         private static IStoreEvents BuildEventStore(NanoContainer context)
         {
+#if !NETCORE
             var scopeOption = context.Resolve<TransactionScopeOption>();
             OptimisticPipelineHook concurrency = scopeOption == TransactionScopeOption.Suppress ? new OptimisticPipelineHook() : null;
+#else
+            OptimisticPipelineHook concurrency = new OptimisticPipelineHook();
+#endif
             var upconverter = context.Resolve<EventUpconverterPipelineHook>();
 
             ICollection<IPipelineHook> hooks = context.Resolve<ICollection<IPipelineHook>>() ?? new IPipelineHook[0];

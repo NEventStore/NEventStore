@@ -13,7 +13,7 @@ namespace NEventStore
         ///     Initializes a new instance of the ConcurrencyException class.
         /// </summary>
         public ConcurrencyException()
-        {}
+        { }
 
         /// <summary>
         ///     Initializes a new instance of the ConcurrencyException class.
@@ -21,7 +21,7 @@ namespace NEventStore
         /// <param name="message">The message that describes the error.</param>
         public ConcurrencyException(string message)
             : base(message)
-        {}
+        { }
 
         /// <summary>
         ///     Initializes a new instance of the ConcurrencyException class.
@@ -30,8 +30,9 @@ namespace NEventStore
         /// <param name="innerException">The message that is the cause of the current exception.</param>
         public ConcurrencyException(string message, Exception innerException)
             : base(message, innerException)
-        {}
+        { }
 
+#if !NETCORE
         /// <summary>
         ///     Initializes a new instance of the ConcurrencyException class.
         /// </summary>
@@ -40,5 +41,6 @@ namespace NEventStore
         protected ConcurrencyException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {}
+#endif
     }
 }
