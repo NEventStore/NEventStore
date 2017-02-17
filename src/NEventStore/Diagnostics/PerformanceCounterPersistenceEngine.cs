@@ -5,7 +5,7 @@ namespace NEventStore.Diagnostics
     using System.Diagnostics;
     using NEventStore.Persistence;
 
-#if !NETCORE
+#if !NETSTANDARD1_6
     public class PerformanceCounterPersistenceEngine : IPersistStreams
     {
         private readonly PerformanceCounters _counters;

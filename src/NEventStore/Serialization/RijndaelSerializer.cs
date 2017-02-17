@@ -6,6 +6,7 @@ namespace NEventStore.Serialization
     using System.Security.Cryptography;
     using NEventStore.Logging;
 
+#if !NETSTANDARD1_6
     public class RijndaelSerializer : ISerialize
     {
         private const int KeyLength = 16; // bytes
@@ -23,7 +24,7 @@ namespace NEventStore.Serialization
             _encryptionKey = encryptionKey;
             _inner = inner;
         }
-
+        
         public virtual void Serialize<T>(Stream output, T graph)
         {
             Logger.Verbose(Messages.SerializingGraph, typeof (T));
@@ -74,4 +75,5 @@ namespace NEventStore.Serialization
             return buffer;
         }
     }
+#endif
 }

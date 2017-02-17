@@ -32,7 +32,7 @@ namespace NEventStore
             : base(message, innerException)
         {}
 
-#if !NETCORE
+#if !NETSTANDARD1_6
         /// <summary>
         ///     Initializes a new instance of the StreamNotFoundException class.
         /// </summary>

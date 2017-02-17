@@ -1,7 +1,7 @@
 namespace NEventStore
 {
     using System;
-#if !NETCORE
+#if !NETSTANDARD1_6
     using System.Transactions;
 #endif
     using NEventStore.Diagnostics;
@@ -19,7 +19,7 @@ namespace NEventStore
         public PersistenceWireup(Wireup inner)
             : base(inner)
         {
-#if !NETCORE
+#if !NETSTANDARD1_6
             Container.Register(TransactionScopeOption.Suppress);
 #endif
         }
@@ -56,7 +56,7 @@ namespace NEventStore
             return this;
         }
 
-#if !NETCORE
+#if !NETSTANDARD1_6
         public virtual PersistenceWireup EnlistInAmbientTransaction()
         {
             Logger.Info(Messages.ConfiguringEngineEnlistment);
@@ -78,7 +78,7 @@ namespace NEventStore
 
             if (_tracking)
             {
-#if !NETCORE
+#if !NETSTANDARD1_6
                 Container.Register<IPersistStreams>(new PerformanceCounterPersistenceEngine(engine, _trackingInstanceName));
 #endif
             }

@@ -3,7 +3,7 @@ namespace NEventStore.Diagnostics
     using System;
     using System.Diagnostics;
 
-#if !NETCORE
+#if !NETSTANDARD1_6
     internal class PerformanceCounters : IDisposable
     {
         private const string CategoryName = "NEventStore";

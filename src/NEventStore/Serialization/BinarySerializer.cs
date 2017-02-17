@@ -1,6 +1,6 @@
 namespace NEventStore.Serialization
 {
-#if !NETCORE
+#if !NETSTANDARD1_6
     using System.IO;
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
