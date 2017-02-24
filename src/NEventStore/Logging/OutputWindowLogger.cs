@@ -55,8 +55,12 @@ namespace NEventStore.Logging
         {
             lock (Sync)
             {
-                Trace.WriteLine(category, message.FormatMessage(_typeToLog, values));
-            }
+#if !NETSTANDARD1_6
+				Trace.WriteLine(category, message.FormatMessage(_typeToLog, values));
+#else
+				System.Diagnostics.Debug.WriteLine(category, message.FormatMessage(_typeToLog, values));
+#endif
+			}
         }
     }
 }

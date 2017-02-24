@@ -5,6 +5,7 @@
     <Authors>NEventStore</Authors>
     <Company>NEventStore</Company>
     <Product>NEventStore</Product>
+    <RootNamespace>NEventStore</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;DEBUG;NETSTANDARD1_6</DefineConstants>

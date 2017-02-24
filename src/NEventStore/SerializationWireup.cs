@@ -23,7 +23,8 @@ namespace NEventStore
             return this;
         }
 
-        public SerializationWireup EncryptWith(byte[] encryptionKey)
+#if !NETSTANDARD1_6
+		public SerializationWireup EncryptWith(byte[] encryptionKey)
         {
             Logger.Debug(Messages.ConfiguringEncryption);
             var wrapped = Container.Resolve<ISerialize>();
@@ -32,5 +33,6 @@ namespace NEventStore
             Container.Register<ISerialize>(new RijndaelSerializer(wrapped, encryptionKey));
             return this;
         }
+#endif
     }
 }
