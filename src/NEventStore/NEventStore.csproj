@@ -60,6 +60,7 @@
       <DependentUpon>Messages.resx</DependentUpon>
     </Compile>
     <Compile Include="Client\PollingClient2.cs" />
+    <Compile Include="Client\PollingClientException.cs" />
     <Compile Include="Client\TaskHelpers.cs" />
     <Compile Include="CommitAttemptExtensions.cs" />
     <Compile Include="CommitEqualityComparer.cs" />

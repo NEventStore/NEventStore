@@ -50,7 +50,19 @@ namespace NEventStore
 
         private static IDictionary<Type, Func<object, object>> GetConverters(IEnumerable<Assembly> toScan)
         {
-            IEnumerable<KeyValuePair<Type, Func<object, object>>> c = from a in toScan
+#if !NETSTANDARD1_6
+			IEnumerable<KeyValuePair<Type, Func<object, object>>> c = from a in toScan
+                                                                      from t in a.GetTypes()
+                                                                      where !t.IsAbstract
+                                                                      let i = t.GetInterface(typeof (IUpconvertEvents<,>).FullName)
+                                                                      where i != null
+                                                                      let sourceType = i.GetGenericArguments().First()
+                                                                      let convertMethod = i.GetMethods(BindingFlags.Public | BindingFlags.Instance).First()
+                                                                      let instance = Activator.CreateInstance(t)
+                                                                      select new KeyValuePair<Type, Func<object, object>>(
+                                                                          sourceType, e => convertMethod.Invoke(instance, new[] {e}));
+#else
+			IEnumerable<KeyValuePair<Type, Func<object, object>>> c = from a in toScan
                                                                       from t in a.GetTypes()
                                                                       where !t.GetTypeInfo().IsAbstract
                                                                       let i = t.GetTypeInfo().GetInterface(typeof (IUpconvertEvents<,>).FullName)
@@ -60,8 +72,9 @@ namespace NEventStore
                                                                       let instance = Activator.CreateInstance(t)
                                                                       select new KeyValuePair<Type, Func<object, object>>(
                                                                           sourceType, e => convertMethod.Invoke(instance, new[] {e}));
-            try
-            {
+#endif
+			try
+			{
                 return c.ToDictionary(x => x.Key, x => x.Value);
             }
             catch (ArgumentException e)
@@ -79,8 +92,12 @@ namespace NEventStore
 
         public virtual EventUpconverterWireup WithConvertersFromAssemblyContaining(params Type[] converters)
         {
-            IEnumerable<Assembly> assemblies = converters.Select(c => c.GetTypeInfo().Assembly).Distinct();
-            Logger.Debug(Messages.EventUpconvertersLoadedFrom, string.Concat(", ", assemblies));
+#if !NETSTANDARD1_6
+			IEnumerable<Assembly> assemblies = converters.Select(c => c.Assembly).Distinct();
+#else
+			IEnumerable<Assembly> assemblies = converters.Select(c => c.GetTypeInfo().Assembly).Distinct();
+#endif
+			Logger.Debug(Messages.EventUpconvertersLoadedFrom, string.Concat(", ", assemblies));
             _assembliesToScan.AddRange(assemblies);
             return this;
         }
