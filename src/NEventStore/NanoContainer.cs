@@ -3,8 +3,9 @@ namespace NEventStore
     using System;
     using System.Collections.Generic;
     using NEventStore.Logging;
+	using System.Reflection;
 
-    public class NanoContainer
+	public class NanoContainer
     {
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (NanoContainer));
 
@@ -27,7 +28,7 @@ namespace NEventStore
                 throw new ArgumentNullException("instance", Messages.InstanceCannotBeNull);
             }
 
-            if (!typeof (TService).IsValueType && !typeof (TService).IsInterface)
+            if (!typeof(TService).GetTypeInfo().IsValueType && !typeof(TService).GetTypeInfo().IsInterface)
             {
                 throw new ArgumentException(Messages.TypeMustBeInterface, "instance");
             }
