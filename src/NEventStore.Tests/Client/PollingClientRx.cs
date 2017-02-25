@@ -1,18 +1,13 @@
 ﻿namespace NEventStore.Client
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Reactive;
-    using System.Reactive.Subjects;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using NEventStore.Logging;
-    using NEventStore.Persistence;
+	using System;
+	using System.Reactive.Subjects;
+	using NEventStore.Persistence;
 
-    /// <summary>
-    /// Represents a client that poll the storage for latest commits.
-    /// </summary>
-    public sealed class PollingClientRx 
+	/// <summary>
+	/// Represents a client that poll the storage for latest commits.
+	/// </summary>
+	public sealed class PollingClientRx 
     {
         private readonly PollingClient2 _pollingClient2;
 
@@ -25,7 +20,7 @@
             if (persistStreams == null) throw new ArgumentNullException("persistStreams");
             if (waitInterval <= 0)
             {
-                throw new ArgumentException(Messages.MustBeGreaterThanZero.FormatWith("interval"));
+				throw new ArgumentException("Must be greater than 0", nameof(waitInterval));
             }
             _subject = new Subject<ICommit>();
             _pollingClient2 = new PollingClient2(persistStreams, c =>

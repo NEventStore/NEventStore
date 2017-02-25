@@ -54,11 +54,6 @@
     <Compile Include="AccessSnapshotsExtensions.cs" />
     <Compile Include="Bucket.cs" />
     <Compile Include="Client\CommitSequencer.cs" />
-    <Compile Include="Client\Messages.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Messages.resx</DependentUpon>
-    </Compile>
     <Compile Include="Client\PollingClient2.cs" />
     <Compile Include="Client\PollingClientException.cs" />
     <Compile Include="Client\TaskHelpers.cs" />
@@ -160,10 +155,6 @@
     <Reference Include="System.Transactions" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Client\Messages.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
     <EmbeddedResource Include="Messages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
