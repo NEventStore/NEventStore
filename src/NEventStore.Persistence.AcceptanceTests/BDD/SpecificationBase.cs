@@ -2,7 +2,9 @@
 {
     using Xunit;
 
-    [RunWith(typeof (SpecificationBaseRunner))]
+#if !XUNIT2
+	[RunWith(typeof (SpecificationBaseRunner))]
+#endif
     public abstract class SpecificationBase
     {
         protected virtual void Because()
