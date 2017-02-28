@@ -29,6 +29,8 @@ namespace NEventStore.Client
 
         private DateTime _lastActivityTimestamp;
 
+        private String _lastPollingError;
+
         private Thread _pollingThread;
 
         private Func<IEnumerable<ICommit>> _pollingFunc;
@@ -63,6 +65,13 @@ namespace NEventStore.Client
         /// This value is obtained with DateTime.UtcNow
         /// </summary>
         public DateTime LastActivityTimestamp { get { return _lastActivityTimestamp; } }
+
+        /// <summary>
+        /// If poller encounter an exception it immediately retry, but we need to tell to the caller code
+        /// that the last polling encounter an error. This is needed to detect a poller stuck as an example
+        /// with deserialization problems.
+        /// </summary>
+        public String LastPollingError { get { return _lastPollingError; } }
 
         public void StartFrom(Int64 checkpointToken = 0)
         {
@@ -121,6 +130,11 @@ namespace NEventStore.Client
         }
 
         /// <summary>
+        /// Added to avoid flooding of logging during polling.
+        /// </summary>
+        private DateTime _lastPollingErrorLogTimestamp = DateTime.MinValue;
+
+        /// <summary>
         /// 
         /// </summary>
         /// <returns>Returns true if we need to stop the outer cycle.</returns>
@@ -132,9 +146,11 @@ namespace NEventStore.Client
                 try
                 {
                     var commits = _pollingFunc();
-
+                    //if we have an error in the provider, the error will be thrown during enumeration
                     foreach (var commit in commits)
                     {
+                        //We need to reset the error, because we read correctly a commit
+                        _lastPollingError = null;
                         _lastActivityTimestamp = DateTime.UtcNow;
                         if (_stopRequest)
                         {
@@ -145,7 +161,7 @@ namespace NEventStore.Client
                         {
                             _logger.Verbose("Commit callback ask retry for checkpointToken {0} - last dispatched {1}", commit.CheckpointToken, _checkpointToken);
                             break;
-                        }
+                        } 
                         else if (result == HandlingResult.Stop)
                         {
                             Stop();
@@ -153,12 +169,23 @@ namespace NEventStore.Client
                         }
                         _checkpointToken = commit.CheckpointToken;
                     }
+                    //if we reach here, we had no error contacting the persistence store.
+                    _lastPollingError = null;
                 }
                 catch (Exception ex)
                 {
-                    // These exceptions are expected to be transient
-                    _logger.Error(String.Format("Error during polling client {0}", ex.ToString()));
-                } 
+                    _lastPollingError = ex.Message;
+
+                    // These exceptions are expected to be transient, we log at maximum a log each minute.
+                    if (DateTime.UtcNow.Subtract(_lastPollingErrorLogTimestamp).TotalMinutes > 1)
+                    {
+                        _logger.Error(String.Format("Error during polling client {0}", ex.ToString()));
+                        _lastPollingErrorLogTimestamp = DateTime.UtcNow;
+                    }
+
+                    //A transient reading error is possible, but we need to wait a little bit before retrying.
+                    Thread.Sleep(1000); 
+                }
                 Interlocked.Exchange(ref _isPolling, 0);
             }
             return false;
