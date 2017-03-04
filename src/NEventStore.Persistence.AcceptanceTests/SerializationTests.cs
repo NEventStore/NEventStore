@@ -14,6 +14,7 @@
     using Xunit.Should;
 #endif
 
+	[TestFixture]
 	public class when_serializing_a_simple_message : SerializationConcern
     {
         private readonly SimpleMessage _message = new SimpleMessage().Populate();

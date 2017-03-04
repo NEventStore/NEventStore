@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
     <RootNamespace>NEventStore.Persistence.AcceptanceTests</RootNamespace>
     <Description />
     <Company />
@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <PackageReference Include="NUnit" Version="3.6.1" />
-    <PackageReference Update="NETStandard.Library" Version="1.6.1" />
   </ItemGroup>
 
   <ItemGroup>
