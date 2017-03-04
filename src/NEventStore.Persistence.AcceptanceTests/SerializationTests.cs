@@ -6,15 +6,21 @@
     using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
 	using FluentAssertions;
+#if MSTEST
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
+#endif
 #if NUNIT
 	using NUnit.Framework;
+	
 #endif
 #if XUNIT
 	using Xunit;
     using Xunit.Should;
 #endif
 
-	[TestFixture]
+#if MSTEST
+	[TestClass]
+#endif
 	public class when_serializing_a_simple_message : SerializationConcern
     {
         private readonly SimpleMessage _message = new SimpleMessage().Populate();
