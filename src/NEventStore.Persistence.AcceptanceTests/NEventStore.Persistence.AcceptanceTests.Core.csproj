@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;NETSTANDARD1_6;XUNIT2</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETSTANDARD1_6;NUNIT</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="xunit.core" Version="2.2.0" />
+    <PackageReference Include="NUnit" Version="3.6.1" />
     <PackageReference Update="NETStandard.Library" Version="1.6.1" />
   </ItemGroup>
 

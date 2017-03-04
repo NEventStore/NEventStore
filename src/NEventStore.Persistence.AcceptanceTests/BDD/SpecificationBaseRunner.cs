@@ -1,12 +1,12 @@
-﻿namespace NEventStore.Persistence.AcceptanceTests.BDD
+﻿#if XUNIT
+
+namespace NEventStore.Persistence.AcceptanceTests.BDD
 {
     using System;
     using System.Collections.Generic;
     using System.Reflection;
     using Xunit;
     using Xunit.Sdk;
-
-#if !XUNIT2
 
 	internal class SpecificationBaseRunner : ITestClassCommand
     {
@@ -163,6 +163,6 @@
         }
     }
 
-#endif
-
 }
+
+#endif
