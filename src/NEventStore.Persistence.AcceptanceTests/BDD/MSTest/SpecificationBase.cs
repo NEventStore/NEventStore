@@ -7,7 +7,9 @@ namespace NEventStore.Persistence.AcceptanceTests.BDD
 
 	/// <summary>
 	/// base class for BDD testing in a Given-When-Then style
-	/// using NUnit
+	/// using MSTest
+	/// 
+	/// in MSTest each test will be executed by a new instance of the test class.
 	/// 
 	/// this will be used to implement a class that will test a single 
 	/// action or behavior and multiple result conditions
@@ -32,7 +34,7 @@ namespace NEventStore.Persistence.AcceptanceTests.BDD
 		/// maybe catch the generated exception with something like: Catch.Exception() shown here and save it to a local variable
 		/// in the when() function, then test for the exception in the 'then' tests 
 		/// </summary>
-		[ClassInitialize]
+		[TestInitialize]
 		public void SetUp()
 		{
 			try
@@ -44,6 +46,7 @@ namespace NEventStore.Persistence.AcceptanceTests.BDD
 			{
 				testFixtureSetupException = ex;
 			}
+
 		}
 
 		[TestInitialize]
