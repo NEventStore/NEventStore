@@ -13,10 +13,22 @@ namespace NEventStore
     using NEventStore.Persistence;
     using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
-    using Xunit;
-    using Xunit.Should;
+#if MSTEST
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using FluentAssertions;
+#endif
+#if NUNIT
+	using NUnit.Framework;	
+#endif
+#if XUNIT
+	using Xunit;
+	sing Xunit.Should;
+#endif
 
-    public class when_creating_a_new_stream : using_persistence
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_creating_a_new_stream : using_persistence
     {
         private IEventStream _stream;
 
@@ -28,47 +40,50 @@ namespace NEventStore
         [Fact]
         public void should_return_a_new_stream()
         {
-            _stream.ShouldNotBeNull();
+            _stream.Should().NotBeNull();
         }
 
         [Fact]
         public void should_return_a_stream_with_the_correct_stream_identifier()
         {
-            _stream.StreamId.ShouldBe(streamId);
+            _stream.StreamId.Should().Be(streamId);
         }
 
         [Fact]
         public void should_return_a_stream_with_a_zero_stream_revision()
         {
-            _stream.StreamRevision.ShouldBe(0);
+            _stream.StreamRevision.Should().Be(0);
         }
 
         [Fact]
         public void should_return_a_stream_with_a_zero_commit_sequence()
         {
-            _stream.CommitSequence.ShouldBe(0);
+            _stream.CommitSequence.Should().Be(0);
         }
 
         [Fact]
         public void should_return_a_stream_with_no_uncommitted_events()
         {
-            _stream.UncommittedEvents.ShouldBeEmpty();
+            _stream.UncommittedEvents.Should().BeEmpty();
         }
 
         [Fact]
         public void should_return_a_stream_with_no_committed_events()
         {
-            _stream.CommittedEvents.ShouldBeEmpty();
+            _stream.CommittedEvents.Should().BeEmpty();
         }
 
         [Fact]
         public void should_return_a_stream_with_empty_headers()
         {
-            _stream.UncommittedHeaders.ShouldBeEmpty();
+            _stream.UncommittedHeaders.Should().BeEmpty();
         }
     }
 
-    public class when_opening_an_empty_stream_starting_at_revision_zero : using_persistence
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_opening_an_empty_stream_starting_at_revision_zero : using_persistence
     {
         private IEventStream _stream;
 
@@ -85,47 +100,50 @@ namespace NEventStore
         [Fact]
         public void should_return_a_new_stream()
         {
-            _stream.ShouldNotBeNull();
+            _stream.Should().NotBeNull();
         }
 
         [Fact]
         public void should_return_a_stream_with_the_correct_stream_identifier()
         {
-            _stream.StreamId.ShouldBe(streamId);
+            _stream.StreamId.Should().Be(streamId);
         }
 
         [Fact]
         public void should_return_a_stream_with_a_zero_stream_revision()
         {
-            _stream.StreamRevision.ShouldBe(0);
+            _stream.StreamRevision.Should().Be(0);
         }
 
         [Fact]
         public void should_return_a_stream_with_a_zero_commit_sequence()
         {
-            _stream.CommitSequence.ShouldBe(0);
+            _stream.CommitSequence.Should().Be(0);
         }
 
         [Fact]
         public void should_return_a_stream_with_no_uncommitted_events()
         {
-            _stream.UncommittedEvents.ShouldBeEmpty();
+            _stream.UncommittedEvents.Should().BeEmpty();
         }
 
         [Fact]
         public void should_return_a_stream_with_no_committed_events()
         {
-            _stream.CommittedEvents.ShouldBeEmpty();
+            _stream.CommittedEvents.Should().BeEmpty();
         }
 
         [Fact]
         public void should_return_a_stream_with_empty_headers()
         {
-            _stream.UncommittedHeaders.ShouldBeEmpty();
+            _stream.UncommittedHeaders.Should().BeEmpty();
         }
     }
 
-    public class when_opening_an_empty_stream_starting_above_revision_zero : using_persistence
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_opening_an_empty_stream_starting_above_revision_zero : using_persistence
     {
         private const int MinRevision = 1;
         private Exception _thrown;
@@ -144,11 +162,14 @@ namespace NEventStore
         [Fact]
         public void should_throw_a_StreamNotFoundException()
         {
-            _thrown.ShouldBeInstanceOf<StreamNotFoundException>();
+            _thrown.Should().BeOfType<StreamNotFoundException>();
         }
     }
 
-    public class when_opening_a_populated_stream : using_persistence
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_opening_a_populated_stream : using_persistence
     {
         private const int MinRevision = 17;
         private const int MaxRevision = 42;
@@ -187,11 +208,14 @@ namespace NEventStore
         [Fact]
         public void should_return_an_event_stream_containing_the_correct_stream_identifer()
         {
-            _stream.StreamId.ShouldBe(streamId);
+            _stream.StreamId.Should().Be(streamId);
         }
     }
 
-    public class when_opening_a_populated_stream_from_a_snapshot : using_persistence
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_opening_a_populated_stream_from_a_snapshot : using_persistence
     {
         private const int MaxRevision = int.MaxValue;
         private ICommit[] _committed;
@@ -217,7 +241,10 @@ namespace NEventStore
         }
     }
 
-    public class when_opening_a_stream_from_a_snapshot_that_is_at_the_revision_of_the_stream_head : using_persistence
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_opening_a_stream_from_a_snapshot_that_is_at_the_revision_of_the_stream_head : using_persistence
     {
         private const int HeadStreamRevision = 42;
         private const int HeadCommitSequence = 15;
@@ -243,41 +270,44 @@ namespace NEventStore
         [Fact]
         public void should_return_a_stream_with_the_correct_stream_identifier()
         {
-            _stream.StreamId.ShouldBe(streamId);
+            _stream.StreamId.Should().Be(streamId);
         }
 
         [Fact]
         public void should_return_a_stream_with_revision_of_the_stream_head()
         {
-            _stream.StreamRevision.ShouldBe(HeadStreamRevision);
+            _stream.StreamRevision.Should().Be(HeadStreamRevision);
         }
 
         [Fact]
         public void should_return_a_stream_with_a_commit_sequence_of_the_stream_head()
         {
-            _stream.CommitSequence.ShouldBe(HeadCommitSequence);
+            _stream.CommitSequence.Should().Be(HeadCommitSequence);
         }
 
         [Fact]
         public void should_return_a_stream_with_no_committed_events()
         {
-            _stream.CommittedEvents.Count.ShouldBe(0);
+            _stream.CommittedEvents.Count.Should().Be(0);
         }
 
         [Fact]
         public void should_return_a_stream_with_no_uncommitted_events()
         {
-            _stream.UncommittedEvents.Count.ShouldBe(0);
+            _stream.UncommittedEvents.Count.Should().Be(0);
         }
 
         [Fact]
         public void should_only_enumerate_the_set_of_commits_once()
         {
-            _committed.GetEnumeratorCallCount.ShouldBe(1);
+            _committed.GetEnumeratorCallCount.Should().Be(1);
         }
     }
 
-    public class when_reading_from_revision_zero : using_persistence
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_reading_from_revision_zero : using_persistence
     {
         protected override void Context()
         {
@@ -299,7 +329,10 @@ namespace NEventStore
         }
     }
 
-    public class when_reading_up_to_revision_revision_zero : using_persistence
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_reading_up_to_revision_revision_zero : using_persistence
     {
         private ICommit _committed;
 
@@ -322,7 +355,10 @@ namespace NEventStore
         }
     }
 
-    public class when_reading_from_a_null_snapshot : using_persistence
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_reading_from_a_null_snapshot : using_persistence
     {
         private Exception thrown;
 
@@ -334,11 +370,14 @@ namespace NEventStore
         [Fact]
         public void should_throw_an_ArgumentNullException()
         {
-            thrown.ShouldBeInstanceOf<ArgumentNullException>();
+            thrown.Should().BeOfType<ArgumentNullException>();
         }
     }
 
-    public class when_reading_from_a_snapshot_up_to_revision_revision_zero : using_persistence
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_reading_from_a_snapshot_up_to_revision_revision_zero : using_persistence
     {
         private ICommit _committed;
         private Snapshot snapshot;
@@ -364,7 +403,10 @@ namespace NEventStore
         }
     }
 
-    public class when_committing_a_null_attempt_back_to_the_stream : using_persistence
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_committing_a_null_attempt_back_to_the_stream : using_persistence
     {
         private Exception thrown;
 
@@ -376,11 +418,14 @@ namespace NEventStore
         [Fact]
         public void should_throw_an_ArgumentNullException()
         {
-            thrown.ShouldBeInstanceOf<ArgumentNullException>();
+            thrown.Should().BeOfType<ArgumentNullException>();
         }
     }
 
-    public class when_committing_with_a_valid_and_populated_attempt_to_a_stream : using_persistence
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_committing_with_a_valid_and_populated_attempt_to_a_stream : using_persistence
     {
         private CommitAttempt _populatedAttempt;
         private ICommit _populatedCommit;
@@ -434,7 +479,10 @@ namespace NEventStore
         }
     }
 
-    public class when_a_precommit_hook_rejects_a_commit : using_persistence
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_a_precommit_hook_rejects_a_commit : using_persistence
     {
         private CommitAttempt _attempt;
         private ICommit _commit;
@@ -468,15 +516,21 @@ namespace NEventStore
         }
     }
 
-    public class when_accessing_the_underlying_persistence : using_persistence
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_accessing_the_underlying_persistence : using_persistence
     {
         public void should_return_a_reference_to_the_underlying_persistence_infrastructure_decorator()
         {
-            Store.Advanced.ShouldBeInstanceOf<PipelineHooksAwarePersistanceDecorator>();
+            Store.Advanced.Should().BeOfType<PipelineHooksAwarePersistanceDecorator>();
         }
     }
 
-    public class when_disposing_the_event_store : using_persistence
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_disposing_the_event_store : using_persistence
     {
         protected override void Because()
         {
