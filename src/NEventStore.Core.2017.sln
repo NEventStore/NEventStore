@@ -38,6 +38,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEventStore.Serialization.B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEventStore.Serialization.GZip.Core.Tests", "NEventStore.Serialization.Gzip.Tests\NEventStore.Serialization.GZip.Core.Tests.csproj", "{BCCDD838-8368-418D-82B5-5389FDDF0ADD}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEventStore.Core.Tests", "NEventStore.Tests\NEventStore.Core.Tests.csproj", "{8860810C-5E46-4E60-8924-C6C77BBC6EB2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -120,6 +122,18 @@ Global
 		{BCCDD838-8368-418D-82B5-5389FDDF0ADD}.Release|x64.Build.0 = Release|x64
 		{BCCDD838-8368-418D-82B5-5389FDDF0ADD}.Release|x86.ActiveCfg = Release|x86
 		{BCCDD838-8368-418D-82B5-5389FDDF0ADD}.Release|x86.Build.0 = Release|x86
+		{8860810C-5E46-4E60-8924-C6C77BBC6EB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8860810C-5E46-4E60-8924-C6C77BBC6EB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8860810C-5E46-4E60-8924-C6C77BBC6EB2}.Debug|x64.ActiveCfg = Debug|x64
+		{8860810C-5E46-4E60-8924-C6C77BBC6EB2}.Debug|x64.Build.0 = Debug|x64
+		{8860810C-5E46-4E60-8924-C6C77BBC6EB2}.Debug|x86.ActiveCfg = Debug|x86
+		{8860810C-5E46-4E60-8924-C6C77BBC6EB2}.Debug|x86.Build.0 = Debug|x86
+		{8860810C-5E46-4E60-8924-C6C77BBC6EB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8860810C-5E46-4E60-8924-C6C77BBC6EB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8860810C-5E46-4E60-8924-C6C77BBC6EB2}.Release|x64.ActiveCfg = Release|x64
+		{8860810C-5E46-4E60-8924-C6C77BBC6EB2}.Release|x64.Build.0 = Release|x64
+		{8860810C-5E46-4E60-8924-C6C77BBC6EB2}.Release|x86.ActiveCfg = Release|x86
+		{8860810C-5E46-4E60-8924-C6C77BBC6EB2}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -131,5 +145,6 @@ Global
 		{D7029339-3794-4275-893A-E705D872BFBE} = {52F7988F-452D-46C2-A144-D85E0CF371C6}
 		{2C6CE3D7-D2DF-49F7-B3AF-5767E1C3705A} = {52F7988F-452D-46C2-A144-D85E0CF371C6}
 		{BCCDD838-8368-418D-82B5-5389FDDF0ADD} = {52F7988F-452D-46C2-A144-D85E0CF371C6}
+		{8860810C-5E46-4E60-8924-C6C77BBC6EB2} = {D35087BF-941A-49EA-96A8-B10457C4D169}
 	EndGlobalSection
 EndGlobal
