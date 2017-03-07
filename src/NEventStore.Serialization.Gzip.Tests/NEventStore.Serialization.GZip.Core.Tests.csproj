@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputType>exe</OutputType>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <ApplicationIcon />
+    <OutputTypeEx>exe</OutputTypeEx>
+    <StartupObject />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;NETSTANDARD1_6;MSTEST;NETCOREAPP1_1</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="packages.config" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\NEventStore.Persistence.AcceptanceTests\SerializationTests.cs" Link="SerializationTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="4.19.0" />
+    <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="15.0.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.1.12" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.1.11" />
+    <PackageReference Include="NUnit" Version="3.6.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NEventStore.Persistence.AcceptanceTests\NEventStore.Persistence.AcceptanceTests.Core.csproj" />
+    <ProjectReference Include="..\NEventStore.Serialization.Json\NEventStore.Serialization.Json.Core.csproj" />
+    <ProjectReference Include="..\NEventStore\NEventStore.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+  </ItemGroup>
+
+</Project>

@@ -3,13 +3,19 @@ namespace NEventStore.Serialization.AcceptanceTests
 // ReSharper restore CheckNamespace
 {
     using NEventStore.Serialization;
+	using NEventStore.Serialization.Json;
 
-    public partial class SerializerFixture
+	public partial class SerializerFixture
     {
         public SerializerFixture()
         {
-            _createSerializer = () =>
+#if !NETSTANDARD1_6
+			_createSerializer = () =>
                 new GzipSerializer(new BinarySerializer());
-        }
+#else
+			_createSerializer = () =>
+				new GzipSerializer(new JsonSerializer());
+#endif
+		}
     }
 }
