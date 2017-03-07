@@ -76,20 +76,18 @@ namespace NEventStore.Persistence.AcceptanceTests.BDD
 	/// http://nunit.org/index.php?p=actionAttributes&r=2.6.3
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Method)]
-	public class ThenAttribute : TestMethodAttribute
+	public class ThenAttribute : LogTestMethod
 	{ }
 
 	[AttributeUsage(AttributeTargets.Method)]
-	public class FactAttribute : TestMethodAttribute
+	public class FactAttribute : LogTestMethod
 	{ }
 
 	public class LogTestMethod : TestMethodAttribute
 	{
 		public override TestResult[] Execute(ITestMethod testMethod)
 		{
-			// Console.WriteLine("Scenario: {0}", testMethod.TestClassName);
-
-			Console.WriteLine(testMethod.TestClassName);
+			Console.WriteLine("Scenario: {0}", testMethod.TestClassName);
 
 			var result = base.Execute(testMethod);
 

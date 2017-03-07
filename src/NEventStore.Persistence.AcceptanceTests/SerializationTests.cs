@@ -74,7 +74,10 @@
         }
     }
 
-    public class when_serializing_a_list_of_event_messages : SerializationConcern
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_serializing_a_list_of_event_messages : SerializationConcern
     {
         private readonly List<EventMessage> Messages = new List<EventMessage>
         {
@@ -109,7 +112,10 @@
         }
     }
 
-    public class when_serializing_a_list_of_commit_headers : SerializationConcern
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_serializing_a_list_of_commit_headers : SerializationConcern
     {
         private readonly Dictionary<string, object> _headers = new Dictionary<string, object>
         {
@@ -145,7 +151,10 @@
         }
     }
 
-    public class when_serializing_an_untyped_payload_on_a_snapshot : SerializationConcern
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_serializing_an_untyped_payload_on_a_snapshot : SerializationConcern
     {
         private Snapshot _deserialized;
         private IDictionary<string, List<int>> _payload;
@@ -167,7 +176,7 @@
         [Fact]
         public void should_correctly_deserialize_the_untyped_payload_contents()
         {
-            _deserialized.Payload.Should().Be(_snapshot.Payload);
+            _deserialized.Payload.ShouldBeEquivalentTo(_snapshot.Payload);
         }
 
         [Fact]
