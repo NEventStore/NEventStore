@@ -4,10 +4,22 @@
     using System.Collections.Generic;
     using System.Linq;
     using NEventStore.Persistence.AcceptanceTests.BDD;
-    using Xunit;
-    using Xunit.Should;
+	using FluentAssertions;
+#if MSTEST
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
+#endif
+#if NUNIT
+	using NUnit.Framework;	
+#endif
+#if XUNIT
+	using Xunit;
+	sing Xunit.Should;
+#endif
 
-    public class when_getting_from_to_then_should_not_get_later_commits : SpecificationBase
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_getting_from_to_then_should_not_get_later_commits : SpecificationBase
     {
         private readonly DateTime _endDate = new DateTime(2013, 1, 2);
         private readonly DateTime _startDate = new DateTime(2013, 1, 1);
@@ -31,7 +43,7 @@
         [Fact]
         public void should_return_two_commits()
         {
-            _commits.Length.ShouldBe(1);
+            _commits.Length.Should().Be(1);
         }
     }
 }

@@ -7,15 +7,14 @@ namespace NEventStore
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
-    using FakeItEasy;
+	using FluentAssertions;
+	using FakeItEasy;
 
     using NEventStore.Persistence;
     using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
 #if MSTEST
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using FluentAssertions;
 #endif
 #if NUNIT
 	using NUnit.Framework;	
