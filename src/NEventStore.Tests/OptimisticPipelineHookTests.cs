@@ -10,16 +10,16 @@ namespace NEventStore
     using NEventStore.Persistence;
     using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
-#if MSTEST
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
 	using FluentAssertions;
+#if MSTEST
+	using Microsoft.VisualStudio.TestTools.UnitTesting;	
 #endif
 #if NUNIT
 	using NUnit.Framework;	
 #endif
 #if XUNIT
 	using Xunit;
-	sing Xunit.Should;
+	using Xunit.Should;
 #endif
 
 	public class OptimisticPipelineHookTests

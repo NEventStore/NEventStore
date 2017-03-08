@@ -16,7 +16,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
 #if XUNIT
 	using Xunit;
-	sing Xunit.Should;
+	using Xunit.Should;
 #endif
 
 #if MSTEST
@@ -1268,7 +1268,7 @@ namespace NEventStore.Persistence.AcceptanceTests
                 _persistence.Dispose();
             }
 #if !NETSTANDARD1_6
-			_persistence = new PerformanceCounterPersistenceEngine(_createPersistence(pageSize), "tests");
+			_persistence = new NEventStore.Diagnostics.PerformanceCounterPersistenceEngine(_createPersistence(pageSize), "tests");
 #else
 			_persistence = _createPersistence(pageSize);
 #endif

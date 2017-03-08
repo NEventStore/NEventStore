@@ -15,7 +15,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 #endif
 #if XUNIT
 	using Xunit;
-	sing Xunit.Should;
+	using Xunit.Should;
 #endif
 
 namespace NEventStore.Client

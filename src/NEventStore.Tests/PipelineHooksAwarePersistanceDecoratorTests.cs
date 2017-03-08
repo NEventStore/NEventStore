@@ -19,7 +19,7 @@ namespace NEventStore
 #endif
 #if XUNIT
 	using Xunit;
-	sing Xunit.Should;
+	using Xunit.Should;
 #endif
 
 	public class PipelineHooksAwarePersistenceDecoratorTests
