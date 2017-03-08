@@ -1221,7 +1221,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         }
     }
 
-    public abstract class PersistenceEngineConcern : SpecificationBase, IUseFixture<PersistenceEngineFixture>
+    public abstract class PersistenceEngineConcern : SpecificationBase, IDisposable
     {
         private PersistenceEngineFixture _fixture;
 
@@ -1240,11 +1240,19 @@ namespace NEventStore.Persistence.AcceptanceTests
             _fixture.Initialize(ConfiguredPageSizeForTesting);
         }
 
-        public void SetFixture(PersistenceEngineFixture data)
-        {
-            _fixture = data;
-            _fixture.Initialize(ConfiguredPageSizeForTesting);
-        }
+		public void Dispose()
+		{
+			if (_fixture != null)
+			{
+				_fixture.Dispose();
+			}
+		}
+
+		protected PersistenceEngineConcern()
+		{
+			_fixture = new PersistenceEngineFixture();
+			_fixture.Initialize(ConfiguredPageSizeForTesting);
+		}
     }
 
     public partial class PersistenceEngineFixture : IDisposable
@@ -1259,8 +1267,12 @@ namespace NEventStore.Persistence.AcceptanceTests
                 _persistence.Drop();
                 _persistence.Dispose();
             }
-            _persistence = new PerformanceCounterPersistenceEngine(_createPersistence(pageSize), "tests");
-            _persistence.Initialize();
+#if !NETSTANDARD1_6
+			_persistence = new PerformanceCounterPersistenceEngine(_createPersistence(pageSize), "tests");
+#else
+			_persistence = _createPersistence(pageSize);
+#endif
+			_persistence.Initialize();
         }
 
         public IPersistStreams Persistence

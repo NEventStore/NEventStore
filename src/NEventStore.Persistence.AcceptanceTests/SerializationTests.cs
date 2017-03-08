@@ -186,7 +186,7 @@
         }
     }
 
-    public class SerializationConcern : SpecificationBase
+    public abstract class SerializationConcern : SpecificationBase
     {
         private SerializerFixture _data;
 
@@ -195,7 +195,7 @@
             get { return _data.Serializer; }
         }
 
-		public SerializationConcern()
+		protected SerializationConcern()
 		{
 			_data = new SerializerFixture();
 		}

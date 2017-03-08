@@ -45,7 +45,8 @@
             [Fact]
             public void should_not_throw_an_argument_null_exception()
             {
-                _exception.Should().NotBeOfType<ArgumentNullException>();
+				// _exception.Should().NotBeOfType<ArgumentNullException>();
+				_exception.Should().BeNull();                
             }
         }
     }

@@ -100,7 +100,10 @@ namespace NEventStore
         }
     }
 
-    public class when_the_head_event_revision_is_less_than_the_max_desired_revision : on_the_event_stream
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_the_head_event_revision_is_less_than_the_max_desired_revision : on_the_event_stream
     {
         private readonly int _eventsPerCommit = 2.Events();
         private ICommit[] _committed;
@@ -130,7 +133,10 @@ namespace NEventStore
         }
     }
 
-    public class when_adding_a_null_event_message : on_the_event_stream
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_adding_a_null_event_message : on_the_event_stream
     {
         private Exception _thrown;
 
@@ -142,12 +148,14 @@ namespace NEventStore
         [Fact]
         public void should_throw()
         {
-            _thrown.ShouldBeInstanceOf<ArgumentNullException>();
+            _thrown.Should().BeOfType<ArgumentNullException>();
         }
     }
 
-
-    public class when_adding_an_unpopulated_event_message : on_the_event_stream
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_adding_an_unpopulated_event_message : on_the_event_stream
     {
         private Exception _thrown;
 
@@ -159,11 +167,14 @@ namespace NEventStore
         [Fact]
         public void should_throw()
         {
-            _thrown.ShouldBeInstanceOf<ArgumentNullException>();
+            _thrown.Should().BeOfType<ArgumentNullException>();
         }
     }
 
-    public class when_adding_a_fully_populated_event_message : on_the_event_stream
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_adding_a_fully_populated_event_message : on_the_event_stream
     {
         protected override void Because()
         {
@@ -177,7 +188,10 @@ namespace NEventStore
         }
     }
 
-    public class when_adding_multiple_populated_event_messages : on_the_event_stream
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_adding_multiple_populated_event_messages : on_the_event_stream
     {
         protected override void Because()
         {
@@ -192,7 +206,10 @@ namespace NEventStore
         }
     }
 
-    public class when_adding_a_simple_object_as_an_event_message : on_the_event_stream
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_adding_a_simple_object_as_an_event_message : on_the_event_stream
     {
         private const string MyEvent = "some event data";
 
@@ -214,7 +231,10 @@ namespace NEventStore
         }
     }
 
-    public class when_clearing_any_uncommitted_changes : on_the_event_stream
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_clearing_any_uncommitted_changes : on_the_event_stream
     {
         protected override void Context()
         {
@@ -233,7 +253,10 @@ namespace NEventStore
         }
     }
 
-    public class when_committing_an_empty_changeset : on_the_event_stream
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_committing_an_empty_changeset : on_the_event_stream
     {
         protected override void Because()
         {
@@ -259,7 +282,10 @@ namespace NEventStore
         }
     }
 
-    public class when_committing_any_uncommitted_changes : on_the_event_stream
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_committing_any_uncommitted_changes : on_the_event_stream
     {
         private readonly Guid _commitId = Guid.NewGuid();
         private readonly Dictionary<string, object> _headers = new Dictionary<string, object> {{"key", "value"}};
@@ -355,7 +381,7 @@ namespace NEventStore
         [Fact]
         public void should_contain_a_copy_of_the_headers_provided()
         {
-            _constructed.Headers.ShouldNotBeEmpty();
+            _constructed.Headers.Should().NotBeEmpty();
         }
 
         [Fact]
@@ -379,13 +405,13 @@ namespace NEventStore
         [Fact]
         public void should_clear_the_uncommitted_events_on_the_stream()
         {
-            Stream.UncommittedEvents.ShouldBeEmpty();
+            Stream.UncommittedEvents.Should().BeEmpty();
         }
 
         [Fact]
         public void should_clear_the_uncommitted_headers_on_the_stream()
         {
-            Stream.UncommittedHeaders.ShouldBeEmpty();
+            Stream.UncommittedHeaders.Should().BeEmpty();
         }
 
         [Fact]
@@ -395,11 +421,14 @@ namespace NEventStore
         }
     }
 
-    /// <summary>
-    ///     This behavior is primarily to support a NoSQL storage solution where CommitId is not being used as the "primary key"
-    ///     in a NoSQL environment, we'll most likely use StreamId + CommitSequence, which also enables optimistic concurrency.
-    /// </summary>
-    public class when_committing_with_an_identifier_that_was_previously_read : on_the_event_stream
+	/// <summary>
+	///     This behavior is primarily to support a NoSQL storage solution where CommitId is not being used as the "primary key"
+	///     in a NoSQL environment, we'll most likely use StreamId + CommitSequence, which also enables optimistic concurrency.
+	/// </summary>
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_committing_with_an_identifier_that_was_previously_read : on_the_event_stream
     {
         private ICommit[] _committed;
         private Guid _dupliateCommitId;
@@ -423,11 +452,14 @@ namespace NEventStore
         [Fact]
         public void should_throw_a_DuplicateCommitException()
         {
-            _thrown.ShouldBeInstanceOf<DuplicateCommitException>();
+            _thrown.Should().BeOfType<DuplicateCommitException>();
         }
     }
 
-    public class when_committing_after_another_thread_or_process_has_moved_the_stream_head : on_the_event_stream
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_committing_after_another_thread_or_process_has_moved_the_stream_head : on_the_event_stream
     {
         private const int StreamRevision = 1;
         private readonly EventMessage _uncommitted = new EventMessage { Body = string.Empty };
@@ -457,7 +489,7 @@ namespace NEventStore
         [Fact]
         public void should_throw_a_ConcurrencyException()
         {
-            _thrown.ShouldBeInstanceOf<ConcurrencyException>();
+            _thrown.Should().BeOfType<ConcurrencyException>();
         }
 
         [Fact]
@@ -485,7 +517,10 @@ namespace NEventStore
         }
     }
 
-    public class when_attempting_to_invoke_behavior_on_a_disposed_stream : on_the_event_stream
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_attempting_to_invoke_behavior_on_a_disposed_stream : on_the_event_stream
     {
         private Exception _thrown;
 
@@ -502,50 +537,56 @@ namespace NEventStore
         [Fact]
         public void should_throw_a_ObjectDisposedException()
         {
-            _thrown.ShouldBeInstanceOf<ObjectDisposedException>();
+            _thrown.Should().BeOfType<ObjectDisposedException>();
         }
     }
 
-    public class when_attempting_to_modify_the_event_collections : on_the_event_stream
+#if MSTEST
+	[TestClass]
+#endif
+	public class when_attempting_to_modify_the_event_collections : on_the_event_stream
     {
         [Fact]
         public void should_throw_an_exception_when_adding_to_the_committed_collection()
         {
-            Catch.Exception(() => Stream.CommittedEvents.Add(null)).ShouldBeInstanceOf<NotSupportedException>();
+            Catch.Exception(() => Stream.CommittedEvents.Add(null)).Should().BeOfType<NotSupportedException>();
         }
 
         [Fact]
         public void should_throw_an_exception_when_adding_to_the_uncommitted_collection()
         {
-            Catch.Exception(() => Stream.UncommittedEvents.Add(null)).ShouldBeInstanceOf<NotSupportedException>();
+            Catch.Exception(() => Stream.UncommittedEvents.Add(null)).Should().BeOfType<NotSupportedException>();
         }
 
         [Fact]
         public void should_throw_an_exception_when_clearing_the_committed_collection()
         {
-            Catch.Exception(() => Stream.CommittedEvents.Clear()).ShouldBeInstanceOf<NotSupportedException>();
+            Catch.Exception(() => Stream.CommittedEvents.Clear()).Should().BeOfType<NotSupportedException>();
         }
 
         [Fact]
         public void should_throw_an_exception_when_clearing_the_uncommitted_collection()
         {
-            Catch.Exception(() => Stream.UncommittedEvents.Clear()).ShouldBeInstanceOf<NotSupportedException>();
+            Catch.Exception(() => Stream.UncommittedEvents.Clear()).Should().BeOfType<NotSupportedException>();
         }
 
         [Fact]
         public void should_throw_an_exception_when_removing_from_the_committed_collection()
         {
-            Catch.Exception(() => Stream.CommittedEvents.Remove(null)).ShouldBeInstanceOf<NotSupportedException>();
+            Catch.Exception(() => Stream.CommittedEvents.Remove(null)).Should().BeOfType<NotSupportedException>();
         }
 
         [Fact]
         public void should_throw_an_exception_when_removing_from_the_uncommitted_collection()
         {
-            Catch.Exception(() => Stream.UncommittedEvents.Remove(null)).ShouldBeInstanceOf<NotSupportedException>();
+            Catch.Exception(() => Stream.UncommittedEvents.Remove(null)).Should().BeOfType<NotSupportedException>();
         }
     }
 
-    public abstract class on_the_event_stream : SpecificationBase, IUseFixture<FakeTimeFixture>
+    public abstract class on_the_event_stream : SpecificationBase
+#if XUNIT
+		, IUseFixture<FakeTimeFixture>
+#endif
     {
         protected const int DefaultStreamRevision = 1;
         protected const int DefaultCommitSequence = 1;
@@ -554,7 +595,21 @@ namespace NEventStore
         protected const string BucketId = "bucket";
         protected readonly string StreamId = Guid.NewGuid().ToString();
 
-        protected ICommitEvents Persistence
+#if MSTEST
+		[ClassInitialize]
+		public static void ClassInitialize(TestContext context)
+		{
+			SystemTime.Resolver = () => new DateTime(2012, 1, 1, 13, 0, 0);
+		}
+
+		[ClassCleanup]
+		public static void ClassCleanup()
+		{
+			SystemTime.Resolver = null;
+		}
+#endif
+
+		protected ICommitEvents Persistence
         {
             get { return _persistence ?? (_persistence = A.Fake<ICommitEvents>()); }
         }

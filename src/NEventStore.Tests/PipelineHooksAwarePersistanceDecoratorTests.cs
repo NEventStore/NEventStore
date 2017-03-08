@@ -10,11 +10,24 @@ namespace NEventStore
     using FakeItEasy;
     using NEventStore.Persistence;
     using NEventStore.Persistence.AcceptanceTests.BDD;
-    using Xunit;
+#if MSTEST
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using FluentAssertions;
+#endif
+#if NUNIT
+	using NUnit.Framework;	
+#endif
+#if XUNIT
+	using Xunit;
+	sing Xunit.Should;
+#endif
 
-    public class PipelineHooksAwarePersistenceDecoratorTests
+	public class PipelineHooksAwarePersistenceDecoratorTests
     {
-        public class when_disposing_the_decorator : using_underlying_persistence
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_disposing_the_decorator : using_underlying_persistence
         {
             protected override void Because()
             {
@@ -28,7 +41,10 @@ namespace NEventStore
             }
         }
 
-        public class when_reading_the_all_events_from_date : using_underlying_persistence
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_reading_the_all_events_from_date : using_underlying_persistence
         {
             private ICommit _commit;
             private DateTime _date;
@@ -72,7 +88,10 @@ namespace NEventStore
             }
         }
 
-        public class when_getting_the_all_events_from_min_to_max_revision : using_underlying_persistence
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_getting_the_all_events_from_min_to_max_revision : using_underlying_persistence
         {
             private ICommit _commit;
             private DateTime _date;
@@ -117,7 +136,10 @@ namespace NEventStore
             }
         }
 
-        public class when_getting_all_events_from_to : using_underlying_persistence
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_getting_all_events_from_to : using_underlying_persistence
         {
             private ICommit _commit;
             private DateTime _end;
@@ -163,7 +185,10 @@ namespace NEventStore
             }
         }
 
-        public class when_committing : using_underlying_persistence
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_committing : using_underlying_persistence
         {
             private CommitAttempt _attempt;
 
@@ -184,7 +209,10 @@ namespace NEventStore
             }
         }
 
-        public class when_reading_the_all_events_from_checkpoint : using_underlying_persistence
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_reading_the_all_events_from_checkpoint : using_underlying_persistence
         {
             private ICommit _commit;
             private IPipelineHook _hook1;
@@ -224,7 +252,10 @@ namespace NEventStore
             }
         }
 
-        public class when_purging : using_underlying_persistence
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_purging : using_underlying_persistence
         {
             private IPipelineHook _hook;
 
@@ -246,7 +277,10 @@ namespace NEventStore
             }
         }
 
-        public class when_purging_a_bucket : using_underlying_persistence
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_purging_a_bucket : using_underlying_persistence
         {
             private IPipelineHook _hook;
             private const string _bucketId = "Bucket";
@@ -269,7 +303,10 @@ namespace NEventStore
             }
         }
 
-        public class when_deleting_a_stream : using_underlying_persistence
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_deleting_a_stream : using_underlying_persistence
         {
             private IPipelineHook _hook;
             private const string _bucketId = "Bucket";
@@ -293,7 +330,7 @@ namespace NEventStore
             }
         }
 
-        public abstract class using_underlying_persistence : SpecificationBase
+		public abstract class using_underlying_persistence : SpecificationBase
         {
             private PipelineHooksAwarePersistanceDecorator decorator;
             protected readonly IPersistStreams persistence = A.Fake<IPersistStreams>();
