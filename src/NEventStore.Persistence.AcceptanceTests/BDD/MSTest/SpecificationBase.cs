@@ -34,7 +34,7 @@ namespace NEventStore.Persistence.AcceptanceTests.BDD
 		/// maybe catch the generated exception with something like: Catch.Exception() shown here and save it to a local variable
 		/// in the when() function, then test for the exception in the 'then' tests 
 		/// </summary>
-		[TestInitialize]
+		[TestInitialize] // I cannot have something like a OnTimeTestInitialize in MsTest, ClassInitialize requires static methods
 		public void SetUp()
 		{
 			try

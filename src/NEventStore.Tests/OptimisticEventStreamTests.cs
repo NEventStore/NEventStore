@@ -596,6 +596,9 @@ namespace NEventStore
 		protected readonly string StreamId = Guid.NewGuid().ToString();
 
 #if MSTEST
+		// todo: we have a problem with ClassInitialize and inheritance, they are not called
+		// a possible workaround is to use the appdomain unload: https://vijayvepa.wordpress.com/2011/06/16/test-classinitialize-and-classcleanup-inheritance/
+		// but each test is run in isolation in MSTest
 		[ClassInitialize]
 		public static void ClassInitialize(TestContext context)
 		{
@@ -604,6 +607,16 @@ namespace NEventStore
 
 		[ClassCleanup]
 		public static void ClassCleanup()
+		{
+			SystemTime.Resolver = null;
+		}
+
+		public on_the_event_stream()
+		{
+			SystemTime.Resolver = () => new DateTime(2012, 1, 1, 13, 0, 0);
+		}
+
+		protected override void Cleanup()
 		{
 			SystemTime.Resolver = null;
 		}
