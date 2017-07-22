@@ -24,12 +24,12 @@
   </ItemGroup>
 
  <ItemGroup>
-    <PackageReference Include="FakeItEasy" Version="3.1.0" />
-    <PackageReference Include="FluentAssertions" Version="4.19.2" />
+    <PackageReference Include="FakeItEasy" Version="3.4.2" />
+    <PackageReference Include="FluentAssertions" Version="4.19.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.1.13" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.1.13" />
-    <PackageReference Include="NUnit" Version="3.6.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.1.18" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.1.18" />
+    <PackageReference Include="NUnit" Version="3.7.1" />
     <PackageReference Include="System.Reactive.Core" Version="3.1.1" />
     <PackageReference Include="System.Reactive.Linq" Version="3.1.1" />
   </ItemGroup>

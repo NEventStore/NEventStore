@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".test", ".test", "{D3C17830-A461-4BA5-A672-461B19B33936}"
 	ProjectSection(SolutionItems) = preProject
@@ -39,6 +39,11 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEventStore.Serialization.GZip.Core.Tests", "NEventStore.Serialization.Gzip.Tests\NEventStore.Serialization.GZip.Core.Tests.csproj", "{BCCDD838-8368-418D-82B5-5389FDDF0ADD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEventStore.Core.Tests", "NEventStore.Tests\NEventStore.Core.Tests.csproj", "{8860810C-5E46-4E60-8924-C6C77BBC6EB2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{407B4AC0-6C11-4123-9BBA-094B2CADCD3A}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
