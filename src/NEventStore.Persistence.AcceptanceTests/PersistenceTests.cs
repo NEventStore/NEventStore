@@ -1223,11 +1223,11 @@ namespace NEventStore.Persistence.AcceptanceTests
 
     public abstract class PersistenceEngineConcern : SpecificationBase, IDisposable
     {
-        private PersistenceEngineFixture _fixture;
+        private readonly PersistenceEngineFixture _fixture;
 
         protected IPersistStreams Persistence
         {
-            get { return _fixture.Persistence; ; }
+            get { return _fixture.Persistence; }
         }
 
         protected int ConfiguredPageSizeForTesting
@@ -1252,9 +1252,9 @@ namespace NEventStore.Persistence.AcceptanceTests
         /// This code was meant to be run right before every test in the fixture to give time
         /// to do further initialization before the PersistenceEngineFixture was created.
         /// Unfortunately the 3 frameworks
-        /// have very different meaning of doing this: 
+        /// have very different ways of doing this: 
         /// - NUnit: TestFixtureSetUp
-        /// - MSTest: ClassInitialize (not inherited)
+        /// - MSTest: ClassInitialize (not inherited, will be ignored if defined on a base class)
         /// - xUnit: IUseFixture + SetFixture
         /// We need a way to also have some configuration before the PersistenceEngineFixture is created.
         /// 

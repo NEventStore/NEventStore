@@ -5,23 +5,22 @@
     using System.Linq;
     using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
-	using FluentAssertions;
+    using FluentAssertions;
 #if MSTEST
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
 #endif
 #if NUNIT
-	using NUnit.Framework;
-	
+    using NUnit.Framework;
 #endif
 #if XUNIT
-	using Xunit;
+    using Xunit;
     using Xunit.Should;
 #endif
 
 #if MSTEST
-	[TestClass]
+    [TestClass]
 #endif
-	public class when_serializing_a_simple_message : SerializationConcern
+    public class when_serializing_a_simple_message : SerializationConcern
     {
         private readonly SimpleMessage _message = new SimpleMessage().Populate();
         private SimpleMessage _deserialized;
@@ -75,9 +74,9 @@
     }
 
 #if MSTEST
-	[TestClass]
+    [TestClass]
 #endif
-	public class when_serializing_a_list_of_event_messages : SerializationConcern
+    public class when_serializing_a_list_of_event_messages : SerializationConcern
     {
         private readonly List<EventMessage> Messages = new List<EventMessage>
         {
@@ -113,9 +112,9 @@
     }
 
 #if MSTEST
-	[TestClass]
+    [TestClass]
 #endif
-	public class when_serializing_a_list_of_commit_headers : SerializationConcern
+    public class when_serializing_a_list_of_commit_headers : SerializationConcern
     {
         private readonly Dictionary<string, object> _headers = new Dictionary<string, object>
         {
@@ -152,9 +151,9 @@
     }
 
 #if MSTEST
-	[TestClass]
+    [TestClass]
 #endif
-	public class when_serializing_an_untyped_payload_on_a_snapshot : SerializationConcern
+    public class when_serializing_an_untyped_payload_on_a_snapshot : SerializationConcern
     {
         private Snapshot _deserialized;
         private IDictionary<string, List<int>> _payload;
@@ -195,10 +194,10 @@
             get { return _data.Serializer; }
         }
 
-		protected SerializationConcern()
-		{
-			_data = new SerializerFixture();
-		}
+        protected SerializationConcern()
+        {
+            _data = new SerializerFixture();
+        }
     }
 
     public partial class SerializerFixture

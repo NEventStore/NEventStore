@@ -21,7 +21,7 @@ namespace NEventStore.Persistence.AcceptanceTests.BDD
 	[LogTestAttribute]
 	public abstract class SpecificationBase
 	{
-		Exception testFixtureSetupException = null;
+		private Exception testFixtureSetupException = null;
 
 		/// <summary>
 		/// there's a problem with error / exception reporting in here, testfixture setup is not well suited for 
@@ -64,7 +64,6 @@ namespace NEventStore.Persistence.AcceptanceTests.BDD
 		protected virtual void Context() { }
 		protected virtual void Because() { }
 
-
 		[OneTimeTearDown]
 		protected virtual void Cleanup() { }
 	}
@@ -77,17 +76,20 @@ namespace NEventStore.Persistence.AcceptanceTests.BDD
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Method)]
 	public class ThenAttribute : TestAttribute
-	{ }
+	{
+	}
 
 	[AttributeUsage(AttributeTargets.Method)]
 	public class FactAttribute : TestAttribute
-	{ }
+	{
+	}
 
+	[AttributeUsageAttribute(AttributeTargets.Class)]
 	public class LogSuiteAttribute : Attribute, ITestAction
 	{
 		public void AfterTest(ITest test)
 		{
-			//throw new NotImplementedException();
+			// Method intentionally left empty.
 		}
 
 		public void BeforeTest(ITest test)
@@ -102,25 +104,23 @@ namespace NEventStore.Persistence.AcceptanceTests.BDD
 	}
 
 	/// <summary>
-	/// Attribute used to identiy the tests
+	/// Attribute used to identify the tests
 	/// and describe them
 	/// 
 	/// for custom actions:
 	/// http://nunit.org/index.php?p=actionAttributes&r=2.6.3
 	/// http://nunit.org/index.php?p=testContext&r=2.6.3
 	/// </summary>
+	[AttributeUsageAttribute(AttributeTargets.Class, AllowMultiple = false)]
 	public class LogTestAttribute : Attribute, ITestAction
 	{
 		public void AfterTest(ITest test)
 		{
-			//WriteToConsole("after", testDetails);
-
 			Console.WriteLine(" - {0} - {1}", test.Method.Name, TestContext.CurrentContext.Result.Outcome.Status);
 		}
 
 		public void BeforeTest(ITest test)
 		{
-			//WriteToConsole("before", testDetails);
 			Console.WriteLine(test.Fixture.GetType().Name);
 		}
 
@@ -128,18 +128,7 @@ namespace NEventStore.Persistence.AcceptanceTests.BDD
 		{
 			get { return ActionTargets.Test; }
 		}
-
-		//private void WriteToConsole(string eventMessage, TestDetails details)
-		//{
-		//	Console.WriteLine("{0} {1}: {2}, from {3}.{4}.",
-		//		eventMessage,
-		//		details.IsSuite ? "Suite" : "Case",
-		//		eventMessage,
-		//		details.Fixture != null ? details.Fixture.GetType().Name : "{no fixture}",
-		//		details.Method != null ? details.Method.Name : "{no method}");
-		//}
 	}
-
 }
 
 #endif

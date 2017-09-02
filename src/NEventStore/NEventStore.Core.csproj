@@ -3,6 +3,7 @@
     <TargetFramework>netstandard1.6</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>NEventStore</RootNamespace>
+    <AssemblyName>NEventStore</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;DEBUG;NETSTANDARD1_6</DefineConstants>

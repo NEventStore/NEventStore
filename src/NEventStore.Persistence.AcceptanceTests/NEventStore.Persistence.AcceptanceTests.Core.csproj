@@ -1,13 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <IsPackable>false</IsPackable>
     <RootNamespace>NEventStore.Persistence.AcceptanceTests</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AssemblyName>NEventStore.Persistence.AcceptanceTests</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;NETSTANDARD1_6;MSTEST;NETCOREAPP1_1</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETSTANDARD1_6;NETCOREAPP2_0;NUNIT</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,8 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
     <PackageReference Include="MSTest.TestFramework" Version="1.1.18" />
-    <PackageReference Include="NUnit" Version="3.7.1" />
+    <PackageReference Include="NUnit" Version="3.8.1" />
   </ItemGroup>
 
   <ItemGroup>

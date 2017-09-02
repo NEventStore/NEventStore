@@ -4,6 +4,7 @@
     <TargetFramework>netstandard1.6</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>NEventStore.Serialization.Json</RootNamespace>
+    <AssemblyName>NEventStore.Serialization.Json</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
