@@ -10,7 +10,7 @@ using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 #endif
 #if NUNIT
-using NUnit.Framework;	
+using NUnit.Framework;
 #endif
 #if XUNIT
 using Xunit;
@@ -20,16 +20,16 @@ using Xunit.Should;
 namespace NEventStore.Client
 {
 #if MSTEST
-	[TestClass]
+    [TestClass]
 #endif
-	public class CommitSequencerTests
+    public class CommitSequencerTests
     {
-        private CommitSequencer sut;
+        private readonly CommitSequencer sut;
 
         private Func<ICommit, PollingClient2.HandlingResult> callBack =
             c => PollingClient2.HandlingResult.MoveToNext;
 
-        private int _outOfSequenceTimeoutInMilliseconds;
+        private readonly int _outOfSequenceTimeoutInMilliseconds;
 
         public CommitSequencerTests()
         {
