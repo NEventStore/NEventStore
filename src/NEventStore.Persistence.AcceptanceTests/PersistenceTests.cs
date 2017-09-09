@@ -1287,7 +1287,7 @@ namespace NEventStore.Persistence.AcceptanceTests
                 _persistence.Drop();
                 _persistence.Dispose();
             }
-#if !NETSTANDARD1_6
+#if !NETSTANDARD1_6 && !NETSTANDARD2_0
             _persistence = new NEventStore.Diagnostics.PerformanceCounterPersistenceEngine(_createPersistence(pageSize), "tests");
 #else
             _persistence = _createPersistence(pageSize);

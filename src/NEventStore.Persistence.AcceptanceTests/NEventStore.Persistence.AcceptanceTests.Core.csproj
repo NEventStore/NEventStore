@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;NETSTANDARD1_6;NETCOREAPP2_0;NUNIT</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETCOREAPP2_0;NUNIT</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

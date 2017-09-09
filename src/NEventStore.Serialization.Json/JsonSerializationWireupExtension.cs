@@ -3,7 +3,7 @@
     public static class JsonSerializationWireupExtension
     {
 #if !NETSTANDARD1_6
-		public static SerializationWireup UsingBinarySerialization(this PersistenceWireup wireup)
+        public static SerializationWireup UsingBinarySerialization(this PersistenceWireup wireup)
         {
             return wireup.UsingCustomSerialization(new BinarySerializer());
         }

@@ -1,10 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>NEventStore.Serialization.Json</RootNamespace>
     <AssemblyName>NEventStore.Serialization.Json</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,10 +41,6 @@
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
       <CustomToolNamespace>NEventStore.Serialization.Json</CustomToolNamespace>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="NETStandard.Library" Version="1.6.1" />
   </ItemGroup>
 
 </Project>

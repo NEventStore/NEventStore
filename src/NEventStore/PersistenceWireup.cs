@@ -76,13 +76,12 @@ namespace NEventStore
                 engine.Initialize();
             }
 
+#if !NETSTANDARD1_6 && !NETSTANDARD2_0
             if (_tracking)
             {
-#if !NETSTANDARD1_6
                 Container.Register<IPersistStreams>(new PerformanceCounterPersistenceEngine(engine, _trackingInstanceName));
-#endif
             }
-
+#endif
             return base.Build();
         }
     }

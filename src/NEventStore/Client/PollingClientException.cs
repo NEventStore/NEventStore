@@ -2,7 +2,6 @@
 
 namespace NEventStore.Client
 {
-
     /// <summary>
     /// ApplicationException has been deprecated in .NET Core
     /// </summary>

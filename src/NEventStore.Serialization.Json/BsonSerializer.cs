@@ -5,9 +5,9 @@ namespace NEventStore.Serialization.Json
     using System.IO;
     using Newtonsoft.Json.Bson;
     using NEventStore.Logging;
-	using System.Reflection;
+    using System.Reflection;
 
-	public class BsonSerializer : JsonSerializer
+    public class BsonSerializer : JsonSerializer
     {
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (BsonSerializer));
 
@@ -29,12 +29,12 @@ namespace NEventStore.Serialization.Json
         private static bool IsArray(Type type)
         {
 #if !NETSTANDARD1_6
-			bool array = typeof (IEnumerable).IsAssignableFrom(type) && !typeof (IDictionary).IsAssignableFrom(type);
+            bool array = typeof (IEnumerable).IsAssignableFrom(type) && !typeof (IDictionary).IsAssignableFrom(type);
 #else
-			bool array = typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(type) && !typeof(IDictionary).GetTypeInfo().IsAssignableFrom(type);
+            bool array = typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(type) && !typeof(IDictionary).GetTypeInfo().IsAssignableFrom(type);
 #endif
 
-			Logger.Verbose(Messages.TypeIsArray, type, array);
+            Logger.Verbose(Messages.TypeIsArray, type, array);
 
             return array;
         }
