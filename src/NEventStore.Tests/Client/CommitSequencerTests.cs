@@ -22,24 +22,28 @@ namespace NEventStore.Client
 #if MSTEST
     [TestClass]
 #endif
+#if NUNIT
+    [TestFixture]
+#endif
     public class CommitSequencerTests
     {
-        private readonly CommitSequencer sut;
+        private int _outOfSequenceTimeoutInMilliseconds;
 
-        private Func<ICommit, PollingClient2.HandlingResult> callBack =
-            c => PollingClient2.HandlingResult.MoveToNext;
-
-        private readonly int _outOfSequenceTimeoutInMilliseconds;
-
-        public CommitSequencerTests()
+        private CommitSequencer InitCommitSequencer(Func<ICommit, PollingClient2.HandlingResult> callBack = null)
         {
+            if (callBack == null)
+            {
+                callBack = c => PollingClient2.HandlingResult.MoveToNext;
+            }
             _outOfSequenceTimeoutInMilliseconds = 2000;
-            sut = new CommitSequencer(c => callBack(c), 0, _outOfSequenceTimeoutInMilliseconds);
+            return new CommitSequencer(c => callBack(c), 0, _outOfSequenceTimeoutInMilliseconds);
         }
 
         [Fact]
         public void verify_check_sequential_missing_commit()
         {
+            var sut = InitCommitSequencer();
+
             var result = sut.Handle(new TestICommit() { CheckpointToken = 1L });
             result.Should().Be(PollingClient2.HandlingResult.MoveToNext);
             result = sut.Handle(new TestICommit() { CheckpointToken = 3L });
@@ -49,6 +53,8 @@ namespace NEventStore.Client
         [Fact]
         public void verify_timeout_on_missing_commit_not_elapsed()
         {
+            var sut = InitCommitSequencer();
+
             DateTime start = DateTime.Now;
             var result = sut.Handle(new TestICommit() { CheckpointToken = 1L });
             result.Should().Be(PollingClient2.HandlingResult.MoveToNext);
@@ -68,11 +74,12 @@ namespace NEventStore.Client
         public void verify_idempotence_on_read_same_commit()
         {
             Int32 callBackCount = 0;
-            callBack = c =>
+            var sut = InitCommitSequencer(c =>
             {
                 callBackCount++;
                 return PollingClient2.HandlingResult.MoveToNext;
-            };
+            });
+
             var result = sut.Handle(new TestICommit() { CheckpointToken = 1 });
             result.Should().Be(PollingClient2.HandlingResult.MoveToNext);
             callBackCount.Should().Be(1);
@@ -84,6 +91,8 @@ namespace NEventStore.Client
         [Fact]
         public void verify_timeout_on_missing_commit_then_next_commit()
         {
+            var sut = InitCommitSequencer();
+
             DateTime start = DateTime.Now;
             var result = sut.Handle(new TestICommit() { CheckpointToken = 1 });
             result.Should().Be(PollingClient2.HandlingResult.MoveToNext);
@@ -105,6 +114,8 @@ namespace NEventStore.Client
         [Fact]
         public void verify_timeout_on_missing_commit_elapsed()
         {
+            var sut = InitCommitSequencer();
+
             DateTime start = DateTime.Now;
             var result = sut.Handle(new TestICommit() { CheckpointToken = 1 });
             result.Should().Be(PollingClient2.HandlingResult.MoveToNext);
