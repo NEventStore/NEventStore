@@ -10,15 +10,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Client\Messages.Designer.cs" />
-    <Compile Remove="Messages.Designer.cs" />
-    <Compile Remove="Resources.Designer.cs" />
-    <Compile Remove="Serialization\Messages.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Remove="Client\Messages.resx" />
-    <EmbeddedResource Remove="Messages.resx" />
-    <EmbeddedResource Remove="Resources.resx" />
-    <EmbeddedResource Remove="Serialization\Messages.resx" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
@@ -37,37 +31,34 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Resources\Core\Messages.Designer.cs">
-      <DependentUpon>Messages.resx</DependentUpon>
+    <Compile Update="Messages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
+      <DependentUpon>Messages.resx</DependentUpon>
     </Compile>
-    <Compile Update="Resources\Core\Resources.Designer.cs">
+    <Compile Update="Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Serialization\Resources\Core\Messages.Designer.cs">
-      <DependentUpon>Messages.resx</DependentUpon>
+    <Compile Update="Serialization\Messages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
+      <DependentUpon>Messages.resx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Update="Resources\Core\Messages.resx">
-      <CustomToolNamespace>NEventStore</CustomToolNamespace>
-      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Messages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Core\Resources.resx">
-      <CustomToolNamespace>NEventStore</CustomToolNamespace>
+    <EmbeddedResource Update="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Serialization\Resources\Core\Messages.resx">
-      <CustomToolNamespace>NEventStore.Serialization</CustomToolNamespace>
-      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+    <EmbeddedResource Update="Serialization\Messages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

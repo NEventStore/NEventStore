@@ -11,10 +11,12 @@ namespace NEventStore
 
     public class PersistenceWireup : Wireup
     {
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof (PersistenceWireup));
+        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(PersistenceWireup));
         private bool _initialize;
+#if !NETSTANDARD1_6 && !NETSTANDARD2_0
         private bool _tracking;
         private string _trackingInstanceName;
+#endif
 
         public PersistenceWireup(Wireup inner)
             : base(inner)
@@ -43,6 +45,7 @@ namespace NEventStore
             return this;
         }
 
+#if !NETSTANDARD1_6 && !NETSTANDARD2_0
         public virtual PersistenceWireup TrackPerformanceInstance(string instanceName)
         {
             if (instanceName == null)
@@ -55,6 +58,7 @@ namespace NEventStore
             _trackingInstanceName = instanceName;
             return this;
         }
+#endif
 
 #if !NETSTANDARD1_6
         public virtual PersistenceWireup EnlistInAmbientTransaction()
