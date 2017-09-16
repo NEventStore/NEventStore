@@ -1,1 +1,1 @@
-dotnet restore "src/NEventStore.Core.2017.sln"
+dotnet restore "src/NEventStore.Core.sln"

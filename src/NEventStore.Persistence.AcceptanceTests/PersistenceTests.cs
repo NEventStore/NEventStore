@@ -1221,9 +1221,21 @@ namespace NEventStore.Persistence.AcceptanceTests
         }
     }
 
-    public abstract class PersistenceEngineConcern : SpecificationBase, IDisposable
+    /// <summary>
+    /// We are adapting the tests to use 3 different frameworks:
+    /// - XUnit: the attached test runner does the job (fixture setup and cleanup)
+    /// - NUnit (.net core project)
+    /// - MSTest (.net core project)
+    /// </summary>
+    public abstract class PersistenceEngineConcern : SpecificationBase
+#if XUNIT
+        , IUseFixture<PersistenceEngineFixture>
+#endif
+#if NUNIT || MSTEST
+        , IDisposable
+#endif
     {
-        private readonly PersistenceEngineFixture _fixture;
+        private PersistenceEngineFixture _fixture;
 
         protected IPersistStreams Persistence
         {
@@ -1240,6 +1252,15 @@ namespace NEventStore.Persistence.AcceptanceTests
             _fixture.Initialize(ConfiguredPageSizeForTesting);
         }
 
+#if XUNIT
+        public void SetFixture(PersistenceEngineFixture data)
+        {
+            _fixture = data;
+            _fixture.Initialize(ConfiguredPageSizeForTesting);
+        }
+#endif
+
+#if NUNIT || MSTEST
         public void Dispose()
         {
             if (_fixture != null)
@@ -1273,6 +1294,7 @@ namespace NEventStore.Persistence.AcceptanceTests
             _fixture = new PersistenceEngineFixture();
             _fixture.Initialize(ConfiguredPageSizeForTesting);
         }
+#endif
     }
 
     public partial class PersistenceEngineFixture : IDisposable
