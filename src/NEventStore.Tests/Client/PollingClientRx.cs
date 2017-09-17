@@ -20,7 +20,7 @@
             if (persistStreams == null) throw new ArgumentNullException("persistStreams");
             if (waitInterval <= 0)
             {
-                throw new ArgumentException("Must be greater than 0", nameof(waitInterval));
+                throw new ArgumentException("Must be greater than 0", "waitInterval");
             }
             _subject = new Subject<ICommit>();
             _pollingClient2 = new PollingClient2(persistStreams, c =>
