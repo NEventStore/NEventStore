@@ -175,7 +175,7 @@
         [Fact]
         public void should_correctly_deserialize_the_untyped_payload_contents()
         {
-            _deserialized.Payload.ShouldBeEquivalentTo(_snapshot.Payload);
+            _deserialized.Payload.Should().BeEquivalentTo(_snapshot.Payload);
         }
 
         [Fact]
