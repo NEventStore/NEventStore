@@ -11,7 +11,6 @@ commit-message-incrementing: Enabled
 branches:
   master:
     mode: ContinuousDelivery
-    tag: 
     increment: Patch
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
@@ -42,7 +41,6 @@ branches:
     track-merge-target: false
   support[/-]:
     mode: ContinuousDelivery
-    tag: 
     increment: Patch
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
@@ -52,5 +50,5 @@ branches:
     increment: Minor
     prevent-increment-of-merged-branch-version: false
     track-merge-target: true
-
-
+ignore:
+  sha: []
