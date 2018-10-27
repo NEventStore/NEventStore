@@ -1,4 +1,4 @@
-##New Polling client without RX	
+## New Polling client without RX	
 
 To remove dependecy from RX library, the old PollingClient was removed from the project. 
 
@@ -8,7 +8,7 @@ With the new PollingClient2 you should simply pass a Func that will be called to
 
 If you want to use the new polling client with RX you can look at PollingClientRx inside Test project.
 
-###Code for old Polling Client
+### Old Polling Client Code
 	
 	namespace NEventStore.Client
 	{
