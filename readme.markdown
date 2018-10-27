@@ -1,14 +1,25 @@
 NEventStore
-======================================================================
+===
 
 NEventStore is a persistence library used to abstract different storage implementations
 when using event sourcing as storage mechanism. This library is developed with a specific focus on [DDD](http://en.wikipedia.org/wiki/Domain-driven_design)/[CQRS](http://cqrsinfo.com) applications.
 
+Build Status
+===
+
+Branches: 
+
+- feature/dotnetcore [![Build status](https://ci.appveyor.com/api/projects/status/frg36pb2oh1j2ddi/branch/feature/dotnetcore?svg=true)](https://ci.appveyor.com/project/AGiorgetti/neventstore/branch/feature/dotnetcore)
+
+
+Documentation
+===
+
 Please see the [documentation](https://github.com/NEventStore/NEventStore/wiki) to get started and for more information.
 
-Version tracking can be [found here](/doc/Versions.MD)
+Version tracking can be [found here](Changelog.MD)
 
-##### Developed with:
+### Developed with:
 
 [![Resharper](http://neventstore.org/images/logo_resharper_small.gif)](http://www.jetbrains.com/resharper/)
 [![TeamCity](http://neventstore.org/images/logo_teamcity_small.gif)](http://www.jetbrains.com/teamcity/)
