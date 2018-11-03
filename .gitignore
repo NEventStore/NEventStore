@@ -114,3 +114,6 @@ nunit.TestResult.*
 # Visual Studio options and artifacts
 .vs/
 *.lock.json
+
+# Custom
+artifacts/
