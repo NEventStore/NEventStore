@@ -7,7 +7,9 @@ if ($configuration -eq '') {
 }
 $runtests = Read-Host 'Run Tests (y / n) [default:n] ?'
 
-choco install gitversion.portable -pre -y
+# consider using NuGet to download the package (GitVersion.CommandLine)
+choco install gitversion.portable --pre --y
+choco upgrade gitversion.portable --pre --y
 
 # Display .NET Core version
 #dotnet --version
