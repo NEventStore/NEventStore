@@ -1,5 +1,11 @@
-$configuration = "Release"
+$configurationdefault = "Release"
 $artifacts = "../../artifacts"
+
+$configuration = Read-Host 'Configuration to build [default: Release] ?'
+if ($configuration -eq '') {
+    $configuration = $configurationdefault
+}
+$runtests = Read-Host 'Run Tests (y / n) [default:n] ?'
 
 choco install gitversion.portable -pre -y
 
@@ -15,8 +21,13 @@ $json = convertFrom-json $str
 $nugetversion = $json.NuGetVersion
 
 Write-Host "Building: "$nugetversion
-
 dotnet build ./src/NEventStore.Core.sln -c $configuration --no-restore
 
+if ($runtests -eq "y") {
+    Write-Host "Executing Tests"
+    dotnet test ./src/NEventStore.Core.sln -c $configuration --no-build
+}
+
+Write-Host "NuGet Packages creation"
 dotnet pack ./src/NEventStore/NEventStore.Core.csproj -c $configuration --no-build -o $artifacts /p:PackageVersion=$nugetversion
 dotnet pack ./src/NEventStore.Serialization.Json/NEventStore.Serialization.Json.Core.csproj -c $configuration --no-build -o $artifacts /p:PackageVersion=$nugetversion
