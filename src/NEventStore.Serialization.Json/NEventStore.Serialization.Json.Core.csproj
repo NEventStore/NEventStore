@@ -5,6 +5,16 @@
     <RootNamespace>NEventStore.Serialization.Json</RootNamespace>
     <AssemblyName>NEventStore.Serialization.Json</AssemblyName>
   </PropertyGroup>
+  <PropertyGroup>
+    <PackageId>NEventStore.Serialization.Json</PackageId>
+    <Title>NEventStore Json Serializers</Title>
+    <Authors>NEventStore Dev Team</Authors>
+    <PackageProjectUrl>http://neventstore.org</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Description>This package contains Json and Bson serializers for NEventStore library. These serializers were removed from the core package to limit dependencies from external libraries.</Description>
+    <PackageTags>events, event sourcing, cqrs, storage, persistence, database</PackageTags>
+    <PackageReleaseNotes></PackageReleaseNotes>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
