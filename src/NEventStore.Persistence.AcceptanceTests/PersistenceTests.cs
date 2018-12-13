@@ -12,7 +12,7 @@ namespace NEventStore.Persistence.AcceptanceTests
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 #endif
 #if NUNIT
-    using NUnit.Framework;	
+    using NUnit.Framework;
 #endif
 #if XUNIT
     using Xunit;
@@ -1046,7 +1046,7 @@ namespace NEventStore.Persistence.AcceptanceTests
             {
                 using (IEventStream stream = eventStore.OpenStream(Guid.NewGuid()))
                 {
-                    stream.Add(new EventMessage { Body = new Pippo() {S = "Hi " + i} });
+                    stream.Add(new EventMessage { Body = new Pippo() { S = "Hi " + i } });
                     stream.CommitChanges(Guid.NewGuid());
                 }
             }
@@ -1299,35 +1299,60 @@ namespace NEventStore.Persistence.AcceptanceTests
 
     public partial class PersistenceEngineFixture : IDisposable
     {
+        public IPersistStreams Persistence { get; private set; }
+
         private readonly Func<int, IPersistStreams> _createPersistence;
-        private IPersistStreams _persistence;
+        private bool _tracking = false;
+        private string _trackingInstanceName;
+
+#if !NETSTANDARD1_6 && !NETSTANDARD2_0
+        /// <summary>
+        /// Automatic Performance Counters and tracking was disabled for full
+        /// framework tests because their initialization
+        /// can fail when the tests run on build machines (like AppVeyor and similar).
+        /// You can enable it back calling this function before <see cref="Initialize(int)"/>
+        /// </summary>
+        /// <param name="instanceName"></param>
+        /// <returns></returns>
+        public PersistenceEngineFixture TrackPerformanceInstance(string instanceName = "tests")
+        {
+            _trackingInstanceName = instanceName;
+            _tracking = true;
+            return this;
+        }
+#endif
 
         public void Initialize(int pageSize)
         {
-            if (_persistence != null && !_persistence.IsDisposed)
+            if (Persistence != null && !Persistence.IsDisposed)
             {
-                _persistence.Drop();
-                _persistence.Dispose();
+                Persistence.Drop();
+                Persistence.Dispose();
             }
-#if !NETSTANDARD1_6 && !NETSTANDARD2_0
-            _persistence = new NEventStore.Diagnostics.PerformanceCounterPersistenceEngine(_createPersistence(pageSize), "tests");
-#else
-            _persistence = _createPersistence(pageSize);
-#endif
-            _persistence.Initialize();
-        }
 
-        public IPersistStreams Persistence
-        {
-            get { return _persistence; }
+#if !NETSTANDARD1_6 && !NETSTANDARD2_0
+            // performance counters cab be disabled for full framework tests because their initialization
+            // can fail when the tests run on build machines (like AppVeyor and similar)
+            if (_tracking)
+            {
+                Persistence = new NEventStore.Diagnostics.PerformanceCounterPersistenceEngine(_createPersistence(pageSize), _trackingInstanceName);
+            }
+            else
+            {
+                Persistence = _createPersistence(pageSize);
+            }
+#else
+            Persistence = _createPersistence(pageSize);
+#endif
+            Persistence.Initialize();
         }
 
         public void Dispose()
         {
-            if (_persistence != null && !_persistence.IsDisposed)
+            if (Persistence != null && !Persistence.IsDisposed)
             {
-                _persistence.Drop();
-                _persistence.Dispose();
+                Persistence.Drop();
+                Persistence.Dispose();
             }
         }
     }
