@@ -1,8 +1,8 @@
-# NEventStore versions
+# NEventStore Versions
 
-## version 6.0.0
+## 6.0.0-rc-0
 
-Version 6 is not backwards compatible with version 5.x. Updating to NEventStore 6.x without doing some preparation work will result in problems.
+__Version 6.x is not backwards compatible with version 5.x.__ Updating to NEventStore 6.x without doing some preparation work will result in problems.
 
 ### New Features
 
@@ -30,7 +30,7 @@ are now hosted in their own project.
 
 Common Domain is now moved in its [own repository](https://github.com/NEventStore/NEventStore.Domain).
 
-## v.5.x.x
+## 5.x.x
 
 Note: Version 5 is not backwards compatible with v4. Updating to v5 without doing some preparation work will result in problems.
 
