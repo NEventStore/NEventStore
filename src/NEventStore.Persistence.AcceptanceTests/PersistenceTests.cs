@@ -1302,10 +1302,11 @@ namespace NEventStore.Persistence.AcceptanceTests
         public IPersistStreams Persistence { get; private set; }
 
         private readonly Func<int, IPersistStreams> _createPersistence;
+
+#if !NETSTANDARD1_6 && !NETSTANDARD2_0
         private bool _tracking = false;
         private string _trackingInstanceName;
 
-#if !NETSTANDARD1_6 && !NETSTANDARD2_0
         /// <summary>
         /// Automatic Performance Counters and tracking was disabled for full
         /// framework tests because their initialization
