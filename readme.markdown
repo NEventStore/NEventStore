@@ -16,7 +16,6 @@ Branches:
 
 - master [![Build status](https://ci.appveyor.com/api/projects/status/frg36pb2oh1j2ddi/branch/master?svg=true)](https://ci.appveyor.com/project/AGiorgetti/neventstore/branch/master)
 - develop [![Build status](https://ci.appveyor.com/api/projects/status/frg36pb2oh1j2ddi/branch/develop?svg=true)](https://ci.appveyor.com/project/AGiorgetti/neventstore/branch/develop)
-- feature/dotnetcore [![Build status](https://ci.appveyor.com/api/projects/status/frg36pb2oh1j2ddi/branch/feature/dotnetcore?svg=true)](https://ci.appveyor.com/project/AGiorgetti/neventstore/branch/feature/dotnetcore)
 
 
 Documentation

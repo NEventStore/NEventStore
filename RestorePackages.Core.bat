@@ -1,1 +1,0 @@
-dotnet restore "src/NEventStore.Core.sln"
