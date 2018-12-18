@@ -1,0 +1,56 @@
+assembly-versioning-scheme: MajorMinorPatch
+mode: ContinuousDeployment
+tag-prefix: '[vV]'
+continuous-delivery-fallback-tag: ci
+major-version-bump-message: '\+semver:\s?(breaking|major)'
+minor-version-bump-message: '\+semver:\s?(feature|minor)'
+patch-version-bump-message: '\+semver:\s?(fix|patch)'
+legacy-semver-padding: 4
+build-metadata-padding: 4
+commit-message-incrementing: Enabled
+branches:
+  master:
+    mode: ContinuousDelivery
+    increment: Patch
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+  release:
+    mode: ContinuousDeployment
+    tag: beta
+    increment: Patch
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+  feature:
+    mode: ContinuousDeployment
+    tag: useBranchName
+    increment: Inherit
+    prevent-increment-of-merged-branch-version: false
+    track-merge-target: false
+  pull-requests:
+    regex: (pull|pull\-requests|pr)[/-]
+    mode: ContinuousDelivery
+    tag: PullRequest
+    increment: Inherit
+    prevent-increment-of-merged-branch-version: false
+    tag-number-pattern: '[/-](?<number>\d+)[-/]'
+    track-merge-target: false
+    source-branches: []
+  hotfix:
+    mode: ContinuousDeployment
+    tag: beta
+    increment: Patch
+    prevent-increment-of-merged-branch-version: false
+    track-merge-target: false
+  support:
+    mode: ContinuousDelivery
+    increment: Patch
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+  develop:
+    mode: ContinuousDeployment
+    tag: unstable
+    increment: Minor
+    prevent-increment-of-merged-branch-version: false
+    track-merge-target: true
+ignore:
+  sha: []

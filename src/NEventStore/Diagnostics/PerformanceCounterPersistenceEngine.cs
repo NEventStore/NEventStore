@@ -5,6 +5,9 @@ namespace NEventStore.Diagnostics
     using System.Diagnostics;
     using NEventStore.Persistence;
 
+    // PerformanceCounters are not cross platform
+
+#if !NETSTANDARD1_6 && !NETSTANDARD2_0
     public class PerformanceCounterPersistenceEngine : IPersistStreams
     {
         private readonly PerformanceCounters _counters;
@@ -30,30 +33,9 @@ namespace NEventStore.Diagnostics
             return commit;
         }
 
-        public void MarkCommitAsDispatched(ICommit commit)
-        {
-            _persistence.MarkCommitAsDispatched(commit);
-            _counters.CountCommitDispatched();
-        }
-
-        public ICheckpoint ParseCheckpoint(string checkpointValue)
-        {
-            return LongCheckpoint.Parse(checkpointValue);
-        }
-
-        public ICheckpoint GetCheckpoint(string checkpointToken = null)
-        {
-            return _persistence.GetCheckpoint(checkpointToken);
-        }
-
         public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             return _persistence.GetFromTo(bucketId, start, end);
-        }
-
-        public IEnumerable<ICommit> GetUndispatchedCommits()
-        {
-            return _persistence.GetUndispatchedCommits();
         }
 
         public IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
@@ -66,14 +48,14 @@ namespace NEventStore.Diagnostics
             return _persistence.GetFrom(bucketId, start);
         }
 
-        public IEnumerable<ICommit> GetFrom(string checkpointToken)
+        public IEnumerable<ICommit> GetFrom(Int64 checkpointToken)
         {
             return _persistence.GetFrom(checkpointToken);
         }
 
-        public IEnumerable<ICommit> GetFrom(string bucketId, string checkpointToken)
+        public IEnumerable<ICommit> GetFrom(string bucketId, Int64 checkpointToken)
         {
-            return _persistence.GetFrom(bucketId,checkpointToken);
+            return _persistence.GetFrom(bucketId, checkpointToken);
         }
 
         public bool AddSnapshot(ISnapshot snapshot)
@@ -149,4 +131,5 @@ namespace NEventStore.Diagnostics
             return _persistence;
         }
     }
+#endif
 }

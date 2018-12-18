@@ -1,5 +1,6 @@
 namespace NEventStore.Serialization
 {
+#if !NETSTANDARD1_6
     using System.IO;
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
@@ -22,4 +23,5 @@ namespace NEventStore.Serialization
             return (T) _formatter.Deserialize(input);
         }
     }
+#endif
 }

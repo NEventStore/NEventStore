@@ -7,13 +7,25 @@ namespace NEventStore
     using System.Linq;
 
     using FakeItEasy;
+    using FluentAssertions;
 
     using NEventStore.Persistence;
     using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
+#if MSTEST
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+#endif
+#if NUNIT
+    using NUnit.Framework;
+#endif
+#if XUNIT
     using Xunit;
     using Xunit.Should;
+#endif
 
+#if MSTEST
+    [TestClass]
+#endif
     public class when_building_a_stream : on_the_event_stream
     {
         private const int MinRevision = 2;
@@ -48,46 +60,49 @@ namespace NEventStore
         [Fact]
         public void should_have_the_correct_stream_identifier()
         {
-            Stream.StreamId.ShouldBe(StreamId);
+            Stream.StreamId.Should().Be(StreamId);
         }
 
         [Fact]
         public void should_have_the_correct_head_stream_revision()
         {
-            Stream.StreamRevision.ShouldBe(MaxRevision);
+            Stream.StreamRevision.Should().Be(MaxRevision);
         }
 
         [Fact]
         public void should_have_the_correct_head_commit_sequence()
         {
-            Stream.CommitSequence.ShouldBe(_committed.Last().CommitSequence);
+            Stream.CommitSequence.Should().Be(_committed.Last().CommitSequence);
         }
 
         [Fact]
         public void should_not_include_events_below_the_minimum_revision_indicated()
         {
-            Stream.CommittedEvents.First().ShouldBe(_committed.First().Events.Last());
+            Stream.CommittedEvents.First().Should().Be(_committed.First().Events.Last());
         }
 
         [Fact]
         public void should_not_include_events_above_the_maximum_revision_indicated()
         {
-            Stream.CommittedEvents.Last().ShouldBe(_committed.Last().Events.First());
+            Stream.CommittedEvents.Last().Should().Be(_committed.Last().Events.First());
         }
 
         [Fact]
         public void should_have_all_of_the_committed_events_up_to_the_stream_revision_specified()
         {
-            Stream.CommittedEvents.Count.ShouldBe(MaxRevision - MinRevision + 1);
+            Stream.CommittedEvents.Count.Should().Be(MaxRevision - MinRevision + 1);
         }
 
         [Fact]
         public void should_contain_the_headers_from_the_underlying_commits()
         {
-            Stream.CommittedHeaders.Count.ShouldBe(2);
+            Stream.CommittedHeaders.Count.Should().Be(2);
         }
     }
 
+#if MSTEST
+    [TestClass]
+#endif
     public class when_the_head_event_revision_is_less_than_the_max_desired_revision : on_the_event_stream
     {
         private readonly int _eventsPerCommit = 2.Events();
@@ -114,94 +129,116 @@ namespace NEventStore
         [Fact]
         public void should_set_the_stream_revision_to_the_revision_of_the_most_recent_event()
         {
-            Stream.StreamRevision.ShouldBe(_committed.Last().StreamRevision);
+            Stream.StreamRevision.Should().Be(_committed.Last().StreamRevision);
         }
     }
 
+#if MSTEST
+    [TestClass]
+#endif
     public class when_adding_a_null_event_message : on_the_event_stream
     {
+        private Exception _thrown;
+
         protected override void Because()
         {
-            Stream.Add(null);
+            _thrown = Catch.Exception(() => Stream.Add(null));
         }
 
         [Fact]
-        public void should_be_ignored()
+        public void should_throw()
         {
-            Stream.UncommittedEvents.ShouldBeEmpty();
+            _thrown.Should().BeOfType<ArgumentNullException>();
         }
     }
 
+#if MSTEST
+    [TestClass]
+#endif
     public class when_adding_an_unpopulated_event_message : on_the_event_stream
     {
+        private Exception _thrown;
+
         protected override void Because()
         {
-            Stream.Add(new EventMessage {Body = null});
+            _thrown = Catch.Exception(() => Stream.Add(new EventMessage { Body = null }));
         }
 
         [Fact]
-        public void should_be_ignored()
+        public void should_throw()
         {
-            Stream.UncommittedEvents.ShouldBeEmpty();
+            _thrown.Should().BeOfType<ArgumentNullException>();
         }
     }
 
+#if MSTEST
+    [TestClass]
+#endif
     public class when_adding_a_fully_populated_event_message : on_the_event_stream
     {
         protected override void Because()
         {
-            Stream.Add(new EventMessage {Body = "populated"});
+            Stream.Add(new EventMessage { Body = "populated" });
         }
 
         [Fact]
         public void should_add_the_event_to_the_set_of_uncommitted_events()
         {
-            Stream.UncommittedEvents.Count.ShouldBe(1);
+            Stream.UncommittedEvents.Count.Should().Be(1);
         }
     }
 
+#if MSTEST
+    [TestClass]
+#endif
     public class when_adding_multiple_populated_event_messages : on_the_event_stream
     {
         protected override void Because()
         {
-            Stream.Add(new EventMessage {Body = "populated"});
-            Stream.Add(new EventMessage {Body = "also populated"});
+            Stream.Add(new EventMessage { Body = "populated" });
+            Stream.Add(new EventMessage { Body = "also populated" });
         }
 
         [Fact]
         public void should_add_all_of_the_events_provided_to_the_set_of_uncommitted_events()
         {
-            Stream.UncommittedEvents.Count.ShouldBe(2);
+            Stream.UncommittedEvents.Count.Should().Be(2);
         }
     }
 
+#if MSTEST
+    [TestClass]
+#endif
     public class when_adding_a_simple_object_as_an_event_message : on_the_event_stream
     {
         private const string MyEvent = "some event data";
 
         protected override void Because()
         {
-            Stream.Add(new EventMessage {Body = MyEvent});
+            Stream.Add(new EventMessage { Body = MyEvent });
         }
 
         [Fact]
         public void should_add_the_uncommited_event_to_the_set_of_uncommitted_events()
         {
-            Stream.UncommittedEvents.Count.ShouldBe(1);
+            Stream.UncommittedEvents.Count.Should().Be(1);
         }
 
         [Fact]
         public void should_wrap_the_uncommited_event_in_an_EventMessage_object()
         {
-            Stream.UncommittedEvents.First().Body.ShouldBe(MyEvent);
+            Stream.UncommittedEvents.First().Body.Should().Be(MyEvent);
         }
     }
 
+#if MSTEST
+    [TestClass]
+#endif
     public class when_clearing_any_uncommitted_changes : on_the_event_stream
     {
         protected override void Context()
         {
-            Stream.Add(new EventMessage {Body = string.Empty});
+            Stream.Add(new EventMessage { Body = string.Empty });
         }
 
         protected override void Because()
@@ -212,10 +249,13 @@ namespace NEventStore
         [Fact]
         public void should_clear_all_uncommitted_events()
         {
-            Stream.UncommittedEvents.Count.ShouldBe(0);
+            Stream.UncommittedEvents.Count.Should().Be(0);
         }
     }
 
+#if MSTEST
+    [TestClass]
+#endif
     public class when_committing_an_empty_changeset : on_the_event_stream
     {
         protected override void Because()
@@ -232,21 +272,24 @@ namespace NEventStore
         [Fact]
         public void should_not_increment_the_current_stream_revision()
         {
-            Stream.StreamRevision.ShouldBe(0);
+            Stream.StreamRevision.Should().Be(0);
         }
 
         [Fact]
         public void should_not_increment_the_current_commit_sequence()
         {
-            Stream.CommitSequence.ShouldBe(0);
+            Stream.CommitSequence.Should().Be(0);
         }
     }
 
+#if MSTEST
+    [TestClass]
+#endif
     public class when_committing_any_uncommitted_changes : on_the_event_stream
     {
         private readonly Guid _commitId = Guid.NewGuid();
-        private readonly Dictionary<string, object> _headers = new Dictionary<string, object> {{"key", "value"}};
-        private readonly EventMessage _uncommitted = new EventMessage {Body = string.Empty};
+        private readonly Dictionary<string, object> _headers = new Dictionary<string, object> { { "key", "value" } };
+        private readonly EventMessage _uncommitted = new EventMessage { Body = string.Empty };
         private CommitAttempt _constructed;
 
         protected override void Context()
@@ -260,7 +303,7 @@ namespace NEventStore
                     attempt.CommitId,
                     attempt.CommitSequence,
                     attempt.CommitStamp,
-                    new LongCheckpoint(0).Value,
+                    0,
                     attempt.Headers,
                     attempt.Events));
             Stream.Add(_uncommitted);
@@ -284,97 +327,97 @@ namespace NEventStore
         [Fact]
         public void should_build_the_commit_with_the_correct_bucket_identifier()
         {
-            _constructed.BucketId.ShouldBe(BucketId);
+            _constructed.BucketId.Should().Be(BucketId);
         }
 
         [Fact]
         public void should_build_the_commit_with_the_correct_stream_identifier()
         {
-            _constructed.StreamId.ShouldBe(StreamId);
+            _constructed.StreamId.Should().Be(StreamId);
         }
 
         [Fact]
         public void should_build_the_commit_with_the_correct_stream_revision()
         {
-            _constructed.StreamRevision.ShouldBe(DefaultStreamRevision);
+            _constructed.StreamRevision.Should().Be(DefaultStreamRevision);
         }
 
         [Fact]
         public void should_build_the_commit_with_the_correct_commit_identifier()
         {
-            _constructed.CommitId.ShouldBe(_commitId);
+            _constructed.CommitId.Should().Be(_commitId);
         }
 
         [Fact]
         public void should_build_the_commit_with_an_incremented_commit_sequence()
         {
-            _constructed.CommitSequence.ShouldBe(DefaultCommitSequence);
+            _constructed.CommitSequence.Should().Be(DefaultCommitSequence);
         }
 
         [Fact]
         public void should_build_the_commit_with_the_correct_commit_stamp()
         {
-            SystemTime.UtcNow.ShouldBe(_constructed.CommitStamp);
+            SystemTime.UtcNow.Should().Be(_constructed.CommitStamp);
         }
 
         [Fact]
         public void should_build_the_commit_with_the_headers_provided()
         {
-            _constructed.Headers[_headers.First().Key].ShouldBe(_headers.First().Value);
+            _constructed.Headers[_headers.First().Key].Should().Be(_headers.First().Value);
         }
 
         [Fact]
         public void should_build_the_commit_containing_all_uncommitted_events()
         {
-            _constructed.Events.Count.ShouldBe(_headers.Count);
+            _constructed.Events.Count.Should().Be(_headers.Count);
         }
 
         [Fact]
         public void should_build_the_commit_using_the_event_messages_provided()
         {
-            _constructed.Events.First().ShouldBe(_uncommitted);
+            _constructed.Events.First().Should().Be(_uncommitted);
         }
 
         [Fact]
         public void should_contain_a_copy_of_the_headers_provided()
         {
-            _constructed.Headers.ShouldNotBeEmpty();
+            _constructed.Headers.Should().NotBeEmpty();
         }
 
         [Fact]
         public void should_update_the_stream_revision()
         {
-            Stream.StreamRevision.ShouldBe(_constructed.StreamRevision);
+            Stream.StreamRevision.Should().Be(_constructed.StreamRevision);
         }
 
         [Fact]
         public void should_update_the_commit_sequence()
         {
-            Stream.CommitSequence.ShouldBe(_constructed.CommitSequence);
+            Stream.CommitSequence.Should().Be(_constructed.CommitSequence);
         }
 
         [Fact]
         public void should_add_the_uncommitted_events_the_committed_events()
         {
-            Stream.CommittedEvents.Last().ShouldBe(_uncommitted);
+            Stream.CommittedEvents.Last().Should().Be(_uncommitted);
         }
 
         [Fact]
         public void should_clear_the_uncommitted_events_on_the_stream()
         {
-            Stream.UncommittedEvents.ShouldBeEmpty();
+            Stream.UncommittedEvents.Should().BeEmpty();
         }
 
         [Fact]
         public void should_clear_the_uncommitted_headers_on_the_stream()
         {
-            Stream.UncommittedHeaders.ShouldBeEmpty();
+            Stream.UncommittedHeaders.Should().BeEmpty();
         }
 
         [Fact]
         public void should_copy_the_uncommitted_headers_to_the_committed_stream_headers()
         {
-            Stream.CommittedHeaders.Count.ShouldBe(_headers.Count);
+            Stream.CommittedHeaders.Count.Should().Be(_headers.Count);
         }
     }
 
@@ -382,6 +425,9 @@ namespace NEventStore
     ///     This behavior is primarily to support a NoSQL storage solution where CommitId is not being used as the "primary key"
     ///     in a NoSQL environment, we'll most likely use StreamId + CommitSequence, which also enables optimistic concurrency.
     /// </summary>
+#if MSTEST
+    [TestClass]
+#endif
     public class when_committing_with_an_identifier_that_was_previously_read : on_the_event_stream
     {
         private ICommit[] _committed;
@@ -390,7 +436,7 @@ namespace NEventStore
 
         protected override void Context()
         {
-            _committed = new[] {BuildCommitStub(1, 1, 1)};
+            _committed = new[] { BuildCommitStub(1, 1, 1) };
             _dupliateCommitId = _committed[0].CommitId;
 
             A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, 0, int.MaxValue)).Returns(_committed);
@@ -406,10 +452,13 @@ namespace NEventStore
         [Fact]
         public void should_throw_a_DuplicateCommitException()
         {
-            _thrown.ShouldBeInstanceOf<DuplicateCommitException>();
+            _thrown.Should().BeOfType<DuplicateCommitException>();
         }
     }
 
+#if MSTEST
+    [TestClass]
+#endif
     public class when_committing_after_another_thread_or_process_has_moved_the_stream_head : on_the_event_stream
     {
         private const int StreamRevision = 1;
@@ -421,8 +470,8 @@ namespace NEventStore
 
         protected override void Context()
         {
-            _committed = new[] {BuildCommitStub(1, 1, 1)};
-            _discoveredOnCommit = new[] {BuildCommitStub(3, 2, 2)};
+            _committed = new[] { BuildCommitStub(1, 1, 1) };
+            _discoveredOnCommit = new[] { BuildCommitStub(3, 2, 2) };
 
             A.CallTo(() => Persistence.Commit(A<CommitAttempt>._)).Throws(new ConcurrencyException());
             A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, StreamRevision, int.MaxValue)).Returns(_committed);
@@ -440,7 +489,7 @@ namespace NEventStore
         [Fact]
         public void should_throw_a_ConcurrencyException()
         {
-            _thrown.ShouldBeInstanceOf<ConcurrencyException>();
+            _thrown.Should().BeOfType<ConcurrencyException>();
         }
 
         [Fact]
@@ -452,22 +501,25 @@ namespace NEventStore
         [Fact]
         public void should_update_the_stream_revision_accordingly()
         {
-            Stream.StreamRevision.ShouldBe(_discoveredOnCommit[0].StreamRevision);
+            Stream.StreamRevision.Should().Be(_discoveredOnCommit[0].StreamRevision);
         }
 
         [Fact]
         public void should_update_the_commit_sequence_accordingly()
         {
-            Stream.CommitSequence.ShouldBe(_discoveredOnCommit[0].CommitSequence);
+            Stream.CommitSequence.Should().Be(_discoveredOnCommit[0].CommitSequence);
         }
 
         [Fact]
         public void should_add_the_newly_discovered_committed_events_to_the_set_of_committed_events_accordingly()
         {
-            Stream.CommittedEvents.Count.ShouldBe(_discoveredOnCommit[0].Events.Count + 1);
+            Stream.CommittedEvents.Count.Should().Be(_discoveredOnCommit[0].Events.Count + 1);
         }
     }
 
+#if MSTEST
+    [TestClass]
+#endif
     public class when_attempting_to_invoke_behavior_on_a_disposed_stream : on_the_event_stream
     {
         private Exception _thrown;
@@ -485,50 +537,56 @@ namespace NEventStore
         [Fact]
         public void should_throw_a_ObjectDisposedException()
         {
-            _thrown.ShouldBeInstanceOf<ObjectDisposedException>();
+            _thrown.Should().BeOfType<ObjectDisposedException>();
         }
     }
 
+#if MSTEST
+    [TestClass]
+#endif
     public class when_attempting_to_modify_the_event_collections : on_the_event_stream
     {
         [Fact]
         public void should_throw_an_exception_when_adding_to_the_committed_collection()
         {
-            Catch.Exception(() => Stream.CommittedEvents.Add(null)).ShouldBeInstanceOf<NotSupportedException>();
+            Catch.Exception(() => Stream.CommittedEvents.Add(null)).Should().BeOfType<NotSupportedException>();
         }
 
         [Fact]
         public void should_throw_an_exception_when_adding_to_the_uncommitted_collection()
         {
-            Catch.Exception(() => Stream.UncommittedEvents.Add(null)).ShouldBeInstanceOf<NotSupportedException>();
+            Catch.Exception(() => Stream.UncommittedEvents.Add(null)).Should().BeOfType<NotSupportedException>();
         }
 
         [Fact]
         public void should_throw_an_exception_when_clearing_the_committed_collection()
         {
-            Catch.Exception(() => Stream.CommittedEvents.Clear()).ShouldBeInstanceOf<NotSupportedException>();
+            Catch.Exception(() => Stream.CommittedEvents.Clear()).Should().BeOfType<NotSupportedException>();
         }
 
         [Fact]
         public void should_throw_an_exception_when_clearing_the_uncommitted_collection()
         {
-            Catch.Exception(() => Stream.UncommittedEvents.Clear()).ShouldBeInstanceOf<NotSupportedException>();
+            Catch.Exception(() => Stream.UncommittedEvents.Clear()).Should().BeOfType<NotSupportedException>();
         }
 
         [Fact]
         public void should_throw_an_exception_when_removing_from_the_committed_collection()
         {
-            Catch.Exception(() => Stream.CommittedEvents.Remove(null)).ShouldBeInstanceOf<NotSupportedException>();
+            Catch.Exception(() => Stream.CommittedEvents.Remove(null)).Should().BeOfType<NotSupportedException>();
         }
 
         [Fact]
         public void should_throw_an_exception_when_removing_from_the_uncommitted_collection()
         {
-            Catch.Exception(() => Stream.UncommittedEvents.Remove(null)).ShouldBeInstanceOf<NotSupportedException>();
+            Catch.Exception(() => Stream.UncommittedEvents.Remove(null)).Should().BeOfType<NotSupportedException>();
         }
     }
 
-    public abstract class on_the_event_stream : SpecificationBase, IUseFixture<FakeTimeFixture>
+    public abstract class on_the_event_stream : SpecificationBase
+#if XUNIT
+        , IUseFixture<FakeTimeFixture>
+#endif
     {
         protected const int DefaultStreamRevision = 1;
         protected const int DefaultCommitSequence = 1;
@@ -536,6 +594,48 @@ namespace NEventStore
         private OptimisticEventStream _stream;
         protected const string BucketId = "bucket";
         protected readonly string StreamId = Guid.NewGuid().ToString();
+
+#if MSTEST
+        // todo: we have a problem with ClassInitialize and inheritance, they are not called
+        // a possible workaround is to use the appdomain unload: https://vijayvepa.wordpress.com/2011/06/16/test-classinitialize-and-classcleanup-inheritance/
+        // but each test is run in isolation in MSTest
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context)
+        {
+            SystemTime.Resolver = () => new DateTime(2012, 1, 1, 13, 0, 0);
+        }
+
+        [ClassCleanup]
+        public static void ClassCleanup()
+        {
+            SystemTime.Resolver = null;
+        }
+
+        public on_the_event_stream()
+        {
+            SystemTime.Resolver = () => new DateTime(2012, 1, 1, 13, 0, 0);
+        }
+
+        protected override void Cleanup()
+        {
+            SystemTime.Resolver = null;
+        }
+#endif
+
+#if NUNIT
+        // can also consider using the NUnit test attrbutes instead of the constructor
+
+        protected on_the_event_stream()
+        {
+            SystemTime.Resolver = () => new DateTime(2012, 1, 1, 13, 0, 0);
+        }
+
+        protected override void Cleanup()
+        {
+            SystemTime.Resolver = null;
+        }
+
+#endif
 
         protected ICommitEvents Persistence
         {
@@ -549,7 +649,7 @@ namespace NEventStore
         }
 
         public void SetFixture(FakeTimeFixture data)
-        {}
+        { }
 
         protected ICommit BuildCommitStub(int revision, int sequence, int eventCount)
         {
@@ -559,7 +659,7 @@ namespace NEventStore
                 events.Add(new EventMessage());
             }
 
-            return new Commit(Bucket.Default, StreamId, revision, Guid.NewGuid(), sequence, SystemTime.UtcNow, new LongCheckpoint(0).Value, null, events);
+            return new Commit(Bucket.Default, StreamId, revision, Guid.NewGuid(), sequence, SystemTime.UtcNow, 0, null, events);
         }
     }
 

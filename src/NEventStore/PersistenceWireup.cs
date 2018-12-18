@@ -1,7 +1,9 @@
 namespace NEventStore
 {
     using System;
+#if !NETSTANDARD1_6
     using System.Transactions;
+#endif
     using NEventStore.Diagnostics;
     using NEventStore.Logging;
     using NEventStore.Persistence;
@@ -9,20 +11,24 @@ namespace NEventStore
 
     public class PersistenceWireup : Wireup
     {
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof (PersistenceWireup));
+        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(PersistenceWireup));
         private bool _initialize;
+#if !NETSTANDARD1_6 && !NETSTANDARD2_0
         private bool _tracking;
         private string _trackingInstanceName;
+#endif
 
         public PersistenceWireup(Wireup inner)
             : base(inner)
         {
+#if !NETSTANDARD1_6
             Container.Register(TransactionScopeOption.Suppress);
+#endif
         }
 
         public virtual PersistenceWireup WithPersistence(IPersistStreams instance)
         {
-            Logger.Debug(Messages.RegisteringPersistenceEngine, instance.GetType());
+            Logger.Info(Messages.RegisteringPersistenceEngine, instance.GetType());
             With(instance);
             return this;
         }
@@ -34,11 +40,12 @@ namespace NEventStore
 
         public virtual PersistenceWireup InitializeStorageEngine()
         {
-            Logger.Debug(Messages.ConfiguringEngineInitialization);
+            Logger.Info(Messages.ConfiguringEngineInitialization);
             _initialize = true;
             return this;
         }
 
+#if !NETSTANDARD1_6 && !NETSTANDARD2_0
         public virtual PersistenceWireup TrackPerformanceInstance(string instanceName)
         {
             if (instanceName == null)
@@ -46,22 +53,25 @@ namespace NEventStore
                 throw new ArgumentNullException("instanceName", Messages.InstanceCannotBeNull);
             }
 
-            Logger.Debug(Messages.ConfiguringEnginePerformanceTracking);
+            Logger.Info(Messages.ConfiguringEnginePerformanceTracking);
             _tracking = true;
             _trackingInstanceName = instanceName;
             return this;
         }
+#endif
 
+#if !NETSTANDARD1_6
         public virtual PersistenceWireup EnlistInAmbientTransaction()
         {
-            Logger.Debug(Messages.ConfiguringEngineEnlistment);
+            Logger.Info(Messages.ConfiguringEngineEnlistment);
             Container.Register(TransactionScopeOption.Required);
             return this;
         }
+#endif
 
         public override IStoreEvents Build()
         {
-            Logger.Debug(Messages.BuildingEngine);
+            Logger.Info(Messages.BuildingEngine);
             var engine = Container.Resolve<IPersistStreams>();
 
             if (_initialize)
@@ -70,11 +80,12 @@ namespace NEventStore
                 engine.Initialize();
             }
 
+#if !NETSTANDARD1_6 && !NETSTANDARD2_0
             if (_tracking)
             {
                 Container.Register<IPersistStreams>(new PerformanceCounterPersistenceEngine(engine, _trackingInstanceName));
             }
-
+#endif
             return base.Build();
         }
     }

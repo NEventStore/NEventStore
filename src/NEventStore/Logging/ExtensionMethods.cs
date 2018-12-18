@@ -10,13 +10,23 @@ namespace NEventStore.Logging
 
         public static string FormatMessage(this string message, Type typeToLog, params object[] values)
         {
+            String formattedMessage;
+            if (values == null || values.Length == 0)
+            {
+                //no parameters no need to string format
+                formattedMessage = message;
+            }
+            else
+            {
+                formattedMessage = string.Format(CultureInfo.InvariantCulture, message, values);
+            }
             return string.Format(
                 CultureInfo.InvariantCulture,
                 MessageFormat,
                 SystemTime.UtcNow,
                 Thread.CurrentThread.GetName(),
                 typeToLog.FullName,
-                string.Format(CultureInfo.InvariantCulture, message, values));
+                formattedMessage);
         }
 
         private static string GetName(this Thread thread)

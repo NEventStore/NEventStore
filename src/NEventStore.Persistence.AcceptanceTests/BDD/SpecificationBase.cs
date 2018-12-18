@@ -1,9 +1,13 @@
-﻿namespace NEventStore.Persistence.AcceptanceTests.BDD
+﻿#if XUNIT
+
+namespace NEventStore.Persistence.AcceptanceTests.BDD
 {
+
     using Xunit;
 
-    [RunWith(typeof (SpecificationBaseRunner))]
-    public abstract class SpecificationBase
+
+	[RunWith(typeof (SpecificationBaseRunner))]
+	public abstract class SpecificationBase
     {
         protected virtual void Because()
         {}
@@ -26,3 +30,5 @@
         }
     }
 }
+
+#endif

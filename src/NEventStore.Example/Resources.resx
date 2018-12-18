@@ -117,13 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MessagesDispatched" xml:space="preserve">
-    <value>Messages from commit have been dispatched: </value>
-  </data>
   <data name="PressAnyKey" xml:space="preserve">
     <value>Press any key to continue...</value>
-  </data>
-  <data name="UnableToDispatch" xml:space="preserve">
-    <value>If for some reason we are unable to dispatch, we'd just handle it here.</value>
   </data>
 </root>

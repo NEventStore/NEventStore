@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp2.0;net45</TargetFrameworks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ApplicationIcon />
+    <OutputTypeEx>exe</OutputTypeEx>
+    <StartupObject />
+    <AssemblyName>NEventStore.Serialization.Json.Tests</AssemblyName>
+    <RootNamespace>NEventStore.Serialization.Json.Tests</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;NUNIT</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>NUNIT</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="5.5.3" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
+    <PackageReference Include="NUnit" Version="3.11.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.11.2" />
+  </ItemGroup>
+    
+  <ItemGroup>
+    <None Remove="packages.config" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\NEventStore.Persistence.AcceptanceTests\SerializationTests.cs" Link="SerializationTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NEventStore.Persistence.AcceptanceTests\NEventStore.Persistence.AcceptanceTests.Core.csproj" />
+    <ProjectReference Include="..\NEventStore.Serialization.Json\NEventStore.Serialization.Json.Core.csproj" />
+    <ProjectReference Include="..\NEventStore\NEventStore.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+  </ItemGroup>
+
+</Project>

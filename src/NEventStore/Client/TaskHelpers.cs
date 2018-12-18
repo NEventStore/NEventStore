@@ -9,14 +9,11 @@
         internal static Task Delay(double milliseconds, CancellationToken cancellationToken)
         {
             var tcs = new TaskCompletionSource<bool>();
-            var timer = new System.Timers.Timer();
-            timer.Elapsed += (obj, args) => tcs.TrySetResult(true);
-            timer.Interval = milliseconds;
-            timer.AutoReset = false;
-            timer.Start();
+			TimerCallback callback = (state) => tcs.TrySetResult(true);
+			var timer = new System.Threading.Timer(callback, null, 0, Convert.ToInt32(milliseconds));
             CancellationTokenRegistration cancellationTokenRegistration = cancellationToken.Register(() =>
             {
-                timer.Stop();
+				timer.Dispose();
                 tcs.TrySetCanceled();
             });
             return tcs.Task.ContinueWith(_ =>

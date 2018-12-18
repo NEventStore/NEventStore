@@ -1,4 +1,6 @@
-﻿namespace NEventStore.Persistence.AcceptanceTests.BDD
+﻿#if XUNIT
+
+namespace NEventStore.Persistence.AcceptanceTests.BDD
 {
     using System;
     using System.Collections.Generic;
@@ -6,7 +8,7 @@
     using Xunit;
     using Xunit.Sdk;
 
-    internal class SpecificationBaseRunner : ITestClassCommand
+	internal class SpecificationBaseRunner : ITestClassCommand
     {
         private readonly List<object> _fixtures = new List<object>();
         private SpecificationBase _objectUnderTest;
@@ -160,4 +162,7 @@
             }
         }
     }
+
 }
+
+#endif

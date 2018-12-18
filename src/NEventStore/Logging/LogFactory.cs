@@ -23,6 +23,38 @@ namespace NEventStore.Logging
 
         private class NullLogger : ILog
         {
+            public bool IsVerboseEnabled
+            {
+                get
+                {
+                    return false;
+                }
+            }
+
+            public bool IsDebugEnabled
+            {
+                get
+                {
+                    return false;
+                }
+            }
+
+            public bool IsInfoEnabled
+            {
+                get
+                {
+                    return false;
+                }
+            }
+
+            public LogLevel LogLevel
+            {
+                get
+                {
+                    return LogLevel.Fatal;
+                }
+            }
+
             public void Verbose(string message, params object[] values)
             {}
 

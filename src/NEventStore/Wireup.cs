@@ -2,17 +2,20 @@ namespace NEventStore
 {
     using System.Collections.Generic;
     using System.Linq;
+#if !NETSTANDARD1_6
     using System.Transactions;
+#endif
     using NEventStore.Conversion;
-    using NEventStore.Dispatcher;
     using NEventStore.Persistence;
     using NEventStore.Persistence.InMemory;
     using NEventStore.Serialization;
+    using Logging;
 
     public class Wireup
     {
         private readonly NanoContainer _container;
         private readonly Wireup _inner;
+        private ILog Logger = LogFactory.BuildLogger(typeof(Wireup));
 
         protected Wireup(NanoContainer container)
         {
@@ -32,11 +35,10 @@ namespace NEventStore
         public static Wireup Init()
         {
             var container = new NanoContainer();
-
+#if !NETSTANDARD1_6
             container.Register(TransactionScopeOption.Suppress);
+#endif
             container.Register<IPersistStreams>(new InMemoryPersistenceEngine());
-            container.Register<IScheduleDispatches>(new NullDispatcher());
-            container.Register<ISerialize>(new JsonSerializer());
             container.Register(BuildEventStore);
 
             return new Wireup(container);
@@ -55,6 +57,7 @@ namespace NEventStore
 
         public virtual Wireup HookIntoPipelineUsing(params IPipelineHook[] hooks)
         {
+            Logger.Info(Resources.WireupHookIntoPipeline, string.Join(", ", hooks.Select(h => h.GetType())));
             ICollection<IPipelineHook> collection = (hooks ?? new IPipelineHook[] { }).Where(x => x != null).ToArray();
             Container.Register(collection);
             return this;
@@ -72,19 +75,21 @@ namespace NEventStore
 
         private static IStoreEvents BuildEventStore(NanoContainer context)
         {
+#if !NETSTANDARD1_6
             var scopeOption = context.Resolve<TransactionScopeOption>();
             OptimisticPipelineHook concurrency = scopeOption == TransactionScopeOption.Suppress ? new OptimisticPipelineHook() : null;
-            var dispatchScheduler = context.Resolve<IScheduleDispatches>();
-            var dispatchSchedulerHook = new DispatchSchedulerPipelineHook(dispatchScheduler);
+#else
+            OptimisticPipelineHook concurrency = new OptimisticPipelineHook();
+#endif
             var upconverter = context.Resolve<EventUpconverterPipelineHook>();
 
             ICollection<IPipelineHook> hooks = context.Resolve<ICollection<IPipelineHook>>() ?? new IPipelineHook[0];
-            hooks = new IPipelineHook[] { concurrency, dispatchSchedulerHook, upconverter }
+            hooks = new IPipelineHook[] { concurrency, upconverter }
                 .Concat(hooks)
                 .Where(x => x != null)
                 .ToArray();
 
-            return new OptimisticEventStore(context.Resolve<IPersistStreams>(), hooks, dispatchScheduler.Start);
+            return new OptimisticEventStore(context.Resolve<IPersistStreams>(), hooks);
         }
     }
 }

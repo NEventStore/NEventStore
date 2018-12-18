@@ -5,9 +5,21 @@
     using System.Linq;
     using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
+    using FluentAssertions;
+#if MSTEST
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+#endif
+#if NUNIT
+    using NUnit.Framework;
+#endif
+#if XUNIT
     using Xunit;
     using Xunit.Should;
+#endif
 
+#if MSTEST
+    [TestClass]
+#endif
     public class when_serializing_a_simple_message : SerializationConcern
     {
         private readonly SimpleMessage _message = new SimpleMessage().Populate();
@@ -27,40 +39,43 @@
         [Fact]
         public void should_deserialize_a_message_which_contains_the_same_Id_as_the_serialized_message()
         {
-            _deserialized.Id.ShouldBe(_message.Id);
+            _deserialized.Id.Should().Be(_message.Id);
         }
 
         [Fact]
         public void should_deserialize_a_message_which_contains_the_same_Value_as_the_serialized_message()
         {
-            _deserialized.Value.ShouldBe(_message.Value);
+            _deserialized.Value.Should().Be(_message.Value);
         }
 
         [Fact]
         public void should_deserialize_a_message_which_contains_the_same_Created_value_as_the_serialized_message()
         {
-            _deserialized.Created.ShouldBe(_message.Created);
+            _deserialized.Created.Should().Be(_message.Created);
         }
 
         [Fact]
         public void should_deserialize_a_message_which_contains_the_same_Count_as_the_serialized_message()
         {
-            _deserialized.Count.ShouldBe(_message.Count);
+            _deserialized.Count.Should().Be(_message.Count);
         }
 
         [Fact]
         public void should_deserialize_a_message_which_contains_the_number_of_elements_as_the_serialized_message()
         {
-            _deserialized.Contents.Count.ShouldBe(_message.Contents.Count);
+            _deserialized.Contents.Count.Should().Be(_message.Contents.Count);
         }
 
         [Fact]
         public void should_deserialize_a_message_which_contains_the_same_Contents_as_the_serialized_message()
         {
-            _deserialized.Contents.SequenceEqual(_message.Contents).ShouldBeTrue();
+            _deserialized.Contents.SequenceEqual(_message.Contents).Should().BeTrue();
         }
     }
 
+#if MSTEST
+    [TestClass]
+#endif
     public class when_serializing_a_list_of_event_messages : SerializationConcern
     {
         private readonly List<EventMessage> Messages = new List<EventMessage>
@@ -86,16 +101,19 @@
         [Fact]
         public void should_deserialize_the_same_number_of_event_messages_as_it_serialized()
         {
-            Messages.Count.ShouldBe(_deserialized.Count);
+            Messages.Count.Should().Be(_deserialized.Count);
         }
 
         [Fact]
         public void should_deserialize_the_the_complex_types_within_the_event_messages()
         {
-            _deserialized.Last().Body.ShouldBeInstanceOf<SimpleMessage>();
+            _deserialized.Last().Body.Should().BeOfType<SimpleMessage>();
         }
     }
 
+#if MSTEST
+    [TestClass]
+#endif
     public class when_serializing_a_list_of_commit_headers : SerializationConcern
     {
         private readonly Dictionary<string, object> _headers = new Dictionary<string, object>
@@ -122,16 +140,19 @@
         [Fact]
         public void should_deserialize_the_same_number_of_event_messages_as_it_serialized()
         {
-            _headers.Count.ShouldBe(_deserialized.Count);
+            _headers.Count.Should().Be(_deserialized.Count);
         }
 
         [Fact]
         public void should_deserialize_the_the_complex_types_within_the_event_messages()
         {
-            _deserialized.Last().Value.ShouldBeInstanceOf<SimpleMessage>();
+            _deserialized.Last().Value.Should().BeOfType<SimpleMessage>();
         }
     }
 
+#if MSTEST
+    [TestClass]
+#endif
     public class when_serializing_an_untyped_payload_on_a_snapshot : SerializationConcern
     {
         private Snapshot _deserialized;
@@ -154,17 +175,17 @@
         [Fact]
         public void should_correctly_deserialize_the_untyped_payload_contents()
         {
-            _deserialized.Payload.ShouldBe(_snapshot.Payload);
+            _deserialized.Payload.Should().BeEquivalentTo(_snapshot.Payload);
         }
 
         [Fact]
         public void should_correctly_deserialize_the_untyped_payload_type()
         {
-            _deserialized.Payload.ShouldBeInstanceOf(_snapshot.Payload.GetType());
+            _deserialized.Payload.Should().BeOfType(_snapshot.Payload.GetType());
         }
     }
 
-    public class SerializationConcern : SpecificationBase, IUseFixture<SerializerFixture>
+    public abstract class SerializationConcern : SpecificationBase
     {
         private SerializerFixture _data;
 
@@ -173,9 +194,9 @@
             get { return _data.Serializer; }
         }
 
-        public void SetFixture(SerializerFixture data)
+        protected SerializationConcern()
         {
-            _data = data;
+            _data = new SerializerFixture();
         }
     }
 

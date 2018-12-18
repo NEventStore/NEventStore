@@ -38,7 +38,7 @@ namespace NEventStore.Persistence
         /// </summary>
         /// <param name="checkpointToken">The checkpoint token.</param>
         /// <returns>An enumerable of Commits.</returns>
-        IEnumerable<ICommit> GetFrom(string checkpointToken = null);
+        IEnumerable<ICommit> GetFrom(Int64 checkpointToken = 0);
 
         /// <summary>
         ///     Gets all commits after from the specified checkpoint. Use null to get from the beginning.
@@ -46,14 +46,7 @@ namespace NEventStore.Persistence
         /// <param name="bucketId">The value which uniquely identifies bucket the stream belongs to.</param>
         /// <param name="checkpointToken">The checkpoint token.</param>
         /// <returns>An enumerable of Commits.</returns>
-        IEnumerable<ICommit> GetFrom(string bucketId, string checkpointToken);
-
-        /// <summary>
-        /// Gets a checkpoint object that is comparable with other checkpoints from this storage engine.
-        /// </summary>
-        /// <param name="checkpointToken">The checkpoint token</param>
-        /// <returns>A <see cref="ICheckpoint"/> instance.</returns>
-        ICheckpoint GetCheckpoint(string checkpointToken = null);
+        IEnumerable<ICommit> GetFrom(string bucketId, Int64 checkpointToken);
 
         /// <summary>
         ///     Gets all commits on or after from the specified starting time and before the specified end time.
@@ -65,22 +58,6 @@ namespace NEventStore.Persistence
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
         IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end);
-
-        /// <summary>
-        ///     Gets a set of commits that has not yet been dispatched.
-        /// </summary>
-        /// <returns>The set of commits to be dispatched.</returns>
-        /// <exception cref="StorageException" />
-        /// <exception cref="StorageUnavailableException" />
-        IEnumerable<ICommit> GetUndispatchedCommits();
-
-        /// <summary>
-        ///     Marks the commit specified as dispatched.
-        /// </summary>
-        /// <param name="commit">The commit to be marked as dispatched.</param>
-        /// <exception cref="StorageException" />
-        /// <exception cref="StorageUnavailableException" />
-        void MarkCommitAsDispatched(ICommit commit);
 
         /// <summary>
         ///     Completely DESTROYS the contents of ANY and ALL streams that have been successfully persisted.  Use with caution.

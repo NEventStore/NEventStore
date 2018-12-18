@@ -65,34 +65,19 @@ namespace NEventStore.Persistence
             return ExecuteHooks(_original.GetFrom(bucketId, start));
         }
 
-        public IEnumerable<ICommit> GetFrom(string checkpointToken)
+        public IEnumerable<ICommit> GetFrom(Int64 checkpointToken)
         {
             return ExecuteHooks(_original.GetFrom(checkpointToken));
         }
 
-        public IEnumerable<ICommit> GetFrom(string bucketId, string checkpointToken)
+        public IEnumerable<ICommit> GetFrom(string bucketId, Int64 checkpointToken)
         {
             return ExecuteHooks(_original.GetFrom(bucketId, checkpointToken));
-        }
-
-        public ICheckpoint GetCheckpoint(string checkpointToken)
-        {
-            return _original.GetCheckpoint(checkpointToken);
         }
 
         public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             return ExecuteHooks(_original.GetFromTo(bucketId, start, end));
-        }
-
-        public IEnumerable<ICommit> GetUndispatchedCommits()
-        {
-            return ExecuteHooks(_original.GetUndispatchedCommits());
-        }
-
-        public void MarkCommitAsDispatched(ICommit commit)
-        {
-            _original.MarkCommitAsDispatched(commit);
         }
 
         public void Purge()

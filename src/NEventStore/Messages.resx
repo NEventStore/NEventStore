@@ -121,13 +121,7 @@
     <value>The instance provided cannot be null.</value>
   </data>
   <data name="TypeMustBeInterface" xml:space="preserve">
-    <value>The type provided must be registered as an interface rather than as a concrete type, e.g. "container.Register&lt;IDispatchCommits&gt;(instance);".</value>
-  </data>
-  <data name="AsyncDispatchSchedulerRegistered" xml:space="preserve">
-    <value>Configuring the store to dispatch messages asynchronously.</value>
-  </data>
-  <data name="DispatcherRegistered" xml:space="preserve">
-    <value>Registering dispatcher of type '{0}'.</value>
+    <value>The type provided must be registered as an interface rather than as a concrete type, e.g. "container.Register&lt;ISomeService&gt;(instance);".</value>
   </data>
   <data name="AddingWireupRegistration" xml:space="preserve">
     <value>Adding wireup registration for an object instance of type '{0}'.</value>
@@ -201,12 +195,6 @@
   <data name="ConnectionFactorySpecified" xml:space="preserve">
     <value>Using SQL connection factory of type '{0}'.</value>
   </data>
-  <data name="SyncDispatchSchedulerRegistered" xml:space="preserve">
-    <value>Configuring the store to dispatch messages synchronously.</value>
-  </data>
-  <data name="SynchronousDispatcherTwoPhaseCommits" xml:space="preserve">
-    <value>Only the synchronous dispatcher can enlist in two-phase commits.</value>
-  </data>
   <data name="EventUpconverterRegistered" xml:space="preserve">
     <value>Configuring the store to upconvert events when fetched.</value>
   </data>
@@ -222,7 +210,22 @@
   <data name="StreamIdHasherSpecified" xml:space="preserve">
     <value>Registering stream ID hasher of type '{0}'</value>
   </data>
-  <data name="SchedulerNotStarted" xml:space="preserve">
-    <value>Scheduler not started.</value>
+  <data name="ConcurrencyExceptionCommitSequence" xml:space="preserve">
+    <value>Head CommitSequence [{0}] greater or equal than Attempt CommitSequence [{1}] - StreamId {2} - StreamRevision {3} - Events Count {4}</value>
+  </data>
+  <data name="ConcurrencyExceptionStreamRevision" xml:space="preserve">
+    <value>Head StreamRevision [{0}] greater or equal than Attempt StreamRevision [{1}] - StreamId {2} - StreamRevision {3} - Events Count {4}</value>
+  </data>
+  <data name="DuplicateCommitIdException" xml:space="preserve">
+    <value>Duplicate commit id {0}.</value>
+  </data>
+  <data name="StorageExceptionCommitSequence" xml:space="preserve">
+    <value>Head CommitSequence [{0}] lesser than Attempt CommitSequence - 1 [{1}] - StreamId {2} - StreamRevision {3} - Events Count {4}</value>
+  </data>
+  <data name="StorageExceptionEndOfStream" xml:space="preserve">
+    <value>Stream EOF: head.StreamRevision [{0}] &lt; attempt.StreamRevision [{1}] - attempt.Events.Count [{2}] - StreamId {3} - StreamRevision {4} </value>
+  </data>
+  <data name="StreamNotFoundException" xml:space="preserve">
+    <value>Stream not found: StreamId {0} bucket {1}.</value>
   </data>
 </root>

@@ -42,10 +42,12 @@ namespace NEventStore.Serialization
             // no-op
         }
 
+#if !NETSTANDARD1_6
         public override void Close()
         {
             // no-op
         }
+#endif
 
         public override void Flush()
         {

@@ -32,6 +32,7 @@ namespace NEventStore.Persistence
             : base(message, innerException)
         {}
 
+#if !NETSTANDARD1_6
         /// <summary>
         ///     Initializes a new instance of the StorageUnavailableException class.
         /// </summary>
@@ -40,5 +41,6 @@ namespace NEventStore.Persistence
         protected StorageUnavailableException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {}
+#endif
     }
 }

@@ -10,12 +10,24 @@ namespace NEventStore
     using NEventStore.Persistence;
     using NEventStore.Persistence.AcceptanceTests;
     using NEventStore.Persistence.AcceptanceTests.BDD;
-    using Xunit;
-    using Xunit.Should;
+	using FluentAssertions;
+#if MSTEST
+	using Microsoft.VisualStudio.TestTools.UnitTesting;	
+#endif
+#if NUNIT
+	using NUnit.Framework;	
+#endif
+#if XUNIT
+	using Xunit;
+	using Xunit.Should;
+#endif
 
-    public class OptimisticPipelineHookTests
+	public class OptimisticPipelineHookTests
     {
-        public class when_committing_with_a_sequence_beyond_the_known_end_of_a_stream : using_commit_hooks
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_committing_with_a_sequence_beyond_the_known_end_of_a_stream : using_commit_hooks
         {
             private const int HeadStreamRevision = 5;
             private const int HeadCommitSequence = 1;
@@ -41,11 +53,14 @@ namespace NEventStore
             [Fact]
             public void should_throw_a_PersistenceException()
             {
-                _thrown.ShouldBeInstanceOf<StorageException>();
+                _thrown.Should().BeOfType<StorageException>();
             }
         }
 
-        public class when_committing_with_a_revision_beyond_the_known_end_of_a_stream : using_commit_hooks
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_committing_with_a_revision_beyond_the_known_end_of_a_stream : using_commit_hooks
         {
             private const int HeadCommitSequence = 1;
             private const int HeadStreamRevision = 1;
@@ -72,11 +87,14 @@ namespace NEventStore
             [Fact]
             public void should_throw_a_PersistenceException()
             {
-                _thrown.ShouldBeInstanceOf<StorageException>();
+                _thrown.Should().BeOfType<StorageException>();
             }
         }
 
-    public class when_committing_with_a_sequence_less_or_equal_to_the_most_recent_sequence_for_the_stream : using_commit_hooks
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_committing_with_a_sequence_less_or_equal_to_the_most_recent_sequence_for_the_stream : using_commit_hooks
         {
             private const int HeadStreamRevision = 42;
             private const int HeadCommitSequence = 42;
@@ -102,11 +120,22 @@ namespace NEventStore
             [Fact]
             public void should_throw_a_ConcurrencyException()
             {
-                thrown.ShouldBeInstanceOf<ConcurrencyException>();
+                thrown.Should().BeOfType<ConcurrencyException>();
+            }
+
+
+            [Fact]
+            public void ConcurrencyException_should_have_good_message()
+            {
+                thrown.Message.Should().Contain(Attempt.StreamId);
+                thrown.Message.Should().Contain("CommitSequence [" + Attempt.CommitSequence);
             }
         }
 
-    public class when_committing_with_a_revision_less_or_equal_to_than_the_most_recent_revision_read_for_the_stream : using_commit_hooks
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_committing_with_a_revision_less_or_equal_to_than_the_most_recent_revision_read_for_the_stream : using_commit_hooks
         {
             private const int HeadStreamRevision = 3;
             private const int HeadCommitSequence = 2;
@@ -131,11 +160,21 @@ namespace NEventStore
             [Fact]
             public void should_throw_a_ConcurrencyException()
             {
-                _thrown.ShouldBeInstanceOf<ConcurrencyException>();
+                _thrown.Should().BeOfType<ConcurrencyException>();
+            }
+
+            [Fact]
+            public void ConcurrencyException_should_have_good_message()
+            {
+                _thrown.Message.Should().Contain(_failedAttempt.StreamId);
+                _thrown.Message.Should().Contain("StreamRevision [" + _failedAttempt.CommitSequence);
             }
         }
 
-    public class when_committing_with_a_commit_sequence_less_than_or_equal_to_the_most_recent_commit_for_the_stream : using_commit_hooks
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_committing_with_a_commit_sequence_less_than_or_equal_to_the_most_recent_commit_for_the_stream : using_commit_hooks
         {
             private const int DuplicateCommitSequence = 1;
             private CommitAttempt _failedAttempt;
@@ -158,11 +197,21 @@ namespace NEventStore
             [Fact]
             public void should_throw_a_ConcurrencyException()
             {
-                _thrown.ShouldBeInstanceOf<ConcurrencyException>();
+                _thrown.Should().BeOfType<ConcurrencyException>();
+            }
+
+            [Fact]
+            public void ConcurrencyException_should_have_good_message()
+            {
+                _thrown.Message.Should().Contain(_failedAttempt.StreamId);
+                _thrown.Message.Should().Contain("CommitSequence [" + _failedAttempt.CommitSequence);
             }
         }
 
-    public class when_committing_with_a_stream_revision_less_than_or_equal_to_the_most_recent_commit_for_the_stream : using_commit_hooks
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_committing_with_a_stream_revision_less_than_or_equal_to_the_most_recent_commit_for_the_stream : using_commit_hooks
         {
             private const int DuplicateStreamRevision = 2;
 
@@ -186,7 +235,14 @@ namespace NEventStore
             [Fact]
             public void should_throw_a_ConcurrencyException()
             {
-                _thrown.ShouldBeInstanceOf<ConcurrencyException>();
+                _thrown.Should().BeOfType<ConcurrencyException>();
+            }
+
+            [Fact]
+            public void Concurrency_exception_should_have_good_message()
+            {
+                _thrown.Message.Should().Contain(_failedAttempt.StreamId);
+                _thrown.Message.Should().Contain(_failedAttempt.StreamRevision.ToString());
             }
         }
 
@@ -221,14 +277,14 @@ namespace NEventStore
             public void should_only_contain_streams_explicitly_tracked()
             {
                 ICommit untracked = BuildCommit(Guid.Empty, _trackedCommitAttempts[0].CommitId);
-                _hook.Contains(untracked).ShouldBeFalse();
+                _hook.Contains(untracked).Should().BeFalse();
             }
 
             [Fact]
             public void should_find_tracked_streams()
             {
                 ICommit stillTracked = BuildCommit(_trackedCommitAttempts.Last().StreamId, _trackedCommitAttempts.Last().CommitId);
-                _hook.Contains(stillTracked).ShouldBeTrue();
+                _hook.Contains(stillTracked).Should().BeTrue();
             }
 
             [Fact]
@@ -236,7 +292,7 @@ namespace NEventStore
             {
                 ICommit droppedFromTracking = BuildCommit(
                     _trackedCommitAttempts.First().StreamId, _trackedCommitAttempts.First().CommitId);
-                _hook.Contains(droppedFromTracking).ShouldBeFalse();
+                _hook.Contains(droppedFromTracking).Should().BeFalse();
             }
 
             private ICommit BuildCommit(Guid streamId, Guid commitId)
@@ -246,11 +302,14 @@ namespace NEventStore
 
             private ICommit BuildCommit(string streamId, Guid commitId)
             {
-                return new Commit(Bucket.Default, streamId, 0, commitId, 0, SystemTime.UtcNow, new LongCheckpoint(0).Value, null, null);
+                return new Commit(Bucket.Default, streamId, 0, commitId, 0, SystemTime.UtcNow, 0, null, null);
             }
         }
 
-        public class when_purging : SpecificationBase
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_purging : SpecificationBase
         {
             private ICommit _trackedCommit;
             private OptimisticPipelineHook _hook;
@@ -270,17 +329,20 @@ namespace NEventStore
             [Fact]
             public void should_not_track_commit()
             {
-                _hook.Contains(_trackedCommit).ShouldBeFalse();
+                _hook.Contains(_trackedCommit).Should().BeFalse();
             }
 
             private ICommit BuildCommit(Guid bucketId, Guid streamId, Guid commitId)
             {
                 return new Commit(bucketId.ToString(), streamId.ToString(), 0, commitId, 0, SystemTime.UtcNow,
-                    new LongCheckpoint(0).Value, null, null);
+                    0, null, null);
             }
         }
 
-        public class when_purging_a_bucket : SpecificationBase
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_purging_a_bucket : SpecificationBase
         {
             private ICommit _trackedCommitBucket1;
             private ICommit _trackedCommitBucket2;
@@ -303,23 +365,26 @@ namespace NEventStore
             [Fact]
             public void should_not_track_the_commit_in_bucket()
             {
-                _hook.Contains(_trackedCommitBucket1).ShouldBeFalse();
+                _hook.Contains(_trackedCommitBucket1).Should().BeFalse();
             }
 
             [Fact]
             public void should_track_the_commit_in_other_bucket()
             {
-                _hook.Contains(_trackedCommitBucket2).ShouldBeTrue();
+                _hook.Contains(_trackedCommitBucket2).Should().BeTrue();
             }
 
             private ICommit BuildCommit(Guid bucketId, Guid streamId, Guid commitId)
             {
                 return new Commit(bucketId.ToString(), streamId.ToString(), 0, commitId, 0, SystemTime.UtcNow,
-                    new LongCheckpoint(0).Value, null, null);
+                    0, null, null);
             }
         }
 
-        public class when_deleting_a_stream : SpecificationBase
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_deleting_a_stream : SpecificationBase
         {
             private ICommit _trackedCommit;
             private ICommit _trackedCommitDeleted;
@@ -344,19 +409,19 @@ namespace NEventStore
             [Fact]
             public void should_not_track_the_commit_in_the_deleted_stream()
             {
-                _hook.Contains(_trackedCommitDeleted).ShouldBeFalse();
+                _hook.Contains(_trackedCommitDeleted).Should().BeFalse();
             }
 
             [Fact]
             public void should_track_the_commit_that_is_not_in_the_deleted_stream()
             {
-                _hook.Contains(_trackedCommit).ShouldBeTrue();
+                _hook.Contains(_trackedCommit).Should().BeTrue();
             }
 
             private ICommit BuildCommit(Guid bucketId, Guid streamId, Guid commitId)
             {
                 return new Commit(bucketId.ToString(), streamId.ToString(), 0, commitId, 0, SystemTime.UtcNow,
-                    new LongCheckpoint(0).Value, null, null);
+                    0, null, null);
             }
         }
 
@@ -373,7 +438,7 @@ namespace NEventStore
             protected ICommit BuildCommitStub(int streamRevision, int commitSequence)
             {
                 List<EventMessage> events = new[] {new EventMessage()}.ToList();
-                return new Commit(Bucket.Default, _streamId, streamRevision, Guid.NewGuid(), commitSequence, SystemTime.UtcNow, new LongCheckpoint(0).Value, null, events);
+                return new Commit(Bucket.Default, _streamId, streamRevision, Guid.NewGuid(), commitSequence, SystemTime.UtcNow, 0, null, events);
             }
 
             protected CommitAttempt BuildCommitAttemptStub(int streamRevision, int commitSequence)
@@ -385,7 +450,7 @@ namespace NEventStore
             protected ICommit BuildCommitStub(Guid commitId, int streamRevision, int commitSequence)
             {
                 List<EventMessage> events = new[] {new EventMessage()}.ToList();
-                return new Commit(Bucket.Default, _streamId, streamRevision, commitId, commitSequence, SystemTime.UtcNow, new LongCheckpoint(0).Value, null, events);
+                return new Commit(Bucket.Default, _streamId, streamRevision, commitId, commitSequence, SystemTime.UtcNow, 0, null, events);
             }
         }
     }

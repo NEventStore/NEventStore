@@ -34,7 +34,7 @@ namespace NEventStore
 
             if (minRevision > 0 && _committed.Count == 0)
             {
-                throw new StreamNotFoundException();
+                throw new StreamNotFoundException(String.Format(Messages.StreamNotFoundException, streamId, BucketId));
             }
         }
 
@@ -73,22 +73,27 @@ namespace NEventStore
 
         public void Add(EventMessage uncommittedEvent)
         {
-            if (uncommittedEvent == null || uncommittedEvent.Body == null)
+            if (uncommittedEvent == null)
             {
-                return;
+                throw new ArgumentNullException("uncommittedEvent");
             }
 
-            Logger.Debug(Resources.AppendingUncommittedToStream, StreamId);
+            if (uncommittedEvent.Body == null)
+            {
+                throw new ArgumentNullException("uncommittedEvent.Body");
+            }
+
+            Logger.Verbose(Resources.AppendingUncommittedToStream, uncommittedEvent.Body.GetType(), StreamId);
             _events.Add(uncommittedEvent);
         }
 
         public void CommitChanges(Guid commitId)
         {
-            Logger.Debug(Resources.AttemptingToCommitChanges, StreamId);
+            Logger.Verbose(Resources.AttemptingToCommitChanges, StreamId);
 
             if (_identifiers.Contains(commitId))
             {
-                throw new DuplicateCommitException();
+                throw new DuplicateCommitException(String.Format(Messages.DuplicateCommitIdException, commitId));
             }
 
             if (!HasChanges())
@@ -100,9 +105,9 @@ namespace NEventStore
             {
                 PersistChanges(commitId);
             }
-            catch (ConcurrencyException)
+            catch (ConcurrencyException cex)
             {
-                Logger.Info(Resources.UnderlyingStreamHasChanged, StreamId);
+                Logger.Debug(Resources.UnderlyingStreamHasChanged, StreamId, cex.Message); //not useful to log info because the exception will be thrown 
                 IEnumerable<ICommit> commits = _persistence.GetFrom(BucketId, StreamId, StreamRevision + 1, int.MaxValue);
                 PopulateStream(StreamRevision + 1, int.MaxValue, commits);
 
@@ -112,7 +117,7 @@ namespace NEventStore
 
         public void ClearChanges()
         {
-            Logger.Debug(Resources.ClearingUncommittedChanges, StreamId);
+            Logger.Verbose(Resources.ClearingUncommittedChanges, StreamId);
             _events.Clear();
             _uncommittedHeaders.Clear();
         }
@@ -177,7 +182,7 @@ namespace NEventStore
                 return true;
             }
 
-            Logger.Warn(Resources.NoChangesToCommit, StreamId);
+            Logger.Info(Resources.NoChangesToCommit, StreamId);
             return false;
         }
 
@@ -185,7 +190,7 @@ namespace NEventStore
         {
             CommitAttempt attempt = BuildCommitAttempt(commitId);
 
-            Logger.Debug(Resources.PersistingCommit, commitId, StreamId);
+            Logger.Debug(Resources.PersistingCommit, commitId, StreamId, attempt.Events == null ? 0 : attempt.Events.Count);
             ICommit commit = _persistence.Commit(attempt);
 
             PopulateStream(StreamRevision + 1, attempt.StreamRevision, new[] { commit });
@@ -194,7 +199,7 @@ namespace NEventStore
 
         private CommitAttempt BuildCommitAttempt(Guid commitId)
         {
-            Logger.Debug(Resources.BuildingCommitAttempt, commitId, StreamId);
+            Logger.Verbose(Resources.BuildingCommitAttempt, commitId, StreamId);
             return new CommitAttempt(
                 BucketId,
                 StreamId,

@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <RootNamespace>NEventStore.Serialization.Json</RootNamespace>
+    <AssemblyName>NEventStore.Serialization.Json</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PackageId>NEventStore.Serialization.Json</PackageId>
+    <Title>NEventStore Json Serializers</Title>
+    <Authors>NEventStore Dev Team</Authors>
+    <PackageProjectUrl>http://neventstore.org</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Description>This package contains Json and Bson serializers for NEventStore library. These serializers were removed from the core package to limit dependencies from external libraries.</Description>
+    <PackageTags>events, event sourcing, cqrs, storage, persistence, database</PackageTags>
+    <PackageReleaseNotes></PackageReleaseNotes>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NEventStore\NEventStore.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Messages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Messages.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Messages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>NEventStore.Serialization.Json</CustomToolNamespace>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

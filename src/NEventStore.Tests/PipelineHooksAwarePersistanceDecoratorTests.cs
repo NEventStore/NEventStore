@@ -10,11 +10,24 @@ namespace NEventStore
     using FakeItEasy;
     using NEventStore.Persistence;
     using NEventStore.Persistence.AcceptanceTests.BDD;
-    using Xunit;
+#if MSTEST
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using FluentAssertions;
+#endif
+#if NUNIT
+	using NUnit.Framework;	
+#endif
+#if XUNIT
+	using Xunit;
+	using Xunit.Should;
+#endif
 
-    public class PipelineHooksAwarePersistenceDecoratorTests
+	public class PipelineHooksAwarePersistenceDecoratorTests
     {
-        public class when_disposing_the_decorator : using_underlying_persistence
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_disposing_the_decorator : using_underlying_persistence
         {
             protected override void Because()
             {
@@ -28,7 +41,10 @@ namespace NEventStore
             }
         }
 
-        public class when_reading_the_all_events_from_date : using_underlying_persistence
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_reading_the_all_events_from_date : using_underlying_persistence
         {
             private ICommit _commit;
             private DateTime _date;
@@ -38,7 +54,7 @@ namespace NEventStore
             protected override void Context()
             {
                 _date = DateTime.Now;
-                _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, new LongCheckpoint(0).Value, null, null);
+                _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, 0, null, null);
 
                 _hook1 = A.Fake<IPipelineHook>();
                 A.CallTo(() => _hook1.Select(_commit)).Returns(_commit);
@@ -72,7 +88,10 @@ namespace NEventStore
             }
         }
 
-        public class when_getting_the_all_events_from_min_to_max_revision : using_underlying_persistence
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_getting_the_all_events_from_min_to_max_revision : using_underlying_persistence
         {
             private ICommit _commit;
             private DateTime _date;
@@ -82,7 +101,7 @@ namespace NEventStore
             protected override void Context()
             {
                 _date = DateTime.Now;
-                _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, new LongCheckpoint(0).Value, null, null);
+                _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, 0, null, null);
 
                 _hook1 = A.Fake<IPipelineHook>();
                 A.CallTo(() => _hook1.Select(_commit)).Returns(_commit);
@@ -117,7 +136,10 @@ namespace NEventStore
             }
         }
 
-        public class when_getting_all_events_from_to : using_underlying_persistence
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_getting_all_events_from_to : using_underlying_persistence
         {
             private ICommit _commit;
             private DateTime _end;
@@ -129,7 +151,7 @@ namespace NEventStore
             {
                 _start = DateTime.Now;
                 _end = DateTime.Now;
-                _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, new LongCheckpoint(0).Value, null, null);
+                _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, 0, null, null);
 
                 _hook1 = A.Fake<IPipelineHook>();
                 A.CallTo(() => _hook1.Select(_commit)).Returns(_commit);
@@ -163,7 +185,10 @@ namespace NEventStore
             }
         }
 
-        public class when_committing : using_underlying_persistence
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_committing : using_underlying_persistence
         {
             private CommitAttempt _attempt;
 
@@ -184,7 +209,10 @@ namespace NEventStore
             }
         }
 
-        public class when_reading_the_all_events_from_checkpoint : using_underlying_persistence
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_reading_the_all_events_from_checkpoint : using_underlying_persistence
         {
             private ICommit _commit;
             private IPipelineHook _hook1;
@@ -192,7 +220,7 @@ namespace NEventStore
 
             protected override void Context()
             {
-                _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, new LongCheckpoint(0).Value, null, null);
+                _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, 0, null, null);
 
                 _hook1 = A.Fake<IPipelineHook>();
                 A.CallTo(() => _hook1.Select(_commit)).Returns(_commit);
@@ -202,18 +230,18 @@ namespace NEventStore
                 A.CallTo(() => _hook2.Select(_commit)).Returns(_commit);
                 pipelineHooks.Add(_hook2);
 
-                A.CallTo(() => persistence.GetFrom(null)).Returns(new List<ICommit> {_commit});
+                A.CallTo(() => persistence.GetFrom(0)).Returns(new List<ICommit> {_commit});
             }
 
             protected override void Because()
             {
-                Decorator.GetFrom(null).ToList();
+                Decorator.GetFrom(0).ToList();
             }
 
             [Fact]
             public void should_call_the_underlying_persistence_to_get_events()
             {
-                A.CallTo(() => persistence.GetFrom(null)).MustHaveHappened(Repeated.Exactly.Once);
+                A.CallTo(() => persistence.GetFrom(0)).MustHaveHappened(Repeated.Exactly.Once);
             }
 
             [Fact]
@@ -224,47 +252,10 @@ namespace NEventStore
             }
         }
 
-        public class when_reading_the_all_events_get_undispatched : using_underlying_persistence
-        {
-            private ICommit _commit;
-            private IPipelineHook _hook1;
-            private IPipelineHook _hook2;
-
-            protected override void Context()
-            {
-                _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, new LongCheckpoint(0).Value, null, null);
-
-                _hook1 = A.Fake<IPipelineHook>();
-                A.CallTo(() => _hook1.Select(_commit)).Returns(_commit);
-                pipelineHooks.Add(_hook1);
-
-                _hook2 = A.Fake<IPipelineHook>();
-                A.CallTo(() => _hook2.Select(_commit)).Returns(_commit);
-                pipelineHooks.Add(_hook2);
-
-                A.CallTo(() => persistence.GetUndispatchedCommits()).Returns(new List<ICommit> {_commit});
-            }
-
-            protected override void Because()
-            {
-                Decorator.GetUndispatchedCommits().ToList();
-            }
-
-            [Fact]
-            public void should_call_the_underlying_persistence_to_get_events()
-            {
-                A.CallTo(() => persistence.GetUndispatchedCommits()).MustHaveHappened(Repeated.Exactly.Once);
-            }
-
-            [Fact]
-            public void should_pass_all_events_through_the_pipeline_hooks()
-            {
-                A.CallTo(() => _hook1.Select(_commit)).MustHaveHappened(Repeated.Exactly.Once);
-                A.CallTo(() => _hook2.Select(_commit)).MustHaveHappened(Repeated.Exactly.Once);
-            }
-        }
-
-        public class when_purging : using_underlying_persistence
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_purging : using_underlying_persistence
         {
             private IPipelineHook _hook;
 
@@ -286,7 +277,10 @@ namespace NEventStore
             }
         }
 
-        public class when_purging_a_bucket : using_underlying_persistence
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_purging_a_bucket : using_underlying_persistence
         {
             private IPipelineHook _hook;
             private const string _bucketId = "Bucket";
@@ -309,7 +303,10 @@ namespace NEventStore
             }
         }
 
-        public class when_deleting_a_stream : using_underlying_persistence
+#if MSTEST
+		[TestClass]
+#endif
+		public class when_deleting_a_stream : using_underlying_persistence
         {
             private IPipelineHook _hook;
             private const string _bucketId = "Bucket";
@@ -333,7 +330,7 @@ namespace NEventStore
             }
         }
 
-        public abstract class using_underlying_persistence : SpecificationBase
+		public abstract class using_underlying_persistence : SpecificationBase
         {
             private PipelineHooksAwarePersistanceDecorator decorator;
             protected readonly IPersistStreams persistence = A.Fake<IPersistStreams>();
