@@ -15,32 +15,32 @@ namespace NEventStore.Logging
             _typeToLog = typeToLog;
         }
 
-        public override void OnVerbose(string message, params object[] values)
+        public override void Verbose(string message, params object[] values)
         {
             Log(ConsoleColor.DarkGreen, message, values);
         }
 
-        public override void OnDebug(string message, params object[] values)
+        public override void Debug(string message, params object[] values)
         {
             Log(ConsoleColor.Green, message, values);
         }
 
-        public override void OnInfo(string message, params object[] values)
+        public override void Info(string message, params object[] values)
         {
             Log(ConsoleColor.White, message, values);
         }
 
-        public override void OnWarn(string message, params object[] values)
+        public override void Warn(string message, params object[] values)
         {
             Log(ConsoleColor.Yellow, message, values);
         }
 
-        public override void OnError(string message, params object[] values)
+        public override void Error(string message, params object[] values)
         {
             Log(ConsoleColor.DarkRed, message, values);
         }
 
-        public override void OnFatal(string message, params object[] values)
+        public override void Fatal(string message, params object[] values)
         {
             Log(ConsoleColor.Red, message, values);
         }

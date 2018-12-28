@@ -8,17 +8,12 @@ namespace NEventStore.Conversion
 
     public class EventUpconverterPipelineHook : PipelineHookBase
     {
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof (EventUpconverterPipelineHook));
+        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(EventUpconverterPipelineHook));
         private readonly IDictionary<Type, Func<object, object>> _converters;
 
         public EventUpconverterPipelineHook(IDictionary<Type, Func<object, object>> converters)
         {
-            if (converters == null)
-            {
-                throw new ArgumentNullException("converters");
-            }
-
-            _converters = converters;
+            _converters = converters ?? throw new ArgumentNullException(nameof(converters));
         }
 
         public override void Dispose()
@@ -72,7 +67,7 @@ namespace NEventStore.Conversion
             }
 
             object target = converter(source);
-            Logger.Debug(Resources.ConvertingEvent, source.GetType(), target.GetType());
+            if (Logger.IsDebugEnabled) Logger.Debug(Resources.ConvertingEvent, source.GetType(), target.GetType());
 
             return Convert(target);
         }

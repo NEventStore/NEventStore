@@ -57,7 +57,7 @@ namespace NEventStore
 
         public virtual Wireup HookIntoPipelineUsing(params IPipelineHook[] hooks)
         {
-            Logger.Info(Resources.WireupHookIntoPipeline, string.Join(", ", hooks.Select(h => h.GetType())));
+            if (Logger.IsInfoEnabled) Logger.Info(Resources.WireupHookIntoPipeline, string.Join(", ", hooks.Select(h => h.GetType())));
             ICollection<IPipelineHook> collection = (hooks ?? new IPipelineHook[] { }).Where(x => x != null).ToArray();
             Container.Register(collection);
             return this;

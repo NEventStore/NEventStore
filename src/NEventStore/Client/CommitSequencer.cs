@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NEventStore.Helpers;
 using NEventStore.Logging;
 
@@ -37,13 +34,13 @@ namespace NEventStore.Client
             }
             else if (_lastCommitRead >= lc)
             {
-                _logger.Warn(String.Format("Wrong sequence in commit, last read {0} actual read {1}", _lastCommitRead, lc));
+                if (_logger.IsWarnEnabled) _logger.Warn(String.Format("Wrong sequence in commit, last read {0} actual read {1}", _lastCommitRead, lc));
                 return PollingClient2.HandlingResult.MoveToNext;
             }
 
             if (outOfSequenceTimestamp == null)
             {
-                _logger.Debug("Sequencer found out of sequence, last dispatched {0} now dispatching {1}", _lastCommitRead, lc);
+                if (_logger.IsDebugEnabled) _logger.Debug("Sequencer found out of sequence, last dispatched {0} now dispatching {1}", _lastCommitRead, lc);
                 outOfSequenceTimestamp = DateTimeService.Now;
             }
             else
@@ -51,10 +48,10 @@ namespace NEventStore.Client
                 var interval = DateTimeService.Now.Subtract(outOfSequenceTimestamp.Value);
                 if (interval.TotalMilliseconds > _outOfSequenceTimeoutInMilliseconds)
                 {
-                    _logger.Debug("Sequencer out of sequence timeout after {0} ms, last dispatched {1} now dispatching {2}", interval.TotalMilliseconds, _lastCommitRead, lc);
+                    if (_logger.IsDebugEnabled) _logger.Debug("Sequencer out of sequence timeout after {0} ms, last dispatched {1} now dispatching {2}", interval.TotalMilliseconds, _lastCommitRead, lc);
                     return InnerHandleResult(commit, lc);
                 }
-                _logger.Debug("Sequencer still out of sequence from {0} ms, last dispatched {1} now dispatching {2}", interval.TotalMilliseconds, _lastCommitRead, lc);
+                if (_logger.IsDebugEnabled) _logger.Debug("Sequencer still out of sequence from {0} ms, last dispatched {1} now dispatching {2}", interval.TotalMilliseconds, _lastCommitRead, lc);
             }
 
             return PollingClient2.HandlingResult.Retry;

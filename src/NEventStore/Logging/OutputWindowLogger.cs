@@ -13,32 +13,32 @@ namespace NEventStore.Logging
             _typeToLog = typeToLog;
         }
 
-        public override void OnVerbose(string message, params object[] values)
+        public override void Verbose(string message, params object[] values)
         {
             DebugWindow("Verbose", message, values);
         }
 
-        public override void OnDebug(string message, params object[] values)
+        public override void Debug(string message, params object[] values)
         {
             DebugWindow("Debug", message, values);
         }
 
-        public override void OnInfo(string message, params object[] values)
+        public override void Info(string message, params object[] values)
         {
             TraceWindow("Info", message, values);
         }
 
-        public override void OnWarn(string message, params object[] values)
+        public override void Warn(string message, params object[] values)
         {
             TraceWindow("Warn", message, values);
         }
 
-        public override void OnError(string message, params object[] values)
+        public override void Error(string message, params object[] values)
         {
             TraceWindow("Error", message, values);
         }
 
-        public override void OnFatal(string message, params object[] values)
+        public override void Fatal(string message, params object[] values)
         {
             TraceWindow("Fatal", message, values);
         }

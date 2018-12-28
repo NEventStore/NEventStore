@@ -1,5 +1,3 @@
-using System;
-
 namespace NEventStore.Logging
 {
     /// <summary>
@@ -7,6 +5,10 @@ namespace NEventStore.Logging
     /// </summary>
     /// <remarks>
     ///     Object instances which implement this interface must be designed to be multi-thread safe.
+    ///     The logging class is intended to be very simple and fast, so all the checks to see if the
+    ///     desired logging level is supported should be done in code.
+    ///     This logging class is not a fully featured logging framework and is intended to be used 
+    ///     only within the NEventStore project.
     /// </remarks>
     public interface ILog
     {
@@ -21,9 +23,24 @@ namespace NEventStore.Logging
         bool IsDebugEnabled { get; }
 
         /// <summary>
-        /// Is true if the logger has debug level enabled
+        /// Is true if the logger has info level enabled
         /// </summary>
         bool IsInfoEnabled { get; }
+
+        /// <summary>
+        /// Is true if the logger has warn level enabled
+        /// </summary>
+        bool IsWarnEnabled { get; }
+
+        /// <summary>
+        /// Is true if the logger has error level enabled
+        /// </summary>
+        bool IsErrorEnabled { get; }
+
+        /// <summary>
+        /// Is true if the logger has fatal level enabled
+        /// </summary>
+        bool IsFatalEnabled { get; }
 
         /// <summary>
         /// Level of the logger
@@ -75,82 +92,51 @@ namespace NEventStore.Logging
 
     public abstract class NEventStoreBaseLogger : ILog
     {
+        private LogLevel _logLevel;
 
-        public LogLevel LogLevel { get; private set; }
-
+        public LogLevel LogLevel
+        {
+            get => _logLevel;
+            private set
+            {
+                _logLevel = value;
+                IsVerboseEnabled = _logLevel <= LogLevel.Verbose;
+                IsDebugEnabled = _logLevel <= LogLevel.Debug;
+                IsInfoEnabled = _logLevel <= LogLevel.Info;
+                IsWarnEnabled = _logLevel <= LogLevel.Warn;
+                IsErrorEnabled = _logLevel <= LogLevel.Error;
+                IsFatalEnabled = _logLevel <= LogLevel.Fatal;
+            }
+        }
 
         public NEventStoreBaseLogger(LogLevel logLevel)
         {
             LogLevel = logLevel;
         }
 
-        public bool IsVerboseEnabled
-        {
-            get
-            {
-                return LogLevel <= LogLevel.Verbose;
-            }
-        }
+        public bool IsVerboseEnabled { get; private set; }
 
-        public bool IsDebugEnabled
-        {
-            get
-            {
-                return LogLevel <= LogLevel.Debug;
-            }
-        }
+        public bool IsDebugEnabled { get; private set; }
 
-        public bool IsInfoEnabled
-        {
-            get
-            {
-                return LogLevel <= LogLevel.Info;
-            }
-        }
+        public bool IsInfoEnabled { get; private set; }
 
+        public bool IsWarnEnabled { get; private set; }
 
-        public void Verbose(string message, params object[] values)
-        {
-            if (IsVerboseEnabled) OnVerbose(message, values);
-        }
+        public bool IsErrorEnabled { get; private set; }
 
-        public void Debug(string message, params object[] values)
-        {
-            if (IsDebugEnabled) OnDebug(message, values);
-        }
+        public bool IsFatalEnabled { get; private set; }
 
-        public void Info(string message, params object[] values)
-        {
-            if (IsInfoEnabled) OnInfo(message, values);
-        }
+        public abstract void Debug(string message, params object[] values);
 
-        public void Warn(string message, params object[] values)
-        {
-            OnWarn(message, values);
-        }
+        public abstract void Error(string message, params object[] values);
 
-        public void Error(string message, params object[] values)
-        {
-            OnError(message, values);
-        }
+        public abstract void Fatal(string message, params object[] values);
 
-        public void Fatal(string message, params object[] values)
-        {
-            OnFatal(message, values);
-        }
+        public abstract void Info(string message, params object[] values);
 
-        public abstract void OnDebug(string message, params object[] values);
+        public abstract void Verbose(string message, params object[] values);
 
-        public abstract void OnError(string message, params object[] values);
-
-        public abstract void OnFatal(string message, params object[] values);
-
-        public abstract void OnInfo(string message, params object[] values);
-
-        public abstract void OnVerbose(string message, params object[] values);
-
-        public abstract void OnWarn(string message, params object[] values);
-
+        public abstract void Warn(string message, params object[] values);
     }
 
     public enum LogLevel

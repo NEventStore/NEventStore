@@ -8,13 +8,13 @@ namespace NEventStore.Serialization
 
         public object Serialize<T>(T graph)
         {
-            Logger.Verbose(Messages.SerializingGraph, typeof (T));
+            // if (Logger.IsVerboseEnabled) Logger.Verbose(Messages.SerializingGraph, typeof (T));
             return graph;
         }
 
         public T Deserialize<T>(object document)
         {
-            Logger.Verbose(Messages.DeserializingStream, typeof (T));
+            // if (Logger.IsVerboseEnabled) Logger.Verbose(Messages.DeserializingStream, typeof (T));
             return (T) document;
         }
     }

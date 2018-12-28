@@ -23,7 +23,7 @@ namespace NEventStore
 
         public OptimisticPipelineHook(int maxStreamsToTrack)
         {
-            Logger.Debug(Resources.TrackingStreams, maxStreamsToTrack);
+            if (Logger.IsDebugEnabled) Logger.Debug(Resources.TrackingStreams, maxStreamsToTrack);
             _maxStreamsToTrack = maxStreamsToTrack;
         }
 
@@ -41,7 +41,7 @@ namespace NEventStore
 
         public override bool PreCommit(CommitAttempt attempt)
         {
-            Logger.Verbose(Resources.OptimisticConcurrencyCheck, attempt.StreamId);
+            if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.OptimisticConcurrencyCheck, attempt.StreamId);
 
             ICommit head = GetStreamHead(GetHeadKey(attempt));
             if (head == null)
@@ -97,7 +97,7 @@ namespace NEventStore
                  )); // beyond the end of the stream
             }
 
-            Logger.Verbose(Resources.NoConflicts, attempt.StreamId);
+            if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.NoConflicts, attempt.StreamId);
             return true;
         }
 
@@ -184,7 +184,7 @@ namespace NEventStore
 
         private void TrackUpToCapacity(ICommit committed)
         {
-            Logger.Verbose(Resources.TrackingCommit, committed.CommitSequence, committed.StreamId);
+            if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.TrackingCommit, committed.CommitSequence, committed.StreamId);
             _maxItemsToTrack.AddFirst(GetHeadKey(committed));
             if (_maxItemsToTrack.Count <= _maxStreamsToTrack)
             {
@@ -192,7 +192,7 @@ namespace NEventStore
             }
 
             HeadKey expired = _maxItemsToTrack.Last.Value;
-            Logger.Verbose(Resources.NoLongerTrackingStream, expired);
+            if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.NoLongerTrackingStream, expired);
 
             _heads.Remove(expired);
             _maxItemsToTrack.RemoveLast();

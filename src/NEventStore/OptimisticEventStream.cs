@@ -83,13 +83,13 @@ namespace NEventStore
                 throw new ArgumentNullException("uncommittedEvent.Body");
             }
 
-            Logger.Verbose(Resources.AppendingUncommittedToStream, uncommittedEvent.Body.GetType(), StreamId);
+            if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.AppendingUncommittedToStream, uncommittedEvent.Body.GetType(), StreamId);
             _events.Add(uncommittedEvent);
         }
 
         public void CommitChanges(Guid commitId)
         {
-            Logger.Verbose(Resources.AttemptingToCommitChanges, StreamId);
+            if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.AttemptingToCommitChanges, StreamId);
 
             if (_identifiers.Contains(commitId))
             {
@@ -107,7 +107,7 @@ namespace NEventStore
             }
             catch (ConcurrencyException cex)
             {
-                Logger.Debug(Resources.UnderlyingStreamHasChanged, StreamId, cex.Message); //not useful to log info because the exception will be thrown 
+                if (Logger.IsDebugEnabled) Logger.Debug(Resources.UnderlyingStreamHasChanged, StreamId, cex.Message); //not useful to log info because the exception will be thrown 
                 IEnumerable<ICommit> commits = _persistence.GetFrom(BucketId, StreamId, StreamRevision + 1, int.MaxValue);
                 PopulateStream(StreamRevision + 1, int.MaxValue, commits);
 
@@ -117,7 +117,7 @@ namespace NEventStore
 
         public void ClearChanges()
         {
-            Logger.Verbose(Resources.ClearingUncommittedChanges, StreamId);
+            if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.ClearingUncommittedChanges, StreamId);
             _events.Clear();
             _uncommittedHeaders.Clear();
         }
@@ -126,7 +126,7 @@ namespace NEventStore
         {
             foreach (var commit in commits ?? Enumerable.Empty<ICommit>())
             {
-                Logger.Verbose(Resources.AddingCommitsToStream, commit.CommitId, commit.Events.Count, StreamId);
+                if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.AddingCommitsToStream, commit.CommitId, commit.Events.Count, StreamId);
                 _identifiers.Add(commit.CommitId);
 
                 CommitSequence = commit.CommitSequence;
@@ -155,13 +155,13 @@ namespace NEventStore
             {
                 if (currentRevision > maxRevision)
                 {
-                    Logger.Debug(Resources.IgnoringBeyondRevision, commit.CommitId, StreamId, maxRevision);
+                    if (Logger.IsDebugEnabled) Logger.Debug(Resources.IgnoringBeyondRevision, commit.CommitId, StreamId, maxRevision);
                     break;
                 }
 
                 if (currentRevision++ < minRevision)
                 {
-                    Logger.Debug(Resources.IgnoringBeforeRevision, commit.CommitId, StreamId, maxRevision);
+                    if (Logger.IsDebugEnabled) Logger.Debug(Resources.IgnoringBeforeRevision, commit.CommitId, StreamId, maxRevision);
                     continue;
                 }
 
@@ -182,7 +182,7 @@ namespace NEventStore
                 return true;
             }
 
-            Logger.Info(Resources.NoChangesToCommit, StreamId);
+            if (Logger.IsInfoEnabled) Logger.Info(Resources.NoChangesToCommit, StreamId);
             return false;
         }
 
@@ -190,7 +190,7 @@ namespace NEventStore
         {
             CommitAttempt attempt = BuildCommitAttempt(commitId);
 
-            Logger.Debug(Resources.PersistingCommit, commitId, StreamId, attempt.Events == null ? 0 : attempt.Events.Count);
+            if (Logger.IsDebugEnabled) Logger.Debug(Resources.PersistingCommit, commitId, StreamId, attempt.Events == null ? 0 : attempt.Events.Count);
             ICommit commit = _persistence.Commit(attempt);
 
             PopulateStream(StreamRevision + 1, attempt.StreamRevision, new[] { commit });
@@ -199,7 +199,7 @@ namespace NEventStore
 
         private CommitAttempt BuildCommitAttempt(Guid commitId)
         {
-            Logger.Verbose(Resources.BuildingCommitAttempt, commitId, StreamId);
+            if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.BuildingCommitAttempt, commitId, StreamId);
             return new CommitAttempt(
                 BucketId,
                 StreamId,
