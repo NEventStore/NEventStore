@@ -10,7 +10,7 @@ namespace NEventStore
         Justification = "This behaves like a stream--not a .NET 'Stream' object, but a stream nonetheless.")]
     public sealed class OptimisticEventStream : IEventStream
     {
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof (OptimisticEventStream));
+        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(OptimisticEventStream));
         private readonly ICollection<EventMessage> _committed = new LinkedList<EventMessage>();
         private readonly IDictionary<string, object> _committedHeaders = new Dictionary<string, object>();
         private readonly ICollection<EventMessage> _events = new LinkedList<EventMessage>();
@@ -18,6 +18,8 @@ namespace NEventStore
         private readonly ICommitEvents _persistence;
         private readonly IDictionary<string, object> _uncommittedHeaders = new Dictionary<string, object>();
         private bool _disposed;
+        // a stream is considered partial if we haven't read all the events in a commit
+        private bool _isPartialStream;
 
         public OptimisticEventStream(string bucketId, string streamId, ICommitEvents persistence)
         {
@@ -91,6 +93,11 @@ namespace NEventStore
         {
             if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.AttemptingToCommitChanges, StreamId);
 
+            if (_isPartialStream)
+            {
+                throw new ConcurrencyException();
+            }
+
             if (_identifiers.Contains(commitId))
             {
                 throw new DuplicateCommitException(String.Format(Messages.DuplicateCommitIdException, commitId));
@@ -124,17 +131,22 @@ namespace NEventStore
 
         private void PopulateStream(int minRevision, int maxRevision, IEnumerable<ICommit> commits)
         {
+            _isPartialStream = false;
             foreach (var commit in commits ?? Enumerable.Empty<ICommit>())
             {
-                if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.AddingCommitsToStream, commit.CommitId, commit.Events.Count, StreamId);
                 _identifiers.Add(commit.CommitId);
 
                 CommitSequence = commit.CommitSequence;
                 int currentRevision = commit.StreamRevision - commit.Events.Count + 1;
+                // just in case the persistence returned more commits than it should be
                 if (currentRevision > maxRevision)
                 {
+                    _isPartialStream = true;
+                    if (Logger.IsDebugEnabled) Logger.Debug(Resources.IgnoringBeyondRevision, commit.CommitId, StreamId, maxRevision);
                     return;
                 }
+
+                if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.AddingCommitsToStream, commit.CommitId, commit.Events.Count, StreamId);
 
                 CopyToCommittedHeaders(commit);
                 CopyToEvents(minRevision, maxRevision, currentRevision, commit);
@@ -155,6 +167,7 @@ namespace NEventStore
             {
                 if (currentRevision > maxRevision)
                 {
+                    _isPartialStream = true;
                     if (Logger.IsDebugEnabled) Logger.Debug(Resources.IgnoringBeyondRevision, commit.CommitId, StreamId, maxRevision);
                     break;
                 }
