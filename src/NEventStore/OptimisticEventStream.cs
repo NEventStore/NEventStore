@@ -136,7 +136,6 @@ namespace NEventStore
             {
                 _identifiers.Add(commit.CommitId);
 
-                CommitSequence = commit.CommitSequence;
                 int currentRevision = commit.StreamRevision - commit.Events.Count + 1;
                 // just in case the persistence returned more commits than it should be
                 if (currentRevision > maxRevision)
@@ -147,6 +146,8 @@ namespace NEventStore
                 }
 
                 if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.AddingCommitsToStream, commit.CommitId, commit.Events.Count, StreamId);
+
+                CommitSequence = commit.CommitSequence;
 
                 CopyToCommittedHeaders(commit);
                 CopyToEvents(minRevision, maxRevision, currentRevision, commit);

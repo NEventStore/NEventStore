@@ -142,6 +142,45 @@ namespace NEventStore
 #if MSTEST
     [TestClass]
 #endif
+    public class when_reading_up_to_revision : on_the_event_stream
+    {
+        private readonly int _eventsPerCommit = 2;
+        private ICommit[] _committed;
+
+        protected override void Context()
+        {
+            _committed = new[]
+            {
+                BuildCommitStub(2, 1, _eventsPerCommit), // 1-2
+                BuildCommitStub(4, 2, _eventsPerCommit), // 3-4
+                BuildCommitStub(6, 3, _eventsPerCommit), // 5-6
+                BuildCommitStub(8, 4, _eventsPerCommit) // 7-8
+            };
+
+            A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, 0, 6)).Returns(_committed);
+        }
+
+        protected override void Because()
+        {
+            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, 0, 6);
+        }
+
+        [Fact]
+        public void should_set_the_stream_revision_to_the_revision_of_the_correct_commit()
+        {
+            Stream.StreamRevision.Should().Be(_committed[2].StreamRevision);
+        }
+
+        [Fact]
+        public void should_set_the_commit_sequence_to_the_sequence_of_the_correct_commit()
+        {
+            Stream.CommitSequence.Should().Be(_committed[2].CommitSequence);
+        }
+    }
+
+#if MSTEST
+    [TestClass]
+#endif
     public class when_adding_a_null_event_message : on_the_event_stream
     {
         private Exception _thrown;
