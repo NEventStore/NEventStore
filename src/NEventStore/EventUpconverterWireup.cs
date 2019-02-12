@@ -15,7 +15,7 @@ namespace NEventStore
 
         public EventUpconverterWireup(Wireup wireup) : base(wireup)
         {
-            Logger.Debug(Messages.EventUpconverterRegistered);
+            if (Logger.IsDebugEnabled) Logger.Debug(Messages.EventUpconverterRegistered);
 
             Container.Register(c =>
             {
@@ -85,7 +85,7 @@ namespace NEventStore
 
         public virtual EventUpconverterWireup WithConvertersFrom(params Assembly[] assemblies)
         {
-            Logger.Debug(Messages.EventUpconvertersLoadedFrom, string.Concat(", ", assemblies));
+            if (Logger.IsDebugEnabled) Logger.Debug(Messages.EventUpconvertersLoadedFrom, string.Concat(", ", assemblies));
             _assembliesToScan.AddRange(assemblies);
             return this;
         }
@@ -97,7 +97,7 @@ namespace NEventStore
 #else
             IEnumerable<Assembly> assemblies = converters.Select(c => c.GetTypeInfo().Assembly).Distinct();
 #endif
-            Logger.Debug(Messages.EventUpconvertersLoadedFrom, string.Concat(", ", assemblies));
+            if (Logger.IsDebugEnabled) Logger.Debug(Messages.EventUpconvertersLoadedFrom, string.Concat(", ", assemblies));
             _assembliesToScan.AddRange(assemblies);
             return this;
         }

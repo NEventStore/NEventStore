@@ -10,7 +10,7 @@ namespace NEventStore
 
         public static PersistenceWireup UsingInMemoryPersistence(this Wireup wireup)
         {
-            Logger.Info(Resources.WireupSetPersistenceEngine, "InMemoryPersistenceEngine");
+            if (Logger.IsInfoEnabled) Logger.Info(Resources.WireupSetPersistenceEngine, "InMemoryPersistenceEngine");
             wireup.With<IPersistStreams>(new InMemoryPersistenceEngine());
 
             return new PersistenceWireup(wireup);

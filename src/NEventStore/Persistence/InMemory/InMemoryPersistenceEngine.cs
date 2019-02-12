@@ -27,33 +27,33 @@ namespace NEventStore.Persistence.InMemory
 
         public void Initialize()
         {
-            Logger.Info(Resources.InitializingEngine);
+            if (Logger.IsInfoEnabled) Logger.Info(Resources.InitializingEngine);
         }
 
         public IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
         {
             ThrowWhenDisposed();
-            Logger.Debug(Resources.GettingAllCommitsFromRevision, streamId, minRevision, maxRevision);
+            if (Logger.IsDebugEnabled) Logger.Debug(Resources.GettingAllCommitsFromRevision, streamId, minRevision, maxRevision);
             return this[bucketId].GetFrom(streamId, minRevision, maxRevision);
         }
 
         public IEnumerable<ICommit> GetFrom(string bucketId, DateTime start)
         {
             ThrowWhenDisposed();
-            Logger.Debug(Resources.GettingAllCommitsFromTime, bucketId, start);
+            if (Logger.IsDebugEnabled) Logger.Debug(Resources.GettingAllCommitsFromTime, bucketId, start);
             return this[bucketId].GetFrom(start);
         }
 
         public IEnumerable<ICommit> GetFrom(string bucketId, Int64 checkpointToken)
         {
             ThrowWhenDisposed();
-            Logger.Debug(Resources.GettingAllCommitsFromBucketAndCheckpoint, bucketId, checkpointToken);
+            if (Logger.IsDebugEnabled) Logger.Debug(Resources.GettingAllCommitsFromBucketAndCheckpoint, bucketId, checkpointToken);
             return this[bucketId].GetFrom(checkpointToken);
         }
 
         public IEnumerable<ICommit> GetFrom(Int64 checkpointToken)
         {
-            Logger.Debug(Resources.GettingAllCommitsFromCheckpoint, checkpointToken);
+            if (Logger.IsDebugEnabled) Logger.Debug(Resources.GettingAllCommitsFromCheckpoint, checkpointToken);
             return _buckets
                 .Values
                 .SelectMany(b => b.GetCommits())
@@ -65,42 +65,42 @@ namespace NEventStore.Persistence.InMemory
         public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             ThrowWhenDisposed();
-            Logger.Debug(Resources.GettingAllCommitsFromToTime, start, end);
+            if (Logger.IsDebugEnabled) Logger.Debug(Resources.GettingAllCommitsFromToTime, start, end);
             return this[bucketId].GetFromTo(start, end);
         }
 
         public ICommit Commit(CommitAttempt attempt)
         {
             ThrowWhenDisposed();
-            Logger.Debug(Resources.AttemptingToCommit, attempt.CommitId, attempt.StreamId, attempt.CommitSequence);
+            if (Logger.IsDebugEnabled) Logger.Debug(Resources.AttemptingToCommit, attempt.CommitId, attempt.StreamId, attempt.CommitSequence);
             return this[attempt.BucketId].Commit(attempt, Interlocked.Increment(ref _checkpoint));
         }
 
         public IEnumerable<IStreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
         {
             ThrowWhenDisposed();
-            Logger.Debug(Resources.GettingStreamsToSnapshot, bucketId, maxThreshold);
+            if (Logger.IsDebugEnabled) Logger.Debug(Resources.GettingStreamsToSnapshot, bucketId, maxThreshold);
             return this[bucketId].GetStreamsToSnapshot(maxThreshold);
         }
 
         public ISnapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
         {
             ThrowWhenDisposed();
-            Logger.Debug(Resources.GettingSnapshotForStream, bucketId, streamId, maxRevision);
+            if (Logger.IsDebugEnabled) Logger.Debug(Resources.GettingSnapshotForStream, bucketId, streamId, maxRevision);
             return this[bucketId].GetSnapshot(streamId, maxRevision);
         }
 
         public bool AddSnapshot(ISnapshot snapshot)
         {
             ThrowWhenDisposed();
-            Logger.Debug(Resources.AddingSnapshot, snapshot.StreamId, snapshot.StreamRevision);
+            if (Logger.IsDebugEnabled) Logger.Debug(Resources.AddingSnapshot, snapshot.StreamId, snapshot.StreamRevision);
             return this[snapshot.BucketId].AddSnapshot(snapshot);
         }
 
         public void Purge()
         {
             ThrowWhenDisposed();
-            Logger.Warn(Resources.PurgingStore);
+            if (Logger.IsWarnEnabled) Logger.Warn(Resources.PurgingStore);
             foreach (var bucket in _buckets.Values)
             {
                 bucket.Purge();
@@ -120,7 +120,7 @@ namespace NEventStore.Persistence.InMemory
 
         public void DeleteStream(string bucketId, string streamId)
         {
-            Logger.Warn(Resources.DeletingStream, streamId, bucketId);
+            if (Logger.IsWarnEnabled) Logger.Warn(Resources.DeletingStream, streamId, bucketId);
             Bucket bucket;
             if (!_buckets.TryGetValue(bucketId, out bucket))
             {
@@ -137,7 +137,7 @@ namespace NEventStore.Persistence.InMemory
         private void Dispose(bool disposing)
         {
             _disposed = true;
-            Logger.Info(Resources.DisposingEngine);
+            if (Logger.IsInfoEnabled) Logger.Info(Resources.DisposingEngine);
         }
 
         private void ThrowWhenDisposed()
@@ -147,7 +147,7 @@ namespace NEventStore.Persistence.InMemory
                 return;
             }
 
-            Logger.Warn(Resources.AlreadyDisposed);
+            if (Logger.IsWarnEnabled) Logger.Warn(Resources.AlreadyDisposed);
             throw new ObjectDisposedException(Resources.AlreadyDisposed);
         }
 
@@ -376,7 +376,7 @@ namespace NEventStore.Persistence.InMemory
                     _potentialConflicts.Add(new IdentityForConcurrencyConflictDetection(commit));
                     IStreamHead head = _heads.FirstOrDefault(x => x.StreamId == commit.StreamId);
                     _heads.Remove(head);
-                    Logger.Debug(Resources.UpdatingStreamHead, commit.StreamId);
+                    if (Logger.IsDebugEnabled) Logger.Debug(Resources.UpdatingStreamHead, commit.StreamId);
                     int snapshotRevision = head == null ? 0 : head.SnapshotRevision;
                     _heads.Add(new StreamHead(commit.BucketId, commit.StreamId, commit.StreamRevision, snapshotRevision));
                     return commit;

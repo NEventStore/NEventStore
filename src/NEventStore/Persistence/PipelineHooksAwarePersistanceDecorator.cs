@@ -124,13 +124,13 @@ namespace NEventStore.Persistence
                 ICommit filtered = commit;
                 foreach (var hook in _pipelineHooks.Where(x => (filtered = x.Select(filtered)) == null))
                 {
-                    Logger.Info(Resources.PipelineHookSkippedCommit, hook.GetType(), commit.CommitId);
+                    if (Logger.IsInfoEnabled) Logger.Info(Resources.PipelineHookSkippedCommit, hook.GetType(), commit.CommitId);
                     break;
                 }
 
                 if (filtered == null)
                 {
-                    Logger.Info(Resources.PipelineHookFilteredCommit);
+                    if (Logger.IsInfoEnabled) Logger.Info(Resources.PipelineHookFilteredCommit);
                 }
                 else
                 {

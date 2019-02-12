@@ -28,7 +28,7 @@ namespace NEventStore
 
         public virtual PersistenceWireup WithPersistence(IPersistStreams instance)
         {
-            Logger.Info(Messages.RegisteringPersistenceEngine, instance.GetType());
+            if (Logger.IsInfoEnabled) Logger.Info(Messages.RegisteringPersistenceEngine, instance.GetType());
             With(instance);
             return this;
         }
@@ -40,7 +40,7 @@ namespace NEventStore
 
         public virtual PersistenceWireup InitializeStorageEngine()
         {
-            Logger.Info(Messages.ConfiguringEngineInitialization);
+            if (Logger.IsInfoEnabled) Logger.Info(Messages.ConfiguringEngineInitialization);
             _initialize = true;
             return this;
         }
@@ -53,7 +53,7 @@ namespace NEventStore
                 throw new ArgumentNullException("instanceName", Messages.InstanceCannotBeNull);
             }
 
-            Logger.Info(Messages.ConfiguringEnginePerformanceTracking);
+            if (Logger.IsInfoEnabled) Logger.Info(Messages.ConfiguringEnginePerformanceTracking);
             _tracking = true;
             _trackingInstanceName = instanceName;
             return this;
@@ -63,7 +63,7 @@ namespace NEventStore
 #if !NETSTANDARD1_6
         public virtual PersistenceWireup EnlistInAmbientTransaction()
         {
-            Logger.Info(Messages.ConfiguringEngineEnlistment);
+            if (Logger.IsInfoEnabled) Logger.Info(Messages.ConfiguringEngineEnlistment);
             Container.Register(TransactionScopeOption.Required);
             return this;
         }
@@ -71,12 +71,12 @@ namespace NEventStore
 
         public override IStoreEvents Build()
         {
-            Logger.Info(Messages.BuildingEngine);
+            if (Logger.IsInfoEnabled) Logger.Info(Messages.BuildingEngine);
             var engine = Container.Resolve<IPersistStreams>();
 
             if (_initialize)
             {
-                Logger.Debug(Messages.InitializingEngine);
+                if (Logger.IsDebugEnabled) Logger.Debug(Messages.InitializingEngine);
                 engine.Initialize();
             }
 

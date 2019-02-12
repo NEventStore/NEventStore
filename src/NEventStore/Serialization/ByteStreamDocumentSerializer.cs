@@ -15,13 +15,13 @@ namespace NEventStore.Serialization
 
         public object Serialize<T>(T graph)
         {
-            Logger.Verbose(Messages.SerializingGraph, typeof (T));
+            if (Logger.IsVerboseEnabled) Logger.Verbose(Messages.SerializingGraph, typeof (T));
             return _serializer.Serialize(graph);
         }
 
         public T Deserialize<T>(object document)
         {
-            Logger.Verbose(Messages.DeserializingStream, typeof (T));
+            if (Logger.IsVerboseEnabled) Logger.Verbose(Messages.DeserializingStream, typeof (T));
             byte[] bytes = FromBase64(document as string) ?? document as byte[];
             return _serializer.Deserialize<T>(bytes);
         }
@@ -33,7 +33,7 @@ namespace NEventStore.Serialization
                 return null;
             }
 
-            Logger.Verbose(Messages.InspectingTextStream);
+            if (Logger.IsVerboseEnabled) Logger.Verbose(Messages.InspectingTextStream);
 
             try
             {

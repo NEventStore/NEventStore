@@ -34,7 +34,7 @@ namespace NEventStore.Serialization.Json
             bool array = typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(type) && !typeof(IDictionary).GetTypeInfo().IsAssignableFrom(type);
 #endif
 
-            Logger.Verbose(Messages.TypeIsArray, type, array);
+            if (Logger.IsVerboseEnabled) Logger.Verbose(Messages.TypeIsArray, type, array);
 
             return array;
         }

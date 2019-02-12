@@ -23,55 +23,37 @@ namespace NEventStore.Logging
 
         private class NullLogger : ILog
         {
-            public bool IsVerboseEnabled
-            {
-                get
-                {
-                    return false;
-                }
-            }
+            public bool IsVerboseEnabled => false;
 
-            public bool IsDebugEnabled
-            {
-                get
-                {
-                    return false;
-                }
-            }
+            public bool IsDebugEnabled => false;
 
-            public bool IsInfoEnabled
-            {
-                get
-                {
-                    return false;
-                }
-            }
+            public bool IsInfoEnabled => false;
 
-            public LogLevel LogLevel
-            {
-                get
-                {
-                    return LogLevel.Fatal;
-                }
-            }
+            public bool IsWarnEnabled => false;
+
+            public bool IsErrorEnabled => false;
+
+            public bool IsFatalEnabled => false;
+
+            public LogLevel LogLevel => LogLevel.Fatal;
 
             public void Verbose(string message, params object[] values)
-            {}
+            { }
 
             public void Debug(string message, params object[] values)
-            {}
+            { }
 
             public void Info(string message, params object[] values)
-            {}
+            { }
 
             public void Warn(string message, params object[] values)
-            {}
+            { }
 
             public void Error(string message, params object[] values)
-            {}
+            { }
 
             public void Fatal(string message, params object[] values)
-            {}
+            { }
         }
     }
 }

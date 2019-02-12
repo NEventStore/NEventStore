@@ -13,13 +13,13 @@ namespace NEventStore.Serialization
 
         public virtual void Serialize<T>(Stream output, T graph)
         {
-            Logger.Verbose(Messages.SerializingGraph, typeof (T));
+            if (Logger.IsVerboseEnabled) Logger.Verbose(Messages.SerializingGraph, typeof (T));
             _formatter.Serialize(output, graph);
         }
 
         public virtual T Deserialize<T>(Stream input)
         {
-            Logger.Verbose(Messages.DeserializingStream, typeof (T));
+            if (Logger.IsVerboseEnabled) Logger.Verbose(Messages.DeserializingStream, typeof (T));
             return (T) _formatter.Deserialize(input);
         }
     }
