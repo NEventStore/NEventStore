@@ -48,8 +48,8 @@ namespace NEventStore
             StreamRevision = snapshot.StreamRevision + _committed.Count;
         }
 
-        public string BucketId { get; private set; }
-        public string StreamId { get; private set; }
+        public string BucketId { get; }
+        public string StreamId { get; }
         public int StreamRevision { get; private set; }
         public int CommitSequence { get; private set; }
 
@@ -77,7 +77,7 @@ namespace NEventStore
         {
             if (uncommittedEvent == null)
             {
-                throw new ArgumentNullException("uncommittedEvent");
+                throw new ArgumentNullException(nameof(uncommittedEvent));
             }
 
             if (uncommittedEvent.Body == null)
@@ -204,7 +204,7 @@ namespace NEventStore
         {
             CommitAttempt attempt = BuildCommitAttempt(commitId);
 
-            if (Logger.IsDebugEnabled) Logger.Debug(Resources.PersistingCommit, commitId, StreamId, attempt.Events == null ? 0 : attempt.Events.Count);
+            if (Logger.IsDebugEnabled) Logger.Debug(Resources.PersistingCommit, commitId, StreamId, attempt.Events?.Count ?? 0);
             ICommit commit = _persistence.Commit(attempt);
 
             PopulateStream(StreamRevision + 1, attempt.StreamRevision, new[] { commit });

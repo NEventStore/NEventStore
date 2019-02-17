@@ -195,13 +195,13 @@ namespace NEventStore
         [Fact]
         public void should_invoke_the_underlying_infrastructure_with_the_values_provided()
         {
-            A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, MinRevision, MaxRevision)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, MinRevision, MaxRevision)).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
         public void should_provide_the_commits_to_the_selection_hooks()
         {
-            PipelineHooks.ForEach(x => A.CallTo(() => x.Select(_committed)).MustHaveHappened(Repeated.Exactly.Once));
+            PipelineHooks.ForEach(x => A.CallTo(() => x.Select(_committed)).MustHaveHappenedOnceExactly());
         }
 
         [Fact]
@@ -236,7 +236,7 @@ namespace NEventStore
         [Fact]
         public void should_query_the_underlying_storage_using_the_revision_of_the_snapshot()
         {
-            A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, 42, MaxRevision)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, 42, MaxRevision)).MustHaveHappenedOnceExactly();
         }
     }
 
@@ -324,7 +324,7 @@ namespace NEventStore
         [Fact]
         public void should_pass_a_revision_range_to_the_persistence_infrastructure()
         {
-            A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, 0, int.MaxValue)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, 0, int.MaxValue)).MustHaveHappenedOnceExactly();
         }
     }
 
@@ -350,7 +350,7 @@ namespace NEventStore
         [Fact]
         public void should_pass_the_maximum_possible_revision_to_the_persistence_infrastructure()
         {
-            A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, 0, int.MaxValue)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, 0, int.MaxValue)).MustHaveHappenedOnceExactly();
         }
     }
 
@@ -398,7 +398,7 @@ namespace NEventStore
         [Fact]
         public void should_pass_the_maximum_possible_revision_to_the_persistence_infrastructure()
         {
-            A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, snapshot.StreamRevision, int.MaxValue)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, snapshot.StreamRevision, int.MaxValue)).MustHaveHappenedOnceExactly();
         }
     }
 
@@ -462,19 +462,19 @@ namespace NEventStore
         [Fact]
         public void should_provide_the_commit_to_the_precommit_hooks()
         {
-            PipelineHooks.ForEach(x => A.CallTo(() => x.PreCommit(_populatedAttempt)).MustHaveHappened(Repeated.Exactly.Once));
+            PipelineHooks.ForEach(x => A.CallTo(() => x.PreCommit(_populatedAttempt)).MustHaveHappenedOnceExactly());
         }
 
         [Fact]
         public void should_provide_the_commit_attempt_to_the_configured_persistence_mechanism()
         {
-            A.CallTo(() => Persistence.Commit(_populatedAttempt)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => Persistence.Commit(_populatedAttempt)).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
         public void should_provide_the_commit_to_the_postcommit_hooks()
         {
-            PipelineHooks.ForEach(x => A.CallTo(() => x.PostCommit(_populatedCommit)).MustHaveHappened(Repeated.Exactly.Once));
+            PipelineHooks.ForEach(x => A.CallTo(() => x.PostCommit(_populatedCommit)).MustHaveHappenedOnceExactly());
         }
     }
 
@@ -539,7 +539,7 @@ namespace NEventStore
         [Fact]
         public void should_dispose_the_underlying_persistence()
         {
-            A.CallTo(() => Persistence.Dispose()).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => Persistence.Dispose()).MustHaveHappenedOnceExactly();
         }
     }
 

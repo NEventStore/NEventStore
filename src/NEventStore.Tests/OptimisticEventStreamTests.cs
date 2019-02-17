@@ -366,7 +366,7 @@ namespace NEventStore
         [Fact]
         public void should_provide_a_commit_to_the_underlying_infrastructure()
         {
-            A.CallTo(() => Persistence.Commit(A<CommitAttempt>._)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => Persistence.Commit(A<CommitAttempt>._)).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -540,7 +540,7 @@ namespace NEventStore
         [Fact]
         public void should_query_the_underlying_storage_to_discover_the_new_commits()
         {
-            A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, StreamRevision + 1, int.MaxValue)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, StreamRevision + 1, int.MaxValue)).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
