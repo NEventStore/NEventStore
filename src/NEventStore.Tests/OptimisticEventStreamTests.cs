@@ -1,4 +1,5 @@
-#pragma warning disable 169
+#pragma warning disable 169 // ReSharper enable InconsistentNaming
+#pragma warning disable IDE1006 // Naming Styles
 
 namespace NEventStore
 {
@@ -78,7 +79,7 @@ namespace NEventStore
         [Fact]
         public void should_not_include_events_below_the_minimum_revision_indicated()
         {
-            Stream.CommittedEvents.First().Should().Be(_committed.First().Events.Last());
+            Stream.CommittedEvents.First().Should().Be(_committed[0].Events.Last());
         }
 
         [Fact]
@@ -510,7 +511,6 @@ namespace NEventStore
         private readonly EventMessage _uncommitted = new EventMessage { Body = string.Empty };
         private ICommit[] _committed;
         private ICommit[] _discoveredOnCommit;
-        private CommitAttempt _constructed;
         private Exception _thrown;
 
         protected override void Context()
@@ -827,4 +827,5 @@ namespace NEventStore
     }
 }
 
-#pragma warning restore 169
+#pragma warning restore IDE1006 // Naming Styles
+#pragma warning restore 169 // ReSharper enable InconsistentNaming

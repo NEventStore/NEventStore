@@ -1,14 +1,14 @@
 
-#pragma warning disable 169
-// ReSharper disable InconsistentNaming
+#pragma warning disable 169 // ReSharper disable InconsistentNaming
+#pragma warning disable IDE1006 // Naming Styles
 
 namespace NEventStore
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-	using FluentAssertions;
-	using FakeItEasy;
+    using FluentAssertions;
+    using FakeItEasy;
 
     using NEventStore.Persistence;
     using NEventStore.Persistence.AcceptanceTests;
@@ -17,7 +17,7 @@ namespace NEventStore
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 #endif
 #if NUNIT
-	using NUnit.Framework;	
+    using NUnit.Framework;
 #endif
 #if XUNIT
 	using Xunit;
@@ -27,7 +27,7 @@ namespace NEventStore
 #if MSTEST
 	[TestClass]
 #endif
-	public class when_creating_a_new_stream : using_persistence
+    public class when_creating_a_new_stream : using_persistence
     {
         private IEventStream _stream;
 
@@ -82,7 +82,7 @@ namespace NEventStore
 #if MSTEST
 	[TestClass]
 #endif
-	public class when_opening_an_empty_stream_starting_at_revision_zero : using_persistence
+    public class when_opening_an_empty_stream_starting_at_revision_zero : using_persistence
     {
         private IEventStream _stream;
 
@@ -142,7 +142,7 @@ namespace NEventStore
 #if MSTEST
 	[TestClass]
 #endif
-	public class when_opening_an_empty_stream_starting_above_revision_zero : using_persistence
+    public class when_opening_an_empty_stream_starting_above_revision_zero : using_persistence
     {
         private const int MinRevision = 1;
         private Exception _thrown;
@@ -168,7 +168,7 @@ namespace NEventStore
 #if MSTEST
 	[TestClass]
 #endif
-	public class when_opening_a_populated_stream : using_persistence
+    public class when_opening_a_populated_stream : using_persistence
     {
         private const int MinRevision = 17;
         private const int MaxRevision = 42;
@@ -214,7 +214,7 @@ namespace NEventStore
 #if MSTEST
 	[TestClass]
 #endif
-	public class when_opening_a_populated_stream_from_a_snapshot : using_persistence
+    public class when_opening_a_populated_stream_from_a_snapshot : using_persistence
     {
         private const int MaxRevision = int.MaxValue;
         private ICommit[] _committed;
@@ -223,7 +223,7 @@ namespace NEventStore
         protected override void Context()
         {
             _snapshot = new Snapshot(streamId, 42, "snapshot");
-            _committed = new[] { BuildCommitStub(42, 0)};
+            _committed = new[] { BuildCommitStub(42, 0) };
 
             A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, 42, MaxRevision)).Returns(_committed);
         }
@@ -243,7 +243,7 @@ namespace NEventStore
 #if MSTEST
 	[TestClass]
 #endif
-	public class when_opening_a_stream_from_a_snapshot_that_is_at_the_revision_of_the_stream_head : using_persistence
+    public class when_opening_a_stream_from_a_snapshot_that_is_at_the_revision_of_the_stream_head : using_persistence
     {
         private const int HeadStreamRevision = 42;
         private const int HeadCommitSequence = 15;
@@ -255,7 +255,7 @@ namespace NEventStore
         {
             _snapshot = new Snapshot(streamId, HeadStreamRevision, "snapshot");
             _committed = new EnumerableCounter<ICommit>(
-                new[] { BuildCommitStub(HeadStreamRevision, HeadCommitSequence)});
+                new[] { BuildCommitStub(HeadStreamRevision, HeadCommitSequence) });
 
             A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, HeadStreamRevision, int.MaxValue))
                 .Returns(_committed);
@@ -306,7 +306,7 @@ namespace NEventStore
 #if MSTEST
 	[TestClass]
 #endif
-	public class when_reading_from_revision_zero : using_persistence
+    public class when_reading_from_revision_zero : using_persistence
     {
         protected override void Context()
         {
@@ -331,7 +331,7 @@ namespace NEventStore
 #if MSTEST
 	[TestClass]
 #endif
-	public class when_reading_up_to_revision_revision_zero : using_persistence
+    public class when_reading_up_to_revision_revision_zero : using_persistence
     {
         private ICommit _committed;
 
@@ -357,7 +357,7 @@ namespace NEventStore
 #if MSTEST
 	[TestClass]
 #endif
-	public class when_reading_from_a_null_snapshot : using_persistence
+    public class when_reading_from_a_null_snapshot : using_persistence
     {
         private Exception thrown;
 
@@ -376,7 +376,7 @@ namespace NEventStore
 #if MSTEST
 	[TestClass]
 #endif
-	public class when_reading_from_a_snapshot_up_to_revision_revision_zero : using_persistence
+    public class when_reading_from_a_snapshot_up_to_revision_revision_zero : using_persistence
     {
         private ICommit _committed;
         private Snapshot snapshot;
@@ -405,13 +405,13 @@ namespace NEventStore
 #if MSTEST
 	[TestClass]
 #endif
-	public class when_committing_a_null_attempt_back_to_the_stream : using_persistence
+    public class when_committing_a_null_attempt_back_to_the_stream : using_persistence
     {
         private Exception thrown;
 
         protected override void Because()
         {
-            thrown = Catch.Exception(() => ((ICommitEvents) Store).Commit(null));
+            thrown = Catch.Exception(() => ((ICommitEvents)Store).Commit(null));
         }
 
         [Fact]
@@ -424,7 +424,7 @@ namespace NEventStore
 #if MSTEST
 	[TestClass]
 #endif
-	public class when_committing_with_a_valid_and_populated_attempt_to_a_stream : using_persistence
+    public class when_committing_with_a_valid_and_populated_attempt_to_a_stream : using_persistence
     {
         private CommitAttempt _populatedAttempt;
         private ICommit _populatedCommit;
@@ -456,7 +456,7 @@ namespace NEventStore
 
         protected override void Because()
         {
-            ((ICommitEvents) Store).Commit(_populatedAttempt);
+            ((ICommitEvents)Store).Commit(_populatedAttempt);
         }
 
         [Fact]
@@ -481,7 +481,7 @@ namespace NEventStore
 #if MSTEST
 	[TestClass]
 #endif
-	public class when_a_precommit_hook_rejects_a_commit : using_persistence
+    public class when_a_precommit_hook_rejects_a_commit : using_persistence
     {
         private CommitAttempt _attempt;
         private ICommit _commit;
@@ -499,7 +499,7 @@ namespace NEventStore
 
         protected override void Because()
         {
-            ((ICommitEvents) Store).Commit(_attempt);
+            ((ICommitEvents)Store).Commit(_attempt);
         }
 
         [Fact]
@@ -518,7 +518,7 @@ namespace NEventStore
 #if MSTEST
 	[TestClass]
 #endif
-	public class when_accessing_the_underlying_persistence : using_persistence
+    public class when_accessing_the_underlying_persistence : using_persistence
     {
         public void should_return_a_reference_to_the_underlying_persistence_infrastructure_decorator()
         {
@@ -529,7 +529,7 @@ namespace NEventStore
 #if MSTEST
 	[TestClass]
 #endif
-	public class when_disposing_the_event_store : using_persistence
+    public class when_disposing_the_event_store : using_persistence
     {
         protected override void Because()
         {
@@ -578,7 +578,7 @@ namespace NEventStore
 
         protected ICommit BuildCommitStub(int streamRevision, int commitSequence)
         {
-            List<EventMessage> events = new[] {new EventMessage()}.ToList();
+            List<EventMessage> events = new[] { new EventMessage() }.ToList();
             return new Commit(Bucket.Default, streamId, streamRevision, Guid.NewGuid(), commitSequence, SystemTime.UtcNow, 0, null, events);
         }
 
@@ -590,11 +590,11 @@ namespace NEventStore
 
         protected ICommit BuildCommitStub(Guid commitId, int streamRevision, int commitSequence)
         {
-            List<EventMessage> events = new[] {new EventMessage()}.ToList();
-            return new Commit(Bucket.Default, streamId, streamRevision, commitId, commitSequence, SystemTime.UtcNow,0, null, events);
+            List<EventMessage> events = new[] { new EventMessage() }.ToList();
+            return new Commit(Bucket.Default, streamId, streamRevision, commitId, commitSequence, SystemTime.UtcNow, 0, null, events);
         }
     }
 }
 
-// ReSharper enable InconsistentNaming
-#pragma warning restore 169
+#pragma warning restore IDE1006 // Naming Styles
+#pragma warning restore 169 // ReSharper enable InconsistentNaming
