@@ -7,7 +7,7 @@ namespace NEventStore.Persistence
 
     public class PipelineHooksAwarePersistanceDecorator : IPersistStreams
     {
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof (PipelineHooksAwarePersistanceDecorator));
+        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(PipelineHooksAwarePersistanceDecorator));
         private readonly IPersistStreams _original;
         private readonly IEnumerable<IPipelineHook> _pipelineHooks;
 
