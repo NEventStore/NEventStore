@@ -16,6 +16,7 @@ namespace NEventStore
         ///     Gets the value which identifies bucket to which the the stream belongs.
         /// </summary>
         string BucketId { get; }
+
         /// <summary>
         ///     Gets the value which uniquely identifies the stream to which the stream belongs.
         /// </summary>

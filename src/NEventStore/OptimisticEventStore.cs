@@ -15,7 +15,7 @@ namespace NEventStore
         {
             if (persistence == null)
             {
-                throw new ArgumentNullException("persistence");
+                throw new ArgumentNullException(nameof(persistence));
             }
 
             _pipelineHooks = pipelineHooks ?? new IPipelineHook[0];
@@ -77,7 +77,7 @@ namespace NEventStore
         {
             if (snapshot == null)
             {
-                throw new ArgumentNullException("snapshot");
+                throw new ArgumentNullException(nameof(snapshot));
             }
 
             if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.OpeningStreamWithSnapshot, snapshot.StreamId, snapshot.StreamRevision, maxRevision);

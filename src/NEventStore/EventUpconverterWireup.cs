@@ -17,14 +17,14 @@ namespace NEventStore
         {
             if (Logger.IsDebugEnabled) Logger.Debug(Messages.EventUpconverterRegistered);
 
-            Container.Register(c =>
+            Container.Register(_ =>
             {
                 if (_registered.Count > 0)
                 {
                     return new EventUpconverterPipelineHook(_registered);
                 }
 
-                if (!_assembliesToScan.Any())
+                if (_assembliesToScan.Count == 0)
                 {
                     _assembliesToScan.AddRange(GetAllAssemblies());
                 }
@@ -109,7 +109,7 @@ namespace NEventStore
         {
             if (converter == null)
             {
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
             }
 
             _registered[typeof (TSource)] = @event => converter.Convert(@event as TSource);
