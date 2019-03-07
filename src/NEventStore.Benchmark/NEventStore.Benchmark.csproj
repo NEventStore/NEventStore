@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+      <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
+      <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+      <ApplicationIcon />
+      <OutputTypeEx>exe</OutputTypeEx>
+      <StartupObject />
+      <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.11.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NEventStore\NEventStore.Core.csproj" />
+  </ItemGroup>
+
+</Project>
