@@ -9,7 +9,7 @@ namespace NEventStore.Persistence.InMemory
 
     public class InMemoryPersistenceEngine : IPersistStreams
     {
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof (InMemoryPersistenceEngine));
+        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(InMemoryPersistenceEngine));
         private readonly ConcurrentDictionary<string, Bucket> _buckets = new ConcurrentDictionary<string, Bucket>();
         private bool _disposed;
         private int _checkpoint;
@@ -121,8 +121,7 @@ namespace NEventStore.Persistence.InMemory
         public void DeleteStream(string bucketId, string streamId)
         {
             if (Logger.IsWarnEnabled) Logger.Warn(Resources.DeletingStream, streamId, bucketId);
-            Bucket bucket;
-            if (!_buckets.TryGetValue(bucketId, out bucket))
+            if (!_buckets.TryGetValue(bucketId, out Bucket bucket))
             {
                 return;
             }
@@ -153,7 +152,6 @@ namespace NEventStore.Persistence.InMemory
 
         private class InMemoryCommit : Commit
         {
-            
             public InMemoryCommit(
                 string bucketId,
                 string streamId,
@@ -165,24 +163,21 @@ namespace NEventStore.Persistence.InMemory
                 IDictionary<string, object> headers,
                 IEnumerable<EventMessage> events)
                 : base(bucketId, streamId, streamRevision, commitId, commitSequence, commitStamp, checkpointToken, headers, events)
-            {
-                
-            }
-
+            { }
         }
 
         private class IdentityForConcurrencyConflictDetection
         {
             protected bool Equals(IdentityForConcurrencyConflictDetection other)
             {
-                return  string.Equals(this.streamId, other.streamId) && 
-                        string.Equals(this.bucketId, other.bucketId) && 
-                        this.commitSequence == other.commitSequence;
+                return string.Equals(this.streamId, other.streamId)
+                        && string.Equals(this.bucketId, other.bucketId)
+                        && this.commitSequence == other.commitSequence;
             }
 
             public override bool Equals(object obj)
             {
-                if (ReferenceEquals(null, obj))
+                if (obj is null)
                 {
                     return false;
                 }
@@ -203,16 +198,15 @@ namespace NEventStore.Persistence.InMemory
                 {
                     int hashCode = this.streamId.GetHashCode();
                     hashCode = (hashCode * 397) ^ this.bucketId.GetHashCode();
-                    hashCode = (hashCode * 397) ^ this.commitSequence;
-                    return hashCode;
+                    return (hashCode * 397) ^ this.commitSequence;
                 }
             }
 
-            private int commitSequence;
+            private readonly int commitSequence;
 
-            private string bucketId;
+            private readonly string bucketId;
 
-            private string streamId;
+            private readonly string streamId;
 
             public IdentityForConcurrencyConflictDetection(CommitAttempt commitAttempt)
             {
@@ -233,14 +227,14 @@ namespace NEventStore.Persistence.InMemory
         {
             protected bool Equals(IdentityForDuplicationDetection other)
             {
-                return  string.Equals(this.streamId, other.streamId) && 
-                        string.Equals(this.bucketId, other.bucketId) && 
-                        this.commitId.Equals(other.commitId);
+                return string.Equals(this.streamId, other.streamId)
+                        && string.Equals(this.bucketId, other.bucketId)
+                        && this.commitId.Equals(other.commitId);
             }
 
             public override bool Equals(object obj)
             {
-                if (ReferenceEquals(null, obj))
+                if (obj is null)
                 {
                     return false;
                 }
@@ -261,16 +255,15 @@ namespace NEventStore.Persistence.InMemory
                 {
                     int hashCode = this.streamId.GetHashCode();
                     hashCode = (hashCode * 397) ^ this.bucketId.GetHashCode();
-                    hashCode = (hashCode * 397) ^ this.commitId.GetHashCode();
-                    return hashCode;
+                    return (hashCode * 397) ^ this.commitId.GetHashCode();
                 }
             }
 
-            private Guid commitId;
+            private readonly Guid commitId;
 
-            private string bucketId;
+            private readonly string bucketId;
 
-            private string streamId;
+            private readonly string streamId;
 
             public IdentityForDuplicationDetection(CommitAttempt commitAttempt)
             {
@@ -290,8 +283,8 @@ namespace NEventStore.Persistence.InMemory
         private class Bucket
         {
             private readonly IList<InMemoryCommit> _commits = new List<InMemoryCommit>();
-            private readonly ICollection<IdentityForDuplicationDetection> _potentialDuplicates= new HashSet<IdentityForDuplicationDetection>();
-            private readonly ICollection<IdentityForConcurrencyConflictDetection> _potentialConflicts = new HashSet<IdentityForConcurrencyConflictDetection>(); 
+            private readonly ICollection<IdentityForDuplicationDetection> _potentialDuplicates = new HashSet<IdentityForDuplicationDetection>();
+            private readonly ICollection<IdentityForConcurrencyConflictDetection> _potentialConflicts = new HashSet<IdentityForConcurrencyConflictDetection>();
 
             public IEnumerable<InMemoryCommit> GetCommits()
             {
@@ -365,7 +358,7 @@ namespace NEventStore.Persistence.InMemory
                         attempt.CommitStamp,
                         checkpoint,
                         attempt.Headers,
-                        attempt.Events );
+                        attempt.Events);
                     if (_potentialConflicts.Contains(new IdentityForConcurrencyConflictDetection(commit)))
                     {
                         throw new ConcurrencyException();
@@ -377,7 +370,7 @@ namespace NEventStore.Persistence.InMemory
                     IStreamHead head = _heads.FirstOrDefault(x => x.StreamId == commit.StreamId);
                     _heads.Remove(head);
                     if (Logger.IsDebugEnabled) Logger.Debug(Resources.UpdatingStreamHead, commit.StreamId);
-                    int snapshotRevision = head == null ? 0 : head.SnapshotRevision;
+                    int snapshotRevision = head?.SnapshotRevision ?? 0;
                     _heads.Add(new StreamHead(commit.BucketId, commit.StreamId, commit.StreamRevision, snapshotRevision));
                     return commit;
                 }

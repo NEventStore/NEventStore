@@ -10,11 +10,11 @@ namespace NEventStore.Persistence
             {
                 return true;
             }
-            if (ReferenceEquals(x, null))
+            if (x is null)
             {
                 return false;
             }
-            if (ReferenceEquals(y, null))
+            if (y is null)
             {
                 return false;
             }
@@ -29,7 +29,7 @@ namespace NEventStore.Persistence
         {
             unchecked
             {
-                return ((obj.StreamId != null ? obj.StreamId.GetHashCode() : 0) * 397) ^ (obj.BucketId != null ? obj.BucketId.GetHashCode() : 0);
+                return ((obj.StreamId?.GetHashCode() ?? 0) * 397) ^ (obj.BucketId?.GetHashCode() ?? 0);
             }
         }
     }

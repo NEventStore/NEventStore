@@ -70,7 +70,7 @@ namespace NEventStore.Persistence
             get { return _commitStamp; }
         }
 
-        public IDictionary<string, object> Headers 
+        public IDictionary<string, object> Headers
         {
             get { return _headers; }
         }
