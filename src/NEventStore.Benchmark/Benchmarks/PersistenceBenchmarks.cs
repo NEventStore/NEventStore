@@ -1,18 +1,17 @@
 ﻿using BenchmarkDotNet.Attributes;
 using NEventStore.Benchmark.Support;
 using System;
-using System.Linq;
 
 namespace NEventStore.Benchmark.Benchmarks
 {
-    // [Config(typeof(AllowNonOptimized))]
+    [Config(typeof(AllowNonOptimized))]
     [SimpleJob(launchCount: 3, warmupCount: 3, targetCount: 20, invocationCount: -1)]
     [MemoryDiagnoser]
     [MeanColumn, StdErrorColumn, StdDevColumn, MinColumn, MaxColumn, IterationsColumn]
     public class PersistenceBenchmarks
     {
         private static readonly Guid StreamId = Guid.NewGuid(); // aggregate identifier
-        private IStoreEvents _eventStore;
+        private readonly IStoreEvents _eventStore;
 
         public PersistenceBenchmarks()
         {
@@ -37,7 +36,7 @@ namespace NEventStore.Benchmark.Benchmarks
             }
         }
 
-        [GlobalSetup(Target = nameof(ReadFromStream))]
+        [GlobalSetup(Targets = new string[] { nameof(ReadFromStream), nameof(ReadFromEventStore) })]
         public void ReadSetup()
         {
             using (var stream = _eventStore.OpenStream(StreamId, 0, int.MaxValue))
@@ -62,6 +61,17 @@ namespace NEventStore.Benchmark.Benchmarks
             {
                 // the whole stream has been read
                 // Console.WriteLine(stream.CommittedEvents.First().Body);
+            }
+        }
+
+        [Benchmark]
+        public void ReadFromEventStore()
+        {
+            var commits = _eventStore.Advanced.GetFrom(Bucket.Default, 0);
+            foreach (var c in commits)
+            {
+                // just iterate through all the commits
+                // Console.WriteLine(c);
             }
         }
     }

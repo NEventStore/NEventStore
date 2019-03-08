@@ -10,7 +10,6 @@ namespace NEventStore.Benchmark
         {
             // var summary = BenchmarkRunner.Run<Md5VsSha256>();
             var summary = BenchmarkRunner.Run<PersistenceBenchmarks>();
-            Console.ReadLine();
         }
     }
 }
