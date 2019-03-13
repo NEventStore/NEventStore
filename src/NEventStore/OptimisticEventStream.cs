@@ -210,7 +210,7 @@ namespace NEventStore
         {
             CommitAttempt attempt = BuildCommitAttempt(commitId);
 
-            Logger.LogDebug(Resources.PersistingCommit, commitId, StreamId, BucketId, attempt.Events?.Count ?? 0);
+            Logger.LogDebug(Resources.PersistingCommit, commitId, StreamId, BucketId, attempt.Events?.Length ?? 0);
             ICommit commit = _persistence.Commit(attempt);
 
             PopulateStream(StreamRevision + 1, attempt.StreamRevision, new[] { commit });
@@ -228,7 +228,7 @@ namespace NEventStore
                 CommitSequence + 1,
                 SystemTime.UtcNow,
                 UncommittedHeaders.ToDictionary(x => x.Key, x => x.Value),
-                _events.ToList());
+                _events.ToArray()); // check this for performance: preallocate the array size.
         }
 
         public void Dispose()

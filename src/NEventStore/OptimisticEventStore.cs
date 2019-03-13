@@ -53,7 +53,7 @@ namespace NEventStore
                 return null;
             }
 
-            Logger.LogTrace(Resources.CommittingAttempt, attempt.CommitId, attempt.Events?.Count ?? 0);
+            Logger.LogTrace(Resources.CommittingAttempt, attempt.CommitId, attempt.Events?.Length ?? 0);
             ICommit commit = _persistence.Commit(attempt);
 
             foreach (var hook in _pipelineHooks)

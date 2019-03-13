@@ -290,7 +290,7 @@ namespace NEventStore
 
         protected override void Context()
         {
-            _attempt = new CommitAttempt(streamId, 1, Guid.NewGuid(), 1, DateTime.Now, null, new List<EventMessage> { new EventMessage() });
+            _attempt = new CommitAttempt(streamId, 1, Guid.NewGuid(), 1, DateTime.Now, null, new EventMessage[] { new EventMessage() });
         }
 
         protected override void Because()

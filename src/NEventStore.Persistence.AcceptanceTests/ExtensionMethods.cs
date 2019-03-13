@@ -54,7 +54,7 @@ namespace NEventStore.Persistence.AcceptanceTests
             now = now ?? SystemTime.UtcNow;
             bucketId = bucketId ?? Bucket.Default;
 
-            var messages = new List<EventMessage>
+            var messages = new EventMessage[]
             {
                 new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Test"}},
                 new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Test2"}},
@@ -74,7 +74,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         public static CommitAttempt BuildNextAttempt(this ICommit commit)
         {
-            var messages = new List<EventMessage>
+            var messages = new EventMessage[]
             {
                 new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Another test"}},
                 new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Another test2"}},
@@ -82,7 +82,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
             return new CommitAttempt(commit.BucketId,
                 commit.StreamId,
-                commit.StreamRevision + messages.Count,
+                commit.StreamRevision + messages.Length,
                 Guid.NewGuid(),
                 commit.CommitSequence + 1,
                 commit.CommitStamp.AddSeconds(1),
@@ -92,7 +92,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         public static CommitAttempt BuildNextAttempt(this CommitAttempt commit)
         {
-            var messages = new List<EventMessage>
+            var messages = new EventMessage[]
             {
                 new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Another test"}},
                 new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Another test2"}},
@@ -142,7 +142,7 @@ namespace NEventStore.Persistence.AcceptanceTests
                 }
             };
 
-            return new CommitAttempt(streamId, streamRevision, commitId, commitSequence, SystemTime.UtcNow, headers, events.ToList());
+            return new CommitAttempt(streamId, streamRevision, commitId, commitSequence, SystemTime.UtcNow, headers, events);
         }
 
         [Serializable]
