@@ -264,4 +264,7 @@
   <data name="WireupSetSerializer" xml:space="preserve">
     <value>Configured serializer: {0}</value>
   </data>
+  <data name="CannotAddCommitsToPartiallyLoadedStream" xml:space="preserve">
+    <value>The stream '{0}' was partially loaded up to revision {1}. Cannot append commits to a partially loaded stream, refreshing the stream.</value>
+  </data>
 </root>

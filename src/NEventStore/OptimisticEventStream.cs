@@ -84,6 +84,10 @@ namespace NEventStore
 
             if (_isPartialStream)
             {
+                if (Logger.IsDebugEnabled) Logger.Debug(Resources.CannotAddCommitsToPartiallyLoadedStream, StreamId, StreamRevision);
+
+                RefreshStreamAfterConcurrencyException();
+
                 throw new ConcurrencyException();
             }
 
@@ -103,12 +107,19 @@ namespace NEventStore
             }
             catch (ConcurrencyException cex)
             {
-                if (Logger.IsDebugEnabled) Logger.Debug(Resources.UnderlyingStreamHasChanged, StreamId, cex.Message); //not useful to log info because the exception will be thrown 
-                IEnumerable<ICommit> commits = _persistence.GetFrom(BucketId, StreamId, StreamRevision + 1, int.MaxValue);
-                PopulateStream(StreamRevision + 1, int.MaxValue, commits);
+                if (Logger.IsDebugEnabled) Logger.Debug(Resources.UnderlyingStreamHasChanged, StreamId, cex.Message);
+
+                RefreshStreamAfterConcurrencyException();
 
                 throw;
             }
+        }
+
+        private void RefreshStreamAfterConcurrencyException()
+        {
+            int refreshFromRevision = StreamRevision + 1;
+            IEnumerable<ICommit> commits = _persistence.GetFrom(BucketId, StreamId, refreshFromRevision, int.MaxValue);
+            PopulateStream(refreshFromRevision, int.MaxValue, commits);
         }
 
         public void ClearChanges()
