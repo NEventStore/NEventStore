@@ -86,7 +86,7 @@ task Clean {
 task NuGetPack -depends Package {
     $versionString = Get-Version $assemblyInfoFilePath
 	$version = New-Object Version $versionString
-	$packageVersion = $version.Major.ToString() + "." + $version.Minor.ToString() + "." + $version.Build.ToString() + "-build" + $build_number.ToString().PadLeft(5,'0')
+	$packageVersion = $version.Major.ToString() + "." + $version.Minor.ToString() + "." + $version.Build.ToString() 
 	gci -r -i *.nuspec "$nuget_dir" |% { .$nuget_dir\nuget.exe pack $_ -basepath $base_directory -o $publish_directory -version $packageVersion }
 }
 
