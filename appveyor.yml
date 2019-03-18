@@ -1,0 +1,97 @@
+environment:
+  next_version: 6.0.1
+  is_pr: false
+init:
+  - ps: >-
+      if ($env:APPVEYOR_REPO_TAG -eq "true")
+      {
+        Update-AppveyorBuild -Version "$env:APPVEYOR_REPO_TAG_NAME"
+      }
+      else
+      {
+        if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER)
+        {
+          $env:is_pr = "false";
+          if ($env:APPVEYOR_REPO_BRANCH -ne "master")
+          {
+            # Update-AppveyorBuild -Version "$($env:next_version)-$($env:APPVEYOR_REPO_BRANCH)-build$($env:APPVEYOR_BUILD_NUMBER)"
+          }
+          else
+          {
+            # Update-AppveyorBuild -Version "$($env:next_version)-beta$($env:APPVEYOR_BUILD_NUMBER)"
+          }
+        }
+        else
+        {
+          $env:is_pr = "true";
+          Update-AppveyorBuild -Version "$($env:next_version)-pr$($env:APPVEYOR_PULL_REQUEST_NUMBER)-build$($env:APPVEYOR_BUILD_NUMBER)"
+        }
+      }
+
+version: 1.0.{build}
+branches:
+  only:
+  - feature/dotnetcore
+  - develop
+  - master
+image: Visual Studio 2017
+configuration: Release
+assembly_info:
+  patch: true
+  file: '**\AssemblyInfo.*'
+  assembly_version: '{version}'
+  assembly_file_version: '{version}'
+  assembly_informational_version: '{version}'
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
+install:
+- sh: choco install gitversion.portable -pre -y
+before_build:
+- ps: >-
+    # Display .NET Core version
+
+    dotnet --version
+
+    # Display minimal restore text
+
+    dotnet restore ./src/NEventStore.Core.sln --verbosity m
+
+    gitversion /l console /output buildserver /updateAssemblyInfo
+build:
+  project: src/NEventStore.Core.sln
+  verbosity: minimal
+after_build:
+- cmd: >-
+    dotnet pack ./src/NEventStore/NEventStore.Core.csproj -c %CONFIGURATION% --no-build -o artifacts /p:PackageVersion=%GitVersion_NuGetVersion%
+
+    dotnet pack ./src/NEventStore.Serialization.Json/NEventStore.Serialization.Json.Core.csproj -c %CONFIGURATION% --no-build -o artifacts /p:PackageVersion=%GitVersion_NuGetVersion%
+test:
+  assemblies:
+    except:
+    - NEventStore.Persistence.AcceptanceTests.dll
+    - NEventStore.dll
+    - NEventStore.Serialization.Json.dll
+artifacts:
+- path: '**\artifacts\**\*.*'
+
+deploy:
+  - provider: NuGet
+    server: http://packages.smokeball.com/nuget/smokeball/
+    api_key:
+      secure: Gb5neQyAROVe6WHeeLpjwGG0VPyVX8Oy/3eUUQBLpQA=
+    on:
+      branch: master
+      is_pr: false
+
+  - provider: NuGet
+    server: http://packages.smokeball.com/nuget/smokeball/
+    api_key:
+      secure: Gb5neQyAROVe6WHeeLpjwGG0VPyVX8Oy/3eUUQBLpQA=
+    on:
+      appveyor_repo_tag: true
