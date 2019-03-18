@@ -49,6 +49,18 @@ namespace NEventStore
         IEventStream OpenStream(ISnapshot snapshot, int maxRevision);
 
         /// <summary>
+        ///  This will return the stream without loading any commits in the database. This should be used to improve performance
+        ///  when appending commits to the stream as there will be no database read perform updating.
+        ///  CAUTION: passing in the wrong value for lastRevision can cause data to become corrupted! Only use this method when you only have 1 thread altering the stream
+        /// </summary>
+        /// <param name="bucketId">The value which uniquely identifies bucket the stream belongs to.</param>
+        /// <param name="streamId">The value which uniquely identifies the stream in the bucket from which the events will be read.</param>
+        /// <param name="lastRevision">The revision of the last commit in the stream</param>
+        /// <param name="lastCommitSequence">The commit sequence of the last commit in the stream</param>
+        /// <returns></returns>
+        IEventStream OpenStreamForAppendOnly(string bucketId, string streamId, int lastRevision, int lastCommitSequence);
+
+        /// <summary>
         ///    Starts the dispatch scheduler. If the dispatch scheduler is set to startup automatically, this will not have any affect.
         /// </summary>
         void StartDispatchScheduler();

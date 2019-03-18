@@ -87,6 +87,19 @@ namespace NEventStore
             return new OptimisticEventStream(snapshot, this, maxRevision);
         }
 
+        public virtual IEventStream OpenStreamForAppendOnly(string bucketId, string streamId, int lastRevision, int lastCommitSequence)
+        {
+            Logger.Debug($"Opening stream with append only {streamId} - {lastRevision} - {lastCommitSequence}");
+
+            var stream = new OptimisticEventStream(bucketId, streamId, this)
+            {
+                StreamRevision = lastRevision, 
+                CommitSequence = lastCommitSequence
+            };
+
+            return stream;
+        }
+
         public virtual void StartDispatchScheduler()
         {
             _startScheduler();
