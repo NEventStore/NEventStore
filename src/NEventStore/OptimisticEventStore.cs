@@ -89,7 +89,7 @@ namespace NEventStore
 
         public virtual IEventStream OpenStreamForAppendOnly(string bucketId, string streamId, int lastRevision, int lastCommitSequence)
         {
-            Logger.Debug("Opening stream with append only {0} - {1} - {2}", streamId, lastRevision, lastCommitSequence);
+            Logger.Debug("Opening stream with append only stream:{0} - revision:{1} - commitseq:{2}", streamId, lastRevision, lastCommitSequence);
 
             var stream = new OptimisticEventStream(bucketId, streamId, this)
             {
