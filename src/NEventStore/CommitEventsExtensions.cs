@@ -21,8 +21,9 @@ namespace NEventStore
         {
             if (commitEvents == null)
             {
-                throw new ArgumentException("commitEvents is null");
+                throw new ArgumentNullException(nameof(commitEvents));
             }
+
             return commitEvents.GetFrom(Bucket.Default, streamId, minRevision, maxRevision);
         }
     }

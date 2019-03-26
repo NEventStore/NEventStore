@@ -99,7 +99,7 @@ namespace NEventStore
         {
             if (storeEvents == null)
             {
-                throw new ArgumentException("storeEvents is null");
+                throw new ArgumentNullException(nameof(storeEvents));
             }
         }
     }

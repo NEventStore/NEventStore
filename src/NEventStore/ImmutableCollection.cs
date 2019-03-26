@@ -5,42 +5,38 @@ namespace NEventStore
     using System.Collections.Generic;
     using System.Linq;
 
-    internal class ImmutableCollection<T> : ICollection<T>, ICollection
+    internal sealed class ImmutableCollection<T> : ICollection<T>, ICollection
     {
         private readonly ICollection<T> _inner;
-        private readonly object _lock = new object();
 
         public ImmutableCollection(ICollection<T> inner)
         {
             _inner = inner;
         }
 
-        public virtual object SyncRoot
-        {
-            get { return _lock; }
-        }
+        public object SyncRoot { get; } = new object();
 
-        public virtual bool IsSynchronized
+        public bool IsSynchronized
         {
             get { return false; }
         }
 
-        public virtual void CopyTo(Array array, int index)
+        public void CopyTo(Array array, int index)
         {
             CopyTo(array.Cast<T>().ToArray(), index);
         }
 
-        public virtual int Count
+        public int Count
         {
             get { return _inner.Count; }
         }
 
-        public virtual bool IsReadOnly
+        public bool IsReadOnly
         {
             get { return true; }
         }
 
-        public virtual IEnumerator<T> GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
         {
             return _inner.GetEnumerator();
         }
@@ -50,27 +46,27 @@ namespace NEventStore
             return GetEnumerator();
         }
 
-        public virtual void Add(T item)
+        public void Add(T item)
         {
             throw new NotSupportedException(Resources.ReadOnlyCollection);
         }
 
-        public virtual bool Remove(T item)
+        public bool Remove(T item)
         {
             throw new NotSupportedException(Resources.ReadOnlyCollection);
         }
 
-        public virtual void Clear()
+        public void Clear()
         {
             throw new NotSupportedException(Resources.ReadOnlyCollection);
         }
 
-        public virtual bool Contains(T item)
+        public bool Contains(T item)
         {
             return _inner.Contains(item);
         }
 
-        public virtual void CopyTo(T[] array, int arrayIndex)
+        public void CopyTo(T[] array, int arrayIndex)
         {
             _inner.CopyTo(array, arrayIndex);
         }

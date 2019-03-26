@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-      <TargetFrameworks>netcoreapp2.0;net45</TargetFrameworks>
+      <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
       <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
       <ApplicationIcon />
       <OutputTypeEx>exe</OutputTypeEx>
@@ -13,35 +13,16 @@
     <DefineConstants Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">TRACE;DEBUG;NETSTANDARD2_0</DefineConstants>
     <DefineConstants Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">NETSTANDARD2_0</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net45'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
     <DefineConstants Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
-    <Reference Include="System.Transactions" />
-  </ItemGroup>
-
   <ItemGroup>
-    <None Remove="App.config" />
-    <None Remove="Settings.StyleCop" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.11.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\NEventStore\NEventStore.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Update="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

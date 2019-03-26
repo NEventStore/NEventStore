@@ -2,6 +2,7 @@ namespace NEventStore.PollingClientExample
 {
     using System;
     using NEventStore.Client;
+    using NEventStore.Logging;
 
     internal static class MainProgram
     {
@@ -11,6 +12,12 @@ namespace NEventStore.PollingClientExample
         {
             using (var store = WireupEventStore())
             {
+                // append some commits to the EventStore
+                AppendToStream(store, "Stream1");
+                AppendToStream(store, "Stream2");
+                AppendToStream(store, "Stream1");
+
+                // now test the polling client
                 Int64 checkpointToken = LoadCheckpoint();
                 var client = new PollingClient2(store.Advanced, commit =>
                 {
@@ -19,7 +26,8 @@ namespace NEventStore.PollingClientExample
                     // Track the most recent checkpoint
                     checkpointToken = commit.CheckpointToken;
                     return PollingClient2.HandlingResult.MoveToNext;
-                });
+                },
+                waitInterval: 3000);
 
                 client.StartFrom(checkpointToken);
 
@@ -43,13 +51,26 @@ namespace NEventStore.PollingClientExample
 
         private static IStoreEvents WireupEventStore()
         {
-            return
-                Wireup.Init()
-                    .LogToOutputWindow()
-                    .UsingInMemoryPersistence()
-                        .InitializeStorageEngine()
-                        .TrackPerformanceInstance("example")
-                    .Build();
+            return Wireup.Init()
+               .LogToOutputWindow(LogLevel.Verbose)
+               .LogToConsoleWindow(LogLevel.Verbose)
+               .UsingInMemoryPersistence()
+               .InitializeStorageEngine()
+#if !NETSTANDARD1_6 && !NETSTANDARD2_0
+               .TrackPerformanceInstance("example")
+#endif
+               .Build();
+        }
+
+        private static void AppendToStream(IStoreEvents store, string streamId)
+        {
+            using (var stream = store.OpenStream(streamId))
+            {
+                var @event = new SomeDomainEvent { Value = "event" };
+
+                stream.Add(new EventMessage { Body = @event });
+                stream.CommitChanges(Guid.NewGuid());
+            }
         }
     }
 }

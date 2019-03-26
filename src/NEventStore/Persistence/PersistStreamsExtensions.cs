@@ -17,7 +17,7 @@ namespace NEventStore.Persistence
         {
             if (persistStreams == null)
             {
-                throw new ArgumentException("persistStreams is null");
+                throw new ArgumentNullException(nameof(persistStreams));
             }
             return persistStreams.GetFrom(Bucket.Default, start);
         }
@@ -35,7 +35,7 @@ namespace NEventStore.Persistence
         {
             if (persistStreams == null)
             {
-                throw new ArgumentException("persistStreams is null");
+                throw new ArgumentNullException(nameof(persistStreams));
             }
             return persistStreams.GetFromTo(Bucket.Default, start, end);
         }
@@ -49,7 +49,7 @@ namespace NEventStore.Persistence
         {
             if (persistStreams == null)
             {
-                throw new ArgumentException("persistStreams is null");
+                throw new ArgumentNullException(nameof(persistStreams));
             }
             persistStreams.DeleteStream(Bucket.Default, streamId);
         }
@@ -62,7 +62,7 @@ namespace NEventStore.Persistence
         {
             if (persistStreams == null)
             {
-                throw new ArgumentException("persistStreams is null");
+                throw new ArgumentNullException(nameof(persistStreams));
             }
             return persistStreams.GetFrom(0);
         }

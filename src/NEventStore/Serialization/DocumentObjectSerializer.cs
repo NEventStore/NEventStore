@@ -1,10 +1,10 @@
 namespace NEventStore.Serialization
 {
-    using NEventStore.Logging;
+    // using NEventStore.Logging;
 
     public class DocumentObjectSerializer : IDocumentSerializer
     {
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof (DocumentObjectSerializer));
+        // private static readonly ILog Logger = LogFactory.BuildLogger(typeof (DocumentObjectSerializer));
 
         public object Serialize<T>(T graph)
         {

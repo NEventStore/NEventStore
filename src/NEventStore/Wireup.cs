@@ -8,14 +8,13 @@ namespace NEventStore
     using NEventStore.Conversion;
     using NEventStore.Persistence;
     using NEventStore.Persistence.InMemory;
-    using NEventStore.Serialization;
     using Logging;
 
     public class Wireup
     {
         private readonly NanoContainer _container;
         private readonly Wireup _inner;
-        private ILog Logger = LogFactory.BuildLogger(typeof(Wireup));
+        private readonly ILog Logger = LogFactory.BuildLogger(typeof(Wireup));
 
         protected Wireup(NanoContainer container)
         {
