@@ -10,11 +10,11 @@ __Version 6.x is not backwards compatible with version 5.x.__ Updating to NEvent
 
 ### Breaking changes
 
-- **Removed Dispatcher and dispatching mechanic, use the PollingClient**: it was marked obsolete in the version 5.x, you should dispatch with other mechanism, like using a PollingClient.
+- **Removed Dispatcher and dispatching mechanic, use the PollingClient**: it was marked obsolete in the version 5.x, you should dispatch events with other mechanisms, like using a PollingClient.
 More information on this topic in the issue: [Race condition in sync and async dispatchers can result in subscribers getting commits / events out of order](https://github.com/NEventStore/NEventStore/issues/360).
 - **Removed LongCheckpoint class**: checkpoint now is a plain Int64, there is no need to keep a LongCheckpoint class anymore. 
 - **PollingClient was removed because it used to depend on Rx**: you can [read more information here](src/NEventStore/Client/README.MD). The new polling client class is called PollingClient2, this however should be considered as a sample implementation you can use to derive your own.
-- **JsonSerializer and BsonSerializer were moved in a separate assembly**: if you need them, you should reference the NEventStore.Serialization.Json assembly or implementing your own serializers that depend on the Json.Net version you need.
+- **JsonSerializer and BsonSerializer were moved in a separate assembly**: if you need them, you should reference the NEventStore.Serialization.Json assembly or implement your own serializers that depend on the Json.Net version you need.
 - **EventMessage** class is now sealed.
 - **OptimistcEventStream throws exceptions if a null message or a message with null body is added to the stream**. Previously if you called Add with null event message or add with an eventmessage with null body, the add operation was ignored without any warning or error. 
 
@@ -38,11 +38,11 @@ __Version 6.x is not backwards compatible with version 5.x.__ Updating to NEvent
 
 ### Breaking changes
 
-- **Removed Dispatcher and dispatching mechanic, use the PollingClient**: it was marked obsolete in the version 5.x, you should dispatch with other mechanism, like using a PollingClient.
+- **Removed Dispatcher and dispatching mechanic, use the PollingClient**: it was marked obsolete in the version 5.x, you should dispatch events with other mechanisms, like using a PollingClient.
 More information on this topic in the issue: [Race condition in sync and async dispatchers can result in subscribers getting commits / events out of order](https://github.com/NEventStore/NEventStore/issues/360).
 - **Removed LongCheckpoint class**: checkpoint now is a plain Int64, there is no need to keep a LongCheckpoint class anymore. 
 - **PollingClient was removed because it used to depend on Rx**: you can [read more information here](src/NEventStore/Client/README.MD). The new polling client class is called PollingClient2, this however should be considered as a sample implementation you can use to derive your own.
-- **JsonSerializer and BsonSerializer were moved in a separate assembly**: if you need them, you should reference the NEventStore.Serialization.Json assembly or implementing your own serializers that depend on the Json.Net version you need.
+- **JsonSerializer and BsonSerializer were moved in a separate assembly**: if you need them, you should reference the NEventStore.Serialization.Json assembly or implement your own serializers that depend on the Json.Net version you need.
 - **EventMessage** class is now sealed.
 - **OptimistcEventStream throws exceptions if a null message or a message with null body is added to the stream**. Previously if you called Add with null event message or add with an eventmessage with null body, the add operation was ignored without any warning or error. 
 
