@@ -23,8 +23,6 @@ namespace NEventStore.Persistence
             SnapshotRevision = snapshotRevision;
         }
 
-        
-
         private static readonly IEqualityComparer<StreamHead> StreamIdBucketIdComparerInstance = new StreamHeadEqualityComparer();
 
         public static IEqualityComparer<StreamHead> StreamIdBucketIdComparer
@@ -36,7 +34,7 @@ namespace NEventStore.Persistence
         ///     Initializes a new instance of the StreamHead class.
         /// </summary>
         protected StreamHead()
-        {}
+        { }
 
         /// <summary>
         ///     Gets the value which uniquely identifies the stream where the last snapshot exceeds the allowed threshold.
@@ -65,8 +63,8 @@ namespace NEventStore.Persistence
         /// <returns>If the two objects are equal, returns true; otherwise false.</returns>
         public override bool Equals(object obj)
         {
-            var commit = obj as StreamHead;
-            return commit != null && commit.StreamId == StreamId;
+            return obj is StreamHead commit
+                && commit.StreamId == StreamId;
         }
 
         /// <summary>

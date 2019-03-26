@@ -7,22 +7,14 @@ namespace NEventStore.Persistence
 
     public class PipelineHooksAwarePersistanceDecorator : IPersistStreams
     {
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof (PipelineHooksAwarePersistanceDecorator));
+        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(PipelineHooksAwarePersistanceDecorator));
         private readonly IPersistStreams _original;
         private readonly IEnumerable<IPipelineHook> _pipelineHooks;
 
         public PipelineHooksAwarePersistanceDecorator(IPersistStreams original, IEnumerable<IPipelineHook> pipelineHooks)
         {
-            if (original == null)
-            {
-                throw new ArgumentNullException("original");
-            }
-            if (pipelineHooks == null)
-            {
-                throw new ArgumentNullException("pipelineHooks");
-            }
-            _original = original;
-            _pipelineHooks = pipelineHooks;
+            _original = original ?? throw new ArgumentNullException(nameof(original));
+            _pipelineHooks = pipelineHooks ?? throw new ArgumentNullException(nameof(pipelineHooks));
         }
 
         public void Dispose()

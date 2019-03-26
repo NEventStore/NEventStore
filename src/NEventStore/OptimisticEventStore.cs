@@ -7,15 +7,17 @@ namespace NEventStore
 
     public class OptimisticEventStore : IStoreEvents, ICommitEvents
     {
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof (OptimisticEventStore));
+        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(OptimisticEventStore));
         private readonly IPersistStreams _persistence;
         private readonly IEnumerable<IPipelineHook> _pipelineHooks;
+
+        public virtual IPersistStreams Advanced { get => _persistence; }
 
         public OptimisticEventStore(IPersistStreams persistence, IEnumerable<IPipelineHook> pipelineHooks)
         {
             if (persistence == null)
             {
-                throw new ArgumentNullException("persistence");
+                throw new ArgumentNullException(nameof(persistence));
             }
 
             _pipelineHooks = pipelineHooks ?? new IPipelineHook[0];
@@ -77,17 +79,12 @@ namespace NEventStore
         {
             if (snapshot == null)
             {
-                throw new ArgumentNullException("snapshot");
+                throw new ArgumentNullException(nameof(snapshot));
             }
 
             if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.OpeningStreamWithSnapshot, snapshot.StreamId, snapshot.StreamRevision, maxRevision);
             maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
             return new OptimisticEventStream(snapshot, this, maxRevision);
-        }
-
-        public virtual IPersistStreams Advanced
-        {
-            get { return _persistence; }
         }
 
         protected virtual void Dispose(bool disposing)

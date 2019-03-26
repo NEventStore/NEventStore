@@ -72,6 +72,7 @@ namespace NEventStore
         public override IStoreEvents Build()
         {
             if (Logger.IsInfoEnabled) Logger.Info(Messages.BuildingEngine);
+
             var engine = Container.Resolve<IPersistStreams>();
 
             if (_initialize)
