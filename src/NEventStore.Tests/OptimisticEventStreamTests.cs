@@ -643,7 +643,8 @@ namespace NEventStore
         private const int MaxRevision = 7;
         private readonly int _eventsPerCommit = 2;
         private ICommit[] _committed;
-        private Exception _thrown;
+        private Exception _thrown1;
+        private Exception _thrown2;
 
         protected override void Context()
         {
@@ -655,13 +656,18 @@ namespace NEventStore
                 BuildCommitStub(8, 4, _eventsPerCommit) // 7-8
             };
 
-            _committed[0].Headers["Common"] = string.Empty;
-            _committed[1].Headers["Common"] = string.Empty;
-            _committed[2].Headers["Common"] = string.Empty;
-            _committed[3].Headers["Common"] = string.Empty;
-            _committed[0].Headers["Unique"] = string.Empty;
-
             A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, MinRevision, MaxRevision)).Returns(_committed);
+            A.CallTo(() => Persistence.Commit(A<CommitAttempt>._))
+               .ReturnsLazily((CommitAttempt attempt) => new Commit(
+                   attempt.BucketId,
+                   attempt.StreamId,
+                   attempt.StreamRevision,
+                   attempt.CommitId,
+                   attempt.CommitSequence,
+                   attempt.CommitStamp,
+                   0,
+                   attempt.Headers,
+                   attempt.Events));
 
             Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, MinRevision, MaxRevision);
         }
@@ -669,13 +675,28 @@ namespace NEventStore
         protected override void Because()
         {
             Stream.Add(new EventMessage() { Body = "Test" });
-            _thrown = Catch.Exception(() => Stream.CommitChanges(Guid.NewGuid()));
+            // this should fail and cause the stream to be reloaded
+            _thrown1 = Catch.Exception(() => Stream.CommitChanges(Guid.NewGuid()));
+            // this should succeed, events will be appended at the end
+            _thrown2 = Catch.Exception(() => Stream.CommitChanges(Guid.NewGuid()));
         }
 
         [Fact]
         public void should_throw_ConsurrencyException()
         {
-            _thrown.Should().BeOfType<ConcurrencyException>();
+            _thrown1.Should().BeOfType<ConcurrencyException>();
+        }
+
+        public void second_attempt_should_succeed_stream_was_refreshed()
+        {
+            _thrown2.Should().BeNull();
+        }
+
+        [Fact]
+        public void events_will_be_appended_to_the_stream_when_commited_on_second_attempt()
+        {
+            Stream.CommittedEvents.Count.Should().Be(7);
+            Stream.CommittedEvents.Last().Body.Should().Be("Test");
         }
     }
 
@@ -694,26 +715,32 @@ namespace NEventStore
         private const int MaxRevision = 6;
         private readonly int _eventsPerCommit = 2;
         private ICommit[] _committed;
-        private Exception _thrown;
+        private Exception _thrown1;
+        private Exception _thrown2;
 
         protected override void Context()
         {
             _committed = new[]
             {
                 BuildCommitStub(2, 1, _eventsPerCommit), // 1-2
-                BuildCommitStub(4, 2, _eventsPerCommit), // 3-4
+                BuildCommitStub(4, 2, _eventsPerCommit), // 3-4 
                 BuildCommitStub(6, 3, _eventsPerCommit), // 5-6 <-- asked up to this one
                 BuildCommitStub(8, 4, _eventsPerCommit) // 7-8
             };
 
-            _committed[0].Headers["Common"] = string.Empty;
-            _committed[1].Headers["Common"] = string.Empty;
-            _committed[2].Headers["Common"] = string.Empty;
-            _committed[3].Headers["Common"] = string.Empty;
-            _committed[0].Headers["Unique"] = string.Empty;
-
             // the persistence returns all the data in the stream
             A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, MinRevision, MaxRevision)).Returns(_committed);
+            A.CallTo(() => Persistence.Commit(A<CommitAttempt>._))
+                .ReturnsLazily((CommitAttempt attempt) => new Commit(
+                    attempt.BucketId,
+                    attempt.StreamId,
+                    attempt.StreamRevision,
+                    attempt.CommitId,
+                    attempt.CommitSequence,
+                    attempt.CommitStamp,
+                    0,
+                    attempt.Headers,
+                    attempt.Events));
 
             Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, MinRevision, MaxRevision);
         }
@@ -721,15 +748,29 @@ namespace NEventStore
         protected override void Because()
         {
             Stream.Add(new EventMessage() { Body = "Test" });
-            Catch.Exception(() => Stream.CommitChanges(Guid.NewGuid()));
-            // this cause the stream to be reloaded
-            _thrown = Catch.Exception(() => Stream.CommitChanges(Guid.NewGuid()));
+            // this should fail and cause the stream to be reloaded
+            _thrown1 = Catch.Exception(() => Stream.CommitChanges(Guid.NewGuid()));
+            // this should succeed, events will be appended at the end
+            _thrown2 = Catch.Exception(() => Stream.CommitChanges(Guid.NewGuid()));
         }
 
         [Fact]
-        public void should_throw_ConsurrencyException()
+        public void first_attempt_should_throw_ConsurrencyException()
         {
-            _thrown.Should().BeOfType<ConcurrencyException>();
+            _thrown1.Should().BeOfType<ConcurrencyException>();
+        }
+
+        [Fact]
+        public void second_attempt_should_succeed_stream_was_refreshed()
+        {
+            _thrown2.Should().BeNull();
+        }
+
+        [Fact]
+        public void events_will_be_appended_to_the_stream_when_commited_on_second_attempt()
+        {
+            Stream.CommittedEvents.Count.Should().Be(6);
+            Stream.CommittedEvents.Last().Body.Should().Be("Test");
         }
     }
 
@@ -806,7 +847,7 @@ namespace NEventStore
             var events = new List<EventMessage>(eventCount);
             for (int i = 0; i < eventCount; i++)
             {
-                events.Add(new EventMessage());
+                events.Add(new EventMessage() { Body = "Body " + (revision - eventCount + i + 1) });
             }
 
             return new Commit(Bucket.Default, StreamId, revision, Guid.NewGuid(), sequence, SystemTime.UtcNow, 0, null, events);

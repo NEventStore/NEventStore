@@ -13,6 +13,10 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
 #if NUNIT
     using NUnit.Framework;
+    using System.Threading.Tasks;
+    using System.Transactions;
+    using System.Threading;
+    using System.Globalization;
 #endif
 #if XUNIT
     using Xunit;
@@ -1061,7 +1065,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         }
     }
 
-    /*
+    /* Transactions support must be investigated, it should be valid only for Databases that supports it (InMemoryPersistence will not).
 #if MSTEST
     [TestClass]
 #endif
@@ -1129,8 +1133,7 @@ namespace NEventStore.Persistence.AcceptanceTests
                 });
                 scope.Complete();
             }
-            ICheckpoint checkpoint = Persistence.GetCheckpoint();
-            ICommit[] commits = Persistence.GetFrom(checkpoint.Value).ToArray();
+            ICommit[] commits = Persistence.GetFrom(0).ToArray();
             commits.Length.Should().Be(loop);
         }
 
@@ -1159,8 +1162,7 @@ namespace NEventStore.Persistence.AcceptanceTests
                     }
                 });
             }
-            ICheckpoint checkpoint = Persistence.GetCheckpoint();
-            ICommit[] commits = Persistence.GetFrom(checkpoint.Value).ToArray();
+            ICommit[] commits = Persistence.GetFrom(0).ToArray();
             commits.Length.Should().Be(0);
         }
 
@@ -1189,8 +1191,7 @@ namespace NEventStore.Persistence.AcceptanceTests
                     }
                 });
             }
-            ICheckpoint checkpoint = Persistence.GetCheckpoint();
-            ICommit[] commits = Persistence.GetFrom(checkpoint.Value).ToArray();
+            ICommit[] commits = Persistence.GetFrom(0).ToArray();
             commits.Length.Should().Be(0);
         }
     }
