@@ -36,7 +36,7 @@
     <Compile Include="..\GlobalSuppressions.cs" Link="Properties\GlobalSuppressions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\CustomDictionary.xml" Link="Properties\CustomDictionary.xml" />
+    <None Include="..\CustomDictionary.xml" Link="Properties\CustomDictionary.xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Messages.Designer.cs">
