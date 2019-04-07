@@ -50,7 +50,7 @@ namespace NEventStore
         {
             if (instanceName == null)
             {
-                throw new ArgumentNullException("instanceName", Messages.InstanceCannotBeNull);
+                throw new ArgumentNullException(nameof(instanceName), Messages.InstanceCannotBeNull);
             }
 
             if (Logger.IsInfoEnabled) Logger.Info(Messages.ConfiguringEnginePerformanceTracking);
@@ -61,6 +61,21 @@ namespace NEventStore
 #endif
 
 #if !NETSTANDARD1_6
+        /// <summary>
+        /// Enables two-phase commit.
+        /// By default NEventStore will suppress surrounding TransactionScopes 
+        /// (All the Persistence drivers that support transactions will create a 
+        /// private nested TransactionScope with <see cref="TransactionScopeOption.Suppress"/> for each operation)
+        /// so that all of its operations run in a dedicated, separate transaction.
+        /// This option changes the behavior so that NEventStore enlists in a surrounding TransactionScope,
+        /// if there is any (All the Persistence drivers that support transactions will create a 
+        /// private nested TransactionScope with <see cref="TransactionScopeOption.Required"/> for each operation).
+        /// </summary>
+        /// <remarks>
+        /// Enabling the two-phase commit will also disable the <see cref="OptimisticPipelineHook"/>
+        /// that provide some additionl concurrency checks to avoid useless roundtrips to the databases.
+        /// </remarks>
+        /// <returns></returns>
         public virtual PersistenceWireup EnlistInAmbientTransaction()
         {
             if (Logger.IsInfoEnabled) Logger.Info(Messages.ConfiguringEngineEnlistment);

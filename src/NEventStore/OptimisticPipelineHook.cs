@@ -12,14 +12,14 @@ namespace NEventStore
     public class OptimisticPipelineHook : PipelineHookBase
     {
         private const int MaxStreamsToTrack = 100;
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof (OptimisticPipelineHook));
+        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(OptimisticPipelineHook));
         private readonly Dictionary<HeadKey, ICommit> _heads = new Dictionary<HeadKey, ICommit>(); //TODO use concurrent collections
         private readonly LinkedList<HeadKey> _maxItemsToTrack = new LinkedList<HeadKey>();
         private readonly int _maxStreamsToTrack;
 
         public OptimisticPipelineHook()
             : this(MaxStreamsToTrack)
-        {}
+        { }
 
         public OptimisticPipelineHook(int maxStreamsToTrack)
         {
@@ -207,8 +207,7 @@ namespace NEventStore
         {
             lock (_maxItemsToTrack)
             {
-                ICommit head;
-                _heads.TryGetValue(headKey, out head);
+                _heads.TryGetValue(headKey, out ICommit head);
                 return head;
             }
         }
@@ -225,29 +224,19 @@ namespace NEventStore
 
         private sealed class HeadKey : IEquatable<HeadKey>
         {
-            private readonly string _bucketId;
+            public string BucketId { get; }
 
-            private readonly string _streamId;
+            public string StreamId { get; }
 
             public HeadKey(string bucketId, string streamId)
             {
-                _bucketId = bucketId;
-                _streamId = streamId;
-            }
-
-            public string BucketId
-            {
-                get { return _bucketId; }
-            }
-
-            public string StreamId
-            {
-                get { return _streamId; }
+                BucketId = bucketId;
+                StreamId = streamId;
             }
 
             public bool Equals(HeadKey other)
             {
-                if (ReferenceEquals(null, other))
+                if (other is null)
                 {
                     return false;
                 }
@@ -255,12 +244,13 @@ namespace NEventStore
                 {
                     return true;
                 }
-                return String.Equals(_bucketId, other._bucketId) && String.Equals(_streamId, other._streamId);
+                return String.Equals(BucketId, other.BucketId)
+                    && String.Equals(StreamId, other.StreamId);
             }
 
             public override bool Equals(object obj)
             {
-                if (ReferenceEquals(null, obj))
+                if (obj is null)
                 {
                     return false;
                 }
@@ -268,14 +258,14 @@ namespace NEventStore
                 {
                     return true;
                 }
-                return obj is HeadKey && Equals((HeadKey) obj);
+                return obj is HeadKey headKey && Equals(headKey);
             }
 
             public override int GetHashCode()
             {
                 unchecked
                 {
-                    return (_bucketId.GetHashCode()*397) ^ _streamId.GetHashCode();
+                    return (BucketId.GetHashCode() * 397) ^ StreamId.GetHashCode();
                 }
             }
         }
