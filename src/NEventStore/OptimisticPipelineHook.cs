@@ -27,12 +27,6 @@ namespace NEventStore
             _maxStreamsToTrack = maxStreamsToTrack;
         }
 
-        public override void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         public override ICommit Select(ICommit committed)
         {
             Track(committed);
@@ -132,13 +126,14 @@ namespace NEventStore
             }
         }
 
-        protected virtual void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
             _heads.Clear();
             _maxItemsToTrack.Clear();
+            base.Dispose(disposing);
         }
 
-        public virtual void Track(ICommit committed)
+        public void Track(ICommit committed)
         {
             if (committed == null)
             {
@@ -198,7 +193,7 @@ namespace NEventStore
             _maxItemsToTrack.RemoveLast();
         }
 
-        public virtual bool Contains(ICommit attempt)
+        public bool Contains(ICommit attempt)
         {
             return GetStreamHead(GetHeadKey(attempt)) != null;
         }

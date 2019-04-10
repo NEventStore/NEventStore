@@ -1,10 +1,9 @@
+using System;
+
 namespace NEventStore
 {
     public abstract class PipelineHookBase : IPipelineHook
     {
-        public virtual void Dispose()
-        {}
-
         public virtual ICommit Select(ICommit committed)
         {
             return committed;
@@ -23,5 +22,16 @@ namespace NEventStore
 
         public virtual void OnDeleteStream(string bucketId, string streamId)
         {}
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            // Cleanup
+        }
     }
 }

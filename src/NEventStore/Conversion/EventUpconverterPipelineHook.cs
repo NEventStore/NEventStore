@@ -16,12 +16,6 @@ namespace NEventStore.Conversion
             _converters = converters ?? throw new ArgumentNullException(nameof(converters));
         }
 
-        public override void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         public override ICommit Select(ICommit committed)
         {
             bool converted = false;
@@ -53,9 +47,10 @@ namespace NEventStore.Conversion
                 eventMessages);
         }
 
-        protected virtual void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
             _converters.Clear();
+            base.Dispose(disposing);
         }
 
         private object Convert(object source)
