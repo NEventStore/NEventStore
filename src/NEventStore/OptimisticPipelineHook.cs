@@ -11,7 +11,7 @@ namespace NEventStore
     /// </summary>
     public class OptimisticPipelineHook : PipelineHookBase
     {
-        private const int MaxStreamsToTrack = 100;
+        internal const int MaxStreamsToTrack = 100;
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof(OptimisticPipelineHook));
         private readonly Dictionary<HeadKey, ICommit> _heads = new Dictionary<HeadKey, ICommit>(); //TODO use concurrent collections
         private readonly LinkedList<HeadKey> _maxItemsToTrack = new LinkedList<HeadKey>();

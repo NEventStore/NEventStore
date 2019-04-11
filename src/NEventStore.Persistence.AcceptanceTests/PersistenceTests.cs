@@ -14,7 +14,6 @@ namespace NEventStore.Persistence.AcceptanceTests
 #if NUNIT
     using NUnit.Framework;
     using System.Threading.Tasks;
-    using System.Transactions;
     using System.Threading;
     using System.Globalization;
 #endif

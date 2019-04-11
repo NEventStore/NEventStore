@@ -1,5 +1,15 @@
 # NEventStore Versions
 
+## 6.1.0
+
+- minor optimizations if no pipeline hooks are used.
+
+### Breaking Changes
+
+- **PipelineHookBase**: changed the way the Dispose pattern was implemented to be compliant with the framework guildelines. Move all the dispose logic to the overridden Dispose(bool disposing) method of your pipeline hook class.
+- **OptimisticPipelineHook** is not configured by default anymore (if not enlisting in ambient transactions); it must be explicitly enabled calling UseOptimisticPipelineHook() when configuring NEventStore. Do not use it if you plan to use transactions.
+- **EnlistInAmbientTransaction** has been removed from the core NEventStore library.
+
 ## 6.0.0
 
 __Version 6.x is not backwards compatible with version 5.x.__ Updating to NEventStore 6.x without doing some preparation work will result in problems.
@@ -8,7 +18,7 @@ __Version 6.x is not backwards compatible with version 5.x.__ Updating to NEvent
 
 - dotnet standard 2.0 , dotnet core 2.0 are now supported for the following projects: NEventStore, NEventStore.Domain, NEventStore.Persistence.Sql, NEventStore.Persistence.MongoDb
 
-### Breaking changes
+### Breaking Changes
 
 - **Removed Dispatcher and dispatching mechanic, use the PollingClient**: it was marked obsolete in the version 5.x, you should dispatch events with other mechanisms, like using a PollingClient.
 More information on this topic in the issue: [Race condition in sync and async dispatchers can result in subscribers getting commits / events out of order](https://github.com/NEventStore/NEventStore/issues/360).

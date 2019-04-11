@@ -55,8 +55,7 @@ namespace NEventStore.Conversion
 
         private object Convert(object source)
         {
-            Func<object, object> converter;
-            if (!_converters.TryGetValue(source.GetType(), out converter))
+            if (!_converters.TryGetValue(source.GetType(), out Func<object, object> converter))
             {
                 return source;
             }

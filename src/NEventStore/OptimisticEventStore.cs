@@ -2,6 +2,7 @@ namespace NEventStore
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using NEventStore.Logging;
     using NEventStore.Persistence;
 
@@ -21,7 +22,14 @@ namespace NEventStore
             }
 
             _pipelineHooks = pipelineHooks ?? new IPipelineHook[0];
-            _persistence = new PipelineHooksAwarePersistanceDecorator(persistence, _pipelineHooks);
+            if (_pipelineHooks.Any())
+            {
+                _persistence = new PipelineHooksAwarePersistanceDecorator(persistence, _pipelineHooks);
+            }
+            else
+            {
+                _persistence = persistence;
+            }
         }
 
         public virtual IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
@@ -44,7 +52,7 @@ namespace NEventStore
                 return null;
             }
 
-            if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.CommittingAttempt, attempt.CommitId, attempt.Events == null ? 0 : attempt.Events.Count);
+            if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.CommittingAttempt, attempt.CommitId, attempt.Events?.Count ?? 0);
             ICommit commit = _persistence.Commit(attempt);
 
             foreach (var hook in _pipelineHooks)

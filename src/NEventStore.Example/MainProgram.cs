@@ -1,17 +1,12 @@
 namespace NEventStore.Example
 {
     using System;
-    using System.Transactions;
     using NEventStore;
     using Logging;
 
     internal static class MainProgram
     {
         private static readonly Guid StreamId = Guid.NewGuid(); // aggregate identifier
-        private static readonly byte[] EncryptionKey = new byte[]
-        {
-            0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf
-        };
 
         private static IStoreEvents store;
 
@@ -19,15 +14,12 @@ namespace NEventStore.Example
         {
             Console.WindowWidth = Console.LargestWindowWidth - 20;
 
-            using (var scope = new TransactionScope())
             using (store = WireupEventStore())
             {
                 OpenOrCreateStream();
                 AppendToStream();
                 TakeSnapshot();
                 LoadFromSnapshotForwardAndAppend();
-
-                scope.Complete();
             }
 
             Console.WriteLine("Press any key to continue...");
@@ -39,6 +31,7 @@ namespace NEventStore.Example
             return Wireup.Init()
                .LogToOutputWindow(LogLevel.Verbose)
                .LogToConsoleWindow(LogLevel.Verbose)
+               .UseOptimisticPipelineHook()
                .UsingInMemoryPersistence()
                .InitializeStorageEngine()
 #if !NETSTANDARD1_6 && !NETSTANDARD2_0

@@ -2,9 +2,6 @@ namespace NEventStore
 {
     using System.Collections.Generic;
     using System.Linq;
-#if !NETSTANDARD1_6
-    using System.Transactions;
-#endif
     using NEventStore.Conversion;
     using NEventStore.Persistence;
     using NEventStore.Persistence.InMemory;
@@ -34,9 +31,7 @@ namespace NEventStore
         public static Wireup Init()
         {
             var container = new NanoContainer();
-#if !NETSTANDARD1_6
-            container.Register(TransactionScopeOption.Suppress);
-#endif
+
             container.Register<IPersistStreams>(new InMemoryPersistenceEngine());
             container.Register(BuildEventStore);
 
@@ -72,14 +67,26 @@ namespace NEventStore
             return Container.Resolve<IStoreEvents>();
         }
 
+        /// <summary>
+        /// <para>
+        /// Provide some additionl concurrency checks to avoid useless roundtrips to the databases in a non-transactional environment.
+        /// </para>
+        /// <para>
+        /// If you enable any sort of two-phase commit and/or transactional behavior on the Persistence drivers
+        /// you should not use the <see cref="OptimisticPipelineHook"/> module.
+        /// </para>
+        /// </summary>
+        /// <param name="maxStreamsToTrack"></param>
+        /// <returns></returns>
+        public Wireup UseOptimisticPipelineHook(int maxStreamsToTrack = OptimisticPipelineHook.MaxStreamsToTrack)
+        {
+            Container.Register(_ => new OptimisticPipelineHook(maxStreamsToTrack));
+            return this;
+        }
+
         private static IStoreEvents BuildEventStore(NanoContainer context)
         {
-#if !NETSTANDARD1_6
-            var scopeOption = context.Resolve<TransactionScopeOption>();
-            OptimisticPipelineHook concurrency = scopeOption == TransactionScopeOption.Suppress ? new OptimisticPipelineHook() : null;
-#else
-            OptimisticPipelineHook concurrency = new OptimisticPipelineHook();
-#endif
+            var concurrency = context.Resolve<OptimisticPipelineHook>();
             var upconverter = context.Resolve<EventUpconverterPipelineHook>();
 
             ICollection<IPipelineHook> hooks = context.Resolve<ICollection<IPipelineHook>>() ?? new IPipelineHook[0];

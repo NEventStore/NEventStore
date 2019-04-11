@@ -1,6 +1,7 @@
 
 #pragma warning disable 169 // ReSharper disable InconsistentNaming
 #pragma warning disable IDE1006 // Naming Styles
+#pragma warning disable S101 // Types should be named in PascalCase
 
 namespace NEventStore
 {
@@ -518,11 +519,26 @@ namespace NEventStore
 #if MSTEST
 	[TestClass]
 #endif
-    public class when_accessing_the_underlying_persistence : using_persistence
+    public class when_accessing_the_underlying_persistence_with_pipeline_hooks : using_persistence
     {
+        protected override void Because()
+        {
+            PipelineHooks.Add(A.Fake<IPipelineHook>());
+        }
+
+        [Fact]
         public void should_return_a_reference_to_the_underlying_persistence_infrastructure_decorator()
         {
             Store.Advanced.Should().BeOfType<PipelineHooksAwarePersistanceDecorator>();
+        }
+    }
+
+    public class when_accessing_the_underlying_persistence_without_pipeline_hooks : using_persistence
+    {
+        [Fact]
+        public void should_return_a_reference_to_the_underlying_persistence()
+        {
+            Store.Advanced.Should().BeOfType(Persistence.GetType());
         }
     }
 
@@ -596,5 +612,6 @@ namespace NEventStore
     }
 }
 
+#pragma warning restore S101 // Types should be named in PascalCase
 #pragma warning restore IDE1006 // Naming Styles
 #pragma warning restore 169 // ReSharper enable InconsistentNaming

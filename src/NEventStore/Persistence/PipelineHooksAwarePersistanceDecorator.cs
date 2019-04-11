@@ -5,7 +5,7 @@ namespace NEventStore.Persistence
     using System.Linq;
     using NEventStore.Logging;
 
-    public class PipelineHooksAwarePersistanceDecorator : IPersistStreams
+    public sealed class PipelineHooksAwarePersistanceDecorator : IPersistStreams
     {
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof(PipelineHooksAwarePersistanceDecorator));
         private readonly IPersistStreams _original;
@@ -57,7 +57,7 @@ namespace NEventStore.Persistence
             return ExecuteHooks(_original.GetFrom(bucketId, start));
         }
 
-        public IEnumerable<ICommit> GetFrom(Int64 checkpointToken)
+        public IEnumerable<ICommit> GetFrom(Int64 checkpointToken = 0)
         {
             return ExecuteHooks(_original.GetFrom(checkpointToken));
         }
