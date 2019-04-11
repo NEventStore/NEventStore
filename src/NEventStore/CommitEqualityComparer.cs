@@ -10,11 +10,11 @@ namespace NEventStore
             {
                 return true;
             }
-            if (ReferenceEquals(x, null))
+            if (x is null)
             {
                 return false;
             }
-            if (ReferenceEquals(y, null))
+            if (y is null)
             {
                 return false;
             }
@@ -29,10 +29,9 @@ namespace NEventStore
         {
             unchecked
             {
-                int hashCode = (obj.BucketId != null ? obj.BucketId.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (obj.StreamId != null ? obj.StreamId.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ obj.CommitId.GetHashCode();
-                return hashCode;
+                int hashCode = obj.BucketId?.GetHashCode() ?? 0;
+                hashCode = (hashCode * 397) ^ (obj.StreamId?.GetHashCode() ?? 0);
+                return (hashCode * 397) ^ obj.CommitId.GetHashCode();
             }
         }
     }

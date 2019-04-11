@@ -25,18 +25,18 @@ namespace NEventStore
         {
             if (Equals(instance, null))
             {
-                throw new ArgumentNullException("instance", Messages.InstanceCannotBeNull);
+                throw new ArgumentNullException(nameof(instance), Messages.InstanceCannotBeNull);
             }
 
 #if !NETSTANDARD1_6
             if (!typeof(TService).IsValueType && !typeof(TService).IsInterface)
             {
-                throw new ArgumentException(Messages.TypeMustBeInterface, "instance");
+                throw new ArgumentException(Messages.TypeMustBeInterface, nameof(instance));
             }
 #else
             if (!typeof(TService).GetTypeInfo().IsValueType && !typeof(TService).GetTypeInfo().IsInterface)
             {
-                throw new ArgumentException(Messages.TypeMustBeInterface, "instance");
+                throw new ArgumentException(Messages.TypeMustBeInterface, nameof(instance));
             }
 #endif
 
@@ -56,7 +56,7 @@ namespace NEventStore
             }
 
             if (Logger.IsDebugEnabled) Logger.Debug(Messages.UnableToResolve, typeof (TService));
-            return default(TService);
+            return default;
         }
     }
 

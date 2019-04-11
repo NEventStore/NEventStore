@@ -1,5 +1,6 @@
 #pragma warning disable 169 // ReSharper disable InconsistentNaming
 #pragma warning disable IDE1006 // Naming Styles
+#pragma warning disable S101 // Types should be named in PascalCase
 
 namespace NEventStore.Persistence.AcceptanceTests
 {
@@ -467,8 +468,10 @@ namespace NEventStore.Persistence.AcceptanceTests
             Persistence.CommitNext(commit2); // rev 5-6
 
             Persistence.AddSnapshot(new Snapshot(_streamId, 1, string.Empty)); //Too far back
-            Persistence.AddSnapshot(_correct = new Snapshot(_streamId, 3, "Snapshot"));
-            Persistence.AddSnapshot(_tooFarForward = new Snapshot(_streamId, 5, string.Empty));
+            _correct = new Snapshot(_streamId, 3, "Snapshot");
+            Persistence.AddSnapshot(_correct);
+            _tooFarForward = new Snapshot(_streamId, 5, string.Empty);
+            Persistence.AddSnapshot(_tooFarForward);
         }
 
         protected override void Because()
@@ -918,8 +921,10 @@ namespace NEventStore.Persistence.AcceptanceTests
             var commitToBucketA = Guid.NewGuid().ToString().BuildAttempt(_now.AddSeconds(1), _bucketAId);
 
             Persistence.Commit(commitToBucketA);
-            Persistence.Commit(commitToBucketA = commitToBucketA.BuildNextAttempt());
-            Persistence.Commit(commitToBucketA = commitToBucketA.BuildNextAttempt());
+            commitToBucketA = commitToBucketA.BuildNextAttempt();
+            Persistence.Commit(commitToBucketA);
+            commitToBucketA = commitToBucketA.BuildNextAttempt();
+            Persistence.Commit(commitToBucketA);
             Persistence.Commit(commitToBucketA.BuildNextAttempt());
 
             _commitToBucketB = Guid.NewGuid().ToString().BuildAttempt(_now.AddSeconds(1), _bucketBId);
@@ -1130,6 +1135,12 @@ namespace NEventStore.Persistence.AcceptanceTests
 #if NUNIT || MSTEST
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
             _fixture?.Dispose();
         }
 
@@ -1217,6 +1228,12 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
             if (Persistence?.IsDisposed == false)
             {
                 Persistence.Drop();
@@ -1226,5 +1243,6 @@ namespace NEventStore.Persistence.AcceptanceTests
     }
 }
 
+#pragma warning restore S101 // Types should be named in PascalCase
 #pragma warning restore 169 // ReSharper disable InconsistentNaming
 #pragma warning restore IDE1006 // Naming Styles

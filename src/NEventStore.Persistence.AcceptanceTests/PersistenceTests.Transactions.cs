@@ -1,5 +1,6 @@
-#pragma warning disable 169
-// ReSharper disable InconsistentNaming
+#pragma warning disable 169 // ReSharper disable InconsistentNaming
+#pragma warning disable IDE1006 // Naming Styles
+#pragma warning disable S101 // Types should be named in PascalCase
 
 namespace NEventStore.Persistence.AcceptanceTests
 {
@@ -153,6 +154,8 @@ namespace NEventStore.Persistence.AcceptanceTests
             commits.Length.Should().Be(0);
         }
     }
-
-    // ReSharper restore InconsistentNaming
 }
+
+#pragma warning restore S101 // Types should be named in PascalCase
+#pragma warning restore 169 // ReSharper disable InconsistentNaming
+#pragma warning restore IDE1006 // Naming Styles

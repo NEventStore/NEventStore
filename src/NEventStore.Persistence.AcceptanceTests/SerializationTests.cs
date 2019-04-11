@@ -1,4 +1,8 @@
-﻿namespace NEventStore.Serialization.AcceptanceTests
+﻿#pragma warning disable 169 // ReSharper disable InconsistentNaming
+#pragma warning disable IDE1006 // Naming Styles
+#pragma warning disable S101 // Types should be named in PascalCase
+
+namespace NEventStore.Serialization.AcceptanceTests
 {
     using System;
     using System.Collections.Generic;
@@ -187,7 +191,7 @@
 
     public abstract class SerializationConcern : SpecificationBase
     {
-        private SerializerFixture _data;
+        private readonly SerializerFixture _data;
 
         public ISerialize Serializer
         {
@@ -211,3 +215,7 @@
         }
     }
 }
+
+#pragma warning restore S101 // Types should be named in PascalCase
+#pragma warning restore 169 // ReSharper disable InconsistentNaming
+#pragma warning restore IDE1006 // Naming Styles

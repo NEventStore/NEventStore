@@ -1,15 +1,13 @@
 ﻿using BenchmarkDotNet.Running;
 using NEventStore.Benchmark.Benchmarks;
-using System;
 
 namespace NEventStore.Benchmark
 {
     public static class Program
     {
-        public static void Main(string[] args)
+        public static void Main(string[] _)
         {
-            // var summary = BenchmarkRunner.Run<Md5VsSha256>();
-            var summary = BenchmarkRunner.Run<PersistenceBenchmarks>();
+            BenchmarkRunner.Run<PersistenceBenchmarks>();
         }
     }
 }
