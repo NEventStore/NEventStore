@@ -1107,11 +1107,11 @@ namespace NEventStore.Persistence.AcceptanceTests
         , IDisposable
 #endif
     {
-        private readonly PersistenceEngineFixture _fixture;
+        protected PersistenceEngineFixture Fixture { get; private set; }
 
         protected IPersistStreams Persistence
         {
-            get { return _fixture.Persistence; }
+            get { return Fixture.Persistence; }
         }
 
         protected int ConfiguredPageSizeForTesting
@@ -1121,16 +1121,18 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected void Reinitialize()
         {
-            _fixture.Initialize(ConfiguredPageSizeForTesting);
+            Fixture.Initialize(ConfiguredPageSizeForTesting);
         }
 
-#if XUNIT
+        /// <summary>
+        /// Can be used by XUNIT to initialize the tests.
+        /// </summary>
+        /// <param name="data"></param>
         public void SetFixture(PersistenceEngineFixture data)
         {
-            _fixture = data;
-            _fixture.Initialize(ConfiguredPageSizeForTesting);
+            Fixture = data;
+            Fixture.Initialize(ConfiguredPageSizeForTesting);
         }
-#endif
 
 #if NUNIT || MSTEST
         public void Dispose()
@@ -1141,7 +1143,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected virtual void Dispose(bool disposing)
         {
-            _fixture?.Dispose();
+            Fixture?.Dispose();
         }
 
         /// <summary>
@@ -1160,17 +1162,21 @@ namespace NEventStore.Persistence.AcceptanceTests
         /// One time initialization (for anything that need it, if you have multiple tests on a fixture)
         /// depending on the framework you are using.
         /// </para>
-        /// <para>We can solve the also adding an optional 'config' delegate to be executed as the first line in this base constructor.</para>
         /// <para>
         /// quick workaround:
-        /// - the 'Reinitialize()' method can be called to rerun the initialization after we changed the configuration
-        /// in the constructor
+        /// - change the parameters of the "Fixture" properties.
+        /// - call the 'Reinitialize()' method can be called to rerun the initialization after we changed the configuration
+        /// in the constructor.
+        /// or
+        /// - call the SetFixture() to reinitialize everything.
         /// </para>
         /// </summary>
-        protected PersistenceEngineConcern()
+        protected PersistenceEngineConcern() : this(new PersistenceEngineFixture())
+        { }
+
+        protected PersistenceEngineConcern(PersistenceEngineFixture fixture)
         {
-            _fixture = new PersistenceEngineFixture();
-            _fixture.Initialize(ConfiguredPageSizeForTesting);
+            SetFixture(fixture);
         }
 #endif
     }
