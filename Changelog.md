@@ -2,13 +2,20 @@
 
 ## 6.1.0
 
-- minor optimizations if no pipeline hooks are used.
+Enlist in ambient transaction was marked obsolete and removed from the main library.
+
+All the transactions (or their suppression) must be managed by the user.
+
+Enlist in ambient transaction was moved to the persistence drivers implementations, each driver has its own way to enable or disable the feature.
+
+Minor optimizations were made if no pipeline hooks are used.
 
 ### Breaking Changes
 
 - **PipelineHookBase**: changed the way the Dispose pattern was implemented to be compliant with the framework guildelines. Move all the dispose logic to the overridden Dispose(bool disposing) method of your pipeline hook class.
-- **OptimisticPipelineHook** is not configured by default anymore (if not enlisting in ambient transactions); it must be explicitly enabled calling UseOptimisticPipelineHook() when configuring NEventStore. Do not use it if you plan to use transactions.
-- **EnlistInAmbientTransaction** has been removed from the core NEventStore library.
+- **OptimisticPipelineHook** is not configured and enabled by default (if not enlisting in ambient transactions) anymore; it must be explicitly enabled calling UseOptimisticPipelineHook() when configuring NEventStore. Do not use it if you plan to use transactions.
+  To keep the previous behavior call .UseOptimisticPipelineHook() when configuring NEventStore.
+- **EnlistInAmbientTransaction** has been removed from the core NEventStore library. It will be moved to specific persistence drivers implementations and marked obsolete.
 
 ## 6.0.0
 
