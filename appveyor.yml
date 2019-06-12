@@ -4,7 +4,7 @@ branches:
   - feature/dotnetcore
   - develop
   - master
-image: Visual Studio 2017
+image: Visual Studio 2019
 configuration: Release
 assembly_info:
   patch: true
