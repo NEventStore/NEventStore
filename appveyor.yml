@@ -4,7 +4,7 @@ branches:
   - feature/dotnetcore
   - develop
   - master
-image: Visual Studio 2019
+image: Visual Studio 2017
 configuration: Release
 assembly_info:
   patch: true
@@ -21,7 +21,7 @@ dotnet_csproj:
   file_version: '{version}'
   informational_version: '{version}'
 install:
-- sh: choco install gitversion.portable -pre -y
+- ps: choco install gitversion.portable -pre -y
 before_build:
 - ps: >-
     # Display .NET Core version
