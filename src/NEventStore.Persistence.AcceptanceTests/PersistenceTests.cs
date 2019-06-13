@@ -1119,11 +1119,6 @@ namespace NEventStore.Persistence.AcceptanceTests
             get { return 2; }
         }
 
-        protected void Reinitialize()
-        {
-            Fixture.Initialize(ConfiguredPageSizeForTesting);
-        }
-
         /// <summary>
         /// Can be used by XUNIT to initialize the tests.
         /// </summary>
@@ -1209,12 +1204,6 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         public void Initialize(int pageSize)
         {
-            if (Persistence?.IsDisposed == false)
-            {
-                Persistence.Drop();
-                Persistence.Dispose();
-            }
-
 #if !NETSTANDARD1_6 && !NETSTANDARD2_0
             // performance counters cab be disabled for full framework tests because their initialization
             // can fail when the tests run on build machines (like AppVeyor and similar)
