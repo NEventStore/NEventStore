@@ -2,7 +2,7 @@
 
 ## 6.1.0
 
-Enlist in ambient transaction was removed from the mail library and added to the persistence drivers implementations, each driver has its own way to support, enable or disable the feature. As of now this change will mainly impact Microsoft SQL Server users, because all other persistence plugins didn't use transactions at all.
+Enlist in ambient transaction has been removed from the mail library and added to the persistence drivers implementations, each driver has its own way to support, enable or disable the feature. As of now this change will mainly impact Microsoft SQL Server users, because all other persistence plugins didn't use transactions at all.
 
 All the transactions (or their suppression) should be explicitly managed by the user.
 
@@ -11,7 +11,7 @@ Minor optimizations were made if no pipeline hooks are used.
 ### Breaking Changes
 
 - **PipelineHookBase**: changed the way the Dispose pattern was implemented to be compliant with the framework guildelines. Move all the dispose logic to the overridden Dispose(bool disposing) method of your pipeline hook class.
-- **OptimisticPipelineHook** is not configured and enabled by default (if not enlisting in ambient transactions) anymore; it now must be explicitly enabled calling UseOptimisticPipelineHook() when configuring NEventStore. Do not use it if you plan to use transactions. To keep the previous behavior call .UseOptimisticPipelineHook() when configuring NEventStore.
+- **OptimisticPipelineHook** optmization is not configured and enabled by default (if not enlisting in ambient transactions) anymore; it now must be explicitly enabled calling UseOptimisticPipelineHook() when configuring NEventStore. Do not use it if you plan to use transactions. To restore the previous behavior call .UseOptimisticPipelineHook() when configuring NEventStore.
 - **EnlistInAmbientTransaction** has been removed from the core NEventStore library. It will be added to specific persistence drivers implementations.
 
 ## 6.0.0
