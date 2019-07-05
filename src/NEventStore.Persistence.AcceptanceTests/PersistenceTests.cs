@@ -1,5 +1,6 @@
-#pragma warning disable 169
-// ReSharper disable InconsistentNaming
+#pragma warning disable 169 // ReSharper disable InconsistentNaming
+#pragma warning disable IDE1006 // Naming Styles
+#pragma warning disable S101 // Types should be named in PascalCase
 
 namespace NEventStore.Persistence.AcceptanceTests
 {
@@ -14,7 +15,6 @@ namespace NEventStore.Persistence.AcceptanceTests
 #if NUNIT
     using NUnit.Framework;
     using System.Threading.Tasks;
-    using System.Transactions;
     using System.Threading;
     using System.Globalization;
 #endif
@@ -130,7 +130,9 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_cause_the_stream_to_be_found_in_the_list_of_streams_to_snapshot()
         {
+#pragma warning disable RCS1202 // Avoid NullReferenceException.
             Persistence.GetStreamsToSnapshot(1).FirstOrDefault(x => x.StreamId == _streamId).Should().NotBeNull();
+#pragma warning restore RCS1202 // Avoid NullReferenceException.
         }
     }
 
@@ -163,7 +165,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_start_from_the_commit_which_contains_the_min_stream_revision_specified()
         {
-            _committed.First().CommitId.Should().Be(_oldest2.CommitId); // contains revision 3
+            _committed[0].CommitId.Should().Be(_oldest2.CommitId); // contains revision 3
         }
 
         [Fact]
@@ -202,7 +204,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_start_from_the_commit_which_contains_the_min_stream_revision_specified()
         {
-            _committed.First().CommitId.Should().Be(_oldest2.CommitId); // contains revision 3
+            _committed[0].CommitId.Should().Be(_oldest2.CommitId); // contains revision 3
         }
 
         [Fact]
@@ -236,7 +238,6 @@ namespace NEventStore.Persistence.AcceptanceTests
         {
             _thrown.Should().BeOfType<ConcurrencyException>();
         }
-
     }
 
     // This test ensure the uniqueness of BucketId+StreamId+CommitSequence 
@@ -467,8 +468,10 @@ namespace NEventStore.Persistence.AcceptanceTests
             Persistence.CommitNext(commit2); // rev 5-6
 
             Persistence.AddSnapshot(new Snapshot(_streamId, 1, string.Empty)); //Too far back
-            Persistence.AddSnapshot(_correct = new Snapshot(_streamId, 3, "Snapshot"));
-            Persistence.AddSnapshot(_tooFarForward = new Snapshot(_streamId, 5, string.Empty));
+            _correct = new Snapshot(_streamId, 3, "Snapshot");
+            Persistence.AddSnapshot(_correct);
+            _tooFarForward = new Snapshot(_streamId, 5, string.Empty);
+            Persistence.AddSnapshot(_tooFarForward);
         }
 
         protected override void Because()
@@ -553,7 +556,9 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_find_the_stream_in_the_set_of_streams_to_be_snapshot_when_within_the_threshold()
         {
+#pragma warning disable RCS1202 // Avoid NullReferenceException.
             Persistence.GetStreamsToSnapshot(WithinThreshold).FirstOrDefault(x => x.StreamId == _streamId).Should().NotBeNull();
+#pragma warning restore RCS1202 // Avoid NullReferenceException.
         }
 
         [Fact]
@@ -608,7 +613,6 @@ namespace NEventStore.Persistence.AcceptanceTests
         private CommitAttempt[] _committed;
         private ICommit[] _loaded;
         private DateTime _start;
-        private Guid _streamId;
 
         protected override void Context()
         {
@@ -646,7 +650,6 @@ namespace NEventStore.Persistence.AcceptanceTests
     {
         private List<Guid> _committed;
         private ICollection<Guid> _loaded;
-        private Guid _streamId;
         private const int checkPoint = 2;
 
         protected override void Context()
@@ -680,7 +683,6 @@ namespace NEventStore.Persistence.AcceptanceTests
         private List<Guid> _committedOnBucket1;
         private List<Guid> _committedOnBucket2;
         private ICollection<Guid> _loaded;
-        private Guid _streamId;
         private const int checkPoint = 2;
 
         protected override void Context()
@@ -793,7 +795,6 @@ namespace NEventStore.Persistence.AcceptanceTests
     {
         private string _streamId;
         private static Exception _thrown;
-        private DateTime _attemptACommitStamp;
 
         protected override void Context()
         {
@@ -824,8 +825,8 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
     public class when_committing_a_stream_with_the_same_id_as_a_stream_in_another_bucket : PersistenceEngineConcern
     {
-        const string _bucketAId = "a";
-        const string _bucketBId = "b";
+        private const string _bucketAId = "a";
+        private const string _bucketBId = "b";
         private string _streamId;
         private static CommitAttempt _attemptForBucketB;
         private static Exception _thrown;
@@ -865,7 +866,7 @@ namespace NEventStore.Persistence.AcceptanceTests
             ICommit[] stream = Persistence.GetFrom(_bucketAId, _streamId, 0, int.MaxValue).ToArray();
             stream.Should().NotBeNull();
             stream.Count().Should().Be(1);
-            stream.First().CommitStamp.Should().Be(_attemptACommitStamp);
+            stream[0].CommitStamp.Should().Be(_attemptACommitStamp);
         }
     }
 
@@ -874,10 +875,10 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
     public class when_saving_a_snapshot_for_a_stream_with_the_same_id_as_a_stream_in_another_bucket : PersistenceEngineConcern
     {
-        const string _bucketAId = "a";
-        const string _bucketBId = "b";
+        private const string _bucketAId = "a";
+        private const string _bucketBId = "b";
 
-        string _streamId;
+        private string _streamId;
 
         private static Snapshot _snapshot;
 
@@ -906,8 +907,8 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
     public class when_reading_all_commits_from_a_particular_point_in_time_and_there_are_streams_in_multiple_buckets : PersistenceEngineConcern
     {
-        const string _bucketAId = "a";
-        const string _bucketBId = "b";
+        private const string _bucketAId = "a";
+        private const string _bucketBId = "b";
 
         private static DateTime _now;
         private static ICommit[] _returnedCommits;
@@ -920,8 +921,10 @@ namespace NEventStore.Persistence.AcceptanceTests
             var commitToBucketA = Guid.NewGuid().ToString().BuildAttempt(_now.AddSeconds(1), _bucketAId);
 
             Persistence.Commit(commitToBucketA);
-            Persistence.Commit(commitToBucketA = commitToBucketA.BuildNextAttempt());
-            Persistence.Commit(commitToBucketA = commitToBucketA.BuildNextAttempt());
+            commitToBucketA = commitToBucketA.BuildNextAttempt();
+            Persistence.Commit(commitToBucketA);
+            commitToBucketA = commitToBucketA.BuildNextAttempt();
+            Persistence.Commit(commitToBucketA);
             Persistence.Commit(commitToBucketA.BuildNextAttempt());
 
             _commitToBucketB = Guid.NewGuid().ToString().BuildAttempt(_now.AddSeconds(1), _bucketBId);
@@ -986,10 +989,11 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
     public class when_purging_all_commits_and_there_are_streams_in_multiple_buckets : PersistenceEngineConcern
     {
-        const string _bucketAId = "a";
-        const string _bucketBId = "b";
+        private const string _bucketAId = "a";
+        private const string _bucketBId = "b";
 
-        string _streamId;
+        private string _streamId;
+
         protected override void Context()
         {
             _streamId = Guid.NewGuid().ToString();
@@ -1054,7 +1058,6 @@ namespace NEventStore.Persistence.AcceptanceTests
                     stream.CommitChanges(Guid.NewGuid());
                 }
             }
-            ICommit[] commits = Persistence.GetFrom(DateTime.MinValue).ToArray();
             _commits = Persistence.GetFrom().ToArray();
         }
 
@@ -1064,138 +1067,6 @@ namespace NEventStore.Persistence.AcceptanceTests
             _commits.Length.Should().Be(_moreThanPageSize);
         }
     }
-
-    /* Transactions support must be investigated, it should be valid only for Databases that supports it (InMemoryPersistence will not).
-#if MSTEST
-    [TestClass]
-#endif
-    public class TransactionConcern : PersistenceEngineConcern
-    {
-        private ICommit[] _commits;
-        private const int Loop = 2;
-        private const int StreamsPerTransaction = 20;
-
-        protected override void Because()
-        {
-            Parallel.For(0, Loop, i =>
-            {
-                var eventStore = new OptimisticEventStore(Persistence, null);
-                using (var scope = new TransactionScope(TransactionScopeOption.Required,
-                    new TransactionOptions {IsolationLevel = IsolationLevel.Serializable}))
-                {
-                    int j;
-                    for (j = 0; j < StreamsPerTransaction; j++)
-                    {
-                        using (var stream = eventStore.OpenStream(i.ToString() + "-" + j.ToString()))
-                        {
-                            for (int k = 0; k < 10; k++)
-                            {
-                                stream.Add(new EventMessage {Body = "body" + k});
-                            }
-                            stream.CommitChanges(Guid.NewGuid());
-                        }
-                    }
-                    scope.Complete();
-                }
-            });
-            _commits = Persistence.GetFrom().ToArray();
-        }
-
-        [Fact]
-        public void Should_have_expected_number_of_commits()
-        {
-            _commits.Length.Should().Be(Loop * StreamsPerTransaction);
-        }
-
-        [Fact]
-        public void ScopeCompleteAndSerializable()
-        {
-            Reinitialize();
-            const int loop = 10;
-            using (var scope = new TransactionScope(
-                TransactionScopeOption.Required,
-                new TransactionOptions
-                {
-                    IsolationLevel = IsolationLevel.Serializable
-                }))
-            {
-                Parallel.For(0, loop, i =>
-                {
-                    Console.WriteLine("Creating stream {0} on thread {1}", i, Thread.CurrentThread.ManagedThreadId);
-                    var eventStore = new OptimisticEventStore(Persistence, null);
-                    string streamId = i.ToString(CultureInfo.InvariantCulture);
-                    using (var stream = eventStore.OpenStream(streamId))
-                    {
-                        stream.Add(new EventMessage { Body = "body1" });
-                        stream.Add(new EventMessage { Body = "body2" });
-                        stream.CommitChanges(Guid.NewGuid());
-                    }
-                });
-                scope.Complete();
-            }
-            ICommit[] commits = Persistence.GetFrom(0).ToArray();
-            commits.Length.Should().Be(loop);
-        }
-
-        [Fact]
-        public void ScopeNotCompleteAndReadCommitted()
-        {
-            Reinitialize();
-            const int loop = 10;
-            using(new TransactionScope(
-                TransactionScopeOption.Required,
-                new TransactionOptions
-                {
-                    IsolationLevel = IsolationLevel.ReadCommitted
-                }))
-            {
-                Parallel.For(0, loop, i =>
-                {
-                    Console.WriteLine(@"Creating stream {0} on thread {1}", i, Thread.CurrentThread.ManagedThreadId);
-                    var eventStore = new OptimisticEventStore(Persistence, null);
-                    string streamId = i.ToString(CultureInfo.InvariantCulture);
-                    using (var stream = eventStore.OpenStream(streamId))
-                    {
-                        stream.Add(new EventMessage { Body = "body1" });
-                        stream.Add(new EventMessage { Body = "body2" });
-                        stream.CommitChanges(Guid.NewGuid());
-                    }
-                });
-            }
-            ICommit[] commits = Persistence.GetFrom(0).ToArray();
-            commits.Length.Should().Be(0);
-        }
-
-        [Fact]
-        public void ScopeNotCompleteAndSerializable()
-        {
-            Reinitialize();
-            const int loop = 10;
-            using(new TransactionScope(
-                TransactionScopeOption.Required,
-                new TransactionOptions
-                {
-                    IsolationLevel = IsolationLevel.ReadCommitted
-                }))
-            {
-                Parallel.For(0, loop, i =>
-                {
-                    Console.WriteLine(@"Creating stream {0} on thread {1}", i, Thread.CurrentThread.ManagedThreadId);
-                    var eventStore = new OptimisticEventStore(Persistence, null);
-                    string streamId = i.ToString(CultureInfo.InvariantCulture);
-                    using (var stream = eventStore.OpenStream(streamId))
-                    {
-                        stream.Add(new EventMessage { Body = "body1" });
-                        stream.Add(new EventMessage { Body = "body2" });
-                        stream.CommitChanges(Guid.NewGuid());
-                    }
-                });
-            }
-            ICommit[] commits = Persistence.GetFrom(0).ToArray();
-            commits.Length.Should().Be(0);
-        }
-    }
-    */
 
 #if MSTEST
     [TestClass]
@@ -1236,11 +1107,11 @@ namespace NEventStore.Persistence.AcceptanceTests
         , IDisposable
 #endif
     {
-        private PersistenceEngineFixture _fixture;
+        protected PersistenceEngineFixture Fixture { get; private set; }
 
         protected IPersistStreams Persistence
         {
-            get { return _fixture.Persistence; }
+            get { return Fixture.Persistence; }
         }
 
         protected int ConfiguredPageSizeForTesting
@@ -1248,29 +1119,30 @@ namespace NEventStore.Persistence.AcceptanceTests
             get { return 2; }
         }
 
-        protected void Reinitialize()
-        {
-            _fixture.Initialize(ConfiguredPageSizeForTesting);
-        }
-
-#if XUNIT
+        /// <summary>
+        /// Can be used by XUNIT to initialize the tests.
+        /// </summary>
+        /// <param name="data"></param>
         public void SetFixture(PersistenceEngineFixture data)
         {
-            _fixture = data;
-            _fixture.Initialize(ConfiguredPageSizeForTesting);
+            Fixture = data;
+            Fixture.Initialize(ConfiguredPageSizeForTesting);
         }
-#endif
 
 #if NUNIT || MSTEST
         public void Dispose()
         {
-            if (_fixture != null)
-            {
-                _fixture.Dispose();
-            }
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            Fixture?.Dispose();
         }
 
         /// <summary>
+        /// <para>
         /// This code was meant to be run right before every test in the fixture to give time
         /// to do further initialization before the PersistenceEngineFixture was created.
         /// Unfortunately the 3 frameworks
@@ -1279,21 +1151,27 @@ namespace NEventStore.Persistence.AcceptanceTests
         /// - MSTest: ClassInitialize (not inherited, will be ignored if defined on a base class)
         /// - xUnit: IUseFixture + SetFixture
         /// We need a way to also have some configuration before the PersistenceEngineFixture is created.
-        /// 
+        /// </para>
+        /// <para>
         /// We'de decided to use the test constructor to do the job, it's your responsibility to guarantee
         /// One time initialization (for anything that need it, if you have multiple tests on a fixture)
         /// depending on the framework you are using.
-        /// 
-        /// We can solve the also adding an optional 'config' delegate to be executed as the first line in this base constructor.
-        /// 
+        /// </para>
+        /// <para>
         /// quick workaround:
-        /// - the 'Reinitialize()' method can be called to rerun the initialization after we changed the configuration
-        /// in the constructor
+        /// - change the parameters of the "Fixture" properties.
+        /// - call the 'Reinitialize()' method can be called to rerun the initialization after we changed the configuration
+        /// in the constructor.
+        /// or
+        /// - call the SetFixture() to reinitialize everything.
+        /// </para>
         /// </summary>
-        protected PersistenceEngineConcern()
+        protected PersistenceEngineConcern() : this(new PersistenceEngineFixture())
+        { }
+
+        protected PersistenceEngineConcern(PersistenceEngineFixture fixture)
         {
-            _fixture = new PersistenceEngineFixture();
-            _fixture.Initialize(ConfiguredPageSizeForTesting);
+            SetFixture(fixture);
         }
 #endif
     }
@@ -1326,12 +1204,6 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         public void Initialize(int pageSize)
         {
-            if (Persistence != null && !Persistence.IsDisposed)
-            {
-                Persistence.Drop();
-                Persistence.Dispose();
-            }
-
 #if !NETSTANDARD1_6 && !NETSTANDARD2_0
             // performance counters cab be disabled for full framework tests because their initialization
             // can fail when the tests run on build machines (like AppVeyor and similar)
@@ -1351,12 +1223,21 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         public void Dispose()
         {
-            if (Persistence != null && !Persistence.IsDisposed)
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (Persistence?.IsDisposed == false)
             {
                 Persistence.Drop();
                 Persistence.Dispose();
             }
         }
     }
-    // ReSharper restore InconsistentNaming
 }
+
+#pragma warning restore S101 // Types should be named in PascalCase
+#pragma warning restore 169 // ReSharper disable InconsistentNaming
+#pragma warning restore IDE1006 // Naming Styles

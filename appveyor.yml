@@ -21,7 +21,7 @@ dotnet_csproj:
   file_version: '{version}'
   informational_version: '{version}'
 install:
-- sh: choco install gitversion.portable -pre -y
+- ps: choco install gitversion.portable -pre -y
 before_build:
 - ps: >-
     # Display .NET Core version

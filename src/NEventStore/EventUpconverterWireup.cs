@@ -9,7 +9,7 @@ namespace NEventStore
 
     public class EventUpconverterWireup : Wireup
     {
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof (EventUpconverterWireup));
+        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(EventUpconverterWireup));
         private readonly List<Assembly> _assembliesToScan = new List<Assembly>();
         private readonly IDictionary<Type, Func<object, object>> _registered = new Dictionary<Type, Func<object, object>>();
 
@@ -30,7 +30,11 @@ namespace NEventStore
                 }
 
                 IDictionary<Type, Func<object, object>> converters = GetConverters(_assembliesToScan);
-                return new EventUpconverterPipelineHook(converters);
+                if (converters.Count > 0)
+                {
+                    return new EventUpconverterPipelineHook(converters);
+                }
+                return null;
             });
         }
 
@@ -40,7 +44,7 @@ namespace NEventStore
             return Assembly.GetCallingAssembly()
                            .GetReferencedAssemblies()
                            .Select(Assembly.Load)
-                           .Concat(new[] {Assembly.GetCallingAssembly()});
+                           .Concat(new[] { Assembly.GetCallingAssembly() });
 #else
             // in netstandard1.6 we return an empty assembly array instead of looking at all the assemblies in the folder
             // GetCallingAssembly is not supported
@@ -54,13 +58,13 @@ namespace NEventStore
             IEnumerable<KeyValuePair<Type, Func<object, object>>> c = from a in toScan
                                                                       from t in a.GetTypes()
                                                                       where !t.IsAbstract
-                                                                      let i = t.GetInterface(typeof (IUpconvertEvents<,>).FullName)
+                                                                      let i = t.GetInterface(typeof(IUpconvertEvents<,>).FullName)
                                                                       where i != null
                                                                       let sourceType = i.GetGenericArguments().First()
                                                                       let convertMethod = i.GetMethods(BindingFlags.Public | BindingFlags.Instance).First()
                                                                       let instance = Activator.CreateInstance(t)
                                                                       select new KeyValuePair<Type, Func<object, object>>(
-                                                                          sourceType, e => convertMethod.Invoke(instance, new[] {e}));
+                                                                          sourceType, e => convertMethod.Invoke(instance, new[] { e }));
 #else
             IEnumerable<KeyValuePair<Type, Func<object, object>>> c = from a in toScan
                                                                       from t in a.GetTypes()
@@ -91,7 +95,6 @@ namespace NEventStore
                     string.Join(", ", assemblies.Select(a => $"{a.GetName().Name} {a.GetName().Version}")));
             }
             _assembliesToScan.AddRange(assemblies);
-            
             return this;
         }
 
@@ -115,7 +118,7 @@ namespace NEventStore
                 throw new ArgumentNullException(nameof(converter));
             }
 
-            _registered[typeof (TSource)] = @event => converter.Convert(@event as TSource);
+            _registered[typeof(TSource)] = @event => converter.Convert(@event as TSource);
 
             return this;
         }

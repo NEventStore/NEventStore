@@ -1,3 +1,5 @@
+#pragma warning disable RCS1170 // Use read-only auto-implemented property.
+
 namespace NEventStore
 {
     using System;
@@ -7,15 +9,6 @@ namespace NEventStore
 
     public class CommitAttempt
     {
-        private readonly string _bucketId;
-        private readonly string _streamId;
-        private readonly int _streamRevision;
-        private readonly Guid _commitId;
-        private readonly int _commitSequence;
-        private readonly DateTime _commitStamp;
-        private readonly IDictionary<string, object> _headers;
-        private readonly ICollection<EventMessage> _events;
-
         /// <summary>
         ///     Initializes a new instance of the Commit class for the default bucket.
         /// </summary>
@@ -88,83 +81,58 @@ namespace NEventStore
             Guard.NotLessThan(() => commitSequence, streamRevision, 0);
             Guard.NotEmpty(() => events, events);
 
-            _bucketId = bucketId;
-            _streamId = streamId;
-            _streamRevision = streamRevision;
-            _commitId = commitId;
-            _commitSequence = commitSequence;
-            _commitStamp = commitStamp;
-            _headers = headers ?? new Dictionary<string, object>();
-            _events = events == null ?
+            BucketId = bucketId;
+            StreamId = streamId;
+            StreamRevision = streamRevision;
+            CommitId = commitId;
+            CommitSequence = commitSequence;
+            CommitStamp = commitStamp;
+            Headers = headers ?? new Dictionary<string, object>();
+            Events = events == null ?
                 new ReadOnlyCollection<EventMessage>(new List<EventMessage>()) :
                 new ReadOnlyCollection<EventMessage>(events.ToList());
         }
 
-        /// <summary>
-        ///     Gets the value which identifies bucket to which the the stream and the the commit belongs.
-        /// </summary>
-        public string BucketId
-        {
-            get { return _bucketId; }
-        }
+                               /// <summary>
+                               ///     Gets the value which identifies bucket to which the the stream and the the commit belongs.
+                               /// </summary>
+        public string BucketId { get; private set; }
 
         /// <summary>
         ///     Gets the value which uniquely identifies the stream to which the commit belongs.
         /// </summary>
-        public string StreamId
-        {
-            get { return _streamId; }
-        }
+        public string StreamId { get; private set; }
 
         /// <summary>
         ///     Gets the value which indicates the revision of the most recent event in the stream to which this commit applies.
         /// </summary>
-        public int StreamRevision
-        {
-            get { return _streamRevision; }
-        }
+        public int StreamRevision { get; private set; }
 
         /// <summary>
         ///     Gets the value which uniquely identifies the commit within the stream.
         /// </summary>
-        public Guid CommitId
-        {
-            get { return _commitId; }
-        }
+        public Guid CommitId { get; private set; }
 
         /// <summary>
         ///     Gets the value which indicates the sequence (or position) in the stream to which this commit applies.
         /// </summary>
-        public int CommitSequence
-        {
-            get { return _commitSequence; }
-        }
+        public int CommitSequence { get; private set; }
 
         /// <summary>
         ///     Gets the point in time at which the commit was persisted.
         /// </summary>
-        public DateTime CommitStamp
-        {
-            get { return _commitStamp; }
-        }
+        public DateTime CommitStamp { get; private set; }
 
         /// <summary>
         ///     Gets the metadata which provides additional, unstructured information about this commit.
         /// </summary>
-        public IDictionary<string, object> Headers 
-        {
-            get { return _headers; }
-        }
+        public IDictionary<string, object> Headers { get; private set; }
 
         /// <summary>
         ///     Gets the collection of event messages to be committed as a single unit.
         /// </summary>
-        public ICollection<EventMessage> Events
-        {
-            get
-            {
-                return _events;
-            }
-        }
+        public ICollection<EventMessage> Events { get; private set; }
     }
 }
+
+#pragma warning restore RCS1170 // Use read-only auto-implemented property.

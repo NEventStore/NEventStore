@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".test", ".test", "{D3C17830-A461-4BA5-A672-461B19B33936}"
 	ProjectSection(SolutionItems) = preProject
 		NEventStore.Persistence.AcceptanceTests\PersistenceTests.cs = NEventStore.Persistence.AcceptanceTests\PersistenceTests.cs
+		NEventStore.Persistence.AcceptanceTests\PersistenceTests.Transactions.cs = NEventStore.Persistence.AcceptanceTests\PersistenceTests.Transactions.cs
 		NEventStore.Persistence.AcceptanceTests\SerializationTests.cs = NEventStore.Persistence.AcceptanceTests\SerializationTests.cs
 	EndProjectSection
 EndProject
@@ -43,6 +44,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{407B4AC0-6C11-4123-9BBA-094B2CADCD3A}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		..\build.ps1 = ..\build.ps1
+		..\Changelog.md = ..\Changelog.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEventStore.Serialization.Binary.Core.Tests", "NEventStore.Serialization.Binary.Tests\NEventStore.Serialization.Binary.Core.Tests.csproj", "{9F0BFA49-8711-4143-B813-ACD0D0B003FD}"

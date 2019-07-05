@@ -23,10 +23,9 @@
             }
         }
 
-
         internal static void NotNull<T>(Expression<Func<T>> reference, T value)
         {
-            if (ReferenceEquals(value, null))
+            if (value == null)
             {
                 throw new ArgumentNullException(GetParameterName(reference));
             }
