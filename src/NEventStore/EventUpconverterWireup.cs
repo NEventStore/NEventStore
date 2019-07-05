@@ -89,7 +89,11 @@ namespace NEventStore
 
         public virtual EventUpconverterWireup WithConvertersFrom(params Assembly[] assemblies)
         {
-            if (Logger.IsDebugEnabled) Logger.Debug(Messages.EventUpconvertersLoadedFrom, string.Concat(", ", assemblies));
+            if (Logger.IsDebugEnabled)
+            {
+                Logger.Debug(Messages.EventUpconvertersLoadedFrom,
+                    string.Join(", ", assemblies.Select(a => $"{a.GetName().Name} {a.GetName().Version}")));
+            }
             _assembliesToScan.AddRange(assemblies);
             return this;
         }
@@ -101,9 +105,7 @@ namespace NEventStore
 #else
             IEnumerable<Assembly> assemblies = converters.Select(c => c.GetTypeInfo().Assembly).Distinct();
 #endif
-            if (Logger.IsDebugEnabled) Logger.Debug(Messages.EventUpconvertersLoadedFrom, string.Concat(", ", assemblies));
-            _assembliesToScan.AddRange(assemblies);
-            return this;
+            return this.WithConvertersFrom(assemblies.ToArray());
         }
 
         public virtual EventUpconverterWireup AddConverter<TSource, TTarget>(
