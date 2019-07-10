@@ -53,9 +53,19 @@ namespace NEventStore.Diagnostics
             return _persistence.GetFrom(checkpointToken);
         }
 
+        public IEnumerable<ICommit> GetFromTo(Int64 from, Int64 to)
+        {
+            return _persistence.GetFromTo(from, to);
+        }
+
         public IEnumerable<ICommit> GetFrom(string bucketId, Int64 checkpointToken)
         {
             return _persistence.GetFrom(bucketId, checkpointToken);
+        }
+
+        public IEnumerable<ICommit> GetFromTo(string bucketId, Int64 from, Int64 to)
+        {
+            return _persistence.GetFromTo(bucketId, from, to);
         }
 
         public bool AddSnapshot(ISnapshot snapshot)

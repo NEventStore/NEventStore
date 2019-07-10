@@ -196,7 +196,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Getting all commits from bucket &apos;{0}&apos; since checkpoint &apos;{1}&apos;..
+        ///   Looks up a localized string similar to Getting all commits from bucket &apos;{0}&apos; since checkpoint &apos;{1}&apos; (excluded)..
         /// </summary>
         internal static string GettingAllCommitsFromBucketAndCheckpoint {
             get {
@@ -205,7 +205,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Getting all commits since checkpoint &apos;{0}&apos;..
+        ///   Looks up a localized string similar to Getting all commits since checkpoint &apos;{0}&apos; (excluded)..
         /// </summary>
         internal static string GettingAllCommitsFromCheckpoint {
             get {
@@ -237,6 +237,24 @@ namespace NEventStore {
         internal static string GettingAllCommitsFromToTime {
             get {
                 return ResourceManager.GetString("GettingAllCommitsFromToTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Getting all commits from bucket &apos;{0}&apos; from checkpoint &apos;{1}&apos; (excluded) up to &apos;{2}&apos; (included)..
+        /// </summary>
+        internal static string GettingCommitsFromBucketAndFromToCheckpoint {
+            get {
+                return ResourceManager.GetString("GettingCommitsFromBucketAndFromToCheckpoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Getting all commits from checkpoint &apos;{0}&apos; (excluded) up to &apos;{1}&apos; (included)..
+        /// </summary>
+        internal static string GettingCommitsFromToCheckpoint {
+            get {
+                return ResourceManager.GetString("GettingCommitsFromToCheckpoint", resourceCulture);
             }
         }
         

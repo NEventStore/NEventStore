@@ -179,11 +179,11 @@
 		{
 			return new Commit(Bucket.Default,
 				Guid.NewGuid().ToString(),
-				0,
+				1,
 				Guid.NewGuid(),
-				0,
+				1,
 				DateTime.MinValue,
-				0,
+				1,
 				null,
 				new[] { eventMessage });
 		}

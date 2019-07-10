@@ -38,10 +38,10 @@ namespace NEventStore
         {
             _committed = new[]
             {
-                BuildCommitStub(2, 1, _eachCommitHas), // 1-2
-                BuildCommitStub(4, 2, _eachCommitHas), // 3-4
-                BuildCommitStub(6, 3, _eachCommitHas), // 5-6
-                BuildCommitStub(8, 4, _eachCommitHas) // 7-8
+                BuildCommitStub(1, 2, 1, _eachCommitHas), // 1-2
+                BuildCommitStub(2, 4, 2, _eachCommitHas), // 3-4
+                BuildCommitStub(3, 6, 3, _eachCommitHas), // 5-6
+                BuildCommitStub(4, 8, 4, _eachCommitHas) // 7-8
             };
 
             _committed[0].Headers["Common"] = string.Empty;
@@ -113,10 +113,10 @@ namespace NEventStore
         {
             _committed = new[]
             {
-                BuildCommitStub(2, 1, _eventsPerCommit), // 1-2
-                BuildCommitStub(4, 2, _eventsPerCommit), // 3-4
-                BuildCommitStub(6, 3, _eventsPerCommit), // 5-6
-                BuildCommitStub(8, 4, _eventsPerCommit) // 7-8
+                BuildCommitStub(1, 2, 1, _eventsPerCommit), // 1-2
+                BuildCommitStub(2, 4, 2, _eventsPerCommit), // 3-4
+                BuildCommitStub(3, 6, 3, _eventsPerCommit), // 5-6
+                BuildCommitStub(4, 8, 4, _eventsPerCommit) // 7-8
             };
 
             A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, 0, int.MaxValue)).Returns(_committed);
@@ -152,10 +152,10 @@ namespace NEventStore
         {
             _committed = new[]
             {
-                BuildCommitStub(2, 1, _eventsPerCommit), // 1-2
-                BuildCommitStub(4, 2, _eventsPerCommit), // 3-4
-                BuildCommitStub(6, 3, _eventsPerCommit), // 5-6
-                BuildCommitStub(8, 4, _eventsPerCommit) // 7-8
+                BuildCommitStub(1, 2, 1, _eventsPerCommit), // 1-2
+                BuildCommitStub(2, 4, 2, _eventsPerCommit), // 3-4
+                BuildCommitStub(3, 6, 3, _eventsPerCommit), // 5-6
+                BuildCommitStub(4, 8, 4, _eventsPerCommit) // 7-8
             };
 
             A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, 0, 6)).Returns(_committed);
@@ -349,7 +349,7 @@ namespace NEventStore
                     attempt.CommitId,
                     attempt.CommitSequence,
                     attempt.CommitStamp,
-                    0,
+                    1,
                     attempt.Headers,
                     attempt.Events));
             Stream.Add(_uncommitted);
@@ -482,7 +482,7 @@ namespace NEventStore
 
         protected override void Context()
         {
-            _committed = new[] { BuildCommitStub(1, 1, 1) };
+            _committed = new[] { BuildCommitStub(1, 1, 1, 1) };
             _dupliateCommitId = _committed[0].CommitId;
 
             A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, 0, int.MaxValue)).Returns(_committed);
@@ -515,8 +515,8 @@ namespace NEventStore
 
         protected override void Context()
         {
-            _committed = new[] { BuildCommitStub(1, 1, 1) };
-            _discoveredOnCommit = new[] { BuildCommitStub(3, 2, 2) };
+            _committed = new[] { BuildCommitStub(1, 1, 1, 1) };
+            _discoveredOnCommit = new[] { BuildCommitStub(2, 3, 2, 2) };
 
             A.CallTo(() => Persistence.Commit(A<CommitAttempt>._)).Throws(new ConcurrencyException());
             A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, StreamRevision, int.MaxValue)).Returns(_committed);
@@ -650,10 +650,10 @@ namespace NEventStore
         {
             _committed = new[]
             {
-                BuildCommitStub(2, 1, _eventsPerCommit), // 1-2
-                BuildCommitStub(4, 2, _eventsPerCommit), // 3-4
-                BuildCommitStub(6, 3, _eventsPerCommit), // 5-6
-                BuildCommitStub(8, 4, _eventsPerCommit) // 7-8
+                BuildCommitStub(1, 2, 1, _eventsPerCommit), // 1-2
+                BuildCommitStub(2, 4, 2, _eventsPerCommit), // 3-4
+                BuildCommitStub(3, 6, 3, _eventsPerCommit), // 5-6
+                BuildCommitStub(4, 8, 4, _eventsPerCommit) // 7-8
             };
 
             A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, MinRevision, MaxRevision)).Returns(_committed);
@@ -665,7 +665,7 @@ namespace NEventStore
                    attempt.CommitId,
                    attempt.CommitSequence,
                    attempt.CommitStamp,
-                   0,
+                   1,
                    attempt.Headers,
                    attempt.Events));
 
@@ -722,10 +722,10 @@ namespace NEventStore
         {
             _committed = new[]
             {
-                BuildCommitStub(2, 1, _eventsPerCommit), // 1-2
-                BuildCommitStub(4, 2, _eventsPerCommit), // 3-4 
-                BuildCommitStub(6, 3, _eventsPerCommit), // 5-6 <-- asked up to this one
-                BuildCommitStub(8, 4, _eventsPerCommit) // 7-8
+                BuildCommitStub(1, 2, 1, _eventsPerCommit), // 1-2
+                BuildCommitStub(2, 4, 2, _eventsPerCommit), // 3-4 
+                BuildCommitStub(3, 6, 3, _eventsPerCommit), // 5-6 <-- asked up to this one
+                BuildCommitStub(4, 8, 4, _eventsPerCommit) // 7-8
             };
 
             // the persistence returns all the data in the stream
@@ -738,7 +738,7 @@ namespace NEventStore
                     attempt.CommitId,
                     attempt.CommitSequence,
                     attempt.CommitStamp,
-                    0,
+                    1,
                     attempt.Headers,
                     attempt.Events));
 
@@ -842,7 +842,7 @@ namespace NEventStore
         public void SetFixture(FakeTimeFixture data)
         { }
 
-        protected ICommit BuildCommitStub(int revision, int sequence, int eventCount)
+        protected ICommit BuildCommitStub(long checkpointToken, int revision, int sequence, int eventCount)
         {
             var events = new List<EventMessage>(eventCount);
             for (int i = 0; i < eventCount; i++)
@@ -850,7 +850,7 @@ namespace NEventStore
                 events.Add(new EventMessage() { Body = "Body " + (revision - eventCount + i + 1) });
             }
 
-            return new Commit(Bucket.Default, StreamId, revision, Guid.NewGuid(), sequence, SystemTime.UtcNow, 0, null, events);
+            return new Commit(Bucket.Default, StreamId, revision, Guid.NewGuid(), sequence, SystemTime.UtcNow, checkpointToken, null, events);
         }
     }
 

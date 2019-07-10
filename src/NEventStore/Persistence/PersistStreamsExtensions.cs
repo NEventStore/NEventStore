@@ -13,6 +13,7 @@ namespace NEventStore.Persistence
         /// <returns>All commits that have occurred on or after the specified starting time.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
+        [Obsolete("Will be removed in a future revision because of inconsistency with GetFrom(checkpointToken) which returns commits from all the buckets")]
         public static IEnumerable<ICommit> GetFrom(this IPersistStreams persistStreams, DateTime start)
         {
             if (persistStreams == null)
@@ -31,6 +32,7 @@ namespace NEventStore.Persistence
         /// <returns>All commits that have occurred on or after the specified starting time and before the end time.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
+        [Obsolete("Will be removed in a future revision because of inconsistency with GetFrom(checkpointToken, from, to) which returns commits from all the buckets")]
         public static IEnumerable<ICommit> GetFromTo(this IPersistStreams persistStreams, DateTime start, DateTime end)
         {
             if (persistStreams == null)
@@ -52,19 +54,6 @@ namespace NEventStore.Persistence
                 throw new ArgumentNullException(nameof(persistStreams));
             }
             persistStreams.DeleteStream(Bucket.Default, streamId);
-        }
-
-        /// <summary>
-        ///     Gets all commits after from start checkpoint.
-        /// </summary>
-        /// <param name="persistStreams">The IPersistStreams instance.</param>
-        public static IEnumerable<ICommit> GetFromStart(this IPersistStreams persistStreams)
-        {
-            if (persistStreams == null)
-            {
-                throw new ArgumentNullException(nameof(persistStreams));
-            }
-            return persistStreams.GetFrom(0);
         }
     }
 }

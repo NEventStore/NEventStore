@@ -1,5 +1,11 @@
 # NEventStore Versions
 
+## 6.2.0
+
+- Added new GetFromTo(Int64, Int64) and GetFromTo(Strimg, Int64, Int64) the the IPersistStreams api.
+- Removed the almost useless GetFromStart() extension method: use IPersistStream.GetFrom(0).
+- Extension methods GetFrom(DateTime) and GetFromTo(DateTime, DateTime) was marked obsolete.
+
 ## 6.1.0
 
 Enlist in ambient transaction has been removed from the mail library and added to the persistence drivers implementations, each driver has its own way to support, enable or disable the feature. As of now this change will mainly impact Microsoft SQL Server users, because all other persistence plugins didn't use transactions at all.

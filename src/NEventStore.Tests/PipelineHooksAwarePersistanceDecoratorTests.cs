@@ -54,7 +54,7 @@ namespace NEventStore
         protected override void Context()
         {
             _date = DateTime.Now;
-            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, _date, 0, null, null);
+            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, _date, 1, null, null);
 
             _hook1 = A.Fake<IPipelineHook>();
             A.CallTo(() => _hook1.Select(_commit)).Returns(_commit);
@@ -71,7 +71,7 @@ namespace NEventStore
         {
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
             // Forces enumeration of commits.
-            Decorator.GetFrom(_date).ToList();
+            Decorator.GetFrom(Bucket.Default, _date).ToList();
         }
 
         [Fact]
@@ -99,7 +99,7 @@ namespace NEventStore
 
         protected override void Context()
         {
-            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, 0, null, null);
+            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, 1, null, null);
 
             _hook1 = A.Fake<IPipelineHook>();
             A.CallTo(() => _hook1.Select(_commit)).Returns(_commit);
@@ -149,7 +149,7 @@ namespace NEventStore
         {
             _start = DateTime.Now;
             _end = DateTime.Now;
-            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, 0, null, null);
+            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, 1, null, null);
 
             _hook1 = A.Fake<IPipelineHook>();
             A.CallTo(() => _hook1.Select(_commit)).Returns(_commit);
@@ -166,7 +166,105 @@ namespace NEventStore
         {
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
             // Forces enumeration of commits
+            Decorator.GetFromTo(Bucket.Default, _start, _end).ToList();
+        }
+
+        [Fact]
+        public void should_call_the_underlying_persistence_to_get_events()
+        {
+            A.CallTo(() => persistence.GetFromTo(Bucket.Default, _start, _end)).MustHaveHappenedOnceExactly();
+        }
+
+        [Fact]
+        public void should_pass_all_events_through_the_pipeline_hooks()
+        {
+            A.CallTo(() => _hook1.Select(_commit)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => _hook2.Select(_commit)).MustHaveHappenedOnceExactly();
+        }
+    }
+
+#if MSTEST
+	[TestClass]
+#endif
+    public class when_reading_all_events_in_all_buckets_from_checkpoint_to_checkpoint : using_underlying_persistence
+    {
+        private ICommit _commit;
+        private Int64 _end;
+        private IPipelineHook _hook1;
+        private IPipelineHook _hook2;
+        private Int64 _start;
+
+        protected override void Context()
+        {
+            _start = 0;
+            _end = 1;
+            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, 1, null, null);
+
+            _hook1 = A.Fake<IPipelineHook>();
+            A.CallTo(() => _hook1.Select(_commit)).Returns(_commit);
+            pipelineHooks.Add(_hook1);
+
+            _hook2 = A.Fake<IPipelineHook>();
+            A.CallTo(() => _hook2.Select(_commit)).Returns(_commit);
+            pipelineHooks.Add(_hook2);
+
+            A.CallTo(() => persistence.GetFromTo(_start, _end)).Returns(new List<ICommit> { _commit });
+        }
+
+        protected override void Because()
+        {
+            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+            // Forces enumeration of commits
             Decorator.GetFromTo(_start, _end).ToList();
+        }
+
+        [Fact]
+        public void should_call_the_underlying_persistence_to_get_events()
+        {
+            A.CallTo(() => persistence.GetFromTo(_start, _end)).MustHaveHappenedOnceExactly();
+        }
+
+        [Fact]
+        public void should_pass_all_events_through_the_pipeline_hooks()
+        {
+            A.CallTo(() => _hook1.Select(_commit)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => _hook2.Select(_commit)).MustHaveHappenedOnceExactly();
+        }
+    }
+
+#if MSTEST
+	[TestClass]
+#endif
+    public class when_reading_all_events_in_a_bucket_from_checkpoint_to_checkpoint : using_underlying_persistence
+    {
+        private ICommit _commit;
+        private Int64 _end;
+        private IPipelineHook _hook1;
+        private IPipelineHook _hook2;
+        private Int64 _start;
+
+        protected override void Context()
+        {
+            _start = 0;
+            _end = 1;
+            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, 1, null, null);
+
+            _hook1 = A.Fake<IPipelineHook>();
+            A.CallTo(() => _hook1.Select(_commit)).Returns(_commit);
+            pipelineHooks.Add(_hook1);
+
+            _hook2 = A.Fake<IPipelineHook>();
+            A.CallTo(() => _hook2.Select(_commit)).Returns(_commit);
+            pipelineHooks.Add(_hook2);
+
+            A.CallTo(() => persistence.GetFromTo(Bucket.Default, _start, _end)).Returns(new List<ICommit> { _commit });
+        }
+
+        protected override void Because()
+        {
+            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+            // Forces enumeration of commits
+            Decorator.GetFromTo(Bucket.Default, _start, _end).ToList();
         }
 
         [Fact]
@@ -218,7 +316,7 @@ namespace NEventStore
 
         protected override void Context()
         {
-            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, 0, null, null);
+            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, 1, null, null);
 
             _hook1 = A.Fake<IPipelineHook>();
             A.CallTo(() => _hook1.Select(_commit)).Returns(_commit);
@@ -261,7 +359,7 @@ namespace NEventStore
 
         protected override void Context()
         {
-            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, 0, null, null);
+            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, 1, null, null);
 
             _hook1 = A.Fake<IPipelineHook>();
             A.CallTo(() => _hook1.Select(_commit)).Returns(_commit);
@@ -383,7 +481,7 @@ namespace NEventStore
 
         protected override void Context()
         {
-            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, 0, null, null);
+            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, 1, null, null);
 
             _hook1 = A.Fake<IPipelineHook>();
             A.CallTo(() => _hook1.Select(_commit)).Returns(null);

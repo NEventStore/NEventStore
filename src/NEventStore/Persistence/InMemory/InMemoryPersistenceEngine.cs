@@ -51,13 +51,33 @@ namespace NEventStore.Persistence.InMemory
             return this[bucketId].GetFrom(checkpointToken);
         }
 
+        public IEnumerable<ICommit> GetFromTo(string bucketId, Int64 from, Int64 to)
+        {
+            ThrowWhenDisposed();
+            if (Logger.IsDebugEnabled) Logger.Debug(Resources.GettingCommitsFromBucketAndFromToCheckpoint, bucketId, from, to);
+            return this[bucketId].GetFromTo(from, to);
+        }
+
         public IEnumerable<ICommit> GetFrom(Int64 checkpointToken)
         {
+            ThrowWhenDisposed();
             if (Logger.IsDebugEnabled) Logger.Debug(Resources.GettingAllCommitsFromCheckpoint, checkpointToken);
             return _buckets
                 .Values
                 .SelectMany(b => b.GetCommits())
                 .Where(c => c.CheckpointToken.CompareTo(checkpointToken) > 0)
+                .OrderBy(c => c.CheckpointToken)
+                .ToArray();
+        }
+
+        public IEnumerable<ICommit> GetFromTo(Int64 from, Int64 to)
+        {
+            ThrowWhenDisposed();
+            if (Logger.IsDebugEnabled) Logger.Debug(Resources.GettingCommitsFromToCheckpoint, from, to);
+            return _buckets
+                .Values
+                .SelectMany(b => b.GetCommits())
+                .Where(c => c.CheckpointToken.CompareTo(from) > 0 && c.CheckpointToken.CompareTo(to) <= 0)
                 .OrderBy(c => c.CheckpointToken)
                 .ToArray();
         }
@@ -325,6 +345,13 @@ namespace NEventStore.Persistence.InMemory
             {
                 InMemoryCommit startingCommit = _commits.FirstOrDefault(x => x.CheckpointToken.CompareTo(checkpoint) == 0);
                 return _commits.Skip(_commits.IndexOf(startingCommit) + 1 /* GetFrom => after the checkpoint*/);
+            }
+
+            public IEnumerable<ICommit> GetFromTo(Int64 from, Int64 to)
+            {
+                InMemoryCommit startingCommit = _commits.FirstOrDefault(x => x.CheckpointToken.CompareTo(from) == 0);
+                return _commits.Skip(_commits.IndexOf(startingCommit) + 1 /* GetFrom => after the checkpoint*/)
+                    .TakeWhile(c => c.CheckpointToken <= to);
             }
 
             public IEnumerable<ICommit> GetFromTo(DateTime start, DateTime end)

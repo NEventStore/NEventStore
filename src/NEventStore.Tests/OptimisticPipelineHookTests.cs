@@ -39,7 +39,7 @@ namespace NEventStore
 
             protected override void Context()
             {
-                _alreadyCommitted = BuildCommitStub(HeadStreamRevision, HeadCommitSequence);
+                _alreadyCommitted = BuildCommitStub(1, HeadStreamRevision, HeadCommitSequence);
                 _beyondEndOfStream = BuildCommitAttemptStub(HeadStreamRevision + 1, BeyondEndOfStreamCommitSequence);
 
                 Hook.PostCommit(_alreadyCommitted);
@@ -73,7 +73,7 @@ namespace NEventStore
 
             protected override void Context()
             {
-                _alreadyCommitted = BuildCommitStub(HeadStreamRevision, HeadCommitSequence);
+                _alreadyCommitted = BuildCommitStub(1, HeadStreamRevision, HeadCommitSequence);
                 _beyondEndOfStream = BuildCommitAttemptStub(BeyondEndOfStreamRevision, HeadCommitSequence + 1);
 
                 Hook.PostCommit(_alreadyCommitted);
@@ -106,7 +106,7 @@ namespace NEventStore
 
             protected override void Context()
             {
-                Committed = BuildCommitStub(HeadStreamRevision, HeadCommitSequence);
+                Committed = BuildCommitStub(1, HeadStreamRevision, HeadCommitSequence);
                 Attempt = BuildCommitAttemptStub(HeadStreamRevision + 1, DupliateCommitSequence);
 
                 Hook.PostCommit(Committed);
@@ -145,7 +145,7 @@ namespace NEventStore
 
             protected override void Context()
             {
-                _committed = BuildCommitStub(HeadStreamRevision, HeadCommitSequence);
+                _committed = BuildCommitStub(1, HeadStreamRevision, HeadCommitSequence);
                 _failedAttempt = BuildCommitAttemptStub(DuplicateStreamRevision, HeadCommitSequence + 1);
 
                 Hook.PostCommit(_committed);
@@ -182,7 +182,7 @@ namespace NEventStore
 
             protected override void Context()
             {
-                _successfulAttempt = BuildCommitStub(1, DuplicateCommitSequence);
+                _successfulAttempt = BuildCommitStub(1, 1, DuplicateCommitSequence);
                 _failedAttempt = BuildCommitAttemptStub(2, DuplicateCommitSequence);
 
                 Hook.PostCommit(_successfulAttempt);
@@ -220,7 +220,7 @@ namespace NEventStore
 
             protected override void Context()
             {
-                _successfulAttempt = BuildCommitStub(DuplicateStreamRevision, 1);
+                _successfulAttempt = BuildCommitStub(1, DuplicateStreamRevision, 1);
                 _failedAttempt = BuildCommitAttemptStub(DuplicateStreamRevision, 2);
 
                 Hook.PostCommit(_successfulAttempt);
@@ -256,9 +256,9 @@ namespace NEventStore
             {
                 _trackedCommitAttempts = new[]
                 {
-                    BuildCommit(Guid.NewGuid(), Guid.NewGuid()),
-                    BuildCommit(Guid.NewGuid(), Guid.NewGuid()),
-                    BuildCommit(Guid.NewGuid(), Guid.NewGuid())
+                    BuildCommit(1, Guid.NewGuid(), Guid.NewGuid()),
+                    BuildCommit(2, Guid.NewGuid(), Guid.NewGuid()),
+                    BuildCommit(3, Guid.NewGuid(), Guid.NewGuid())
                 };
 
                 _hook = new OptimisticPipelineHook(MaxStreamsToTrack);
@@ -275,33 +275,34 @@ namespace NEventStore
             [Fact]
             public void should_only_contain_streams_explicitly_tracked()
             {
-                ICommit untracked = BuildCommit(Guid.Empty, _trackedCommitAttempts[0].CommitId);
+                ICommit untracked = BuildCommit(4, Guid.Empty, _trackedCommitAttempts[0].CommitId);
                 _hook.Contains(untracked).Should().BeFalse();
             }
 
             [Fact]
             public void should_find_tracked_streams()
             {
-                ICommit stillTracked = BuildCommit(_trackedCommitAttempts.Last().StreamId, _trackedCommitAttempts.Last().CommitId);
+                var lastCommit = _trackedCommitAttempts.Last();
+                ICommit stillTracked = BuildCommit(lastCommit.CheckpointToken, lastCommit.StreamId, lastCommit.CommitId);
                 _hook.Contains(stillTracked).Should().BeTrue();
             }
 
             [Fact]
             public void should_only_track_the_specified_number_of_streams()
             {
-                ICommit droppedFromTracking = BuildCommit(
-                    _trackedCommitAttempts[0].StreamId, _trackedCommitAttempts[0].CommitId);
+                var firstCommit = _trackedCommitAttempts[0];
+                ICommit droppedFromTracking = BuildCommit(firstCommit.CheckpointToken, firstCommit.StreamId, firstCommit.CommitId);
                 _hook.Contains(droppedFromTracking).Should().BeFalse();
             }
 
-            private ICommit BuildCommit(Guid streamId, Guid commitId)
+            private ICommit BuildCommit(long checkpointToken, Guid streamId, Guid commitId)
             {
-                return BuildCommit(streamId.ToString(), commitId);
+                return BuildCommit(checkpointToken, streamId.ToString(), commitId);
             }
 
-            private ICommit BuildCommit(string streamId, Guid commitId)
+            private ICommit BuildCommit(long checkpointToken, string streamId, Guid commitId)
             {
-                return new Commit(Bucket.Default, streamId, 0, commitId, 0, SystemTime.UtcNow, 0, null, null);
+                return new Commit(Bucket.Default, streamId, 1, commitId, 1, SystemTime.UtcNow, checkpointToken, null, null);
             }
         }
 
@@ -334,7 +335,7 @@ namespace NEventStore
             private ICommit BuildCommit(Guid bucketId, Guid streamId, Guid commitId)
             {
                 return new Commit(bucketId.ToString(), streamId.ToString(), 0, commitId, 0, SystemTime.UtcNow,
-                    0, null, null);
+                    1, null, null);
             }
         }
 
@@ -349,8 +350,8 @@ namespace NEventStore
 
             protected override void Context()
             {
-                _trackedCommitBucket1 = BuildCommit(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
-                _trackedCommitBucket2 = BuildCommit(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+                _trackedCommitBucket1 = BuildCommit(1, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+                _trackedCommitBucket2 = BuildCommit(2, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
                 _hook = new OptimisticPipelineHook();
                 _hook.Track(_trackedCommitBucket1);
                 _hook.Track(_trackedCommitBucket2);
@@ -373,10 +374,10 @@ namespace NEventStore
                 _hook.Contains(_trackedCommitBucket2).Should().BeTrue();
             }
 
-            private ICommit BuildCommit(Guid bucketId, Guid streamId, Guid commitId)
+            private ICommit BuildCommit(long checkpointToken, Guid bucketId, Guid streamId, Guid commitId)
             {
                 return new Commit(bucketId.ToString(), streamId.ToString(), 0, commitId, 0, SystemTime.UtcNow,
-                    0, null, null);
+                    checkpointToken, null, null);
             }
         }
 
@@ -393,8 +394,8 @@ namespace NEventStore
 
             protected override void Context()
             {
-                _trackedCommit = BuildCommit(_bucketId, Guid.NewGuid(), Guid.NewGuid());
-                _trackedCommitDeleted = BuildCommit(_bucketId, _streamIdDeleted, Guid.NewGuid());
+                _trackedCommit = BuildCommit(1, _bucketId, Guid.NewGuid(), Guid.NewGuid());
+                _trackedCommitDeleted = BuildCommit(2, _bucketId, _streamIdDeleted, Guid.NewGuid());
                 _hook = new OptimisticPipelineHook();
                 _hook.Track(_trackedCommit);
                 _hook.Track(_trackedCommitDeleted);
@@ -417,10 +418,10 @@ namespace NEventStore
                 _hook.Contains(_trackedCommit).Should().BeTrue();
             }
 
-            private ICommit BuildCommit(Guid bucketId, Guid streamId, Guid commitId)
+            private ICommit BuildCommit(long checkpointToken, Guid bucketId, Guid streamId, Guid commitId)
             {
                 return new Commit(bucketId.ToString(), streamId.ToString(), 0, commitId, 0, SystemTime.UtcNow,
-                    0, null, null);
+                    checkpointToken, null, null);
             }
         }
 
@@ -429,15 +430,15 @@ namespace NEventStore
             protected readonly OptimisticPipelineHook Hook = new OptimisticPipelineHook();
             private readonly string _streamId = Guid.NewGuid().ToString();
 
-            protected CommitAttempt BuildCommitStub(Guid commitId)
+            protected CommitAttempt BuildCommitAttempt(Guid commitId)
             {
                 return new CommitAttempt(_streamId, 1, commitId, 1, SystemTime.UtcNow, null, null);
             }
 
-            protected ICommit BuildCommitStub(int streamRevision, int commitSequence)
+            protected ICommit BuildCommitStub(long checkpointToken, int streamRevision, int commitSequence)
             {
                 List<EventMessage> events = new[] { new EventMessage() }.ToList();
-                return new Commit(Bucket.Default, _streamId, streamRevision, Guid.NewGuid(), commitSequence, SystemTime.UtcNow, 0, null, events);
+                return new Commit(Bucket.Default, _streamId, streamRevision, Guid.NewGuid(), commitSequence, SystemTime.UtcNow, checkpointToken, null, events);
             }
 
             protected CommitAttempt BuildCommitAttemptStub(int streamRevision, int commitSequence)
@@ -446,10 +447,10 @@ namespace NEventStore
                 return new CommitAttempt(Bucket.Default, _streamId, streamRevision, Guid.NewGuid(), commitSequence, SystemTime.UtcNow, null, events);
             }
 
-            protected ICommit BuildCommitStub(Guid commitId, int streamRevision, int commitSequence)
+            protected ICommit BuildCommitStub(long checkpointToken, Guid commitId, int streamRevision, int commitSequence)
             {
                 List<EventMessage> events = new[] { new EventMessage() }.ToList();
-                return new Commit(Bucket.Default, _streamId, streamRevision, commitId, commitSequence, SystemTime.UtcNow, 0, null, events);
+                return new Commit(Bucket.Default, _streamId, streamRevision, commitId, commitSequence, SystemTime.UtcNow, checkpointToken, null, events);
             }
         }
     }

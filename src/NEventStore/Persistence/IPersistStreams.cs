@@ -24,7 +24,7 @@ namespace NEventStore.Persistence
         void Initialize();
 
         /// <summary>
-        ///     Gets all commits on or after from the specified starting time.
+        ///     Gets all commits on or after the specified starting time.
         /// </summary>
         /// <param name="bucketId">The value which uniquely identifies bucket the stream belongs to.</param>
         /// <param name="start">The point in time at which to start.</param>
@@ -34,22 +34,7 @@ namespace NEventStore.Persistence
         IEnumerable<ICommit> GetFrom(string bucketId, DateTime start);
 
         /// <summary>
-        ///     Gets all commits after the specified checkpoint. Use null to get from the beginning.
-        /// </summary>
-        /// <param name="checkpointToken">The checkpoint token.</param>
-        /// <returns>An enumerable of Commits.</returns>
-        IEnumerable<ICommit> GetFrom(Int64 checkpointToken = 0);
-
-        /// <summary>
-        ///     Gets all commits after from the specified checkpoint. Use null to get from the beginning.
-        /// </summary>
-        /// <param name="bucketId">The value which uniquely identifies bucket the stream belongs to.</param>
-        /// <param name="checkpointToken">The checkpoint token.</param>
-        /// <returns>An enumerable of Commits.</returns>
-        IEnumerable<ICommit> GetFrom(string bucketId, Int64 checkpointToken);
-
-        /// <summary>
-        ///     Gets all commits on or after from the specified starting time and before the specified end time.
+        ///     Gets all commits on or after the specified starting time and before the specified end time.
         /// </summary>
         /// <param name="bucketId">The value which uniquely identifies bucket the stream belongs to.</param>
         /// <param name="start">The point in time at which to start.</param>
@@ -58,6 +43,46 @@ namespace NEventStore.Persistence
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
         IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end);
+
+        /// <summary>
+        ///     Gets all commits (from all the buckets) after the specified checkpoint (excluded). Use 0 to get from the beginning.
+        /// </summary>
+        /// <param name="checkpointToken">The checkpoint token: all the commits after this one will be returned.</param>
+        /// <returns>An enumerable of Commits.</returns>
+        /// <exception cref="StorageException" />
+        /// <exception cref="StorageUnavailableException" />
+        IEnumerable<ICommit> GetFrom(Int64 checkpointToken = 0);
+
+        /// <summary>
+        ///     Gets all commits (from all the buckets) after the specified checkpoint token (excluded) up to the specified end checkpoint token (included).
+        /// </summary>
+        /// <param name="from">The checkpoint token: all the commits after this one will be returned</param>
+        /// <param name="to">The checkpoint token: all the commits tp to this one (included) will be returned</param>
+        /// <returns>All commits that have occurred on or after the specified checkpoint token up to the specified end checkpoint token.</returns>
+        /// <exception cref="StorageException" />
+        /// <exception cref="StorageUnavailableException" />
+        IEnumerable<ICommit> GetFromTo(Int64 from, Int64 to);
+
+        /// <summary>
+        ///     Gets all commits after the specified checkpoint (excluded) for a specific bucket. Use 0 to get from the beginning.
+        /// </summary>
+        /// <param name="bucketId">The value which uniquely identifies bucket the stream belongs to.</param>
+        /// <param name="checkpointToken">The checkpoint token: all the commits after this one will be returned</param>
+        /// <returns>An enumerable of Commits.</returns>
+        /// <exception cref="StorageException" />
+        /// <exception cref="StorageUnavailableException" />
+        IEnumerable<ICommit> GetFrom(string bucketId, Int64 checkpointToken);
+
+        /// <summary>
+        ///     Gets all commits after the specified checkpoint token (excluded) up to the specified end checkpoint token (included).
+        /// </summary>
+        /// <param name="bucketId">The value which uniquely identifies bucket the stream belongs to.</param>
+        /// <param name="from">The checkpoint token: all the commits after this one will be returned</param>
+        /// <param name="to">The checkpoint token: all the commits tp to this one (included) will be returned</param>
+        /// <returns>All commits that have occurred on or after the specified checkpoint token up to the specified end checkpoint token.</returns>
+        /// <exception cref="StorageException" />
+        /// <exception cref="StorageUnavailableException" />
+        IEnumerable<ICommit> GetFromTo(string bucketId, Int64 from, Int64 to);
 
         /// <summary>
         ///     Completely DESTROYS the contents of ANY and ALL streams that have been successfully persisted.  Use with caution.

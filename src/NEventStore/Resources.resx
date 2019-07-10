@@ -247,10 +247,10 @@
     <value>Converting an Event from '{0}' to '{1}'.</value>
   </data>
   <data name="GettingAllCommitsFromCheckpoint" xml:space="preserve">
-    <value>Getting all commits since checkpoint '{0}'.</value>
+    <value>Getting all commits since checkpoint '{0}' (excluded).</value>
   </data>
   <data name="GettingAllCommitsFromBucketAndCheckpoint" xml:space="preserve">
-    <value>Getting all commits from bucket '{0}' since checkpoint '{1}'.</value>
+    <value>Getting all commits from bucket '{0}' since checkpoint '{1}' (excluded).</value>
   </data>
   <data name="DeletingStream" xml:space="preserve">
     <value>Deleting stream '{0}' from bucket '{1}'.</value>
@@ -266,5 +266,11 @@
   </data>
   <data name="CannotAddCommitsToPartiallyLoadedStream" xml:space="preserve">
     <value>The stream '{0}' was partially loaded up to revision {1}. Cannot append commits to a partially loaded stream, refreshing the stream.</value>
+  </data>
+  <data name="GettingCommitsFromBucketAndFromToCheckpoint" xml:space="preserve">
+    <value>Getting all commits from bucket '{0}' from checkpoint '{1}' (excluded) up to '{2}' (included).</value>
+  </data>
+  <data name="GettingCommitsFromToCheckpoint" xml:space="preserve">
+    <value>Getting all commits from checkpoint '{0}' (excluded) up to '{1}' (included).</value>
   </data>
 </root>

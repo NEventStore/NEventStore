@@ -178,7 +178,7 @@ namespace NEventStore
 
         protected override void Context()
         {
-            _committed = BuildCommitStub(MinRevision, 1);
+            _committed = BuildCommitStub(1, MinRevision, 1);
 
             A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, MinRevision, MaxRevision))
                 .Returns(new[] { _committed });
@@ -224,7 +224,7 @@ namespace NEventStore
         protected override void Context()
         {
             _snapshot = new Snapshot(streamId, 42, "snapshot");
-            _committed = new[] { BuildCommitStub(42, 0) };
+            _committed = new[] { BuildCommitStub(1, 42, 0) };
 
             A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, 42, MaxRevision)).Returns(_committed);
         }
@@ -256,7 +256,7 @@ namespace NEventStore
         {
             _snapshot = new Snapshot(streamId, HeadStreamRevision, "snapshot");
             _committed = new EnumerableCounter<ICommit>(
-                new[] { BuildCommitStub(HeadStreamRevision, HeadCommitSequence) });
+                new[] { BuildCommitStub(1, HeadStreamRevision, HeadCommitSequence) });
 
             A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, HeadStreamRevision, int.MaxValue))
                 .Returns(_committed);
@@ -338,7 +338,7 @@ namespace NEventStore
 
         protected override void Context()
         {
-            _committed = BuildCommitStub(1, 1);
+            _committed = BuildCommitStub(1, 1, 1);
 
             A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, 0, int.MaxValue)).Returns(new[] { _committed });
         }
@@ -385,7 +385,7 @@ namespace NEventStore
         protected override void Context()
         {
             snapshot = new Snapshot(streamId, 1, "snapshot");
-            _committed = BuildCommitStub(1, 1);
+            _committed = BuildCommitStub(1, 1, 1);
 
             A.CallTo(() => Persistence.GetFrom(Bucket.Default, streamId, snapshot.StreamRevision, int.MaxValue))
                 .Returns(new[] { _committed });
@@ -443,7 +443,7 @@ namespace NEventStore
                         attempt.CommitId,
                         attempt.CommitSequence,
                         attempt.CommitStamp,
-                        0,
+                        1,
                         attempt.Headers,
                         attempt.Events);
                     return _populatedCommit;
@@ -490,7 +490,7 @@ namespace NEventStore
         protected override void Context()
         {
             _attempt = BuildCommitAttemptStub(1, 1);
-            _commit = BuildCommitStub(1, 1);
+            _commit = BuildCommitStub(1, 1, 1);
 
             var hook = A.Fake<IPipelineHook>();
             A.CallTo(() => hook.PreCommit(_attempt)).Returns(false);
@@ -592,10 +592,10 @@ namespace NEventStore
             return new CommitAttempt(Bucket.Default, streamId, 1, commitId, 1, SystemTime.UtcNow, null, null);
         }
 
-        protected ICommit BuildCommitStub(int streamRevision, int commitSequence)
+        protected ICommit BuildCommitStub(long checkpointToken, int streamRevision, int commitSequence)
         {
             List<EventMessage> events = new[] { new EventMessage() }.ToList();
-            return new Commit(Bucket.Default, streamId, streamRevision, Guid.NewGuid(), commitSequence, SystemTime.UtcNow, 0, null, events);
+            return new Commit(Bucket.Default, streamId, streamRevision, Guid.NewGuid(), commitSequence, SystemTime.UtcNow, checkpointToken, null, events);
         }
 
         protected CommitAttempt BuildCommitAttemptStub(int streamRevision, int commitSequence)
@@ -604,10 +604,10 @@ namespace NEventStore
             return new CommitAttempt(Bucket.Default, streamId, streamRevision, Guid.NewGuid(), commitSequence, SystemTime.UtcNow, null, events);
         }
 
-        protected ICommit BuildCommitStub(Guid commitId, int streamRevision, int commitSequence)
+        protected ICommit BuildCommitStub(long checkpointToken, Guid commitId, int streamRevision, int commitSequence)
         {
             List<EventMessage> events = new[] { new EventMessage() }.ToList();
-            return new Commit(Bucket.Default, streamId, streamRevision, commitId, commitSequence, SystemTime.UtcNow, 0, null, events);
+            return new Commit(Bucket.Default, streamId, streamRevision, commitId, commitSequence, SystemTime.UtcNow, checkpointToken, null, events);
         }
     }
 }

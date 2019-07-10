@@ -37,7 +37,7 @@
 
         protected override void Because()
         {
-            _commits = _engine.GetFromTo(_startDate, _endDate).ToArray();
+            _commits = _engine.GetFromTo(Bucket.Default, _startDate, _endDate).ToArray();
         }
 
         [Fact]

@@ -595,7 +595,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Because()
         {
-            _committed = Persistence.GetFrom(_now).ToArray();
+            _committed = Persistence.GetFrom(Bucket.Default, _now).ToArray();
         }
 
         [Fact]
@@ -625,7 +625,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Because()
         {
-            _loaded = Persistence.GetFrom(_start).ToArray();
+            _loaded = Persistence.GetFrom(Bucket.Default, _start).ToArray();
         }
 
         [Fact]
@@ -726,7 +726,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         protected override void Because()
         {
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            _thrown = Catch.Exception(() => Persistence.GetFrom(DateTime.MinValue).FirstOrDefault());
+            _thrown = Catch.Exception(() => Persistence.GetFrom(Bucket.Default, DateTime.MinValue).FirstOrDefault());
         }
 
         [Fact]
@@ -754,7 +754,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_not_find_any_commits_stored()
         {
-            Persistence.GetFrom(DateTime.MinValue).Count().Should().Be(0);
+            Persistence.GetFrom(Bucket.Default, DateTime.MinValue).Count().Should().Be(0);
         }
 
         [Fact]
@@ -962,7 +962,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Because()
         {
-            _commits = Persistence.GetFromStart().ToArray();
+            _commits = Persistence.GetFrom(0).ToArray();
         }
 
         [Fact]
