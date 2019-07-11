@@ -57,7 +57,7 @@ namespace NEventStore.Persistence
             return ExecuteHooks(_original.GetFrom(bucketId, start));
         }
 
-        public IEnumerable<ICommit> GetFrom(Int64 checkpointToken = 0)
+        public IEnumerable<ICommit> GetFrom(Int64 checkpointToken)
         {
             return ExecuteHooks(_original.GetFrom(checkpointToken));
         }

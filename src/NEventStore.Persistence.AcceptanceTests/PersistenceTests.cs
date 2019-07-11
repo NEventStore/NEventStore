@@ -719,6 +719,93 @@ namespace NEventStore.Persistence.AcceptanceTests
 #if MSTEST
     [TestClass]
 #endif
+    public class when_paging_over_all_commits_from_a_particular_checkpoint_to_a_checkpoint : PersistenceEngineConcern
+    {
+        private List<Guid> _committed = new List<Guid>();
+        private ICollection<Guid> _loaded;
+        private const int startCheckpoint = 2;
+        private int endCheckpoint;
+
+        protected override void Context()
+        {
+            var committedOnBucket1 = Persistence.CommitMany(ConfiguredPageSizeForTesting + 1, null, Bucket.Default).Select(c => c.CommitId).ToList();
+            var committedOnBucket2 = Persistence.CommitMany(ConfiguredPageSizeForTesting + 1, null, "Bucket1").Select(c => c.CommitId).ToList();
+            _committed.AddRange(committedOnBucket1);
+            _committed.AddRange(committedOnBucket2);
+            endCheckpoint = (2 * (ConfiguredPageSizeForTesting + 1)) - 1;
+        }
+
+        protected override void Because()
+        {
+            _loaded = Persistence.GetFromTo(startCheckpoint, endCheckpoint).Select(c => c.CommitId).ToList();
+        }
+
+        [Fact]
+        public void should_load_the_same_number_of_commits_which_have_been_persisted_starting_from_the_checkpoint_to_the_checkpoint()
+        {
+            _loaded.Count.Should().Be(endCheckpoint - startCheckpoint);
+        }
+
+        [Fact]
+        public void should_load_only_the_commits_starting_from_the_checkpoint_to_the_checkpoint()
+        {
+            _committed
+                .Skip(startCheckpoint)
+                .Take(_committed.Count - startCheckpoint - 1)
+                //.Take(endCheckpoint - startCheckpoint)
+                .All(x => _loaded.Contains(x)).Should().BeTrue(); // all commits should be found in loaded collection
+        }
+    }
+
+#if MSTEST
+    [TestClass]
+#endif
+    public class when_paging_over_all_commits_of_a_bucket_from_a_particular_checkpoint_to_a_checkpoint : PersistenceEngineConcern
+    {
+        private List<Guid> _committedOnBucket1;
+        private List<Guid> _committedOnBucket2;
+        private ICollection<Guid> _loaded;
+        private const int startCheckpoint = 2;
+        private int endCheckpoint;
+
+        protected override void Context()
+        {
+            _committedOnBucket1 = Persistence.CommitMany(ConfiguredPageSizeForTesting + 1, null, "b1").Select(c => c.CommitId).ToList();
+            _committedOnBucket2 = Persistence.CommitMany(ConfiguredPageSizeForTesting + 1, null, "b2").Select(c => c.CommitId).ToList();
+            _committedOnBucket1.AddRange(Persistence.CommitMany(4, null, "b1").Select(c => c.CommitId));
+            endCheckpoint = ((2 * (ConfiguredPageSizeForTesting + 1)) + 4) - 1;
+        }
+
+        protected override void Because()
+        {
+            _loaded = Persistence.GetFromTo("b1", startCheckpoint, endCheckpoint).Select(c => c.CommitId).ToList();
+        }
+
+        [Fact]
+        public void should_load_the_same_number_of_commits_which_have_been_persisted_starting_from_the_checkpoint_to_the_checkpoint()
+        {
+            _loaded.Count.Should().Be(_committedOnBucket1.Count - startCheckpoint - 1);
+        }
+
+        [Fact]
+        public void should_load_only_the_commits_on_bucket1_starting_from_the_checkpoint_to_the_checkpoint()
+        {
+            _committedOnBucket1
+                .Skip(startCheckpoint)
+                .Take(_committedOnBucket1.Count - startCheckpoint - 1)
+                .All(x => _loaded.Contains(x)).Should().BeTrue(); // all commits should be found in loaded collection
+        }
+
+        [Fact]
+        public void should_not_load_the_commits_from_bucket2()
+        {
+            _committedOnBucket2.All(x => !_loaded.Contains(x)).Should().BeTrue();
+        }
+    }
+
+#if MSTEST
+    [TestClass]
+#endif
     public class when_reading_all_commits_from_the_year_1_AD : PersistenceEngineConcern
     {
         private Exception _thrown;
@@ -1058,7 +1145,7 @@ namespace NEventStore.Persistence.AcceptanceTests
                     stream.CommitChanges(Guid.NewGuid());
                 }
             }
-            _commits = Persistence.GetFrom().ToArray();
+            _commits = Persistence.GetFrom(0).ToArray();
         }
 
         [Fact]
@@ -1088,7 +1175,7 @@ namespace NEventStore.Persistence.AcceptanceTests
                 new List<EventMessage> { new EventMessage { Body = new string('a', bodyLength) } });
             Persistence.Commit(attempt);
 
-            ICommit commits = Persistence.GetFrom().Single();
+            ICommit commits = Persistence.GetFrom(0).Single();
             commits.Events.Single().Body.ToString().Length.Should().Be(bodyLength);
         }
     }

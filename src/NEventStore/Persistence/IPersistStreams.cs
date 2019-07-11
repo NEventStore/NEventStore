@@ -51,7 +51,7 @@ namespace NEventStore.Persistence
         /// <returns>An enumerable of Commits.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        IEnumerable<ICommit> GetFrom(Int64 checkpointToken = 0);
+        IEnumerable<ICommit> GetFrom(Int64 checkpointToken);
 
         /// <summary>
         ///     Gets all commits (from all the buckets) after the specified checkpoint token (excluded) up to the specified end checkpoint token (included).
@@ -85,20 +85,22 @@ namespace NEventStore.Persistence
         IEnumerable<ICommit> GetFromTo(string bucketId, Int64 from, Int64 to);
 
         /// <summary>
-        ///     Completely DESTROYS the contents of ANY and ALL streams that have been successfully persisted.  Use with caution.
+        ///     Completely DESTROYS the contents of ANY and ALL streams that have been successfully persisted.
+        ///     Use with caution.
         /// </summary>
         void Purge();
 
         /// <summary>
         ///     Completely DESTROYS the contents of ANY and ALL streams that have been successfully persisted
-        ///     in the specified bucket.  Use with caution.
+        ///     in the specified bucket. 
+        ///     Use with caution.
         /// </summary>
         void Purge(string bucketId);
 
         /// <summary>
         ///     Completely DESTROYS the contents and schema (if applicable) containting ANY and ALL streams that have been
-        ///     successfully persisted
-        ///     in the specified bucket.  Use with caution.
+        ///     successfully persisted. 
+        ///     Use with caution.
         /// </summary>
         void Drop();
 

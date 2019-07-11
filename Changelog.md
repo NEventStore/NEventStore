@@ -1,10 +1,16 @@
 # NEventStore Versions
 
-## 6.2.0
+## 7.0.0
 
-- Added new GetFromTo(Int64, Int64) and GetFromTo(Strimg, Int64, Int64) the the IPersistStreams api.
+The IPersistStreams interface got some major changes:
+
+- Added new GetFromTo(Int64, Int64) and GetFromTo(Strimg, Int64, Int64) methods to the IPersistStreams interface.
+- Extension methods GetFrom(DateTime) and GetFromTo(DateTime, DateTime) were marked obsolete and will be removed.
+
+### Breaking Changes
+
+- The default value of 0 has been removed from the IPersistStreams.GetFrom(Int64) method.
 - Removed the almost useless GetFromStart() extension method: use IPersistStream.GetFrom(0).
-- Extension methods GetFrom(DateTime) and GetFromTo(DateTime, DateTime) was marked obsolete.
 
 ## 6.1.0
 
