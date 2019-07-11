@@ -1,13 +1,16 @@
 NEventStore
 ===
 
-NEventStore is a persistence library used to abstract different storage implementations
-when using event sourcing as storage mechanism. This library is developed with a specific focus on [DDD](http://en.wikipedia.org/wiki/Domain-driven_design)/[CQRS](https://en.wikipedia.org/wiki/Command%E2%80%93query_separation#Command_query_responsibility_segregation) applications.
+NEventStore is a persistence library used to abstract different storage implementations when using event sourcing as storage mechanism. 
+
+This library is developed with a specific focus on [DDD](http://en.wikipedia.org/wiki/Domain-driven_design)/[CQRS](https://en.wikipedia.org/wiki/Command%E2%80%93query_separation#Command_query_responsibility_segregation) applications.
 
 NEventStore currently supports:
 
 - dotnet framework 4.5
-- dotnet standard 2.0, dotnet core 2.0 
+- dotnet standard 2.0, dotnet core 2.0
+
+Starting from Version 6.0.0 NEventStore will use [Semantic Versioning](https://semver.org/) to track the version numbers.
 
 Build Status (AppVeyor)
 ===
