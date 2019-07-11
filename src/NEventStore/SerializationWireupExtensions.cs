@@ -20,7 +20,5 @@ namespace NEventStore
             if (Logger.IsInfoEnabled) Logger.Info(Resources.WireupSetSerializer, "Custom" + serializer.GetType());
             return new SerializationWireup(wireup, serializer);
         }
-
-   
     }
 }

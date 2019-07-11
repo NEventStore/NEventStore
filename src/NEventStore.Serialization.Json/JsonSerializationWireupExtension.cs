@@ -9,7 +9,7 @@
         }
 #endif
 
-        public static SerializationWireup UsingCustomSerialization(this PersistenceWireup wireup, ISerialize serializer)
+        private static SerializationWireup UsingCustomSerialization(this PersistenceWireup wireup, ISerialize serializer)
         {
             return new SerializationWireup(wireup, serializer);
         }

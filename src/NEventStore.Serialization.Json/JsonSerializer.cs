@@ -30,7 +30,7 @@ namespace NEventStore.Serialization.Json
 
         public JsonSerializer(params Type[] knownTypes)
         {
-            if (knownTypes != null && knownTypes.Length == 0)
+            if (knownTypes?.Length == 0)
             {
                 knownTypes = null;
             }

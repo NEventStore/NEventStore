@@ -153,7 +153,11 @@ namespace NEventStore.Persistence.InMemory
             get { return _disposed; }
         }
 
+#pragma warning disable RCS1163 // Unused parameter.
+#pragma warning disable IDE0060 // Remove unused parameter
         private void Dispose(bool disposing)
+#pragma warning restore IDE0060 // Remove unused parameter
+#pragma warning restore RCS1163 // Unused parameter.
         {
             _disposed = true;
             if (Logger.IsInfoEnabled) Logger.Info(Resources.DisposingEngine);

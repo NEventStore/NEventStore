@@ -721,7 +721,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
     public class when_paging_over_all_commits_from_a_particular_checkpoint_to_a_checkpoint : PersistenceEngineConcern
     {
-        private List<Guid> _committed = new List<Guid>();
+        private readonly List<Guid> _committed = new List<Guid>();
         private ICollection<Guid> _loaded;
         private const int startCheckpoint = 2;
         private int endCheckpoint;
