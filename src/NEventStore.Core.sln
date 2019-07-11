@@ -44,6 +44,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{407B4AC0-6C11-4123-9BBA-094B2CADCD3A}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		..\appveyor.yml = ..\appveyor.yml
 		..\build.ps1 = ..\build.ps1
 		..\Changelog.md = ..\Changelog.md
 		..\readme.markdown = ..\readme.markdown
