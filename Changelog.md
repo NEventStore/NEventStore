@@ -11,6 +11,7 @@ The IPersistStreams interface got some major changes:
 
 - The default value of 0 has been removed from the IPersistStreams.GetFrom(Int64) method.
 - Removed the almost useless GetFromStart() extension method: use IPersistStream.GetFrom(0).
+- Bson serializer was moved from NEventStore.Serialization.Json to its own package: 'NEventStore.Serialization.Bson'. Closes: [#479](https://github.com/NEventStore/NEventStore/issues/479).
 
 ## 6.1.0
 

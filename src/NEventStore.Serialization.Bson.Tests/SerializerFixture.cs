@@ -2,7 +2,7 @@
 namespace NEventStore.Serialization.AcceptanceTests
 // ReSharper restore CheckNamespace
 {
-    using NEventStore.Serialization.Json;
+    using NEventStore.Serialization.Bson;
 
     public partial class SerializerFixture
     {

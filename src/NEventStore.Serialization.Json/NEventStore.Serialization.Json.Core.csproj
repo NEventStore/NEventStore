@@ -11,7 +11,7 @@
     <Authors>NEventStore Dev Team</Authors>
     <PackageProjectUrl>http://neventstore.org</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Description>This package contains Json and Bson serializers for NEventStore library. These serializers were removed from the core package to limit dependencies from external libraries.</Description>
+    <Description>This package contains Json serializers for NEventStore library. These serializers were removed from the core package to limit dependencies from external libraries.</Description>
     <PackageTags>events, event sourcing, cqrs, storage, persistence, database</PackageTags>
     <PackageReleaseNotes></PackageReleaseNotes>
   </PropertyGroup>
