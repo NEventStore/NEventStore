@@ -7,6 +7,7 @@
 	- Extension methods PersistStreamsExtensions.GetFrom(DateTime) and PersistStreamsExtensions.GetFromTo(DateTime, DateTime) were marked obsolete and will be removed.
 	- A new PersistStreamsExtensions.GetCommit(Int64) method was added to retrieve a single commit [#445](https://github.com/NEventStore/NEventStore/issues/445).
 - PollingClient was moved to its own NEventStore.PollingClient NuGet package [#467](https://github.com/NEventStore/NEventStore/issues/467).
+- Added more information to the DuplicateCommitException error message (StreamId and BucketId), also the information provided by the Persistence providers will be reviewed [#372](https://github.com/NEventStore/NEventStore/issues/372).
 
 ### Breaking Changes
 

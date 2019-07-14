@@ -93,7 +93,7 @@ namespace NEventStore
 
             if (_identifiers.Contains(commitId))
             {
-                throw new DuplicateCommitException(String.Format(Messages.DuplicateCommitIdException, commitId));
+                throw new DuplicateCommitException(String.Format(Messages.DuplicateCommitIdException, StreamId, BucketId, commitId));
             }
 
             if (!HasChanges())

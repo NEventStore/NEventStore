@@ -217,7 +217,7 @@
     <value>Head StreamRevision [{0}] greater or equal than Attempt StreamRevision [{1}] - StreamId {2} - StreamRevision {3} - Events Count {4}</value>
   </data>
   <data name="DuplicateCommitIdException" xml:space="preserve">
-    <value>Duplicate commit id {0}.</value>
+    <value>Stream: {0} Bucket: {1} Duplicate commit id {2}.</value>
   </data>
   <data name="StorageExceptionCommitSequence" xml:space="preserve">
     <value>Head CommitSequence [{0}] lesser than Attempt CommitSequence - 1 [{1}] - StreamId {2} - StreamRevision {3} - Events Count {4}</value>

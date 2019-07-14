@@ -411,7 +411,7 @@ namespace NEventStore.Persistence.InMemory
             {
                 if (_potentialDuplicates.Contains(new IdentityForDuplicationDetection(attempt)))
                 {
-                    throw new DuplicateCommitException();
+                    throw new DuplicateCommitException(String.Format(Messages.DuplicateCommitIdException, attempt.StreamId, attempt.BucketId, attempt.CommitId));
                 }
             }
 
