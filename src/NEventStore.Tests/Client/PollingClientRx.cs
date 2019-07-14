@@ -1,4 +1,4 @@
-﻿namespace NEventStore.Client
+﻿namespace NEventStore.PollingClient
 {
     using System;
     using System.Reactive.Subjects;
@@ -17,10 +17,10 @@
             IPersistStreams persistStreams,
             Int32 waitInterval = 5000)
         {
-            if (persistStreams == null) throw new ArgumentNullException("persistStreams");
+            if (persistStreams == null) throw new ArgumentNullException(nameof(persistStreams));
             if (waitInterval <= 0)
             {
-                throw new ArgumentException("Must be greater than 0", "waitInterval");
+                throw new ArgumentException("Must be greater than 0", nameof(waitInterval));
             }
             _subject = new Subject<ICommit>();
             _pollingClient2 = new PollingClient2(persistStreams, c =>
@@ -37,12 +37,12 @@
         }
 
         private Int64 _checkpointToObserveFrom;
+
         public IObservable<ICommit> ObserveFrom(Int64 checkpointToken = 0)
         {
             _checkpointToObserveFrom = checkpointToken;
             return _subject;
         }
-
 
         internal void Start()
         {
@@ -53,7 +53,6 @@
         {
             _pollingClient2.Dispose();
         }
-
 
         internal void StartFromBucket(string bucketId)
         {

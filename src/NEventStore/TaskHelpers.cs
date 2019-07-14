@@ -1,4 +1,4 @@
-﻿namespace NEventStore.Client
+﻿namespace NEventStore
 {
     using System;
     using System.Threading;
@@ -9,8 +9,10 @@
         internal static Task Delay(double milliseconds, CancellationToken cancellationToken)
         {
             var tcs = new TaskCompletionSource<bool>();
-			TimerCallback callback = (state) => tcs.TrySetResult(true);
-			var timer = new System.Threading.Timer(callback, null, 0, Convert.ToInt32(milliseconds));
+			TimerCallback callback = (_) => tcs.TrySetResult(true);
+#pragma warning disable IDE0067 // Dispose objects before losing scope
+            var timer = new Timer(callback, null, 0, Convert.ToInt32(milliseconds));
+#pragma warning restore IDE0067 // Dispose objects before losing scope
             CancellationTokenRegistration cancellationTokenRegistration = cancellationToken.Register(() =>
             {
 				timer.Dispose();
@@ -38,13 +40,13 @@
             }
 
             task.ContinueWith(
-                              onComplete,
+                onComplete,
                 execSync ?
                     TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion :
                     TaskContinuationOptions.OnlyOnRanToCompletion);
 
             task.ContinueWith(
-                              onFaulted,
+                onFaulted,
                 execSync ?
                     TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnFaulted :
                     TaskContinuationOptions.OnlyOnFaulted);
@@ -65,13 +67,13 @@
             }
 
             task.ContinueWith(
-                              onComplete,
+                onComplete,
                 execSync ?
                     TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion :
                     TaskContinuationOptions.OnlyOnRanToCompletion);
 
             task.ContinueWith(
-                              onFaulted,
+                onFaulted,
                 execSync ?
                     TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnFaulted :
                     TaskContinuationOptions.OnlyOnFaulted);

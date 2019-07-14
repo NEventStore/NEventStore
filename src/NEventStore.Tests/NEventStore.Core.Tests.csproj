@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NEventStore.Persistence.AcceptanceTests\NEventStore.Persistence.AcceptanceTests.Core.csproj" />
+    <ProjectReference Include="..\NEventStore.PollingClient\NEventStore.PollingClient.csproj" />
     <ProjectReference Include="..\NEventStore\NEventStore.Core.csproj" />
   </ItemGroup>
 

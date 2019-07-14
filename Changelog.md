@@ -2,16 +2,17 @@
 
 ## 7.0.0
 
-The IPersistStreams interface got some major changes:
-
-- Added new GetFromTo(Int64, Int64) and GetFromTo(Strimg, Int64, Int64) methods to the IPersistStreams interface.
-- Extension methods GetFrom(DateTime) and GetFromTo(DateTime, DateTime) were marked obsolete and will be removed.
+- The IPersistStreams interface got some major changes:
+	- Added new GetFromTo(Int64, Int64) and GetFromTo(Strimg, Int64, Int64) methods to the IPersistStreams interface.
+	- Extension methods GetFrom(DateTime) and GetFromTo(DateTime, DateTime) were marked obsolete and will be removed.
+- PollingClient was moved to its own NEventStore.PollingClient NuGet package [#467](https://github.com/NEventStore/NEventStore/issues/467).
 
 ### Breaking Changes
 
 - The default value of 0 has been removed from the IPersistStreams.GetFrom(Int64) method.
 - Removed the almost useless GetFromStart() extension method: use IPersistStream.GetFrom(0).
 - Bson serializer was moved from NEventStore.Serialization.Json to its own package: 'NEventStore.Serialization.Bson'. Closes: [#479](https://github.com/NEventStore/NEventStore/issues/479).
+- PollingClient was moved to its own package: add a reference to NEventStore.PollingClient NuGet package. Also the namespace was changed from NEventStore.Client to NEventStorePollingClient.
 
 ## 6.1.0
 

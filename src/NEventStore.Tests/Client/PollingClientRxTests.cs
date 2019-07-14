@@ -1,4 +1,6 @@
-﻿namespace NEventStore.Client
+﻿#pragma warning disable IDE1006 // Naming Styles
+
+namespace NEventStore.PollingClient
 {
     using System;
     using System.Collections.Generic;
@@ -223,6 +225,7 @@
     {
         private IObservable<ICommit> _observeCommits;
         private Task<ICommit> _commitObserved;
+
         protected override void Context()
         {
             base.Context();
@@ -278,3 +281,5 @@
         }
     }
 }
+
+#pragma warning restore IDE1006 // Naming Styles

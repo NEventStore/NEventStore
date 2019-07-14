@@ -36,6 +36,8 @@ after_build:
 - cmd: >-
     dotnet pack ./src/NEventStore/NEventStore.Core.csproj -c %CONFIGURATION% --no-build -o artifacts /p:PackageVersion=%GitVersion_NuGetVersion%
 
+    dotnet pack ./src/NEventStore/NEventStore.PollingClient.csproj -c %CONFIGURATION% --no-build -o artifacts /p:PackageVersion=%GitVersion_NuGetVersion%
+
     dotnet pack ./src/NEventStore.Serialization.Json/NEventStore.Serialization.Json.Core.csproj -c %CONFIGURATION% --no-build -o artifacts /p:PackageVersion=%GitVersion_NuGetVersion%
 
     dotnet pack ./src/NEventStore.Serialization.Bson/NEventStore.Serialization.Bson.Core.csproj -c %CONFIGURATION% --no-build -o artifacts /p:PackageVersion=%GitVersion_NuGetVersion%

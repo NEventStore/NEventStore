@@ -1,7 +1,7 @@
 namespace NEventStore.PollingClientExample
 {
     using System;
-    using NEventStore.Client;
+    using NEventStore.PollingClient;
     using NEventStore.Logging;
 
     internal static class MainProgram

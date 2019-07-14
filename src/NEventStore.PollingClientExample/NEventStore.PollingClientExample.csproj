@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NEventStore.PollingClient\NEventStore.PollingClient.csproj" />
     <ProjectReference Include="..\NEventStore\NEventStore.Core.csproj" />
   </ItemGroup>
 

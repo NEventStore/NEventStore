@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable IDE1006 // Naming Styles
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +19,7 @@ using Xunit;
 using Xunit.Should;
 #endif
 
-namespace NEventStore.Client
+namespace NEventStore.PollingClient
 {
 #if MSTEST
     [TestClass]
@@ -33,7 +35,7 @@ namespace NEventStore.Client
         {
             if (callBack == null)
             {
-                callBack = c => PollingClient2.HandlingResult.MoveToNext;
+                callBack = _ => PollingClient2.HandlingResult.MoveToNext;
             }
             _outOfSequenceTimeoutInMilliseconds = 2000;
             return new CommitSequencer(c => callBack(c), 0, _outOfSequenceTimeoutInMilliseconds);
@@ -74,7 +76,7 @@ namespace NEventStore.Client
         public void verify_idempotence_on_read_same_commit()
         {
             Int32 callBackCount = 0;
-            var sut = InitCommitSequencer(c =>
+            var sut = InitCommitSequencer(_ =>
             {
                 callBackCount++;
                 return PollingClient2.HandlingResult.MoveToNext;
@@ -108,7 +110,6 @@ namespace NEventStore.Client
                 result = sut.Handle(new TestICommit() { CheckpointToken = 3 });
                 result.Should().Be(PollingClient2.HandlingResult.MoveToNext);
             }
-
         }
 
         [Fact]
@@ -173,8 +174,9 @@ namespace NEventStore.Client
                 get { return new List<EventMessage>(); }
             }
 
-
             public Int64 CheckpointToken { get; set; }
         }
     }
 }
+
+#pragma warning restore IDE1006 // Naming Styles
