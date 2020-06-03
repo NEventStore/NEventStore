@@ -431,6 +431,7 @@ namespace NEventStore.Persistence.InMemory
                 {
                     return _snapshots
                         .Where(x => x.StreamId == streamId && x.StreamRevision <= maxRevision)
+                        .Reverse()
                         .OrderByDescending(x => x.StreamRevision)
                         .FirstOrDefault();
                 }
