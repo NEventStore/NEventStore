@@ -41,7 +41,7 @@ namespace NEventStore
         public OptimisticEventStream(ISnapshot snapshot, ICommitEvents persistence, int maxRevision)
             : this(snapshot.BucketId, snapshot.StreamId, persistence)
         {
-            IEnumerable<ICommit> commits = persistence.GetFrom(snapshot.BucketId, snapshot.StreamId, snapshot.StreamRevision, maxRevision);
+            IEnumerable<ICommit> commits = persistence.GetFromSnapshot(snapshot, maxRevision);
             PopulateStream(snapshot.StreamRevision + 1, maxRevision, commits);
             StreamRevision = snapshot.StreamRevision + _committed.Count;
         }

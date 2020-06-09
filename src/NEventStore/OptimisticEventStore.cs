@@ -29,6 +29,11 @@ namespace NEventStore
             return _persistence.GetFrom(bucketId, streamId, minRevision, maxRevision);
         }
 
+        public IEnumerable<ICommit> GetFromSnapshot(ISnapshot snapshot, int maxRevision)
+        {
+            return _persistence.GetFromSnapshot(snapshot, maxRevision);
+        }
+
         public virtual ICommit Commit(CommitAttempt attempt)
         {
             Guard.NotNull(() => attempt, attempt);

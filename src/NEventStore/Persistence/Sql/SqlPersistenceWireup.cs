@@ -13,7 +13,7 @@ namespace NEventStore
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (SqlPersistenceWireup));
         private int _pageSize = DefaultPageSize;
 
-        public SqlPersistenceWireup(Wireup wireup, IConnectionFactory connectionFactory)
+        public SqlPersistenceWireup(Wireup wireup, IConnectionFactory connectionFactory, IConnectionFactory archivingConnectionFactory = null)
             : base(wireup)
         {
             Logger.Debug(Messages.ConnectionFactorySpecified, connectionFactory);
@@ -28,7 +28,8 @@ namespace NEventStore
                 c.Resolve<ISqlDialect>(),
                 c.Resolve<IStreamIdHasher>(),
                 c.Resolve<TransactionScopeOption>(),
-                _pageSize).Build());
+                _pageSize,
+                archivingConnectionFactory).Build());
         }
 
         public virtual SqlPersistenceWireup WithDialect(ISqlDialect instance)

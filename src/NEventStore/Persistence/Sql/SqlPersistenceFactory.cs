@@ -14,6 +14,7 @@ namespace NEventStore.Persistence.Sql
         private readonly TransactionScopeOption _scopeOption;
         private readonly ISerialize _serializer;
         private readonly IStreamIdHasher _streamIdHasher;
+        private readonly IConnectionFactory _archivingConnection;
 
         public SqlPersistenceFactory(string connectionName, ISerialize serializer, ISqlDialect dialect = null)
             : this(serializer, TransactionScopeOption.Suppress, null, DefaultPageSize)
@@ -28,7 +29,8 @@ namespace NEventStore.Persistence.Sql
             ISqlDialect dialect,
             IStreamIdHasher streamIdHasher = null,
             TransactionScopeOption scopeOption = TransactionScopeOption.Suppress,
-            int pageSize = DefaultPageSize)
+            int pageSize = DefaultPageSize,
+            IConnectionFactory archivingConnection = null)
             : this(serializer, scopeOption, streamIdHasher, pageSize)
         {
             if (dialect == null)
@@ -38,6 +40,7 @@ namespace NEventStore.Persistence.Sql
 
             _connectionFactory = factory;
             _dialect = dialect;
+            _archivingConnection = archivingConnection;
         }
 
         private SqlPersistenceFactory(ISerialize serializer, TransactionScopeOption scopeOption,  IStreamIdHasher streamIdHasher, int pageSize)
@@ -72,7 +75,7 @@ namespace NEventStore.Persistence.Sql
 
         public virtual IPersistStreams Build()
         {
-            return new SqlPersistenceEngine(ConnectionFactory, Dialect, Serializer, _scopeOption, PageSize, StreamIdHasher);
+            return new SqlPersistenceEngine(ConnectionFactory, Dialect, Serializer, _scopeOption, PageSize, StreamIdHasher, _archivingConnection);
         }
 
         protected static ISqlDialect ResolveDialect(ConnectionStringSettings settings)

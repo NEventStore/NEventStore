@@ -21,6 +21,11 @@ namespace NEventStore.Diagnostics
             _persistence.Initialize();
         }
 
+        public IEnumerable<ICommit> GetFromSnapshot(ISnapshot snapshot, int maxRevision)
+        {
+            return GetFrom(snapshot.BucketId, snapshot.StreamId, snapshot.StreamRevision, maxRevision);
+        }
+
         public ICommit Commit(CommitAttempt attempt)
         {
             Stopwatch clock = Stopwatch.StartNew();
