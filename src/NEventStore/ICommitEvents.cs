@@ -24,6 +24,8 @@ namespace NEventStore
         /// <exception cref="StorageUnavailableException" />
         IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision);
 
+        IEnumerable<ICommit> GetFromSnapshot(ISnapshot snapshot, int maxRevision);
+
         /// <summary>
         ///     Writes the to-be-commited events provided to the underlying persistence mechanism.
         /// </summary>

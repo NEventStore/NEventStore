@@ -35,6 +35,11 @@ namespace NEventStore.Persistence
             return ExecuteHooks(_original.GetFrom(bucketId, streamId, minRevision, maxRevision));
         }
 
+        public IEnumerable<ICommit> GetFromSnapshot(ISnapshot snapshot, int maxRevision)
+        {
+            return ExecuteHooks(_original.GetFromSnapshot(snapshot, maxRevision));
+        }
+
         public ICommit Commit(CommitAttempt attempt)
         {
             return _original.Commit(attempt);

@@ -37,6 +37,11 @@ namespace NEventStore.Persistence.InMemory
             return this[bucketId].GetFrom(streamId, minRevision, maxRevision);
         }
 
+        public IEnumerable<ICommit> GetFromSnapshot(ISnapshot snapshot, int maxRevision)
+        {
+            return GetFrom(snapshot.BucketId, snapshot.StreamId, snapshot.StreamRevision, maxRevision);
+        }
+
         public IEnumerable<ICommit> GetFrom(string bucketId, DateTime start)
         {
             ThrowWhenDisposed();

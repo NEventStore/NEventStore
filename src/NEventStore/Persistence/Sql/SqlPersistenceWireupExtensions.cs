@@ -21,5 +21,10 @@ namespace NEventStore
         {
             return new SqlPersistenceWireup(wireup, factory);
         }
+
+        public static SqlPersistenceWireup UsingSqlPersistence(this Wireup wireup, IConnectionFactory factory, IConnectionFactory archivingConnectionFactory)
+        {
+            return new SqlPersistenceWireup(wireup, factory, archivingConnectionFactory);
+        }
     }
 }
