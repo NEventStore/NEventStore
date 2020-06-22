@@ -331,9 +331,27 @@ namespace NEventStore.Persistence.Sql
             LongCheckpoint checkpoint = LongCheckpoint.Parse(checkpointToken);
             Logger.Debug(Messages.GettingAllCommitsFromBucketAndCheckpoint, bucketId, checkpointToken);
 
+            var statement = _dialect.GetCommitsFromBucketAndCheckpoint;
+
+            var commits = new List<ICommit>();
+            if (_archivingConnection != null)
+            {
+                commits.AddRange(ExecuteQuery(_archivingConnection, query =>
+                {
+                    query.AddParameter(_dialect.BucketId, bucketId, DbType.AnsiString);
+                    query.AddParameter(_dialect.CheckpointNumber, checkpoint.LongValue);
+                    return query.ExecutePagedQuery(statement, (q, r) => { })
+                        .Select(x => x.GetCommit(_serializer, _dialect));
+                }));
+            }
+
+            //if there are any commits returned from the archive db, return those first
+            //before looking at the current db. This simplifies any issues around paging
+            if (commits.Any())
+                return commits;
+
             return ExecuteQuery(query =>
             {
-                string statement = _dialect.GetCommitsFromBucketAndCheckpoint;
                 query.AddParameter(_dialect.BucketId, bucketId, DbType.AnsiString);
                 query.AddParameter(_dialect.CheckpointNumber, checkpoint.LongValue);
                 return query.ExecutePagedQuery(statement, (q, r) => { })
@@ -345,9 +363,28 @@ namespace NEventStore.Persistence.Sql
         {
             LongCheckpoint checkpoint = LongCheckpoint.Parse(checkpointToken);
             Logger.Debug(Messages.GettingAllCommitsFromCheckpoint, checkpointToken);
+
+            var statement = _dialect.GetCommitsFromCheckpoint;
+
+            var commits = new List<ICommit>();
+            if (_archivingConnection != null)
+            {
+                //get what's in the archiving db first
+                commits.AddRange(ExecuteQuery(_archivingConnection, query =>
+                {
+                    query.AddParameter(_dialect.CheckpointNumber, checkpoint.LongValue);
+                    return query.ExecutePagedQuery(statement, (q, r) => { })
+                        .Select(x => x.GetCommit(_serializer, _dialect));
+                }));
+            }
+
+            //if there are any commits returned from the archive db, return those first
+            //before looking at the current db. This simplifies any issues around paging
+            if (commits.Any())
+                return commits;
+
             return ExecuteQuery(query =>
             {
-                string statement = _dialect.GetCommitsFromCheckpoint;
                 query.AddParameter(_dialect.CheckpointNumber, checkpoint.LongValue);
                 return query.ExecutePagedQuery(statement, (q, r) => { })
                     .Select(x => x.GetCommit(_serializer, _dialect));
