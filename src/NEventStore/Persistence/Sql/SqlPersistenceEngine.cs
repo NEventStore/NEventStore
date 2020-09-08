@@ -20,6 +20,7 @@ namespace NEventStore.Persistence.Sql
         private readonly int _pageSize;
         private readonly TransactionScopeOption _scopeOption;
         private readonly ISerialize _serializer;
+        private readonly ISerializeSnapshots _snapshotSerializer;
         private bool _disposed;
         private int _initialized;
         private readonly IStreamIdHasher _streamIdHasher;
@@ -29,15 +30,17 @@ namespace NEventStore.Persistence.Sql
             IConnectionFactory connectionFactory,
             ISqlDialect dialect,
             ISerialize serializer,
+            ISerializeSnapshots snpashotSerializer,
             TransactionScopeOption scopeOption,
             int pageSize)
-            : this(connectionFactory, dialect, serializer, scopeOption, pageSize, new Sha1StreamIdHasher())
+            : this(connectionFactory, dialect, serializer, snpashotSerializer, scopeOption, pageSize, new Sha1StreamIdHasher())
         { }
 
         public SqlPersistenceEngine(
             IConnectionFactory connectionFactory,
             ISqlDialect dialect,
             ISerialize serializer,
+            ISerializeSnapshots snpashotSerializer,
             TransactionScopeOption scopeOption,
             int pageSize,
             IStreamIdHasher streamIdHasher,
@@ -74,6 +77,7 @@ namespace NEventStore.Persistence.Sql
             _scopeOption = scopeOption;
             _pageSize = pageSize;
             _streamIdHasher = new StreamIdHasherValidator(streamIdHasher);
+            _snapshotSerializer = snpashotSerializer;
             _archivingConnection = archivingConnection;
 
             Logger.Debug(Messages.UsingScope, _scopeOption.ToString());
@@ -274,7 +278,7 @@ namespace NEventStore.Persistence.Sql
                     query.AddParameter(_dialect.BucketId, bucketId, DbType.AnsiString);
                     query.AddParameter(_dialect.StreamId, streamIdHash, DbType.AnsiString);
                     query.AddParameter(_dialect.StreamRevision, maxRevision);
-                    return query.ExecuteWithQuery(statement).Select(x => x.GetSnapshot(_serializer, streamId));
+                    return query.ExecuteWithQuery(statement).Select(x => _snapshotSerializer != null ? x.GetSnapshot(_snapshotSerializer, streamId) : x.GetSnapshot(_serializer, streamId));
                 }).FirstOrDefault();
         }
 
@@ -287,7 +291,7 @@ namespace NEventStore.Persistence.Sql
                     cmd.AddParameter(_dialect.BucketId, snapshot.BucketId, DbType.AnsiString);
                     cmd.AddParameter(_dialect.StreamId, streamId, DbType.AnsiString);
                     cmd.AddParameter(_dialect.StreamRevision, snapshot.StreamRevision);
-                    _dialect.AddPayloadParamater(_connectionFactory, connection, cmd, _serializer.Serialize(snapshot.Payload));
+                    _dialect.AddPayloadParamater(_connectionFactory, connection, cmd, _snapshotSerializer != null ? _snapshotSerializer.Serialize(snapshot.Payload) : _serializer.Serialize(snapshot.Payload));
                     return cmd.ExecuteWithoutExceptions(_dialect.AppendSnapshotToCommit);
                 }) > 0;
         }

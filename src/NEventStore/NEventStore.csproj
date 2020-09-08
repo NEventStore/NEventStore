@@ -211,6 +211,7 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="SnapshotSerializationWireup.cs" />
     <Compile Include="SerializationWireup.cs" />
     <Compile Include="SerializationWireupExtensions.cs" />
     <Compile Include="Serialization\BinarySerializer.cs" />
@@ -220,6 +221,7 @@
     <Compile Include="Serialization\IDocumentSerializer.cs" />
     <Compile Include="Serialization\IndisposableStream.cs" />
     <Compile Include="Serialization\BsonSerializer.cs" />
+    <Compile Include="Serialization\ISerializeSnapshots.cs" />
     <Compile Include="Serialization\JsonSerializer.cs" />
     <Compile Include="Serialization\Messages.Designer.cs">
       <DependentUpon>Messages.resx</DependentUpon>

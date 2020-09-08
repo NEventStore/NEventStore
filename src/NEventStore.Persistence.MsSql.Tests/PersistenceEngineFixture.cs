@@ -11,6 +11,7 @@
             _createPersistence = pageSize =>
                 new SqlPersistenceFactory(new EnviromentConnectionFactory("MsSql", "System.Data.SqlClient"),
                     new BinarySerializer(),
+                    null,
                     new MsSqlDialect(),
                     pageSize: pageSize).Build();
         }

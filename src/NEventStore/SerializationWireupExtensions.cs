@@ -14,6 +14,16 @@ namespace NEventStore
             return new SerializationWireup(wireup, serializer);
         }
 
+        public static SnapshotSerializationWireup UsingCustomSnapshotSerialization(this PersistenceWireup wireup, ISerializeSnapshots serializer)
+        {
+            return new SnapshotSerializationWireup(wireup, serializer);
+        }
+
+        public static SnapshotSerializationWireup UsingCustomSnapshotSerialization(this SerializationWireup wireup, ISerializeSnapshots serializer)
+        {
+            return new SnapshotSerializationWireup(wireup, serializer);
+        }
+
         public static SerializationWireup UsingJsonSerialization(this PersistenceWireup wireup)
         {
             return wireup.UsingCustomSerialization(new JsonSerializer());
