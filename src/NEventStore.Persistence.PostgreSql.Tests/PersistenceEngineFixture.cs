@@ -12,6 +12,7 @@
                 new SqlPersistenceFactory(
                     new EnviromentConnectionFactory("PostgreSql", "Npgsql"),
                     new BinarySerializer(),
+                    null,
                     new PostgreSqlDialect(),
                     pageSize: pageSize).Build();
         }

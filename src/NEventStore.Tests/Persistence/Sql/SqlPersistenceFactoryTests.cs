@@ -16,6 +16,7 @@
         {
             _exception = Catch.Exception(() => new SqlPersistenceFactory("Connection",
                 new BinarySerializer(),
+                null,
                 new OracleNativeDialect()).Build());
         }
 

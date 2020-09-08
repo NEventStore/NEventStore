@@ -25,6 +25,7 @@ namespace NEventStore
             Container.Register(c => new SqlPersistenceFactory(
                 connectionFactory,
                 c.Resolve<ISerialize>(),
+                c.Resolve<ISerializeSnapshots>(),
                 c.Resolve<ISqlDialect>(),
                 c.Resolve<IStreamIdHasher>(),
                 c.Resolve<TransactionScopeOption>(),

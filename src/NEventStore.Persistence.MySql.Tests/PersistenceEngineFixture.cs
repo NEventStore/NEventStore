@@ -12,6 +12,7 @@
                     new SqlPersistenceFactory(
                         new EnviromentConnectionFactory("MySql", "MySql.Data.MySqlClient"),
                         new BinarySerializer(),
+                        null,
                         new MySqlDialect(),
                         pageSize: pageSize).Build();
 

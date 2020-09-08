@@ -12,6 +12,7 @@
                 new SqlPersistenceFactory(
                     new ConfigurationConnectionFactory("NEventStore.Persistence.AcceptanceTests.Properties.Settings.SQLite"),
                     new BinarySerializer(),
+                    null,
                     new SqliteDialect(),
                     pageSize: pageSize).Build();
         }

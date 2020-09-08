@@ -15,9 +15,10 @@ namespace NEventStore.Persistence.Sql
         private readonly ISerialize _serializer;
         private readonly IStreamIdHasher _streamIdHasher;
         private readonly IConnectionFactory _archivingConnection;
+        private readonly ISerializeSnapshots _snapshotSerializer;
 
-        public SqlPersistenceFactory(string connectionName, ISerialize serializer, ISqlDialect dialect = null)
-            : this(serializer, TransactionScopeOption.Suppress, null, DefaultPageSize)
+        public SqlPersistenceFactory(string connectionName, ISerialize serializer, ISerializeSnapshots snapshotSerializer, ISqlDialect dialect = null)
+            : this(serializer, snapshotSerializer, TransactionScopeOption.Suppress, null, DefaultPageSize)
         {
             _connectionFactory = new ConfigurationConnectionFactory(connectionName);
             _dialect = dialect ?? ResolveDialect(new ConfigurationConnectionFactory(connectionName).Settings);
@@ -26,12 +27,13 @@ namespace NEventStore.Persistence.Sql
         public SqlPersistenceFactory(
             IConnectionFactory factory,
             ISerialize serializer,
+            ISerializeSnapshots snapshotSerializer,
             ISqlDialect dialect,
             IStreamIdHasher streamIdHasher = null,
             TransactionScopeOption scopeOption = TransactionScopeOption.Suppress,
             int pageSize = DefaultPageSize,
             IConnectionFactory archivingConnection = null)
-            : this(serializer, scopeOption, streamIdHasher, pageSize)
+            : this(serializer, snapshotSerializer, scopeOption, streamIdHasher, pageSize)
         {
             if (dialect == null)
             {
@@ -43,9 +45,10 @@ namespace NEventStore.Persistence.Sql
             _archivingConnection = archivingConnection;
         }
 
-        private SqlPersistenceFactory(ISerialize serializer, TransactionScopeOption scopeOption,  IStreamIdHasher streamIdHasher, int pageSize)
+        private SqlPersistenceFactory(ISerialize serializer, ISerializeSnapshots snapshotSerializer, TransactionScopeOption scopeOption,  IStreamIdHasher streamIdHasher, int pageSize)
         {
             _serializer = serializer;
+            _snapshotSerializer = snapshotSerializer;
             _scopeOption = scopeOption;
             _streamIdHasher = streamIdHasher ?? new Sha1StreamIdHasher();
             PageSize = pageSize;
@@ -66,6 +69,11 @@ namespace NEventStore.Persistence.Sql
             get { return _serializer; }
         }
 
+        protected virtual ISerializeSnapshots SnapshotSerializer
+        {
+            get { return _snapshotSerializer; }
+        }
+
         protected virtual IStreamIdHasher StreamIdHasher
         {
             get { return _streamIdHasher; }
@@ -75,7 +83,7 @@ namespace NEventStore.Persistence.Sql
 
         public virtual IPersistStreams Build()
         {
-            return new SqlPersistenceEngine(ConnectionFactory, Dialect, Serializer, _scopeOption, PageSize, StreamIdHasher, _archivingConnection);
+            return new SqlPersistenceEngine(ConnectionFactory, Dialect, Serializer, SnapshotSerializer, _scopeOption, PageSize, StreamIdHasher, _archivingConnection);
         }
 
         protected static ISqlDialect ResolveDialect(ConnectionStringSettings settings)
