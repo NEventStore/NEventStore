@@ -4,6 +4,7 @@ using System.Threading;
 using NEventStore.Logging;
 using NEventStore.Persistence;
 using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
 
 namespace NEventStore.PollingClient
 {
@@ -19,7 +20,7 @@ namespace NEventStore.PollingClient
             Stop = 2,
         }
 
-        private readonly ILog _logger;
+        private readonly ILogger _logger;
 
         private readonly Func<ICommit, HandlingResult> _commitCallback;
 
@@ -190,7 +191,7 @@ namespace NEventStore.PollingClient
                     var result = _commitCallback(commit);
                     if (result == HandlingResult.Retry)
                     {
-                        if (_logger.IsVerboseEnabled) _logger.Verbose("Commit callback ask retry for checkpointToken {0} - last dispatched {1}", commit.CheckpointToken, _checkpointToken);
+                        _logger.LogTrace("Commit callback ask retry for checkpointToken {0} - last dispatched {1}", commit.CheckpointToken, _checkpointToken);
                         break;
                     }
                     else if (result == HandlingResult.Stop)
@@ -211,7 +212,7 @@ namespace NEventStore.PollingClient
                 // These exceptions are expected to be transient, we log at maximum a log each minute.
                 if (DateTime.UtcNow.Subtract(_lastPollingErrorLogTimestamp).TotalMinutes > 1)
                 {
-                    if (_logger.IsErrorEnabled) _logger.Error(String.Format("Error during polling client {0}", ex.ToString()));
+                    _logger.LogError(String.Format("Error during polling client {0}", ex.ToString()));
                     _lastPollingErrorLogTimestamp = DateTime.UtcNow;
                 }
 

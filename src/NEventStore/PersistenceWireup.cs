@@ -1,6 +1,7 @@
 namespace NEventStore
 {
     using System;
+    using Microsoft.Extensions.Logging;
     using NEventStore.Diagnostics;
     using NEventStore.Logging;
     using NEventStore.Persistence;
@@ -8,7 +9,7 @@ namespace NEventStore
 
     public class PersistenceWireup : Wireup
     {
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(PersistenceWireup));
+        private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(PersistenceWireup));
         private bool _initialize;
 #if !NETSTANDARD1_6 && !NETSTANDARD2_0
         private bool _tracking;
@@ -29,7 +30,7 @@ namespace NEventStore
 
         public virtual PersistenceWireup WithPersistence(IPersistStreams instance)
         {
-            if (Logger.IsInfoEnabled) Logger.Info(Messages.RegisteringPersistenceEngine, instance.GetType());
+            Logger.LogInformation(Messages.RegisteringPersistenceEngine, instance.GetType());
             With(instance);
             return this;
         }
@@ -41,7 +42,7 @@ namespace NEventStore
 
         public virtual PersistenceWireup InitializeStorageEngine()
         {
-            if (Logger.IsInfoEnabled) Logger.Info(Messages.ConfiguringEngineInitialization);
+            Logger.LogInformation(Messages.ConfiguringEngineInitialization);
             _initialize = true;
             return this;
         }
@@ -54,7 +55,7 @@ namespace NEventStore
                 throw new ArgumentNullException(nameof(instanceName), Messages.InstanceCannotBeNull);
             }
 
-            if (Logger.IsInfoEnabled) Logger.Info(Messages.ConfiguringEnginePerformanceTracking);
+            Logger.LogInformation(Messages.ConfiguringEnginePerformanceTracking);
             _tracking = true;
             _trackingInstanceName = instanceName;
             return this;
@@ -91,13 +92,13 @@ namespace NEventStore
         public override IStoreEvents Build()
 #pragma warning restore S125 // Sections of code should not be commented out
         {
-            if (Logger.IsInfoEnabled) Logger.Info(Messages.BuildingEngine);
+            Logger.LogInformation(Messages.BuildingEngine);
 
             var engine = Container.Resolve<IPersistStreams>();
 
             if (_initialize)
             {
-                if (Logger.IsDebugEnabled) Logger.Debug(Messages.InitializingEngine);
+                Logger.LogDebug(Messages.InitializingEngine);
                 engine.Initialize();
             }
 

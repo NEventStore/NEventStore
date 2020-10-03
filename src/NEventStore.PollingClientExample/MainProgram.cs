@@ -52,8 +52,8 @@ namespace NEventStore.PollingClientExample
         private static IStoreEvents WireupEventStore()
         {
             return Wireup.Init()
-               .LogToOutputWindow(LogLevel.Verbose)
-               .LogToConsoleWindow(LogLevel.Verbose)
+               //.LogToOutputWindow(LogLevel.Verbose)
+               //.LogToConsoleWindow(LogLevel.Verbose)
                .UsingInMemoryPersistence()
                .InitializeStorageEngine()
 #if !NETSTANDARD1_6 && !NETSTANDARD2_0
