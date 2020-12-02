@@ -15,9 +15,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{08A28C69-B04C-4622-8BF7-C9C4C410E64C}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\NEventStore.nuspec = .nuget\NEventStore.nuspec
+		.nuget\NEventStore.Serialization.Json.nuspec = .nuget\NEventStore.Serialization.Json.nuspec
 		.nuget\NuGet.Config = .nuget\NuGet.Config
 		.nuget\NuGet.targets = .nuget\NuGet.targets
-		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "core", "core", "{D35087BF-941A-49EA-96A8-B10457C4D169}"

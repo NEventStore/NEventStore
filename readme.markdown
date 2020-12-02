@@ -7,8 +7,9 @@ This library is developed with a specific focus on [DDD](http://en.wikipedia.org
 
 NEventStore currently supports:
 
-- dotnet framework 4.5
-- dotnet standard 2.0, dotnet core 2.0
+- .net 5
+- .net standard 2.0
+- .net framework 4.6.1
 
 Starting from Version 6.0.0 NEventStore will use [Semantic Versioning](https://semver.org/) to track the version numbers.
 
@@ -42,7 +43,7 @@ ChangeLog can be [found here](Changelog.md)
 [![dotCover](http://neventstore.org/images/logo_dotcover_small.gif)](http://www.jetbrains.com/dotcover/)
 [![dotTrace](http://neventstore.org/images/logo_dottrace_small.gif)](http://www.jetbrains.com/dottrace/)
 
-# How to build
+# How to build (Windows OS)
 
 To build the project locally on a Windows Machine:
 

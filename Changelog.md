@@ -1,5 +1,14 @@
 # NEventStore Versions
 
+## 8.0.0
+
+- Added support for .net 5.
+- Added support for .net framework 4.6.1.
+
+### Breaking Changes
+
+- Droppped support for .Net Framework 4.5, only .Net 4.6.1+ will be supported in 8.x. .Net Framewrok support will be dropped in a future revision.
+
 ## 7.0.0
 
 - The IPersistStreams interface got some major changes:

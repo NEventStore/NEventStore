@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-      <TargetFrameworks>netcoreapp2.0;net45</TargetFrameworks>
+      <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
       <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
       <ApplicationIcon />
       <OutputTypeEx>exe</OutputTypeEx>
@@ -13,7 +13,7 @@
     <DefineConstants Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">TRACE;DEBUG;NETSTANDARD2_0</DefineConstants>
     <DefineConstants Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">NETSTANDARD2_0</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net45'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
     <DefineConstants Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
 
