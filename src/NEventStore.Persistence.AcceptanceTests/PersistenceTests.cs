@@ -1269,7 +1269,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         private readonly Func<int, IPersistStreams> _createPersistence;
 
-#if !NETSTANDARD1_6 && !NETSTANDARD2_0
+#if NET461
         private bool _tracking = false;
         private string _trackingInstanceName;
 
@@ -1291,7 +1291,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         public void Initialize(int pageSize)
         {
-#if !NETSTANDARD1_6 && !NETSTANDARD2_0
+#if NET461
             // performance counters cab be disabled for full framework tests because their initialization
             // can fail when the tests run on build machines (like AppVeyor and similar)
             if (_tracking)

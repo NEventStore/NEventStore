@@ -89,11 +89,7 @@ namespace NEventStore.Serialization.Bson
 
         private static bool IsArray(Type type)
         {
-#if !NETSTANDARD1_6
             bool array = typeof(IEnumerable).IsAssignableFrom(type) && !typeof(IDictionary).IsAssignableFrom(type);
-#else
-            bool array = typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(type) && !typeof(IDictionary).GetTypeInfo().IsAssignableFrom(type);
-#endif
 
             if (Logger.IsVerboseEnabled) Logger.Verbose(Messages.TypeIsArray, type, array);
 

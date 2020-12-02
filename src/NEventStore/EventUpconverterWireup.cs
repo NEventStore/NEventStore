@@ -40,21 +40,14 @@ namespace NEventStore
 
         private static IEnumerable<Assembly> GetAllAssemblies()
         {
-#if !NETSTANDARD1_6
             return Assembly.GetCallingAssembly()
                            .GetReferencedAssemblies()
                            .Select(Assembly.Load)
                            .Concat(new[] { Assembly.GetCallingAssembly() });
-#else
-            // in netstandard1.6 we return an empty assembly array instead of looking at all the assemblies in the folder
-            // GetCallingAssembly is not supported
-            return new Assembly[] { };
-#endif
         }
 
         private static IDictionary<Type, Func<object, object>> GetConverters(IEnumerable<Assembly> toScan)
         {
-#if !NETSTANDARD1_6
             IEnumerable<KeyValuePair<Type, Func<object, object>>> c = from a in toScan
                                                                       from t in a.GetTypes()
                                                                       where !t.IsAbstract
@@ -65,18 +58,6 @@ namespace NEventStore
                                                                       let instance = Activator.CreateInstance(t)
                                                                       select new KeyValuePair<Type, Func<object, object>>(
                                                                           sourceType, e => convertMethod.Invoke(instance, new[] { e }));
-#else
-            IEnumerable<KeyValuePair<Type, Func<object, object>>> c = from a in toScan
-                                                                      from t in a.GetTypes()
-                                                                      where !t.GetTypeInfo().IsAbstract
-                                                                      let i = t.GetTypeInfo().GetInterface(typeof (IUpconvertEvents<,>).FullName)
-                                                                      where i != null
-                                                                      let sourceType = i.GetTypeInfo().GetGenericArguments().First()
-                                                                      let convertMethod = i.GetTypeInfo().GetMethods(BindingFlags.Public | BindingFlags.Instance).First()
-                                                                      let instance = Activator.CreateInstance(t)
-                                                                      select new KeyValuePair<Type, Func<object, object>>(
-                                                                          sourceType, e => convertMethod.Invoke(instance, new[] {e}));
-#endif
             try
             {
                 return c.ToDictionary(x => x.Key, x => x.Value);
@@ -100,11 +81,7 @@ namespace NEventStore
 
         public virtual EventUpconverterWireup WithConvertersFromAssemblyContaining(params Type[] converters)
         {
-#if !NETSTANDARD1_6
             IEnumerable<Assembly> assemblies = converters.Select(c => c.Assembly).Distinct();
-#else
-            IEnumerable<Assembly> assemblies = converters.Select(c => c.GetTypeInfo().Assembly).Distinct();
-#endif
             return this.WithConvertersFrom(assemblies.ToArray());
         }
 

@@ -1,22 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
+    <TargetFrameworks>net461;netcoreapp2.0;net5.0</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <IsPackable>false</IsPackable>
     <AssemblyName>NEventStore.Tests</AssemblyName>
     <RootNamespace>NEventStore.Tests</RootNamespace>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
-    <DefineConstants Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">TRACE;DEBUG;NUNIT;NETSTANDARD2_0</DefineConstants>
-    <DefineConstants Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">NUNIT;NETSTANDARD2_0</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
+  <PropertyGroup>
     <DefineConstants Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">TRACE;DEBUG;NUNIT</DefineConstants>
     <DefineConstants Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">NUNIT</DefineConstants>
   </PropertyGroup>
-
+    
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
@@ -27,10 +23,6 @@
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
     <PackageReference Include="System.Reactive.Core" Version="4.4.1" />
     <PackageReference Include="System.Reactive.Linq" Version="4.4.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="packages.config" />
   </ItemGroup>
 
   <ItemGroup>

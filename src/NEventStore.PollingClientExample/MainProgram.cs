@@ -56,7 +56,7 @@ namespace NEventStore.PollingClientExample
                .LogToConsoleWindow(LogLevel.Verbose)
                .UsingInMemoryPersistence()
                .InitializeStorageEngine()
-#if !NETSTANDARD1_6 && !NETSTANDARD2_0
+#if NET461
                .TrackPerformanceInstance("example")
 #endif
                .Build();

@@ -10,7 +10,7 @@ namespace NEventStore
     {
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof(PersistenceWireup));
         private bool _initialize;
-#if !NETSTANDARD1_6 && !NETSTANDARD2_0
+#if NET461
         private bool _tracking;
         private string _trackingInstanceName;
 #endif
@@ -20,12 +20,10 @@ namespace NEventStore
         {
 #pragma warning disable S125 // Sections of code should not be commented out
             /* EnlistInAmbientTransaction: Will be moved to the specific Persistence driver or completely removed letting the clients handle that
-            #if !NETSTANDARD1_6
-                        Container.Register(TransactionScopeOption.Suppress);
-            #endif
+            Container.Register(TransactionScopeOption.Suppress);
             */
-        }
 #pragma warning restore S125 // Sections of code should not be commented out
+        }
 
         public virtual PersistenceWireup WithPersistence(IPersistStreams instance)
         {
@@ -46,7 +44,7 @@ namespace NEventStore
             return this;
         }
 
-#if !NETSTANDARD1_6 && !NETSTANDARD2_0
+#if NET461
         public virtual PersistenceWireup TrackPerformanceInstance(string instanceName)
         {
             if (instanceName == null)
@@ -63,7 +61,6 @@ namespace NEventStore
 
 #pragma warning disable S125 // Sections of code should not be commented out
         /* EnlistInAmbientTransaction: Will be moved to the specific Persistence driver or completely removed letting the clients handle that
-        #if !NETSTANDARD1_6
                 /// <summary>
                 /// Enables two-phase commit.
                 /// By default NEventStore will suppress surrounding TransactionScopes 
@@ -85,11 +82,10 @@ namespace NEventStore
                     Container.Register(TransactionScopeOption.Required);
                     return this;
                 }
-        #endif
         */
+#pragma warning restore S125 // Sections of code should not be commented out
 
         public override IStoreEvents Build()
-#pragma warning restore S125 // Sections of code should not be commented out
         {
             if (Logger.IsInfoEnabled) Logger.Info(Messages.BuildingEngine);
 
@@ -101,7 +97,7 @@ namespace NEventStore
                 engine.Initialize();
             }
 
-#if !NETSTANDARD1_6 && !NETSTANDARD2_0
+#if NET461
             if (_tracking)
             {
                 Container.Register<IPersistStreams>(new PerformanceCounterPersistenceEngine(engine, _trackingInstanceName));

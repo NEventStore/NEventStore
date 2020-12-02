@@ -34,7 +34,7 @@ namespace NEventStore.Example
                .UseOptimisticPipelineHook()
                .UsingInMemoryPersistence()
                .InitializeStorageEngine()
-#if !NETSTANDARD1_6 && !NETSTANDARD2_0
+#if NET461
                .TrackPerformanceInstance("example")
 #endif
                .HookIntoPipelineUsing(new[] { new AuthorizationPipelineHook() })
