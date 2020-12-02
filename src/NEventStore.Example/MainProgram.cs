@@ -12,7 +12,7 @@ namespace NEventStore.Example
 
         private static void Main()
         {
-            Console.WindowWidth = Console.LargestWindowWidth - 20;
+            // Console.WindowWidth = Console.LargestWindowWidth - 20;
 
             using (store = WireupEventStore())
             {
