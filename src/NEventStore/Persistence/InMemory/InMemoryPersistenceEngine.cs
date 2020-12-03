@@ -446,6 +446,14 @@ namespace NEventStore.Persistence.InMemory
                         return false;
                     }
 
+                    // if the snapshot is already there do NOT add it (follow the SQL implementation)
+                    // and the original GetSnapshot behavior which was to return the first one that was
+                    // added to the collection
+                    if (_snapshots.Any(s => s.StreamId == snapshot.StreamId && s.StreamRevision == snapshot.StreamRevision))
+                    {
+                        return false;
+                    }
+
                     _snapshots.Add(snapshot);
                     _heads.Remove(currentHead);
                     _heads.Add(new StreamHead(currentHead.BucketId, currentHead.StreamId, currentHead.HeadRevision, snapshot.StreamRevision));

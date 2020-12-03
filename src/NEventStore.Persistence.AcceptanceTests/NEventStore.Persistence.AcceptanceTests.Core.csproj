@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net5.0;netcoreapp2.1;net461</TargetFrameworks>
+    <TargetFrameworks>net5.0;netcoreapp3.1;net461</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <RootNamespace>NEventStore.Persistence.AcceptanceTests</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>

@@ -4,6 +4,7 @@
 
 - Added support for .net 5.
 - Added support for .net framework 4.6.1.
+- Fixed InMemoryPersistenceEngine.AddSnapshot() behavior: adding multiple snapshots for the same tuple bucketId, streamId, streamRevision is not allowed; the updated snapshot will be ignored [#484](https://github.com/NEventStore/NEventStore/pull/484).
 
 ### Breaking Changes
 

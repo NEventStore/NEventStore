@@ -450,6 +450,61 @@ namespace NEventStore.Persistence.AcceptanceTests
         }
     }
 
+    /// <summary>
+    /// having multiple snapshots for the same tuple: bucketId, streamId, streamRevision
+    /// should not be allowed, the resulting behavior should be ignoring or updating the
+    /// snapshot, that was the original design (it's up to the driver decide what to do)
+    /// this behavior can be changed in a future implementation.
+    /// </summary>
+#if MSTEST
+    [TestClass]
+#endif
+    public class when_adding_multiple_snapshots_for_same_bucketId_streamId_streamRevision : PersistenceEngineConcern
+    {
+        private bool _added;
+        private Snapshot _snapshot;
+        private Snapshot _updatedSnapshot;
+        private string _streamId;
+
+        private Exception _thrown;
+
+        protected override void Context()
+        {
+            _streamId = Guid.NewGuid().ToString();
+            _snapshot = new Snapshot(_streamId, 1, "Snapshot");
+            Persistence.CommitSingle(_streamId);
+
+            Persistence.AddSnapshot(_snapshot);
+        }
+
+        protected override void Because()
+        {
+            _updatedSnapshot = new Snapshot(_streamId, 1, "Updated Snapshot");
+            _thrown = Catch.Exception(() => _added = Persistence.AddSnapshot(_updatedSnapshot));
+        }
+
+        [Fact]
+        public void should_not_raise_exception()
+        {
+            _thrown.Should().BeNull();
+        }
+
+        [Fact]
+        public void should_be_able_to_retrieve_the_correct_snapshot_original_or_updated_depends_on_driver_implementation()
+        {
+            var snapshot = Persistence.GetSnapshot(_streamId, _snapshot.StreamRevision);
+            snapshot.Should().NotBeNull();
+            if (_added)
+            {
+                snapshot.Payload.Should().Be(_updatedSnapshot.Payload, "The snapshot was added, I expected to get the most updated version");
+            }
+            else
+            {
+                snapshot.Payload.Should().Be(_snapshot.Payload, "The snapshot was not added, I excpeted to get the original version");
+            }
+        }
+    }
+
 #if MSTEST
     [TestClass]
 #endif
