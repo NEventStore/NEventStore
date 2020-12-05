@@ -6,12 +6,13 @@ namespace NEventStore
     using NEventStore.Persistence;
     using NEventStore.Persistence.InMemory;
     using Logging;
+    using Microsoft.Extensions.Logging;
 
     public class Wireup
     {
         private readonly NanoContainer _container;
         private readonly Wireup _inner;
-        private readonly ILog Logger = LogFactory.BuildLogger(typeof(Wireup));
+        private readonly ILogger Logger = LogFactory.BuildLogger(typeof(Wireup));
 
         protected Wireup(NanoContainer container)
         {
@@ -51,7 +52,7 @@ namespace NEventStore
 
         public virtual Wireup HookIntoPipelineUsing(params IPipelineHook[] hooks)
         {
-            if (Logger.IsInfoEnabled) Logger.Info(Resources.WireupHookIntoPipeline, string.Join(", ", hooks.Select(h => h.GetType())));
+            Logger.LogInformation(Resources.WireupHookIntoPipeline, string.Join(", ", hooks.Select(h => h.GetType())));
             ICollection<IPipelineHook> collection = (hooks ?? new IPipelineHook[] { }).Where(x => x != null).ToArray();
             Container.Register(collection);
             return this;

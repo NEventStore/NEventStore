@@ -4,18 +4,19 @@ namespace NEventStore
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using Microsoft.Extensions.Logging;
     using NEventStore.Conversion;
     using NEventStore.Logging;
 
     public class EventUpconverterWireup : Wireup
     {
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(EventUpconverterWireup));
+        private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(EventUpconverterWireup));
         private readonly List<Assembly> _assembliesToScan = new List<Assembly>();
         private readonly IDictionary<Type, Func<object, object>> _registered = new Dictionary<Type, Func<object, object>>();
 
         public EventUpconverterWireup(Wireup wireup) : base(wireup)
         {
-            if (Logger.IsDebugEnabled) Logger.Debug(Messages.EventUpconverterRegistered);
+            Logger.LogDebug(Messages.EventUpconverterRegistered);
 
             Container.Register(_ =>
             {
@@ -70,11 +71,10 @@ namespace NEventStore
 
         public virtual EventUpconverterWireup WithConvertersFrom(params Assembly[] assemblies)
         {
-            if (Logger.IsDebugEnabled)
-            {
-                Logger.Debug(Messages.EventUpconvertersLoadedFrom,
+           
+            
+                Logger.LogDebug(Messages.EventUpconvertersLoadedFrom,
                     string.Join(", ", assemblies.Select(a => $"{a.GetName().Name} {a.GetName().Version}")));
-            }
             _assembliesToScan.AddRange(assemblies);
             return this;
         }

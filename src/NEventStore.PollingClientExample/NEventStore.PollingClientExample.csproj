@@ -19,6 +19,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\NEventStore.PollingClient\NEventStore.PollingClient.csproj" />
     <ProjectReference Include="..\NEventStore\NEventStore.Core.csproj" />
   </ItemGroup>

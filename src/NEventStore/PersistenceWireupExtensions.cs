@@ -1,16 +1,17 @@
 namespace NEventStore
 {
     using Logging;
+    using Microsoft.Extensions.Logging;
     using NEventStore.Persistence;
     using NEventStore.Persistence.InMemory;
 
     public static class PersistenceWireupExtensions
     {
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(OptimisticPipelineHook));
+        private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(OptimisticPipelineHook));
 
         public static PersistenceWireup UsingInMemoryPersistence(this Wireup wireup)
         {
-            if (Logger.IsInfoEnabled) Logger.Info(Resources.WireupSetPersistenceEngine, "InMemoryPersistenceEngine");
+            Logger.LogInformation(Resources.WireupSetPersistenceEngine, "InMemoryPersistenceEngine");
             wireup.With<IPersistStreams>(new InMemoryPersistenceEngine());
 
             return new PersistenceWireup(wireup);

@@ -9,10 +9,11 @@ namespace NEventStore.Serialization.Bson
     using System.Collections.Generic;
     using Newtonsoft.Json;
     using System.Linq;
+    using Microsoft.Extensions.Logging;
 
     public class BsonSerializer : ISerialize
     {
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(BsonSerializer));
+        private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(BsonSerializer));
 
         private readonly IEnumerable<Type> _knownTypes = new[] { typeof(List<EventMessage>), typeof(Dictionary<string, object>) };
 
@@ -39,11 +40,11 @@ namespace NEventStore.Serialization.Bson
 
             _knownTypes = knownTypes ?? _knownTypes;
 
-            if (Logger.IsDebugEnabled)
+            if (Logger.IsEnabled(LogLevel.Debug))
             {
                 foreach (var type in _knownTypes)
                 {
-                    Logger.Debug(Messages.RegisteringKnownType, type);
+                    Logger.LogDebug(Messages.RegisteringKnownType, type);
                 }
             }
         }
@@ -79,11 +80,11 @@ namespace NEventStore.Serialization.Bson
         {
             if (_knownTypes.Contains(typeToSerialize))
             {
-                if (Logger.IsVerboseEnabled) Logger.Verbose(Messages.UsingUntypedSerializer, typeToSerialize);
+                Logger.LogTrace(Messages.UsingUntypedSerializer, typeToSerialize);
                 return _untypedSerializer;
             }
 
-            if (Logger.IsVerboseEnabled) Logger.Verbose(Messages.UsingTypedSerializer, typeToSerialize);
+            Logger.LogTrace(Messages.UsingTypedSerializer, typeToSerialize);
             return _typedSerializer;
         }
 
@@ -91,7 +92,7 @@ namespace NEventStore.Serialization.Bson
         {
             bool array = typeof(IEnumerable).IsAssignableFrom(type) && !typeof(IDictionary).IsAssignableFrom(type);
 
-            if (Logger.IsVerboseEnabled) Logger.Verbose(Messages.TypeIsArray, type, array);
+            Logger.LogTrace(Messages.TypeIsArray, type, array);
 
             return array;
         }
