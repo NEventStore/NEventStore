@@ -34,7 +34,7 @@ namespace NEventStore.Persistence.InMemory
         public IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
         {
             ThrowWhenDisposed();
-            Logger.LogDebug(Resources.GettingAllCommitsFromRevision, streamId, minRevision, maxRevision);
+            Logger.LogDebug(Resources.GettingAllCommitsFromRevision, streamId, bucketId, minRevision, maxRevision);
             return this[bucketId].GetFrom(streamId, minRevision, maxRevision);
         }
 
@@ -93,7 +93,7 @@ namespace NEventStore.Persistence.InMemory
         public ICommit Commit(CommitAttempt attempt)
         {
             ThrowWhenDisposed();
-            Logger.LogDebug(Resources.AttemptingToCommit, attempt.CommitId, attempt.StreamId, attempt.CommitSequence);
+            Logger.LogDebug(Resources.AttemptingToCommit, attempt.CommitId, attempt.StreamId, attempt.BucketId, attempt.CommitSequence);
             return this[attempt.BucketId].Commit(attempt, Interlocked.Increment(ref _checkpoint));
         }
 
@@ -114,7 +114,7 @@ namespace NEventStore.Persistence.InMemory
         public bool AddSnapshot(ISnapshot snapshot)
         {
             ThrowWhenDisposed();
-            Logger.LogDebug(Resources.AddingSnapshot, snapshot.StreamId, snapshot.StreamRevision);
+            Logger.LogDebug(Resources.AddingSnapshot, snapshot.BucketId, snapshot.StreamId, snapshot.StreamRevision);
             return this[snapshot.BucketId].AddSnapshot(snapshot);
         }
 
@@ -401,7 +401,7 @@ namespace NEventStore.Persistence.InMemory
                     _potentialConflicts.Add(new IdentityForConcurrencyConflictDetection(commit));
                     IStreamHead head = _heads.FirstOrDefault(x => x.StreamId == commit.StreamId);
                     _heads.Remove(head);
-                    Logger.LogDebug(Resources.UpdatingStreamHead, commit.StreamId);
+                    Logger.LogDebug(Resources.UpdatingStreamHead, commit.StreamId, commit.BucketId);
                     int snapshotRevision = head?.SnapshotRevision ?? 0;
                     _heads.Add(new StreamHead(commit.BucketId, commit.StreamId, commit.StreamRevision, snapshotRevision));
                     return commit;

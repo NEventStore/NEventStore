@@ -75,21 +75,26 @@ namespace NEventStore
                 throw new ArgumentNullException(nameof(uncommittedEvent.Body));
             }
 
-            Logger.LogTrace(Resources.AppendingUncommittedToStream, uncommittedEvent.Body.GetType(), StreamId);
+            Logger.LogTrace(Resources.AppendingUncommittedToStream, uncommittedEvent.Body.GetType(), StreamId, BucketId);
             _events.Add(uncommittedEvent);
         }
 
         public void CommitChanges(Guid commitId)
         {
-            Logger.LogTrace(Resources.AttemptingToCommitChanges, StreamId);
+            Logger.LogTrace(Resources.AttemptingToCommitChanges, StreamId, BucketId);
 
             if (_isPartialStream)
             {
-                Logger.LogDebug(Resources.CannotAddCommitsToPartiallyLoadedStream, StreamId, StreamRevision);
+                Logger.LogDebug(Resources.CannotAddCommitsToPartiallyLoadedStream, StreamId, BucketId, StreamRevision);
 
                 RefreshStreamAfterConcurrencyException();
 
-                throw new ConcurrencyException();
+                throw new ConcurrencyException(string.Format(
+                    Resources.CannotAddCommitsToPartiallyLoadedStream,
+                    StreamId,
+                    BucketId,
+                    StreamRevision
+                    ));
             }
 
             if (_identifiers.Contains(commitId))
@@ -108,7 +113,7 @@ namespace NEventStore
             }
             catch (ConcurrencyException cex)
             {
-                Logger.LogDebug(Resources.UnderlyingStreamHasChanged, StreamId, cex.Message);
+                Logger.LogDebug(Resources.UnderlyingStreamHasChanged, StreamId, BucketId, cex.Message);
 
                 RefreshStreamAfterConcurrencyException();
 
@@ -125,7 +130,7 @@ namespace NEventStore
 
         public void ClearChanges()
         {
-            Logger.LogTrace(Resources.ClearingUncommittedChanges, StreamId);
+            Logger.LogTrace(Resources.ClearingUncommittedChanges, StreamId, BucketId);
             _events.Clear();
             UncommittedHeaders.Clear();
         }
@@ -146,7 +151,7 @@ namespace NEventStore
                     return;
                 }
 
-                Logger.LogTrace(Resources.AddingCommitsToStream, commit.CommitId, commit.Events.Count, StreamId);
+                Logger.LogTrace(Resources.AddingCommitsToStream, commit.CommitId, commit.Events.Count, StreamId, BucketId);
 
                 CommitSequence = commit.CommitSequence;
 
@@ -197,7 +202,7 @@ namespace NEventStore
                 return true;
             }
 
-            Logger.LogInformation(Resources.NoChangesToCommit, StreamId);
+            Logger.LogInformation(Resources.NoChangesToCommit, StreamId, BucketId);
             return false;
         }
 
@@ -205,7 +210,7 @@ namespace NEventStore
         {
             CommitAttempt attempt = BuildCommitAttempt(commitId);
 
-            Logger.LogDebug(Resources.PersistingCommit, commitId, StreamId, attempt.Events?.Count ?? 0);
+            Logger.LogDebug(Resources.PersistingCommit, commitId, StreamId, BucketId, attempt.Events?.Count ?? 0);
             ICommit commit = _persistence.Commit(attempt);
 
             PopulateStream(StreamRevision + 1, attempt.StreamRevision, new[] { commit });
@@ -214,7 +219,7 @@ namespace NEventStore
 
         private CommitAttempt BuildCommitAttempt(Guid commitId)
         {
-            Logger.LogTrace(Resources.BuildingCommitAttempt, commitId, StreamId);
+            Logger.LogTrace(Resources.BuildingCommitAttempt, commitId, StreamId, BucketId);
             return new CommitAttempt(
                 BucketId,
                 StreamId,

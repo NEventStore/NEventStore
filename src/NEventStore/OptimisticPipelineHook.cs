@@ -49,6 +49,7 @@ namespace NEventStore
                 throw new ConcurrencyException(String.Format(
                     Messages.ConcurrencyExceptionCommitSequence,
                     head.CommitSequence,
+                    attempt.BucketId,
                     attempt.CommitSequence,
                     attempt.StreamId,
                     attempt.StreamRevision,
@@ -61,7 +62,7 @@ namespace NEventStore
                 throw new ConcurrencyException(String.Format(
                     Messages.ConcurrencyExceptionStreamRevision,
                     head.StreamRevision,
-                    attempt.StreamRevision,
+                    attempt.BucketId,
                     attempt.StreamId,
                     attempt.StreamRevision,
                     attempt.Events.Count
@@ -73,6 +74,7 @@ namespace NEventStore
                 throw new StorageException(String.Format(
                      Messages.StorageExceptionCommitSequence,
                      head.CommitSequence,
+                     attempt.BucketId,
                      attempt.CommitSequence,
                      attempt.StreamId,
                      attempt.StreamRevision,
@@ -87,12 +89,13 @@ namespace NEventStore
                      head.StreamRevision,
                      attempt.StreamRevision,
                      attempt.Events.Count,
+                     attempt.BucketId,
                      attempt.StreamId,
                      attempt.StreamRevision
                  )); // beyond the end of the stream
             }
 
-            Logger.LogTrace(Resources.NoConflicts, attempt.StreamId);
+            Logger.LogTrace(Resources.NoConflicts, attempt.StreamId, attempt.BucketId);
             return true;
         }
 
@@ -180,7 +183,7 @@ namespace NEventStore
 
         private void TrackUpToCapacity(ICommit committed)
         {
-            Logger.LogTrace(Resources.TrackingCommit, committed.CommitSequence, committed.StreamId);
+            Logger.LogTrace(Resources.TrackingCommit, committed.CommitSequence, committed.StreamId, committed.BucketId);
             _maxItemsToTrack.AddFirst(GetHeadKey(committed));
             if (_maxItemsToTrack.Count <= _maxStreamsToTrack)
             {
@@ -188,7 +191,7 @@ namespace NEventStore
             }
 
             HeadKey expired = _maxItemsToTrack.Last.Value;
-            Logger.LogTrace(Resources.NoLongerTrackingStream, expired);
+            Logger.LogTrace(Resources.NoLongerTrackingStream, expired.StreamId, expired.BucketId);
 
             _heads.Remove(expired);
             _maxItemsToTrack.RemoveLast();
