@@ -32,7 +32,6 @@ namespace NEventStore
             : base(message, innerException)
         {}
 
-#if !NETSTANDARD1_6
         /// <summary>
         ///     Initializes a new instance of the DuplicateCommitException class.
         /// </summary>
@@ -41,6 +40,5 @@ namespace NEventStore
         protected DuplicateCommitException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {}
-#endif
     }
 }

@@ -3,12 +3,13 @@ namespace NEventStore
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Microsoft.Extensions.Logging;
     using NEventStore.Logging;
     using NEventStore.Persistence;
 
     public class OptimisticEventStore : IStoreEvents, ICommitEvents
     {
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(OptimisticEventStore));
+        private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(OptimisticEventStore));
         private readonly IPersistStreams _persistence;
         private readonly IEnumerable<IPipelineHook> _pipelineHooks;
 
@@ -42,22 +43,22 @@ namespace NEventStore
             Guard.NotNull(() => attempt, attempt);
             foreach (var hook in _pipelineHooks)
             {
-                if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.InvokingPreCommitHooks, attempt.CommitId, hook.GetType());
+                Logger.LogTrace(Resources.InvokingPreCommitHooks, attempt.CommitId, hook.GetType());
                 if (hook.PreCommit(attempt))
                 {
                     continue;
                 }
 
-                if (Logger.IsInfoEnabled) Logger.Info(Resources.CommitRejectedByPipelineHook, hook.GetType(), attempt.CommitId);
+                Logger.LogInformation(Resources.CommitRejectedByPipelineHook, hook.GetType(), attempt.CommitId);
                 return null;
             }
 
-            if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.CommittingAttempt, attempt.CommitId, attempt.Events?.Count ?? 0);
+            Logger.LogTrace(Resources.CommittingAttempt, attempt.CommitId, attempt.Events?.Count ?? 0);
             ICommit commit = _persistence.Commit(attempt);
 
             foreach (var hook in _pipelineHooks)
             {
-                if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.InvokingPostCommitPipelineHooks, attempt.CommitId, hook.GetType());
+                Logger.LogTrace(Resources.InvokingPostCommitPipelineHooks, attempt.CommitId, hook.GetType());
                 hook.PostCommit(commit);
             }
             return commit;
@@ -71,7 +72,7 @@ namespace NEventStore
 
         public virtual IEventStream CreateStream(string bucketId, string streamId)
         {
-            if (Logger.IsDebugEnabled) Logger.Debug(Resources.CreatingStream, streamId, bucketId);
+            Logger.LogDebug(Resources.CreatingStream, streamId, bucketId);
             return new OptimisticEventStream(bucketId, streamId, this);
         }
 
@@ -79,7 +80,7 @@ namespace NEventStore
         {
             maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
 
-            if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.OpeningStreamAtRevision, streamId, bucketId, minRevision, maxRevision);
+            Logger.LogTrace(Resources.OpeningStreamAtRevision, streamId, bucketId, minRevision, maxRevision);
             return new OptimisticEventStream(bucketId, streamId, this, minRevision, maxRevision);
         }
 
@@ -90,7 +91,7 @@ namespace NEventStore
                 throw new ArgumentNullException(nameof(snapshot));
             }
 
-            if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.OpeningStreamWithSnapshot, snapshot.StreamId, snapshot.StreamRevision, maxRevision);
+            Logger.LogTrace(Resources.OpeningStreamWithSnapshot, snapshot.StreamId, snapshot.BucketId, snapshot.StreamRevision, maxRevision);
             maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
             return new OptimisticEventStream(snapshot, this, maxRevision);
         }
@@ -102,7 +103,7 @@ namespace NEventStore
                 return;
             }
 
-            if (Logger.IsInfoEnabled) Logger.Info(Resources.ShuttingDownStore);
+            Logger.LogInformation(Resources.ShuttingDownStore);
             _persistence.Dispose();
             foreach (var hook in _pipelineHooks)
             {

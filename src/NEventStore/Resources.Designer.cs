@@ -61,7 +61,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Adding commit &apos;{0}&apos; with {1} events to stream &apos;{2}&apos;..
+        ///   Looks up a localized string similar to Adding commit &apos;{0}&apos; with {1} events to stream &apos;{2}&apos; bucket&apos;{3}&apos;..
         /// </summary>
         internal static string AddingCommitsToStream {
             get {
@@ -70,7 +70,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Adding a snapshot for stream &apos;{0}&apos; at revision &apos;{1}&apos;..
+        ///   Looks up a localized string similar to Adding a snapshot for bucket &apos;{0}&apos; stream &apos;{1}&apos; at revision &apos;{2}&apos;..
         /// </summary>
         internal static string AddingSnapshot {
             get {
@@ -88,7 +88,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Appending uncommitted event &apos;{0}&apos; to stream &apos;{1}&apos;.
+        ///   Looks up a localized string similar to Appending uncommitted event &apos;{0}&apos; to stream &apos;{1}&apos; bucket &apos;{2}&apos;.
         /// </summary>
         internal static string AppendingUncommittedToStream {
             get {
@@ -97,7 +97,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Attempting to append commit &apos;{0}&apos; to stream &apos;{1}&apos; at position &apos;{2}&apos;..
+        ///   Looks up a localized string similar to Attempting to append commit &apos;{0}&apos; to stream &apos;{1}&apos; bucket &apos;{2}&apos; at position &apos;{3}&apos;..
         /// </summary>
         internal static string AttemptingToCommit {
             get {
@@ -106,7 +106,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Attempting to commit all changes on stream &apos;{0}&apos; to the underlying store..
+        ///   Looks up a localized string similar to Attempting to commit all changes on stream &apos;{0}&apos; bucket &apos;{1}&apos; to the underlying store..
         /// </summary>
         internal static string AttemptingToCommitChanges {
             get {
@@ -115,7 +115,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Building a commit attempt &apos;{0}&apos; on stream &apos;{1}&apos;..
+        ///   Looks up a localized string similar to Building a commit attempt &apos;{0}&apos; on stream &apos;{1}&apos; bucket &apos;{2}&apos;..
         /// </summary>
         internal static string BuildingCommitAttempt {
             get {
@@ -124,7 +124,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The stream &apos;{0}&apos; was partially loaded up to revision {1}. Cannot append commits to a partially loaded stream, refreshing the stream..
+        ///   Looks up a localized string similar to The stream &apos;{0}&apos; bucket &apos;{1}&apos; was partially loaded up to revision {1}. Cannot append commits to a partially loaded stream, refreshing the stream..
         /// </summary>
         internal static string CannotAddCommitsToPartiallyLoadedStream {
             get {
@@ -133,7 +133,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Clearing all uncommitted changes on stream &apos;{0}&apos;..
+        ///   Looks up a localized string similar to Clearing all uncommitted changes on stream &apos;{0}&apos; bucket &apos;{1}&apos;..
         /// </summary>
         internal static string ClearingUncommittedChanges {
             get {
@@ -214,7 +214,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Getting all commits for stream &apos;{0}&apos; between &apos;{1}&apos; and &apos;{2}&apos;..
+        ///   Looks up a localized string similar to Getting all commits for stream &apos;{0}&apos; bucket &apos;{1}&apos; between &apos;{2}&apos; and &apos;{3}&apos;..
         /// </summary>
         internal static string GettingAllCommitsFromRevision {
             get {
@@ -331,7 +331,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There are no outstanding changes to be committed stream &apos;{0}&apos;..
+        ///   Looks up a localized string similar to There are no outstanding changes to be committed stream &apos;{0}&apos; bucket &apos;{1}&apos;..
         /// </summary>
         internal static string NoChangesToCommit {
             get {
@@ -340,7 +340,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No other commits have been discovered that conflict for stream &apos;{0}&apos;..
+        ///   Looks up a localized string similar to No other commits have been discovered that conflict for stream &apos;{0}&apos; bucket &apos;{1}&apos;..
         /// </summary>
         internal static string NoConflicts {
             get {
@@ -349,7 +349,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Purging all commits on stream &apos;{0}&apos; from tracking..
+        ///   Looks up a localized string similar to Purging all commits on stream &apos;{0}&apos; bucket &apos;{1}&apos; from tracking..
         /// </summary>
         internal static string NoLongerTrackingStream {
             get {
@@ -385,7 +385,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Opening stream &apos;{0}&apos; with snapshot at {1} up to revision {2}..
+        ///   Looks up a localized string similar to Opening stream &apos;{0}&apos; from bucket &apos;{1}&apos; with snapshot at {2} up to revision {3}..
         /// </summary>
         internal static string OpeningStreamWithSnapshot {
             get {
@@ -403,7 +403,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Pushing attempt &apos;{0}&apos; on stream &apos;{1}&apos; with &apos;{2}&apos; events to the underlying store..
+        ///   Looks up a localized string similar to Pushing attempt &apos;{0}&apos; on stream &apos;{1}&apos; bucket &apos;{2}&apos; with &apos;{3}&apos; events to the underlying store..
         /// </summary>
         internal static string PersistingCommit {
             get {
@@ -466,7 +466,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Tracking commit {0} on stream &apos;{1}&apos;..
+        ///   Looks up a localized string similar to Tracking commit {0} on stream &apos;{1}&apos; bucket &apos;{2}&apos;..
         /// </summary>
         internal static string TrackingCommit {
             get {
@@ -484,7 +484,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The underlying stream &apos;{0}&apos; has changed since the last known commit, refreshing the stream. Exception Message: {1}.
+        ///   Looks up a localized string similar to The underlying stream &apos;{0}&apos; bucket &apos;{1}&apos; has changed since the last known commit, refreshing the stream. Exception Message: {2}.
         /// </summary>
         internal static string UnderlyingStreamHasChanged {
             get {
@@ -493,7 +493,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Updating stream head for stream &apos;{0}&apos;..
+        ///   Looks up a localized string similar to Updating stream head for stream &apos;{0}&apos; bucket &apos;{1}&apos;..
         /// </summary>
         internal static string UpdatingStreamHead {
             get {

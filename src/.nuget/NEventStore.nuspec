@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>NEventStore</id>
-    <version>6.0</version>
+    <version>8.0</version>
     <title>NEventStore</title>
     <authors>NEventStore Dev Team</authors>
     <owners>NEventStore Dev Team</owners>
@@ -12,7 +12,7 @@
     <summary>NEventStore is a persistence agnostic event sourcing library for .NET. The primary use is most often associated with CQRS.</summary>
     <language>es-US</language>
     <tags>events, event sourcing, cqrs, storage, persistence, database</tags>
-	<releaseNotes>v6.x is not backwards compatible with v5.x. Please check the release notes on github.</releaseNotes>
+	<releaseNotes>Please check the release notes on github.</releaseNotes>
   </metadata>
   <files>
     <file src="publish-net40\NEventStore\bin\**" target="lib\net40"/>

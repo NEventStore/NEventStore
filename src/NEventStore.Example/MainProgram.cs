@@ -3,6 +3,7 @@ namespace NEventStore.Example
     using System;
     using NEventStore;
     using Logging;
+    using Microsoft.Extensions.Logging;
 
     internal static class MainProgram
     {
@@ -12,7 +13,7 @@ namespace NEventStore.Example
 
         private static void Main()
         {
-            Console.WindowWidth = Console.LargestWindowWidth - 20;
+            // Console.WindowWidth = Console.LargestWindowWidth - 20;
 
             using (store = WireupEventStore())
             {
@@ -28,13 +29,20 @@ namespace NEventStore.Example
 
         private static IStoreEvents WireupEventStore()
         {
+            var loggerFactory = LoggerFactory.Create(logging =>
+            {
+                logging
+                    .AddConsole()
+                    .AddDebug()
+                    .SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+            });
+
             return Wireup.Init()
-               .LogToOutputWindow(LogLevel.Verbose)
-               .LogToConsoleWindow(LogLevel.Verbose)
+               .WithLoggerFactory(loggerFactory)
                .UseOptimisticPipelineHook()
                .UsingInMemoryPersistence()
                .InitializeStorageEngine()
-#if !NETSTANDARD1_6 && !NETSTANDARD2_0
+#if NET461
                .TrackPerformanceInstance("example")
 #endif
                .HookIntoPipelineUsing(new[] { new AuthorizationPipelineHook() })

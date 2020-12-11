@@ -7,10 +7,11 @@ namespace NEventStore.Serialization.Json
     using System.Text;
     using Newtonsoft.Json;
     using NEventStore.Logging;
+    using Microsoft.Extensions.Logging;
 
     public class JsonSerializer : ISerialize
     {
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(JsonSerializer));
+        private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(JsonSerializer));
 
         private readonly IEnumerable<Type> _knownTypes = new[] { typeof(List<EventMessage>), typeof(Dictionary<string, object>) };
 
@@ -37,18 +38,18 @@ namespace NEventStore.Serialization.Json
 
             _knownTypes = knownTypes ?? _knownTypes;
 
-            if (Logger.IsDebugEnabled)
+            if (Logger.IsEnabled(LogLevel.Debug))
             {
                 foreach (var type in _knownTypes)
                 {
-                    Logger.Debug(Messages.RegisteringKnownType, type);
+                    Logger.LogDebug(Messages.RegisteringKnownType, type);
                 }
             }
         }
 
         public virtual void Serialize<T>(Stream output, T graph)
         {
-            if (Logger.IsVerboseEnabled) Logger.Verbose(Messages.SerializingGraph, typeof(T));
+            Logger.LogTrace(Messages.SerializingGraph, typeof(T));
             using (var streamWriter = new StreamWriter(output, Encoding.UTF8))
             using (var jsonTextWriter = new JsonTextWriter(streamWriter))
             {
@@ -58,7 +59,7 @@ namespace NEventStore.Serialization.Json
 
         public virtual T Deserialize<T>(Stream input)
         {
-            if (Logger.IsVerboseEnabled) Logger.Verbose(Messages.DeserializingStream, typeof(T));
+            Logger.LogTrace(Messages.DeserializingStream, typeof(T));
             using (var streamReader = new StreamReader(input, Encoding.UTF8))
             using (var jsonTextReader = new JsonTextReader(streamReader))
             {
@@ -81,11 +82,11 @@ namespace NEventStore.Serialization.Json
         {
             if (_knownTypes.Contains(typeToSerialize))
             {
-                if (Logger.IsVerboseEnabled) Logger.Verbose(Messages.UsingUntypedSerializer, typeToSerialize);
+                Logger.LogTrace(Messages.UsingUntypedSerializer, typeToSerialize);
                 return _untypedSerializer;
             }
 
-            if (Logger.IsVerboseEnabled) Logger.Verbose(Messages.UsingTypedSerializer, typeToSerialize);
+            Logger.LogTrace(Messages.UsingTypedSerializer, typeToSerialize);
             return _typedSerializer;
         }
     }
