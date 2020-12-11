@@ -3,6 +3,7 @@ namespace NEventStore
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Microsoft.Extensions.Logging;
     using NEventStore.Logging;
     using NEventStore.Persistence;
 
@@ -12,7 +13,7 @@ namespace NEventStore
     public class OptimisticPipelineHook : PipelineHookBase
     {
         internal const int MaxStreamsToTrack = 100;
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(OptimisticPipelineHook));
+        private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(OptimisticPipelineHook));
         private readonly Dictionary<HeadKey, ICommit> _heads = new Dictionary<HeadKey, ICommit>(); //TODO use concurrent collections
         private readonly LinkedList<HeadKey> _maxItemsToTrack = new LinkedList<HeadKey>();
         private readonly int _maxStreamsToTrack;
@@ -23,7 +24,7 @@ namespace NEventStore
 
         public OptimisticPipelineHook(int maxStreamsToTrack)
         {
-            if (Logger.IsDebugEnabled) Logger.Debug(Resources.TrackingStreams, maxStreamsToTrack);
+            Logger.LogDebug(Resources.TrackingStreams, maxStreamsToTrack);
             _maxStreamsToTrack = maxStreamsToTrack;
         }
 
@@ -35,7 +36,7 @@ namespace NEventStore
 
         public override bool PreCommit(CommitAttempt attempt)
         {
-            if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.OptimisticConcurrencyCheck, attempt.StreamId);
+            Logger.LogTrace(Resources.OptimisticConcurrencyCheck, attempt.StreamId);
 
             ICommit head = GetStreamHead(GetHeadKey(attempt));
             if (head == null)
@@ -48,6 +49,7 @@ namespace NEventStore
                 throw new ConcurrencyException(String.Format(
                     Messages.ConcurrencyExceptionCommitSequence,
                     head.CommitSequence,
+                    attempt.BucketId,
                     attempt.CommitSequence,
                     attempt.StreamId,
                     attempt.StreamRevision,
@@ -60,7 +62,7 @@ namespace NEventStore
                 throw new ConcurrencyException(String.Format(
                     Messages.ConcurrencyExceptionStreamRevision,
                     head.StreamRevision,
-                    attempt.StreamRevision,
+                    attempt.BucketId,
                     attempt.StreamId,
                     attempt.StreamRevision,
                     attempt.Events.Count
@@ -72,6 +74,7 @@ namespace NEventStore
                 throw new StorageException(String.Format(
                      Messages.StorageExceptionCommitSequence,
                      head.CommitSequence,
+                     attempt.BucketId,
                      attempt.CommitSequence,
                      attempt.StreamId,
                      attempt.StreamRevision,
@@ -86,12 +89,13 @@ namespace NEventStore
                      head.StreamRevision,
                      attempt.StreamRevision,
                      attempt.Events.Count,
+                     attempt.BucketId,
                      attempt.StreamId,
                      attempt.StreamRevision
                  )); // beyond the end of the stream
             }
 
-            if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.NoConflicts, attempt.StreamId);
+            Logger.LogTrace(Resources.NoConflicts, attempt.StreamId, attempt.BucketId);
             return true;
         }
 
@@ -179,7 +183,7 @@ namespace NEventStore
 
         private void TrackUpToCapacity(ICommit committed)
         {
-            if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.TrackingCommit, committed.CommitSequence, committed.StreamId);
+            Logger.LogTrace(Resources.TrackingCommit, committed.CommitSequence, committed.StreamId, committed.BucketId);
             _maxItemsToTrack.AddFirst(GetHeadKey(committed));
             if (_maxItemsToTrack.Count <= _maxStreamsToTrack)
             {
@@ -187,7 +191,7 @@ namespace NEventStore
             }
 
             HeadKey expired = _maxItemsToTrack.Last.Value;
-            if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.NoLongerTrackingStream, expired);
+            Logger.LogTrace(Resources.NoLongerTrackingStream, expired.StreamId, expired.BucketId);
 
             _heads.Remove(expired);
             _maxItemsToTrack.RemoveLast();

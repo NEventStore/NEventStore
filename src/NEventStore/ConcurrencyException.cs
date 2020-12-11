@@ -32,7 +32,6 @@ namespace NEventStore
             : base(message, innerException)
         { }
 
-#if !NETSTANDARD1_6
         /// <summary>
         ///     Initializes a new instance of the ConcurrencyException class.
         /// </summary>
@@ -41,6 +40,5 @@ namespace NEventStore
         protected ConcurrencyException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {}
-#endif
     }
 }

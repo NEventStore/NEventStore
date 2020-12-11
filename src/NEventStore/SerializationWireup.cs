@@ -1,11 +1,12 @@
 namespace NEventStore
 {
+    using Microsoft.Extensions.Logging;
     using NEventStore.Logging;
     using NEventStore.Serialization;
 
     public class SerializationWireup : Wireup
     {
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof (SerializationWireup));
+        private static readonly ILogger Logger = LogFactory.BuildLogger(typeof (SerializationWireup));
 
         public SerializationWireup(Wireup inner, ISerialize serializer)
             : base(inner)
@@ -15,24 +16,22 @@ namespace NEventStore
 
         public SerializationWireup Compress()
         {
-            if (Logger.IsDebugEnabled) Logger.Debug(Messages.ConfiguringCompression);
+            Logger.LogDebug(Messages.ConfiguringCompression);
             var wrapped = Container.Resolve<ISerialize>();
 
-            if (Logger.IsInfoEnabled) Logger.Info(Messages.WrappingSerializerGZip, wrapped.GetType());
+            Logger.LogInformation(Messages.WrappingSerializerGZip, wrapped.GetType());
             Container.Register<ISerialize>(new GzipSerializer(wrapped));
             return this;
         }
 
-#if !NETSTANDARD1_6
         public SerializationWireup EncryptWith(byte[] encryptionKey)
         {
-            if (Logger.IsDebugEnabled) Logger.Debug(Messages.ConfiguringEncryption);
+            Logger.LogDebug(Messages.ConfiguringEncryption);
             var wrapped = Container.Resolve<ISerialize>();
 
-            if (Logger.IsInfoEnabled) Logger.Info(Messages.WrappingSerializerEncryption, wrapped.GetType());
+            Logger.LogInformation(Messages.WrappingSerializerEncryption, wrapped.GetType());
             Container.Register<ISerialize>(new RijndaelSerializer(wrapped, encryptionKey));
             return this;
         }
-#endif
     }
 }

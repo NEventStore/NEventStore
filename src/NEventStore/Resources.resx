@@ -142,7 +142,7 @@
     <value>Initializing engine.</value>
   </data>
   <data name="GettingAllCommitsFromRevision" xml:space="preserve">
-    <value>Getting all commits for stream '{0}' between '{1}' and '{2}'.</value>
+    <value>Getting all commits for stream '{0}' bucket '{1}' between '{2}' and '{3}'.</value>
   </data>
   <data name="GettingAllCommitsFromTime" xml:space="preserve">
     <value>Getting all commits from bucket '{0}' from '{1}' forward.</value>
@@ -151,10 +151,10 @@
     <value>Getting all commits from bucket '{0}' from '{1}' to '{2}'.</value>
   </data>
   <data name="AttemptingToCommit" xml:space="preserve">
-    <value>Attempting to append commit '{0}' to stream '{1}' at position '{2}'.</value>
+    <value>Attempting to append commit '{0}' to stream '{1}' bucket '{2}' at position '{3}'.</value>
   </data>
   <data name="UpdatingStreamHead" xml:space="preserve">
-    <value>Updating stream head for stream '{0}'.</value>
+    <value>Updating stream head for stream '{0}' bucket '{1}'.</value>
   </data>
   <data name="GettingStreamsToSnapshot" xml:space="preserve">
     <value>Getting the set of all streams to be snapshot from bucket '{0}' which exceed {1} revisions without a snapshot.</value>
@@ -163,7 +163,7 @@
     <value>Getting the most recent snapshot from bucket '{0}' for stream '{1}' on/since revision '{2}'.</value>
   </data>
   <data name="AddingSnapshot" xml:space="preserve">
-    <value>Adding a snapshot for stream '{0}' at revision '{1}'.</value>
+    <value>Adding a snapshot for bucket '{0}' stream '{1}' at revision '{2}'.</value>
   </data>
   <data name="PurgingStore" xml:space="preserve">
     <value>Purging all data from storage.</value>
@@ -175,13 +175,13 @@
     <value>Verifying that no other commits have succeed on the stream '{0}'.</value>
   </data>
   <data name="NoConflicts" xml:space="preserve">
-    <value>No other commits have been discovered that conflict for stream '{0}'.</value>
+    <value>No other commits have been discovered that conflict for stream '{0}' bucket '{1}'.</value>
   </data>
   <data name="TrackingCommit" xml:space="preserve">
-    <value>Tracking commit {0} on stream '{1}'.</value>
+    <value>Tracking commit {0} on stream '{1}' bucket '{2}'.</value>
   </data>
   <data name="NoLongerTrackingStream" xml:space="preserve">
-    <value>Purging all commits on stream '{0}' from tracking.</value>
+    <value>Purging all commits on stream '{0}' bucket '{1}' from tracking.</value>
   </data>
   <data name="CreatingStream" xml:space="preserve">
     <value>Creating stream '{0}' in bucket '{1}'.</value>
@@ -190,7 +190,7 @@
     <value>Opening stream '{0}' from bucket '{1}' between revisions {2} and {3}.</value>
   </data>
   <data name="OpeningStreamWithSnapshot" xml:space="preserve">
-    <value>Opening stream '{0}' with snapshot at {1} up to revision {2}.</value>
+    <value>Opening stream '{0}' from bucket '{1}' with snapshot at {2} up to revision {3}.</value>
   </data>
   <data name="PipelineHookSkippedCommit" xml:space="preserve">
     <value>Pipeline hook of type '{0}' skipped over commit '{1}'.</value>
@@ -211,7 +211,7 @@
     <value>Pushing commit '{0}' to post-commit hook of type '{1}'.</value>
   </data>
   <data name="AddingCommitsToStream" xml:space="preserve">
-    <value>Adding commit '{0}' with {1} events to stream '{2}'.</value>
+    <value>Adding commit '{0}' with {1} events to stream '{2}' bucket'{3}'.</value>
   </data>
   <data name="IgnoringBeyondRevision" xml:space="preserve">
     <value>Ignoring some events on commit '{0}' of stream '{1}' because they go beyond revision {2}.</value>
@@ -220,25 +220,25 @@
     <value>Ignoring some events on commit '{0}' of stream '{1}' because they starting before revision {2}.</value>
   </data>
   <data name="AppendingUncommittedToStream" xml:space="preserve">
-    <value>Appending uncommitted event '{0}' to stream '{1}'</value>
+    <value>Appending uncommitted event '{0}' to stream '{1}' bucket '{2}'</value>
   </data>
   <data name="AttemptingToCommitChanges" xml:space="preserve">
-    <value>Attempting to commit all changes on stream '{0}' to the underlying store.</value>
+    <value>Attempting to commit all changes on stream '{0}' bucket '{1}' to the underlying store.</value>
   </data>
   <data name="NoChangesToCommit" xml:space="preserve">
-    <value>There are no outstanding changes to be committed stream '{0}'.</value>
+    <value>There are no outstanding changes to be committed stream '{0}' bucket '{1}'.</value>
   </data>
   <data name="UnderlyingStreamHasChanged" xml:space="preserve">
-    <value>The underlying stream '{0}' has changed since the last known commit, refreshing the stream. Exception Message: {1}</value>
+    <value>The underlying stream '{0}' bucket '{1}' has changed since the last known commit, refreshing the stream. Exception Message: {2}</value>
   </data>
   <data name="PersistingCommit" xml:space="preserve">
-    <value>Pushing attempt '{0}' on stream '{1}' with '{2}' events to the underlying store.</value>
+    <value>Pushing attempt '{0}' on stream '{1}' bucket '{2}' with '{3}' events to the underlying store.</value>
   </data>
   <data name="BuildingCommitAttempt" xml:space="preserve">
-    <value>Building a commit attempt '{0}' on stream '{1}'.</value>
+    <value>Building a commit attempt '{0}' on stream '{1}' bucket '{2}'.</value>
   </data>
   <data name="ClearingUncommittedChanges" xml:space="preserve">
-    <value>Clearing all uncommitted changes on stream '{0}'.</value>
+    <value>Clearing all uncommitted changes on stream '{0}' bucket '{1}'.</value>
   </data>
   <data name="ShuttingDownStore" xml:space="preserve">
     <value>Shutting down event store.</value>
@@ -265,7 +265,7 @@
     <value>Configured serializer: {0}</value>
   </data>
   <data name="CannotAddCommitsToPartiallyLoadedStream" xml:space="preserve">
-    <value>The stream '{0}' was partially loaded up to revision {1}. Cannot append commits to a partially loaded stream, refreshing the stream.</value>
+    <value>The stream '{0}' bucket '{1}' was partially loaded up to revision {1}. Cannot append commits to a partially loaded stream, refreshing the stream.</value>
   </data>
   <data name="GettingCommitsFromBucketAndFromToCheckpoint" xml:space="preserve">
     <value>Getting all commits from bucket '{0}' from checkpoint '{1}' (excluded) up to '{2}' (included).</value>

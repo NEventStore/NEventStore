@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
 using NEventStore.Helpers;
 using NEventStore.Logging;
 
@@ -6,7 +7,7 @@ namespace NEventStore.PollingClient
 {
     public class CommitSequencer
     {
-        private readonly ILog _logger;
+        private readonly ILogger _logger;
 
         private readonly Func<ICommit, PollingClient2.HandlingResult> _commitCallback;
 
@@ -34,13 +35,13 @@ namespace NEventStore.PollingClient
             }
             else if (_lastCommitRead >= lc)
             {
-                if (_logger.IsWarnEnabled) _logger.Warn(String.Format("Wrong sequence in commit, last read {0} actual read {1}", _lastCommitRead, lc));
+                _logger.LogWarning(String.Format("Wrong sequence in commit, last read {0} actual read {1}", _lastCommitRead, lc));
                 return PollingClient2.HandlingResult.MoveToNext;
             }
 
             if (outOfSequenceTimestamp == null)
             {
-                if (_logger.IsDebugEnabled) _logger.Debug("Sequencer found out of sequence, last dispatched {0} now dispatching {1}", _lastCommitRead, lc);
+                _logger.LogDebug("Sequencer found out of sequence, last dispatched {0} now dispatching {1}", _lastCommitRead, lc);
                 outOfSequenceTimestamp = DateTimeService.Now;
             }
             else
@@ -48,10 +49,10 @@ namespace NEventStore.PollingClient
                 var interval = DateTimeService.Now.Subtract(outOfSequenceTimestamp.Value);
                 if (interval.TotalMilliseconds > _outOfSequenceTimeoutInMilliseconds)
                 {
-                    if (_logger.IsDebugEnabled) _logger.Debug("Sequencer out of sequence timeout after {0} ms, last dispatched {1} now dispatching {2}", interval.TotalMilliseconds, _lastCommitRead, lc);
+                    _logger.LogDebug("Sequencer out of sequence timeout after {0} ms, last dispatched {1} now dispatching {2}", interval.TotalMilliseconds, _lastCommitRead, lc);
                     return InnerHandleResult(commit, lc);
                 }
-                if (_logger.IsDebugEnabled) _logger.Debug("Sequencer still out of sequence from {0} ms, last dispatched {1} now dispatching {2}", interval.TotalMilliseconds, _lastCommitRead, lc);
+                _logger.LogDebug("Sequencer still out of sequence from {0} ms, last dispatched {1} now dispatching {2}", interval.TotalMilliseconds, _lastCommitRead, lc);
             }
 
             return PollingClient2.HandlingResult.Retry;

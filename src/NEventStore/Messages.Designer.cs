@@ -124,7 +124,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Head CommitSequence [{0}] greater or equal than Attempt CommitSequence [{1}] - StreamId {2} - StreamRevision {3} - Events Count {4}.
+        ///   Looks up a localized string similar to Head CommitSequence [{0}] greater or equal than Attempt BucketId [{1}] - CommitSequence [{2}] - StreamId {3} - StreamRevision {4} - Events Count {5}.
         /// </summary>
         internal static string ConcurrencyExceptionCommitSequence {
             get {
@@ -133,7 +133,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Head StreamRevision [{0}] greater or equal than Attempt StreamRevision [{1}] - StreamId {2} - StreamRevision {3} - Events Count {4}.
+        ///   Looks up a localized string similar to Head StreamRevision [{0}] greater or equal than Attempt BucketId [{1}] - StreamId {2} - StreamRevision {3} - Events Count {4}.
         /// </summary>
         internal static string ConcurrencyExceptionStreamRevision {
             get {
@@ -322,7 +322,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Head CommitSequence [{0}] lesser than Attempt CommitSequence - 1 [{1}] - StreamId {2} - StreamRevision {3} - Events Count {4}.
+        ///   Looks up a localized string similar to Head CommitSequence [{0}] lesser than Attempt BucketId [{1}] - CommitSequence [{2}] - StreamId {3} - StreamRevision {4} - Events Count {5}.
         /// </summary>
         internal static string StorageExceptionCommitSequence {
             get {
@@ -331,7 +331,7 @@ namespace NEventStore {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Stream EOF: head.StreamRevision [{0}] &lt; attempt.StreamRevision [{1}] - attempt.Events.Count [{2}] - StreamId {3} - StreamRevision {4} .
+        ///   Looks up a localized string similar to Stream EOF: head.StreamRevision [{0}] &lt; attempt.StreamRevision [{1}] - attempt.Events.Count [{2}] - BucketId {3} - StreamId {4} - StreamRevision {5} .
         /// </summary>
         internal static string StorageExceptionEndOfStream {
             get {

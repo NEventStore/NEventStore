@@ -4,13 +4,14 @@ namespace NEventStore
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using Microsoft.Extensions.Logging;
     using NEventStore.Logging;
 
     [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix",
         Justification = "This behaves like a stream--not a .NET 'Stream' object, but a stream nonetheless.")]
     public sealed class OptimisticEventStream : IEventStream
     {
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(OptimisticEventStream));
+        private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(OptimisticEventStream));
         private readonly ICollection<EventMessage> _committed = new LinkedList<EventMessage>();
         private readonly ImmutableCollection<EventMessage> _committedImmutableWrapper;
         private readonly IDictionary<string, object> _committedHeaders = new Dictionary<string, object>();
@@ -74,21 +75,26 @@ namespace NEventStore
                 throw new ArgumentNullException(nameof(uncommittedEvent.Body));
             }
 
-            if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.AppendingUncommittedToStream, uncommittedEvent.Body.GetType(), StreamId);
+            Logger.LogTrace(Resources.AppendingUncommittedToStream, uncommittedEvent.Body.GetType(), StreamId, BucketId);
             _events.Add(uncommittedEvent);
         }
 
         public void CommitChanges(Guid commitId)
         {
-            if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.AttemptingToCommitChanges, StreamId);
+            Logger.LogTrace(Resources.AttemptingToCommitChanges, StreamId, BucketId);
 
             if (_isPartialStream)
             {
-                if (Logger.IsDebugEnabled) Logger.Debug(Resources.CannotAddCommitsToPartiallyLoadedStream, StreamId, StreamRevision);
+                Logger.LogDebug(Resources.CannotAddCommitsToPartiallyLoadedStream, StreamId, BucketId, StreamRevision);
 
                 RefreshStreamAfterConcurrencyException();
 
-                throw new ConcurrencyException();
+                throw new ConcurrencyException(string.Format(
+                    Resources.CannotAddCommitsToPartiallyLoadedStream,
+                    StreamId,
+                    BucketId,
+                    StreamRevision
+                    ));
             }
 
             if (_identifiers.Contains(commitId))
@@ -107,7 +113,7 @@ namespace NEventStore
             }
             catch (ConcurrencyException cex)
             {
-                if (Logger.IsDebugEnabled) Logger.Debug(Resources.UnderlyingStreamHasChanged, StreamId, cex.Message);
+                Logger.LogDebug(Resources.UnderlyingStreamHasChanged, StreamId, BucketId, cex.Message);
 
                 RefreshStreamAfterConcurrencyException();
 
@@ -124,7 +130,7 @@ namespace NEventStore
 
         public void ClearChanges()
         {
-            if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.ClearingUncommittedChanges, StreamId);
+            Logger.LogTrace(Resources.ClearingUncommittedChanges, StreamId, BucketId);
             _events.Clear();
             UncommittedHeaders.Clear();
         }
@@ -141,11 +147,11 @@ namespace NEventStore
                 if (currentRevision > maxRevision)
                 {
                     _isPartialStream = true;
-                    if (Logger.IsDebugEnabled) Logger.Debug(Resources.IgnoringBeyondRevision, commit.CommitId, StreamId, maxRevision);
+                    Logger.LogDebug(Resources.IgnoringBeyondRevision, commit.CommitId, StreamId, maxRevision);
                     return;
                 }
 
-                if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.AddingCommitsToStream, commit.CommitId, commit.Events.Count, StreamId);
+                Logger.LogTrace(Resources.AddingCommitsToStream, commit.CommitId, commit.Events.Count, StreamId, BucketId);
 
                 CommitSequence = commit.CommitSequence;
 
@@ -169,13 +175,13 @@ namespace NEventStore
                 if (currentRevision > maxRevision)
                 {
                     _isPartialStream = true;
-                    if (Logger.IsDebugEnabled) Logger.Debug(Resources.IgnoringBeyondRevision, commit.CommitId, StreamId, maxRevision);
+                    Logger.LogDebug(Resources.IgnoringBeyondRevision, commit.CommitId, StreamId, maxRevision);
                     break;
                 }
 
                 if (currentRevision++ < minRevision)
                 {
-                    if (Logger.IsDebugEnabled) Logger.Debug(Resources.IgnoringBeforeRevision, commit.CommitId, StreamId, maxRevision);
+                    Logger.LogDebug(Resources.IgnoringBeforeRevision, commit.CommitId, StreamId, maxRevision);
                     continue;
                 }
 
@@ -196,7 +202,7 @@ namespace NEventStore
                 return true;
             }
 
-            if (Logger.IsInfoEnabled) Logger.Info(Resources.NoChangesToCommit, StreamId);
+            Logger.LogInformation(Resources.NoChangesToCommit, StreamId, BucketId);
             return false;
         }
 
@@ -204,7 +210,7 @@ namespace NEventStore
         {
             CommitAttempt attempt = BuildCommitAttempt(commitId);
 
-            if (Logger.IsDebugEnabled) Logger.Debug(Resources.PersistingCommit, commitId, StreamId, attempt.Events?.Count ?? 0);
+            Logger.LogDebug(Resources.PersistingCommit, commitId, StreamId, BucketId, attempt.Events?.Count ?? 0);
             ICommit commit = _persistence.Commit(attempt);
 
             PopulateStream(StreamRevision + 1, attempt.StreamRevision, new[] { commit });
@@ -213,7 +219,7 @@ namespace NEventStore
 
         private CommitAttempt BuildCommitAttempt(Guid commitId)
         {
-            if (Logger.IsVerboseEnabled) Logger.Verbose(Resources.BuildingCommitAttempt, commitId, StreamId);
+            Logger.LogTrace(Resources.BuildingCommitAttempt, commitId, StreamId, BucketId);
             return new CommitAttempt(
                 BucketId,
                 StreamId,

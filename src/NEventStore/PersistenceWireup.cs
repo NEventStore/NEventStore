@@ -1,6 +1,7 @@
 namespace NEventStore
 {
     using System;
+    using Microsoft.Extensions.Logging;
     using NEventStore.Diagnostics;
     using NEventStore.Logging;
     using NEventStore.Persistence;
@@ -8,9 +9,9 @@ namespace NEventStore
 
     public class PersistenceWireup : Wireup
     {
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(PersistenceWireup));
+        private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(PersistenceWireup));
         private bool _initialize;
-#if !NETSTANDARD1_6 && !NETSTANDARD2_0
+#if NET461
         private bool _tracking;
         private string _trackingInstanceName;
 #endif
@@ -20,16 +21,14 @@ namespace NEventStore
         {
 #pragma warning disable S125 // Sections of code should not be commented out
             /* EnlistInAmbientTransaction: Will be moved to the specific Persistence driver or completely removed letting the clients handle that
-            #if !NETSTANDARD1_6
-                        Container.Register(TransactionScopeOption.Suppress);
-            #endif
+            Container.Register(TransactionScopeOption.Suppress);
             */
-        }
 #pragma warning restore S125 // Sections of code should not be commented out
+        }
 
         public virtual PersistenceWireup WithPersistence(IPersistStreams instance)
         {
-            if (Logger.IsInfoEnabled) Logger.Info(Messages.RegisteringPersistenceEngine, instance.GetType());
+            Logger.LogInformation(Messages.RegisteringPersistenceEngine, instance.GetType());
             With(instance);
             return this;
         }
@@ -41,12 +40,12 @@ namespace NEventStore
 
         public virtual PersistenceWireup InitializeStorageEngine()
         {
-            if (Logger.IsInfoEnabled) Logger.Info(Messages.ConfiguringEngineInitialization);
+            Logger.LogInformation(Messages.ConfiguringEngineInitialization);
             _initialize = true;
             return this;
         }
 
-#if !NETSTANDARD1_6 && !NETSTANDARD2_0
+#if NET461
         public virtual PersistenceWireup TrackPerformanceInstance(string instanceName)
         {
             if (instanceName == null)
@@ -54,7 +53,7 @@ namespace NEventStore
                 throw new ArgumentNullException(nameof(instanceName), Messages.InstanceCannotBeNull);
             }
 
-            if (Logger.IsInfoEnabled) Logger.Info(Messages.ConfiguringEnginePerformanceTracking);
+            Logger.LogInformation(Messages.ConfiguringEnginePerformanceTracking);
             _tracking = true;
             _trackingInstanceName = instanceName;
             return this;
@@ -63,7 +62,6 @@ namespace NEventStore
 
 #pragma warning disable S125 // Sections of code should not be commented out
         /* EnlistInAmbientTransaction: Will be moved to the specific Persistence driver or completely removed letting the clients handle that
-        #if !NETSTANDARD1_6
                 /// <summary>
                 /// Enables two-phase commit.
                 /// By default NEventStore will suppress surrounding TransactionScopes 
@@ -85,23 +83,22 @@ namespace NEventStore
                     Container.Register(TransactionScopeOption.Required);
                     return this;
                 }
-        #endif
         */
+#pragma warning restore S125 // Sections of code should not be commented out
 
         public override IStoreEvents Build()
-#pragma warning restore S125 // Sections of code should not be commented out
         {
-            if (Logger.IsInfoEnabled) Logger.Info(Messages.BuildingEngine);
+            Logger.LogInformation(Messages.BuildingEngine);
 
             var engine = Container.Resolve<IPersistStreams>();
 
             if (_initialize)
             {
-                if (Logger.IsDebugEnabled) Logger.Debug(Messages.InitializingEngine);
+                Logger.LogDebug(Messages.InitializingEngine);
                 engine.Initialize();
             }
 
-#if !NETSTANDARD1_6 && !NETSTANDARD2_0
+#if NET461
             if (_tracking)
             {
                 Container.Register<IPersistStreams>(new PerformanceCounterPersistenceEngine(engine, _trackingInstanceName));

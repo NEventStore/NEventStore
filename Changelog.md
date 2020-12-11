@@ -1,5 +1,18 @@
 # NEventStore Versions
 
+## 8.0.0
+
+- Added support for .net 5 [#489](https://github.com/NEventStore/NEventStore/issues/489).
+- Added support for .net framework 4.6.1.
+- Fixed InMemoryPersistenceEngine.AddSnapshot() behavior: adding multiple snapshots for the same tuple bucketId, streamId, streamRevision is not allowed; the updated snapshot will be ignored [#484](https://github.com/NEventStore/NEventStore/pull/484).
+- Logging infrastructure switched to [Microsoft.Extensions.Logging](https://docs.microsoft.com/en-us/dotnet/core/extensions/logging) [#454](https://github.com/NEventStore/NEventStore/issues/454), [#488](https://github.com/NEventStore/NEventStore/pull/488).
+- Reviewed Exception (and logging) messages: many of those that refer to a StreamId should also provide BucketId information [#480](https://github.com/NEventStore/NEventStore/issues/480)
+
+### Breaking Changes
+
+- Droppped support for .Net Framework 4.5, only .Net 4.6.1+ will be supported in 8.x. .Net Framewrok support will be dropped in a future revision.
+- Logging switched to Microsoft.Extensions.Logging, old logging code and configuration functions have been removed.
+
 ## 7.0.0
 
 - The IPersistStreams interface got some major changes:

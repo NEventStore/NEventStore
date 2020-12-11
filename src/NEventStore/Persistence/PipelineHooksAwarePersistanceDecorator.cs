@@ -3,11 +3,12 @@ namespace NEventStore.Persistence
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Microsoft.Extensions.Logging;
     using NEventStore.Logging;
 
     public sealed class PipelineHooksAwarePersistanceDecorator : IPersistStreams
     {
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof(PipelineHooksAwarePersistanceDecorator));
+        private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(PipelineHooksAwarePersistanceDecorator));
         private readonly IPersistStreams _original;
         private readonly IEnumerable<IPipelineHook> _pipelineHooks;
 
@@ -126,13 +127,13 @@ namespace NEventStore.Persistence
                 ICommit filtered = commit;
                 foreach (var hook in _pipelineHooks.Where(x => (filtered = x.Select(filtered)) == null))
                 {
-                    if (Logger.IsInfoEnabled) Logger.Info(Resources.PipelineHookSkippedCommit, hook.GetType(), commit.CommitId);
+                    Logger.LogInformation(Resources.PipelineHookSkippedCommit, hook.GetType(), commit.CommitId);
                     break;
                 }
 
                 if (filtered == null)
                 {
-                    if (Logger.IsInfoEnabled) Logger.Info(Resources.PipelineHookFilteredCommit);
+                    Logger.LogInformation(Resources.PipelineHookFilteredCommit);
                 }
                 else
                 {

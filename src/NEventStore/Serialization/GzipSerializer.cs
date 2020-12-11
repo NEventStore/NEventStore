@@ -2,11 +2,12 @@ namespace NEventStore.Serialization
 {
     using System.IO;
     using System.IO.Compression;
+    using Microsoft.Extensions.Logging;
     using NEventStore.Logging;
 
     public class GzipSerializer : ISerialize
     {
-        private static readonly ILog Logger = LogFactory.BuildLogger(typeof (GzipSerializer));
+        private static readonly ILogger Logger = LogFactory.BuildLogger(typeof (GzipSerializer));
         private readonly ISerialize _inner;
 
         public GzipSerializer(ISerialize inner)
@@ -16,14 +17,14 @@ namespace NEventStore.Serialization
 
         public virtual void Serialize<T>(Stream output, T graph)
         {
-            if (Logger.IsVerboseEnabled) Logger.Verbose(Messages.SerializingGraph, typeof (T));
+            Logger.LogTrace(Messages.SerializingGraph, typeof (T));
             using (var compress = new DeflateStream(output, CompressionMode.Compress, true))
                 _inner.Serialize(compress, graph);
         }
 
         public virtual T Deserialize<T>(Stream input)
         {
-            if (Logger.IsVerboseEnabled) Logger.Verbose(Messages.DeserializingStream, typeof (T));
+            Logger.LogTrace(Messages.DeserializingStream, typeof (T));
             using (var decompress = new DeflateStream(input, CompressionMode.Decompress, true))
                 return _inner.Deserialize<T>(decompress);
         }

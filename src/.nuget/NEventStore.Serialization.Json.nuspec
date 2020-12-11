@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
 		<id>NEventStore.Serialization.Json</id>
-		<version>6.0</version>
+		<version>8.0</version>
 		<title>NEventStore Json Serializers</title>
 		<authors>NEventStore Dev Team</authors>
 		<owners>NEventStore Dev Team</owners>
