@@ -3,7 +3,6 @@ namespace NEventStore
     using System;
     using System.Collections.Generic;
     using NEventStore.Logging;
-    using System.Reflection;
     using Microsoft.Extensions.Logging;
 
     public class NanoContainer
