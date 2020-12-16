@@ -18,6 +18,11 @@ namespace NEventStore.Persistence.Sql.SqlDialects
             get { return "SET ROWCOUNT 1;\n" + base.GetSnapshot.Replace("LIMIT 1;", ";"); }
         }
 
+        public override string GetSnapshotWithoutPayload
+        {
+            get { return "SET ROWCOUNT 1;\n" + base.GetSnapshot.Replace("LIMIT 1;", ";"); }
+        }
+
         public override string GetCommitsFromStartingRevision
         {
             get { return NaturalPaging(base.GetCommitsFromStartingRevision); }
