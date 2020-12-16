@@ -268,6 +268,20 @@ namespace NEventStore.Persistence.Sql
                 });
         }
 
+        public ISnapshot GetSnapshotWithoutPayload(string bucketId, string streamId, int maxRevision)
+        {
+            Logger.Debug(Messages.GettingRevision, streamId, maxRevision);
+            var streamIdHash = _streamIdHasher.GetHash(streamId);
+            return ExecuteQuery(query =>
+            {
+                string statement = _dialect.GetSnapshotWithoutPayload;
+                query.AddParameter(_dialect.BucketId, bucketId, DbType.AnsiString);
+                query.AddParameter(_dialect.StreamId, streamIdHash, DbType.AnsiString);
+                query.AddParameter(_dialect.StreamRevision, maxRevision);
+                return query.ExecuteWithQuery(statement).Select(x => x.GetSnapshotWithoutPayload(streamId));
+            }).FirstOrDefault();
+        }
+
         public virtual ISnapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
         {
             Logger.Debug(Messages.GettingRevision, streamId, maxRevision);

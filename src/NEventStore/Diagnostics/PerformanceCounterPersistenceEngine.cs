@@ -102,6 +102,11 @@ namespace NEventStore.Diagnostics
             return _persistence.GetStreamsToSnapshot(bucketId, maxThreshold);
         }
 
+        public ISnapshot GetSnapshotWithoutPayload(string bucketId, string streamId, int maxRevision)
+        {
+            return _persistence.GetSnapshotWithoutPayload(bucketId, streamId, maxRevision);
+        }
+
         public virtual void Purge()
         {
             _persistence.Purge();

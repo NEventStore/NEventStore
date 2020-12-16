@@ -22,6 +22,7 @@ namespace NEventStore.Persistence.Sql
 
         string GetStreamsRequiringSnapshots { get; }
         string GetSnapshot { get; }
+        string GetSnapshotWithoutPayload { get; }
         string AppendSnapshotToCommit { get; }
 
         string GetUndispatchedCommits { get; }

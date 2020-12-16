@@ -40,5 +40,16 @@ namespace NEventStore
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
         IEnumerable<IStreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold);
+
+        /// <summary>
+        ///     Gets the most recent snapshot metadata without the payload.
+        /// </summary>
+        /// <param name="bucketId">The value which uniquely identifies bucket the stream belongs to.</param>
+        /// <param name="streamId">The stream to be searched for a snapshot.</param>
+        /// <param name="maxRevision">The maximum revision possible for the desired snapshot.</param>
+        /// <returns>If found, it returns the snapshot; otherwise null is returned.</returns>
+        /// <exception cref="StorageException" />
+        /// <exception cref="StorageUnavailableException" />
+        ISnapshot GetSnapshotWithoutPayload(string bucketId, string streamId, int maxRevision);
     }
 }

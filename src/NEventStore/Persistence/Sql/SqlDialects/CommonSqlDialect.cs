@@ -61,6 +61,11 @@ namespace NEventStore.Persistence.Sql.SqlDialects
             get { return CommonSqlStatements.GetSnapshot; }
         }
 
+        public string GetSnapshotWithoutPayload
+        {
+            get { return CommonSqlStatements.GetSnapshotWithoutPayload; }
+        }
+
         public virtual string AppendSnapshotToCommit
         {
             get { return CommonSqlStatements.AppendSnapshotToCommit; }

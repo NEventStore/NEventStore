@@ -60,6 +60,11 @@ namespace NEventStore.Persistence
             return _original.GetStreamsToSnapshot(bucketId, maxThreshold);
         }
 
+        public ISnapshot GetSnapshotWithoutPayload(string bucketId, string streamId, int maxRevision)
+        {
+            return _original.GetSnapshotWithoutPayload(bucketId, streamId, maxRevision);
+        }
+
         public void Initialize()
         {
             _original.Initialize();

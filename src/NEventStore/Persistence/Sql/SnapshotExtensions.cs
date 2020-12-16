@@ -34,6 +34,15 @@ namespace NEventStore.Persistence.Sql
                 serializer.Deserialize<object>(record, PayloadIndex));
         }
 
+        public static Snapshot GetSnapshotWithoutPayload(this IDataRecord record, string streamIdOriginal)
+        {
+            return new Snapshot(
+                record[BucketIdIndex].ToString(),
+                streamIdOriginal,
+                record[StreamRevisionIndex].ToInt(),
+                null);
+        }
+
         public static T Deserialize<T>(this ISerializeSnapshots serializer, IDataRecord record, int index)
         {
             if (index >= record.FieldCount)

@@ -107,6 +107,13 @@ namespace NEventStore.Persistence.InMemory
             return this[bucketId].GetStreamsToSnapshot(maxThreshold);
         }
 
+        public ISnapshot GetSnapshotWithoutPayload(string bucketId, string streamId, int maxRevision)
+        {
+            ThrowWhenDisposed();
+            Logger.Debug(Resources.GettingSnapshotForStream, bucketId, streamId, maxRevision);
+            return this[bucketId].GetSnapshot(streamId, maxRevision);
+        }
+
         public ISnapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
         {
             ThrowWhenDisposed();

@@ -1,0 +1,3 @@
+To create a new nuget package, execute
+
+.\Build.RunTask.bat NuGetPack 5.2.x 
