@@ -1,3 +1,5 @@
+#pragma warning disable RCS1170 // Use read-only auto-implemented property.
+
 namespace NEventStore.Persistence
 {
     using System.Collections.Generic;
@@ -23,12 +25,7 @@ namespace NEventStore.Persistence
             SnapshotRevision = snapshotRevision;
         }
 
-        private static readonly IEqualityComparer<StreamHead> StreamIdBucketIdComparerInstance = new StreamHeadEqualityComparer();
-
-        public static IEqualityComparer<StreamHead> StreamIdBucketIdComparer
-        {
-            get { return StreamIdBucketIdComparerInstance; }
-        }
+        public static IEqualityComparer<StreamHead> StreamIdBucketIdComparer { get; } = new StreamHeadEqualityComparer();
 
         /// <summary>
         ///     Initializes a new instance of the StreamHead class.
@@ -77,3 +74,5 @@ namespace NEventStore.Persistence
         }
     }
 }
+
+#pragma warning restore RCS1170 // Use read-only auto-implemented property.

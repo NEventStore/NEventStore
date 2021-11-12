@@ -13,7 +13,7 @@ namespace NEventStore
     public interface IEventStream : IDisposable
     {
         /// <summary>
-        ///     Gets the value which identifies bucket to which the the stream belongs.
+        ///     Gets the value which identifies bucket to which the stream belongs.
         /// </summary>
         string BucketId { get; }
 

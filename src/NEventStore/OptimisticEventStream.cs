@@ -72,7 +72,7 @@ namespace NEventStore
 
             if (uncommittedEvent.Body == null)
             {
-                throw new ArgumentNullException(nameof(uncommittedEvent.Body));
+                throw new ArgumentException(nameof(uncommittedEvent.Body));
             }
 
             Logger.LogTrace(Resources.AppendingUncommittedToStream, uncommittedEvent.Body.GetType(), StreamId, BucketId);
@@ -210,7 +210,7 @@ namespace NEventStore
         {
             CommitAttempt attempt = BuildCommitAttempt(commitId);
 
-            Logger.LogDebug(Resources.PersistingCommit, commitId, StreamId, BucketId, attempt.Events?.Length ?? 0);
+            Logger.LogDebug(Resources.PersistingCommit, commitId, StreamId, BucketId, attempt.Events?.Count ?? 0);
             ICommit commit = _persistence.Commit(attempt);
 
             PopulateStream(StreamRevision + 1, attempt.StreamRevision, new[] { commit });

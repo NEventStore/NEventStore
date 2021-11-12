@@ -1,11 +1,16 @@
 namespace NEventStore.Serialization
 {
+    using System;
     using System.IO;
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
     using Microsoft.Extensions.Logging;
     using NEventStore.Logging;
 
+    /// <summary>
+    /// Delegates to <see cref="BinaryFormatter"/> to perform the actual serialization.
+    /// </summary>
+    [Obsolete("BinaryFormatter serialization is obsolete and should not be used. See https://aka.ms/binaryformatter for more information.")]
     public class BinarySerializer : ISerialize
     {
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof (BinarySerializer));

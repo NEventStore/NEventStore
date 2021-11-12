@@ -3,6 +3,7 @@
 ## 9.0.0
 
 - Added support for .net 6 [#493](https://github.com/NEventStore/NEventStore/issues/493).
+- Change / Optimization: Commit and CommitAttempt do not create internal readonly collections anymore, it can be useless given the fact we can change properties of events.
 
 ## 8.0.0
 
