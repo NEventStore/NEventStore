@@ -1,5 +1,9 @@
 # NEventStore Versions
 
+## 9.0.0
+
+- Added support for .net 6 [#493](https://github.com/NEventStore/NEventStore/issues/493).
+
 ## 8.0.0
 
 - Added support for .net 5 [#489](https://github.com/NEventStore/NEventStore/issues/489).
