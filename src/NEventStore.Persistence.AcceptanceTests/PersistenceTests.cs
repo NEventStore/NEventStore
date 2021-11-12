@@ -38,7 +38,7 @@ namespace NEventStore.Persistence.AcceptanceTests
                 2,
                 Guid.NewGuid(),
                 1,
-                DateTime.Now,
+                DateTime.UtcNow,
                 new Dictionary<string, object> { { "key.1", "value" } },
                 new List<EventMessage> { new EventMessage { Body = new ExtensionMethods.SomeDomainEvent { SomeProperty = "Test" } } });
             Persistence.Commit(attempt);
