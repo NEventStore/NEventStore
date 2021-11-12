@@ -29,7 +29,7 @@ namespace NEventStore.Diagnostics
             Stopwatch clock = Stopwatch.StartNew();
             ICommit commit = _persistence.Commit(attempt);
             clock.Stop();
-            _counters.CountCommit(attempt.Events.Length, clock.ElapsedMilliseconds);
+            _counters.CountCommit(attempt.Events.Count, clock.ElapsedMilliseconds);
             return commit;
         }
 

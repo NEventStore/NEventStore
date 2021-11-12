@@ -22,7 +22,7 @@ namespace NEventStore
                 throw new ArgumentNullException(nameof(persistence));
             }
 
-            _pipelineHooks = pipelineHooks ?? new IPipelineHook[0];
+            _pipelineHooks = pipelineHooks ?? Array.Empty<IPipelineHook>();
             if (_pipelineHooks.Any())
             {
                 _persistence = new PipelineHooksAwarePersistanceDecorator(persistence, _pipelineHooks);
@@ -53,7 +53,7 @@ namespace NEventStore
                 return null;
             }
 
-            Logger.LogTrace(Resources.CommittingAttempt, attempt.CommitId, attempt.Events?.Length ?? 0);
+            Logger.LogTrace(Resources.CommittingAttempt, attempt.CommitId, attempt.Events?.Count ?? 0);
             ICommit commit = _persistence.Commit(attempt);
 
             foreach (var hook in _pipelineHooks)

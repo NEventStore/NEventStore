@@ -53,7 +53,7 @@ namespace NEventStore
                     attempt.CommitSequence,
                     attempt.StreamId,
                     attempt.StreamRevision,
-                    attempt.Events.Length
+                    attempt.Events.Count
                 ));
             }
 
@@ -65,7 +65,7 @@ namespace NEventStore
                     attempt.BucketId,
                     attempt.StreamId,
                     attempt.StreamRevision,
-                    attempt.Events.Length
+                    attempt.Events.Count
                 ));
             }
 
@@ -78,17 +78,17 @@ namespace NEventStore
                      attempt.CommitSequence,
                      attempt.StreamId,
                      attempt.StreamRevision,
-                     attempt.Events.Length
+                     attempt.Events.Count
                  )); // beyond the end of the stream
             }
 
-            if (head.StreamRevision < attempt.StreamRevision - attempt.Events.Length)
+            if (head.StreamRevision < attempt.StreamRevision - attempt.Events.Count)
             {
                 throw new StorageException(String.Format(
                      Messages.StorageExceptionEndOfStream,
                      head.StreamRevision,
                      attempt.StreamRevision,
-                     attempt.Events.Length,
+                     attempt.Events.Count,
                      attempt.BucketId,
                      attempt.StreamId,
                      attempt.StreamRevision

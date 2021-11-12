@@ -4,8 +4,6 @@ namespace NEventStore
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
 
     public class CommitAttempt
     {
@@ -25,8 +23,8 @@ namespace NEventStore
             Guid commitId,
             int commitSequence,
             DateTime commitStamp,
-            Dictionary<string, object> headers,
-            EventMessage[] events)
+            IDictionary<string, object> headers,
+            ICollection<EventMessage> events)
             : this(Bucket.Default, streamId.ToString(), streamRevision, commitId, commitSequence, commitStamp, headers, events)
         { }
 
@@ -46,15 +44,15 @@ namespace NEventStore
             Guid commitId,
             int commitSequence,
             DateTime commitStamp,
-            Dictionary<string, object> headers,
-            EventMessage[] events)
+            IDictionary<string, object> headers,
+            ICollection<EventMessage> events)
             : this(Bucket.Default, streamId, streamRevision, commitId, commitSequence, commitStamp, headers, events)
         { }
 
         /// <summary>
         ///     Initializes a new instance of the Commit class.
         /// </summary>
-        /// <param name="bucketId">The value which identifies bucket to which the the stream and the the commit belongs</param>
+        /// <param name="bucketId">The value which identifies bucket to which the stream and the commit belongs</param>
         /// <param name="streamId">The value which uniquely identifies the stream in a bucket to which the commit belongs.</param>
         /// <param name="streamRevision">The value which indicates the revision of the most recent event in the stream to which this commit applies.</param>
         /// <param name="commitId">The value which uniquely identifies the commit within the stream.</param>
@@ -69,8 +67,8 @@ namespace NEventStore
             Guid commitId,
             int commitSequence,
             DateTime commitStamp,
-            Dictionary<string, object> headers,
-            EventMessage[] events)
+            IDictionary<string, object> headers,
+            ICollection<EventMessage> events)
         {
             Guard.NotNullOrWhiteSpace(() => bucketId, bucketId);
             Guard.NotNullOrWhiteSpace(() => streamId, streamId);
@@ -87,14 +85,14 @@ namespace NEventStore
             CommitSequence = commitSequence;
             CommitStamp = commitStamp;
             Headers = headers ?? new Dictionary<string, object>();
-            Events = events ?? new EventMessage[0];
+            Events = events ?? Array.Empty<EventMessage>();
             //Events = events == null ?
             //    new ReadOnlyCollection<EventMessage>(new List<EventMessage>()) :
             //    new ReadOnlyCollection<EventMessage>(events.ToList());
         }
 
         /// <summary>
-        ///     Gets the value which identifies bucket to which the the stream and the the commit belongs.
+        ///     Gets the value which identifies bucket to which the stream and the commit belongs.
         /// </summary>
         public string BucketId { get; private set; }
 
@@ -126,12 +124,12 @@ namespace NEventStore
         /// <summary>
         ///     Gets the metadata which provides additional, unstructured information about this commit.
         /// </summary>
-        public Dictionary<string, object> Headers { get; private set; }
+        public IDictionary<string, object> Headers { get; private set; }
 
         /// <summary>
         ///     Gets the collection of event messages to be committed as a single unit.
         /// </summary>
-        public EventMessage[] Events { get; private set; }
+        public ICollection<EventMessage> Events { get; private set; }
     }
 }
 

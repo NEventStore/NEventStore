@@ -8,8 +8,10 @@ namespace NEventStore.Serialization.AcceptanceTests
     {
         public SerializerFixture()
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             _createSerializer = () =>
                 new BinarySerializer();
+#pragma warning restore CS0618 // Type or member is obsolete
         }
     }
 }

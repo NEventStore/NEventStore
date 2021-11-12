@@ -213,7 +213,7 @@ namespace NEventStore
         [Fact]
         public void should_throw()
         {
-            _thrown.Should().BeOfType<ArgumentNullException>();
+            _thrown.Should().BeOfType<ArgumentException>();
         }
     }
 
@@ -415,7 +415,7 @@ namespace NEventStore
         [Fact]
         public void should_build_the_commit_containing_all_uncommitted_events()
         {
-            _constructed.Events.Length.Should().Be(_headers.Count);
+            _constructed.Events.Count.Should().Be(_headers.Count);
         }
 
         [Fact]
