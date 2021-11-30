@@ -12,24 +12,28 @@ namespace NEventStore.Serialization.Json
     public class JsonSerializer : ISerialize
     {
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(JsonSerializer));
-
         private readonly IEnumerable<Type> _knownTypes = new[] { typeof(List<EventMessage>), typeof(Dictionary<string, object>) };
 
-        private readonly Newtonsoft.Json.JsonSerializer _typedSerializer = new Newtonsoft.Json.JsonSerializer
-        {
-            TypeNameHandling = TypeNameHandling.All,
-            DefaultValueHandling = DefaultValueHandling.Ignore,
-            NullValueHandling = NullValueHandling.Ignore
-        };
+        private readonly Newtonsoft.Json.JsonSerializer _typedSerializer;
 
-        private readonly Newtonsoft.Json.JsonSerializer _untypedSerializer = new Newtonsoft.Json.JsonSerializer
-        {
-            TypeNameHandling = TypeNameHandling.Auto,
-            DefaultValueHandling = DefaultValueHandling.Ignore,
-            NullValueHandling = NullValueHandling.Ignore
-        };
+        private readonly Newtonsoft.Json.JsonSerializer _untypedSerializer;
 
-        public JsonSerializer(params Type[] knownTypes)
+        /// <summary>
+        /// NEventStore Json Serialization using Newtonsoft.Json
+        /// </summary>
+        /// <param name="jsonSerializerSettings">Allows to configure some Json serialization options,
+        /// some of them will be overwritten given the values passed to <paramref name="knownTypes"/> parameter</param>
+        /// <param name="knownTypes">
+        /// Every Type specified here will be serialized with:
+        /// - TypeNameHandling = TypeNameHandling.Auto
+        /// - DefaultValueHandling = DefaultValueHandling.Ignore
+        /// - NullValueHandling = NullValueHandling.Ignore
+        /// Every other type will be serialized with:
+        /// - TypeNameHandling = TypeNameHandling.All
+        /// - DefaultValueHandling = DefaultValueHandling.Ignore
+        /// - NullValueHandling = NullValueHandling.Ignore
+        /// </param>
+        public JsonSerializer(JsonSerializerSettings jsonSerializerSettings, params Type[] knownTypes)
         {
             if (knownTypes?.Length == 0)
             {
@@ -37,6 +41,16 @@ namespace NEventStore.Serialization.Json
             }
 
             _knownTypes = knownTypes ?? _knownTypes;
+
+            _typedSerializer = Newtonsoft.Json.JsonSerializer.Create(jsonSerializerSettings);
+            _typedSerializer.TypeNameHandling = TypeNameHandling.All;
+            _typedSerializer.DefaultValueHandling = DefaultValueHandling.Ignore;
+            _typedSerializer.NullValueHandling = NullValueHandling.Ignore;
+
+            _untypedSerializer = Newtonsoft.Json.JsonSerializer.Create(jsonSerializerSettings);
+            _untypedSerializer.TypeNameHandling = TypeNameHandling.Auto;
+            _untypedSerializer.DefaultValueHandling = DefaultValueHandling.Ignore;
+            _untypedSerializer.NullValueHandling = NullValueHandling.Ignore;
 
             if (Logger.IsEnabled(LogLevel.Debug))
             {
