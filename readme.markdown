@@ -7,7 +7,8 @@ This library is developed with a specific focus on [DDD](http://en.wikipedia.org
 
 NEventStore currently supports:
 
-- .net 5
+- .net 6.0
+- .net 5.0
 - .net standard 2.0
 - .net framework 4.6.1
 

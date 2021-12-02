@@ -32,7 +32,7 @@ namespace NEventStore.Conversion
                     converted = true;
                     return new EventMessage { Headers = eventMessage.Headers, Body = convert };
                 })
-                .ToList();
+                .ToArray();
             if (!converted)
             {
                 return committed;

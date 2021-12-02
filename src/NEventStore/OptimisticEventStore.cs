@@ -22,7 +22,7 @@ namespace NEventStore
                 throw new ArgumentNullException(nameof(persistence));
             }
 
-            _pipelineHooks = pipelineHooks ?? new IPipelineHook[0];
+            _pipelineHooks = pipelineHooks ?? Array.Empty<IPipelineHook>();
             if (_pipelineHooks.Any())
             {
                 _persistence = new PipelineHooksAwarePersistanceDecorator(persistence, _pipelineHooks);

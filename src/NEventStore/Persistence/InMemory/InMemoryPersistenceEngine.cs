@@ -186,7 +186,7 @@ namespace NEventStore.Persistence.InMemory
                 DateTime commitStamp,
                 Int64 checkpointToken,
                 IDictionary<string, object> headers,
-                IEnumerable<EventMessage> events)
+                ICollection<EventMessage> events)
                 : base(bucketId, streamId, streamRevision, commitId, commitSequence, commitStamp, checkpointToken, headers, events)
             { }
         }

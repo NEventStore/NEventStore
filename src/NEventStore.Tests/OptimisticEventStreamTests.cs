@@ -213,7 +213,7 @@ namespace NEventStore
         [Fact]
         public void should_throw()
         {
-            _thrown.Should().BeOfType<ArgumentNullException>();
+            _thrown.Should().BeOfType<ArgumentException>();
         }
     }
 

@@ -4,8 +4,6 @@ namespace NEventStore
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
 
     public class CommitAttempt
     {
@@ -26,7 +24,7 @@ namespace NEventStore
             int commitSequence,
             DateTime commitStamp,
             IDictionary<string, object> headers,
-            IEnumerable<EventMessage> events)
+            ICollection<EventMessage> events)
             : this(Bucket.Default, streamId.ToString(), streamRevision, commitId, commitSequence, commitStamp, headers, events)
         { }
 
@@ -47,14 +45,14 @@ namespace NEventStore
             int commitSequence,
             DateTime commitStamp,
             IDictionary<string, object> headers,
-            IEnumerable<EventMessage> events)
+            ICollection<EventMessage> events)
             : this(Bucket.Default, streamId, streamRevision, commitId, commitSequence, commitStamp, headers, events)
-        {}
+        { }
 
         /// <summary>
         ///     Initializes a new instance of the Commit class.
         /// </summary>
-        /// <param name="bucketId">The value which identifies bucket to which the the stream and the the commit belongs</param>
+        /// <param name="bucketId">The value which identifies bucket to which the stream and the commit belongs</param>
         /// <param name="streamId">The value which uniquely identifies the stream in a bucket to which the commit belongs.</param>
         /// <param name="streamRevision">The value which indicates the revision of the most recent event in the stream to which this commit applies.</param>
         /// <param name="commitId">The value which uniquely identifies the commit within the stream.</param>
@@ -70,9 +68,8 @@ namespace NEventStore
             int commitSequence,
             DateTime commitStamp,
             IDictionary<string, object> headers,
-            IEnumerable<EventMessage> events)
+            ICollection<EventMessage> events)
         {
-            //TODO write tests for these?
             Guard.NotNullOrWhiteSpace(() => bucketId, bucketId);
             Guard.NotNullOrWhiteSpace(() => streamId, streamId);
             Guard.NotLessThanOrEqualTo(() => streamRevision, streamRevision, 0);
@@ -88,14 +85,15 @@ namespace NEventStore
             CommitSequence = commitSequence;
             CommitStamp = commitStamp;
             Headers = headers ?? new Dictionary<string, object>();
-            Events = events == null ?
-                new ReadOnlyCollection<EventMessage>(new List<EventMessage>()) :
-                new ReadOnlyCollection<EventMessage>(events.ToList());
+            Events = events ?? Array.Empty<EventMessage>();
+            //Events = events == null ?
+            //    new ReadOnlyCollection<EventMessage>(new List<EventMessage>()) :
+            //    new ReadOnlyCollection<EventMessage>(events.ToList());
         }
 
-                               /// <summary>
-                               ///     Gets the value which identifies bucket to which the the stream and the the commit belongs.
-                               /// </summary>
+        /// <summary>
+        ///     Gets the value which identifies bucket to which the stream and the commit belongs.
+        /// </summary>
         public string BucketId { get; private set; }
 
         /// <summary>

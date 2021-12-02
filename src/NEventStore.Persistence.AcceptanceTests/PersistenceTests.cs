@@ -1,6 +1,6 @@
+
 #pragma warning disable 169 // ReSharper disable InconsistentNaming
 #pragma warning disable IDE1006 // Naming Styles
-#pragma warning disable S101 // Types should be named in PascalCase
 
 namespace NEventStore.Persistence.AcceptanceTests
 {
@@ -38,9 +38,9 @@ namespace NEventStore.Persistence.AcceptanceTests
                 2,
                 Guid.NewGuid(),
                 1,
-                DateTime.Now,
+                DateTime.UtcNow,
                 new Dictionary<string, object> { { "key.1", "value" } },
-                new List<EventMessage> { new EventMessage { Body = new ExtensionMethods.SomeDomainEvent { SomeProperty = "Test" } } });
+                new EventMessage[] { new EventMessage { Body = new ExtensionMethods.SomeDomainEvent { SomeProperty = "Test" } } });
             Persistence.Commit(attempt);
         }
 
@@ -130,9 +130,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_cause_the_stream_to_be_found_in_the_list_of_streams_to_snapshot()
         {
-#pragma warning disable RCS1202 // Avoid NullReferenceException.
             Persistence.GetStreamsToSnapshot(1).FirstOrDefault(x => x.StreamId == _streamId).Should().NotBeNull();
-#pragma warning restore RCS1202 // Avoid NullReferenceException.
         }
     }
 
@@ -330,8 +328,8 @@ namespace NEventStore.Persistence.AcceptanceTests
                 commit.CommitId,
                 commit.CommitSequence,
                 commit.CommitStamp,
-                commit.Headers,
-                commit.Events);
+                commit.Headers.ToDictionary(k => k.Key, v => v.Value),
+                commit.Events.ToArray());
         }
 
         protected override void Because()
@@ -364,8 +362,8 @@ namespace NEventStore.Persistence.AcceptanceTests
                 commit.CommitId,
                 commit.CommitSequence + 1,
                 commit.CommitStamp,
-                commit.Headers,
-                commit.Events
+                commit.Headers.ToDictionary(k => k.Key, v => v.Value),
+                commit.Events.ToArray()
             );
         }
 
@@ -611,9 +609,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_find_the_stream_in_the_set_of_streams_to_be_snapshot_when_within_the_threshold()
         {
-#pragma warning disable RCS1202 // Avoid NullReferenceException.
             Persistence.GetStreamsToSnapshot(WithinThreshold).FirstOrDefault(x => x.StreamId == _streamId).Should().NotBeNull();
-#pragma warning restore RCS1202 // Avoid NullReferenceException.
         }
 
         [Fact]
@@ -1227,7 +1223,7 @@ namespace NEventStore.Persistence.AcceptanceTests
                 1,
                 DateTime.UtcNow,
                 new Dictionary<string, object>(),
-                new List<EventMessage> { new EventMessage { Body = new string('a', bodyLength) } });
+                new EventMessage[] { new EventMessage { Body = new string('a', bodyLength) } });
             Persistence.Commit(attempt);
 
             ICommit commits = Persistence.GetFrom(0).Single();
@@ -1288,7 +1284,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         /// This code was meant to be run right before every test in the fixture to give time
         /// to do further initialization before the PersistenceEngineFixture was created.
         /// Unfortunately the 3 frameworks
-        /// have very different ways of doing this: 
+        /// have very different ways of doing this:
         /// - NUnit: TestFixtureSetUp
         /// - MSTest: ClassInitialize (not inherited, will be ignored if defined on a base class)
         /// - xUnit: IUseFixture + SetFixture
@@ -1380,6 +1376,5 @@ namespace NEventStore.Persistence.AcceptanceTests
     }
 }
 
-#pragma warning restore S101 // Types should be named in PascalCase
 #pragma warning restore 169 // ReSharper disable InconsistentNaming
 #pragma warning restore IDE1006 // Naming Styles

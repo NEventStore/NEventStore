@@ -5,7 +5,7 @@ using System;
 namespace NEventStore.Benchmark.Benchmarks
 {
     [Config(typeof(AllowNonOptimized))]
-    [SimpleJob(launchCount: 3, warmupCount: 3, targetCount: 20, invocationCount: -1)]
+    [SimpleJob(launchCount: 3, warmupCount: 3, targetCount: 3, invocationCount: 1)]
     [MemoryDiagnoser]
     [MeanColumn, StdErrorColumn, StdDevColumn, MinColumn, MaxColumn, IterationsColumn]
     public class PersistenceBenchmarks
@@ -18,6 +18,9 @@ namespace NEventStore.Benchmark.Benchmarks
             _eventStore = EventStoreHelpers.WireupEventStore();
         }
 
+        [Params(100, 1000, 10000, 100000)]
+        public int CommitsToWrite { get; set; }
+
         [Benchmark]
         public void WriteToStream()
         {
@@ -26,8 +29,7 @@ namespace NEventStore.Benchmark.Benchmarks
             // if no commits exist then it creates a new stream for us.
             using (var stream = _eventStore.OpenStream(StreamId, 0, int.MaxValue))
             {
-                // add XXX commits to the stream
-                for (int i = 0; i < 500; i++)
+                for (int i = 0; i < CommitsToWrite; i++)
                 {
                     var @event = new SomeDomainEvent { Value = i.ToString() };
                     stream.Add(new EventMessage { Body = @event });
@@ -41,8 +43,7 @@ namespace NEventStore.Benchmark.Benchmarks
         {
             using (var stream = _eventStore.OpenStream(StreamId, 0, int.MaxValue))
             {
-                // add XXX commits to the stream
-                for (int i = 0; i < 500; i++)
+                for (int i = 0; i < CommitsToWrite; i++)
                 {
                     var @event = new SomeDomainEvent { Value = i.ToString() };
                     stream.Add(new EventMessage { Body = @event });
