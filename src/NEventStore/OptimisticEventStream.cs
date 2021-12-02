@@ -72,7 +72,7 @@ namespace NEventStore
 
             if (uncommittedEvent.Body == null)
             {
-                throw new ArgumentNullException(nameof(uncommittedEvent.Body));
+                throw new ArgumentException(nameof(uncommittedEvent.Body));
             }
 
             Logger.LogTrace(Resources.AppendingUncommittedToStream, uncommittedEvent.Body.GetType(), StreamId, BucketId);
@@ -228,7 +228,7 @@ namespace NEventStore
                 CommitSequence + 1,
                 SystemTime.UtcNow,
                 UncommittedHeaders.ToDictionary(x => x.Key, x => x.Value),
-                _events.ToList());
+                _events.ToArray()); // check this for performance: preallocate the array size.
         }
 
         public void Dispose()

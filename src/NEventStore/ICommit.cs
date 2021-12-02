@@ -9,7 +9,7 @@ namespace NEventStore
     public interface ICommit
     {
         /// <summary>
-        ///     Gets the value which identifies bucket to which the the stream and the the commit belongs.
+        ///     Gets the value which identifies bucket to which the stream and the commit belongs.
         /// </summary>
         string BucketId { get; }
 

@@ -600,7 +600,7 @@ namespace NEventStore
 
         protected CommitAttempt BuildCommitAttemptStub(int streamRevision, int commitSequence)
         {
-            List<EventMessage> events = new[] { new EventMessage() }.ToList();
+            var events = new[] { new EventMessage() };
             return new CommitAttempt(Bucket.Default, streamId, streamRevision, Guid.NewGuid(), commitSequence, SystemTime.UtcNow, null, events);
         }
 
