@@ -595,7 +595,7 @@ namespace NEventStore.Persistence.Sql
 
         protected virtual TransactionScope OpenCommandScope()
         {
-            return new TransactionScope(_scopeOption);
+            return new TransactionScope(_scopeOption, TransactionScopeAsyncFlowOption.Enabled);
         }
 
         private static bool RecoverableException(Exception e)
