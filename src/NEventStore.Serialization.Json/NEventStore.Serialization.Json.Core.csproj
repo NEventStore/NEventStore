@@ -14,6 +14,7 @@
     <Description>This package contains Json serializers for NEventStore library. These serializers were removed from the core package to limit dependencies from external libraries.</Description>
     <PackageTags>events, event sourcing, cqrs, storage, persistence, database</PackageTags>
     <PackageReleaseNotes></PackageReleaseNotes>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;DEBUG</DefineConstants>

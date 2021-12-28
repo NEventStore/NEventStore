@@ -1,5 +1,9 @@
 # NEventStore Versions
 
+## 9.0.1 
+
+- Added documentation files to NuGet packages (improved intellisense support) [#496](https://github.com/NEventStore/NEventStore/issues/496)
+
 ## 9.0.0
 
 - Added support for .net 6 [#493](https://github.com/NEventStore/NEventStore/issues/493).
