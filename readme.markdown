@@ -46,5 +46,4 @@ ChangeLog can be [found here](Changelog.md)
 
 To build the project locally on a Windows Machine:
 
-- Install [Chocolatey](https://chocolatey.org/).
 - Open a Powershell console in Administrative mode and run the build script `build.ps1` in the root of the repository.
