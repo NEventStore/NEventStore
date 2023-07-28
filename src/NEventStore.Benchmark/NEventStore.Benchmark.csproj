@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-      <TargetFrameworks>net6.0;net5.0;netcoreapp3.1;net461</TargetFrameworks>
-      <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-      <ApplicationIcon />
-      <OutputTypeEx>exe</OutputTypeEx>
-      <StartupObject />
-      <OutputType>Exe</OutputType>
+    <TargetFrameworks>net7.0;net462</TargetFrameworks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ApplicationIcon />
+    <OutputTypeEx>exe</OutputTypeEx>
+    <StartupObject />
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.6" />
   </ItemGroup>
 
   <ItemGroup>

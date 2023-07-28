@@ -9,7 +9,7 @@
                // .LogToConsoleWindow(LogLevel.Verbose)
                .UsingInMemoryPersistence()
                .InitializeStorageEngine()
-#if NET461
+#if NET462
                .TrackPerformanceInstance("example")
 #endif
                // .HookIntoPipelineUsing(new[] { new AuthorizationPipelineHook() })

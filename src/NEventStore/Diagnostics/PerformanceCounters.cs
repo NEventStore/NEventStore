@@ -5,7 +5,7 @@ namespace NEventStore.Diagnostics
 
     // PerformanceCounters are not cross platform
 
-#if NET461
+#if NET462
     internal class PerformanceCounters : IDisposable
     {
         private const string CategoryName = "NEventStore";

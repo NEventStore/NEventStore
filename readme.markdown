@@ -7,10 +7,8 @@ This library is developed with a specific focus on [DDD](http://en.wikipedia.org
 
 NEventStore currently supports:
 
-- .net 6.0
-- .net 5.0
 - .net standard 2.0
-- .net framework 4.6.1
+- .net framework 4.6.2
 
 Starting from Version 6.0.0 NEventStore will use [Semantic Versioning](https://semver.org/) to track the version numbers.
 
