@@ -1,5 +1,10 @@
 # NEventStore Versions
 
+## 9.1.1
+
+- Fixed `build.ps1` script to correctly update Assembly Version number before building.
+- Updated Readme with how Versioning works.
+
 ## 9.1.0
 
 - Support the following Target Frameworks only: netstandard2.0, net462.	
