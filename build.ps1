@@ -1,5 +1,5 @@
 $configurationdefault = "Release"
-$artifacts = "../../artifacts"
+$artifacts = "../artifacts"
 
 $configuration = Read-Host 'Configuration to build [default: Release] ?'
 if ($configuration -eq '') {
@@ -7,17 +7,25 @@ if ($configuration -eq '') {
 }
 $runtests = Read-Host 'Run Tests (y / n) [default:n] ?'
 
-# Consider using NuGet to download the package (GitVersion.CommandLine)
-choco install gitversion.portable --pre --y
-choco upgrade gitversion.portable --pre --y
+# Install gitversion tool
+dotnet tool restore
+$output = dotnet tool run dotnet-gitversion | out-string
+
+# GitVersion
+Write-Host $output
+$version = $output | ConvertFrom-Json
+$assemblyVersion = $version.AssemblySemver
+$assemblyFileVersion = $version.AssemblySemver
+#$assemblyInformationalVersion = ($version.SemVer + "." + $version.Sha)
+$assemblyInformationalVersion = ($version.InformationalVersion)
+$nugetVersion = $version.NuGetVersion
+Write-Host $assemblyVersion
+Write-Host $assemblyFileVersion
+Write-Host $assemblyInformationalVersion
+Write-Host $nugetVersion
 
 # Display minimal restore information
 dotnet restore ./src/NEventStore.Core.sln --verbosity m
-
-# GitVersion 
-$str = gitversion /updateAssemblyInfo | out-string
-$json = convertFrom-json $str
-$nugetversion = $json.NuGetVersion
 
 # Build
 Write-Host "Building: "$nugetversion

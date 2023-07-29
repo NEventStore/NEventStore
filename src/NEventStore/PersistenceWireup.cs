@@ -11,7 +11,7 @@ namespace NEventStore
     {
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(PersistenceWireup));
         private bool _initialize;
-#if NET461
+#if NET462
         private bool _tracking;
         private string _trackingInstanceName;
 #endif
@@ -45,7 +45,7 @@ namespace NEventStore
             return this;
         }
 
-#if NET461
+#if NET462
         public virtual PersistenceWireup TrackPerformanceInstance(string instanceName)
         {
             if (instanceName == null)
@@ -98,7 +98,7 @@ namespace NEventStore
                 engine.Initialize();
             }
 
-#if NET461
+#if NET462
             if (_tracking)
             {
                 Container.Register<IPersistStreams>(new PerformanceCounterPersistenceEngine(engine, _trackingInstanceName));

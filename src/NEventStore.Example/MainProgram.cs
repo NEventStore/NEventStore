@@ -42,7 +42,7 @@ namespace NEventStore.Example
                .UseOptimisticPipelineHook()
                .UsingInMemoryPersistence()
                .InitializeStorageEngine()
-#if NET461
+#if NET462
                .TrackPerformanceInstance("example")
 #endif
                .HookIntoPipelineUsing(new[] { new AuthorizationPipelineHook() })
