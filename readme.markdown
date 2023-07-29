@@ -47,3 +47,15 @@ ChangeLog can be [found here](Changelog.md)
 To build the project locally on a Windows Machine:
 
 - Open a Powershell console in Administrative mode and run the build script `build.ps1` in the root of the repository.
+
+## Vesioning
+
+Versioning is done automatically by the build script updating the
+AssemblyInfo.cs file (<GenerateAssemblyInfo>false</GenerateAssemblyInfo> in .csproj files) 
+before the build starts. The version number is retrieved
+from the git repository tags using "gitversion" tool.
+
+Things are handled this way because NEventStore is used a submodule in other projects and it
+need to have it's own version number when building other projects.
+
+You should not update the version number manually, not commit the updated AssemblyInfo files.
