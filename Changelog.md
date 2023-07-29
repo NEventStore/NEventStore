@@ -1,5 +1,10 @@
 # NEventStore Versions
 
+## 9.1.0
+
+- Support the following Target Frameworks only: netstandard2.0, net462.	
+- Updated Newtonsoft.Json 13.0.3
+
 ## 9.0.1 
 
 - Added documentation files to NuGet packages (improved intellisense support) [#496](https://github.com/NEventStore/NEventStore/issues/496)

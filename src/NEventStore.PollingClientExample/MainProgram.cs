@@ -63,7 +63,7 @@ namespace NEventStore.PollingClientExample
                .WithLoggerFactory(loggerFactory)
                .UsingInMemoryPersistence()
                .InitializeStorageEngine()
-#if NET461
+#if NET462
                .TrackPerformanceInstance("example")
 #endif
                .Build();

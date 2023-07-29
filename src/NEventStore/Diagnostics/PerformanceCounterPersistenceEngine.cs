@@ -7,7 +7,7 @@ namespace NEventStore.Diagnostics
 
     // PerformanceCounters are not cross platform
 
-#if NET461
+#if NET462
     public class PerformanceCounterPersistenceEngine : IPersistStreams
     {
         private readonly PerformanceCounters _counters;

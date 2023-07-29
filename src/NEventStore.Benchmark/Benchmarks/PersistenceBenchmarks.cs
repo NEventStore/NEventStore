@@ -5,7 +5,7 @@ using System;
 namespace NEventStore.Benchmark.Benchmarks
 {
     [Config(typeof(AllowNonOptimized))]
-    [SimpleJob(launchCount: 3, warmupCount: 3, targetCount: 3, invocationCount: 1)]
+    [SimpleJob(launchCount: 3, warmupCount: 3, iterationCount: 3, invocationCount: 1)]
     [MemoryDiagnoser]
     [MeanColumn, StdErrorColumn, StdDevColumn, MinColumn, MaxColumn, IterationsColumn]
     public class PersistenceBenchmarks
