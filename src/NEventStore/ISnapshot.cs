@@ -23,6 +23,6 @@ namespace NEventStore
         /// <summary>
         ///     Gets the snapshot or materialized view of the stream at the revision indicated.
         /// </summary>
-        object Payload { get; }
+        object Payload { get; set; }
     }
 }

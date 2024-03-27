@@ -61,6 +61,6 @@ namespace NEventStore
         ///     Gets the snapshot or materialized view of the stream at the revision indicated.
         /// </summary>
         [DataMember]
-        public virtual object Payload { get; private set; }
+        public virtual object Payload { get; set; }
     }
 }
