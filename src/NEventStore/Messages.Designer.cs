@@ -151,6 +151,15 @@ namespace NEventStore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Configuring a custom event serializer..
+        /// </summary>
+        internal static string ConfiguringCustomEventSerialization {
+            get {
+                return ResourceManager.GetString("ConfiguringCustomEventSerialization", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Configuring serializer to encrypt the serialized payload..
         /// </summary>
         internal static string ConfiguringEncryption {
@@ -372,6 +381,15 @@ namespace NEventStore {
         internal static string UnableToResolve {
             get {
                 return ResourceManager.GetString("UnableToResolve", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configuring a custom event serializer of type &apos;{0}&apos;..
+        /// </summary>
+        internal static string UsingCustomEventSerialization {
+            get {
+                return ResourceManager.GetString("UsingCustomEventSerialization", resourceCulture);
             }
         }
         

@@ -1,3 +1,5 @@
+using System;
+
 namespace NEventStore
 {
     using Microsoft.Extensions.Logging;
@@ -12,6 +14,7 @@ namespace NEventStore
             : base(inner)
         {
             Container.Register(serializer);
+            Container.Register(c => new DefaultEventSerializer(c.Resolve<ISerialize>()));
         }
 
         public SerializationWireup Compress()
@@ -31,6 +34,19 @@ namespace NEventStore
 
             Logger.LogInformation(Messages.WrappingSerializerEncryption, wrapped.GetType());
             Container.Register<ISerialize>(new RijndaelSerializer(wrapped, encryptionKey));
+            return this;
+        }
+
+        public SerializationWireup WithCustomEventSerialization(
+            Func<ISerialize, ISerializeEvents> eventSerializerFactory)
+        {
+            Logger.LogDebug(Messages.ConfiguringCustomEventSerialization);
+
+            var serializer = Container.Resolve<ISerialize>();
+            var eventSerializer = eventSerializerFactory(serializer);
+
+            Logger.LogInformation(Messages.UsingCustomEventSerialization, eventSerializer.GetType());
+            Container.Register(eventSerializer);
             return this;
         }
     }
