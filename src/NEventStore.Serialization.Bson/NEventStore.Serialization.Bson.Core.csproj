@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>NEventStore.Serialization.Bson</RootNamespace>
     <AssemblyName>NEventStore.Serialization.Bson</AssemblyName>
@@ -21,7 +21,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.2" />
+    <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NEventStore\NEventStore.Core.csproj" />

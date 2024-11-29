@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>NEventStore</RootNamespace>
     <AssemblyName>NEventStore</AssemblyName>
@@ -29,7 +29,7 @@
     <None Include="..\CustomDictionary.xml" Link="Properties\CustomDictionary.xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Messages.Designer.cs">
