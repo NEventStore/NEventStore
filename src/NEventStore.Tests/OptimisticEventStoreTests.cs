@@ -1,3 +1,5 @@
+#region
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,21 +9,23 @@ using NEventStore.Persistence;
 using NEventStore.Persistence.AcceptanceTests;
 using NEventStore.Persistence.AcceptanceTests.BDD.NUnit;
 
+#endregion
+
 #pragma warning disable 169 // ReSharper disable InconsistentNaming
 #pragma warning disable IDE1006 // Naming Styles
 #pragma warning disable S101 // Types should be named in PascalCase
 
 namespace NEventStore.Tests;
 #if MSTEST
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 #endif
 #if XUNIT
-	using Xunit;
-	using Xunit.Should;
+using Xunit;
+using Xunit.Should;
 #endif
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_creating_a_new_stream : using_persistence
 {
@@ -76,7 +80,7 @@ public class when_creating_a_new_stream : using_persistence
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_opening_an_empty_stream_starting_at_revision_zero : using_persistence
 {
@@ -136,7 +140,7 @@ public class when_opening_an_empty_stream_starting_at_revision_zero : using_pers
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_opening_an_empty_stream_starting_above_revision_zero : using_persistence
 {
@@ -162,7 +166,7 @@ public class when_opening_an_empty_stream_starting_above_revision_zero : using_p
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_opening_a_populated_stream : using_persistence
 {
@@ -209,7 +213,7 @@ public class when_opening_a_populated_stream : using_persistence
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_opening_a_populated_stream_from_a_snapshot : using_persistence
 {
@@ -238,7 +242,7 @@ public class when_opening_a_populated_stream_from_a_snapshot : using_persistence
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_opening_a_stream_from_a_snapshot_that_is_at_the_revision_of_the_stream_head : using_persistence
 {
@@ -301,7 +305,7 @@ public class when_opening_a_stream_from_a_snapshot_that_is_at_the_revision_of_th
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_reading_from_revision_zero : using_persistence
 {
@@ -326,7 +330,7 @@ public class when_reading_from_revision_zero : using_persistence
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_reading_up_to_revision_revision_zero : using_persistence
 {
@@ -352,7 +356,7 @@ public class when_reading_up_to_revision_revision_zero : using_persistence
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_reading_from_a_null_snapshot : using_persistence
 {
@@ -371,7 +375,7 @@ public class when_reading_from_a_null_snapshot : using_persistence
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_reading_from_a_snapshot_up_to_revision_revision_zero : using_persistence
 {
@@ -401,7 +405,7 @@ public class when_reading_from_a_snapshot_up_to_revision_revision_zero : using_p
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_committing_a_null_attempt_back_to_the_stream : using_persistence
 {
@@ -420,7 +424,7 @@ public class when_committing_a_null_attempt_back_to_the_stream : using_persisten
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_committing_with_a_valid_and_populated_attempt_to_a_stream : using_persistence
 {
@@ -477,7 +481,7 @@ public class when_committing_with_a_valid_and_populated_attempt_to_a_stream : us
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_a_precommit_hook_rejects_a_commit : using_persistence
 {
@@ -514,7 +518,7 @@ public class when_a_precommit_hook_rejects_a_commit : using_persistence
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_accessing_the_underlying_persistence_with_pipeline_hooks : using_persistence
 {
@@ -540,7 +544,7 @@ public class when_accessing_the_underlying_persistence_without_pipeline_hooks : 
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_disposing_the_event_store : using_persistence
 {

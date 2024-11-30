@@ -1,3 +1,5 @@
+#region
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,20 +9,22 @@ using NEventStore.Persistence;
 using NEventStore.Persistence.AcceptanceTests;
 using NEventStore.Persistence.AcceptanceTests.BDD.NUnit;
 
+#endregion
+
 #pragma warning disable 169 // ReSharper enable InconsistentNaming
 #pragma warning disable IDE1006 // Naming Styles
 
 namespace NEventStore.Tests;
 #if MSTEST
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 #endif
 #if XUNIT
-    using Xunit;
-    using Xunit.Should;
+using Xunit;
+using Xunit.Should;
 #endif
 
 #if MSTEST
-    [TestClass]
+[TestClass]
 #endif
 public class when_building_a_stream : on_the_event_stream
 {
@@ -97,7 +101,7 @@ public class when_building_a_stream : on_the_event_stream
 }
 
 #if MSTEST
-    [TestClass]
+[TestClass]
 #endif
 public class when_the_head_event_revision_is_less_than_the_max_desired_revision : on_the_event_stream
 {
@@ -136,7 +140,7 @@ public class when_the_head_event_revision_is_less_than_the_max_desired_revision 
 }
 
 #if MSTEST
-    [TestClass]
+[TestClass]
 #endif
 public class when_reading_up_to_revision : on_the_event_stream
 {
@@ -175,7 +179,7 @@ public class when_reading_up_to_revision : on_the_event_stream
 }
 
 #if MSTEST
-    [TestClass]
+[TestClass]
 #endif
 public class when_adding_a_null_event_message : on_the_event_stream
 {
@@ -194,7 +198,7 @@ public class when_adding_a_null_event_message : on_the_event_stream
 }
 
 #if MSTEST
-    [TestClass]
+[TestClass]
 #endif
 public class when_adding_an_unpopulated_event_message : on_the_event_stream
 {
@@ -213,7 +217,7 @@ public class when_adding_an_unpopulated_event_message : on_the_event_stream
 }
 
 #if MSTEST
-    [TestClass]
+[TestClass]
 #endif
 public class when_adding_a_fully_populated_event_message : on_the_event_stream
 {
@@ -230,7 +234,7 @@ public class when_adding_a_fully_populated_event_message : on_the_event_stream
 }
 
 #if MSTEST
-    [TestClass]
+[TestClass]
 #endif
 public class when_adding_multiple_populated_event_messages : on_the_event_stream
 {
@@ -248,7 +252,7 @@ public class when_adding_multiple_populated_event_messages : on_the_event_stream
 }
 
 #if MSTEST
-    [TestClass]
+[TestClass]
 #endif
 public class when_adding_a_simple_object_as_an_event_message : on_the_event_stream
 {
@@ -273,7 +277,7 @@ public class when_adding_a_simple_object_as_an_event_message : on_the_event_stre
 }
 
 #if MSTEST
-    [TestClass]
+[TestClass]
 #endif
 public class when_clearing_any_uncommitted_changes : on_the_event_stream
 {
@@ -295,7 +299,7 @@ public class when_clearing_any_uncommitted_changes : on_the_event_stream
 }
 
 #if MSTEST
-    [TestClass]
+[TestClass]
 #endif
 public class when_committing_an_empty_changeset : on_the_event_stream
 {
@@ -324,7 +328,7 @@ public class when_committing_an_empty_changeset : on_the_event_stream
 }
 
 #if MSTEST
-    [TestClass]
+[TestClass]
 #endif
 public class when_committing_any_uncommitted_changes : on_the_event_stream
 {
@@ -465,7 +469,7 @@ public class when_committing_any_uncommitted_changes : on_the_event_stream
 ///     in a NoSQL environment, we'll most likely use StreamId + CommitSequence, which also enables optimistic concurrency.
 /// </summary>
 #if MSTEST
-    [TestClass]
+[TestClass]
 #endif
 public class when_committing_with_an_identifier_that_was_previously_read : on_the_event_stream
 {
@@ -496,7 +500,7 @@ public class when_committing_with_an_identifier_that_was_previously_read : on_th
 }
 
 #if MSTEST
-    [TestClass]
+[TestClass]
 #endif
 public class when_committing_after_another_thread_or_process_has_moved_the_stream_head : on_the_event_stream
 {
@@ -558,7 +562,7 @@ public class when_committing_after_another_thread_or_process_has_moved_the_strea
 }
 
 #if MSTEST
-    [TestClass]
+[TestClass]
 #endif
 public class when_attempting_to_invoke_behavior_on_a_disposed_stream : on_the_event_stream
 {
@@ -582,7 +586,7 @@ public class when_attempting_to_invoke_behavior_on_a_disposed_stream : on_the_ev
 }
 
 #if MSTEST
-    [TestClass]
+[TestClass]
 #endif
 public class when_attempting_to_modify_the_event_collections : on_the_event_stream
 {
@@ -630,7 +634,7 @@ public class when_attempting_to_modify_the_event_collections : on_the_event_stre
 ///     https://github.com/NEventStore/NEventStore/issues/420
 /// </summary>
 #if MSTEST
-    [TestClass]
+[TestClass]
 #endif
 public class issue_420_when_adding_events_in_the_middle_of_the_last_commit : on_the_event_stream
 {
@@ -702,7 +706,7 @@ public class issue_420_when_adding_events_in_the_middle_of_the_last_commit : on_
 ///     https://github.com/NEventStore/NEventStore/issues/420
 /// </summary>
 #if MSTEST
-    [TestClass]
+[TestClass]
 #endif
 public class
     issue_420_when_adding_events_in_the_middle_a_commit_if_persistence_returns_too_many_commits : on_the_event_stream
@@ -772,7 +776,7 @@ public class
 
 public abstract class on_the_event_stream : SpecificationBase
 #if XUNIT
-        , IUseFixture<FakeTimeFixture>
+    , IUseFixture<FakeTimeFixture>
 #endif
 {
     protected const int DefaultStreamRevision = 1;
@@ -783,30 +787,30 @@ public abstract class on_the_event_stream : SpecificationBase
     protected readonly string StreamId = Guid.NewGuid().ToString();
 
 #if MSTEST
-        // todo: we have a problem with ClassInitialize and inheritance, they are not called
-        // a possible workaround is to use the appdomain unload: https://vijayvepa.wordpress.com/2011/06/16/test-classinitialize-and-classcleanup-inheritance/
-        // but each test is run in isolation in MSTest
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
-        {
-            SystemTime.Resolver = () => new DateTime(2012, 1, 1, 13, 0, 0);
-        }
+    // todo: we have a problem with ClassInitialize and inheritance, they are not called
+    // a possible workaround is to use the appdomain unload: https://vijayvepa.wordpress.com/2011/06/16/test-classinitialize-and-classcleanup-inheritance/
+    // but each test is run in isolation in MSTest
+    [ClassInitialize]
+    public static void ClassInitialize(TestContext context)
+    {
+        SystemTime.Resolver = () => new DateTime(2012, 1, 1, 13, 0, 0);
+    }
 
-        [ClassCleanup]
-        public static void ClassCleanup()
-        {
-            SystemTime.Resolver = null;
-        }
+    [ClassCleanup]
+    public static void ClassCleanup()
+    {
+        SystemTime.Resolver = null;
+    }
 
-        public on_the_event_stream()
-        {
-            SystemTime.Resolver = () => new DateTime(2012, 1, 1, 13, 0, 0);
-        }
+    public on_the_event_stream()
+    {
+        SystemTime.Resolver = () => new DateTime(2012, 1, 1, 13, 0, 0);
+    }
 
-        protected override void Cleanup()
-        {
-            SystemTime.Resolver = null;
-        }
+    protected override void Cleanup()
+    {
+        SystemTime.Resolver = null;
+    }
 #endif
 
 #if NUNIT

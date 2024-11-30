@@ -1,5 +1,9 @@
+#region
+
 using System.Collections;
 using System.Collections.Generic;
+
+#endregion
 
 namespace NEventStore.Tests;
 

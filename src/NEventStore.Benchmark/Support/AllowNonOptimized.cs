@@ -1,6 +1,10 @@
-﻿using System.Linq;
+﻿#region
+
+using System.Linq;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Validators;
+
+#endregion
 
 namespace NEventStore.Benchmark.Support;
 

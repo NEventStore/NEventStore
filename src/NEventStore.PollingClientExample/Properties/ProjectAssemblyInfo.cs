@@ -1,5 +1,9 @@
-﻿using System.Reflection;
+﻿#region
+
+using System.Reflection;
 using System.Runtime.InteropServices;
+
+#endregion
 
 [assembly: AssemblyTitle("NEventStore.Example")]
 [assembly: AssemblyDescription("")]

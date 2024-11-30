@@ -1,10 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.1</TargetFrameworks>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <RootNamespace>NEventStore</RootNamespace>
         <AssemblyName>NEventStore</AssemblyName>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <LangVersion>13</LangVersion>
+        <TargetFramework>net9.0</TargetFramework>
     </PropertyGroup>
     <PropertyGroup>
         <PackageId>NEventStore</PackageId>

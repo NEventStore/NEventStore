@@ -1,6 +1,10 @@
-﻿using System;
+﻿#region
+
+using System;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+
+#endregion
 
 #if NUNIT
 

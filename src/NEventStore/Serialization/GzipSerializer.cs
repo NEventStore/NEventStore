@@ -1,36 +1,39 @@
+#region
+
 using System.IO;
 using System.IO.Compression;
 using Microsoft.Extensions.Logging;
 using NEventStore.Logging;
 
-namespace NEventStore.Serialization
+#endregion
+
+namespace NEventStore.Serialization;
+
+public class GzipSerializer : ISerialize
 {
-    public class GzipSerializer : ISerialize
+    private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(GzipSerializer));
+    private readonly ISerialize _inner;
+
+    public GzipSerializer(ISerialize inner)
     {
-        private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(GzipSerializer));
-        private readonly ISerialize _inner;
+        _inner = inner;
+    }
 
-        public GzipSerializer(ISerialize inner)
+    public virtual void Serialize<T>(Stream output, T graph)
+    {
+        Logger.LogTrace(Messages.SerializingGraph, typeof(T));
+        using (var compress = new DeflateStream(output, CompressionMode.Compress, true))
         {
-            _inner = inner;
+            _inner.Serialize(compress, graph);
         }
+    }
 
-        public virtual void Serialize<T>(Stream output, T graph)
+    public virtual T Deserialize<T>(Stream input)
+    {
+        Logger.LogTrace(Messages.DeserializingStream, typeof(T));
+        using (var decompress = new DeflateStream(input, CompressionMode.Decompress, true))
         {
-            Logger.LogTrace(Messages.SerializingGraph, typeof(T));
-            using (var compress = new DeflateStream(output, CompressionMode.Compress, true))
-            {
-                _inner.Serialize(compress, graph);
-            }
-        }
-
-        public virtual T Deserialize<T>(Stream input)
-        {
-            Logger.LogTrace(Messages.DeserializingStream, typeof(T));
-            using (var decompress = new DeflateStream(input, CompressionMode.Decompress, true))
-            {
-                return _inner.Deserialize<T>(decompress);
-            }
+            return _inner.Deserialize<T>(decompress);
         }
     }
 }

@@ -1,10 +1,9 @@
-namespace NEventStore
+namespace NEventStore;
+
+public static class EventUpconverterWireupExtensions
 {
-    public static class EventUpconverterWireupExtensions
+    public static EventUpconverterWireup UsingEventUpconversion(this Wireup wireup)
     {
-        public static EventUpconverterWireup UsingEventUpconversion(this Wireup wireup)
-        {
-            return new EventUpconverterWireup(wireup);
-        }
+        return new EventUpconverterWireup(wireup);
     }
 }

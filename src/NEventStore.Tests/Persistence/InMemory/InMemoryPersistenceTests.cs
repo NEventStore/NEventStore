@@ -1,21 +1,25 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using NEventStore.Persistence.AcceptanceTests.BDD.NUnit;
 using NEventStore.Persistence.InMemory;
 
+#endregion
+
 namespace NEventStore.Tests.Persistence.InMemory;
 #if MSTEST
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 #endif
 #if XUNIT
-	using Xunit;
-	using Xunit.Should;
+using Xunit;
+using Xunit.Should;
 #endif
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_getting_from_to_then_should_not_get_later_commits : SpecificationBase
 {

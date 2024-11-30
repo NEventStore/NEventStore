@@ -7,7 +7,7 @@ namespace NEventStore.Persistence.AcceptanceTests.BDD
     using Xunit;
     using Xunit.Sdk;
 
-	internal class SpecificationBaseRunner : ITestClassCommand
+    internal class SpecificationBaseRunner : ITestClassCommand
     {
         private readonly List<object> _fixtures = new List<object>();
         private SpecificationBase _objectUnderTest;
@@ -19,7 +19,7 @@ namespace NEventStore.Persistence.AcceptanceTests.BDD
                 if (_objectUnderTest == null)
                 {
                     GuardTypeUnderTest();
-                    _objectUnderTest = (SpecificationBase) Activator.CreateInstance(TypeUnderTest.Type);
+                    _objectUnderTest = (SpecificationBase)Activator.CreateInstance(TypeUnderTest.Type);
                 }
 
                 return _objectUnderTest;
@@ -78,7 +78,7 @@ namespace NEventStore.Persistence.AcceptanceTests.BDD
         public IEnumerable<ITestCommand> EnumerateTestCommands(IMethodInfo testMethod)
         {
             string displayName = (TypeUnderTest.Type.Name + ", it " + testMethod.Name).Replace('_', ' ');
-            return new[] {new SpecTestCommand(testMethod, displayName)};
+            return new[] { new SpecTestCommand(testMethod, displayName) };
         }
 
         public IEnumerable<IMethodInfo> EnumerateTestMethods()
@@ -103,7 +103,7 @@ namespace NEventStore.Persistence.AcceptanceTests.BDD
                     {
                         Type genericDefinition = @interface.GetGenericTypeDefinition();
 
-                        if (genericDefinition == typeof (IUseFixture<>))
+                        if (genericDefinition == typeof(IUseFixture<>))
                         {
                             Type dataType = @interface.GetGenericArguments()[0];
                             if (dataType == TypeUnderTest.Type)
@@ -115,9 +115,9 @@ namespace NEventStore.Persistence.AcceptanceTests.BDD
 
                             fixtureData = Activator.CreateInstance(dataType);
 
-                            MethodInfo method = @interface.GetMethod("SetFixture", new[] {dataType});
+                            MethodInfo method = @interface.GetMethod("SetFixture", new[] { dataType });
                             _fixtures.Add(fixtureData);
-                            method.Invoke(ObjectUnderTest, new[] {fixtureData});
+                            method.Invoke(ObjectUnderTest, new[] { fixtureData });
                         }
                     }
                 }
@@ -135,7 +135,7 @@ namespace NEventStore.Persistence.AcceptanceTests.BDD
                 throw new InvalidOperationException("Forgot to set TypeUnderTest before calling ObjectUnderTest");
             }
 
-            if (!typeof (SpecificationBase).IsAssignableFrom(TypeUnderTest.Type))
+            if (!typeof(SpecificationBase).IsAssignableFrom(TypeUnderTest.Type))
             {
                 throw new InvalidOperationException("SpecificationBaseRunner can only be used with types that derive from SpecificationBase");
             }
@@ -144,7 +144,8 @@ namespace NEventStore.Persistence.AcceptanceTests.BDD
         private class SpecTestCommand : TestCommand
         {
             public SpecTestCommand(IMethodInfo testMethod, string displayName) : base(testMethod, displayName, 0)
-            {}
+            {
+            }
 
             public override MethodResult Execute(object testClass)
             {
@@ -161,7 +162,6 @@ namespace NEventStore.Persistence.AcceptanceTests.BDD
             }
         }
     }
-
 }
 
 #endif

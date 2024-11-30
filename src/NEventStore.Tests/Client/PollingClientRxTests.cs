@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
@@ -8,19 +10,21 @@ using NEventStore.Persistence;
 using NEventStore.Persistence.AcceptanceTests;
 using NEventStore.Persistence.AcceptanceTests.BDD.NUnit;
 
+#endregion
+
 #pragma warning disable IDE1006 // Naming Styles
 
 namespace NEventStore.Tests.Client;
 #if MSTEST
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 #endif
 #if XUNIT
-    using Xunit;
-    using Xunit.Should;
+using Xunit;
+using Xunit.Should;
 #endif
 
 #if MSTEST
-    [TestClass]
+[TestClass]
 #endif
 public class CreatingPollingClientTests
 {
@@ -45,7 +49,7 @@ public class CreatingPollingClientTests
 }
 
 #if MSTEST
-    [TestClass]
+[TestClass]
 #endif
 public class when_commit_is_comitted_before_subscribing : using_polling_client
 {
@@ -78,7 +82,7 @@ public class when_commit_is_comitted_before_subscribing : using_polling_client
 }
 
 #if MSTEST
-    [TestClass]
+[TestClass]
 #endif
 public class when_commit_is_comitted_before_and_after_subscribing : using_polling_client
 {
@@ -165,7 +169,7 @@ public class when_commit_is_comitted_before_and_after_subscribing : using_pollin
 //}
 
 #if MSTEST
-    [TestClass]
+[TestClass]
 #endif
 public class with_two_subscriptions_on_a_single_observer_and_multiple_commits : using_polling_client
 {
@@ -210,7 +214,7 @@ public class with_two_subscriptions_on_a_single_observer_and_multiple_commits : 
 }
 
 #if MSTEST
-    [TestClass]
+[TestClass]
 #endif
 public class when_polling_from_bucket1 : using_polling_client
 {

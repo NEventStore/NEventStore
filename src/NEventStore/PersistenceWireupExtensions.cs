@@ -1,25 +1,24 @@
-namespace NEventStore
+namespace NEventStore;
+
+using Logging;
+using Microsoft.Extensions.Logging;
+using Persistence;
+using Persistence.InMemory;
+
+public static class PersistenceWireupExtensions
 {
-    using Logging;
-    using Microsoft.Extensions.Logging;
-    using Persistence;
-    using Persistence.InMemory;
+    private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(OptimisticPipelineHook));
 
-    public static class PersistenceWireupExtensions
+    public static PersistenceWireup UsingInMemoryPersistence(this Wireup wireup)
     {
-        private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(OptimisticPipelineHook));
+        Logger.LogInformation(Resources.WireupSetPersistenceEngine, "InMemoryPersistenceEngine");
+        wireup.With<IPersistStreams>(new InMemoryPersistenceEngine());
 
-        public static PersistenceWireup UsingInMemoryPersistence(this Wireup wireup)
-        {
-            Logger.LogInformation(Resources.WireupSetPersistenceEngine, "InMemoryPersistenceEngine");
-            wireup.With<IPersistStreams>(new InMemoryPersistenceEngine());
+        return new PersistenceWireup(wireup);
+    }
 
-            return new PersistenceWireup(wireup);
-        }
-
-        public static int Records(this int records)
-        {
-            return records;
-        }
+    public static int Records(this int records)
+    {
+        return records;
     }
 }

@@ -1,14 +1,12 @@
-//-----------------------------------------------------------------------
-// <copyright file="GlobalAssemblyInfo.cs">
-//	 Copyright (c) Jonathan Oliver. All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+#region
 
 using System;
 using System.Reflection;
 using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
+#endregion
 
 [assembly: AssemblyCompany("NEventStore")]
 [assembly: AssemblyProduct("NEventStore")]

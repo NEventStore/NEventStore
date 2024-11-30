@@ -1,9 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.1</TargetFrameworks>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <RootNamespace>NEventStore.Serialization.Json</RootNamespace>
         <AssemblyName>NEventStore.Serialization.Json</AssemblyName>
+        <TargetFramework>net9.0</TargetFramework>
+        <LangVersion>13</LangVersion>
     </PropertyGroup>
     <PropertyGroup>
         <PackageId>NEventStore.Serialization.Json</PackageId>

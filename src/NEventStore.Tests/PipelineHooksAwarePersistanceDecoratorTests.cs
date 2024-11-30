@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FakeItEasy;
@@ -6,22 +8,24 @@ using FluentAssertions;
 using NEventStore.Persistence;
 using NEventStore.Persistence.AcceptanceTests.BDD.NUnit;
 
+#endregion
+
 #pragma warning disable 169
 // ReSharper disable InconsistentNaming
 #pragma warning disable IDE1006 // Naming Styles
 
 namespace NEventStore.Tests;
 #if MSTEST
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using FluentAssertions;
 #endif
 #if XUNIT
-	using Xunit;
-	using Xunit.Should;
+using Xunit;
+using Xunit.Should;
 #endif
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_disposing_the_decorator : using_underlying_persistence
 {
@@ -38,7 +42,7 @@ public class when_disposing_the_decorator : using_underlying_persistence
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_reading_the_all_events_in_a_bucket_from_date : using_underlying_persistence
 {
@@ -85,7 +89,7 @@ public class when_reading_the_all_events_in_a_bucket_from_date : using_underlyin
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_reading_the_all_events_in_a_bucket_from_min_to_max_revision : using_underlying_persistence
 {
@@ -132,7 +136,7 @@ public class when_reading_the_all_events_in_a_bucket_from_min_to_max_revision : 
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_reading_all_events_in_a_bucket_from_date_to_date : using_underlying_persistence
 {
@@ -181,7 +185,7 @@ public class when_reading_all_events_in_a_bucket_from_date_to_date : using_under
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_reading_all_events_in_all_buckets_from_checkpoint_to_checkpoint : using_underlying_persistence
 {
@@ -230,7 +234,7 @@ public class when_reading_all_events_in_all_buckets_from_checkpoint_to_checkpoin
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_reading_all_events_in_a_bucket_from_checkpoint_to_checkpoint : using_underlying_persistence
 {
@@ -279,7 +283,7 @@ public class when_reading_all_events_in_a_bucket_from_checkpoint_to_checkpoint :
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_committing : using_underlying_persistence
 {
@@ -303,7 +307,7 @@ public class when_committing : using_underlying_persistence
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_reading_the_all_events_from_checkpoint : using_underlying_persistence
 {
@@ -346,7 +350,7 @@ public class when_reading_the_all_events_from_checkpoint : using_underlying_pers
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_reading_the_all_events_in_a_bucket_from_checkpoint : using_underlying_persistence
 {
@@ -389,7 +393,7 @@ public class when_reading_the_all_events_in_a_bucket_from_checkpoint : using_und
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_purging : using_underlying_persistence
 {
@@ -414,7 +418,7 @@ public class when_purging : using_underlying_persistence
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_purging_a_bucket : using_underlying_persistence
 {
@@ -440,7 +444,7 @@ public class when_purging_a_bucket : using_underlying_persistence
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_deleting_a_stream : using_underlying_persistence
 {
@@ -467,7 +471,7 @@ public class when_deleting_a_stream : using_underlying_persistence
 }
 
 #if MSTEST
-    [TestClass]
+[TestClass]
 #endif
 public class when_reading_the_all_events_from_checkpoint_with_filtering_pipelinehook : using_underlying_persistence
 {

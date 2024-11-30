@@ -1,4 +1,8 @@
-﻿using NUnit.Framework;
+﻿#region
+
+using NUnit.Framework;
+
+#endregion
 
 namespace NEventStore.Serialization.Binary.Tests;
 

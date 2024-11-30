@@ -3,6 +3,9 @@
 #if MSTEST
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 #endif
+
+#region
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,14 +16,17 @@ using NEventStore.Persistence;
 using NEventStore.Persistence.AcceptanceTests;
 using NEventStore.Persistence.AcceptanceTests.BDD.NUnit;
 using NEventStore.PollingClient;
+
+#endregion
+
 #if XUNIT
-	using Xunit;
-	using Xunit.Should;
+using Xunit;
+using Xunit.Should;
 #endif
 
 namespace NEventStore.Tests.Client;
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class CreatingPollingClient2Tests
 {
@@ -40,7 +46,7 @@ public class CreatingPollingClient2Tests
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class base_handling_committed_events : using_polling_client2
 {
@@ -71,7 +77,7 @@ public class base_handling_committed_events : using_polling_client2
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class base_handling_committed_events_and_new_events : using_polling_client2
 {
@@ -103,7 +109,7 @@ public class base_handling_committed_events_and_new_events : using_polling_clien
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class verify_stopping_commit_polling_client : using_polling_client2
 {
@@ -136,7 +142,7 @@ public class verify_stopping_commit_polling_client : using_polling_client2
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class verify_retry_commit_polling_client : using_polling_client2
 {
@@ -171,7 +177,7 @@ public class verify_retry_commit_polling_client : using_polling_client2
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class verify_retry_then_move_next : using_polling_client2
 {
@@ -210,7 +216,7 @@ public class verify_retry_then_move_next : using_polling_client2
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class verify_manual_plling : using_polling_client2
 {

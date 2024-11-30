@@ -1,7 +1,11 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Reactive.Subjects;
 using NEventStore.Persistence;
 using NEventStore.PollingClient;
+
+#endregion
 
 namespace NEventStore.Tests.Client;
 

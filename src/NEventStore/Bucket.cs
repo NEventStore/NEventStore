@@ -1,10 +1,9 @@
-namespace NEventStore
+namespace NEventStore;
+
+public static class Bucket
 {
-    public static class Bucket
-    {
-        /// <summary>
-        /// The default bucket Id.
-        /// </summary>
-        public const string Default = "default";
-    }
+    /// <summary>
+    /// The default bucket Id.
+    /// </summary>
+    public const string Default = "default";
 }

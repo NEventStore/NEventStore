@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -7,17 +9,19 @@ using NEventStore.Conversion;
 using NEventStore.Persistence;
 using NEventStore.Persistence.AcceptanceTests.BDD.NUnit;
 
+#endregion
+
 namespace NEventStore.Tests.ConversionTests;
 #if MSTEST
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 #endif
 #if XUNIT
-	using Xunit;
-	using Xunit.Should;
+using Xunit;
+using Xunit.Should;
 #endif
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_opening_a_commit_that_does_not_have_convertible_events : using_event_converter
 {
@@ -49,7 +53,7 @@ public class when_opening_a_commit_that_does_not_have_convertible_events : using
 }
 
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_opening_a_commit_that_has_convertible_events : using_event_converter
 {
@@ -82,7 +86,7 @@ public class when_opening_a_commit_that_has_convertible_events : using_event_con
 
 // ReSharper disable InconsistentNaming
 #if MSTEST
-	[TestClass]
+[TestClass]
 #endif
 public class when_an_event_converter_implements_the_IConvertEvents_interface_explicitly : using_event_converter
 // ReSharper restore InconsistentNaming

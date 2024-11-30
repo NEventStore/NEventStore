@@ -1,6 +1,10 @@
 ﻿// ReSharper disable once CheckNamespace
 
+#region
+
 using NEventStore.Persistence.InMemory;
+
+#endregion
 
 namespace NEventStore.Persistence.AcceptanceTests;
 
