@@ -1,9 +1,9 @@
+using System;
+using Microsoft.Extensions.Logging;
+using NEventStore.Logging;
+
 namespace NEventStore
 {
-    using System;
-    using Microsoft.Extensions.Logging;
-    using NEventStore.Logging;
-
     public static class LoggingWireupExtensions
     {
         public static Wireup WithLoggerFactory(this Wireup wireup, ILoggerFactory loggerFactory)

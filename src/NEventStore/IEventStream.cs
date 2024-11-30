@@ -1,9 +1,9 @@
+using System;
+using System.Collections.Generic;
+using NEventStore.Persistence;
+
 namespace NEventStore
 {
-    using System;
-    using System.Collections.Generic;
-    using NEventStore.Persistence;
-
     /// <summary>
     ///     Indicates the ability to track a series of events and commit them to durable storage.
     /// </summary>

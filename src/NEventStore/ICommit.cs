@@ -1,10 +1,11 @@
+using System;
+using System.Collections.Generic;
+
 namespace NEventStore
 {
-    using System;
-    using System.Collections.Generic;
-
     /// <summary>
-    ///     Represents a series of events which have been fully committed as a single unit and which apply to the stream indicated.
+    ///     Represents a series of events which have been fully committed as a single unit and which apply to the stream
+    ///     indicated.
     /// </summary>
     public interface ICommit
     {
@@ -49,8 +50,8 @@ namespace NEventStore
         ICollection<EventMessage> Events { get; }
 
         /// <summary>
-        /// The checkpoint that represents the storage level order.
+        ///     The checkpoint that represents the storage level order.
         /// </summary>
-        Int64 CheckpointToken { get; }
+        long CheckpointToken { get; }
     }
 }

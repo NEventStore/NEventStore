@@ -1,12 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Extensions.Logging;
+using NEventStore.Logging;
+using NEventStore.Persistence;
+
 namespace NEventStore
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Microsoft.Extensions.Logging;
-    using NEventStore.Logging;
-    using NEventStore.Persistence;
-
     /// <summary>
     ///     Tracks the heads of streams to reduce latency by avoiding roundtrips to storage.
     /// </summary>
@@ -14,13 +14,17 @@ namespace NEventStore
     {
         internal const int MaxStreamsToTrack = 100;
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(OptimisticPipelineHook));
-        private readonly Dictionary<HeadKey, ICommit> _heads = new Dictionary<HeadKey, ICommit>(); //TODO use concurrent collections
+
+        private readonly Dictionary<HeadKey, ICommit>
+            _heads = new Dictionary<HeadKey, ICommit>(); //TODO use concurrent collections
+
         private readonly LinkedList<HeadKey> _maxItemsToTrack = new LinkedList<HeadKey>();
         private readonly int _maxStreamsToTrack;
 
         public OptimisticPipelineHook()
             : this(MaxStreamsToTrack)
-        { }
+        {
+        }
 
         public OptimisticPipelineHook(int maxStreamsToTrack)
         {
@@ -38,15 +42,11 @@ namespace NEventStore
         {
             Logger.LogTrace(Resources.OptimisticConcurrencyCheck, attempt.StreamId);
 
-            ICommit head = GetStreamHead(GetHeadKey(attempt));
-            if (head == null)
-            {
-                return true;
-            }
+            var head = GetStreamHead(GetHeadKey(attempt));
+            if (head == null) return true;
 
             if (head.CommitSequence >= attempt.CommitSequence)
-            {
-                throw new ConcurrencyException(String.Format(
+                throw new ConcurrencyException(string.Format(
                     Messages.ConcurrencyExceptionCommitSequence,
                     head.CommitSequence,
                     attempt.BucketId,
@@ -55,11 +55,9 @@ namespace NEventStore
                     attempt.StreamRevision,
                     attempt.Events.Count
                 ));
-            }
 
             if (head.StreamRevision >= attempt.StreamRevision)
-            {
-                throw new ConcurrencyException(String.Format(
+                throw new ConcurrencyException(string.Format(
                     Messages.ConcurrencyExceptionStreamRevision,
                     head.StreamRevision,
                     attempt.BucketId,
@@ -67,33 +65,28 @@ namespace NEventStore
                     attempt.StreamRevision,
                     attempt.Events.Count
                 ));
-            }
 
             if (head.CommitSequence < attempt.CommitSequence - 1)
-            {
-                throw new StorageException(String.Format(
-                     Messages.StorageExceptionCommitSequence,
-                     head.CommitSequence,
-                     attempt.BucketId,
-                     attempt.CommitSequence,
-                     attempt.StreamId,
-                     attempt.StreamRevision,
-                     attempt.Events.Count
-                 )); // beyond the end of the stream
-            }
+                throw new StorageException(string.Format(
+                    Messages.StorageExceptionCommitSequence,
+                    head.CommitSequence,
+                    attempt.BucketId,
+                    attempt.CommitSequence,
+                    attempt.StreamId,
+                    attempt.StreamRevision,
+                    attempt.Events.Count
+                )); // beyond the end of the stream
 
             if (head.StreamRevision < attempt.StreamRevision - attempt.Events.Count)
-            {
-                throw new StorageException(String.Format(
-                     Messages.StorageExceptionEndOfStream,
-                     head.StreamRevision,
-                     attempt.StreamRevision,
-                     attempt.Events.Count,
-                     attempt.BucketId,
-                     attempt.StreamId,
-                     attempt.StreamRevision
-                 )); // beyond the end of the stream
-            }
+                throw new StorageException(string.Format(
+                    Messages.StorageExceptionEndOfStream,
+                    head.StreamRevision,
+                    attempt.StreamRevision,
+                    attempt.Events.Count,
+                    attempt.BucketId,
+                    attempt.StreamId,
+                    attempt.StreamRevision
+                )); // beyond the end of the stream
 
             Logger.LogTrace(Resources.NoConflicts, attempt.StreamId, attempt.BucketId);
             return true;
@@ -114,11 +107,9 @@ namespace NEventStore
                     _maxItemsToTrack.Clear();
                     return;
                 }
-                HeadKey[] headsInBucket = _heads.Keys.Where(k => k.BucketId == bucketId).ToArray();
-                foreach (var head in headsInBucket)
-                {
-                    RemoveHead(head);
-                }
+
+                var headsInBucket = _heads.Keys.Where(k => k.BucketId == bucketId).ToArray();
+                foreach (var head in headsInBucket) RemoveHead(head);
             }
         }
 
@@ -139,10 +130,7 @@ namespace NEventStore
 
         public void Track(ICommit committed)
         {
-            if (committed == null)
-            {
-                return;
-            }
+            if (committed == null) return;
 
             lock (_maxItemsToTrack)
             {
@@ -153,12 +141,9 @@ namespace NEventStore
 
         private void UpdateStreamHead(ICommit committed)
         {
-            HeadKey headKey = GetHeadKey(committed);
-            ICommit head = GetStreamHead(headKey);
-            if (AlreadyTracked(head))
-            {
-                _maxItemsToTrack.Remove(headKey);
-            }
+            var headKey = GetHeadKey(committed);
+            var head = GetStreamHead(headKey);
+            if (AlreadyTracked(head)) _maxItemsToTrack.Remove(headKey);
 
             head = head ?? committed;
             head = head.StreamRevision > committed.StreamRevision ? head : committed;
@@ -169,11 +154,8 @@ namespace NEventStore
         private void RemoveHead(HeadKey head)
         {
             _heads.Remove(head);
-            LinkedListNode<HeadKey> node = _maxItemsToTrack.Find(head); // There should only be ever one or none
-            if (node != null)
-            {
-                _maxItemsToTrack.Remove(node);
-            }
+            var node = _maxItemsToTrack.Find(head); // There should only be ever one or none
+            if (node != null) _maxItemsToTrack.Remove(node);
         }
 
         private static bool AlreadyTracked(ICommit head)
@@ -185,12 +167,9 @@ namespace NEventStore
         {
             Logger.LogTrace(Resources.TrackingCommit, committed.CommitSequence, committed.StreamId, committed.BucketId);
             _maxItemsToTrack.AddFirst(GetHeadKey(committed));
-            if (_maxItemsToTrack.Count <= _maxStreamsToTrack)
-            {
-                return;
-            }
+            if (_maxItemsToTrack.Count <= _maxStreamsToTrack) return;
 
-            HeadKey expired = _maxItemsToTrack.Last.Value;
+            var expired = _maxItemsToTrack.Last.Value;
             Logger.LogTrace(Resources.NoLongerTrackingStream, expired.StreamId, expired.BucketId);
 
             _heads.Remove(expired);
@@ -206,7 +185,7 @@ namespace NEventStore
         {
             lock (_maxItemsToTrack)
             {
-                _heads.TryGetValue(headKey, out ICommit head);
+                _heads.TryGetValue(headKey, out var head);
                 return head;
             }
         }
@@ -223,40 +202,28 @@ namespace NEventStore
 
         private sealed class HeadKey : IEquatable<HeadKey>
         {
-            public string BucketId { get; }
-
-            public string StreamId { get; }
-
             public HeadKey(string bucketId, string streamId)
             {
                 BucketId = bucketId;
                 StreamId = streamId;
             }
 
+            public string BucketId { get; }
+
+            public string StreamId { get; }
+
             public bool Equals(HeadKey other)
             {
-                if (other is null)
-                {
-                    return false;
-                }
-                if (ReferenceEquals(this, other))
-                {
-                    return true;
-                }
-                return String.Equals(BucketId, other.BucketId)
-                    && String.Equals(StreamId, other.StreamId);
+                if (other is null) return false;
+                if (ReferenceEquals(this, other)) return true;
+                return string.Equals(BucketId, other.BucketId)
+                       && string.Equals(StreamId, other.StreamId);
             }
 
             public override bool Equals(object obj)
             {
-                if (obj is null)
-                {
-                    return false;
-                }
-                if (ReferenceEquals(this, obj))
-                {
-                    return true;
-                }
+                if (obj is null) return false;
+                if (ReferenceEquals(this, obj)) return true;
                 return obj is HeadKey headKey && Equals(headKey);
             }
 

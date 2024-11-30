@@ -1,21 +1,23 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
-  <metadata>
-    <id>NEventStore</id>
-    <version>8.0</version>
-    <title>NEventStore</title>
-    <authors>NEventStore Dev Team</authors>
-    <owners>NEventStore Dev Team</owners>
-    <projectUrl>http://neventstore.org</projectUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>The purpose of the EventStore is to represent a series of events as a stream.</description>
-    <summary>NEventStore is a persistence agnostic event sourcing library for .NET. The primary use is most often associated with CQRS.</summary>
-    <language>es-US</language>
-    <tags>events, event sourcing, cqrs, storage, persistence, database</tags>
-	<releaseNotes>Please check the release notes on github.</releaseNotes>
-  </metadata>
-  <files>
-    <file src="publish-net40\NEventStore\bin\**" target="lib\net40"/>
-	<file src="src\NEventStore\**\*.cs" target="src\NEventStore" />
-  </files>  
+    <metadata>
+        <id>NEventStore</id>
+        <version>8.0</version>
+        <title>NEventStore</title>
+        <authors>NEventStore Dev Team</authors>
+        <owners>NEventStore Dev Team</owners>
+        <projectUrl>http://neventstore.org</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>The purpose of the EventStore is to represent a series of events as a stream.</description>
+        <summary>NEventStore is a persistence agnostic event sourcing library for .NET. The primary use is most often
+            associated with CQRS.
+        </summary>
+        <language>es-US</language>
+        <tags>events, event sourcing, cqrs, storage, persistence, database</tags>
+        <releaseNotes>Please check the release notes on github.</releaseNotes>
+    </metadata>
+    <files>
+        <file src="publish-net40\NEventStore\bin\**" target="lib\net40"/>
+        <file src="src\NEventStore\**\*.cs" target="src\NEventStore"/>
+    </files>
 </package>

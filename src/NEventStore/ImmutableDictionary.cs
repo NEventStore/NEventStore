@@ -1,9 +1,9 @@
-﻿namespace NEventStore
-{
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
+namespace NEventStore
+{
     public sealed class ImmutableDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         private readonly IDictionary<TKey, TValue> _inner;
@@ -13,7 +13,11 @@
             _inner = inner;
         }
 
-        public TValue this[TKey key] { get => _inner[key]; set => throw new NotSupportedException(Resources.ReadOnlyCollection); }
+        public TValue this[TKey key]
+        {
+            get => _inner[key];
+            set => throw new NotSupportedException(Resources.ReadOnlyCollection);
+        }
 
         public ICollection<TKey> Keys => _inner.Keys;
 

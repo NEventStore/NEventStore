@@ -1,25 +1,22 @@
 ﻿#pragma warning disable IDE1006 // Naming Styles
 
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NEventStore.Helpers;
-using NEventStore.Persistence.AcceptanceTests.BDD;
-using FluentAssertions;
 #if MSTEST
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 #endif
-#if NUNIT
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using FluentAssertions;
+using NEventStore.Helpers;
+using NEventStore.Persistence.AcceptanceTests.BDD.NUnit;
+using NEventStore.PollingClient;
 using NUnit.Framework;
-#endif
 #if XUNIT
 using Xunit;
 using Xunit.Should;
 #endif
 
-namespace NEventStore.PollingClient
+namespace NEventStore.Tests.Client
 {
 #if MSTEST
     [TestClass]

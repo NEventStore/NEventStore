@@ -1,43 +1,43 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <RootNamespace>NEventStore.Serialization.Bson</RootNamespace>
-    <AssemblyName>NEventStore.Serialization.Bson</AssemblyName>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PackageId>NEventStore.Serialization.Bson</PackageId>
-    <Title>NEventStore Bson Serializers</Title>
-    <Authors>NEventStore Dev Team</Authors>
-    <PackageProjectUrl>http://neventstore.org</PackageProjectUrl>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Description>This package contains Bson serializers for NEventStore library. These serializers were removed from the core package to limit dependencies from external libraries.</Description>
-    <PackageTags>events, event sourcing, cqrs, storage, persistence, database</PackageTags>
-    <PackageReleaseNotes></PackageReleaseNotes>
-    <GenerateDocumentationFile>True</GenerateDocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.3" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\NEventStore\NEventStore.Core.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Messages.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Messages.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Update="Messages.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
-      <CustomToolNamespace>NEventStore.Serialization.Bson</CustomToolNamespace>
-    </EmbeddedResource>
-  </ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <RootNamespace>NEventStore.Serialization.Bson</RootNamespace>
+        <AssemblyName>NEventStore.Serialization.Bson</AssemblyName>
+    </PropertyGroup>
+    <PropertyGroup>
+        <PackageId>NEventStore.Serialization.Bson</PackageId>
+        <Title>NEventStore Bson Serializers</Title>
+        <Authors>NEventStore Dev Team</Authors>
+        <PackageProjectUrl>http://neventstore.org</PackageProjectUrl>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <Description>This package contains Bson serializers for NEventStore library. These serializers were removed from the core package to limit dependencies from external libraries.</Description>
+        <PackageTags>events, event sourcing, cqrs, storage, persistence, database</PackageTags>
+        <PackageReleaseNotes></PackageReleaseNotes>
+        <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <DefineConstants>TRACE;DEBUG</DefineConstants>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+        <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.3"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\NEventStore\NEventStore.Core.csproj"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Update="Messages.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Messages.resx</DependentUpon>
+        </Compile>
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Update="Messages.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+            <CustomToolNamespace>NEventStore.Serialization.Bson</CustomToolNamespace>
+        </EmbeddedResource>
+    </ItemGroup>
 </Project>

@@ -1,19 +1,16 @@
-﻿#pragma warning disable IDE1006 // Naming Styles
+﻿using System;
+using FluentAssertions;
+using NEventStore.Persistence;
+using NEventStore.Persistence.AcceptanceTests;
+using NEventStore.Persistence.AcceptanceTests.BDD.NUnit;
+using NEventStore.Persistence.InMemory;
 
-namespace NEventStore
+#pragma warning disable IDE1006 // Naming Styles
+
+namespace NEventStore.Tests
 {
-    using NEventStore.Persistence.AcceptanceTests;
-    using NEventStore.Persistence.AcceptanceTests.BDD;
-    using System;
-    using FluentAssertions;
 #if MSTEST
 	using Microsoft.VisualStudio.TestTools.UnitTesting;	
-#endif
-#if NUNIT
-    using NUnit.Framework;
-    using NEventStore.Persistence.InMemory;
-    using NEventStore.Tests;
-    using NEventStore.Persistence;
 #endif
 #if XUNIT
 	using Xunit;

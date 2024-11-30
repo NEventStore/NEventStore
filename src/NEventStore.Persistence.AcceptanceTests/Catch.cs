@@ -1,21 +1,20 @@
-﻿namespace NEventStore.Persistence.AcceptanceTests
+﻿using System;
+
+namespace NEventStore.Persistence.AcceptanceTests;
+
+public static class Catch
 {
-    using System;
-
-    public static class Catch
+    public static Exception Exception(Action action)
     {
-        public static Exception Exception(Action action)
+        try
         {
-            try
-            {
-                action();
-            }
-            catch (Exception ex)
-            {
-                return ex;
-            }
-
-            return null;
+            action();
         }
+        catch (Exception ex)
+        {
+            return ex;
+        }
+
+        return null;
     }
 }

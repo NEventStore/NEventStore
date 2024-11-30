@@ -1,8 +1,8 @@
+using System.Collections.Generic;
+using NEventStore.Persistence;
+
 namespace NEventStore
 {
-    using System.Collections.Generic;
-    using NEventStore.Persistence;
-
     /// <summary>
     ///     Indicates the ability to commit events and access events to and from a given stream.
     /// </summary>

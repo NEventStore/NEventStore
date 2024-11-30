@@ -1,46 +1,46 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net9.0</TargetFrameworks>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <IsPackable>false</IsPackable>
-    <AssemblyName>NEventStore.Tests</AssemblyName>
-    <RootNamespace>NEventStore.Tests</RootNamespace>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFrameworks>net9.0</TargetFrameworks>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <IsPackable>false</IsPackable>
+        <AssemblyName>NEventStore.Tests</AssemblyName>
+        <RootNamespace>NEventStore.Tests</RootNamespace>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <DefineConstants Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">TRACE;DEBUG;NUNIT</DefineConstants>
-    <DefineConstants Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">NUNIT</DefineConstants>
-  </PropertyGroup>
-    
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="3.6.3" />
-    <PackageReference Include="MSTest.TestFramework" Version="3.6.3" />
-    <PackageReference Include="NUnit" Version="4.2.2" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
-    <PackageReference Include="FakeItEasy" Version="8.3.0" />
-    <PackageReference Include="FluentAssertions" Version="6.12.2" />
-    <PackageReference Include="System.Reactive.Core" Version="6.0.1" />
-    <PackageReference Include="System.Reactive.Linq" Version="6.0.1" />
-  </ItemGroup>
+    <PropertyGroup>
+        <DefineConstants Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">TRACE;DEBUG;NUNIT</DefineConstants>
+        <DefineConstants Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">NUNIT</DefineConstants>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Include="..\NEventStore.Persistence.AcceptanceTests\PersistenceTests.cs" Link="Persistence\InMemoryPersistence\PersistenceTests.cs" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0"/>
+        <PackageReference Include="MSTest.TestAdapter" Version="3.6.3"/>
+        <PackageReference Include="MSTest.TestFramework" Version="3.6.3"/>
+        <PackageReference Include="NUnit" Version="4.2.2"/>
+        <PackageReference Include="NUnit3TestAdapter" Version="4.6.0"/>
+        <PackageReference Include="FakeItEasy" Version="8.3.0"/>
+        <PackageReference Include="FluentAssertions" Version="6.12.2"/>
+        <PackageReference Include="System.Reactive.Core" Version="6.0.1"/>
+        <PackageReference Include="System.Reactive.Linq" Version="6.0.1"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\NEventStore.Persistence.AcceptanceTests\NEventStore.Persistence.AcceptanceTests.Core.csproj" />
-    <ProjectReference Include="..\NEventStore.PollingClient\NEventStore.PollingClient.csproj" />
-    <ProjectReference Include="..\NEventStore\NEventStore.Core.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <Compile Include="..\NEventStore.Persistence.AcceptanceTests\PersistenceTests.cs" Link="Persistence\InMemoryPersistence\PersistenceTests.cs"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\NEventStore.Persistence.AcceptanceTests\NEventStore.Persistence.AcceptanceTests.Core.csproj"/>
+        <ProjectReference Include="..\NEventStore.PollingClient\NEventStore.PollingClient.csproj"/>
+        <ProjectReference Include="..\NEventStore\NEventStore.Core.csproj"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Persistence\InMemoryPersistence\" />
-  </ItemGroup>
+    <ItemGroup>
+        <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Persistence\InMemoryPersistence\"/>
+    </ItemGroup>
 
 </Project>

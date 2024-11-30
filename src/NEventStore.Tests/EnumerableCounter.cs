@@ -1,29 +1,28 @@
-namespace NEventStore
+using System.Collections;
+using System.Collections.Generic;
+
+namespace NEventStore.Tests;
+
+internal class EnumerableCounter<T> : IEnumerable<T>
 {
-    using System.Collections;
-    using System.Collections.Generic;
+    private readonly IEnumerable<T> _enumerable;
 
-    internal class EnumerableCounter<T> : IEnumerable<T>
+    public EnumerableCounter(IEnumerable<T> enumerable)
     {
-        private readonly IEnumerable<T> _enumerable;
+        _enumerable = enumerable;
+        GetEnumeratorCallCount = 0;
+    }
 
-        public EnumerableCounter(IEnumerable<T> enumerable)
-        {
-            _enumerable = enumerable;
-            GetEnumeratorCallCount = 0;
-        }
+    public int GetEnumeratorCallCount { get; private set; }
 
-        public int GetEnumeratorCallCount { get; private set; }
+    public IEnumerator<T> GetEnumerator()
+    {
+        GetEnumeratorCallCount++;
+        return _enumerable.GetEnumerator();
+    }
 
-        public IEnumerator<T> GetEnumerator()
-        {
-            GetEnumeratorCallCount++;
-            return _enumerable.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }

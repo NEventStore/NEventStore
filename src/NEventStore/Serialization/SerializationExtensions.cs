@@ -1,7 +1,7 @@
+using System.IO;
+
 namespace NEventStore.Serialization
 {
-    using System.IO;
-
     /// <summary>
     ///     Implements extension methods that make call to the serialization infrastructure more simple.
     /// </summary>
@@ -16,11 +16,9 @@ namespace NEventStore.Serialization
         /// <returns>A serialized representation of the object graph provided.</returns>
         public static byte[] Serialize<T>(this ISerialize serializer, T value)
         {
-            using (var stream = new MemoryStream())
-            {
-                serializer.Serialize(stream, value);
-                return stream.ToArray();
-            }
+            using var stream = new MemoryStream();
+            serializer.Serialize(stream, value);
+            return stream.ToArray();
         }
 
         /// <summary>
@@ -32,14 +30,13 @@ namespace NEventStore.Serialization
         /// <returns>The reconstituted object, if any.</returns>
         public static T Deserialize<T>(this ISerialize serializer, byte[] serialized)
         {
-            serialized = serialized ?? new byte[] {};
-            if (serialized.Length == 0)
-            {
-                return default(T);
-            }
+            serialized = serialized ?? new byte[] { };
+            if (serialized.Length == 0) return default;
 
             using (var stream = new MemoryStream(serialized))
+            {
                 return serializer.Deserialize<T>(stream);
+            }
         }
     }
 }

@@ -17,7 +17,7 @@ namespace NEventStore.Helpers
         public void Dispose()
         {
             // Interlocked allows the continuation to be executed only once
-            Action dispose = Interlocked.Exchange(ref _disposeAction, null);
+            var dispose = Interlocked.Exchange(ref _disposeAction, null);
             dispose?.Invoke();
         }
     }

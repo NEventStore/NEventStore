@@ -2,7 +2,8 @@ $configurationdefault = "Release"
 $artifacts = "../../artifacts"
 
 $configuration = Read-Host 'Configuration to build [default: Release] ?'
-if ($configuration -eq '') {
+if ($configuration -eq '')
+{
     $configuration = $configurationdefault
 }
 $runtests = Read-Host 'Run Tests (y / n) [default:n] ?'
@@ -23,7 +24,8 @@ Write-Host "Building: "$nugetversion
 dotnet build ./src/NEventStore.Core.sln -c $configuration --no-restore
 
 # Testing
-if ($runtests -eq "y") {
+if ($runtests -eq "y")
+{
     Write-Host "Executing Tests"
     dotnet test ./src/NEventStore.Core.sln -c $configuration --no-build
     Write-Host "Tests Execution Complated"

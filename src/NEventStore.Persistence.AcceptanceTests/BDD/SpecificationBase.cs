@@ -1,5 +1,4 @@
 ﻿#if XUNIT
-
 namespace NEventStore.Persistence.AcceptanceTests.BDD
 {
 

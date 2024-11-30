@@ -1,10 +1,10 @@
+using System;
+using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
+using NEventStore.Logging;
+
 namespace NEventStore
 {
-    using System;
-    using System.Collections.Generic;
-    using NEventStore.Logging;
-    using Microsoft.Extensions.Logging;
-
     public class NanoContainer
     {
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(NanoContainer));
@@ -16,7 +16,7 @@ namespace NEventStore
             where TService : class
         {
             Logger.LogDebug(Messages.RegisteringWireupCallback, typeof(TService));
-            var registration = new ContainerRegistration(c => (object)resolve(c));
+            var registration = new ContainerRegistration(c => resolve(c));
             _registrations[typeof(TService)] = registration;
             return registration;
         }
@@ -24,14 +24,10 @@ namespace NEventStore
         public virtual ContainerRegistration Register<TService>(TService instance)
         {
             if (Equals(instance, null))
-            {
                 throw new ArgumentNullException(nameof(instance), Messages.InstanceCannotBeNull);
-            }
 
             if (!typeof(TService).IsValueType && !typeof(TService).IsInterface)
-            {
                 throw new ArgumentException(Messages.TypeMustBeInterface, nameof(instance));
-            }
 
             Logger.LogDebug(Messages.RegisteringServiceInstance, typeof(TService));
             var registration = new ContainerRegistration(instance);
@@ -43,13 +39,11 @@ namespace NEventStore
         {
             Logger.LogDebug(Messages.ResolvingService, typeof(TService));
 
-            if (_registrations.TryGetValue(typeof(TService), out ContainerRegistration registration))
-            {
+            if (_registrations.TryGetValue(typeof(TService), out var registration))
                 return (TService)registration.Resolve(this);
-            }
 
             Logger.LogDebug(Messages.UnableToResolve, typeof(TService));
-            return default(TService);
+            return default;
         }
     }
 
@@ -90,10 +84,7 @@ namespace NEventStore
 
             Logger.LogTrace(Messages.AttemptingToResolveInstance);
 
-            if (_instance != null)
-            {
-                return _instance;
-            }
+            if (_instance != null) return _instance;
 
             Logger.LogTrace(Messages.BuildingAndStoringNewInstance);
             return _instance = _resolve(container);

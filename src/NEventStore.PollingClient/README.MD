@@ -1,23 +1,27 @@
 # Polling Client
 
-This project contains a 'reference' implementation of a Polling Client for NEventStore. 
+This project contains a 'reference' implementation of a Polling Client for NEventStore.
 
-Its duty is to constantly ask the NEventStore if there are new commits made by the users, read them and dispatch the committed events to their handlers.
+Its duty is to constantly ask the NEventStore if there are new commits made by the users, read them and dispatch the
+committed events to their handlers.
 
-You are encouraged to write your own PollingClient that suits your needs, you can use the code in this project as a starting point.
+You are encouraged to write your own PollingClient that suits your needs, you can use the code in this project as a
+starting point.
 
-## New Polling client without RX	
+## New Polling client without RX
 
-To remove dependecy from RX library, the old PollingClient was removed from the project. 
+To remove dependecy from RX library, the old PollingClient was removed from the project.
 
-The entire code for OldPollingClient is included in this README, If you still need it in your project you can simply include this class in your code as well as the dependencies from RX.
+The entire code for OldPollingClient is included in this README, If you still need it in your project you can simply
+include this class in your code as well as the dependencies from RX.
 
-With the new PollingClient2 you should simply pass a Func that will be called to handle the commit, you can use Rx if you like that approach approach, or even better you can use TPL Dataflow that is probably more suited.
+With the new PollingClient2 you should simply pass a Func that will be called to handle the commit, you can use Rx if
+you like that approach approach, or even better you can use TPL Dataflow that is probably more suited.
 
 If you want to use the new polling client with RX you can look at PollingClientRx inside Test project.
 
 ### Old Polling Client Code
-	
+
 	namespace NEventStore.Client
 	{
 	    using System;

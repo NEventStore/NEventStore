@@ -1,4 +1,6 @@
-﻿#pragma warning disable 169 // ReSharper disable InconsistentNaming
+﻿using NEventStore.Persistence.AcceptanceTests.BDD.NUnit;
+
+#pragma warning disable 169 // ReSharper disable InconsistentNaming
 #pragma warning disable IDE1006 // Naming Styles
 #pragma warning disable S101 // Types should be named in PascalCase
 
@@ -120,7 +122,7 @@ namespace NEventStore.Serialization.AcceptanceTests
 #endif
     public class when_serializing_a_list_of_commit_headers : SerializationConcern
     {
-        private readonly Dictionary<string, object> _headers = new Dictionary<string, object>
+        private readonly Dictionary<string, object> _headers = new()
         {
             {"HeaderKey", "SomeValue"},
             {"AnotherKey", 42},
@@ -191,17 +193,9 @@ namespace NEventStore.Serialization.AcceptanceTests
 
     public abstract class SerializationConcern : SpecificationBase
     {
-        private readonly SerializerFixture _data;
+        private readonly SerializerFixture _data = new();
 
-        public ISerialize Serializer
-        {
-            get { return _data.Serializer; }
-        }
-
-        protected SerializationConcern()
-        {
-            _data = new SerializerFixture();
-        }
+        protected ISerialize Serializer => _data.Serializer;
     }
 
     public partial class SerializerFixture
@@ -209,10 +203,7 @@ namespace NEventStore.Serialization.AcceptanceTests
         private readonly Func<ISerialize> _createSerializer;
         private ISerialize _serializer;
 
-        public ISerialize Serializer
-        {
-            get { return _serializer ?? (_serializer = _createSerializer()); }
-        }
+        public ISerialize Serializer => _serializer ??= _createSerializer();
     }
 }
 

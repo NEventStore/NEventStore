@@ -1,7 +1,6 @@
-﻿namespace NEventStore.Example
+﻿namespace NEventStore.Example;
+
+internal class SomeDomainEvent
 {
-	internal class SomeDomainEvent
-	{
-		public string Value { get; set; }
-	}
+    public string Value { get; set; }
 }

@@ -1,31 +1,32 @@
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using MessagePack;
+using MessagePack.Resolvers;
+using Microsoft.Extensions.Logging;
+using NEventStore.Logging;
+
 namespace NEventStore.Serialization
 {
-    using System;
-    using System.IO;
-    using System.Runtime.Serialization;
-    using System.Runtime.Serialization.Formatters.Binary;
-    using Microsoft.Extensions.Logging;
-    using NEventStore.Logging;
-
     /// <summary>
-    /// Delegates to <see cref="BinaryFormatter"/> to perform the actual serialization.
+    ///     Delegates to <see cref="BinaryFormatter" /> to perform the actual serialization.
     /// </summary>
-    [Obsolete("BinaryFormatter serialization is obsolete and should not be used. See https://aka.ms/binaryformatter for more information.")]
-    public class BinarySerializer : ISerialize
+    public sealed class BinarySerializer : ISerialize
     {
-        private static readonly ILogger Logger = LogFactory.BuildLogger(typeof (BinarySerializer));
-        private readonly IFormatter _formatter = new BinaryFormatter();
+        private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(BinarySerializer));
 
-        public virtual void Serialize<T>(Stream output, T graph)
+        private static readonly MessagePackSerializerOptions _options =
+            new MessagePackSerializerOptions(TypelessContractlessStandardResolver.Instance);
+
+        public void Serialize<T>(Stream output, T graph)
         {
-            Logger.LogTrace(Messages.SerializingGraph, typeof (T));
-            _formatter.Serialize(output, graph);
+            Logger.LogTrace(Messages.SerializingGraph, typeof(T));
+            MessagePackSerializer.Serialize(output, graph, _options);
         }
 
-        public virtual T Deserialize<T>(Stream input)
+        public T Deserialize<T>(Stream input)
         {
-            Logger.LogTrace(Messages.DeserializingStream, typeof (T));
-            return (T) _formatter.Deserialize(input);
+            Logger.LogTrace(Messages.DeserializingStream, typeof(T));
+            return MessagePackSerializer.Deserialize<T>(input, _options);
         }
     }
 }

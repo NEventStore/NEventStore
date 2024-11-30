@@ -1,26 +1,27 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
-	<metadata>
-		<id>NEventStore.Serialization.Json</id>
-		<version>8.0</version>
-		<title>NEventStore Json Serializers</title>
-		<authors>NEventStore Dev Team</authors>
-		<owners>NEventStore Dev Team</owners>
-		<projectUrl>http://neventstore.org</projectUrl>
-		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<description>This package contains Json and Bson serializers for NEventStore library</description>
-		<summary>These serializers were removed from the core package to limit dependencies from external libraries.</summary>
-		<language>es-US</language>
-		<tags>events, event sourcing, cqrs, storage, persistence, database</tags>
-		<releaseNotes></releaseNotes>
+    <metadata>
+        <id>NEventStore.Serialization.Json</id>
+        <version>8.0</version>
+        <title>NEventStore Json Serializers</title>
+        <authors>NEventStore Dev Team</authors>
+        <owners>NEventStore Dev Team</owners>
+        <projectUrl>http://neventstore.org</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>This package contains Json and Bson serializers for NEventStore library</description>
+        <summary>These serializers were removed from the core package to limit dependencies from external libraries.
+        </summary>
+        <language>es-US</language>
+        <tags>events, event sourcing, cqrs, storage, persistence, database</tags>
+        <releaseNotes></releaseNotes>
 
-		<dependencies>
-			<dependency id="NEventStore" version="[$version$]" />
-		</dependencies>
-	</metadata>
+        <dependencies>
+            <dependency id="NEventStore" version="[$version$]"/>
+        </dependencies>
+    </metadata>
 
-	<files>
-		<file src="publish-net40\NEventStore.Serialization.Json\bin\**" target="lib\net40"/>
-		<file src="src\NEventStore.Serialization.Json\**\*.cs" target="src\NEventStore.Serialization.Json" />
-	</files>  
+    <files>
+        <file src="publish-net40\NEventStore.Serialization.Json\bin\**" target="lib\net40"/>
+        <file src="src\NEventStore.Serialization.Json\**\*.cs" target="src\NEventStore.Serialization.Json"/>
+    </files>
 </package>

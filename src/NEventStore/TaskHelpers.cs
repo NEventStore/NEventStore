@@ -1,21 +1,21 @@
-﻿namespace NEventStore
-{
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
+namespace NEventStore
+{
     internal static class TaskHelpers
     {
         internal static Task Delay(double milliseconds, CancellationToken cancellationToken)
         {
             var tcs = new TaskCompletionSource<bool>();
-			TimerCallback callback = (_) => tcs.TrySetResult(true);
+            TimerCallback callback = _ => tcs.TrySetResult(true);
 #pragma warning disable IDE0067 // Dispose objects before losing scope
             var timer = new Timer(callback, null, 0, Convert.ToInt32(milliseconds));
 #pragma warning restore IDE0067 // Dispose objects before losing scope
-            CancellationTokenRegistration cancellationTokenRegistration = cancellationToken.Register(() =>
+            var cancellationTokenRegistration = cancellationToken.Register(() =>
             {
-				timer.Dispose();
+                timer.Dispose();
                 tcs.TrySetCanceled();
             });
             return tcs.Task.ContinueWith(_ =>
@@ -25,7 +25,8 @@
             }, TaskContinuationOptions.ExecuteSynchronously);
         }
 
-        public static void WhenCompleted<T>(this Task<T> task, Action<Task<T>> onComplete, Action<Task<T>> onFaulted, bool execSync = false)
+        public static void WhenCompleted<T>(this Task<T> task, Action<Task<T>> onComplete, Action<Task<T>> onFaulted,
+            bool execSync = false)
         {
             if (task.IsCompleted)
             {
@@ -41,18 +42,19 @@
 
             task.ContinueWith(
                 onComplete,
-                execSync ?
-                    TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion :
-                    TaskContinuationOptions.OnlyOnRanToCompletion);
+                execSync
+                    ? TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion
+                    : TaskContinuationOptions.OnlyOnRanToCompletion);
 
             task.ContinueWith(
                 onFaulted,
-                execSync ?
-                    TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnFaulted :
-                    TaskContinuationOptions.OnlyOnFaulted);
+                execSync
+                    ? TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnFaulted
+                    : TaskContinuationOptions.OnlyOnFaulted);
         }
 
-        public static void WhenCompleted(this Task task, Action<Task> onComplete, Action<Task> onFaulted, bool execSync = false)
+        public static void WhenCompleted(this Task task, Action<Task> onComplete, Action<Task> onFaulted,
+            bool execSync = false)
         {
             if (task.IsCompleted)
             {
@@ -68,15 +70,15 @@
 
             task.ContinueWith(
                 onComplete,
-                execSync ?
-                    TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion :
-                    TaskContinuationOptions.OnlyOnRanToCompletion);
+                execSync
+                    ? TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion
+                    : TaskContinuationOptions.OnlyOnRanToCompletion);
 
             task.ContinueWith(
                 onFaulted,
-                execSync ?
-                    TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnFaulted :
-                    TaskContinuationOptions.OnlyOnFaulted);
+                execSync
+                    ? TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnFaulted
+                    : TaskContinuationOptions.OnlyOnFaulted);
         }
     }
 }

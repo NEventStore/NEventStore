@@ -1,12 +1,10 @@
+using Microsoft.Extensions.Logging;
+using NEventStore.Logging;
+using NEventStore.Persistence;
+using NEventStore.Serialization;
+
 namespace NEventStore
 {
-    using System;
-    using Microsoft.Extensions.Logging;
-    using NEventStore.Diagnostics;
-    using NEventStore.Logging;
-    using NEventStore.Persistence;
-    using NEventStore.Serialization;
-
     public class PersistenceWireup : Wireup
     {
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(PersistenceWireup));
@@ -64,12 +62,12 @@ namespace NEventStore
         /* EnlistInAmbientTransaction: Will be moved to the specific Persistence driver or completely removed letting the clients handle that
                 /// <summary>
                 /// Enables two-phase commit.
-                /// By default NEventStore will suppress surrounding TransactionScopes 
-                /// (All the Persistence drivers that support transactions will create a 
+                /// By default NEventStore will suppress surrounding TransactionScopes
+                /// (All the Persistence drivers that support transactions will create a
                 /// private nested TransactionScope with <see cref="TransactionScopeOption.Suppress"/> for each operation)
                 /// so that all of its operations run in a dedicated, separate transaction.
                 /// This option changes the behavior so that NEventStore enlists in a surrounding TransactionScope,
-                /// if there is any (All the Persistence drivers that support transactions will create a 
+                /// if there is any (All the Persistence drivers that support transactions will create a
                 /// private nested TransactionScope with <see cref="TransactionScopeOption.Required"/> for each operation).
                 /// </summary>
                 /// <remarks>

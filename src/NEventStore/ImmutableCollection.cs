@@ -1,10 +1,10 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace NEventStore
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Linq;
-
     internal sealed class ImmutableCollection<T> : ICollection<T>, ICollection
     {
         private readonly ICollection<T> _inner;
@@ -16,25 +16,16 @@ namespace NEventStore
 
         public object SyncRoot { get; } = new object();
 
-        public bool IsSynchronized
-        {
-            get { return false; }
-        }
+        public bool IsSynchronized => false;
 
         public void CopyTo(Array array, int index)
         {
             CopyTo(array.Cast<T>().ToArray(), index);
         }
 
-        public int Count
-        {
-            get { return _inner.Count; }
-        }
+        public int Count => _inner.Count;
 
-        public bool IsReadOnly
-        {
-            get { return true; }
-        }
+        public bool IsReadOnly => true;
 
         public IEnumerator<T> GetEnumerator()
         {

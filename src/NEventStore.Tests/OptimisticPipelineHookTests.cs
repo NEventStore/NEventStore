@@ -1,21 +1,19 @@
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using FluentAssertions;
+using NEventStore.Persistence;
+using NEventStore.Persistence.AcceptanceTests;
+using NEventStore.Persistence.AcceptanceTests.BDD.NUnit;
+
 #pragma warning disable 169 // ReSharper disable InconsistentNaming
 #pragma warning disable IDE1006 // Naming Styles
 
-namespace NEventStore
+namespace NEventStore.Tests
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using NEventStore.Persistence;
-    using NEventStore.Persistence.AcceptanceTests;
-    using NEventStore.Persistence.AcceptanceTests.BDD;
-    using FluentAssertions;
 #if MSTEST
 	using Microsoft.VisualStudio.TestTools.UnitTesting;	
-#endif
-#if NUNIT
-    using NUnit.Framework;
 #endif
 #if XUNIT
 	using Xunit;

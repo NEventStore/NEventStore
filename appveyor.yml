@@ -17,37 +17,37 @@ dotnet_csproj:
   file_version: '{version}'
   informational_version: '{version}'
 install:
-- ps: choco install gitversion.portable -y
+  - ps: choco install gitversion.portable -y
 before_build:
-- ps: >-
-    # Display .NET Core version
-
-    dotnet --version
-
-    # Display minimal restore text
-
-    dotnet restore ./src/NEventStore.Core.sln --verbosity m
-
-    gitversion /l console /output buildserver /updateAssemblyInfo
+  - ps: >-
+      # Display .NET Core version
+      
+      dotnet --version
+      
+      # Display minimal restore text
+      
+      dotnet restore ./src/NEventStore.Core.sln --verbosity m
+      
+      gitversion /l console /output buildserver /updateAssemblyInfo
 build:
   project: src/NEventStore.Core.sln
   verbosity: minimal
 after_build:
-- cmd: >-
-    dotnet pack ./src/NEventStore/NEventStore.Core.csproj -c %CONFIGURATION% --no-build -o artifacts /p:PackageVersion=%GitVersion_NuGetVersion%
-
-    dotnet pack ./src/NEventStore.PollingClient/NEventStore.PollingClient.csproj -c %CONFIGURATION% --no-build -o artifacts /p:PackageVersion=%GitVersion_NuGetVersion%
-
-    dotnet pack ./src/NEventStore.Serialization.Json/NEventStore.Serialization.Json.Core.csproj -c %CONFIGURATION% --no-build -o artifacts /p:PackageVersion=%GitVersion_NuGetVersion%
-
-    dotnet pack ./src/NEventStore.Serialization.Bson/NEventStore.Serialization.Bson.Core.csproj -c %CONFIGURATION% --no-build -o artifacts /p:PackageVersion=%GitVersion_NuGetVersion%
+  - cmd: >-
+      dotnet pack ./src/NEventStore/NEventStore.Core.csproj -c %CONFIGURATION% --no-build -o artifacts /p:PackageVersion=%GitVersion_NuGetVersion%
+      
+      dotnet pack ./src/NEventStore.PollingClient/NEventStore.PollingClient.csproj -c %CONFIGURATION% --no-build -o artifacts /p:PackageVersion=%GitVersion_NuGetVersion%
+      
+      dotnet pack ./src/NEventStore.Serialization.Json/NEventStore.Serialization.Json.Core.csproj -c %CONFIGURATION% --no-build -o artifacts /p:PackageVersion=%GitVersion_NuGetVersion%
+      
+      dotnet pack ./src/NEventStore.Serialization.Bson/NEventStore.Serialization.Bson.Core.csproj -c %CONFIGURATION% --no-build -o artifacts /p:PackageVersion=%GitVersion_NuGetVersion%
 test:
   assemblies:
     except:
-    - NEventStore.Persistence.AcceptanceTests.dll
-    - NEventStore.dll
-    - NEventStore.Serialization.Json.dll
-    - NEventStore.Serialization.Bson.dll
+      - NEventStore.Persistence.AcceptanceTests.dll
+      - NEventStore.dll
+      - NEventStore.Serialization.Json.dll
+      - NEventStore.Serialization.Bson.dll
 artifacts:
-- path: '**\artifacts\**\*.*'
+  - path: '**\artifacts\**\*.*'
 deploy: off

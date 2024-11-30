@@ -1,8 +1,8 @@
+using System;
+using NEventStore.Persistence;
+
 namespace NEventStore
 {
-    using System;
-    using NEventStore.Persistence;
-
     /// <summary>
     ///     Indicates the ability to store and retreive a stream of events.
     /// </summary>

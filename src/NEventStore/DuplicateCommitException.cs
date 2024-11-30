@@ -1,8 +1,8 @@
+using System;
+using System.Runtime.Serialization;
+
 namespace NEventStore
 {
-    using System;
-    using System.Runtime.Serialization;
-
     /// <summary>
     ///     Represents an attempt to commit the same information more than once.
     /// </summary>
@@ -13,7 +13,8 @@ namespace NEventStore
         ///     Initializes a new instance of the DuplicateCommitException class.
         /// </summary>
         public DuplicateCommitException()
-        {}
+        {
+        }
 
         /// <summary>
         ///     Initializes a new instance of the DuplicateCommitException class.
@@ -21,7 +22,8 @@ namespace NEventStore
         /// <param name="message">The message that describes the error.</param>
         public DuplicateCommitException(string message)
             : base(message)
-        {}
+        {
+        }
 
         /// <summary>
         ///     Initializes a new instance of the DuplicateCommitException class.
@@ -30,7 +32,8 @@ namespace NEventStore
         /// <param name="innerException">The message that is the cause of the current exception.</param>
         public DuplicateCommitException(string message, Exception innerException)
             : base(message, innerException)
-        {}
+        {
+        }
 
         /// <summary>
         ///     Initializes a new instance of the DuplicateCommitException class.
@@ -39,6 +42,7 @@ namespace NEventStore
         /// <param name="context">The StreamingContext that contains contextual information about the source or destination.</param>
         protected DuplicateCommitException(SerializationInfo info, StreamingContext context)
             : base(info, context)
-        {}
+        {
+        }
     }
 }

@@ -1,10 +1,10 @@
+using System;
+using System.Collections.Generic;
+
 #pragma warning disable RCS1170 // Use read-only auto-implemented property.
 
 namespace NEventStore.Persistence
 {
-    using System;
-    using System.Collections.Generic;
-
     public class Commit : ICommit
     {
         public Commit(
@@ -14,7 +14,7 @@ namespace NEventStore.Persistence
             Guid commitId,
             int commitSequence,
             DateTime commitStamp,
-            Int64 checkpointToken,
+            long checkpointToken,
             IDictionary<string, object> headers,
             ICollection<EventMessage> events)
         {
@@ -32,23 +32,23 @@ namespace NEventStore.Persistence
             //    new ReadOnlyCollection<EventMessage>(new List<EventMessage>(events));
         }
 
-        public string BucketId { get; private set; }
+        public string BucketId { get; }
 
-        public string StreamId { get; private set; }
+        public string StreamId { get; }
 
-        public int StreamRevision { get; private set; }
+        public int StreamRevision { get; }
 
-        public Guid CommitId { get; private set; }
+        public Guid CommitId { get; }
 
-        public int CommitSequence { get; private set; }
+        public int CommitSequence { get; }
 
-        public DateTime CommitStamp { get; private set; }
+        public DateTime CommitStamp { get; }
 
-        public IDictionary<string, object> Headers { get; private set; }
+        public IDictionary<string, object> Headers { get; }
 
-        public ICollection<EventMessage> Events { get; private set; }
+        public ICollection<EventMessage> Events { get; }
 
-        public Int64 CheckpointToken { get; private set; }
+        public long CheckpointToken { get; }
     }
 }
 

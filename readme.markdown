@@ -1,24 +1,31 @@
 NEventStore
 ===
 
-NEventStore is a persistence library used to abstract different storage implementations when using event sourcing as storage mechanism. 
+NEventStore is a persistence library used to abstract different storage implementations when using event sourcing as
+storage mechanism.
 
-This library is developed with a specific focus on [DDD](http://en.wikipedia.org/wiki/Domain-driven_design)/[CQRS](https://en.wikipedia.org/wiki/Command%E2%80%93query_separation#Command_query_responsibility_segregation) applications.
+This library is developed with a specific focus
+on [DDD](http://en.wikipedia.org/wiki/Domain-driven_design)/[CQRS](https://en.wikipedia.org/wiki/Command%E2%80%93query_separation#Command_query_responsibility_segregation)
+applications.
 
 NEventStore currently supports:
 
 - .net standard 2.0
 - .net framework 4.6.2
 
-Starting from Version 6.0.0 NEventStore will use [Semantic Versioning](https://semver.org/) to track the version numbers.
+Starting from Version 6.0.0 NEventStore will use [Semantic Versioning](https://semver.org/) to track the version
+numbers.
 
 Build Status (AppVeyor)
 ===
 
-Branches: 
+Branches:
 
-- master [![Build status](https://ci.appveyor.com/api/projects/status/frg36pb2oh1j2ddi/branch/master?svg=true)](https://ci.appveyor.com/project/AGiorgetti/neventstore/branch/master)
-- develop [![Build status](https://ci.appveyor.com/api/projects/status/frg36pb2oh1j2ddi/branch/develop?svg=true)](https://ci.appveyor.com/project/AGiorgetti/neventstore/branch/develop)
+-
+
+master [![Build status](https://ci.appveyor.com/api/projects/status/frg36pb2oh1j2ddi/branch/master?svg=true)](https://ci.appveyor.com/project/AGiorgetti/neventstore/branch/master)
+-
+develop [![Build status](https://ci.appveyor.com/api/projects/status/frg36pb2oh1j2ddi/branch/develop?svg=true)](https://ci.appveyor.com/project/AGiorgetti/neventstore/branch/develop)
 
 Main Library Packages
 ===
@@ -51,7 +58,7 @@ To build the project locally on a Windows Machine:
 ## Vesioning
 
 Versioning is done automatically by the build script updating the
-AssemblyInfo.cs file (<GenerateAssemblyInfo>false</GenerateAssemblyInfo> in .csproj files) 
+AssemblyInfo.cs file (<GenerateAssemblyInfo>false</GenerateAssemblyInfo> in .csproj files)
 before the build starts. The version number is retrieved
 from the git repository tags using "gitversion" tool.
 

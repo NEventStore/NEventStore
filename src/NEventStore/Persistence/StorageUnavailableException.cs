@@ -1,8 +1,8 @@
+using System;
+using System.Runtime.Serialization;
+
 namespace NEventStore.Persistence
 {
-    using System;
-    using System.Runtime.Serialization;
-
     /// <summary>
     ///     Indicates that the underlying persistence medium is unavailable or offline.
     /// </summary>
@@ -13,7 +13,8 @@ namespace NEventStore.Persistence
         ///     Initializes a new instance of the StorageUnavailableException class.
         /// </summary>
         public StorageUnavailableException()
-        {}
+        {
+        }
 
         /// <summary>
         ///     Initializes a new instance of the StorageUnavailableException class.
@@ -21,7 +22,8 @@ namespace NEventStore.Persistence
         /// <param name="message">The message that describes the error.</param>
         public StorageUnavailableException(string message)
             : base(message)
-        {}
+        {
+        }
 
         /// <summary>
         ///     Initializes a new instance of the StorageUnavailableException class.
@@ -30,7 +32,8 @@ namespace NEventStore.Persistence
         /// <param name="innerException">The message that is the cause of the current exception.</param>
         public StorageUnavailableException(string message, Exception innerException)
             : base(message, innerException)
-        {}
+        {
+        }
 
         /// <summary>
         ///     Initializes a new instance of the StorageUnavailableException class.
@@ -39,6 +42,7 @@ namespace NEventStore.Persistence
         /// <param name="context">The StreamingContext that contains contextual information about the source or destination.</param>
         protected StorageUnavailableException(SerializationInfo info, StreamingContext context)
             : base(info, context)
-        {}
+        {
+        }
     }
 }

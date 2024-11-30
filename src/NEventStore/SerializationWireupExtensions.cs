@@ -1,15 +1,16 @@
+using System;
+using Microsoft.Extensions.Logging;
+using NEventStore.Logging;
+using NEventStore.Serialization;
+
 namespace NEventStore
 {
-    using Logging;
-    using Microsoft.Extensions.Logging;
-    using NEventStore.Serialization;
-    using System;
-
     public static class SerializationWireupExtensions
     {
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(PersistenceWireup));
 
-        [Obsolete("BinaryFormatter serialization is obsolete and should not be used. See https://aka.ms/binaryformatter for more information.")]
+        [Obsolete(
+            "BinaryFormatter serialization is obsolete and should not be used. See https://aka.ms/binaryformatter for more information.")]
         public static SerializationWireup UsingBinarySerialization(this PersistenceWireup wireup)
         {
             Logger.LogInformation(Resources.WireupSetSerializer, "Binary");

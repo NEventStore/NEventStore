@@ -1,7 +1,7 @@
+using System;
+
 namespace NEventStore
 {
-    using System;
-
     /// <summary>
     ///     Provides the ability to override the current moment in time to facilitate testing.
     ///     Original idea by Ayende Rahien:
@@ -17,9 +17,6 @@ namespace NEventStore
         /// <summary>
         ///     Gets the current moment in time.
         /// </summary>
-        public static DateTime UtcNow
-        {
-            get { return Resolver == null ? DateTime.UtcNow : Resolver(); }
-        }
+        public static DateTime UtcNow => Resolver == null ? DateTime.UtcNow : Resolver();
     }
 }

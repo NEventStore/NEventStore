@@ -1,12 +1,12 @@
+using Microsoft.Extensions.Logging;
+using NEventStore.Logging;
+using NEventStore.Serialization;
+
 namespace NEventStore
 {
-    using Microsoft.Extensions.Logging;
-    using NEventStore.Logging;
-    using NEventStore.Serialization;
-
     public class SerializationWireup : Wireup
     {
-        private static readonly ILogger Logger = LogFactory.BuildLogger(typeof (SerializationWireup));
+        private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(SerializationWireup));
 
         public SerializationWireup(Wireup inner, ISerialize serializer)
             : base(inner)

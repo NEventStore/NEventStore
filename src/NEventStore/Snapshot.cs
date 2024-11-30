@@ -1,8 +1,8 @@
+using System;
+using System.Runtime.Serialization;
+
 namespace NEventStore
 {
-    using System;
-    using System.Runtime.Serialization;
-
     /// <summary>
     ///     Represents a materialized view of a stream at specific revision.
     /// </summary>
@@ -18,7 +18,8 @@ namespace NEventStore
         /// <param name="payload">The snapshot or materialized view of the stream at the revision indicated.</param>
         public Snapshot(string streamId, int streamRevision, object payload)
             : this(Bucket.Default, streamId, streamRevision, payload)
-        {}
+        {
+        }
 
         /// <summary>
         ///     Initializes a new instance of the Snapshot class.
@@ -40,10 +41,10 @@ namespace NEventStore
         ///     Initializes a new instance of the Snapshot class.
         /// </summary>
         protected Snapshot()
-        {}
+        {
+        }
 
-        [DataMember]
-        public virtual string BucketId { get; private set; }
+        [DataMember] public virtual string BucketId { get; private set; }
 
         /// <summary>
         ///     Gets the value which uniquely identifies the stream to which the snapshot applies.
