@@ -1,96 +1,95 @@
-namespace NEventStore.Example
+namespace NEventStore.Example;
+
+using System;
+using NEventStore;
+using Logging;
+using Microsoft.Extensions.Logging;
+
+internal static class MainProgram
 {
-    using System;
-    using NEventStore;
-    using Logging;
-    using Microsoft.Extensions.Logging;
+    private static readonly Guid StreamId = Guid.NewGuid(); // aggregate identifier
 
-    internal static class MainProgram
+    private static IStoreEvents store;
+
+    private static void Main()
     {
-        private static readonly Guid StreamId = Guid.NewGuid(); // aggregate identifier
+        // Console.WindowWidth = Console.LargestWindowWidth - 20;
 
-        private static IStoreEvents store;
-
-        private static void Main()
+        using (store = WireupEventStore())
         {
-            // Console.WindowWidth = Console.LargestWindowWidth - 20;
-
-            using (store = WireupEventStore())
-            {
-                OpenOrCreateStream();
-                AppendToStream();
-                TakeSnapshot();
-                LoadFromSnapshotForwardAndAppend();
-            }
-
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadKey();
+            OpenOrCreateStream();
+            AppendToStream();
+            TakeSnapshot();
+            LoadFromSnapshotForwardAndAppend();
         }
 
-        private static IStoreEvents WireupEventStore()
-        {
-            var loggerFactory = LoggerFactory.Create(logging =>
-            {
-                logging
-                    .AddConsole()
-                    .AddDebug()
-                    .SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
-            });
+        Console.WriteLine("Press any key to continue...");
+        Console.ReadKey();
+    }
 
-            return Wireup.Init()
-               .WithLoggerFactory(loggerFactory)
-               .UseOptimisticPipelineHook()
-               .UsingInMemoryPersistence()
-               .InitializeStorageEngine()
+    private static IStoreEvents WireupEventStore()
+    {
+        var loggerFactory = LoggerFactory.Create(logging =>
+        {
+            logging
+                .AddConsole()
+                .AddDebug()
+                .SetMinimumLevel(LogLevel.Trace);
+        });
+
+        return Wireup.Init()
+            .WithLoggerFactory(loggerFactory)
+            .UseOptimisticPipelineHook()
+            .UsingInMemoryPersistence()
+            .InitializeStorageEngine()
 #if NET462
                .TrackPerformanceInstance("example")
 #endif
-               .HookIntoPipelineUsing(new[] { new AuthorizationPipelineHook() })
-               .Build();
-        }
+            .HookIntoPipelineUsing(new[] { new AuthorizationPipelineHook() })
+            .Build();
+    }
 
-        private static void OpenOrCreateStream()
+    private static void OpenOrCreateStream()
+    {
+        // we can call CreateStream(StreamId) if we know there isn't going to be any data.
+        // or we can call OpenStream(StreamId, 0, int.MaxValue) to read all commits,
+        // if no commits exist then it creates a new stream for us.
+        using (var stream = store.OpenStream(StreamId, 0, int.MaxValue))
         {
-            // we can call CreateStream(StreamId) if we know there isn't going to be any data.
-            // or we can call OpenStream(StreamId, 0, int.MaxValue) to read all commits,
-            // if no commits exist then it creates a new stream for us.
-            using (var stream = store.OpenStream(StreamId, 0, int.MaxValue))
-            {
-                var @event = new SomeDomainEvent { Value = "Initial event." };
+            var @event = new SomeDomainEvent { Value = "Initial event." };
 
-                stream.Add(new EventMessage { Body = @event });
-                stream.CommitChanges(Guid.NewGuid());
-            }
+            stream.Add(new EventMessage { Body = @event });
+            stream.CommitChanges(Guid.NewGuid());
         }
+    }
 
-        private static void AppendToStream()
+    private static void AppendToStream()
+    {
+        using (var stream = store.OpenStream(StreamId))
         {
-            using (var stream = store.OpenStream(StreamId))
-            {
-                var @event = new SomeDomainEvent { Value = "Second event." };
+            var @event = new SomeDomainEvent { Value = "Second event." };
 
-                stream.Add(new EventMessage { Body = @event });
-                stream.CommitChanges(Guid.NewGuid());
-            }
+            stream.Add(new EventMessage { Body = @event });
+            stream.CommitChanges(Guid.NewGuid());
         }
+    }
 
-        private static void TakeSnapshot()
+    private static void TakeSnapshot()
+    {
+        var memento = new AggregateMemento { Value = "snapshot" };
+        store.Advanced.AddSnapshot(new Snapshot(StreamId.ToString(), 2, memento));
+    }
+
+    private static void LoadFromSnapshotForwardAndAppend()
+    {
+        var latestSnapshot = store.Advanced.GetSnapshot(StreamId, int.MaxValue);
+
+        using (var stream = store.OpenStream(latestSnapshot, int.MaxValue))
         {
-            var memento = new AggregateMemento { Value = "snapshot" };
-            store.Advanced.AddSnapshot(new Snapshot(StreamId.ToString(), 2, memento));
-        }
+            var @event = new SomeDomainEvent { Value = "Third event (first one after a snapshot)." };
 
-        private static void LoadFromSnapshotForwardAndAppend()
-        {
-            var latestSnapshot = store.Advanced.GetSnapshot(StreamId, int.MaxValue);
-
-            using (var stream = store.OpenStream(latestSnapshot, int.MaxValue))
-            {
-                var @event = new SomeDomainEvent { Value = "Third event (first one after a snapshot)." };
-
-                stream.Add(new EventMessage { Body = @event });
-                stream.CommitChanges(Guid.NewGuid());
-            }
+            stream.Add(new EventMessage { Body = @event });
+            stream.CommitChanges(Guid.NewGuid());
         }
     }
 }

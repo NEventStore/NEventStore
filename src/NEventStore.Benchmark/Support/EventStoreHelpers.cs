@@ -1,19 +1,18 @@
-﻿namespace NEventStore.Benchmark.Support
+﻿namespace NEventStore.Benchmark.Support;
+
+internal static class EventStoreHelpers
 {
-    internal static class EventStoreHelpers
+    internal static IStoreEvents WireupEventStore()
     {
-        internal static IStoreEvents WireupEventStore()
-        {
-            return Wireup.Init()
-               // .LogToOutputWindow(LogLevel.Verbose)
-               // .LogToConsoleWindow(LogLevel.Verbose)
-               .UsingInMemoryPersistence()
-               .InitializeStorageEngine()
+        return Wireup.Init()
+            // .LogToOutputWindow(LogLevel.Verbose)
+            // .LogToConsoleWindow(LogLevel.Verbose)
+            .UsingInMemoryPersistence()
+            .InitializeStorageEngine()
 #if NET462
                .TrackPerformanceInstance("example")
 #endif
-               // .HookIntoPipelineUsing(new[] { new AuthorizationPipelineHook() })
-               .Build();
-        }
+            // .HookIntoPipelineUsing(new[] { new AuthorizationPipelineHook() })
+            .Build();
     }
 }

@@ -8,7 +8,7 @@ namespace NEventStore
         /// <summary>
         /// Gets the value which uniquely identifies the bucket to which the snapshot applies.
         /// </summary>
-        string BucketId { get;  }
+        string BucketId { get; }
 
         /// <summary>
         ///     Gets the value which uniquely identifies the stream to which the snapshot applies.

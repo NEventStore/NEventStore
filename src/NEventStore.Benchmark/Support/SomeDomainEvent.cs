@@ -1,7 +1,6 @@
-﻿namespace NEventStore.Benchmark.Support
+﻿namespace NEventStore.Benchmark.Support;
+
+internal class SomeDomainEvent
 {
-    internal class SomeDomainEvent
-    {
-        public string Value { get; set; }
-    }
+    public string Value { get; set; }
 }

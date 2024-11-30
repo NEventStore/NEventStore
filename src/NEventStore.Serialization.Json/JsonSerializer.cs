@@ -6,13 +6,15 @@ namespace NEventStore.Serialization.Json
     using System.Linq;
     using System.Text;
     using Newtonsoft.Json;
-    using NEventStore.Logging;
+    using Logging;
     using Microsoft.Extensions.Logging;
 
     public class JsonSerializer : ISerialize
     {
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(JsonSerializer));
-        private readonly IEnumerable<Type> _knownTypes = new[] { typeof(List<EventMessage>), typeof(Dictionary<string, object>) };
+
+        private readonly IEnumerable<Type> _knownTypes = new[]
+            { typeof(List<EventMessage>), typeof(Dictionary<string, object>) };
 
         private readonly Newtonsoft.Json.JsonSerializer _typedSerializer;
 
@@ -35,10 +37,7 @@ namespace NEventStore.Serialization.Json
         /// </param>
         public JsonSerializer(JsonSerializerSettings jsonSerializerSettings, params Type[] knownTypes)
         {
-            if (knownTypes?.Length == 0)
-            {
-                knownTypes = null;
-            }
+            if (knownTypes?.Length == 0) knownTypes = null;
 
             _knownTypes = knownTypes ?? _knownTypes;
 
@@ -53,12 +52,8 @@ namespace NEventStore.Serialization.Json
             _untypedSerializer.NullValueHandling = NullValueHandling.Ignore;
 
             if (Logger.IsEnabled(LogLevel.Debug))
-            {
                 foreach (var type in _knownTypes)
-                {
                     Logger.LogDebug(Messages.RegisteringKnownType, type);
-                }
-            }
         }
 
         public virtual void Serialize<T>(Stream output, T graph)
@@ -88,7 +83,7 @@ namespace NEventStore.Serialization.Json
 
         protected virtual T Deserialize<T>(JsonReader reader)
         {
-            Type type = typeof(T);
+            var type = typeof(T);
             return (T)GetSerializer(type).Deserialize(reader, type);
         }
 

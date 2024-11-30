@@ -25,8 +25,10 @@ namespace NEventStore
             DateTime commitStamp,
             IDictionary<string, object> headers,
             ICollection<EventMessage> events)
-            : this(Bucket.Default, streamId.ToString(), streamRevision, commitId, commitSequence, commitStamp, headers, events)
-        { }
+            : this(Bucket.Default, streamId.ToString(), streamRevision, commitId, commitSequence, commitStamp, headers,
+                events)
+        {
+        }
 
         /// <summary>
         ///     Initializes a new instance of the Commit class for the default bucket.
@@ -47,7 +49,8 @@ namespace NEventStore
             IDictionary<string, object> headers,
             ICollection<EventMessage> events)
             : this(Bucket.Default, streamId, streamRevision, commitId, commitSequence, commitStamp, headers, events)
-        { }
+        {
+        }
 
         /// <summary>
         ///     Initializes a new instance of the Commit class.

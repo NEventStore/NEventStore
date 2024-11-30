@@ -1,159 +1,166 @@
-namespace NEventStore.Persistence.AcceptanceTests
+namespace NEventStore.Persistence.AcceptanceTests;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+public static class ExtensionMethods
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    public static class ExtensionMethods
+    public static HashSet<T> ToHashSet<T>(this IEnumerable<T> collection)
     {
-        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> collection)
+        return new HashSet<T>(collection);
+    }
+
+    public static LinkedList<T> ToLinkedList<T>(this IEnumerable<T> collection)
+    {
+        return new LinkedList<T>(collection);
+    }
+
+    public static ICommit CommitSingle(this IPersistStreams persistence, string streamId = null)
+    {
+        var commitAttempt = (streamId ?? Guid.NewGuid().ToString()).BuildAttempt();
+        return persistence.Commit(commitAttempt);
+    }
+
+    public static ICommit CommitNext(this IPersistStreams persistence, ICommit previous)
+    {
+        var nextAttempt = previous.BuildNextAttempt();
+        return persistence.Commit(nextAttempt);
+    }
+
+    public static ICommit CommitNext(this IPersistStreams persistence, CommitAttempt previous)
+    {
+        var nextAttempt = previous.BuildNextAttempt();
+        return persistence.Commit(nextAttempt);
+    }
+
+    public static IEnumerable<CommitAttempt> CommitMany(this IPersistStreams persistence, int numberOfCommits,
+        string streamId = null, string bucketId = null)
+    {
+        var commits = new List<CommitAttempt>();
+        CommitAttempt attempt = null;
+
+        for (var i = 0; i < numberOfCommits; i++)
         {
-            return new HashSet<T>(collection);
+            attempt = attempt == null
+                ? (streamId ?? Guid.NewGuid().ToString()).BuildAttempt(null, bucketId)
+                : attempt.BuildNextAttempt();
+            persistence.Commit(attempt);
+            commits.Add(attempt);
         }
 
-        public static LinkedList<T> ToLinkedList<T>(this IEnumerable<T> collection)
-        {
-            return new LinkedList<T>(collection);
-        }
+        return commits;
+    }
 
-        public static ICommit CommitSingle(this IPersistStreams persistence, string streamId = null)
-        {
-            CommitAttempt commitAttempt = (streamId ?? Guid.NewGuid().ToString()).BuildAttempt();
-            return persistence.Commit(commitAttempt);
-        }
+    public static CommitAttempt BuildAttempt(this string streamId, DateTime? now = null, string bucketId = null)
+    {
+        now = now ?? SystemTime.UtcNow;
+        bucketId = bucketId ?? Bucket.Default;
 
-        public static ICommit CommitNext(this IPersistStreams persistence, ICommit previous)
+        var messages = new EventMessage[]
         {
-            var nextAttempt = previous.BuildNextAttempt();
-            return persistence.Commit(nextAttempt);
-        }
+            new() { Body = new SomeDomainEvent { SomeProperty = "Test" } },
+            new() { Body = new SomeDomainEvent { SomeProperty = "Test2" } }
+        };
 
-        public static ICommit CommitNext(this IPersistStreams persistence, CommitAttempt previous)
+        return new CommitAttempt(
+            bucketId,
+            streamId,
+            2,
+            Guid.NewGuid(),
+            1,
+            now.Value,
+            new Dictionary<string, object> { { "A header", "A string value" }, { "Another header", 2 } },
+            messages
+        );
+    }
+
+    public static CommitAttempt BuildNextAttempt(this ICommit commit)
+    {
+        var messages = new EventMessage[]
         {
-            var nextAttempt = previous.BuildNextAttempt();
-            return persistence.Commit(nextAttempt);
-        }
+            new() { Body = new SomeDomainEvent { SomeProperty = "Another test" } },
+            new() { Body = new SomeDomainEvent { SomeProperty = "Another test2" } }
+        };
 
-        public static IEnumerable<CommitAttempt> CommitMany(this IPersistStreams persistence, int numberOfCommits, string streamId = null, string bucketId = null)
+        return new CommitAttempt(commit.BucketId,
+            commit.StreamId,
+            commit.StreamRevision + messages.Length,
+            Guid.NewGuid(),
+            commit.CommitSequence + 1,
+            commit.CommitStamp.AddSeconds(1),
+            new Dictionary<string, object>(),
+            messages);
+    }
+
+    public static CommitAttempt BuildNextAttempt(this CommitAttempt commit)
+    {
+        var messages = new EventMessage[]
         {
-            var commits = new List<CommitAttempt>();
-            CommitAttempt attempt = null;
+            new() { Body = new SomeDomainEvent { SomeProperty = "Another test" } },
+            new() { Body = new SomeDomainEvent { SomeProperty = "Another test2" } }
+        };
 
-            for (int i = 0; i < numberOfCommits; i++)
+        return new CommitAttempt(commit.BucketId,
+            commit.StreamId,
+            commit.StreamRevision + 2,
+            Guid.NewGuid(),
+            commit.CommitSequence + 1,
+            commit.CommitStamp.AddSeconds(1),
+            new Dictionary<string, object>(),
+            messages);
+    }
+
+    public static SimpleMessage Populate(this SimpleMessage message)
+    {
+        message = message ?? new SimpleMessage();
+
+        return new SimpleMessage
+        {
+            Id = Guid.NewGuid(),
+            Count = 1234,
+            Created = new DateTime(2000, 2, 3, 4, 5, 6, 7).ToUniversalTime(),
+            Value = message.Value + "Hello, World!",
+            Contents = { "a", null, string.Empty, "d" }
+        };
+    }
+
+    public static CommitAttempt BuildCommit(this string streamId)
+    {
+        const int streamRevision = 2;
+        const int commitSequence = 2;
+        var commitId = Guid.NewGuid();
+        var headers = new Dictionary<string, object> { { "Key", "Value" }, { "Key2", (long)1234 }, { "Key3", null } };
+        var events = new[]
+        {
+            new EventMessage
             {
-                attempt = attempt == null ? (streamId ?? Guid.NewGuid().ToString()).BuildAttempt(null, bucketId) : attempt.BuildNextAttempt();
-                persistence.Commit(attempt);
-                commits.Add(attempt);
-            }
-
-            return commits;
-        }
-
-        public static CommitAttempt BuildAttempt(this string streamId, DateTime? now = null, string bucketId = null)
-        {
-            now = now ?? SystemTime.UtcNow;
-            bucketId = bucketId ?? Bucket.Default;
-
-            var messages = new EventMessage[]
-            {
-                new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Test"}},
-                new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Test2"}},
-            };
-
-            return new CommitAttempt(
-                bucketId: bucketId,
-                streamId: streamId,
-                streamRevision: 2,
-                commitId: Guid.NewGuid(),
-                commitSequence: 1,
-                commitStamp: now.Value,
-                headers: new Dictionary<string, object> { { "A header", "A string value" }, { "Another header", 2 } },
-                events: messages
-            );
-        }
-
-        public static CommitAttempt BuildNextAttempt(this ICommit commit)
-        {
-            var messages = new EventMessage[]
-            {
-                new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Another test"}},
-                new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Another test2"}},
-            };
-
-            return new CommitAttempt(commit.BucketId,
-                commit.StreamId,
-                commit.StreamRevision + messages.Length,
-                Guid.NewGuid(),
-                commit.CommitSequence + 1,
-                commit.CommitStamp.AddSeconds(1),
-                new Dictionary<string, object>(),
-                messages);
-        }
-
-        public static CommitAttempt BuildNextAttempt(this CommitAttempt commit)
-        {
-            var messages = new EventMessage[]
-            {
-                new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Another test"}},
-                new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Another test2"}},
-            };
-
-            return new CommitAttempt(commit.BucketId,
-                commit.StreamId,
-                commit.StreamRevision + 2,
-                Guid.NewGuid(),
-                commit.CommitSequence + 1,
-                commit.CommitStamp.AddSeconds(1),
-                new Dictionary<string, object>(),
-                messages);
-        }
-
-        public static SimpleMessage Populate(this SimpleMessage message)
-        {
-            message = message ?? new SimpleMessage();
-
-            return new SimpleMessage
-            {
-                Id = Guid.NewGuid(),
-                Count = 1234,
-                Created = new DateTime(2000, 2, 3, 4, 5, 6, 7).ToUniversalTime(),
-                Value = message.Value + "Hello, World!",
-                Contents = { "a", null, string.Empty, "d" }
-            };
-        }
-
-        public static CommitAttempt BuildCommit(this string streamId)
-        {
-            const int streamRevision = 2;
-            const int commitSequence = 2;
-            Guid commitId = Guid.NewGuid();
-            var headers = new Dictionary<string, object> { { "Key", "Value" }, { "Key2", (long)1234 }, { "Key3", null } };
-            var events = new[]
-            {
-                new EventMessage
+                Headers =
                 {
-                    Headers = {{"MsgKey1", TimeSpan.MinValue}, {"MsgKey2", Guid.NewGuid()}, {"MsgKey3", 1.1M}, {"MsgKey4", (ushort) 1}},
-                    Body = "some value"
+                    { "MsgKey1", TimeSpan.MinValue }, { "MsgKey2", Guid.NewGuid() }, { "MsgKey3", 1.1M },
+                    { "MsgKey4", (ushort)1 }
                 },
-                new EventMessage
-                {
-                    Headers = {{"MsgKey1", new Uri("http://www.google.com/")}, {"MsgKey4", "some header"}},
-                    Body = new[] {"message body"}
-                }
-            };
-
-            return new CommitAttempt(streamId, streamRevision, commitId, commitSequence, SystemTime.UtcNow, headers, events);
-        }
-
-        [Serializable]
-        public class SomeDomainEvent
-        {
-            public string SomeProperty { get; set; }
-
-            public override string ToString()
+                Body = "some value"
+            },
+            new EventMessage
             {
-                return SomeProperty;
+                Headers = { { "MsgKey1", new Uri("http://www.google.com/") }, { "MsgKey4", "some header" } },
+                Body = new[] { "message body" }
             }
+        };
+
+        return new CommitAttempt(streamId, streamRevision, commitId, commitSequence, SystemTime.UtcNow, headers,
+            events);
+    }
+
+    [Serializable]
+    public class SomeDomainEvent
+    {
+        public string SomeProperty { get; set; }
+
+        public override string ToString()
+        {
+            return SomeProperty;
         }
     }
 }

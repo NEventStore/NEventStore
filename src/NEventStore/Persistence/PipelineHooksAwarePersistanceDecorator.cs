@@ -4,7 +4,7 @@ namespace NEventStore.Persistence
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.Extensions.Logging;
-    using NEventStore.Logging;
+    using Logging;
 
     public sealed class PipelineHooksAwarePersistanceDecorator : IPersistStreams
     {
@@ -12,7 +12,8 @@ namespace NEventStore.Persistence
         private readonly IPersistStreams _original;
         private readonly IEnumerable<IPipelineHook> _pipelineHooks;
 
-        public PipelineHooksAwarePersistanceDecorator(IPersistStreams original, IEnumerable<IPipelineHook> pipelineHooks)
+        public PipelineHooksAwarePersistanceDecorator(IPersistStreams original,
+            IEnumerable<IPipelineHook> pipelineHooks)
         {
             _original = original ?? throw new ArgumentNullException(nameof(original));
             _pipelineHooks = pipelineHooks ?? throw new ArgumentNullException(nameof(pipelineHooks));
@@ -58,22 +59,22 @@ namespace NEventStore.Persistence
             return ExecuteHooks(_original.GetFrom(bucketId, start));
         }
 
-        public IEnumerable<ICommit> GetFrom(Int64 checkpointToken)
+        public IEnumerable<ICommit> GetFrom(long checkpointToken)
         {
             return ExecuteHooks(_original.GetFrom(checkpointToken));
         }
 
-        public IEnumerable<ICommit> GetFromTo(Int64 from, Int64 to)
+        public IEnumerable<ICommit> GetFromTo(long from, long to)
         {
             return ExecuteHooks(_original.GetFromTo(from, to));
         }
 
-        public IEnumerable<ICommit> GetFrom(string bucketId, Int64 checkpointToken)
+        public IEnumerable<ICommit> GetFrom(string bucketId, long checkpointToken)
         {
             return ExecuteHooks(_original.GetFrom(bucketId, checkpointToken));
         }
 
-        public IEnumerable<ICommit> GetFromTo(string bucketId, Int64 from, Int64 to)
+        public IEnumerable<ICommit> GetFromTo(string bucketId, long from, long to)
         {
             return ExecuteHooks(_original.GetFromTo(bucketId, from, to));
         }
@@ -86,19 +87,13 @@ namespace NEventStore.Persistence
         public void Purge()
         {
             _original.Purge();
-            foreach (var pipelineHook in _pipelineHooks)
-            {
-                pipelineHook.OnPurge();
-            }
+            foreach (var pipelineHook in _pipelineHooks) pipelineHook.OnPurge();
         }
 
         public void Purge(string bucketId)
         {
             _original.Purge(bucketId);
-            foreach (var pipelineHook in _pipelineHooks)
-            {
-                pipelineHook.OnPurge(bucketId);
-            }
+            foreach (var pipelineHook in _pipelineHooks) pipelineHook.OnPurge(bucketId);
         }
 
         public void Drop()
@@ -109,22 +104,16 @@ namespace NEventStore.Persistence
         public void DeleteStream(string bucketId, string streamId)
         {
             _original.DeleteStream(bucketId, streamId);
-            foreach (var pipelineHook in _pipelineHooks)
-            {
-                pipelineHook.OnDeleteStream(bucketId, streamId);
-            }
+            foreach (var pipelineHook in _pipelineHooks) pipelineHook.OnDeleteStream(bucketId, streamId);
         }
 
-        public bool IsDisposed
-        {
-            get { return _original.IsDisposed; }
-        }
+        public bool IsDisposed => _original.IsDisposed;
 
         private IEnumerable<ICommit> ExecuteHooks(IEnumerable<ICommit> commits)
         {
             foreach (var commit in commits)
             {
-                ICommit filtered = commit;
+                var filtered = commit;
                 foreach (var hook in _pipelineHooks.Where(x => (filtered = x.Select(filtered)) == null))
                 {
                     Logger.LogInformation(Resources.PipelineHookSkippedCommit, hook.GetType(), commit.CommitId);
@@ -132,13 +121,9 @@ namespace NEventStore.Persistence
                 }
 
                 if (filtered == null)
-                {
                     Logger.LogInformation(Resources.PipelineHookFilteredCommit);
-                }
                 else
-                {
                     yield return filtered;
-                }
             }
         }
     }

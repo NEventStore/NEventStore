@@ -1,25 +1,26 @@
-namespace NEventStore.PollingClientExample
+namespace NEventStore.PollingClientExample;
+
+using System;
+using PollingClient;
+using Microsoft.Extensions.Logging;
+
+internal static class MainProgram
 {
-    using System;
-    using NEventStore.PollingClient;
-    using Microsoft.Extensions.Logging;
+    private static readonly byte[] EncryptionKey =
+        { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf };
 
-    internal static class MainProgram
+    private static void Main()
     {
-        private static readonly byte[] EncryptionKey = { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf };
-
-        private static void Main()
+        using (var store = WireupEventStore())
         {
-            using (var store = WireupEventStore())
-            {
-                // append some commits to the EventStore
-                AppendToStream(store, "Stream1");
-                AppendToStream(store, "Stream2");
-                AppendToStream(store, "Stream1");
+            // append some commits to the EventStore
+            AppendToStream(store, "Stream1");
+            AppendToStream(store, "Stream2");
+            AppendToStream(store, "Stream1");
 
-                // now test the polling client
-                Int64 checkpointToken = LoadCheckpoint();
-                var client = new PollingClient2(store.Advanced, commit =>
+            // now test the polling client
+            var checkpointToken = LoadCheckpoint();
+            var client = new PollingClient2(store.Advanced, commit =>
                 {
                     // Project the commit etc
                     Console.WriteLine(Resources.CommitInfo, commit.BucketId, commit.StreamId, commit.CommitSequence);
@@ -27,57 +28,56 @@ namespace NEventStore.PollingClientExample
                     checkpointToken = commit.CheckpointToken;
                     return PollingClient2.HandlingResult.MoveToNext;
                 },
-                waitInterval: 3000);
+                3000);
 
-                client.StartFrom(checkpointToken);
+            client.StartFrom(checkpointToken);
 
-                Console.WriteLine(Resources.PressAnyKey);
-                Console.ReadKey();
-                client.Stop();
-                SaveCheckpoint(checkpointToken);
-            }
+            Console.WriteLine(Resources.PressAnyKey);
+            Console.ReadKey();
+            client.Stop();
+            SaveCheckpoint(checkpointToken);
         }
+    }
 
-        private static Int64 LoadCheckpoint()
+    private static long LoadCheckpoint()
+    {
+        // Load the checkpoint value from disk / local db/ etc
+        return 0;
+    }
+
+    private static void SaveCheckpoint(long checkpointToken)
+    {
+        //Save checkpointValue to disk / whatever.
+    }
+
+    private static IStoreEvents WireupEventStore()
+    {
+        var loggerFactory = LoggerFactory.Create(logging =>
         {
-            // Load the checkpoint value from disk / local db/ etc
-            return 0;
-        }
+            logging
+                .AddConsole()
+                .AddDebug()
+                .SetMinimumLevel(LogLevel.Trace);
+        });
 
-        private static void SaveCheckpoint(Int64 checkpointToken)
-        {
-            //Save checkpointValue to disk / whatever.
-        }
-
-        private static IStoreEvents WireupEventStore()
-        {
-            var loggerFactory = LoggerFactory.Create(logging =>
-            {
-                logging
-                    .AddConsole()
-                    .AddDebug()
-                    .SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
-            });
-
-            return Wireup.Init()
-               .WithLoggerFactory(loggerFactory)
-               .UsingInMemoryPersistence()
-               .InitializeStorageEngine()
+        return Wireup.Init()
+            .WithLoggerFactory(loggerFactory)
+            .UsingInMemoryPersistence()
+            .InitializeStorageEngine()
 #if NET462
                .TrackPerformanceInstance("example")
 #endif
-               .Build();
-        }
+            .Build();
+    }
 
-        private static void AppendToStream(IStoreEvents store, string streamId)
+    private static void AppendToStream(IStoreEvents store, string streamId)
+    {
+        using (var stream = store.OpenStream(streamId))
         {
-            using (var stream = store.OpenStream(streamId))
-            {
-                var @event = new SomeDomainEvent { Value = "event" };
+            var @event = new SomeDomainEvent { Value = "event" };
 
-                stream.Add(new EventMessage { Body = @event });
-                stream.CommitChanges(Guid.NewGuid());
-            }
+            stream.Add(new EventMessage { Body = @event });
+            stream.CommitChanges(Guid.NewGuid());
         }
     }
 }

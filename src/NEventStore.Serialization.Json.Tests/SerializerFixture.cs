@@ -1,15 +1,15 @@
 ﻿// ReSharper disable CheckNamespace
-namespace NEventStore.Serialization.AcceptanceTests
-// ReSharper restore CheckNamespace
-{
-    using NEventStore.Serialization.Json;
 
-    public partial class SerializerFixture
+namespace NEventStore.Serialization.AcceptanceTests;
+// ReSharper restore CheckNamespace
+
+using Json;
+
+public partial class SerializerFixture
+{
+    public SerializerFixture()
     {
-        public SerializerFixture()
-        {
-            _createSerializer = () =>
-                new JsonSerializer(null);
-        }
+        _createSerializer = () =>
+            new JsonSerializer(null);
     }
 }

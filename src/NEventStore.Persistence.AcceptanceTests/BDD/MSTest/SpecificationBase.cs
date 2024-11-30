@@ -1,5 +1,4 @@
 ﻿#if MSTEST
-
 namespace NEventStore.Persistence.AcceptanceTests.BDD
 {
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -55,7 +54,8 @@ namespace NEventStore.Persistence.AcceptanceTests.BDD
 		{
 			if (testFixtureSetupException != null)
 			{
-				string msg = string.Format("There was a failure during Context() or Because() phases.\n\rException: {0}\n\rStacktrace: {1}",
+				string msg =
+ string.Format("There was a failure during Context() or Because() phases.\n\rException: {0}\n\rStacktrace: {1}",
 					testFixtureSetupException.Message, testFixtureSetupException.StackTrace);
 				Assert.Fail(msg);
 			}

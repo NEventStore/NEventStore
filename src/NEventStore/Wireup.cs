@@ -2,9 +2,9 @@ namespace NEventStore
 {
     using System.Collections.Generic;
     using System.Linq;
-    using NEventStore.Conversion;
-    using NEventStore.Persistence;
-    using NEventStore.Persistence.InMemory;
+    using Conversion;
+    using Persistence;
+    using Persistence.InMemory;
     using Logging;
     using Microsoft.Extensions.Logging;
 
@@ -24,10 +24,7 @@ namespace NEventStore
             _inner = inner;
         }
 
-        protected NanoContainer Container
-        {
-            get { return _container ?? _inner.Container; }
-        }
+        protected NanoContainer Container => _container ?? _inner.Container;
 
         public static Wireup Init()
         {
@@ -60,10 +57,7 @@ namespace NEventStore
 
         public virtual IStoreEvents Build()
         {
-            if (_inner != null)
-            {
-                return _inner.Build();
-            }
+            if (_inner != null) return _inner.Build();
 
             return Container.Resolve<IStoreEvents>();
         }
@@ -90,7 +84,7 @@ namespace NEventStore
             var concurrency = context.Resolve<OptimisticPipelineHook>();
             var upconverter = context.Resolve<EventUpconverterPipelineHook>();
 
-            ICollection<IPipelineHook> hooks = context.Resolve<ICollection<IPipelineHook>>() ?? new IPipelineHook[0];
+            var hooks = context.Resolve<ICollection<IPipelineHook>>() ?? new IPipelineHook[0];
             hooks = new IPipelineHook[] { concurrency, upconverter }
                 .Concat(hooks)
                 .Where(x => x != null)

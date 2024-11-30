@@ -2,8 +2,8 @@ namespace NEventStore
 {
     using Logging;
     using Microsoft.Extensions.Logging;
-    using NEventStore.Persistence;
-    using NEventStore.Persistence.InMemory;
+    using Persistence;
+    using Persistence.InMemory;
 
     public static class PersistenceWireupExtensions
     {

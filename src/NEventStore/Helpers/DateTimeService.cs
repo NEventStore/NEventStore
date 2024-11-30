@@ -10,21 +10,9 @@ namespace NEventStore.Helpers
         private static Func<DateTime> _nowFunc = () => DateTime.Now;
         private static Func<DateTime> _utcNowFunc = () => DateTime.UtcNow;
 
-        public static DateTime Now
-        {
-            get
-            {
-                return _nowFunc();
-            }
-        }
+        public static DateTime Now => _nowFunc();
 
-        public static DateTime UtcNow
-        {
-            get
-            {
-                return _utcNowFunc();
-            }
-        }
+        public static DateTime UtcNow => _utcNowFunc();
 
         #region "test function"
 

@@ -51,7 +51,7 @@ namespace NEventStore.Persistence
         /// <returns>An enumerable of Commits.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        IEnumerable<ICommit> GetFrom(Int64 checkpointToken);
+        IEnumerable<ICommit> GetFrom(long checkpointToken);
 
         /// <summary>
         ///     Gets all commits (from all the buckets) after the specified checkpoint token (excluded) up to the specified end checkpoint token (included).
@@ -61,7 +61,7 @@ namespace NEventStore.Persistence
         /// <returns>All commits that have occurred on or after the specified checkpoint token up to the specified end checkpoint token.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        IEnumerable<ICommit> GetFromTo(Int64 from, Int64 to);
+        IEnumerable<ICommit> GetFromTo(long from, long to);
 
         /// <summary>
         ///     Gets all commits after the specified checkpoint (excluded) for a specific bucket. Use 0 to get from the beginning.
@@ -71,7 +71,7 @@ namespace NEventStore.Persistence
         /// <returns>An enumerable of Commits.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        IEnumerable<ICommit> GetFrom(string bucketId, Int64 checkpointToken);
+        IEnumerable<ICommit> GetFrom(string bucketId, long checkpointToken);
 
         /// <summary>
         ///     Gets all commits after the specified checkpoint token (excluded) up to the specified end checkpoint token (included).
@@ -82,7 +82,7 @@ namespace NEventStore.Persistence
         /// <returns>All commits that have occurred on or after the specified checkpoint token up to the specified end checkpoint token.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        IEnumerable<ICommit> GetFromTo(string bucketId, Int64 from, Int64 to);
+        IEnumerable<ICommit> GetFromTo(string bucketId, long from, long to);
 
         /// <summary>
         ///     Completely DESTROYS the contents of ANY and ALL streams that have been successfully persisted.

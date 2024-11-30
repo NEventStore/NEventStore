@@ -1,7 +1,7 @@
 namespace NEventStore
 {
     using System;
-    using NEventStore.Persistence;
+    using Persistence;
 
     public static class StoreEventsExtensions
     {
@@ -53,7 +53,8 @@ namespace NEventStore
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
         /// <exception cref="StreamNotFoundException" />
-        public static IEventStream OpenStream(this IStoreEvents storeEvents, Guid streamId, int minRevision = int.MinValue, int maxRevision = int.MaxValue)
+        public static IEventStream OpenStream(this IStoreEvents storeEvents, Guid streamId,
+            int minRevision = int.MinValue, int maxRevision = int.MaxValue)
         {
             return OpenStream(storeEvents, Bucket.Default, streamId, minRevision, maxRevision);
         }
@@ -70,7 +71,8 @@ namespace NEventStore
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
         /// <exception cref="StreamNotFoundException" />
-        public static IEventStream OpenStream(this IStoreEvents storeEvents, string streamId, int minRevision = int.MinValue, int maxRevision = int.MaxValue)
+        public static IEventStream OpenStream(this IStoreEvents storeEvents, string streamId,
+            int minRevision = int.MinValue, int maxRevision = int.MaxValue)
         {
             EnsureStoreEventsNotNull(storeEvents);
             return storeEvents.OpenStream(Bucket.Default, streamId, minRevision, maxRevision);
@@ -89,7 +91,8 @@ namespace NEventStore
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
         /// <exception cref="StreamNotFoundException" />
-        public static IEventStream OpenStream(this IStoreEvents storeEvents, string bucketId, Guid streamId, int minRevision = int.MinValue, int maxRevision = int.MaxValue)
+        public static IEventStream OpenStream(this IStoreEvents storeEvents, string bucketId, Guid streamId,
+            int minRevision = int.MinValue, int maxRevision = int.MaxValue)
         {
             EnsureStoreEventsNotNull(storeEvents);
             return storeEvents.OpenStream(bucketId, streamId.ToString(), minRevision, maxRevision);
@@ -97,10 +100,7 @@ namespace NEventStore
 
         private static void EnsureStoreEventsNotNull(IStoreEvents storeEvents)
         {
-            if (storeEvents == null)
-            {
-                throw new ArgumentNullException(nameof(storeEvents));
-            }
+            if (storeEvents == null) throw new ArgumentNullException(nameof(storeEvents));
         }
     }
 }

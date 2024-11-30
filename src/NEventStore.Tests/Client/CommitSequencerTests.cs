@@ -16,163 +16,137 @@ using Xunit;
 using Xunit.Should;
 #endif
 
-namespace NEventStore.Tests.Client
-{
+namespace NEventStore.Tests.Client;
 #if MSTEST
     [TestClass]
 #endif
 #if NUNIT
-    [TestFixture]
+[TestFixture]
 #endif
-    public class CommitSequencerTests
+public class CommitSequencerTests
+{
+    private int _outOfSequenceTimeoutInMilliseconds;
+
+    private CommitSequencer InitCommitSequencer(Func<ICommit, PollingClient2.HandlingResult> callBack = null)
     {
-        private int _outOfSequenceTimeoutInMilliseconds;
+        if (callBack == null) callBack = _ => PollingClient2.HandlingResult.MoveToNext;
+        _outOfSequenceTimeoutInMilliseconds = 2000;
+        return new CommitSequencer(c => callBack(c), 0, _outOfSequenceTimeoutInMilliseconds);
+    }
 
-        private CommitSequencer InitCommitSequencer(Func<ICommit, PollingClient2.HandlingResult> callBack = null)
+    [Fact]
+    public void verify_check_sequential_missing_commit()
+    {
+        var sut = InitCommitSequencer();
+
+        var result = sut.Handle(new TestICommit() { CheckpointToken = 1L });
+        result.Should().Be(PollingClient2.HandlingResult.MoveToNext);
+        result = sut.Handle(new TestICommit() { CheckpointToken = 3L });
+        result.Should().Be(PollingClient2.HandlingResult.Retry);
+    }
+
+    [Fact]
+    public void verify_timeout_on_missing_commit_not_elapsed()
+    {
+        var sut = InitCommitSequencer();
+
+        var start = DateTime.Now;
+        var result = sut.Handle(new TestICommit() { CheckpointToken = 1L });
+        result.Should().Be(PollingClient2.HandlingResult.MoveToNext);
+        using (DateTimeService.Override(start))
         {
-            if (callBack == null)
-            {
-                callBack = _ => PollingClient2.HandlingResult.MoveToNext;
-            }
-            _outOfSequenceTimeoutInMilliseconds = 2000;
-            return new CommitSequencer(c => callBack(c), 0, _outOfSequenceTimeoutInMilliseconds);
-        }
-
-        [Fact]
-        public void verify_check_sequential_missing_commit()
-        {
-            var sut = InitCommitSequencer();
-
-            var result = sut.Handle(new TestICommit() { CheckpointToken = 1L });
-            result.Should().Be(PollingClient2.HandlingResult.MoveToNext);
-            result = sut.Handle(new TestICommit() { CheckpointToken = 3L });
+            result = sut.Handle(new TestICommit() { CheckpointToken = 3 });
             result.Should().Be(PollingClient2.HandlingResult.Retry);
         }
 
-        [Fact]
-        public void verify_timeout_on_missing_commit_not_elapsed()
+        using (DateTimeService.Override(start.AddMilliseconds(_outOfSequenceTimeoutInMilliseconds - 100)))
         {
-            var sut = InitCommitSequencer();
+            result = sut.Handle(new TestICommit() { CheckpointToken = 3 });
+            result.Should().Be(PollingClient2.HandlingResult.Retry);
+        }
+    }
 
-            DateTime start = DateTime.Now;
-            var result = sut.Handle(new TestICommit() { CheckpointToken = 1L });
-            result.Should().Be(PollingClient2.HandlingResult.MoveToNext);
-            using (DateTimeService.Override(start))
-            {
-                result = sut.Handle(new TestICommit() { CheckpointToken = 3 });
-                result.Should().Be(PollingClient2.HandlingResult.Retry);
-            }
-            using (DateTimeService.Override(start.AddMilliseconds(_outOfSequenceTimeoutInMilliseconds - 100)))
-            {
-                result = sut.Handle(new TestICommit() { CheckpointToken = 3 });
-                result.Should().Be(PollingClient2.HandlingResult.Retry);
-            }
+    [Fact]
+    public void verify_idempotence_on_read_same_commit()
+    {
+        var callBackCount = 0;
+        var sut = InitCommitSequencer(_ =>
+        {
+            callBackCount++;
+            return PollingClient2.HandlingResult.MoveToNext;
+        });
+
+        var result = sut.Handle(new TestICommit() { CheckpointToken = 1 });
+        result.Should().Be(PollingClient2.HandlingResult.MoveToNext);
+        callBackCount.Should().Be(1);
+        result = sut.Handle(new TestICommit() { CheckpointToken = 1 });
+        result.Should().Be(PollingClient2.HandlingResult.MoveToNext);
+        callBackCount.Should().Be(1);
+    }
+
+    [Fact]
+    public void verify_timeout_on_missing_commit_then_next_commit()
+    {
+        var sut = InitCommitSequencer();
+
+        var start = DateTime.Now;
+        var result = sut.Handle(new TestICommit() { CheckpointToken = 1 });
+        result.Should().Be(PollingClient2.HandlingResult.MoveToNext);
+        using (DateTimeService.Override(start))
+        {
+            result = sut.Handle(new TestICommit() { CheckpointToken = 3 });
+            result.Should().Be(PollingClient2.HandlingResult.Retry);
         }
 
-        [Fact]
-        public void verify_idempotence_on_read_same_commit()
+        using (DateTimeService.Override(start.AddMilliseconds(_outOfSequenceTimeoutInMilliseconds - 100)))
         {
-            Int32 callBackCount = 0;
-            var sut = InitCommitSequencer(_ =>
-            {
-                callBackCount++;
-                return PollingClient2.HandlingResult.MoveToNext;
-            });
+            result = sut.Handle(new TestICommit() { CheckpointToken = 2 });
+            result.Should().Be(PollingClient2.HandlingResult.MoveToNext);
+            result = sut.Handle(new TestICommit() { CheckpointToken = 3 });
+            result.Should().Be(PollingClient2.HandlingResult.MoveToNext);
+        }
+    }
 
-            var result = sut.Handle(new TestICommit() { CheckpointToken = 1 });
-            result.Should().Be(PollingClient2.HandlingResult.MoveToNext);
-            callBackCount.Should().Be(1);
-            result = sut.Handle(new TestICommit() { CheckpointToken = 1 });
-            result.Should().Be(PollingClient2.HandlingResult.MoveToNext);
-            callBackCount.Should().Be(1);
+    [Fact]
+    public void verify_timeout_on_missing_commit_elapsed()
+    {
+        var sut = InitCommitSequencer();
+
+        var start = DateTime.Now;
+        var result = sut.Handle(new TestICommit() { CheckpointToken = 1 });
+        result.Should().Be(PollingClient2.HandlingResult.MoveToNext);
+        using (DateTimeService.Override(start))
+        {
+            result = sut.Handle(new TestICommit() { CheckpointToken = 3 });
+            result.Should().Be(PollingClient2.HandlingResult.Retry);
         }
 
-        [Fact]
-        public void verify_timeout_on_missing_commit_then_next_commit()
+        using (DateTimeService.Override(start.AddMilliseconds(_outOfSequenceTimeoutInMilliseconds + 100)))
         {
-            var sut = InitCommitSequencer();
-
-            DateTime start = DateTime.Now;
-            var result = sut.Handle(new TestICommit() { CheckpointToken = 1 });
+            result = sut.Handle(new TestICommit() { CheckpointToken = 3 });
             result.Should().Be(PollingClient2.HandlingResult.MoveToNext);
-            using (DateTimeService.Override(start))
-            {
-                result = sut.Handle(new TestICommit() { CheckpointToken = 3 });
-                result.Should().Be(PollingClient2.HandlingResult.Retry);
-            }
-            using (DateTimeService.Override(start.AddMilliseconds(_outOfSequenceTimeoutInMilliseconds - 100)))
-            {
-                result = sut.Handle(new TestICommit() { CheckpointToken = 2 });
-                result.Should().Be(PollingClient2.HandlingResult.MoveToNext);
-                result = sut.Handle(new TestICommit() { CheckpointToken = 3 });
-                result.Should().Be(PollingClient2.HandlingResult.MoveToNext);
-            }
         }
+    }
 
-        [Fact]
-        public void verify_timeout_on_missing_commit_elapsed()
-        {
-            var sut = InitCommitSequencer();
+    public class TestICommit : ICommit
+    {
+        public string BucketId => "";
 
-            DateTime start = DateTime.Now;
-            var result = sut.Handle(new TestICommit() { CheckpointToken = 1 });
-            result.Should().Be(PollingClient2.HandlingResult.MoveToNext);
-            using (DateTimeService.Override(start))
-            {
-                result = sut.Handle(new TestICommit() { CheckpointToken = 3 });
-                result.Should().Be(PollingClient2.HandlingResult.Retry);
-            }
-            using (DateTimeService.Override(start.AddMilliseconds(_outOfSequenceTimeoutInMilliseconds + 100)))
-            {
-                result = sut.Handle(new TestICommit() { CheckpointToken = 3 });
-                result.Should().Be(PollingClient2.HandlingResult.MoveToNext);
-            }
-        }
+        public string StreamId => "";
 
-        public class TestICommit : ICommit
-        {
-            public string BucketId
-            {
-                get { return ""; }
-            }
+        public int StreamRevision => 0;
 
-            public string StreamId
-            {
-                get { return ""; }
-            }
+        public Guid CommitId => Guid.Empty;
 
-            public int StreamRevision
-            {
-                get { return 0; }
-            }
+        public int CommitSequence => 0;
 
-            public Guid CommitId
-            {
-                get { return Guid.Empty; }
-            }
+        public DateTime CommitStamp => DateTimeService.Now;
 
-            public int CommitSequence
-            {
-                get { return 0; }
-            }
+        public IDictionary<string, object> Headers => new ConcurrentDictionary<string, object>();
 
-            public DateTime CommitStamp
-            {
-                get { return DateTimeService.Now; }
-            }
+        public ICollection<EventMessage> Events => new List<EventMessage>();
 
-            public IDictionary<string, object> Headers
-            {
-                get { return new ConcurrentDictionary<string, object>(); }
-            }
-
-            public ICollection<EventMessage> Events
-            {
-                get { return new List<EventMessage>(); }
-            }
-
-            public Int64 CheckpointToken { get; set; }
-        }
+        public long CheckpointToken { get; set; }
     }
 }
 
