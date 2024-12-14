@@ -4,8 +4,7 @@ namespace NEventStore.Serialization.MsgPack
     using MessagePack.Resolvers;
     using Microsoft.Extensions.Logging;
     using NEventStore.Logging;
-    using System;
-    using System.Collections.Generic;
+    using System;    
     using System.IO;
 
     /// <summary>
@@ -21,25 +20,27 @@ namespace NEventStore.Serialization.MsgPack
         /// <summary>
         /// Serializer options
         /// </summary>
-        private static readonly MessagePackSerializerOptions _options = new MessagePackSerializerOptions(TypelessContractlessStandardResolver.Instance);
+        private readonly MessagePackSerializerOptions _options;
 
         /// <summary>
         /// Known types.
         /// </summary>
-        private readonly IEnumerable<Type> _knownTypes = new[] { typeof(List<EventMessage>), typeof(Dictionary<string, object>) };
+        private readonly Type[] _knownTypes;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
+        /// <param name="options">MsgPack Options.</param>
         /// <param name="knownTypes">Know types.</param>
-        public MsgPackSerializer(params Type[] knownTypes)
+        public MsgPackSerializer(MessagePackSerializerOptions options = null, params Type[] knownTypes)
         {
+            _options = options ?? new MessagePackSerializerOptions(TypelessContractlessStandardResolver.Instance);
             if (knownTypes?.Length == 0)
             {
                 knownTypes = null;
             }
 
-            _knownTypes = knownTypes ?? _knownTypes;
+            _knownTypes = knownTypes ?? new Type[0];
             if (Logger.IsEnabled(LogLevel.Debug))
             {
                 foreach (var type in _knownTypes)

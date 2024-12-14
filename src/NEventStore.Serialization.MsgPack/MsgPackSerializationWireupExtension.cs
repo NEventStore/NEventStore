@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using MessagePack;
+using System.Diagnostics;
 
 namespace NEventStore.Serialization.MsgPack
 {
@@ -11,8 +12,9 @@ namespace NEventStore.Serialization.MsgPack
         /// Use the MessagePack serializer.
         /// </summary>
         /// <param name="wireup">Wireup to extend</param>
+        /// <param name="option">MsgPack serialization options</param>
         /// <returns>Serialization Wireup</returns>
         [DebuggerStepThrough]
-        public static SerializationWireup UsingMsgPackSerialization(this PersistenceWireup wireup) => wireup.UsingCustomSerialization(new MsgPackSerializer());
+        public static SerializationWireup UsingMsgPackSerialization(this PersistenceWireup wireup, MessagePackSerializerOptions option = null) => wireup.UsingCustomSerialization(new MsgPackSerializer(option));
     }
 }
