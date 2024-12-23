@@ -4,7 +4,7 @@ using NEventStore.Logging;
 namespace NEventStore.Serialization
 {
     /// <summary>
-    /// A document serializer that uses a serializer to serialize and deserialize objects.
+    /// A document serializer that uses a serializer to serialize and deserialize objects to and from byte arrays.
     /// </summary>
     public class ByteStreamDocumentSerializer : IDocumentSerializer
     {
@@ -14,15 +14,19 @@ namespace NEventStore.Serialization
         /// <summary>
         /// Initializes a new instance of the ByteStreamDocumentSerializer class.
         /// </summary>
-        /// <param name="serializer"></param>
         public ByteStreamDocumentSerializer(ISerialize serializer)
         {
             _serializer = serializer;
         }
 
         /// <inheritdoc/>
+        /// <remarks>Serializes the object graph in a byte array</remarks>
         public object Serialize<T>(T graph)
         {
+            if (graph == null)
+            {
+                throw new ArgumentNullException(nameof(graph));
+            }
             if (Logger.IsEnabled(LogLevel.Trace))
             {
                 Logger.LogTrace(Messages.SerializingGraph, typeof(T));
@@ -31,17 +35,23 @@ namespace NEventStore.Serialization
         }
 
         /// <inheritdoc/>
+        /// <remarks>
+        /// Accepts a byte array (in the form of a byte array or a base64 encoded string)
+        /// and deserialize it to an object graph.
+        /// </remarks>
         public T Deserialize<T>(object document)
         {
+            var bytes = (FromBase64(document as string) ?? document as byte[])
+                ?? throw new NotSupportedException("document must be byte[] or a string representing base64 encoded byte[]");
+
             if (Logger.IsEnabled(LogLevel.Trace))
             {
                 Logger.LogTrace(Messages.DeserializingStream, typeof(T));
             }
-            byte[] bytes = FromBase64(document as string) ?? document as byte[];
             return _serializer.Deserialize<T>(bytes);
         }
 
-        private static byte[]? FromBase64(string value)
+        private static byte[]? FromBase64(string? value)
         {
             if (string.IsNullOrEmpty(value))
             {

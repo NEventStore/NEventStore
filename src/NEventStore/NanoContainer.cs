@@ -22,7 +22,7 @@ namespace NEventStore
             {
                 Logger.LogDebug(Messages.RegisteringWireupCallback, typeof(TService));
             }
-            var registration = new ContainerRegistration(c => (object)resolve(c));
+            var registration = new ContainerRegistration(c => resolve(c));
             _registrations[typeof(TService)] = registration;
             return registration;
         }
@@ -33,6 +33,7 @@ namespace NEventStore
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"></exception>
         public virtual ContainerRegistration Register<TService>(TService instance)
+            where TService : class
         {
             if (Equals(instance, null))
             {
@@ -55,7 +56,8 @@ namespace NEventStore
         /// <summary>
         /// Resolves a service from the container.
         /// </summary>
-        public virtual TService Resolve<TService>()
+        public virtual TService? Resolve<TService>()
+            where TService : class
         {
             if (Logger.IsEnabled(LogLevel.Debug))
             {
@@ -64,7 +66,7 @@ namespace NEventStore
 
             if (_registrations.TryGetValue(typeof(TService), out ContainerRegistration registration))
             {
-                return (TService)registration.Resolve(this);
+                return (registration.Resolve(this)) as TService;
             }
 
             if (Logger.IsEnabled(LogLevel.Debug))
@@ -81,8 +83,8 @@ namespace NEventStore
     public class ContainerRegistration
     {
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(ContainerRegistration));
-        private readonly Func<NanoContainer, object> _resolve;
-        private object _instance;
+        private readonly Func<NanoContainer, object>? _resolve;
+        private object? _instance;
         private bool _instancePerCall;
 
         /// <summary>
@@ -90,6 +92,11 @@ namespace NEventStore
         /// </summary>
         public ContainerRegistration(Func<NanoContainer, object> resolve)
         {
+            if (resolve is null)
+            {
+                throw new ArgumentNullException(nameof(resolve));
+            }
+
             if (Logger.IsEnabled(LogLevel.Trace))
             {
                 Logger.LogTrace(Messages.AddingWireupCallback);
@@ -102,6 +109,11 @@ namespace NEventStore
         /// </summary>
         public ContainerRegistration(object instance)
         {
+            if (instance is null)
+            {
+                throw new ArgumentNullException(nameof(instance));
+            }
+
             if (Logger.IsEnabled(LogLevel.Trace))
             {
                 Logger.LogTrace(Messages.AddingWireupRegistration, instance.GetType());
@@ -114,6 +126,10 @@ namespace NEventStore
         /// </summary>
         public virtual ContainerRegistration InstancePerCall()
         {
+            if (_resolve == null)
+            {
+                throw new InvalidOperationException("Cannot configure InstancePerCall() on instance registrations.");
+            }
             if (Logger.IsEnabled(LogLevel.Trace))
             {
                 Logger.LogTrace(Messages.ConfiguringInstancePerCall);
@@ -125,7 +141,7 @@ namespace NEventStore
         /// <summary>
         /// Resolves the registration.
         /// </summary>
-        public virtual object Resolve(NanoContainer container)
+        public virtual object? Resolve(NanoContainer container)
         {
             if (Logger.IsEnabled(LogLevel.Trace))
             {
@@ -137,7 +153,7 @@ namespace NEventStore
                 {
                     Logger.LogTrace(Messages.BuildingNewInstance);
                 }
-                return _resolve(container);
+                return _resolve!(container);
             }
 
             if (Logger.IsEnabled(LogLevel.Trace))
@@ -154,7 +170,7 @@ namespace NEventStore
             {
                 Logger.LogTrace(Messages.BuildingAndStoringNewInstance);
             }
-            return _instance = _resolve(container);
+            return _instance = _resolve!(container);
         }
     }
 }

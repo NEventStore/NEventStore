@@ -527,14 +527,14 @@ namespace NEventStore
 
     public abstract class using_underlying_persistence : SpecificationBase
     {
-        private PipelineHooksAwarePersistanceDecorator decorator;
+        private PipelineHooksAwarePersistStreamsDecorator decorator;
         protected readonly IPersistStreams persistence = A.Fake<IPersistStreams>();
         protected readonly List<IPipelineHook> pipelineHooks = new List<IPipelineHook>();
         protected readonly string streamId = Guid.NewGuid().ToString();
 
-        public PipelineHooksAwarePersistanceDecorator Decorator
+        public PipelineHooksAwarePersistStreamsDecorator Decorator
         {
-            get { return decorator ?? (decorator = new PipelineHooksAwarePersistanceDecorator(persistence, pipelineHooks.Select(x => x))); }
+            get { return decorator ?? (decorator = new PipelineHooksAwarePersistStreamsDecorator(persistence, pipelineHooks.Select(x => x))); }
             set { decorator = value; }
         }
     }

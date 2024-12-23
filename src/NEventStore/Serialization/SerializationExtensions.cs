@@ -1,3 +1,4 @@
+
 namespace NEventStore.Serialization
 {
     /// <summary>
@@ -14,11 +15,9 @@ namespace NEventStore.Serialization
         /// <returns>A serialized representation of the object graph provided.</returns>
         public static byte[] Serialize<T>(this ISerialize serializer, T value)
         {
-            using (var stream = new MemoryStream())
-            {
-                serializer.Serialize(stream, value);
-                return stream.ToArray();
-            }
+            using var stream = new MemoryStream();
+            serializer.Serialize(stream, value);
+            return stream.ToArray();
         }
 
         /// <summary>
@@ -30,10 +29,10 @@ namespace NEventStore.Serialization
         /// <returns>The reconstituted object, if any.</returns>
         public static T Deserialize<T>(this ISerialize serializer, byte[] serialized)
         {
-            serialized = serialized ?? new byte[] {};
-            if (serialized.Length == 0)
+            // add null or empty check
+            if (serialized == null || serialized.Length == 0)
             {
-                return default(T);
+                throw new ArgumentNullException(nameof(serialized), "cannot be null or empty.");
             }
 
             using var stream = new MemoryStream(serialized);

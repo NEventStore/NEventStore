@@ -17,3 +17,14 @@ csharp_style_prefer_primary_constructors = false
 
 # IDE0028: Simplify collection initialization
 dotnet_style_collection_initializer = false
+
+# IDE0305: Simplify collection initialization
+dotnet_diagnostic.IDE0305.severity = none
+
+# Logging Warnings: temporary disabled, enable them again later on
+
+# CA1848: Use the LoggerMessage delegates
+dotnet_diagnostic.CA1848.severity = none
+
+# CA2254: Template should be a static expression
+dotnet_diagnostic.CA2254.severity = none

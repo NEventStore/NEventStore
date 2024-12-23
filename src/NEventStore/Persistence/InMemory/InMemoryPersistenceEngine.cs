@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Globalization;
 using Microsoft.Extensions.Logging;
 using NEventStore.Logging;
 
@@ -40,47 +41,25 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
+        public IEnumerable<ICommit> GetFrom(string bucketId, DateTime startDate)
         {
             ThrowWhenDisposed();
             if (Logger.IsEnabled(LogLevel.Debug))
             {
-                Logger.LogDebug(Resources.GettingAllCommitsFromRevision, streamId, bucketId, minRevision, maxRevision);
+                Logger.LogDebug(Resources.GettingAllCommitsFromTime, bucketId, startDate);
             }
-            return this[bucketId].GetFrom(streamId, minRevision, maxRevision);
+            return this[bucketId].GetFrom(startDate);
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFrom(string bucketId, DateTime start)
+        public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime startDate, DateTime endDate)
         {
             ThrowWhenDisposed();
             if (Logger.IsEnabled(LogLevel.Debug))
             {
-                Logger.LogDebug(Resources.GettingAllCommitsFromTime, bucketId, start);
+                Logger.LogDebug(Resources.GettingAllCommitsFromToTime, startDate, endDate);
             }
-            return this[bucketId].GetFrom(start);
-        }
-
-        /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFrom(string bucketId, Int64 checkpointToken)
-        {
-            ThrowWhenDisposed();
-            if (Logger.IsEnabled(LogLevel.Debug))
-            {
-                Logger.LogDebug(Resources.GettingAllCommitsFromBucketAndCheckpoint, bucketId, checkpointToken);
-            }
-            return this[bucketId].GetFrom(checkpointToken);
-        }
-
-        /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFromTo(string bucketId, Int64 from, Int64 to)
-        {
-            ThrowWhenDisposed();
-            if (Logger.IsEnabled(LogLevel.Debug))
-            {
-                Logger.LogDebug(Resources.GettingCommitsFromBucketAndFromToCheckpoint, bucketId, from, to);
-            }
-            return this[bucketId].GetFromTo(from, to);
+            return this[bucketId].GetFromTo(startDate, endDate);
         }
 
         /// <inheritdoc/>
@@ -100,30 +79,52 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFromTo(Int64 from, Int64 to)
+        public IEnumerable<ICommit> GetFromTo(Int64 fromCheckpointToken, Int64 toCheckpointToken)
         {
             ThrowWhenDisposed();
             if (Logger.IsEnabled(LogLevel.Debug))
             {
-                Logger.LogDebug(Resources.GettingCommitsFromToCheckpoint, from, to);
+                Logger.LogDebug(Resources.GettingCommitsFromToCheckpoint, fromCheckpointToken, toCheckpointToken);
             }
             return _buckets
                 .Values
                 .SelectMany(b => b.GetCommits())
-                .Where(c => c.CheckpointToken.CompareTo(from) > 0 && c.CheckpointToken.CompareTo(to) <= 0)
+                .Where(c => c.CheckpointToken.CompareTo(fromCheckpointToken) > 0 && c.CheckpointToken.CompareTo(toCheckpointToken) <= 0)
                 .OrderBy(c => c.CheckpointToken)
                 .ToArray();
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
+        public IEnumerable<ICommit> GetFrom(string bucketId, Int64 checkpointToken)
         {
             ThrowWhenDisposed();
             if (Logger.IsEnabled(LogLevel.Debug))
             {
-                Logger.LogDebug(Resources.GettingAllCommitsFromToTime, start, end);
+                Logger.LogDebug(Resources.GettingAllCommitsFromBucketAndCheckpoint, bucketId, checkpointToken);
             }
-            return this[bucketId].GetFromTo(start, end);
+            return this[bucketId].GetFrom(checkpointToken);
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<ICommit> GetFromTo(string bucketId, Int64 fromCheckpointToken, Int64 toCheckpointToken)
+        {
+            ThrowWhenDisposed();
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug(Resources.GettingCommitsFromBucketAndFromToCheckpoint, bucketId, fromCheckpointToken, toCheckpointToken);
+            }
+            return this[bucketId].GetFromTo(fromCheckpointToken, toCheckpointToken);
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
+        {
+            ThrowWhenDisposed();
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug(Resources.GettingAllCommitsFromRevision, streamId, bucketId, minRevision, maxRevision);
+            }
+            return this[bucketId].GetFrom(streamId, minRevision, maxRevision);
         }
 
         /// <inheritdoc/>
@@ -188,8 +189,7 @@ namespace NEventStore.Persistence.InMemory
         /// <inheritdoc/>
         public void Purge(string bucketId)
         {
-            Bucket _;
-            _buckets.TryRemove(bucketId, out _);
+            _buckets.TryRemove(bucketId, out var _);
         }
 
         /// <inheritdoc/>
@@ -264,8 +264,8 @@ namespace NEventStore.Persistence.InMemory
         {
             protected bool Equals(IdentityForConcurrencyConflictDetection other)
             {
-                return string.Equals(this.streamId, other.streamId)
-                        && string.Equals(this.bucketId, other.bucketId)
+                return string.Equals(this.streamId, other.streamId, StringComparison.Ordinal)
+                        && string.Equals(this.bucketId, other.bucketId, StringComparison.Ordinal)
                         && this.commitSequence == other.commitSequence;
             }
 
@@ -321,8 +321,8 @@ namespace NEventStore.Persistence.InMemory
         {
             protected bool Equals(IdentityForDuplicationDetection other)
             {
-                return string.Equals(this.streamId, other.streamId)
-                        && string.Equals(this.bucketId, other.bucketId)
+                return string.Equals(this.streamId, other.streamId, StringComparison.Ordinal)
+                        && string.Equals(this.bucketId, other.bucketId, StringComparison.Ordinal)
                         && this.commitId.Equals(other.commitId);
             }
 
@@ -376,9 +376,9 @@ namespace NEventStore.Persistence.InMemory
 
         private class Bucket
         {
-            private readonly List<InMemoryCommit> _commits = new();
-            private readonly ICollection<IdentityForDuplicationDetection> _potentialDuplicates = new HashSet<IdentityForDuplicationDetection>();
-            private readonly ICollection<IdentityForConcurrencyConflictDetection> _potentialConflicts = new HashSet<IdentityForConcurrencyConflictDetection>();
+            private readonly List<InMemoryCommit> _commits = [];
+            private readonly HashSet<IdentityForDuplicationDetection> _potentialDuplicates = [];
+            private readonly HashSet<IdentityForConcurrencyConflictDetection> _potentialConflicts = [];
 
             public IEnumerable<InMemoryCommit> GetCommits()
             {
@@ -390,7 +390,7 @@ namespace NEventStore.Persistence.InMemory
 
             private readonly ICollection<IStreamHead> _heads = new LinkedList<IStreamHead>();
             private readonly ICollection<ISnapshot> _snapshots = new LinkedList<ISnapshot>();
-            private readonly Dictionary<Guid, DateTime> _stamps = new();
+            private readonly Dictionary<Guid, DateTime> _stamps = [];
 
             public IEnumerable<ICommit> GetFrom(string streamId, int minRevision, int maxRevision)
             {
@@ -408,7 +408,7 @@ namespace NEventStore.Persistence.InMemory
                 Guid commitId = _stamps.Where(x => x.Value >= start).Select(x => x.Key).FirstOrDefault();
                 if (commitId == Guid.Empty)
                 {
-                    return Enumerable.Empty<ICommit>();
+                    return [];
                 }
 
                 InMemoryCommit startingCommit = _commits.FirstOrDefault(x => x.CommitId == commitId);
@@ -435,7 +435,7 @@ namespace NEventStore.Persistence.InMemory
                 Guid lastCommitId = selectedCommitIds.LastOrDefault();
                 if (lastCommitId == Guid.Empty && lastCommitId == Guid.Empty)
                 {
-                    return Enumerable.Empty<ICommit>();
+                    return [];
                 }
                 InMemoryCommit startingCommit = _commits.FirstOrDefault(x => x.CommitId == firstCommitId);
                 InMemoryCommit endingCommit = _commits.FirstOrDefault(x => x.CommitId == lastCommitId);
@@ -443,7 +443,7 @@ namespace NEventStore.Persistence.InMemory
                 int endingCommitIndex = (endingCommit == null) ? _commits.Count - 1 : _commits.IndexOf(endingCommit);
                 int numberToTake = endingCommitIndex - startingCommitIndex + 1;
 
-                return _commits.Skip(_commits.IndexOf(startingCommit)).Take(numberToTake);
+                return _commits.Skip(startingCommitIndex).Take(numberToTake);
             }
 
             public ICommit Commit(CommitAttempt attempt, Int64 checkpoint)
@@ -484,7 +484,9 @@ namespace NEventStore.Persistence.InMemory
             {
                 if (_potentialDuplicates.Contains(new IdentityForDuplicationDetection(attempt)))
                 {
-                    throw new DuplicateCommitException(String.Format(Messages.DuplicateCommitIdException, attempt.StreamId, attempt.BucketId, attempt.CommitId));
+                    throw new DuplicateCommitException(String.Format(
+                        CultureInfo.InvariantCulture,
+                        Messages.DuplicateCommitIdException, attempt.StreamId, attempt.BucketId, attempt.CommitId));
                 }
             }
 

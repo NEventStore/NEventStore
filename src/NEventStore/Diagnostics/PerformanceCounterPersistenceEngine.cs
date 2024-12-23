@@ -18,8 +18,6 @@ namespace NEventStore.Diagnostics
         /// <summary>
         /// Initializes a new instance of the PerformanceCounterPersistenceEngine class.
         /// </summary>
-        /// <param name="persistence"></param>
-        /// <param name="instanceName"></param>
         public PerformanceCounterPersistenceEngine(IPersistStreams persistence, string instanceName)
         {
             _persistence = persistence;
@@ -156,7 +154,6 @@ namespace NEventStore.Diagnostics
         /// <summary>
         /// Dispose the performance counter and the wrapped persistence engine.
         /// </summary>
-        /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
             if (!disposing)

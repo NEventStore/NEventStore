@@ -10,7 +10,7 @@ namespace NEventStore.Persistence
         /// <summary>
         /// Initializes a new instance of the Commit class.
         /// </summary>
-         public Commit(
+        public Commit(
             string bucketId,
             string streamId,
             int streamRevision,

@@ -6,17 +6,17 @@ namespace NEventStore.Persistence
     /// <summary>
     ///    Represents a persistence decorator that allows for hooks to be injected into the pipeline.
     /// </summary>
-    public sealed class PipelineHooksAwarePersistanceDecorator : IPersistStreams
+    public sealed class PipelineHooksAwarePersistStreamsDecorator : IPersistStreams
     {
-        private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(PipelineHooksAwarePersistanceDecorator));
+        private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(PipelineHooksAwarePersistStreamsDecorator));
         private readonly IPersistStreams _original;
         private readonly IEnumerable<IPipelineHook> _pipelineHooks;
 
         /// <summary>
-        /// Initializes a new instance of the PipelineHooksAwarePersistanceDecorator class.
+        /// Initializes a new instance of the PipelineHooksAwarePersistStreamsDecorator class.
         /// </summary>
         /// <exception cref="ArgumentNullException"></exception>
-        public PipelineHooksAwarePersistanceDecorator(IPersistStreams original, IEnumerable<IPipelineHook> pipelineHooks)
+        public PipelineHooksAwarePersistStreamsDecorator(IPersistStreams original, IEnumerable<IPipelineHook> pipelineHooks)
         {
             _original = original ?? throw new ArgumentNullException(nameof(original));
             _pipelineHooks = pipelineHooks ?? throw new ArgumentNullException(nameof(pipelineHooks));
@@ -26,6 +26,36 @@ namespace NEventStore.Persistence
         public void Dispose()
         {
             _original.Dispose();
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<ICommit> GetFrom(string bucketId, DateTime startDate) {
+            return ExecuteHooks(_original.GetFrom(bucketId, startDate));
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime startDate, DateTime endDate) {
+            return ExecuteHooks(_original.GetFromTo(bucketId, startDate, endDate));
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<ICommit> GetFrom(Int64 checkpointToken) {
+            return ExecuteHooks(_original.GetFrom(checkpointToken));
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<ICommit> GetFromTo(Int64 fromCheckpointToken, Int64 toCheckpointToken) {
+            return ExecuteHooks(_original.GetFromTo(fromCheckpointToken, toCheckpointToken));
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<ICommit> GetFrom(string bucketId, Int64 checkpointToken) {
+            return ExecuteHooks(_original.GetFrom(bucketId, checkpointToken));
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<ICommit> GetFromTo(string bucketId, Int64 fromCheckpointToken, Int64 toCheckpointToken) {
+            return ExecuteHooks(_original.GetFromTo(bucketId, fromCheckpointToken, toCheckpointToken));
         }
 
         /// <inheritdoc/>
@@ -62,42 +92,6 @@ namespace NEventStore.Persistence
         public void Initialize()
         {
             _original.Initialize();
-        }
-
-        /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFrom(string bucketId, DateTime start)
-        {
-            return ExecuteHooks(_original.GetFrom(bucketId, start));
-        }
-
-        /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFrom(Int64 checkpointToken)
-        {
-            return ExecuteHooks(_original.GetFrom(checkpointToken));
-        }
-
-        /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFromTo(Int64 from, Int64 to)
-        {
-            return ExecuteHooks(_original.GetFromTo(from, to));
-        }
-
-        /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFrom(string bucketId, Int64 checkpointToken)
-        {
-            return ExecuteHooks(_original.GetFrom(bucketId, checkpointToken));
-        }
-
-        /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFromTo(string bucketId, Int64 from, Int64 to)
-        {
-            return ExecuteHooks(_original.GetFromTo(bucketId, from, to));
-        }
-
-        /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
-        {
-            return ExecuteHooks(_original.GetFromTo(bucketId, start, end));
         }
 
         /// <inheritdoc/>

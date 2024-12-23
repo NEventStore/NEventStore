@@ -1,5 +1,20 @@
 # NEventStore Versions
 
+## vNext
+
+- nullability ?
+- pesistence async (IPersistStreams) ?
+- persistence: read using cursors ?
+- system.text.json ?
+
+### Breaking Changes
+
+- `PersistStreamsExtensions.GetFrom(IPersistStreams, DateTime)` and `PersistStreamsExtensions.GetFromTo(IPersistStreams, DateTime, DateTime)` extension methods
+  were marked obsolete and have been removed: they had inconsistent behavior with the other GetFrom(checkpointToken) methods, 
+  they were getting data from the default bucket only.
+- `PipelineHooksAwarePersistanceDecorator` renamed to `PipelineHooksAwarePersistStreamsDecorator`
+- signature
+
 ## 9.2.0
 
 - Updated nuget packages to include symbol packages and more information.

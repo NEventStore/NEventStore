@@ -8,6 +8,10 @@ namespace NEventStore.Serialization
         /// <inheritdoc/>
         public object Serialize<T>(T graph)
         {
+            if (graph == null)
+            {
+                throw new ArgumentNullException(nameof(graph));
+            }
             return graph;
         }
 

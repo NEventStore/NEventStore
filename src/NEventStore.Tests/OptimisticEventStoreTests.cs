@@ -529,7 +529,7 @@ namespace NEventStore
         [Fact]
         public void should_return_a_reference_to_the_underlying_persistence_infrastructure_decorator()
         {
-            Store.Advanced.Should().BeOfType<PipelineHooksAwarePersistanceDecorator>();
+            Store.Advanced.Should().BeOfType<PipelineHooksAwarePersistStreamsDecorator>();
         }
     }
 

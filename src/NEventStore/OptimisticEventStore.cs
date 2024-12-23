@@ -30,7 +30,7 @@ namespace NEventStore
             _pipelineHooks = pipelineHooks ?? Array.Empty<IPipelineHook>();
             if (_pipelineHooks.Any())
             {
-                _persistence = new PipelineHooksAwarePersistanceDecorator(persistence, _pipelineHooks);
+                _persistence = new PipelineHooksAwarePersistStreamsDecorator(persistence, _pipelineHooks);
             }
             else
             {

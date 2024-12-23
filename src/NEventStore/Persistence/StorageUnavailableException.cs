@@ -1,8 +1,7 @@
+using System.Runtime.Serialization;
+
 namespace NEventStore.Persistence
 {
-    using System;
-    using System.Runtime.Serialization;
-
     /// <summary>
     ///     Indicates that the underlying persistence medium is unavailable or offline.
     /// </summary>
