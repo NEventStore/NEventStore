@@ -1,16 +1,14 @@
+using System.Collections;
+using NEventStore.Logging;
+using Newtonsoft.Json.Bson;
+using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
+
 namespace NEventStore.Serialization.Bson
 {
-    using System;
-    using System.Collections;
-    using System.IO;
-    using NEventStore.Logging;
-    using System.Reflection;
-    using Newtonsoft.Json.Bson;
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
-    using System.Linq;
-    using Microsoft.Extensions.Logging;
-
+    /// <summary>
+    /// Represents a BSON serializer.
+    /// </summary>
     public class BsonSerializer : ISerialize
     {
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(BsonSerializer));
@@ -31,6 +29,9 @@ namespace NEventStore.Serialization.Bson
             NullValueHandling = NullValueHandling.Ignore
         };
 
+        /// <summary>
+        /// Initializes a new instance of the BsonSerializer class.
+        /// </summary>
         public BsonSerializer(params Type[] knownTypes)
         {
             if (knownTypes?.Length == 0)
@@ -80,11 +81,17 @@ namespace NEventStore.Serialization.Bson
         {
             if (_knownTypes.Contains(typeToSerialize))
             {
-                Logger.LogTrace(Messages.UsingUntypedSerializer, typeToSerialize);
+                if (Logger.IsEnabled(LogLevel.Trace))
+                {
+                    Logger.LogTrace(Messages.UsingUntypedSerializer, typeToSerialize);
+                }
                 return _untypedSerializer;
             }
 
-            Logger.LogTrace(Messages.UsingTypedSerializer, typeToSerialize);
+            if (Logger.IsEnabled(LogLevel.Trace))
+            {
+                Logger.LogTrace(Messages.UsingTypedSerializer, typeToSerialize);
+            }
             return _typedSerializer;
         }
 
@@ -92,7 +99,10 @@ namespace NEventStore.Serialization.Bson
         {
             bool array = typeof(IEnumerable).IsAssignableFrom(type) && !typeof(IDictionary).IsAssignableFrom(type);
 
-            Logger.LogTrace(Messages.TypeIsArray, type, array);
+            if (Logger.IsEnabled(LogLevel.Trace))
+            {
+                Logger.LogTrace(Messages.TypeIsArray, type, array);
+            }
 
             return array;
         }

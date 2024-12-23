@@ -1,9 +1,10 @@
+using NEventStore.Persistence;
+
 namespace NEventStore
 {
-    using System;
-    using System.Collections.Generic;
-    using NEventStore.Persistence;
-
+    /// <summary>
+    ///    Provides extension methods for <see cref="ICommitEvents"/> instances.
+    /// </summary>
     public static class CommitEventsExtensions
     {
         /// <summary>

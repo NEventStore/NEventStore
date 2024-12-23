@@ -1,7 +1,5 @@
 namespace NEventStore
 {
-    using System;
-
     /// <summary>
     ///     Provides the ability to override the current moment in time to facilitate testing.
     ///     Original idea by Ayende Rahien:

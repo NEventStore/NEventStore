@@ -1,19 +1,24 @@
+using System.Collections;
+using System.Security.Cryptography;
+using Microsoft.Extensions.Logging;
+using NEventStore.Logging;
+
 namespace NEventStore.Serialization
 {
-    using System;
-    using System.Collections;
-    using System.IO;
-    using System.Security.Cryptography;
-    using Microsoft.Extensions.Logging;
-    using NEventStore.Logging;
-
+    /// <summary>
+    ///    Represents a serializer that encrypts the serialized data using the Rijndael algorithm.
+    /// </summary>
     public class RijndaelSerializer : ISerialize
     {
         private const int KeyLength = 16; // bytes
-        private static readonly ILogger Logger = LogFactory.BuildLogger(typeof (RijndaelSerializer));
+        private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(RijndaelSerializer));
         private readonly byte[] _encryptionKey;
         private readonly ISerialize _inner;
 
+        /// <summary>
+        /// Initializes a new instance of the RijndaelSerializer class.
+        /// </summary>
+        /// <exception cref="ArgumentException"></exception>
         public RijndaelSerializer(ISerialize inner, byte[] encryptionKey)
         {
             if (!KeyIsValid(encryptionKey, KeyLength))
@@ -24,10 +29,14 @@ namespace NEventStore.Serialization
             _encryptionKey = encryptionKey;
             _inner = inner;
         }
-        
+
+        /// <inheritdoc/>
         public virtual void Serialize<T>(Stream output, T graph)
         {
-            Logger.LogTrace(Messages.SerializingGraph, typeof (T));
+            if (Logger.IsEnabled(LogLevel.Trace))
+            {
+                Logger.LogTrace(Messages.SerializingGraph, typeof(T));
+            }
 
             using (var rijndael = new RijndaelManaged())
             {
@@ -47,9 +56,13 @@ namespace NEventStore.Serialization
             }
         }
 
+        /// <inheritdoc/>
         public virtual T Deserialize<T>(Stream input)
         {
-            Logger.LogTrace(Messages.DeserializingStream, typeof (T));
+            if (Logger.IsEnabled(LogLevel.Trace))
+            {
+                Logger.LogTrace(Messages.DeserializingStream, typeof(T));
+            }
 
             using (var rijndael = new RijndaelManaged())
             {

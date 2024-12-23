@@ -1,10 +1,7 @@
+using System.Collections;
+
 namespace NEventStore
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Linq;
-
     internal sealed class ImmutableCollection<T> : ICollection<T>, ICollection
     {
         private readonly ICollection<T> _inner;

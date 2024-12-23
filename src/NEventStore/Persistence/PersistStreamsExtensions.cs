@@ -1,9 +1,8 @@
 namespace NEventStore.Persistence
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
+    /// <summary>
+    ///    Provides a set of extension methods for the <see cref="IPersistStreams"/> interface.
+    /// </summary>
     public static class PersistStreamsExtensions
     {
         /// <summary>

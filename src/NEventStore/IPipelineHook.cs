@@ -1,7 +1,5 @@
 namespace NEventStore
 {
-    using System;
-
     /// <summary>
     ///     Provides the ability to hook into the pipeline of persisting a commit.
     /// </summary>

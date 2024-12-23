@@ -1,8 +1,7 @@
+using System.Diagnostics;
+
 namespace NEventStore.Diagnostics
 {
-    using System;
-    using System.Diagnostics;
-
     // PerformanceCounters are not cross platform
 
 #if NET462

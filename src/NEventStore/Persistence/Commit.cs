@@ -2,12 +2,15 @@
 
 namespace NEventStore.Persistence
 {
-    using System;
-    using System.Collections.Generic;
-
+    /// <summary>
+    /// Represents a commit to the event store.
+    /// </summary>
     public class Commit : ICommit
     {
-        public Commit(
+        /// <summary>
+        /// Initializes a new instance of the Commit class.
+        /// </summary>
+         public Commit(
             string bucketId,
             string streamId,
             int streamRevision,
@@ -32,22 +35,31 @@ namespace NEventStore.Persistence
             //    new ReadOnlyCollection<EventMessage>(new List<EventMessage>(events));
         }
 
+        /// <inheritdoc/>
         public string BucketId { get; private set; }
 
+        /// <inheritdoc/>
         public string StreamId { get; private set; }
 
+        /// <inheritdoc/>
         public int StreamRevision { get; private set; }
 
+        /// <inheritdoc/>
         public Guid CommitId { get; private set; }
 
+        /// <inheritdoc/>
         public int CommitSequence { get; private set; }
 
+        /// <inheritdoc/>
         public DateTime CommitStamp { get; private set; }
 
+        /// <inheritdoc/>
         public IDictionary<string, object> Headers { get; private set; }
 
+        /// <inheritdoc/>
         public ICollection<EventMessage> Events { get; private set; }
 
+        /// <inheritdoc/>
         public Int64 CheckpointToken { get; private set; }
     }
 }

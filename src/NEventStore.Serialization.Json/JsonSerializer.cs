@@ -1,14 +1,13 @@
+using System.Text;
+using Newtonsoft.Json;
+using NEventStore.Logging;
+using Microsoft.Extensions.Logging;
+
 namespace NEventStore.Serialization.Json
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Text;
-    using Newtonsoft.Json;
-    using NEventStore.Logging;
-    using Microsoft.Extensions.Logging;
-
+    /// <summary>
+    /// The Newtonsoft JSON serializer.
+    /// </summary>
     public class JsonSerializer : ISerialize
     {
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(JsonSerializer));
@@ -61,9 +60,13 @@ namespace NEventStore.Serialization.Json
             }
         }
 
+        /// <inheritdoc/>
         public virtual void Serialize<T>(Stream output, T graph)
         {
-            Logger.LogTrace(Messages.SerializingGraph, typeof(T));
+            if (Logger.IsEnabled(LogLevel.Trace))
+            {
+                Logger.LogTrace(Messages.SerializingGraph, typeof(T));
+            }
             using (var streamWriter = new StreamWriter(output, Encoding.UTF8))
             using (var jsonTextWriter = new JsonTextWriter(streamWriter))
             {
@@ -71,9 +74,13 @@ namespace NEventStore.Serialization.Json
             }
         }
 
+        /// <inheritdoc/>
         public virtual T Deserialize<T>(Stream input)
         {
-            Logger.LogTrace(Messages.DeserializingStream, typeof(T));
+            if (Logger.IsEnabled(LogLevel.Trace))
+            {
+                Logger.LogTrace(Messages.DeserializingStream, typeof(T));
+            }
             using (var streamReader = new StreamReader(input, Encoding.UTF8))
             using (var jsonTextReader = new JsonTextReader(streamReader))
             {
@@ -81,26 +88,35 @@ namespace NEventStore.Serialization.Json
             }
         }
 
+        /// <inheritdoc/>
         protected virtual void Serialize(JsonWriter writer, object graph)
         {
             GetSerializer(graph.GetType()).Serialize(writer, graph);
         }
 
+        /// <inheritdoc/>
         protected virtual T Deserialize<T>(JsonReader reader)
         {
             Type type = typeof(T);
             return (T)GetSerializer(type).Deserialize(reader, type);
         }
 
+        /// <inheritdoc/>
         protected virtual Newtonsoft.Json.JsonSerializer GetSerializer(Type typeToSerialize)
         {
             if (_knownTypes.Contains(typeToSerialize))
             {
-                Logger.LogTrace(Messages.UsingUntypedSerializer, typeToSerialize);
+                if (Logger.IsEnabled(LogLevel.Trace))
+                {
+                    Logger.LogTrace(Messages.UsingUntypedSerializer, typeToSerialize);
+                }
                 return _untypedSerializer;
             }
 
-            Logger.LogTrace(Messages.UsingTypedSerializer, typeToSerialize);
+            if (Logger.IsEnabled(LogLevel.Trace))
+            {
+                Logger.LogTrace(Messages.UsingTypedSerializer, typeToSerialize);
+            }
             return _typedSerializer;
         }
     }

@@ -1,21 +1,19 @@
-// using Microsoft.Extensions.Logging;
-// using NEventStore.Logging;
-
 namespace NEventStore.Serialization
 {
+    /// <summary>
+    ///    A simple serializer that does not perform any serialization.
+    /// </summary>
     public class DocumentObjectSerializer : IDocumentSerializer
     {
-        // private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(DocumentObjectSerializer));
-
+        /// <inheritdoc/>
         public object Serialize<T>(T graph)
         {
-            // Logger.LogTrace(Messages.SerializingGraph, typeof(T));
             return graph;
         }
 
+        /// <inheritdoc/>
         public T Deserialize<T>(object document)
         {
-            // Logger.LogTrace(Messages.DeserializingStream, typeof(T));
             return (T)document;
         }
     }

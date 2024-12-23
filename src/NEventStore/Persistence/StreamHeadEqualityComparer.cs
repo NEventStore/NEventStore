@@ -2,8 +2,12 @@ namespace NEventStore.Persistence
 {
     using System.Collections.Generic;
 
+    /// <summary>
+    /// Represents a strategy for comparing stream heads.
+    /// </summary>
     public sealed class StreamHeadEqualityComparer : IEqualityComparer<IStreamHead>
     {
+        /// <inheritdoc/>
         public bool Equals(IStreamHead x, IStreamHead y)
         {
             if (ReferenceEquals(x, y))
@@ -22,9 +26,10 @@ namespace NEventStore.Persistence
             {
                 return false;
             }
-            return string.Equals(x.StreamId, y.StreamId) && string.Equals(x.BucketId, y.BucketId);
+            return string.Equals(x.StreamId, y.StreamId, StringComparison.Ordinal) && string.Equals(x.BucketId, y.BucketId, StringComparison.Ordinal);
         }
 
+        /// <inheritdoc/>
         public int GetHashCode(IStreamHead obj)
         {
             unchecked

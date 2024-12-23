@@ -1,9 +1,11 @@
 namespace NEventStore
 {
-    using System.Collections.Generic;
-
+    /// <summary>
+    ///    Compares two commits for equality based on their bucket identity, stream identity, and commit identity.
+    /// </summary>
     public sealed class CommitEqualityComparer : IEqualityComparer<ICommit>
     {
+        /// <inheritdoc/>
         public bool Equals(ICommit x, ICommit y)
         {
             if (ReferenceEquals(x, y))
@@ -22,9 +24,12 @@ namespace NEventStore
             {
                 return false;
             }
-            return string.Equals(x.BucketId, y.BucketId) && string.Equals(x.StreamId, y.StreamId) && string.Equals(x.CommitId, y.CommitId) ;
+            return string.Equals(x.BucketId, y.BucketId, StringComparison.Ordinal)
+                && string.Equals(x.StreamId, y.StreamId, StringComparison.Ordinal)
+                && string.Equals(x.CommitId, y.CommitId);
         }
 
+        /// <inheritdoc/>
         public int GetHashCode(ICommit obj)
         {
             unchecked

@@ -2,10 +2,16 @@ namespace NEventStore.Serialization
 {
     using System.IO;
 
+    /// <summary>
+    ///    Represents a stream that wraps another stream and prevents it from being disposed.
+    /// </summary>
     internal class IndisposableStream : Stream
     {
         private readonly Stream _stream;
 
+        /// <summary>
+        ///   Initializes a new instance of the IndisposableStream class.
+        /// </summary>
         public IndisposableStream(Stream stream)
         {
             _stream = stream;

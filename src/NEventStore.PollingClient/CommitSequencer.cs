@@ -1,10 +1,12 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using NEventStore.Helpers;
 using NEventStore.Logging;
 
 namespace NEventStore.PollingClient
 {
+    /// <summary>
+    ///    Represents a sequencer for commits.
+    /// </summary>
     public class CommitSequencer
     {
         private readonly ILogger _logger;
@@ -15,6 +17,9 @@ namespace NEventStore.PollingClient
 
         private readonly Int32 _outOfSequenceTimeoutInMilliseconds;
 
+        /// <summary>
+        ///   Initializes a new instance of the CommitSequencer class.
+        /// </summary>
         public CommitSequencer(Func<ICommit, PollingClient2.HandlingResult> commitCallback, long lastCommitRead, int outOfSequenceTimeoutInMilliseconds)
         {
             _logger = LogFactory.BuildLogger(GetType());
@@ -23,8 +28,11 @@ namespace NEventStore.PollingClient
             _outOfSequenceTimeoutInMilliseconds = outOfSequenceTimeoutInMilliseconds;
         }
 
-        private DateTime? outOfSequenceTimestamp = null;
+        private DateTime? outOfSequenceTimestamp;
 
+        /// <summary>
+        ///  Handles the specified commit.
+        /// </summary>
         public PollingClient2.HandlingResult Handle(ICommit commit)
         {
             var lc = commit.CheckpointToken;
@@ -35,13 +43,19 @@ namespace NEventStore.PollingClient
             }
             else if (_lastCommitRead >= lc)
             {
-                _logger.LogWarning(String.Format("Wrong sequence in commit, last read {0} actual read {1}", _lastCommitRead, lc));
+                if (_logger.IsEnabled(LogLevel.Warning))
+                {
+                    _logger.LogWarning(String.Format("Wrong sequence in commit, last read {0} actual read {1}", _lastCommitRead, lc));
+                }
                 return PollingClient2.HandlingResult.MoveToNext;
             }
 
             if (outOfSequenceTimestamp == null)
             {
-                _logger.LogDebug("Sequencer found out of sequence, last dispatched {0} now dispatching {1}", _lastCommitRead, lc);
+                if (_logger.IsEnabled(LogLevel.Debug))
+                {
+                    _logger.LogDebug("Sequencer found out of sequence, last dispatched {0} now dispatching {1}", _lastCommitRead, lc);
+                }
                 outOfSequenceTimestamp = DateTimeService.Now;
             }
             else
@@ -49,10 +63,16 @@ namespace NEventStore.PollingClient
                 var interval = DateTimeService.Now.Subtract(outOfSequenceTimestamp.Value);
                 if (interval.TotalMilliseconds > _outOfSequenceTimeoutInMilliseconds)
                 {
-                    _logger.LogDebug("Sequencer out of sequence timeout after {0} ms, last dispatched {1} now dispatching {2}", interval.TotalMilliseconds, _lastCommitRead, lc);
+                    if (_logger.IsEnabled(LogLevel.Debug))
+                    {
+                        _logger.LogDebug("Sequencer out of sequence timeout after {0} ms, last dispatched {1} now dispatching {2}", interval.TotalMilliseconds, _lastCommitRead, lc);
+                    }
                     return InnerHandleResult(commit, lc);
                 }
-                _logger.LogDebug("Sequencer still out of sequence from {0} ms, last dispatched {1} now dispatching {2}", interval.TotalMilliseconds, _lastCommitRead, lc);
+                if (_logger.IsEnabled(LogLevel.Debug))
+                {
+                    _logger.LogDebug("Sequencer still out of sequence from {0} ms, last dispatched {1} now dispatching {2}", interval.TotalMilliseconds, _lastCommitRead, lc);
+                }
             }
 
             return PollingClient2.HandlingResult.Retry;
