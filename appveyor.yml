@@ -34,13 +34,15 @@ build:
   verbosity: minimal
 after_build:
 - cmd: >-
-    dotnet pack ./src/NEventStore/NEventStore.Core.csproj -c %CONFIGURATION% --no-build -o artifacts /p:PackageVersion=%GitVersion_NuGetVersion%
+    dotnet pack ./src/NEventStore/NEventStore.Core.csproj -c %CONFIGURATION% --no-build -o artifacts /p:PackageVersion=%GitVersion_SemVer%
 
-    dotnet pack ./src/NEventStore.PollingClient/NEventStore.PollingClient.csproj -c %CONFIGURATION% --no-build -o artifacts /p:PackageVersion=%GitVersion_NuGetVersion%
+    dotnet pack ./src/NEventStore.PollingClient/NEventStore.PollingClient.csproj -c %CONFIGURATION% --no-build -o artifacts /p:PackageVersion=%GitVersion_SemVer%
 
-    dotnet pack ./src/NEventStore.Serialization.Json/NEventStore.Serialization.Json.Core.csproj -c %CONFIGURATION% --no-build -o artifacts /p:PackageVersion=%GitVersion_NuGetVersion%
+    dotnet pack ./src/NEventStore.Serialization.Json/NEventStore.Serialization.Json.Core.csproj -c %CONFIGURATION% --no-build -o artifacts /p:PackageVersion=%GitVersion_SemVer%
 
-    dotnet pack ./src/NEventStore.Serialization.Bson/NEventStore.Serialization.Bson.Core.csproj -c %CONFIGURATION% --no-build -o artifacts /p:PackageVersion=%GitVersion_NuGetVersion%
+    dotnet pack ./src/NEventStore.Serialization.Bson/NEventStore.Serialization.Bson.Core.csproj -c %CONFIGURATION% --no-build -o artifacts /p:PackageVersion=%GitVersion_SemVer%
+
+    dotnet pack ./src/NEventStore.Serialization.MsgPack/NEventStore.Serialization.MsgPack.Core.csproj -c %CONFIGURATION% --no-build -o artifacts /p:PackageVersion=%GitVersion_SemVer%
 test:
   assemblies:
     except:
@@ -48,6 +50,7 @@ test:
     - NEventStore.dll
     - NEventStore.Serialization.Json.dll
     - NEventStore.Serialization.Bson.dll
+    - NEventStore.Serialization.MsgPack.dll
 artifacts:
 - path: '**\artifacts\**\*.*'
 deploy: off

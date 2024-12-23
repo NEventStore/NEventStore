@@ -26,6 +26,7 @@ Main Library Packages
 - NEventStore - the core library package.
 - NEventStore.Serialization.Json - Json serialization to be used with an IDocumentSerializer.
 - NEventStore.Serialization.Bson - BSon serialization to be used with an IDocumentSerializer.
+- NEventStore.Serialization.MsgPack - Message Pack serialization to be used with an IDocumentSerializer.
 - NEventStore.PollingClient - provides an implementation for a PollingClient.
 
 Documentation
@@ -33,7 +34,7 @@ Documentation
 
 Please see the [documentation](https://github.com/NEventStore/NEventStore/wiki) to get started and for more information.
 
-ChangeLog can be [found here](Changelog.md)
+ChangeLog can be [found here](https://github.com/NEventStore/NEventStore/blob/master/Changelog.md)
 
 ### Developed with:
 
@@ -48,7 +49,7 @@ To build the project locally on a Windows Machine:
 
 - Open a Powershell console in Administrative mode and run the build script `build.ps1` in the root of the repository.
 
-## Vesioning
+## Versioning
 
 Versioning is done automatically by the build script updating the
 AssemblyInfo.cs file (<GenerateAssemblyInfo>false</GenerateAssemblyInfo> in .csproj files) 

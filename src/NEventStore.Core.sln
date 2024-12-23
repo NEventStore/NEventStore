@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35521.163 d17.12
+VisualStudioVersion = 17.12.35521.163
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".test", ".test", "{D3C17830-A461-4BA5-A672-461B19B33936}"
 	ProjectSection(SolutionItems) = preProject
@@ -42,7 +42,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\appveyor.yml = ..\appveyor.yml
 		..\build.ps1 = ..\build.ps1
 		..\Changelog.md = ..\Changelog.md
-		..\readme.markdown = ..\readme.markdown
+		Directory.Build.props = Directory.Build.props
+		..\license.txt = ..\license.txt
+		..\Readme.md = ..\Readme.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEventStore.Serialization.Binary.Core.Tests", "NEventStore.Serialization.Binary.Tests\NEventStore.Serialization.Binary.Core.Tests.csproj", "{9F0BFA49-8711-4143-B813-ACD0D0B003FD}"
