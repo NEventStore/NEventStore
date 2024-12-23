@@ -1,8 +1,7 @@
+using System.Runtime.Serialization;
+
 namespace NEventStore
 {
-    using System;
-    using System.Runtime.Serialization;
-
     /// <summary>
     ///     Represents a materialized view of a stream at specific revision.
     /// </summary>
@@ -42,6 +41,7 @@ namespace NEventStore
         protected Snapshot()
         {}
 
+        /// <inheritdoc/>
         [DataMember]
         public virtual string BucketId { get; private set; }
 

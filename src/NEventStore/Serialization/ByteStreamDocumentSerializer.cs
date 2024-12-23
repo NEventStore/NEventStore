@@ -1,40 +1,57 @@
+using Microsoft.Extensions.Logging;
+using NEventStore.Logging;
+
 namespace NEventStore.Serialization
 {
-    using System;
-    using Microsoft.Extensions.Logging;
-    using NEventStore.Logging;
-
+    /// <summary>
+    /// A document serializer that uses a serializer to serialize and deserialize objects.
+    /// </summary>
     public class ByteStreamDocumentSerializer : IDocumentSerializer
     {
-        private static readonly ILogger Logger = LogFactory.BuildLogger(typeof (ByteStreamDocumentSerializer));
+        private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(ByteStreamDocumentSerializer));
         private readonly ISerialize _serializer;
 
+        /// <summary>
+        /// Initializes a new instance of the ByteStreamDocumentSerializer class.
+        /// </summary>
+        /// <param name="serializer"></param>
         public ByteStreamDocumentSerializer(ISerialize serializer)
         {
             _serializer = serializer;
         }
 
+        /// <inheritdoc/>
         public object Serialize<T>(T graph)
         {
-            Logger.LogTrace(Messages.SerializingGraph, typeof (T));
+            if (Logger.IsEnabled(LogLevel.Trace))
+            {
+                Logger.LogTrace(Messages.SerializingGraph, typeof(T));
+            }
             return _serializer.Serialize(graph);
         }
 
+        /// <inheritdoc/>
         public T Deserialize<T>(object document)
         {
-            Logger.LogTrace(Messages.DeserializingStream, typeof (T));
+            if (Logger.IsEnabled(LogLevel.Trace))
+            {
+                Logger.LogTrace(Messages.DeserializingStream, typeof(T));
+            }
             byte[] bytes = FromBase64(document as string) ?? document as byte[];
             return _serializer.Deserialize<T>(bytes);
         }
 
-        private static byte[] FromBase64(string value)
+        private static byte[]? FromBase64(string value)
         {
             if (string.IsNullOrEmpty(value))
             {
                 return null;
             }
 
-            Logger.LogTrace(Messages.InspectingTextStream);
+            if (Logger.IsEnabled(LogLevel.Trace))
+            {
+                Logger.LogTrace(Messages.InspectingTextStream);
+            }
 
             try
             {

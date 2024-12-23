@@ -1,9 +1,10 @@
+using NEventStore.Persistence;
+
 namespace NEventStore
 {
-    using System;
-    using System.Collections.Generic;
-    using NEventStore.Persistence;
-
+    /// <summary>
+    ///    Provides extension methods for <see cref="IAccessSnapshots"/>.
+    /// </summary>
     public static class AccessSnapshotsExtensions
     {
         /// <summary>

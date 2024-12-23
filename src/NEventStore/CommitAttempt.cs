@@ -2,9 +2,9 @@
 
 namespace NEventStore
 {
-    using System;
-    using System.Collections.Generic;
-
+    /// <summary>
+    /// Commit Attempt represents a single attempt to commit a set of events to a stream.
+    /// </summary>
     public class CommitAttempt
     {
         /// <summary>

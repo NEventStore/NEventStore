@@ -1,12 +1,14 @@
+using Microsoft.Extensions.Logging;
+using NEventStore.Diagnostics;
+using NEventStore.Logging;
+using NEventStore.Persistence;
+using NEventStore.Serialization;
+
 namespace NEventStore
 {
-    using System;
-    using Microsoft.Extensions.Logging;
-    using NEventStore.Diagnostics;
-    using NEventStore.Logging;
-    using NEventStore.Persistence;
-    using NEventStore.Serialization;
-
+    /// <summary>
+    ///    Represents the persistence wireup.
+    /// </summary>
     public class PersistenceWireup : Wireup
     {
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(PersistenceWireup));
@@ -16,6 +18,9 @@ namespace NEventStore
         private string _trackingInstanceName;
 #endif
 
+        /// <summary>
+        /// Initializes a new instance of the PersistenceWireup class.
+        /// </summary>
         public PersistenceWireup(Wireup inner)
             : base(inner)
         {
@@ -26,26 +31,45 @@ namespace NEventStore
 #pragma warning restore S125 // Sections of code should not be commented out
         }
 
+        /// <summary>
+        /// Configures the persistence engine to use the specified serializer.
+        /// </summary>
         public virtual PersistenceWireup WithPersistence(IPersistStreams instance)
         {
-            Logger.LogInformation(Messages.RegisteringPersistenceEngine, instance.GetType());
+            if (Logger.IsEnabled(LogLevel.Information))
+            {
+                Logger.LogInformation(Messages.RegisteringPersistenceEngine, instance.GetType());
+            }
             With(instance);
             return this;
         }
 
+        /// <summary>
+        /// Configures the persistence engine to use the specified serializer.
+        /// </summary>
         protected virtual SerializationWireup WithSerializer(ISerialize serializer)
         {
             return new SerializationWireup(this, serializer);
         }
 
+        /// <summary>
+        /// Initializes the storage engine.
+        /// </summary>
         public virtual PersistenceWireup InitializeStorageEngine()
         {
-            Logger.LogInformation(Messages.ConfiguringEngineInitialization);
+            if (Logger.IsEnabled(LogLevel.Information))
+            {
+                Logger.LogInformation(Messages.ConfiguringEngineInitialization);
+            }
             _initialize = true;
             return this;
         }
 
 #if NET462
+        /// <summary>
+        /// Configures the persistence engine to track performance counters.
+        /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
         public virtual PersistenceWireup TrackPerformanceInstance(string instanceName)
         {
             if (instanceName == null)
@@ -53,7 +77,10 @@ namespace NEventStore
                 throw new ArgumentNullException(nameof(instanceName), Messages.InstanceCannotBeNull);
             }
 
-            Logger.LogInformation(Messages.ConfiguringEnginePerformanceTracking);
+            if (Logger.IsEnabled(LogLevel.Information))
+            {
+                Logger.LogInformation(Messages.ConfiguringEnginePerformanceTracking);
+            }
             _tracking = true;
             _trackingInstanceName = instanceName;
             return this;
@@ -86,15 +113,24 @@ namespace NEventStore
         */
 #pragma warning restore S125 // Sections of code should not be commented out
 
+        /// <summary>
+        /// Builds the persistence engine.
+        /// </summary>
         public override IStoreEvents Build()
         {
-            Logger.LogInformation(Messages.BuildingEngine);
+            if (Logger.IsEnabled(LogLevel.Information))
+            {
+                Logger.LogInformation(Messages.BuildingEngine);
+            }
 
             var engine = Container.Resolve<IPersistStreams>();
 
             if (_initialize)
             {
-                Logger.LogDebug(Messages.InitializingEngine);
+                if (Logger.IsEnabled(LogLevel.Debug))
+                {
+                    Logger.LogDebug(Messages.InitializingEngine);
+                }
                 engine.Initialize();
             }
 

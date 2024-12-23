@@ -1,10 +1,9 @@
+using NEventStore.Persistence;
+
 namespace NEventStore
 {
-    using System;
-    using NEventStore.Persistence;
-
     /// <summary>
-    ///     Indicates the ability to store and retreive a stream of events.
+    ///     Indicates the ability to store and retrieve a stream of events.
     /// </summary>
     /// <remarks>
     ///     Instances of this class must be designed to be multi-thread safe such that they can be shared between threads.

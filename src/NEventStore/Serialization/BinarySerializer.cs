@@ -1,12 +1,10 @@
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using Microsoft.Extensions.Logging;
+using NEventStore.Logging;
+
 namespace NEventStore.Serialization
 {
-    using System;
-    using System.IO;
-    using System.Runtime.Serialization;
-    using System.Runtime.Serialization.Formatters.Binary;
-    using Microsoft.Extensions.Logging;
-    using NEventStore.Logging;
-
     /// <summary>
     /// Delegates to <see cref="BinaryFormatter"/> to perform the actual serialization.
     /// </summary>
@@ -16,15 +14,23 @@ namespace NEventStore.Serialization
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof (BinarySerializer));
         private readonly IFormatter _formatter = new BinaryFormatter();
 
+        /// <inheritdoc/>
         public virtual void Serialize<T>(Stream output, T graph)
         {
-            Logger.LogTrace(Messages.SerializingGraph, typeof (T));
+            if (Logger.IsEnabled(LogLevel.Trace))
+            {
+                Logger.LogTrace(Messages.SerializingGraph, typeof(T));
+            }
             _formatter.Serialize(output, graph);
         }
 
+        /// <inheritdoc/>
         public virtual T Deserialize<T>(Stream input)
         {
-            Logger.LogTrace(Messages.DeserializingStream, typeof (T));
+            if (Logger.IsEnabled(LogLevel.Trace))
+            {
+                Logger.LogTrace(Messages.DeserializingStream, typeof(T));
+            }
             return (T) _formatter.Deserialize(input);
         }
     }

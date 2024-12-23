@@ -16,7 +16,7 @@ dotnet restore ./src/NEventStore.Core.sln --verbosity m
 # GitVersion 
 $str = dotnet tool run dotnet-gitversion /updateAssemblyInfo | out-string
 $json = convertFrom-json $str
-$nugetversion = $json.NuGetVersion
+$nugetversion = $json.SemVer
 
 # Build
 Write-Host "Building: "$nugetversion
@@ -35,3 +35,4 @@ dotnet pack ./src/NEventStore/NEventStore.Core.csproj -c $configuration --no-bui
 dotnet pack ./src/NEventStore.PollingClient/NEventStore.PollingClient.csproj -c $configuration --no-build -o $artifacts /p:PackageVersion=$nugetversion
 dotnet pack ./src/NEventStore.Serialization.Json/NEventStore.Serialization.Json.Core.csproj -c $configuration --no-build -o $artifacts /p:PackageVersion=$nugetversion
 dotnet pack ./src/NEventStore.Serialization.Bson/NEventStore.Serialization.Bson.Core.csproj -c $configuration --no-build -o $artifacts /p:PackageVersion=$nugetversion
+dotnet pack ./src/NEventStore.Serialization.MsgPack/NEventStore.Serialization.MsgPack.Core.csproj -c $configuration --no-build -o $artifacts /p:PackageVersion=$nugetversion
