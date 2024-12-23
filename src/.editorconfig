@@ -5,3 +5,15 @@ indent_size = 4
 
 [*.xml]
 indent_style = space
+
+[*.cs]
+csharp_new_line_before_open_brace = all
+
+# RCS1229: Use async/await when necessary.
+dotnet_diagnostic.RCS1229.severity = error
+
+# IDE0290: Use primary constructor
+csharp_style_prefer_primary_constructors = false
+
+# IDE0028: Simplify collection initialization
+dotnet_style_collection_initializer = false

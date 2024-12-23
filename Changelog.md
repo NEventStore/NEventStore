@@ -1,5 +1,11 @@
 # NEventStore Versions
 
+## vNext
+
+- Updated nuget packages to include symbol packages and more informations.
+- Updated Newtonsoft.Bson 13.0.3
+- Added MessagePack serializer, thanks to [@pvagnozzi](https://github.com/pvagnozzi)
+
 ## 9.1.1
 
 - Fixed `build.ps1` script to correctly update Assembly Version number before building.

@@ -5,6 +5,7 @@
     <RootNamespace>NEventStore</RootNamespace>
     <AssemblyName>NEventStore</AssemblyName>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <DefineConstants Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>NEventStore</PackageId>
@@ -15,10 +16,23 @@
     <Description>The purpose of the EventStore is to represent a series of events as a stream. NEventStore is a persistence agnostic event sourcing library for .NET. The primary use is most often associated with CQRS.</Description>
     <PackageTags>events, event sourcing, cqrs, storage, persistence, database</PackageTags>
     <PackageReleaseNotes></PackageReleaseNotes>
-  </PropertyGroup>
-  <PropertyGroup>
-    <DefineConstants Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">TRACE;DEBUG</DefineConstants>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <Deterministic>true</Deterministic>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <ContinuousIntegrationBuild Condition="'$(TF_BUILD)' == 'true'">True</ContinuousIntegrationBuild>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">True</ContinuousIntegrationBuild>
+    <Copyright>NEventStore Dev Team</Copyright>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageReadmeFile>Readme.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/NEventStore/NEventStore</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseFile>license.txt</PackageLicenseFile>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>True</EnableNETAnalyzers>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
@@ -26,6 +40,18 @@
     <Compile Include="..\GlobalSuppressions.cs" Link="Properties\GlobalSuppressions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\license.txt">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\Readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
     <None Include="..\CustomDictionary.xml" Link="Properties\CustomDictionary.xml" />
   </ItemGroup>
   <ItemGroup>

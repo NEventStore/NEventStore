@@ -16,7 +16,7 @@ dotnet restore ./src/NEventStore.Core.sln --verbosity m
 # GitVersion 
 $str = dotnet tool run dotnet-gitversion /updateAssemblyInfo | out-string
 $json = convertFrom-json $str
-$nugetversion = $json.NuGetVersion
+$nugetversion = $json.SemVer
 
 # Build
 Write-Host "Building: "$nugetversion
