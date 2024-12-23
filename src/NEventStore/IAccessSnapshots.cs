@@ -1,8 +1,7 @@
+using NEventStore.Persistence;
+
 namespace NEventStore
 {
-    using System.Collections.Generic;
-    using NEventStore.Persistence;
-
     /// <summary>
     ///     Indicates the ability to get or retrieve a snapshot for a given stream.
     /// </summary>

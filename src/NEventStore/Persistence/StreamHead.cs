@@ -25,6 +25,9 @@ namespace NEventStore.Persistence
             SnapshotRevision = snapshotRevision;
         }
 
+        /// <summary>
+        /// Stream Head Equality Comparer
+        /// </summary>
         public static IEqualityComparer<StreamHead> StreamIdBucketIdComparer { get; } = new StreamHeadEqualityComparer();
 
         /// <summary>

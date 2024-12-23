@@ -1,7 +1,5 @@
 namespace NEventStore.Serialization
 {
-    using System.IO;
-
     /// <summary>
     ///     Implements extension methods that make call to the serialization infrastructure more simple.
     /// </summary>
@@ -38,8 +36,8 @@ namespace NEventStore.Serialization
                 return default(T);
             }
 
-            using (var stream = new MemoryStream(serialized))
-                return serializer.Deserialize<T>(stream);
+            using var stream = new MemoryStream(serialized);
+            return serializer.Deserialize<T>(stream);
         }
     }
 }

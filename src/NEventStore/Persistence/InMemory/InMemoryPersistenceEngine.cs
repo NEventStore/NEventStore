@@ -1,17 +1,16 @@
+using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
+using NEventStore.Logging;
+
 namespace NEventStore.Persistence.InMemory
 {
-    using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
-    using Microsoft.Extensions.Logging;
-    using NEventStore.Logging;
-
+    /// <summary>
+    /// Represents an in-memory persistence engine.
+    /// </summary>
     public class InMemoryPersistenceEngine : IPersistStreams
     {
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(InMemoryPersistenceEngine));
-        private readonly ConcurrentDictionary<string, Bucket> _buckets = new ConcurrentDictionary<string, Bucket>();
+        private readonly ConcurrentDictionary<string, Bucket> _buckets = new();
         private bool _disposed;
         private int _checkpoint;
 
@@ -20,49 +19,78 @@ namespace NEventStore.Persistence.InMemory
             get { return _buckets.GetOrAdd(bucketId, _ => new Bucket()); }
         }
 
+        /// <summary>
+        /// Disposes the engine.
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Initializes the engine.
+        /// </summary>
         public void Initialize()
         {
-            Logger.LogInformation(Resources.InitializingEngine);
+            if (Logger.IsEnabled(LogLevel.Information))
+            {
+                Logger.LogInformation(Resources.InitializingEngine);
+            }
         }
 
+        /// <inheritdoc/>
         public IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
         {
             ThrowWhenDisposed();
-            Logger.LogDebug(Resources.GettingAllCommitsFromRevision, streamId, bucketId, minRevision, maxRevision);
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug(Resources.GettingAllCommitsFromRevision, streamId, bucketId, minRevision, maxRevision);
+            }
             return this[bucketId].GetFrom(streamId, minRevision, maxRevision);
         }
 
+        /// <inheritdoc/>
         public IEnumerable<ICommit> GetFrom(string bucketId, DateTime start)
         {
             ThrowWhenDisposed();
-            Logger.LogDebug(Resources.GettingAllCommitsFromTime, bucketId, start);
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug(Resources.GettingAllCommitsFromTime, bucketId, start);
+            }
             return this[bucketId].GetFrom(start);
         }
 
+        /// <inheritdoc/>
         public IEnumerable<ICommit> GetFrom(string bucketId, Int64 checkpointToken)
         {
             ThrowWhenDisposed();
-            Logger.LogDebug(Resources.GettingAllCommitsFromBucketAndCheckpoint, bucketId, checkpointToken);
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug(Resources.GettingAllCommitsFromBucketAndCheckpoint, bucketId, checkpointToken);
+            }
             return this[bucketId].GetFrom(checkpointToken);
         }
 
+        /// <inheritdoc/>
         public IEnumerable<ICommit> GetFromTo(string bucketId, Int64 from, Int64 to)
         {
             ThrowWhenDisposed();
-            Logger.LogDebug(Resources.GettingCommitsFromBucketAndFromToCheckpoint, bucketId, from, to);
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug(Resources.GettingCommitsFromBucketAndFromToCheckpoint, bucketId, from, to);
+            }
             return this[bucketId].GetFromTo(from, to);
         }
 
+        /// <inheritdoc/>
         public IEnumerable<ICommit> GetFrom(Int64 checkpointToken)
         {
             ThrowWhenDisposed();
-            Logger.LogDebug(Resources.GettingAllCommitsFromCheckpoint, checkpointToken);
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug(Resources.GettingAllCommitsFromCheckpoint, checkpointToken);
+            }
             return _buckets
                 .Values
                 .SelectMany(b => b.GetCommits())
@@ -71,10 +99,14 @@ namespace NEventStore.Persistence.InMemory
                 .ToArray();
         }
 
+        /// <inheritdoc/>
         public IEnumerable<ICommit> GetFromTo(Int64 from, Int64 to)
         {
             ThrowWhenDisposed();
-            Logger.LogDebug(Resources.GettingCommitsFromToCheckpoint, from, to);
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug(Resources.GettingCommitsFromToCheckpoint, from, to);
+            }
             return _buckets
                 .Values
                 .SelectMany(b => b.GetCommits())
@@ -83,65 +115,96 @@ namespace NEventStore.Persistence.InMemory
                 .ToArray();
         }
 
+        /// <inheritdoc/>
         public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
         {
             ThrowWhenDisposed();
-            Logger.LogDebug(Resources.GettingAllCommitsFromToTime, start, end);
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug(Resources.GettingAllCommitsFromToTime, start, end);
+            }
             return this[bucketId].GetFromTo(start, end);
         }
 
+        /// <inheritdoc/>
         public ICommit Commit(CommitAttempt attempt)
         {
             ThrowWhenDisposed();
-            Logger.LogDebug(Resources.AttemptingToCommit, attempt.CommitId, attempt.StreamId, attempt.BucketId, attempt.CommitSequence);
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug(Resources.AttemptingToCommit, attempt.CommitId, attempt.StreamId, attempt.BucketId, attempt.CommitSequence);
+            }
             return this[attempt.BucketId].Commit(attempt, Interlocked.Increment(ref _checkpoint));
         }
 
+        /// <inheritdoc/>
         public IEnumerable<IStreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
         {
             ThrowWhenDisposed();
-            Logger.LogDebug(Resources.GettingStreamsToSnapshot, bucketId, maxThreshold);
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug(Resources.GettingStreamsToSnapshot, bucketId, maxThreshold);
+            }
             return this[bucketId].GetStreamsToSnapshot(maxThreshold);
         }
 
+        /// <inheritdoc/>
         public ISnapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
         {
             ThrowWhenDisposed();
-            Logger.LogDebug(Resources.GettingSnapshotForStream, bucketId, streamId, maxRevision);
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug(Resources.GettingSnapshotForStream, bucketId, streamId, maxRevision);
+            }
             return this[bucketId].GetSnapshot(streamId, maxRevision);
         }
 
+        /// <inheritdoc/>
         public bool AddSnapshot(ISnapshot snapshot)
         {
             ThrowWhenDisposed();
-            Logger.LogDebug(Resources.AddingSnapshot, snapshot.BucketId, snapshot.StreamId, snapshot.StreamRevision);
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug(Resources.AddingSnapshot, snapshot.BucketId, snapshot.StreamId, snapshot.StreamRevision);
+            }
             return this[snapshot.BucketId].AddSnapshot(snapshot);
         }
 
+        /// <inheritdoc/>
         public void Purge()
         {
             ThrowWhenDisposed();
-            Logger.LogWarning(Resources.PurgingStore);
+            if (Logger.IsEnabled(LogLevel.Warning))
+            {
+                Logger.LogWarning(Resources.PurgingStore);
+            }
+
             foreach (var bucket in _buckets.Values)
             {
                 bucket.Purge();
             }
         }
 
+        /// <inheritdoc/>
         public void Purge(string bucketId)
         {
             Bucket _;
             _buckets.TryRemove(bucketId, out _);
         }
 
+        /// <inheritdoc/>
         public void Drop()
         {
             _buckets.Clear();
         }
 
+        /// <inheritdoc/>
         public void DeleteStream(string bucketId, string streamId)
         {
-            Logger.LogWarning(Resources.DeletingStream, streamId, bucketId);
+            if (Logger.IsEnabled(LogLevel.Warning))
+            {
+                Logger.LogWarning(Resources.DeletingStream, streamId, bucketId);
+            }
             if (!_buckets.TryGetValue(bucketId, out Bucket bucket))
             {
                 return;
@@ -149,6 +212,7 @@ namespace NEventStore.Persistence.InMemory
             bucket.DeleteStream(streamId);
         }
 
+        /// <inheritdoc/>
         public bool IsDisposed
         {
             get { return _disposed; }
@@ -161,7 +225,10 @@ namespace NEventStore.Persistence.InMemory
 #pragma warning restore RCS1163 // Unused parameter.
         {
             _disposed = true;
-            Logger.LogInformation(Resources.DisposingEngine);
+            if (Logger.IsEnabled(LogLevel.Information))
+            {
+                Logger.LogInformation(Resources.DisposingEngine);
+            }
         }
 
         private void ThrowWhenDisposed()
@@ -170,8 +237,10 @@ namespace NEventStore.Persistence.InMemory
             {
                 return;
             }
-
-            Logger.LogWarning(Resources.AlreadyDisposed);
+            if (Logger.IsEnabled(LogLevel.Warning))
+            {
+                Logger.LogWarning(Resources.AlreadyDisposed);
+            }
             throw new ObjectDisposedException(Resources.AlreadyDisposed);
         }
 
@@ -307,7 +376,7 @@ namespace NEventStore.Persistence.InMemory
 
         private class Bucket
         {
-            private readonly IList<InMemoryCommit> _commits = new List<InMemoryCommit>();
+            private readonly List<InMemoryCommit> _commits = new();
             private readonly ICollection<IdentityForDuplicationDetection> _potentialDuplicates = new HashSet<IdentityForDuplicationDetection>();
             private readonly ICollection<IdentityForConcurrencyConflictDetection> _potentialConflicts = new HashSet<IdentityForConcurrencyConflictDetection>();
 
@@ -321,7 +390,7 @@ namespace NEventStore.Persistence.InMemory
 
             private readonly ICollection<IStreamHead> _heads = new LinkedList<IStreamHead>();
             private readonly ICollection<ISnapshot> _snapshots = new LinkedList<ISnapshot>();
-            private readonly IDictionary<Guid, DateTime> _stamps = new Dictionary<Guid, DateTime>();
+            private readonly Dictionary<Guid, DateTime> _stamps = new();
 
             public IEnumerable<ICommit> GetFrom(string streamId, int minRevision, int maxRevision)
             {
@@ -401,7 +470,10 @@ namespace NEventStore.Persistence.InMemory
                     _potentialConflicts.Add(new IdentityForConcurrencyConflictDetection(commit));
                     IStreamHead head = _heads.FirstOrDefault(x => x.StreamId == commit.StreamId);
                     _heads.Remove(head);
-                    Logger.LogDebug(Resources.UpdatingStreamHead, commit.StreamId, commit.BucketId);
+                    if (Logger.IsEnabled(LogLevel.Debug))
+                    {
+                        Logger.LogDebug(Resources.UpdatingStreamHead, commit.StreamId, commit.BucketId);
+                    }
                     int snapshotRevision = head?.SnapshotRevision ?? 0;
                     _heads.Add(new StreamHead(commit.BucketId, commit.StreamId, commit.StreamRevision, snapshotRevision));
                     return commit;

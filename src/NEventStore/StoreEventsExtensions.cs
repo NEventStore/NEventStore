@@ -1,8 +1,10 @@
+using NEventStore.Persistence;
+
 namespace NEventStore
 {
-    using System;
-    using NEventStore.Persistence;
-
+    /// <summary>
+    ///    Provides extension methods for <see cref="IStoreEvents"/>.
+    /// </summary>
     public static class StoreEventsExtensions
     {
         /// <summary>

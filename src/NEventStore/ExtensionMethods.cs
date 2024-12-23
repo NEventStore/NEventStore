@@ -1,7 +1,7 @@
+using System.Globalization;
+
 namespace NEventStore
 {
-    using System.Globalization;
-
     /// <summary>
     ///     A set of common methods used through the NEventStore.
     /// </summary>
@@ -10,7 +10,7 @@ namespace NEventStore
         /// <summary>
         ///     Formats the string provided using the values specified.
         /// </summary>
-        /// <param name="format">The string to be formated.</param>
+        /// <param name="format">The string to be formatted.</param>
         /// <param name="values">The values to be embedded into the string.</param>
         /// <returns>The formatted string.</returns>
         public static string FormatWith(this string format, params object[] values)

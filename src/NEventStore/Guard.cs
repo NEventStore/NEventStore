@@ -1,10 +1,7 @@
-﻿namespace NEventStore
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
+namespace NEventStore
+{
     internal static class Guard
     {
         internal static void NotFalse(bool condition, Func<Exception> createException)
@@ -57,7 +54,7 @@
             NotNull(reference, value);
             if (value.CompareTo(default(T)) == 0)
             {
-                throw new ArgumentException("{0} has value {1} which cannot be equal to it's default value {2}".FormatWith(GetParameterName(reference), value, default(T)));
+                throw new ArgumentException("{0} has value {1} which cannot be equal to it's default value {2}".FormatWith(GetParameterName(reference), value, default(T)!));
             }
         }
 
@@ -66,7 +63,7 @@
             NotNull(reference, value);
             if (!value.Any())
             {
-                throw new ArgumentException("{0} cannot be empty".FormatWith(GetParameterName(reference), value, default(T)));
+                throw new ArgumentException("{0} cannot be empty".FormatWith(GetParameterName(reference), value, default(T)!));
             }
         }
 

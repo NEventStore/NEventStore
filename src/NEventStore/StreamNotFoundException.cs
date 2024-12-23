@@ -1,8 +1,7 @@
+using System.Runtime.Serialization;
+
 namespace NEventStore
 {
-    using System;
-    using System.Runtime.Serialization;
-
     /// <summary>
     ///     Represents an attempt to retrieve a nonexistent event stream.
     /// </summary>

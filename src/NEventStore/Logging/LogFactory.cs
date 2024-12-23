@@ -15,7 +15,7 @@ namespace NEventStore.Logging
         static LogFactory()
         {
             var logger = NullLogger.Instance;
-            BuildLogger = type => logger;
+            BuildLogger = _ => logger;
         }
 
         /// <summary>

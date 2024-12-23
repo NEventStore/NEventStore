@@ -1,12 +1,9 @@
+using Microsoft.Extensions.Logging;
+using NEventStore.Logging;
+using NEventStore.Persistence;
+
 namespace NEventStore
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Microsoft.Extensions.Logging;
-    using NEventStore.Logging;
-    using NEventStore.Persistence;
-
     /// <summary>
     ///     Tracks the heads of streams to reduce latency by avoiding roundtrips to storage.
     /// </summary>
@@ -18,25 +15,39 @@ namespace NEventStore
         private readonly LinkedList<HeadKey> _maxItemsToTrack = new LinkedList<HeadKey>();
         private readonly int _maxStreamsToTrack;
 
+        /// <summary>
+        ///    Initializes a new instance of the OptimisticPipelineHook class.
+        /// </summary>
         public OptimisticPipelineHook()
             : this(MaxStreamsToTrack)
         { }
 
+        /// <summary>
+        ///   Initializes a new instance of the OptimisticPipelineHook class.
+        /// </summary>
         public OptimisticPipelineHook(int maxStreamsToTrack)
         {
-            Logger.LogDebug(Resources.TrackingStreams, maxStreamsToTrack);
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug(Resources.TrackingStreams, maxStreamsToTrack);
+            }
             _maxStreamsToTrack = maxStreamsToTrack;
         }
 
+        /// <inheritdoc/>
         public override ICommit Select(ICommit committed)
         {
             Track(committed);
             return committed;
         }
 
+        /// <inheritdoc/>
         public override bool PreCommit(CommitAttempt attempt)
         {
-            Logger.LogTrace(Resources.OptimisticConcurrencyCheck, attempt.StreamId);
+            if (Logger.IsEnabled(LogLevel.Trace))
+            {
+                Logger.LogTrace(Resources.OptimisticConcurrencyCheck, attempt.StreamId);
+            }
 
             ICommit head = GetStreamHead(GetHeadKey(attempt));
             if (head == null)
@@ -95,15 +106,20 @@ namespace NEventStore
                  )); // beyond the end of the stream
             }
 
-            Logger.LogTrace(Resources.NoConflicts, attempt.StreamId, attempt.BucketId);
+            if (Logger.IsEnabled(LogLevel.Trace))
+            {
+                Logger.LogTrace(Resources.NoConflicts, attempt.StreamId, attempt.BucketId);
+            }
             return true;
         }
 
+        /// <inheritdoc/>
         public override void PostCommit(ICommit committed)
         {
             Track(committed);
         }
 
+        /// <inheritdoc/>
         public override void OnPurge(string bucketId)
         {
             lock (_maxItemsToTrack)
@@ -122,6 +138,7 @@ namespace NEventStore
             }
         }
 
+        /// <inheritdoc/>
         public override void OnDeleteStream(string bucketId, string streamId)
         {
             lock (_maxItemsToTrack)
@@ -130,6 +147,7 @@ namespace NEventStore
             }
         }
 
+        /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             _heads.Clear();
@@ -137,6 +155,7 @@ namespace NEventStore
             base.Dispose(disposing);
         }
 
+        /// <inheritdoc/>
         public void Track(ICommit committed)
         {
             if (committed == null)
@@ -183,7 +202,10 @@ namespace NEventStore
 
         private void TrackUpToCapacity(ICommit committed)
         {
-            Logger.LogTrace(Resources.TrackingCommit, committed.CommitSequence, committed.StreamId, committed.BucketId);
+            if (Logger.IsEnabled(LogLevel.Trace))
+            {
+                Logger.LogTrace(Resources.TrackingCommit, committed.CommitSequence, committed.StreamId, committed.BucketId);
+            }
             _maxItemsToTrack.AddFirst(GetHeadKey(committed));
             if (_maxItemsToTrack.Count <= _maxStreamsToTrack)
             {
@@ -191,12 +213,16 @@ namespace NEventStore
             }
 
             HeadKey expired = _maxItemsToTrack.Last.Value;
-            Logger.LogTrace(Resources.NoLongerTrackingStream, expired.StreamId, expired.BucketId);
+            if (Logger.IsEnabled(LogLevel.Trace))
+            {
+                Logger.LogTrace(Resources.NoLongerTrackingStream, expired.StreamId, expired.BucketId);
+            }
 
             _heads.Remove(expired);
             _maxItemsToTrack.RemoveLast();
         }
 
+        /// <inheritdoc/>
         public bool Contains(ICommit attempt)
         {
             return GetStreamHead(GetHeadKey(attempt)) != null;
@@ -243,8 +269,8 @@ namespace NEventStore
                 {
                     return true;
                 }
-                return String.Equals(BucketId, other.BucketId)
-                    && String.Equals(StreamId, other.StreamId);
+                return String.Equals(BucketId, other.BucketId, StringComparison.Ordinal)
+                    && String.Equals(StreamId, other.StreamId, StringComparison.Ordinal);
             }
 
             public override bool Equals(object obj)

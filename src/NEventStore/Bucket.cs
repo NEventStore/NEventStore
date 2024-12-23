@@ -1,5 +1,8 @@
 namespace NEventStore
 {
+    /// <summary>
+    ///    Provides a way to identify a bucket.
+    /// </summary>
     public static class Bucket
     {
         /// <summary>

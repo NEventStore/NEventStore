@@ -1,22 +1,29 @@
+using System.Reflection;
+using Microsoft.Extensions.Logging;
+using NEventStore.Conversion;
+using NEventStore.Logging;
+
 namespace NEventStore
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-    using Microsoft.Extensions.Logging;
-    using NEventStore.Conversion;
-    using NEventStore.Logging;
-
+    /// <summary>
+    ///    Represents the configuration for event upconverters.
+    /// </summary>
     public class EventUpconverterWireup : Wireup
     {
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(EventUpconverterWireup));
         private readonly List<Assembly> _assembliesToScan = new List<Assembly>();
-        private readonly IDictionary<Type, Func<object, object>> _registered = new Dictionary<Type, Func<object, object>>();
+        private readonly Dictionary<Type, Func<object, object>> _registered = new Dictionary<Type, Func<object, object>>();
 
+        /// <summary>
+        /// Initializes a new instance of the EventUpconverterWireup class.
+        /// </summary>
+        /// <param name="wireup"></param>
         public EventUpconverterWireup(Wireup wireup) : base(wireup)
         {
-            Logger.LogDebug(Messages.EventUpconverterRegistered);
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug(Messages.EventUpconverterRegistered);
+            }
 
             Container.Register(_ =>
             {
@@ -47,7 +54,7 @@ namespace NEventStore
                            .Concat(new[] { Assembly.GetCallingAssembly() });
         }
 
-        private static IDictionary<Type, Func<object, object>> GetConverters(IEnumerable<Assembly> toScan)
+        private static Dictionary<Type, Func<object, object>> GetConverters(IEnumerable<Assembly> toScan)
         {
             IEnumerable<KeyValuePair<Type, Func<object, object>>> c = from a in toScan
                                                                       from t in a.GetTypes()
@@ -69,22 +76,33 @@ namespace NEventStore
             }
         }
 
+        /// <summary>
+        /// Scans the specified assemblies for event upconverters.
+        /// </summary>
         public virtual EventUpconverterWireup WithConvertersFrom(params Assembly[] assemblies)
         {
-           
-            
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
                 Logger.LogDebug(Messages.EventUpconvertersLoadedFrom,
                     string.Join(", ", assemblies.Select(a => $"{a.GetName().Name} {a.GetName().Version}")));
+            }
             _assembliesToScan.AddRange(assemblies);
             return this;
         }
 
+        /// <summary>
+        /// Scans the assemblies containing the converters for event upconverters.
+        /// </summary>
         public virtual EventUpconverterWireup WithConvertersFromAssemblyContaining(params Type[] converters)
         {
             IEnumerable<Assembly> assemblies = converters.Select(c => c.Assembly).Distinct();
             return this.WithConvertersFrom(assemblies.ToArray());
         }
 
+        /// <summary>
+        /// Adds a converter to the pipeline.
+        /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
         public virtual EventUpconverterWireup AddConverter<TSource, TTarget>(
             IUpconvertEvents<TSource, TTarget> converter)
             where TSource : class
