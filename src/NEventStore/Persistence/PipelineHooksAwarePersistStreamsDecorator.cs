@@ -65,7 +65,7 @@ namespace NEventStore.Persistence
         }
 
         /// <inheritdoc/>
-        public ICommit Commit(CommitAttempt attempt)
+        public ICommit? Commit(CommitAttempt attempt)
         {
             return _original.Commit(attempt);
         }

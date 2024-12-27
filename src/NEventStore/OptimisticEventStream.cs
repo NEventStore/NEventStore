@@ -14,11 +14,11 @@ namespace NEventStore
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(OptimisticEventStream));
         private readonly ICollection<EventMessage> _committed = new LinkedList<EventMessage>();
         private readonly ImmutableCollection<EventMessage> _committedImmutableWrapper;
-        private readonly Dictionary<string, object> _committedHeaders = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> _committedHeaders = [];
         private readonly ImmutableDictionary<string, object> _committedHeadersImmutableWrapper;
         private readonly ICollection<EventMessage> _events = new LinkedList<EventMessage>();
         private readonly ImmutableCollection<EventMessage> _eventsImmutableWrapper;
-        private readonly ICollection<Guid> _identifiers = new HashSet<Guid>();
+        private readonly HashSet<Guid> _identifiers = [];
         private readonly ICommitEvents _persistence;
         private bool _disposed;
         // a stream is considered partial if we haven't read all the events in a commit
@@ -174,7 +174,7 @@ namespace NEventStore
         private void PopulateStream(int minRevision, int maxRevision, IEnumerable<ICommit> commits)
         {
             _isPartialStream = false;
-            foreach (var commit in commits ?? Enumerable.Empty<ICommit>())
+            foreach (var commit in commits ?? [])
             {
                 _identifiers.Add(commit.CommitId);
 
@@ -265,9 +265,9 @@ namespace NEventStore
             {
                 Logger.LogDebug(Resources.PersistingCommit, commitId, StreamId, BucketId, attempt.Events?.Count ?? 0);
             }
-            ICommit commit = _persistence.Commit(attempt);
+            var commit = _persistence.Commit(attempt);
 
-            PopulateStream(StreamRevision + 1, attempt.StreamRevision, new[] { commit });
+            PopulateStream(StreamRevision + 1, attempt.StreamRevision, [commit]);
             ClearChanges();
         }
 

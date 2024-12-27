@@ -31,19 +31,19 @@ namespace NEventStore.Diagnostics
         }
 
         /// <inheritdoc/>
-        public ICommit Commit(CommitAttempt attempt)
+        public ICommit? Commit(CommitAttempt attempt)
         {
             Stopwatch clock = Stopwatch.StartNew();
-            ICommit commit = _persistence.Commit(attempt);
+            var commit = _persistence.Commit(attempt);
             clock.Stop();
             _counters.CountCommit(attempt.Events.Count, clock.ElapsedMilliseconds);
             return commit;
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
+        public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime startDate, DateTime endDate)
         {
-            return _persistence.GetFromTo(bucketId, start, end);
+            return _persistence.GetFromTo(bucketId, startDate, endDate);
         }
 
         /// <inheritdoc/>
@@ -53,9 +53,9 @@ namespace NEventStore.Diagnostics
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFrom(string bucketId, DateTime start)
+        public IEnumerable<ICommit> GetFrom(string bucketId, DateTime startDate)
         {
-            return _persistence.GetFrom(bucketId, start);
+            return _persistence.GetFrom(bucketId, startDate);
         }
 
         /// <inheritdoc/>
@@ -65,9 +65,9 @@ namespace NEventStore.Diagnostics
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFromTo(Int64 from, Int64 to)
+        public IEnumerable<ICommit> GetFromTo(Int64 fromCheckpointToken, Int64 toCheckpointToken)
         {
-            return _persistence.GetFromTo(from, to);
+            return _persistence.GetFromTo(fromCheckpointToken, toCheckpointToken);
         }
 
         /// <inheritdoc/>
@@ -77,9 +77,9 @@ namespace NEventStore.Diagnostics
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFromTo(string bucketId, Int64 from, Int64 to)
+        public IEnumerable<ICommit> GetFromTo(string bucketId, Int64 fromCheckpointToken, Int64 toCheckpointToken)
         {
-            return _persistence.GetFromTo(bucketId, from, to);
+            return _persistence.GetFromTo(bucketId, fromCheckpointToken, toCheckpointToken);
         }
 
         /// <inheritdoc/>

@@ -20,14 +20,14 @@ namespace NEventStore
         /// Initializes a new instance of the OptimisticEventStore class.
         /// </summary>
         /// <exception cref="ArgumentNullException"></exception>
-        public OptimisticEventStore(IPersistStreams persistence, IEnumerable<IPipelineHook> pipelineHooks)
+        public OptimisticEventStore(IPersistStreams persistence, IEnumerable<IPipelineHook>? pipelineHooks)
         {
             if (persistence == null)
             {
                 throw new ArgumentNullException(nameof(persistence));
             }
 
-            _pipelineHooks = pipelineHooks ?? Array.Empty<IPipelineHook>();
+            _pipelineHooks = pipelineHooks ?? [];
             if (_pipelineHooks.Any())
             {
                 _persistence = new PipelineHooksAwarePersistStreamsDecorator(persistence, _pipelineHooks);
@@ -45,7 +45,7 @@ namespace NEventStore
         }
 
         /// <inheritdoc/>
-        public virtual ICommit Commit(CommitAttempt attempt)
+        public virtual ICommit? Commit(CommitAttempt attempt)
         {
             Guard.NotNull(() => attempt, attempt);
             foreach (var hook in _pipelineHooks)
@@ -70,15 +70,18 @@ namespace NEventStore
             {
                 Logger.LogTrace(Resources.CommittingAttempt, attempt.CommitId, attempt.Events?.Count ?? 0);
             }
-            ICommit commit = _persistence.Commit(attempt);
+            var commit = _persistence.Commit(attempt);
 
-            foreach (var hook in _pipelineHooks)
+            if (commit != null)
             {
-                if (Logger.IsEnabled(LogLevel.Trace))
+                foreach (var hook in _pipelineHooks)
                 {
-                    Logger.LogTrace(Resources.InvokingPostCommitPipelineHooks, attempt.CommitId, hook.GetType());
+                    if (Logger.IsEnabled(LogLevel.Trace))
+                    {
+                        Logger.LogTrace(Resources.InvokingPostCommitPipelineHooks, attempt.CommitId, hook.GetType());
+                    }
+                    hook.PostCommit(commit);
                 }
-                hook.PostCommit(commit);
             }
             return commit;
         }

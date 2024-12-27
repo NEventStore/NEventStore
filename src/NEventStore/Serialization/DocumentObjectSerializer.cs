@@ -6,7 +6,7 @@ namespace NEventStore.Serialization
     public class DocumentObjectSerializer : IDocumentSerializer
     {
         /// <inheritdoc/>
-        public object Serialize<T>(T graph)
+        public object Serialize<T>(T graph) where T : notnull
         {
             if (graph == null)
             {
@@ -16,9 +16,9 @@ namespace NEventStore.Serialization
         }
 
         /// <inheritdoc/>
-        public T Deserialize<T>(object document)
+        public T? Deserialize<T>(object document)
         {
-            return (T)document;
+            return (T?)document;
         }
     }
 }

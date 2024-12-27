@@ -21,7 +21,7 @@ namespace NEventStore
             {
                 Logger.LogInformation(Resources.WireupSetPersistenceEngine, "InMemoryPersistenceEngine");
             }
-            wireup.With<IPersistStreams>(new InMemoryPersistenceEngine());
+            wireup.Register<IPersistStreams>(new InMemoryPersistenceEngine());
 
             return new PersistenceWireup(wireup);
         }

@@ -30,6 +30,6 @@ namespace NEventStore
         /// <exception cref="ConcurrencyException" />
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        ICommit Commit(CommitAttempt attempt);
+        ICommit? Commit(CommitAttempt attempt);
     }
 }

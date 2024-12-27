@@ -21,7 +21,7 @@ namespace NEventStore.Serialization
 
         /// <inheritdoc/>
         /// <remarks>Serializes the object graph in a byte array</remarks>
-        public object Serialize<T>(T graph)
+        public object Serialize<T>(T graph) where T : notnull
         {
             if (graph == null)
             {
@@ -39,7 +39,7 @@ namespace NEventStore.Serialization
         /// Accepts a byte array (in the form of a byte array or a base64 encoded string)
         /// and deserialize it to an object graph.
         /// </remarks>
-        public T Deserialize<T>(object document)
+        public T? Deserialize<T>(object document)
         {
             var bytes = (FromBase64(document as string) ?? document as byte[])
                 ?? throw new NotSupportedException("document must be byte[] or a string representing base64 encoded byte[]");

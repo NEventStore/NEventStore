@@ -15,6 +15,7 @@
 - `PipelineHooksAwarePersistanceDecorator` renamed to `PipelineHooksAwarePersistStreamsDecorator`.
 - `BinarySerializer` moved to its own package: `NEventStore.Serialization.Binary`.
 - improved methods signature with nullability annotations.
+- `Wireup.With()` renamed `Wireup.Register()`.
 
 ## 9.2.0
 
