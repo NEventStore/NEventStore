@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace NEventStore.Serialization.MsgPack {
+namespace NEventStore.Serialization.Binary {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace NEventStore.Serialization.MsgPack {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("NEventStore.Serialization.MsgPack.Messages", typeof(Messages).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("NEventStore.Serialization.Binary.Messages", typeof(Messages).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

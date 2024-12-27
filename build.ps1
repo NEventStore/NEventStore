@@ -36,3 +36,4 @@ dotnet pack ./src/NEventStore.PollingClient/NEventStore.PollingClient.csproj -c 
 dotnet pack ./src/NEventStore.Serialization.Json/NEventStore.Serialization.Json.Core.csproj -c $configuration --no-build -o $artifacts /p:PackageVersion=$nugetversion
 dotnet pack ./src/NEventStore.Serialization.Bson/NEventStore.Serialization.Bson.Core.csproj -c $configuration --no-build -o $artifacts /p:PackageVersion=$nugetversion
 dotnet pack ./src/NEventStore.Serialization.MsgPack/NEventStore.Serialization.MsgPack.Core.csproj -c $configuration --no-build -o $artifacts /p:PackageVersion=$nugetversion
+dotnet pack ./src/NEventStore.Serialization.Binary/NEventStore.Serialization.Binary.Core.csproj -c $configuration --no-build -o $artifacts /p:PackageVersion=$nugetversion

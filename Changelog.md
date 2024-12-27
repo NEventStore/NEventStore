@@ -12,8 +12,9 @@
 - `PersistStreamsExtensions.GetFrom(IPersistStreams, DateTime)` and `PersistStreamsExtensions.GetFromTo(IPersistStreams, DateTime, DateTime)` extension methods
   were marked obsolete and have been removed: they had inconsistent behavior with the other GetFrom(checkpointToken) methods, 
   they were getting data from the default bucket only.
-- `PipelineHooksAwarePersistanceDecorator` renamed to `PipelineHooksAwarePersistStreamsDecorator`
-- signature
+- `PipelineHooksAwarePersistanceDecorator` renamed to `PipelineHooksAwarePersistStreamsDecorator`.
+- `BinarySerializer` moved to its own package: `NEventStore.Serialization.Binary`.
+- improved methods signature with nullability annotations.
 
 ## 9.2.0
 

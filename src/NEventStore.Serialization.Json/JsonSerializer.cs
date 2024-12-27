@@ -11,7 +11,7 @@ namespace NEventStore.Serialization.Json
     public class JsonSerializer : ISerialize
     {
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(JsonSerializer));
-        private readonly IEnumerable<Type> _knownTypes = new[] { typeof(List<EventMessage>), typeof(Dictionary<string, object>) };
+        private readonly IEnumerable<Type> _knownTypes = [typeof(List<EventMessage>), typeof(Dictionary<string, object>)];
 
         private readonly Newtonsoft.Json.JsonSerializer _typedSerializer;
 
@@ -32,7 +32,7 @@ namespace NEventStore.Serialization.Json
         /// - DefaultValueHandling = DefaultValueHandling.Ignore
         /// - NullValueHandling = NullValueHandling.Ignore
         /// </param>
-        public JsonSerializer(JsonSerializerSettings jsonSerializerSettings, params Type[] knownTypes)
+        public JsonSerializer(JsonSerializerSettings? jsonSerializerSettings, params Type[]? knownTypes)
         {
             if (knownTypes?.Length == 0)
             {
@@ -61,47 +61,49 @@ namespace NEventStore.Serialization.Json
         }
 
         /// <inheritdoc/>
-        public virtual void Serialize<T>(Stream output, T graph)
+        public virtual void Serialize<T>(Stream output, T graph) where T: notnull
         {
             if (Logger.IsEnabled(LogLevel.Trace))
             {
                 Logger.LogTrace(Messages.SerializingGraph, typeof(T));
             }
-            using (var streamWriter = new StreamWriter(output, Encoding.UTF8))
-            using (var jsonTextWriter = new JsonTextWriter(streamWriter))
-            {
-                Serialize(jsonTextWriter, graph);
-            }
+            using var streamWriter = new StreamWriter(output, Encoding.UTF8);
+            using var jsonTextWriter = new JsonTextWriter(streamWriter);
+            Serialize(jsonTextWriter, graph);
         }
 
         /// <inheritdoc/>
-        public virtual T Deserialize<T>(Stream input)
+        public virtual T? Deserialize<T>(Stream input)
         {
             if (Logger.IsEnabled(LogLevel.Trace))
             {
                 Logger.LogTrace(Messages.DeserializingStream, typeof(T));
             }
-            using (var streamReader = new StreamReader(input, Encoding.UTF8))
-            using (var jsonTextReader = new JsonTextReader(streamReader))
-            {
-                return Deserialize<T>(jsonTextReader);
-            }
+            using var streamReader = new StreamReader(input, Encoding.UTF8);
+            using var jsonTextReader = new JsonTextReader(streamReader);
+            return Deserialize<T>(jsonTextReader);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Serialize an object to a JsonWriter.
+        /// </summary>
         protected virtual void Serialize(JsonWriter writer, object graph)
         {
             GetSerializer(graph.GetType()).Serialize(writer, graph);
         }
 
-        /// <inheritdoc/>
-        protected virtual T Deserialize<T>(JsonReader reader)
+        /// <summary>
+        /// Deserialize an object from a JsonReader.
+        /// </summary>
+        protected virtual T? Deserialize<T>(JsonReader reader)
         {
             Type type = typeof(T);
-            return (T)GetSerializer(type).Deserialize(reader, type);
+            return (T?)GetSerializer(type).Deserialize(reader, type);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Get the serializer for the given type.
+        /// </summary>
         protected virtual Newtonsoft.Json.JsonSerializer GetSerializer(Type typeToSerialize)
         {
             if (_knownTypes.Contains(typeToSerialize))

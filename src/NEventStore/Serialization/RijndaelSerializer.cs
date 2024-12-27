@@ -31,7 +31,7 @@ namespace NEventStore.Serialization
         }
 
         /// <inheritdoc/>
-        public virtual void Serialize<T>(Stream output, T graph)
+        public virtual void Serialize<T>(Stream output, T graph) where T: notnull
         {
             if (Logger.IsEnabled(LogLevel.Trace))
             {
@@ -53,7 +53,7 @@ namespace NEventStore.Serialization
         }
 
         /// <inheritdoc/>
-        public virtual T Deserialize<T>(Stream input)
+        public virtual T? Deserialize<T>(Stream input)
         {
             if (Logger.IsEnabled(LogLevel.Trace))
             {

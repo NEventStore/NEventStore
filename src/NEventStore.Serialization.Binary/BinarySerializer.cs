@@ -2,7 +2,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using Microsoft.Extensions.Logging;
 using NEventStore.Logging;
 
-namespace NEventStore.Serialization
+namespace NEventStore.Serialization.Binary
 {
     /// <summary>
     /// Delegates to <see cref="BinaryFormatter"/> to perform the actual serialization.
@@ -14,7 +14,7 @@ namespace NEventStore.Serialization
         private readonly BinaryFormatter _formatter = new();
 
         /// <inheritdoc/>
-        public virtual void Serialize<T>(Stream output, T graph)
+        public virtual void Serialize<T>(Stream output, T graph) where T : notnull
         {
             if (Logger.IsEnabled(LogLevel.Trace))
             {
