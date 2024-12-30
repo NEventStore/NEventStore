@@ -1,23 +1,19 @@
+using FakeItEasy;
+using FluentAssertions;
+
+using NEventStore.Persistence;
+using NEventStore.Persistence.AcceptanceTests;
+using NEventStore.Persistence.AcceptanceTests.BDD;
+#if MSTEST
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+#endif
+#if NUNIT
+
 #pragma warning disable 169 // ReSharper enable InconsistentNaming
 #pragma warning disable IDE1006 // Naming Styles
 
 namespace NEventStore
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using FakeItEasy;
-    using FluentAssertions;
-
-    using NEventStore.Persistence;
-    using NEventStore.Persistence.AcceptanceTests;
-    using NEventStore.Persistence.AcceptanceTests.BDD;
-#if MSTEST
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
-#if NUNIT
-    using NUnit.Framework;
 #endif
 #if XUNIT
     using Xunit;
@@ -32,17 +28,17 @@ namespace NEventStore
         private const int MinRevision = 2;
         private const int MaxRevision = 7;
         private readonly int _eachCommitHas = 2; // events
-        private ICommit[] _committed;
+        private ICommit[]? _committed;
 
         protected override void Context()
         {
-            _committed = new[]
-            {
+            _committed =
+            [
                 BuildCommitStub(1, 2, 1, _eachCommitHas), // 1-2
                 BuildCommitStub(2, 4, 2, _eachCommitHas), // 3-4
                 BuildCommitStub(3, 6, 3, _eachCommitHas), // 5-6
                 BuildCommitStub(4, 8, 4, _eachCommitHas) // 7-8
-            };
+            ];
 
             _committed[0].Headers["Common"] = string.Empty;
             _committed[1].Headers["Common"] = string.Empty;
@@ -73,19 +69,19 @@ namespace NEventStore
         [Fact]
         public void should_have_the_correct_head_commit_sequence()
         {
-            Stream.CommitSequence.Should().Be(_committed.Last().CommitSequence);
+            Stream.CommitSequence.Should().Be(_committed!.Last().CommitSequence);
         }
 
         [Fact]
         public void should_not_include_events_below_the_minimum_revision_indicated()
         {
-            Stream.CommittedEvents.First().Should().Be(_committed[0].Events.Last());
+            Stream.CommittedEvents.First().Should().Be(_committed![0].Events.Last());
         }
 
         [Fact]
         public void should_not_include_events_above_the_maximum_revision_indicated()
         {
-            Stream.CommittedEvents.Last().Should().Be(_committed.Last().Events.First());
+            Stream.CommittedEvents.Last().Should().Be(_committed!.Last().Events.First());
         }
 
         [Fact]
@@ -107,17 +103,17 @@ namespace NEventStore
     public class when_the_head_event_revision_is_less_than_the_max_desired_revision : on_the_event_stream
     {
         private readonly int _eventsPerCommit = 2;
-        private ICommit[] _committed;
+        private ICommit[]? _committed;
 
         protected override void Context()
         {
-            _committed = new[]
-            {
+            _committed =
+            [
                 BuildCommitStub(1, 2, 1, _eventsPerCommit), // 1-2
                 BuildCommitStub(2, 4, 2, _eventsPerCommit), // 3-4
                 BuildCommitStub(3, 6, 3, _eventsPerCommit), // 5-6
                 BuildCommitStub(4, 8, 4, _eventsPerCommit) // 7-8
-            };
+            ];
 
             A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, 0, int.MaxValue)).Returns(_committed);
         }
@@ -130,13 +126,13 @@ namespace NEventStore
         [Fact]
         public void should_set_the_stream_revision_to_the_revision_of_the_most_recent_event()
         {
-            Stream.StreamRevision.Should().Be(_committed.Last().StreamRevision);
+            Stream.StreamRevision.Should().Be(_committed!.Last().StreamRevision);
         }
 
         [Fact]
         public void should_set_the_commit_sequence_the_most_recent_commit_sequence()
         {
-            Stream.CommitSequence.Should().Be(_committed.Last().CommitSequence);
+            Stream.CommitSequence.Should().Be(_committed!.Last().CommitSequence);
         }
     }
 
@@ -146,17 +142,17 @@ namespace NEventStore
     public class when_reading_up_to_revision : on_the_event_stream
     {
         private readonly int _eventsPerCommit = 2;
-        private ICommit[] _committed;
+        private ICommit[]? _committed;
 
         protected override void Context()
         {
-            _committed = new[]
-            {
+            _committed =
+            [
                 BuildCommitStub(1, 2, 1, _eventsPerCommit), // 1-2
                 BuildCommitStub(2, 4, 2, _eventsPerCommit), // 3-4
                 BuildCommitStub(3, 6, 3, _eventsPerCommit), // 5-6
                 BuildCommitStub(4, 8, 4, _eventsPerCommit) // 7-8
-            };
+            ];
 
             A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, 0, 6)).Returns(_committed);
         }
@@ -169,13 +165,13 @@ namespace NEventStore
         [Fact]
         public void should_set_the_stream_revision_to_the_revision_of_the_correct_commit()
         {
-            Stream.StreamRevision.Should().Be(_committed[2].StreamRevision);
+            Stream.StreamRevision.Should().Be(_committed![2].StreamRevision);
         }
 
         [Fact]
         public void should_set_the_commit_sequence_to_the_sequence_of_the_correct_commit()
         {
-            Stream.CommitSequence.Should().Be(_committed[2].CommitSequence);
+            Stream.CommitSequence.Should().Be(_committed![2].CommitSequence);
         }
     }
 
@@ -184,7 +180,7 @@ namespace NEventStore
 #endif
     public class when_adding_a_null_event_message : on_the_event_stream
     {
-        private Exception _thrown;
+        private Exception? _thrown;
 
         protected override void Because()
         {
@@ -203,7 +199,7 @@ namespace NEventStore
 #endif
     public class when_adding_an_unpopulated_event_message : on_the_event_stream
     {
-        private Exception _thrown;
+        private Exception? _thrown;
 
         protected override void Because()
         {
@@ -265,13 +261,13 @@ namespace NEventStore
         }
 
         [Fact]
-        public void should_add_the_uncommited_event_to_the_set_of_uncommitted_events()
+        public void should_add_the_uncommitted_event_to_the_set_of_uncommitted_events()
         {
             Stream.UncommittedEvents.Count.Should().Be(1);
         }
 
         [Fact]
-        public void should_wrap_the_uncommited_event_in_an_EventMessage_object()
+        public void should_wrap_the_uncommitted_event_in_an_EventMessage_object()
         {
             Stream.UncommittedEvents.First().Body.Should().Be(MyEvent);
         }
@@ -334,9 +330,9 @@ namespace NEventStore
     public class when_committing_any_uncommitted_changes : on_the_event_stream
     {
         private readonly Guid _commitId = Guid.NewGuid();
-        private readonly Dictionary<string, object> _headers = new Dictionary<string, object> { { "key", "value" } };
-        private readonly EventMessage _uncommitted = new EventMessage { Body = string.Empty };
-        private CommitAttempt _constructed;
+        private readonly Dictionary<string, object> _headers = new() { { "key", "value" } };
+        private readonly EventMessage _uncommitted = new() { Body = string.Empty };
+        private CommitAttempt? _constructed;
 
         protected override void Context()
         {
@@ -373,73 +369,73 @@ namespace NEventStore
         [Fact]
         public void should_build_the_commit_with_the_correct_bucket_identifier()
         {
-            _constructed.BucketId.Should().Be(BucketId);
+            _constructed!.BucketId.Should().Be(BucketId);
         }
 
         [Fact]
         public void should_build_the_commit_with_the_correct_stream_identifier()
         {
-            _constructed.StreamId.Should().Be(StreamId);
+            _constructed!.StreamId.Should().Be(StreamId);
         }
 
         [Fact]
         public void should_build_the_commit_with_the_correct_stream_revision()
         {
-            _constructed.StreamRevision.Should().Be(DefaultStreamRevision);
+            _constructed!.StreamRevision.Should().Be(DefaultStreamRevision);
         }
 
         [Fact]
         public void should_build_the_commit_with_the_correct_commit_identifier()
         {
-            _constructed.CommitId.Should().Be(_commitId);
+            _constructed!.CommitId.Should().Be(_commitId);
         }
 
         [Fact]
         public void should_build_the_commit_with_an_incremented_commit_sequence()
         {
-            _constructed.CommitSequence.Should().Be(DefaultCommitSequence);
+            _constructed!.CommitSequence.Should().Be(DefaultCommitSequence);
         }
 
         [Fact]
         public void should_build_the_commit_with_the_correct_commit_stamp()
         {
-            SystemTime.UtcNow.Should().Be(_constructed.CommitStamp);
+            SystemTime.UtcNow.Should().Be(_constructed!.CommitStamp);
         }
 
         [Fact]
         public void should_build_the_commit_with_the_headers_provided()
         {
-            _constructed.Headers[_headers.First().Key].Should().Be(_headers.First().Value);
+            _constructed!.Headers[_headers.First().Key].Should().Be(_headers.First().Value);
         }
 
         [Fact]
         public void should_build_the_commit_containing_all_uncommitted_events()
         {
-            _constructed.Events.Count.Should().Be(_headers.Count);
+            _constructed!.Events.Count.Should().Be(_headers.Count);
         }
 
         [Fact]
         public void should_build_the_commit_using_the_event_messages_provided()
         {
-            _constructed.Events.First().Should().Be(_uncommitted);
+            _constructed!.Events.First().Should().Be(_uncommitted);
         }
 
         [Fact]
         public void should_contain_a_copy_of_the_headers_provided()
         {
-            _constructed.Headers.Should().NotBeEmpty();
+            _constructed!.Headers.Should().NotBeEmpty();
         }
 
         [Fact]
         public void should_update_the_stream_revision()
         {
-            Stream.StreamRevision.Should().Be(_constructed.StreamRevision);
+            Stream.StreamRevision.Should().Be(_constructed!.StreamRevision);
         }
 
         [Fact]
         public void should_update_the_commit_sequence()
         {
-            Stream.CommitSequence.Should().Be(_constructed.CommitSequence);
+            Stream.CommitSequence.Should().Be(_constructed!.CommitSequence);
         }
 
         [Fact]
@@ -476,14 +472,14 @@ namespace NEventStore
 #endif
     public class when_committing_with_an_identifier_that_was_previously_read : on_the_event_stream
     {
-        private ICommit[] _committed;
-        private Guid _dupliateCommitId;
-        private Exception _thrown;
+        private ICommit[]? _committed;
+        private Guid _duplicateCommitId;
+        private Exception? _thrown;
 
         protected override void Context()
         {
-            _committed = new[] { BuildCommitStub(1, 1, 1, 1) };
-            _dupliateCommitId = _committed[0].CommitId;
+            _committed = [BuildCommitStub(1, 1, 1, 1)];
+            _duplicateCommitId = _committed[0].CommitId;
 
             A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, 0, int.MaxValue)).Returns(_committed);
 
@@ -492,7 +488,7 @@ namespace NEventStore
 
         protected override void Because()
         {
-            _thrown = Catch.Exception(() => Stream.CommitChanges(_dupliateCommitId));
+            _thrown = Catch.Exception(() => Stream.CommitChanges(_duplicateCommitId));
         }
 
         [Fact]
@@ -508,15 +504,15 @@ namespace NEventStore
     public class when_committing_after_another_thread_or_process_has_moved_the_stream_head : on_the_event_stream
     {
         private const int StreamRevision = 1;
-        private readonly EventMessage _uncommitted = new EventMessage { Body = string.Empty };
-        private ICommit[] _committed;
-        private ICommit[] _discoveredOnCommit;
-        private Exception _thrown;
+        private readonly EventMessage _uncommitted = new() { Body = string.Empty };
+        private ICommit[]? _committed;
+        private ICommit[]? _discoveredOnCommit;
+        private Exception? _thrown;
 
         protected override void Context()
         {
-            _committed = new[] { BuildCommitStub(1, 1, 1, 1) };
-            _discoveredOnCommit = new[] { BuildCommitStub(2, 3, 2, 2) };
+            _committed = [BuildCommitStub(1, 1, 1, 1)];
+            _discoveredOnCommit = [BuildCommitStub(2, 3, 2, 2)];
 
             A.CallTo(() => Persistence.Commit(A<CommitAttempt>._)).Throws(new ConcurrencyException());
             A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, StreamRevision, int.MaxValue)).Returns(_committed);
@@ -546,19 +542,19 @@ namespace NEventStore
         [Fact]
         public void should_update_the_stream_revision_accordingly()
         {
-            Stream.StreamRevision.Should().Be(_discoveredOnCommit[0].StreamRevision);
+            Stream.StreamRevision.Should().Be(_discoveredOnCommit![0].StreamRevision);
         }
 
         [Fact]
         public void should_update_the_commit_sequence_accordingly()
         {
-            Stream.CommitSequence.Should().Be(_discoveredOnCommit[0].CommitSequence);
+            Stream.CommitSequence.Should().Be(_discoveredOnCommit![0].CommitSequence);
         }
 
         [Fact]
         public void should_add_the_newly_discovered_committed_events_to_the_set_of_committed_events_accordingly()
         {
-            Stream.CommittedEvents.Count.Should().Be(_discoveredOnCommit[0].Events.Count + 1);
+            Stream.CommittedEvents.Count.Should().Be(_discoveredOnCommit![0].Events.Count + 1);
         }
     }
 
@@ -567,7 +563,7 @@ namespace NEventStore
 #endif
     public class when_attempting_to_invoke_behavior_on_a_disposed_stream : on_the_event_stream
     {
-        private Exception _thrown;
+        private Exception? _thrown;
 
         protected override void Context()
         {
@@ -594,13 +590,13 @@ namespace NEventStore
         [Fact]
         public void should_throw_an_exception_when_adding_to_the_committed_collection()
         {
-            Catch.Exception(() => Stream.CommittedEvents.Add(null)).Should().BeOfType<NotSupportedException>();
+            Catch.Exception(() => Stream.CommittedEvents.Add(new EventMessage())).Should().BeOfType<NotSupportedException>();
         }
 
         [Fact]
         public void should_throw_an_exception_when_adding_to_the_uncommitted_collection()
         {
-            Catch.Exception(() => Stream.UncommittedEvents.Add(null)).Should().BeOfType<NotSupportedException>();
+            Catch.Exception(() => Stream.UncommittedEvents.Add(new EventMessage())).Should().BeOfType<NotSupportedException>();
         }
 
         [Fact]
@@ -618,13 +614,13 @@ namespace NEventStore
         [Fact]
         public void should_throw_an_exception_when_removing_from_the_committed_collection()
         {
-            Catch.Exception(() => Stream.CommittedEvents.Remove(null)).Should().BeOfType<NotSupportedException>();
+            Catch.Exception(() => Stream.CommittedEvents.Remove(new EventMessage())).Should().BeOfType<NotSupportedException>();
         }
 
         [Fact]
         public void should_throw_an_exception_when_removing_from_the_uncommitted_collection()
         {
-            Catch.Exception(() => Stream.UncommittedEvents.Remove(null)).Should().BeOfType<NotSupportedException>();
+            Catch.Exception(() => Stream.UncommittedEvents.Remove(new EventMessage())).Should().BeOfType<NotSupportedException>();
         }
     }
 
@@ -642,19 +638,19 @@ namespace NEventStore
         private const int MinRevision = 2;
         private const int MaxRevision = 7;
         private readonly int _eventsPerCommit = 2;
-        private ICommit[] _committed;
-        private Exception _thrown1;
-        private Exception _thrown2;
+        private ICommit[]? _committed;
+        private Exception? _thrown1;
+        private Exception? _thrown2;
 
         protected override void Context()
         {
-            _committed = new[]
-            {
+            _committed =
+            [
                 BuildCommitStub(1, 2, 1, _eventsPerCommit), // 1-2
                 BuildCommitStub(2, 4, 2, _eventsPerCommit), // 3-4
                 BuildCommitStub(3, 6, 3, _eventsPerCommit), // 5-6
                 BuildCommitStub(4, 8, 4, _eventsPerCommit) // 7-8
-            };
+            ];
 
             A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, MinRevision, MaxRevision)).Returns(_committed);
             A.CallTo(() => Persistence.Commit(A<CommitAttempt>._))
@@ -682,7 +678,7 @@ namespace NEventStore
         }
 
         [Fact]
-        public void should_throw_ConsurrencyException()
+        public void should_throw_ConcurrencyException()
         {
             _thrown1.Should().BeOfType<ConcurrencyException>();
         }
@@ -693,7 +689,7 @@ namespace NEventStore
         }
 
         [Fact]
-        public void events_will_be_appended_to_the_stream_when_commited_on_second_attempt()
+        public void events_will_be_appended_to_the_stream_when_committed_on_second_attempt()
         {
             Stream.CommittedEvents.Count.Should().Be(7);
             Stream.CommittedEvents.Last().Body.Should().Be("Test");
@@ -714,19 +710,19 @@ namespace NEventStore
         private const int MinRevision = 2;
         private const int MaxRevision = 6;
         private readonly int _eventsPerCommit = 2;
-        private ICommit[] _committed;
-        private Exception _thrown1;
-        private Exception _thrown2;
+        private ICommit[]? _committed;
+        private Exception? _thrown1;
+        private Exception? _thrown2;
 
         protected override void Context()
         {
-            _committed = new[]
-            {
+            _committed =
+            [
                 BuildCommitStub(1, 2, 1, _eventsPerCommit), // 1-2
                 BuildCommitStub(2, 4, 2, _eventsPerCommit), // 3-4 
                 BuildCommitStub(3, 6, 3, _eventsPerCommit), // 5-6 <-- asked up to this one
                 BuildCommitStub(4, 8, 4, _eventsPerCommit) // 7-8
-            };
+            ];
 
             // the persistence returns all the data in the stream
             A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, MinRevision, MaxRevision)).Returns(_committed);
@@ -755,7 +751,7 @@ namespace NEventStore
         }
 
         [Fact]
-        public void first_attempt_should_throw_ConsurrencyException()
+        public void first_attempt_should_throw_ConcurrencyException()
         {
             _thrown1.Should().BeOfType<ConcurrencyException>();
         }
@@ -767,7 +763,7 @@ namespace NEventStore
         }
 
         [Fact]
-        public void events_will_be_appended_to_the_stream_when_commited_on_second_attempt()
+        public void events_will_be_appended_to_the_stream_when_committed_on_second_attempt()
         {
             Stream.CommittedEvents.Count.Should().Be(6);
             Stream.CommittedEvents.Last().Body.Should().Be("Test");
@@ -781,8 +777,8 @@ namespace NEventStore
     {
         protected const int DefaultStreamRevision = 1;
         protected const int DefaultCommitSequence = 1;
-        private ICommitEvents _persistence;
-        private OptimisticEventStream _stream;
+        private ICommitEvents? _persistence;
+        private OptimisticEventStream? _stream;
         protected const string BucketId = "bucket";
         protected readonly string StreamId = Guid.NewGuid().ToString();
 
@@ -830,12 +826,12 @@ namespace NEventStore
 
         protected ICommitEvents Persistence
         {
-            get { return _persistence ?? (_persistence = A.Fake<ICommitEvents>()); }
+            get { return _persistence ??= A.Fake<ICommitEvents>(); }
         }
 
         protected OptimisticEventStream Stream
         {
-            get { return _stream ?? (_stream = new OptimisticEventStream(BucketId, StreamId, Persistence)); }
+            get { return _stream ??= new OptimisticEventStream(BucketId, StreamId, Persistence); }
             set { _stream = value; }
         }
 
@@ -864,6 +860,7 @@ namespace NEventStore
         public void Dispose()
         {
             SystemTime.Resolver = null;
+            GC.SuppressFinalize(this);
         }
     }
 }

@@ -18,8 +18,8 @@ namespace NEventStore.Persistence
             int commitSequence,
             DateTime commitStamp,
             Int64 checkpointToken,
-            IDictionary<string, object> headers,
-            ICollection<EventMessage> events)
+            IDictionary<string, object>? headers,
+            ICollection<EventMessage>? events)
         {
             BucketId = bucketId;
             StreamId = streamId;

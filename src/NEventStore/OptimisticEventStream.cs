@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using Microsoft.Extensions.Logging;
 using NEventStore.Logging;
 
@@ -66,7 +67,7 @@ namespace NEventStore
 
             if (minRevision > 0 && _committed.Count == 0)
             {
-                throw new StreamNotFoundException(String.Format(Messages.StreamNotFoundException, streamId, BucketId));
+                throw new StreamNotFoundException(String.Format(CultureInfo.InvariantCulture, Messages.StreamNotFoundException, streamId, BucketId));
             }
         }
 
@@ -119,6 +120,7 @@ namespace NEventStore
                 RefreshStreamAfterConcurrencyException();
 
                 throw new ConcurrencyException(string.Format(
+                    CultureInfo.InvariantCulture,
                     Resources.CannotAddCommitsToPartiallyLoadedStream,
                     StreamId,
                     BucketId,
@@ -128,7 +130,7 @@ namespace NEventStore
 
             if (_identifiers.Contains(commitId))
             {
-                throw new DuplicateCommitException(String.Format(Messages.DuplicateCommitIdException, StreamId, BucketId, commitId));
+                throw new DuplicateCommitException(String.Format(CultureInfo.InvariantCulture, Messages.DuplicateCommitIdException, StreamId, BucketId, commitId));
             }
 
             if (!HasChanges())
@@ -171,35 +173,46 @@ namespace NEventStore
             UncommittedHeaders.Clear();
         }
 
+        private void PopulateStream(int minRevision, int maxRevision, ICommit commit)
+        {
+            _isPartialStream = false;
+            InnerPopulateStream(minRevision, maxRevision, commit);
+        }
+
         private void PopulateStream(int minRevision, int maxRevision, IEnumerable<ICommit> commits)
         {
             _isPartialStream = false;
             foreach (var commit in commits ?? [])
             {
-                _identifiers.Add(commit.CommitId);
-
-                int currentRevision = commit.StreamRevision - commit.Events.Count + 1;
-                // just in case the persistence returned more commits than it should be
-                if (currentRevision > maxRevision)
-                {
-                    _isPartialStream = true;
-                    if (Logger.IsEnabled(LogLevel.Debug))
-                    {
-                        Logger.LogDebug(Resources.IgnoringBeyondRevision, commit.CommitId, StreamId, maxRevision);
-                    }
-                    return;
-                }
-
-                if (Logger.IsEnabled(LogLevel.Trace))
-                {
-                    Logger.LogTrace(Resources.AddingCommitsToStream, commit.CommitId, commit.Events.Count, StreamId, BucketId);
-                }
-
-                CommitSequence = commit.CommitSequence;
-
-                CopyToCommittedHeaders(commit);
-                CopyToEvents(minRevision, maxRevision, currentRevision, commit);
+                InnerPopulateStream(minRevision, maxRevision, commit);
             }
+        }
+
+        private void InnerPopulateStream(int minRevision, int maxRevision, ICommit commit)
+        {
+            _identifiers.Add(commit.CommitId);
+
+            int currentRevision = commit.StreamRevision - commit.Events.Count + 1;
+            // just in case the persistence returned more commits than it should be
+            if (currentRevision > maxRevision)
+            {
+                _isPartialStream = true;
+                if (Logger.IsEnabled(LogLevel.Debug))
+                {
+                    Logger.LogDebug(Resources.IgnoringBeyondRevision, commit.CommitId, StreamId, maxRevision);
+                }
+                return;
+            }
+
+            if (Logger.IsEnabled(LogLevel.Trace))
+            {
+                Logger.LogTrace(Resources.AddingCommitsToStream, commit.CommitId, commit.Events.Count, StreamId, BucketId);
+            }
+
+            CommitSequence = commit.CommitSequence;
+
+            CopyToCommittedHeaders(commit);
+            CopyToEvents(minRevision, maxRevision, currentRevision, commit);
         }
 
         private void CopyToCommittedHeaders(ICommit commit)
@@ -266,9 +279,11 @@ namespace NEventStore
                 Logger.LogDebug(Resources.PersistingCommit, commitId, StreamId, BucketId, attempt.Events?.Count ?? 0);
             }
             var commit = _persistence.Commit(attempt);
-
-            PopulateStream(StreamRevision + 1, attempt.StreamRevision, [commit]);
-            ClearChanges();
+            if (commit != null)
+            {
+                PopulateStream(StreamRevision + 1, attempt.StreamRevision, commit);
+                ClearChanges();
+            }
         }
 
         private CommitAttempt BuildCommitAttempt(Guid commitId)

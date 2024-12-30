@@ -579,7 +579,7 @@ namespace NEventStore
 
         protected OptimisticEventStore Store
         {
-            get { return store ?? (store = new OptimisticEventStore(Persistence, PipelineHooks.Select(x => x))); }
+            get { return store ??= new OptimisticEventStore(Persistence, PipelineHooks.Select(x => x)); }
         }
 
         protected override void Cleanup()

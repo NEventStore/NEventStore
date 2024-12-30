@@ -6,6 +6,9 @@
 - pesistence async (IPersistStreams) ?
 - persistence: read using cursors ?
 - system.text.json ?
+- Improved comments and added more nullability checks.
+- Minor performance improvements.
+- Updated Testing Packages (NUnit, FluentAssertions, Microsoft.NET.Test and so on...)
 
 ### Breaking Changes
 
