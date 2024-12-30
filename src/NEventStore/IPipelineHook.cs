@@ -37,7 +37,7 @@ namespace NEventStore
         /// <summary>
         ///     Invoked when a stream has been deleted.
         /// </summary>
-        /// <param name="bucketId">The bucket Id from which the stream whch has been deleted.</param>
+        /// <param name="bucketId">The bucket Id from which the stream which has been deleted.</param>
         /// <param name="streamId">The stream Id of the stream which has been deleted.</param>
         void OnDeleteStream(string bucketId, string streamId);
     }

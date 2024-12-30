@@ -5,6 +5,7 @@ VisualStudioVersion = 17.12.35521.163
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".test", ".test", "{D3C17830-A461-4BA5-A672-461B19B33936}"
 	ProjectSection(SolutionItems) = preProject
+		NEventStore.Persistence.AcceptanceTests\PersistenceTests.Async.cs = NEventStore.Persistence.AcceptanceTests\PersistenceTests.Async.cs
 		NEventStore.Persistence.AcceptanceTests\PersistenceTests.cs = NEventStore.Persistence.AcceptanceTests\PersistenceTests.cs
 		NEventStore.Persistence.AcceptanceTests\PersistenceTests.Transactions.cs = NEventStore.Persistence.AcceptanceTests\PersistenceTests.Transactions.cs
 		NEventStore.Persistence.AcceptanceTests\SerializationTests.cs = NEventStore.Persistence.AcceptanceTests\SerializationTests.cs

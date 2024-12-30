@@ -26,7 +26,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\NEventStore.Persistence.AcceptanceTests\PersistenceTests.cs" Link="Persistence\InMemoryPersistence\PersistenceTests.cs" />
+    <Compile Include="..\NEventStore.Persistence.AcceptanceTests\PersistenceTests.cs" Link="Persistence\InMemory\PersistenceTests.cs" />
+    <Compile Include="..\NEventStore.Persistence.AcceptanceTests\PersistenceTests.Async.cs" Link="Persistence\InMemory\PersistenceTests.Async.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,10 +38,6 @@
 
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Persistence\InMemoryPersistence\" />
   </ItemGroup>
 
 </Project>

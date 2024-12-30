@@ -9,7 +9,9 @@ namespace NEventStore.Persistence
     /// <remarks>
     ///     Instances of this class must be designed to be multi-thread safe such that they can be shared between threads.
     /// </remarks>
-    public interface IPersistStreams : IDisposable, ICommitEvents, IAccessSnapshots
+    public interface IPersistStreams : IDisposable
+        , ICommitEvents, IAccessSnapshots
+        , ICommitEventsAsync
     {
         /// <summary>
         ///     Gets a value indicating whether this instance has been disposed of.
@@ -31,6 +33,7 @@ namespace NEventStore.Persistence
         /// <returns>All commits that have occurred on or after the specified starting time.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
+        [Obsolete("DateTime is problematic in distributed systems. Use GetFrom(Int64 checkpointToken) instead. This method will be removed in a later version.")]
         IEnumerable<ICommit> GetFrom(string bucketId, DateTime startDate);
 
         /// <summary>
@@ -42,6 +45,7 @@ namespace NEventStore.Persistence
         /// <returns>All commits that have occurred on or after the specified starting time and before the end time.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
+        [Obsolete("DateTime is problematic in distributed systems. Use GetFromTo(Int64 fromCheckpointToken, Int64 toCheckpointToken) instead. This method will be removed in a later version.")]
         IEnumerable<ICommit> GetFromTo(string bucketId, DateTime startDate, DateTime endDate);
 
         /// <summary>

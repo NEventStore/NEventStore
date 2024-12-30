@@ -128,7 +128,7 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public ICommit Commit(CommitAttempt attempt)
+        public ICommit? Commit(CommitAttempt attempt)
         {
             ThrowWhenDisposed();
             if (Logger.IsEnabled(LogLevel.Debug))
@@ -136,6 +136,31 @@ namespace NEventStore.Persistence.InMemory
                 Logger.LogDebug(Resources.AttemptingToCommit, attempt.CommitId, attempt.StreamId, attempt.BucketId, attempt.CommitSequence);
             }
             return this[attempt.BucketId].Commit(attempt, Interlocked.Increment(ref _checkpoint));
+        }
+
+        /// <inheritdoc/>
+        public async Task GetFromAsync(string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> observer, CancellationToken cancellationToken)
+        {
+            var data = GetFrom(bucketId, streamId, minRevision, maxRevision);
+            if (data?.Any() == true)
+            {
+                foreach (var commit in data)
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        await observer.OnErrorAsync(commit.CheckpointToken, new OperationCanceledException());
+                        break;
+                    }
+                    await observer.OnNextAsync(commit);
+                }
+                await observer.OnCompletedAsync(data.Last().CheckpointToken);
+            }
+        }
+
+        /// <inheritdoc/>
+        public Task<ICommit?> CommitAsync(CommitAttempt attempt, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(Commit(attempt));
         }
 
         /// <inheritdoc/>

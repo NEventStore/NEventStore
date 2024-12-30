@@ -31,6 +31,12 @@ namespace NEventStore.Diagnostics
         }
 
         /// <inheritdoc/>
+        public IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
+        {
+            return _persistence.GetFrom(bucketId, streamId, minRevision, maxRevision);
+        }
+
+        /// <inheritdoc/>
         public ICommit? Commit(CommitAttempt attempt)
         {
             Stopwatch clock = Stopwatch.StartNew();
@@ -41,15 +47,25 @@ namespace NEventStore.Diagnostics
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime startDate, DateTime endDate)
+        public Task GetFromAsync(string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> observer, CancellationToken cancellationToken)
         {
-            return _persistence.GetFromTo(bucketId, startDate, endDate);
+            return _persistence.GetFromAsync(bucketId, streamId, minRevision, maxRevision, observer, cancellationToken);
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
+        public async Task<ICommit?> CommitAsync(CommitAttempt attempt, CancellationToken cancellationToken)
         {
-            return _persistence.GetFrom(bucketId, streamId, minRevision, maxRevision);
+            Stopwatch clock = Stopwatch.StartNew();
+            var commit = await _persistence.CommitAsync(attempt, cancellationToken).ConfigureAwait(false);
+            clock.Stop();
+            _counters.CountCommit(attempt.Events.Count, clock.ElapsedMilliseconds);
+            return commit;
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime startDate, DateTime endDate)
+        {
+            return _persistence.GetFromTo(bucketId, startDate, endDate);
         }
 
         /// <inheritdoc/>

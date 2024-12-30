@@ -1,8 +1,8 @@
 ﻿// ReSharper disable once CheckNamespace
+using NEventStore.Persistence.InMemory;
+
 namespace NEventStore.Persistence.AcceptanceTests
 {
-    using NEventStore.Persistence.InMemory;
-
     public partial class PersistenceEngineFixture
     {
         public PersistenceEngineFixture()
