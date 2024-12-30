@@ -4,7 +4,7 @@
 
     public static class Catch
     {
-        public static Exception Exception(Action action)
+        public static Exception? Exception(Action action)
         {
             try
             {

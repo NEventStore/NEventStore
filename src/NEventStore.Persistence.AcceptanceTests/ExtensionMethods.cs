@@ -1,9 +1,5 @@
 namespace NEventStore.Persistence.AcceptanceTests
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
     public static class ExtensionMethods
     {
         public static HashSet<T> ToHashSet<T>(this IEnumerable<T> collection)
@@ -16,28 +12,46 @@ namespace NEventStore.Persistence.AcceptanceTests
             return new LinkedList<T>(collection);
         }
 
-        public static ICommit CommitSingle(this IPersistStreams persistence, string streamId = null)
+        public static ICommit? CommitSingle(this IPersistStreams persistence, string? streamId = null)
         {
             CommitAttempt commitAttempt = (streamId ?? Guid.NewGuid().ToString()).BuildAttempt();
             return persistence.Commit(commitAttempt);
         }
 
-        public static ICommit CommitNext(this IPersistStreams persistence, ICommit previous)
+        public static Task<ICommit?> CommitSingleAsync(this IPersistStreams persistence, string? streamId = null)
+        {
+            CommitAttempt commitAttempt = (streamId ?? Guid.NewGuid().ToString()).BuildAttempt();
+            return persistence.CommitAsync(commitAttempt, CancellationToken.None);
+        }
+
+        public static ICommit? CommitNext(this IPersistStreams persistence, ICommit previous)
         {
             var nextAttempt = previous.BuildNextAttempt();
             return persistence.Commit(nextAttempt);
         }
 
-        public static ICommit CommitNext(this IPersistStreams persistence, CommitAttempt previous)
+        public static Task<ICommit?> CommitNextAsync(this IPersistStreams persistence, ICommit previous)
+        {
+            var nextAttempt = previous.BuildNextAttempt();
+            return persistence.CommitAsync(nextAttempt, CancellationToken.None);
+        }
+
+        public static ICommit? CommitNext(this IPersistStreams persistence, CommitAttempt previous)
         {
             var nextAttempt = previous.BuildNextAttempt();
             return persistence.Commit(nextAttempt);
         }
 
-        public static IEnumerable<CommitAttempt> CommitMany(this IPersistStreams persistence, int numberOfCommits, string streamId = null, string bucketId = null)
+        public static Task<ICommit?> CommitNextAsync(this IPersistStreams persistence, CommitAttempt previous)
+        {
+            var nextAttempt = previous.BuildNextAttempt();
+            return persistence.CommitAsync(nextAttempt, CancellationToken.None);
+        }
+
+        public static IEnumerable<CommitAttempt> CommitMany(this IPersistStreams persistence, int numberOfCommits, string? streamId = null, string? bucketId = null)
         {
             var commits = new List<CommitAttempt>();
-            CommitAttempt attempt = null;
+            CommitAttempt? attempt = null;
 
             for (int i = 0; i < numberOfCommits; i++)
             {
@@ -49,15 +63,28 @@ namespace NEventStore.Persistence.AcceptanceTests
             return commits;
         }
 
-        public static CommitAttempt BuildAttempt(this string streamId, DateTime? now = null, string bucketId = null)
+        public static async Task<IEnumerable<CommitAttempt>> CommitManyAsync(this IPersistStreams persistence, int numberOfCommits, string? streamId = null, string? bucketId = null)
         {
-            now = now ?? SystemTime.UtcNow;
-            bucketId = bucketId ?? Bucket.Default;
+            var commits = new List<CommitAttempt>();
+            CommitAttempt? attempt = null;
+            for (int i = 0; i < numberOfCommits; i++)
+            {
+                attempt = attempt == null ? (streamId ?? Guid.NewGuid().ToString()).BuildAttempt(null, bucketId) : attempt.BuildNextAttempt();
+                await persistence.CommitAsync(attempt, CancellationToken.None).ConfigureAwait(false);
+                commits.Add(attempt);
+            }
+            return commits;
+        }
+
+        public static CommitAttempt BuildAttempt(this string streamId, DateTime? now = null, string? bucketId = null)
+        {
+            now ??= SystemTime.UtcNow;
+            bucketId ??= Bucket.Default;
 
             var messages = new EventMessage[]
             {
-                new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Test"}},
-                new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Test2"}},
+                new() {Body = new SomeDomainEvent {SomeProperty = "Test"}},
+                new() {Body = new SomeDomainEvent {SomeProperty = "Test2"}},
             };
 
             return new CommitAttempt(
@@ -76,8 +103,8 @@ namespace NEventStore.Persistence.AcceptanceTests
         {
             var messages = new EventMessage[]
             {
-                new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Another test"}},
-                new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Another test2"}},
+                new() {Body = new SomeDomainEvent {SomeProperty = "Another test"}},
+                new() {Body = new SomeDomainEvent {SomeProperty = "Another test2"}},
             };
 
             return new CommitAttempt(commit.BucketId,
@@ -94,8 +121,8 @@ namespace NEventStore.Persistence.AcceptanceTests
         {
             var messages = new EventMessage[]
             {
-                new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Another test"}},
-                new EventMessage {Body = new SomeDomainEvent {SomeProperty = "Another test2"}},
+                new() {Body = new SomeDomainEvent {SomeProperty = "Another test"}},
+                new() {Body = new SomeDomainEvent {SomeProperty = "Another test2"}},
             };
 
             return new CommitAttempt(commit.BucketId,
@@ -110,7 +137,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         public static SimpleMessage Populate(this SimpleMessage message)
         {
-            message = message ?? new SimpleMessage();
+            message ??= new SimpleMessage();
 
             return new SimpleMessage
             {
@@ -148,9 +175,9 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Serializable]
         public class SomeDomainEvent
         {
-            public string SomeProperty { get; set; }
+            public string? SomeProperty { get; set; }
 
-            public override string ToString()
+            public override string? ToString()
             {
                 return SomeProperty;
             }

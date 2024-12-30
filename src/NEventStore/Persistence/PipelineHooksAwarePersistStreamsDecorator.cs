@@ -29,32 +29,40 @@ namespace NEventStore.Persistence
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFrom(string bucketId, DateTime startDate) {
+        [Obsolete("DateTime is problematic in distributed systems. Use GetFrom(Int64 checkpointToken) instead. This method will be removed in a later version.")]
+        public IEnumerable<ICommit> GetFrom(string bucketId, DateTime startDate)
+        {
             return ExecuteHooks(_original.GetFrom(bucketId, startDate));
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime startDate, DateTime endDate) {
+        [Obsolete("DateTime is problematic in distributed systems. Use GetFromTo(Int64 fromCheckpointToken, Int64 toCheckpointToken) instead. This method will be removed in a later version.")]
+        public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime startDate, DateTime endDate)
+        {
             return ExecuteHooks(_original.GetFromTo(bucketId, startDate, endDate));
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFrom(Int64 checkpointToken) {
+        public IEnumerable<ICommit> GetFrom(Int64 checkpointToken)
+        {
             return ExecuteHooks(_original.GetFrom(checkpointToken));
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFromTo(Int64 fromCheckpointToken, Int64 toCheckpointToken) {
+        public IEnumerable<ICommit> GetFromTo(Int64 fromCheckpointToken, Int64 toCheckpointToken)
+        {
             return ExecuteHooks(_original.GetFromTo(fromCheckpointToken, toCheckpointToken));
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFrom(string bucketId, Int64 checkpointToken) {
+        public IEnumerable<ICommit> GetFrom(string bucketId, Int64 checkpointToken)
+        {
             return ExecuteHooks(_original.GetFrom(bucketId, checkpointToken));
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFromTo(string bucketId, Int64 fromCheckpointToken, Int64 toCheckpointToken) {
+        public IEnumerable<ICommit> GetFromTo(string bucketId, Int64 fromCheckpointToken, Int64 toCheckpointToken)
+        {
             return ExecuteHooks(_original.GetFromTo(bucketId, fromCheckpointToken, toCheckpointToken));
         }
 
@@ -68,6 +76,19 @@ namespace NEventStore.Persistence
         public ICommit? Commit(CommitAttempt attempt)
         {
             return _original.Commit(attempt);
+        }
+
+        /// <inheritdoc/>
+        public Task GetFromAsync(string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> observer, CancellationToken cancellationToken)
+        {
+            var pipelineHookObserver = new PipelineHookObserver(_pipelineHooks, observer);
+            return _original.GetFromAsync(bucketId, streamId, minRevision, maxRevision, pipelineHookObserver, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public Task<ICommit?> CommitAsync(CommitAttempt attempt, CancellationToken cancellationToken)
+        {
+            return _original.CommitAsync(attempt, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -160,6 +181,68 @@ namespace NEventStore.Persistence
                 else
                 {
                     yield return filtered;
+                }
+            }
+        }
+
+        private class PipelineHookObserver : IAsyncObserver<ICommit>
+        {
+            private readonly IEnumerable<IPipelineHook> _pipelineHooks;
+            private readonly IAsyncObserver<ICommit> _observer;
+
+            public PipelineHookObserver(
+                IEnumerable<IPipelineHook> pipelineHooks,
+                IAsyncObserver<ICommit> observer
+                )
+            {
+                _pipelineHooks = pipelineHooks;
+                _observer = observer;
+            }
+
+            public Task OnCompletedAsync(Int64 checkpointOrRevision)
+            {
+                return _observer.OnCompletedAsync(checkpointOrRevision);
+            }
+
+            public Task OnErrorAsync(Int64 checkpointOrRevision, Exception error)
+            {
+                return _observer.OnErrorAsync(checkpointOrRevision, error);
+            }
+
+            public Task OnNextAsync(ICommit value)
+            {
+                var commit = ExecuteHooks(value);
+                if (commit != null)
+                {
+                    return _observer.OnNextAsync(commit);
+                }
+                return Task.CompletedTask;
+            }
+
+            private ICommit? ExecuteHooks(ICommit commit)
+            {
+                ICommit filtered = commit;
+                // todo: should Pipeline hooks be async?
+                foreach (var hook in _pipelineHooks.Where(x => (filtered = x.Select(filtered)) == null))
+                {
+                    if (Logger.IsEnabled(LogLevel.Information))
+                    {
+                        Logger.LogInformation(Resources.PipelineHookSkippedCommit, hook.GetType(), commit.CommitId);
+                    }
+                    break;
+                }
+
+                if (filtered == null)
+                {
+                    if (Logger.IsEnabled(LogLevel.Information))
+                    {
+                        Logger.LogInformation(Resources.PipelineHookFilteredCommit);
+                    }
+                    return null;
+                }
+                else
+                {
+                    return filtered;
                 }
             }
         }
