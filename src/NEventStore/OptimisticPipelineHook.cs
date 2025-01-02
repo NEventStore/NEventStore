@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using NEventStore.Logging;
 using NEventStore.Persistence;
+using System.Globalization;
 
 namespace NEventStore
 {
@@ -11,8 +12,8 @@ namespace NEventStore
     {
         internal const int MaxStreamsToTrack = 100;
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(OptimisticPipelineHook));
-        private readonly Dictionary<HeadKey, ICommit> _heads = new Dictionary<HeadKey, ICommit>(); //TODO use concurrent collections
-        private readonly LinkedList<HeadKey> _maxItemsToTrack = new LinkedList<HeadKey>();
+        private readonly Dictionary<HeadKey, ICommit> _heads = []; //TODO use concurrent collections
+        private readonly LinkedList<HeadKey> _maxItemsToTrack = new();
         private readonly int _maxStreamsToTrack;
 
         /// <summary>
@@ -35,7 +36,7 @@ namespace NEventStore
         }
 
         /// <inheritdoc/>
-        public override ICommit Select(ICommit committed)
+        public override ICommit? SelectCommit(ICommit committed)
         {
             Track(committed);
             return committed;
@@ -58,6 +59,7 @@ namespace NEventStore
             if (head.CommitSequence >= attempt.CommitSequence)
             {
                 throw new ConcurrencyException(String.Format(
+                    CultureInfo.InvariantCulture,
                     Messages.ConcurrencyExceptionCommitSequence,
                     head.CommitSequence,
                     attempt.BucketId,
@@ -71,6 +73,7 @@ namespace NEventStore
             if (head.StreamRevision >= attempt.StreamRevision)
             {
                 throw new ConcurrencyException(String.Format(
+                    CultureInfo.InvariantCulture,
                     Messages.ConcurrencyExceptionStreamRevision,
                     head.StreamRevision,
                     attempt.BucketId,
@@ -83,26 +86,28 @@ namespace NEventStore
             if (head.CommitSequence < attempt.CommitSequence - 1)
             {
                 throw new StorageException(String.Format(
-                     Messages.StorageExceptionCommitSequence,
-                     head.CommitSequence,
-                     attempt.BucketId,
-                     attempt.CommitSequence,
-                     attempt.StreamId,
-                     attempt.StreamRevision,
-                     attempt.Events.Count
+                    CultureInfo.InvariantCulture,
+                    Messages.StorageExceptionCommitSequence,
+                    head.CommitSequence,
+                    attempt.BucketId,
+                    attempt.CommitSequence,
+                    attempt.StreamId,
+                    attempt.StreamRevision,
+                    attempt.Events.Count
                  )); // beyond the end of the stream
             }
 
             if (head.StreamRevision < attempt.StreamRevision - attempt.Events.Count)
             {
                 throw new StorageException(String.Format(
-                     Messages.StorageExceptionEndOfStream,
-                     head.StreamRevision,
-                     attempt.StreamRevision,
-                     attempt.Events.Count,
-                     attempt.BucketId,
-                     attempt.StreamId,
-                     attempt.StreamRevision
+                    CultureInfo.InvariantCulture,
+                    Messages.StorageExceptionEndOfStream,
+                    head.StreamRevision,
+                    attempt.StreamRevision,
+                    attempt.Events.Count,
+                    attempt.BucketId,
+                    attempt.StreamId,
+                    attempt.StreamRevision
                  )); // beyond the end of the stream
             }
 
@@ -120,7 +125,7 @@ namespace NEventStore
         }
 
         /// <inheritdoc/>
-        public override void OnPurge(string bucketId)
+        public override void OnPurge(string? bucketId)
         {
             lock (_maxItemsToTrack)
             {
@@ -179,7 +184,7 @@ namespace NEventStore
                 _maxItemsToTrack.Remove(headKey);
             }
 
-            head = head ?? committed;
+            head ??= committed;
             head = head.StreamRevision > committed.StreamRevision ? head : committed;
 
             _heads[headKey] = head;

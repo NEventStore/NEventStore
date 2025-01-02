@@ -6,7 +6,7 @@ namespace NEventStore
     public abstract class PipelineHookBase : IPipelineHook
     {
         /// <inheritdoc/>
-        public virtual ICommit Select(ICommit committed)
+        public virtual ICommit? SelectCommit(ICommit committed)
         {
             return committed;
         }
@@ -22,7 +22,7 @@ namespace NEventStore
         {}
 
         /// <inheritdoc/>
-        public virtual void OnPurge(string bucketId)
+        public virtual void OnPurge(string? bucketId)
         {}
 
         /// <inheritdoc/>

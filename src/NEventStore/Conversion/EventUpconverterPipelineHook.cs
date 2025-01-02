@@ -1,12 +1,9 @@
+using Microsoft.Extensions.Logging;
+using NEventStore.Logging;
+using NEventStore.Persistence;
+
 namespace NEventStore.Conversion
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Microsoft.Extensions.Logging;
-    using NEventStore.Logging;
-    using NEventStore.Persistence;
-
     /// <summary>
     /// Represents a pipeline hook that upconverts events.
     /// </summary>
@@ -25,7 +22,7 @@ namespace NEventStore.Conversion
         }
 
         /// <inheritdoc/>
-        public override ICommit Select(ICommit committed)
+        public override ICommit? SelectCommit(ICommit committed)
         {
             bool converted = false;
             var eventMessages = committed

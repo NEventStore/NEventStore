@@ -23,7 +23,7 @@ namespace NEventStore
             Guid commitId,
             int commitSequence,
             DateTime commitStamp,
-            IDictionary<string, object> headers,
+            IDictionary<string, object>? headers,
             ICollection<EventMessage> events)
             : this(Bucket.Default, streamId.ToString(), streamRevision, commitId, commitSequence, commitStamp, headers, events)
         { }
@@ -44,7 +44,7 @@ namespace NEventStore
             Guid commitId,
             int commitSequence,
             DateTime commitStamp,
-            IDictionary<string, object> headers,
+            IDictionary<string, object>? headers,
             ICollection<EventMessage> events)
             : this(Bucket.Default, streamId, streamRevision, commitId, commitSequence, commitStamp, headers, events)
         { }
@@ -67,7 +67,7 @@ namespace NEventStore
             Guid commitId,
             int commitSequence,
             DateTime commitStamp,
-            IDictionary<string, object> headers,
+            IDictionary<string, object>? headers,
             ICollection<EventMessage> events)
         {
             Guard.NotNullOrWhiteSpace(() => bucketId, bucketId);
@@ -85,7 +85,7 @@ namespace NEventStore
             CommitSequence = commitSequence;
             CommitStamp = commitStamp;
             Headers = headers ?? new Dictionary<string, object>();
-            Events = events ?? Array.Empty<EventMessage>();
+            Events = events;
             //Events = events == null ?
             //    new ReadOnlyCollection<EventMessage>(new List<EventMessage>()) :
             //    new ReadOnlyCollection<EventMessage>(events.ToList());

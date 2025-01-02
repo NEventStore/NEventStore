@@ -13,7 +13,7 @@ namespace NEventStore
         /// </summary>
         /// <param name="committed">The commit to be filtered.</param>
         /// <returns>If successful, returns a populated commit; otherwise returns null.</returns>
-        ICommit Select(ICommit committed);
+        ICommit? SelectCommit(ICommit committed);
 
         /// <summary>
         ///     Hooks into the commit pipeline prior to persisting the commit to durable storage.
@@ -32,7 +32,7 @@ namespace NEventStore
         ///     Invoked when a bucket has been purged. If buckedId is null, then all buckets have been purged.
         /// </summary>
         /// <param name="bucketId">The bucket Id that has been purged. Null when all buckets have been purged.</param>
-        void OnPurge(string bucketId);
+        void OnPurge(string? bucketId);
 
         /// <summary>
         ///     Invoked when a stream has been deleted.

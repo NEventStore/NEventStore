@@ -17,7 +17,7 @@ using Xunit.Should;
 // ReSharper disable InconsistentNaming
 #pragma warning disable IDE1006 // Naming Styles
 
-namespace NEventStore
+namespace NEventStore.Async
 {
 #if MSTEST
     [TestClass]
@@ -88,7 +88,7 @@ namespace NEventStore
 #endif
     public class when_reading_the_all_events_in_a_bucket_from_min_to_max_revision : using_underlying_persistence
     {
-        private Commit? _commit;
+        private ICommit? _commit;
         private IPipelineHook? _hook1;
         private IPipelineHook? _hook2;
 
@@ -104,21 +104,26 @@ namespace NEventStore
             A.CallTo(() => _hook2.SelectCommit(_commit)).Returns(_commit);
             pipelineHooks.Add(_hook2);
 
-            A.CallTo(() => persistence.GetFrom(Bucket.Default, _commit.StreamId, 0, int.MaxValue))
-                .Returns([_commit]);
+            A.CallTo(() => persistence.GetFromAsync(Bucket.Default, _commit.StreamId, 0, int.MaxValue, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None))
+                .ReturnsLazily(async (string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellation) =>
+                {
+                    await asyncObserver.OnNextAsync(_commit);
+                    await asyncObserver.OnCompletedAsync(1);
+                });
         }
 
-        protected override void Because()
+        protected override Task BecauseAsync()
         {
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
             // Forces enumeration of commits.
-            Decorator.GetFrom(Bucket.Default, _commit!.StreamId, 0, int.MaxValue).ToList();
+            var streamObserver = new CommitStreamObserver();
+            return Decorator.GetFromAsync(Bucket.Default, _commit!.StreamId, 0, int.MaxValue, streamObserver, CancellationToken.None);
         }
 
         [Fact]
         public void should_call_the_underlying_persistence_to_get_events()
         {
-            A.CallTo(() => persistence.GetFrom(Bucket.Default, _commit!.StreamId, 0, int.MaxValue)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => persistence.GetFromAsync(Bucket.Default, _commit!.StreamId, 0, int.MaxValue, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None)).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -288,15 +293,15 @@ namespace NEventStore
             _attempt = new CommitAttempt(streamId, 1, Guid.NewGuid(), 1, DateTime.Now, null, [new EventMessage()]);
         }
 
-        protected override void Because()
+        protected override Task BecauseAsync()
         {
-            Decorator.Commit(_attempt!);
+            return Decorator.CommitAsync(_attempt!, CancellationToken.None);
         }
 
         [Fact]
         public void should_dispose_the_underlying_persistence()
         {
-            A.CallTo(() => persistence.Commit(_attempt!)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => persistence.CommitAsync(_attempt!, CancellationToken.None)).MustHaveHappenedOnceExactly();
         }
     }
 

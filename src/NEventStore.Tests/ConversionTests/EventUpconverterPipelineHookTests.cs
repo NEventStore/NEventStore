@@ -1,32 +1,30 @@
-﻿namespace NEventStore.ConversionTests
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-    using NEventStore.Conversion;
-    using NEventStore.Persistence;
-    using NEventStore.Persistence.AcceptanceTests.BDD;
-    using FluentAssertions;
+﻿#pragma warning disable IDE1006 // Naming Styles
+
+using System.Reflection;
+using NEventStore.Conversion;
+using NEventStore.Persistence;
+using NEventStore.Persistence.AcceptanceTests.BDD;
+using FluentAssertions;
 #if MSTEST
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 #endif
 #if NUNIT
-    using NUnit.Framework;
 #endif
 #if XUNIT
-	using Xunit;
-	using Xunit.Should;
+using Xunit;
+using Xunit.Should;
 #endif
 
+namespace NEventStore.ConversionTests
+{
 #if MSTEST
-	[TestClass]
+    [TestClass]
 #endif
     public class when_opening_a_commit_that_does_not_have_convertible_events : using_event_converter
     {
-        private ICommit _commit;
+        private ICommit? _commit;
 
-        private ICommit _converted;
+        private ICommit? _converted;
 
         protected override void Context()
         {
@@ -35,7 +33,7 @@
 
         protected override void Because()
         {
-            _converted = EventUpconverter.Select(_commit);
+            _converted = EventUpconverter.SelectCommit(_commit!);
         }
 
         [Fact]
@@ -47,19 +45,19 @@
         [Fact]
         public void should_have_the_same_instance_of_the_event()
         {
-            _converted.Events.Single().Should().Be(_commit.Events.Single());
+            _converted!.Events.Single().Should().Be(_commit!.Events.Single());
         }
     }
 
 #if MSTEST
-	[TestClass]
+    [TestClass]
 #endif
     public class when_opening_a_commit_that_has_convertible_events : using_event_converter
     {
-        private ICommit _commit;
+        private ICommit? _commit;
 
         private readonly Guid _id = Guid.NewGuid();
-        private ICommit _converted;
+        private ICommit? _converted;
 
         protected override void Context()
         {
@@ -68,33 +66,33 @@
 
         protected override void Because()
         {
-            _converted = EventUpconverter.Select(_commit);
+            _converted = EventUpconverter.SelectCommit(_commit!);
         }
 
         [Fact]
         public void should_be_of_the_converted_type()
         {
-            _converted.Events.Single().Body.GetType().Should().Be(typeof(ConvertingEvent3));
+            _converted!.Events.Single().Body.GetType().Should().Be(typeof(ConvertingEvent3));
         }
 
         [Fact]
-        public void should_have_the_same_id_of_the_commited_event()
+        public void should_have_the_same_id_of_the_committed_event()
         {
-            ((ConvertingEvent3)_converted.Events.Single().Body).Id.Should().Be(_id);
+            ((ConvertingEvent3)_converted!.Events.Single().Body).Id.Should().Be(_id);
         }
     }
 
     // ReSharper disable InconsistentNaming
 #if MSTEST
-	[TestClass]
+    [TestClass]
 #endif
     public class when_an_event_converter_implements_the_IConvertEvents_interface_explicitly : using_event_converter
     // ReSharper restore InconsistentNaming
     {
-        private ICommit _commit;
+        private ICommit? _commit;
         private readonly Guid _id = Guid.NewGuid();
-        private ICommit _converted;
-        private EventMessage _eventMessage;
+        private ICommit? _converted;
+        private EventMessage? _eventMessage;
 
         protected override void Context()
         {
@@ -105,31 +103,31 @@
 
         protected override void Because()
         {
-            _converted = EventUpconverter.Select(_commit);
+            _converted = EventUpconverter.SelectCommit(_commit!);
         }
 
         [Fact]
         public void should_be_of_the_converted_type()
         {
-            _converted.Events.Single().Body.GetType().Should().Be(typeof(ConvertingEvent3));
+            _converted!.Events.Single().Body.GetType().Should().Be(typeof(ConvertingEvent3));
         }
 
         [Fact]
-        public void should_have_the_same_id_of_the_commited_event()
+        public void should_have_the_same_id_of_the_committed_event()
         {
-            ((ConvertingEvent3)_converted.Events.Single().Body).Id.Should().Be(_id);
+            ((ConvertingEvent3)_converted!.Events.Single().Body).Id.Should().Be(_id);
         }
     }
 
     public abstract class using_event_converter : SpecificationBase
     {
-        private IEnumerable<Assembly> _assemblies;
-        private Dictionary<Type, Func<object, object>> _converters;
-        private EventUpconverterPipelineHook _eventUpconverter;
+        private IEnumerable<Assembly>? _assemblies;
+        private Dictionary<Type, Func<object, object>>? _converters;
+        private EventUpconverterPipelineHook? _eventUpconverter;
 
         protected EventUpconverterPipelineHook EventUpconverter
         {
-            get { return _eventUpconverter ?? (_eventUpconverter = CreateUpConverterHook()); }
+            get { return _eventUpconverter ??= CreateUpConverterHook(); }
         }
 
         private EventUpconverterPipelineHook CreateUpConverterHook()
@@ -139,16 +137,16 @@
             return new EventUpconverterPipelineHook(_converters);
         }
 
-        private Dictionary<Type, Func<object, object>> GetConverters(IEnumerable<Assembly> toScan)
+        private static Dictionary<Type, Func<object, object>> GetConverters(IEnumerable<Assembly> toScan)
         {
             IEnumerable<KeyValuePair<Type, Func<object, object>>> c = from a in toScan
                                                                       from t in a.GetTypes()
-                                                                      let i = t.GetInterface(typeof(IUpconvertEvents<,>).FullName)
+                                                                      let i = t.GetInterface(typeof(IUpconvertEvents<,>).FullName!)
                                                                       where i != null
                                                                       let sourceType = i.GetGenericArguments().First()
                                                                       let convertMethod = i.GetMethods(BindingFlags.Public | BindingFlags.Instance).First()
                                                                       let instance = Activator.CreateInstance(t)
-                                                                      select new KeyValuePair<Type, Func<object, object>>(sourceType, e => convertMethod.Invoke(instance, new[] { e }));
+                                                                      select new KeyValuePair<Type, Func<object, object?>>(sourceType, e => convertMethod.Invoke(instance, [e]));
             try
             {
                 return c.ToDictionary(x => x.Key, x => x.Value);
@@ -159,10 +157,10 @@
             }
         }
 
-        private IEnumerable<Assembly> GetAllAssemblies()
+        private static IEnumerable<Assembly> GetAllAssemblies()
         {
             return
-                Assembly.GetCallingAssembly().GetReferencedAssemblies().Select(Assembly.Load).Concat(new[] { Assembly.GetCallingAssembly() });
+                Assembly.GetCallingAssembly().GetReferencedAssemblies().Select(Assembly.Load).Concat([Assembly.GetCallingAssembly()]);
         }
 
         protected static ICommit CreateCommit(EventMessage eventMessage)
@@ -175,7 +173,7 @@
                 DateTime.MinValue,
                 1,
                 null,
-                new[] { eventMessage });
+                [eventMessage]);
         }
     }
 
@@ -195,8 +193,7 @@
         }
     }
 
-    public class NonConvertingEvent
-    { }
+    public class NonConvertingEvent;
 
     public class ConvertingEvent
     {
@@ -235,5 +232,4 @@
     }
 }
 
-// ReSharper enable InconsistentNaming
-#pragma warning restore 169
+#pragma warning restore IDE1006 // Naming Styles
