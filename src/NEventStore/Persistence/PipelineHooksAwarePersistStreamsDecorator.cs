@@ -161,8 +161,8 @@ namespace NEventStore.Persistence
         {
             foreach (var commit in commits)
             {
-                ICommit filtered = commit;
-                foreach (var hook in _pipelineHooks.Where(x => (filtered = x.Select(filtered)) == null))
+                ICommit? filtered = commit;
+                foreach (var hook in _pipelineHooks.Where(x => (filtered = x.SelectCommit(filtered)) == null))
                 {
                     if (Logger.IsEnabled(LogLevel.Information))
                     {
@@ -185,7 +185,7 @@ namespace NEventStore.Persistence
             }
         }
 
-        private class PipelineHookObserver : IAsyncObserver<ICommit>
+        internal class PipelineHookObserver : IAsyncObserver<ICommit>
         {
             private readonly IEnumerable<IPipelineHook> _pipelineHooks;
             private readonly IAsyncObserver<ICommit> _observer;
@@ -199,14 +199,14 @@ namespace NEventStore.Persistence
                 _observer = observer;
             }
 
-            public Task OnCompletedAsync(Int64 checkpointOrRevision)
+            public Task OnCompletedAsync(Int64 checkpoint)
             {
-                return _observer.OnCompletedAsync(checkpointOrRevision);
+                return _observer.OnCompletedAsync(checkpoint);
             }
 
-            public Task OnErrorAsync(Int64 checkpointOrRevision, Exception error)
+            public Task OnErrorAsync(Int64 checkpoint, Exception error)
             {
-                return _observer.OnErrorAsync(checkpointOrRevision, error);
+                return _observer.OnErrorAsync(checkpoint, error);
             }
 
             public Task OnNextAsync(ICommit value)
@@ -221,9 +221,9 @@ namespace NEventStore.Persistence
 
             private ICommit? ExecuteHooks(ICommit commit)
             {
-                ICommit filtered = commit;
+                ICommit? filtered = commit;
                 // todo: should Pipeline hooks be async?
-                foreach (var hook in _pipelineHooks.Where(x => (filtered = x.Select(filtered)) == null))
+                foreach (var hook in _pipelineHooks.Where(x => (filtered = x.SelectCommit(filtered)) == null))
                 {
                     if (Logger.IsEnabled(LogLevel.Information))
                     {

@@ -2,34 +2,28 @@
 #pragma warning disable 169 // ReSharper disable InconsistentNaming
 #pragma warning disable IDE1006 // Naming Styles
 
-namespace NEventStore.Persistence.AcceptanceTests
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using NEventStore.Persistence.AcceptanceTests.BDD;
-    using FluentAssertions;
+using NEventStore.Persistence.AcceptanceTests.BDD;
+using FluentAssertions;
 #if MSTEST
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 #endif
 #if NUNIT
-    using NUnit.Framework;
-    using System.Threading.Tasks;
-    using System.Threading;
-    using System.Globalization;
+using NUnit.Framework;
 #endif
 #if XUNIT
-    using Xunit;
-    using Xunit.Should;
+using Xunit;
+using Xunit.Should;
 #endif
 
+namespace NEventStore.Persistence.AcceptanceTests
+{
 #if MSTEST
     [TestClass]
 #endif
     public class when_a_commit_header_has_a_name_that_contains_a_period : PersistenceEngineConcern
     {
-        private ICommit _persisted;
-        private string _streamId;
+        private ICommit? _persisted;
+        private string? _streamId;
 
         protected override void Context()
         {
@@ -40,19 +34,19 @@ namespace NEventStore.Persistence.AcceptanceTests
                 1,
                 DateTime.UtcNow,
                 new Dictionary<string, object> { { "key.1", "value" } },
-                new EventMessage[] { new EventMessage { Body = new ExtensionMethods.SomeDomainEvent { SomeProperty = "Test" } } });
+                [new EventMessage { Body = new ExtensionMethods.SomeDomainEvent { SomeProperty = "Test" } }]);
             Persistence.Commit(attempt);
         }
 
         protected override void Because()
         {
-            _persisted = Persistence.GetFrom(_streamId, 0, int.MaxValue).First();
+            _persisted = Persistence.GetFrom(_streamId!, 0, int.MaxValue).First();
         }
 
         [Fact]
         public void should_correctly_deserialize_headers()
         {
-            _persisted.Headers.Keys.Should().Contain("key.1");
+            _persisted!.Headers.Keys.Should().Contain("key.1");
         }
     }
 
@@ -61,10 +55,10 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
     public class when_a_commit_is_successfully_persisted : PersistenceEngineConcern
     {
-        private CommitAttempt _attempt;
+        private CommitAttempt? _attempt;
         private DateTime _now;
-        private ICommit _persisted;
-        private string _streamId;
+        private ICommit? _persisted;
+        private string? _streamId;
 
         protected override void Context()
         {
@@ -77,38 +71,38 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Because()
         {
-            _persisted = Persistence.GetFrom(_streamId, 0, int.MaxValue).First();
+            _persisted = Persistence.GetFrom(_streamId!, 0, int.MaxValue).First();
         }
 
         [Fact]
         public void should_correctly_persist_the_stream_identifier()
         {
-            _persisted.StreamId.Should().Be(_attempt.StreamId);
+            _persisted!.StreamId.Should().Be(_attempt!.StreamId);
         }
 
         [Fact]
         public void should_correctly_persist_the_stream_stream_revision()
         {
-            _persisted.StreamRevision.Should().Be(_attempt.StreamRevision);
+            _persisted!.StreamRevision.Should().Be(_attempt!.StreamRevision);
         }
 
         [Fact]
         public void should_correctly_persist_the_commit_identifier()
         {
-            _persisted.CommitId.Should().Be(_attempt.CommitId);
+            _persisted!.CommitId.Should().Be(_attempt!.CommitId);
         }
 
         [Fact]
         public void should_correctly_persist_the_commit_sequence()
         {
-            _persisted.CommitSequence.Should().Be(_attempt.CommitSequence);
+            _persisted!.CommitSequence.Should().Be(_attempt!.CommitSequence);
         }
 
         // persistence engines have varying levels of precision with respect to time.
         [Fact]
         public void should_correctly_persist_the_commit_stamp()
         {
-            var difference = _persisted.CommitStamp.Subtract(_now);
+            var difference = _persisted!.CommitStamp.Subtract(_now);
             difference.Days.Should().Be(0);
             difference.Hours.Should().Be(0);
             difference.Minutes.Should().Be(0);
@@ -118,13 +112,13 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_correctly_persist_the_headers()
         {
-            _persisted.Headers.Count.Should().Be(_attempt.Headers.Count);
+            _persisted!.Headers.Count.Should().Be(_attempt!.Headers.Count);
         }
 
         [Fact]
         public void should_correctly_persist_the_events()
         {
-            _persisted.Events.Count.Should().Be(_attempt.Events.Count);
+            _persisted!.Events.Count.Should().Be(_attempt!.Events.Count);
         }
 
         [Fact]
@@ -141,35 +135,35 @@ namespace NEventStore.Persistence.AcceptanceTests
     {
         private const int LoadFromCommitContainingRevision = 3;
         private const int UpToCommitWithContainingRevision = 5;
-        private ICommit[] _committed;
-        private ICommit _oldest, _oldest2, _oldest3;
-        private string _streamId;
+        private ICommit[]? _committed;
+        private ICommit? _oldest, _oldest2, _oldest3;
+        private string? _streamId;
 
         protected override void Context()
         {
             _oldest = Persistence.CommitSingle(); // 2 events, revision 1-2
-            _oldest2 = Persistence.CommitNext(_oldest); // 2 events, revision 3-4
-            _oldest3 = Persistence.CommitNext(_oldest2); // 2 events, revision 5-6
-            Persistence.CommitNext(_oldest3); // 2 events, revision 7-8
+            _oldest2 = Persistence.CommitNext(_oldest!); // 2 events, revision 3-4
+            _oldest3 = Persistence.CommitNext(_oldest2!); // 2 events, revision 5-6
+            Persistence.CommitNext(_oldest3!); // 2 events, revision 7-8
 
-            _streamId = _oldest.StreamId;
+            _streamId = _oldest!.StreamId;
         }
 
         protected override void Because()
         {
-            _committed = Persistence.GetFrom(_streamId, LoadFromCommitContainingRevision, UpToCommitWithContainingRevision).ToArray();
+            _committed = Persistence.GetFrom(_streamId!, LoadFromCommitContainingRevision, UpToCommitWithContainingRevision).ToArray();
         }
 
         [Fact]
         public void should_start_from_the_commit_which_contains_the_min_stream_revision_specified()
         {
-            _committed[0].CommitId.Should().Be(_oldest2.CommitId); // contains revision 3
+            _committed![0].CommitId.Should().Be(_oldest2!.CommitId); // contains revision 3
         }
 
         [Fact]
         public void should_read_up_to_the_commit_which_contains_the_max_stream_revision_specified()
         {
-            _committed.Last().CommitId.Should().Be(_oldest3.CommitId); // contains revision 5
+            _committed!.Last().CommitId.Should().Be(_oldest3!.CommitId); // contains revision 5
         }
     }
 
@@ -180,35 +174,35 @@ namespace NEventStore.Persistence.AcceptanceTests
     {
         private const int LoadFromCommitContainingRevision = 3;
         private const int UpToCommitWithContainingRevision = 6;
-        private ICommit[] _committed;
-        private ICommit _oldest, _oldest2, _oldest3;
-        private string _streamId;
+        private ICommit[]? _committed;
+        private ICommit? _oldest, _oldest2, _oldest3;
+        private string? _streamId;
 
         protected override void Context()
         {
             _oldest = Persistence.CommitSingle(); // 2 events, revision 1-2
-            _oldest2 = Persistence.CommitNext(_oldest); // 2 events, revision 3-4
-            _oldest3 = Persistence.CommitNext(_oldest2); // 2 events, revision 5-6
-            Persistence.CommitNext(_oldest3); // 2 events, revision 7-8
+            _oldest2 = Persistence.CommitNext(_oldest!); // 2 events, revision 3-4
+            _oldest3 = Persistence.CommitNext(_oldest2!); // 2 events, revision 5-6
+            Persistence.CommitNext(_oldest3!); // 2 events, revision 7-8
 
-            _streamId = _oldest.StreamId;
+            _streamId = _oldest!.StreamId;
         }
 
         protected override void Because()
         {
-            _committed = Persistence.GetFrom(_streamId, LoadFromCommitContainingRevision, UpToCommitWithContainingRevision).ToArray();
+            _committed = Persistence.GetFrom(_streamId!, LoadFromCommitContainingRevision, UpToCommitWithContainingRevision).ToArray();
         }
 
         [Fact]
         public void should_start_from_the_commit_which_contains_the_min_stream_revision_specified()
         {
-            _committed[0].CommitId.Should().Be(_oldest2.CommitId); // contains revision 3
+            _committed![0].CommitId.Should().Be(_oldest2!.CommitId); // contains revision 3
         }
 
         [Fact]
         public void should_read_up_to_the_commit_which_contains_the_max_stream_revision_specified()
         {
-            _committed.Last().CommitId.Should().Be(_oldest3.CommitId); // contains revision 6
+            _committed!.Last().CommitId.Should().Be(_oldest3!.CommitId); // contains revision 6
         }
     }
 
@@ -217,18 +211,18 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
     public class when_committing_a_stream_with_the_same_revision : PersistenceEngineConcern
     {
-        private CommitAttempt _attemptWithSameRevision;
-        private Exception _thrown;
+        private CommitAttempt? _attemptWithSameRevision;
+        private Exception? _thrown;
 
         protected override void Context()
         {
-            ICommit commit = Persistence.CommitSingle();
-            _attemptWithSameRevision = commit.StreamId.BuildAttempt();
+            var commit = Persistence.CommitSingle();
+            _attemptWithSameRevision = commit!.StreamId.BuildAttempt();
         }
 
         protected override void Because()
         {
-            _thrown = Catch.Exception(() => Persistence.Commit(_attemptWithSameRevision));
+            _thrown = Catch.Exception(() => Persistence.Commit(_attemptWithSameRevision!));
         }
 
         [Fact]
@@ -245,8 +239,8 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
     public class when_committing_a_stream_with_the_same_sequence : PersistenceEngineConcern
     {
-        private CommitAttempt _attempt1, _attempt2;
-        private Exception _thrown;
+        private CommitAttempt? _attempt1, _attempt2;
+        private Exception? _thrown;
 
         protected override void Context()
         {
@@ -260,10 +254,9 @@ namespace NEventStore.Persistence.AcceptanceTests
                 _attempt1.CommitSequence,   // <--- Same commit seq
                 DateTime.UtcNow,
                 _attempt1.Headers,
-                new[]
-                {
+                [
                     new EventMessage(){ Body = new ExtensionMethods.SomeDomainEvent {SomeProperty = "Test 3"}}
-                }
+                ]
             );
 
             Persistence.Commit(_attempt1);
@@ -271,7 +264,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Because()
         {
-            _thrown = Catch.Exception(() => Persistence.Commit(_attempt2));
+            _thrown = Catch.Exception(() => Persistence.Commit(_attempt2!));
         }
 
         [Fact]
@@ -287,8 +280,8 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
     public class when_attempting_to_overwrite_a_committed_sequence : PersistenceEngineConcern
     {
-        private CommitAttempt _failedAttempt;
-        private Exception _thrown;
+        private CommitAttempt? _failedAttempt;
+        private Exception? _thrown;
 
         protected override void Context()
         {
@@ -300,7 +293,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Because()
         {
-            _thrown = Catch.Exception(() => Persistence.Commit(_failedAttempt));
+            _thrown = Catch.Exception(() => Persistence.Commit(_failedAttempt!));
         }
 
         [Fact]
@@ -315,14 +308,14 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
     public class when_attempting_to_persist_a_commit_twice : PersistenceEngineConcern
     {
-        private CommitAttempt _attemptTwice;
-        private Exception _thrown;
+        private CommitAttempt? _attemptTwice;
+        private Exception? _thrown;
 
         protected override void Context()
         {
             var commit = Persistence.CommitSingle();
             _attemptTwice = new CommitAttempt(
-                commit.BucketId,
+                commit!.BucketId,
                 commit.StreamId,
                 commit.StreamRevision,
                 commit.CommitId,
@@ -334,7 +327,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Because()
         {
-            _thrown = Catch.Exception(() => Persistence.Commit(_attemptTwice));
+            _thrown = Catch.Exception(() => Persistence.Commit(_attemptTwice!));
         }
 
         [Fact]
@@ -349,14 +342,14 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
     public class when_attempting_to_persist_a_commitId_twice_on_same_stream : PersistenceEngineConcern
     {
-        private CommitAttempt _attemptTwice;
-        private Exception _thrown;
+        private CommitAttempt? _attemptTwice;
+        private Exception? _thrown;
 
         protected override void Context()
         {
             var commit = Persistence.CommitSingle();
             _attemptTwice = new CommitAttempt(
-                commit.BucketId,
+                commit!.BucketId,
                 commit.StreamId,
                 commit.StreamRevision + 1,
                 commit.CommitId,
@@ -369,7 +362,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Because()
         {
-            _thrown = Catch.Exception(() => Persistence.Commit(_attemptTwice));
+            _thrown = Catch.Exception(() => Persistence.Commit(_attemptTwice!));
         }
 
         [Fact]
@@ -384,9 +377,9 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
     public class when_committing_more_events_than_the_configured_page_size : PersistenceEngineConcern
     {
-        private CommitAttempt[] _committed;
-        private ICommit[] _loaded;
-        private string _streamId;
+        private CommitAttempt[]? _committed;
+        private ICommit[]? _loaded;
+        private string? _streamId;
 
         protected override void Context()
         {
@@ -396,20 +389,20 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Because()
         {
-            _loaded = Persistence.GetFrom(_streamId, 0, int.MaxValue).ToArray();
+            _loaded = Persistence.GetFrom(_streamId!, 0, int.MaxValue).ToArray();
         }
 
         [Fact]
         public void should_load_the_same_number_of_commits_which_have_been_persisted()
         {
-            _loaded.Length.Should().Be(_committed.Length);
+            _loaded!.Length.Should().Be(_committed!.Length);
         }
 
         [Fact]
         public void should_load_the_same_commits_which_have_been_persisted()
         {
-            _committed
-                .All(commit => _loaded.SingleOrDefault(loaded => loaded.CommitId == commit.CommitId) != null)
+            _committed!
+                .All(commit => _loaded!.SingleOrDefault(loaded => loaded.CommitId == commit.CommitId) != null)
                 .Should().BeTrue();
         }
     }
@@ -420,8 +413,8 @@ namespace NEventStore.Persistence.AcceptanceTests
     public class when_saving_a_snapshot : PersistenceEngineConcern
     {
         private bool _added;
-        private Snapshot _snapshot;
-        private string _streamId;
+        private Snapshot? _snapshot;
+        private string? _streamId;
 
         protected override void Context()
         {
@@ -432,7 +425,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Because()
         {
-            _added = Persistence.AddSnapshot(_snapshot);
+            _added = Persistence.AddSnapshot(_snapshot!);
         }
 
         [Fact]
@@ -444,7 +437,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_be_able_to_retrieve_the_snapshot()
         {
-            Persistence.GetSnapshot(_streamId, _snapshot.StreamRevision).Should().NotBeNull();
+            Persistence.GetSnapshot(_streamId!, _snapshot!.StreamRevision).Should().NotBeNull();
         }
     }
 
@@ -460,11 +453,11 @@ namespace NEventStore.Persistence.AcceptanceTests
     public class when_adding_multiple_snapshots_for_same_bucketId_streamId_streamRevision : PersistenceEngineConcern
     {
         private bool _added;
-        private Snapshot _snapshot;
-        private Snapshot _updatedSnapshot;
-        private string _streamId;
+        private Snapshot? _snapshot;
+        private Snapshot? _updatedSnapshot;
+        private string? _streamId;
 
-        private Exception _thrown;
+        private Exception? _thrown;
 
         protected override void Context()
         {
@@ -477,7 +470,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Because()
         {
-            _updatedSnapshot = new Snapshot(_streamId, 1, "Updated Snapshot");
+            _updatedSnapshot = new Snapshot(_streamId!, 1, "Updated Snapshot");
             _thrown = Catch.Exception(() => _added = Persistence.AddSnapshot(_updatedSnapshot));
         }
 
@@ -490,15 +483,15 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_be_able_to_retrieve_the_correct_snapshot_original_or_updated_depends_on_driver_implementation()
         {
-            var snapshot = Persistence.GetSnapshot(_streamId, _snapshot.StreamRevision);
+            var snapshot = Persistence.GetSnapshot(_streamId!, _snapshot!.StreamRevision);
             snapshot.Should().NotBeNull();
             if (_added)
             {
-                snapshot.Payload.Should().Be(_updatedSnapshot.Payload, "The snapshot was added, I expected to get the most updated version");
+                snapshot.Payload.Should().Be(_updatedSnapshot!.Payload, "The snapshot was added, I expected to get the most updated version");
             }
             else
             {
-                snapshot.Payload.Should().Be(_snapshot.Payload, "The snapshot was not added, I excpeted to get the original version");
+                snapshot.Payload.Should().Be(_snapshot.Payload, "The snapshot was not added, I expected to get the original version");
             }
         }
     }
@@ -508,17 +501,17 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
     public class when_retrieving_a_snapshot : PersistenceEngineConcern
     {
-        private ISnapshot _correct;
-        private ISnapshot _snapshot;
-        private string _streamId;
-        private ISnapshot _tooFarForward;
+        private Snapshot? _correct;
+        private ISnapshot? _snapshot;
+        private string? _streamId;
+        private Snapshot? _tooFarForward;
 
         protected override void Context()
         {
             _streamId = Guid.NewGuid().ToString();
-            ICommit commit1 = Persistence.CommitSingle(_streamId); // rev 1-2
-            ICommit commit2 = Persistence.CommitNext(commit1); // rev 3-4
-            Persistence.CommitNext(commit2); // rev 5-6
+            var commit1 = Persistence.CommitSingle(_streamId); // rev 1-2
+            var commit2 = Persistence.CommitNext(commit1!); // rev 3-4
+            Persistence.CommitNext(commit2!); // rev 5-6
 
             Persistence.AddSnapshot(new Snapshot(_streamId, 1, string.Empty)); //Too far back
             _correct = new Snapshot(_streamId, 3, "Snapshot");
@@ -529,25 +522,25 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Because()
         {
-            _snapshot = Persistence.GetSnapshot(_streamId, _tooFarForward.StreamRevision - 1);
+            _snapshot = Persistence.GetSnapshot(_streamId!, _tooFarForward!.StreamRevision - 1);
         }
 
         [Fact]
         public void should_load_the_most_recent_prior_snapshot()
         {
-            _snapshot.StreamRevision.Should().Be(_correct.StreamRevision);
+            _snapshot!.StreamRevision.Should().Be(_correct!.StreamRevision);
         }
 
         [Fact]
         public void should_have_the_correct_snapshot_payload()
         {
-            _snapshot.Payload.Should().Be(_correct.Payload);
+            _snapshot!.Payload.Should().Be(_correct!.Payload);
         }
 
         [Fact]
         public void should_have_the_correct_stream_id()
         {
-            _snapshot.StreamId.Should().Be(_correct.StreamId);
+            _snapshot!.StreamId.Should().Be(_correct!.StreamId);
         }
     }
 
@@ -557,21 +550,21 @@ namespace NEventStore.Persistence.AcceptanceTests
     public class when_a_snapshot_has_been_added_to_the_most_recent_commit_of_a_stream : PersistenceEngineConcern
     {
         private const string SnapshotData = "snapshot";
-        private ICommit _newest;
-        private ICommit _oldest, _oldest2;
-        private string _streamId;
+        private ICommit? _newest;
+        private ICommit? _oldest, _oldest2;
+        private string? _streamId;
 
         protected override void Context()
         {
             _streamId = Guid.NewGuid().ToString();
             _oldest = Persistence.CommitSingle(_streamId);
-            _oldest2 = Persistence.CommitNext(_oldest);
-            _newest = Persistence.CommitNext(_oldest2);
+            _oldest2 = Persistence.CommitNext(_oldest!);
+            _newest = Persistence.CommitNext(_oldest2!);
         }
 
         protected override void Because()
         {
-            Persistence.AddSnapshot(new Snapshot(_streamId, _newest.StreamRevision, SnapshotData));
+            Persistence.AddSnapshot(new Snapshot(_streamId!, _newest!.StreamRevision, SnapshotData));
         }
 
         [Fact]
@@ -589,20 +582,20 @@ namespace NEventStore.Persistence.AcceptanceTests
         private const int WithinThreshold = 2;
         private const int OverThreshold = 3;
         private const string SnapshotData = "snapshot";
-        private ICommit _oldest, _oldest2;
-        private string _streamId;
+        private ICommit? _oldest, _oldest2;
+        private string ?_streamId;
 
         protected override void Context()
         {
             _streamId = Guid.NewGuid().ToString();
             _oldest = Persistence.CommitSingle(_streamId);
-            _oldest2 = Persistence.CommitNext(_oldest);
-            Persistence.AddSnapshot(new Snapshot(_streamId, _oldest2.StreamRevision, SnapshotData));
+            _oldest2 = Persistence.CommitNext(_oldest!);
+            Persistence.AddSnapshot(new Snapshot(_streamId, _oldest2!.StreamRevision, SnapshotData));
         }
 
         protected override void Because()
         {
-            Persistence.Commit(_oldest2.BuildNextAttempt());
+            Persistence.Commit(_oldest2!.BuildNextAttempt());
         }
 
         // Because Raven and Mongo update the stream head asynchronously, occasionally will fail this test
@@ -624,12 +617,12 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
     public class when_reading_all_commits_from_a_particular_point_in_time : PersistenceEngineConcern
     {
-        private ICommit[] _committed;
-        private CommitAttempt _first;
+        private ICommit[]? _committed;
+        private CommitAttempt? _first;
         private DateTime _now;
-        private ICommit _second;
-        private string _streamId;
-        private ICommit _third;
+        private ICommit? _second;
+        private string? _streamId;
+        private ICommit? _third;
 
         protected override void Context()
         {
@@ -640,8 +633,8 @@ namespace NEventStore.Persistence.AcceptanceTests
             Persistence.Commit(_first);
 
             _second = Persistence.CommitNext(_first);
-            _third = Persistence.CommitNext(_second);
-            Persistence.CommitNext(_third);
+            _third = Persistence.CommitNext(_second!);
+            Persistence.CommitNext(_third!);
         }
 
         protected override void Because()
@@ -652,7 +645,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_return_all_commits_on_or_after_the_point_in_time_specified()
         {
-            _committed.Length.Should().Be(4);
+            _committed!.Length.Should().Be(4);
         }
     }
 
@@ -661,8 +654,8 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
     public class when_paging_over_all_commits_from_a_particular_point_in_time : PersistenceEngineConcern
     {
-        private CommitAttempt[] _committed;
-        private ICommit[] _loaded;
+        private CommitAttempt[]? _committed;
+        private ICommit[]? _loaded;
         private DateTime _start;
 
         protected override void Context()
@@ -682,14 +675,14 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_load_the_same_number_of_commits_which_have_been_persisted()
         {
-            _loaded.Length.Should().Be(_committed.Length);
+            _loaded!.Length.Should().Be(_committed!.Length);
         }
 
         [Fact]
         public void should_load_the_same_commits_which_have_been_persisted()
         {
-            _committed
-                .All(commit => _loaded.SingleOrDefault(loaded => loaded.CommitId == commit.CommitId) != null)
+            _committed!
+                .All(commit => _loaded!.SingleOrDefault(loaded => loaded.CommitId == commit.CommitId) != null)
                 .Should().BeTrue();
         }
     }
@@ -699,8 +692,8 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
     public class when_paging_over_all_commits_from_a_particular_checkpoint : PersistenceEngineConcern
     {
-        private List<Guid> _committed;
-        private ICollection<Guid> _loaded;
+        private List<Guid>? _committed;
+        private List<Guid>? _loaded;
         private const int checkPoint = 2;
 
         protected override void Context()
@@ -716,13 +709,13 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_load_the_same_number_of_commits_which_have_been_persisted_starting_from_the_checkpoint()
         {
-            _loaded.Count.Should().Be(_committed.Count - checkPoint);
+            _loaded!.Count.Should().Be(_committed!.Count - checkPoint);
         }
 
         [Fact]
         public void should_load_only_the_commits_starting_from_the_checkpoint()
         {
-            _committed.Skip(checkPoint).All(x => _loaded.Contains(x)).Should().BeTrue(); // all commits should be found in loaded collection
+            _committed!.Skip(checkPoint).All(x => _loaded!.Contains(x)).Should().BeTrue(); // all commits should be found in loaded collection
         }
     }
 
@@ -731,9 +724,9 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
     public class when_paging_over_all_commits_of_a_bucket_from_a_particular_checkpoint : PersistenceEngineConcern
     {
-        private List<Guid> _committedOnBucket1;
-        private List<Guid> _committedOnBucket2;
-        private ICollection<Guid> _loaded;
+        private List<Guid>? _committedOnBucket1;
+        private List<Guid>? _committedOnBucket2;
+        private List<Guid>? _loaded;
         private const int checkPoint = 2;
 
         protected override void Context()
@@ -751,19 +744,19 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_load_the_same_number_of_commits_which_have_been_persisted_starting_from_the_checkpoint()
         {
-            _loaded.Count.Should().Be(_committedOnBucket1.Count - checkPoint);
+            _loaded!.Count.Should().Be(_committedOnBucket1!.Count - checkPoint);
         }
 
         [Fact]
         public void should_load_only_the_commits_on_bucket1_starting_from_the_checkpoint()
         {
-            _committedOnBucket1.Skip(checkPoint).All(x => _loaded.Contains(x)).Should().BeTrue(); // all commits should be found in loaded collection
+            _committedOnBucket1!.Skip(checkPoint).All(x => _loaded!.Contains(x)).Should().BeTrue(); // all commits should be found in loaded collection
         }
 
         [Fact]
         public void should_not_load_the_commits_from_bucket2()
         {
-            _committedOnBucket2.All(x => !_loaded.Contains(x)).Should().BeTrue();
+            _committedOnBucket2!.All(x => !_loaded!.Contains(x)).Should().BeTrue();
         }
     }
 
@@ -772,8 +765,8 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
     public class when_paging_over_all_commits_from_a_particular_checkpoint_to_a_checkpoint : PersistenceEngineConcern
     {
-        private readonly List<Guid> _committed = new List<Guid>();
-        private ICollection<Guid> _loaded;
+        private readonly List<Guid> _committed = [];
+        private List<Guid>? _loaded;
         private const int startCheckpoint = 2;
         private int endCheckpoint;
 
@@ -794,7 +787,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_load_the_same_number_of_commits_which_have_been_persisted_starting_from_the_checkpoint_to_the_checkpoint()
         {
-            _loaded.Count.Should().Be(endCheckpoint - startCheckpoint);
+            _loaded!.Count.Should().Be(endCheckpoint - startCheckpoint);
         }
 
         [Fact]
@@ -804,7 +797,7 @@ namespace NEventStore.Persistence.AcceptanceTests
                 .Skip(startCheckpoint)
                 .Take(_committed.Count - startCheckpoint - 1)
                 //.Take(endCheckpoint - startCheckpoint)
-                .All(x => _loaded.Contains(x)).Should().BeTrue(); // all commits should be found in loaded collection
+                .All(x => _loaded!.Contains(x)).Should().BeTrue(); // all commits should be found in loaded collection
         }
     }
 
@@ -813,9 +806,9 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
     public class when_paging_over_all_commits_of_a_bucket_from_a_particular_checkpoint_to_a_checkpoint : PersistenceEngineConcern
     {
-        private List<Guid> _committedOnBucket1;
-        private List<Guid> _committedOnBucket2;
-        private ICollection<Guid> _loaded;
+        private List<Guid>? _committedOnBucket1;
+        private List<Guid>? _committedOnBucket2;
+        private List<Guid>? _loaded;
         private const int startCheckpoint = 2;
         private int endCheckpoint;
 
@@ -835,22 +828,22 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_load_the_same_number_of_commits_which_have_been_persisted_starting_from_the_checkpoint_to_the_checkpoint()
         {
-            _loaded.Count.Should().Be(_committedOnBucket1.Count - startCheckpoint - 1);
+            _loaded!.Count.Should().Be(_committedOnBucket1!.Count - startCheckpoint - 1);
         }
 
         [Fact]
         public void should_load_only_the_commits_on_bucket1_starting_from_the_checkpoint_to_the_checkpoint()
         {
-            _committedOnBucket1
+            _committedOnBucket1!
                 .Skip(startCheckpoint)
-                .Take(_committedOnBucket1.Count - startCheckpoint - 1)
-                .All(x => _loaded.Contains(x)).Should().BeTrue(); // all commits should be found in loaded collection
+                .Take(_committedOnBucket1!.Count - startCheckpoint - 1)
+                .All(x => _loaded!.Contains(x)).Should().BeTrue(); // all commits should be found in loaded collection
         }
 
         [Fact]
         public void should_not_load_the_commits_from_bucket2()
         {
-            _committedOnBucket2.All(x => !_loaded.Contains(x)).Should().BeTrue();
+            _committedOnBucket2!.All(x => !_loaded!.Contains(x)).Should().BeTrue();
         }
     }
 
@@ -859,7 +852,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
     public class when_reading_all_commits_from_the_year_1_AD : PersistenceEngineConcern
     {
-        private Exception _thrown;
+        private Exception? _thrown;
 
         protected override void Because()
         {
@@ -907,7 +900,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
     public class when_invoking_after_disposal : PersistenceEngineConcern
     {
-        private Exception _thrown;
+        private Exception? _thrown;
 
         protected override void Context()
         {
@@ -931,8 +924,8 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
     public class when_committing_a_stream_with_the_same_id_as_a_stream_same_bucket : PersistenceEngineConcern
     {
-        private string _streamId;
-        private static Exception _thrown;
+        private string? _streamId;
+        private static Exception? _thrown;
 
         protected override void Context()
         {
@@ -942,7 +935,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Because()
         {
-            _thrown = Catch.Exception(() => Persistence.Commit(_streamId.BuildAttempt()));
+            _thrown = Catch.Exception(() => Persistence.Commit(_streamId!.BuildAttempt()));
         }
 
         [Fact]
@@ -965,9 +958,9 @@ namespace NEventStore.Persistence.AcceptanceTests
     {
         private const string _bucketAId = "a";
         private const string _bucketBId = "b";
-        private string _streamId;
-        private static CommitAttempt _attemptForBucketB;
-        private static Exception _thrown;
+        private string? _streamId;
+        private static CommitAttempt? _attemptForBucketB;
+        private static Exception? _thrown;
         private DateTime _attemptACommitStamp;
 
         protected override void Context()
@@ -981,7 +974,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Because()
         {
-            _thrown = Catch.Exception(() => Persistence.Commit(_attemptForBucketB));
+            _thrown = Catch.Exception(() => Persistence.Commit(_attemptForBucketB!));
         }
 
         [Fact]
@@ -993,17 +986,17 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_persist_to_the_correct_bucket()
         {
-            ICommit[] stream = Persistence.GetFrom(_bucketBId, _streamId, 0, int.MaxValue).ToArray();
+            ICommit[] stream = Persistence.GetFrom(_bucketBId, _streamId!, 0, int.MaxValue).ToArray();
             stream.Should().NotBeNull();
-            stream.Count().Should().Be(1);
+            stream.Length.Should().Be(1);
         }
 
         [Fact]
         public void should_not_affect_the_stream_from_the_other_bucket()
         {
-            ICommit[] stream = Persistence.GetFrom(_bucketAId, _streamId, 0, int.MaxValue).ToArray();
+            ICommit[] stream = Persistence.GetFrom(_bucketAId, _streamId!, 0, int.MaxValue).ToArray();
             stream.Should().NotBeNull();
-            stream.Count().Should().Be(1);
+            stream.Length.Should().Be(1);
             stream[0].CommitStamp.Should().Be(_attemptACommitStamp);
         }
     }
@@ -1016,9 +1009,9 @@ namespace NEventStore.Persistence.AcceptanceTests
         private const string _bucketAId = "a";
         private const string _bucketBId = "b";
 
-        private string _streamId;
+        private string? _streamId;
 
-        private static Snapshot _snapshot;
+        private static Snapshot? _snapshot;
 
         protected override void Context()
         {
@@ -1030,13 +1023,13 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected override void Because()
         {
-            Persistence.AddSnapshot(_snapshot);
+            Persistence.AddSnapshot(_snapshot!);
         }
 
         [Fact]
         public void should_affect_snapshots_from_another_bucket()
         {
-            Persistence.GetSnapshot(_bucketAId, _streamId, _snapshot.StreamRevision).Should().BeNull();
+            Persistence.GetSnapshot(_bucketAId, _streamId!, _snapshot!.StreamRevision).Should().BeNull();
         }
     }
 
@@ -1049,8 +1042,8 @@ namespace NEventStore.Persistence.AcceptanceTests
         private const string _bucketBId = "b";
 
         private static DateTime _now;
-        private static ICommit[] _returnedCommits;
-        private CommitAttempt _commitToBucketB;
+        private static ICommit[]? _returnedCommits;
+        private CommitAttempt? _commitToBucketB;
 
         protected override void Context()
         {
@@ -1078,7 +1071,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_not_return_commits_from_other_buckets()
         {
-            _returnedCommits.Any(c => c.CommitId.Equals(_commitToBucketB.CommitId)).Should().BeFalse();
+            _returnedCommits!.Any(c => c.CommitId.Equals(_commitToBucketB!.CommitId)).Should().BeFalse();
         }
     }
 
@@ -1087,7 +1080,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 #endif
     public class when_getting_all_commits_since_checkpoint_and_there_are_streams_in_multiple_buckets : PersistenceEngineConcern
     {
-        private ICommit[] _commits;
+        private ICommit[]? _commits;
 
         protected override void Context()
         {
@@ -1113,7 +1106,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         public void should_be_in_order_by_checkpoint()
         {
             Int64 checkpoint = 0;
-            foreach (var commit in _commits)
+            foreach (var commit in _commits!)
             {
                 Int64 commitCheckpoint = commit.CheckpointToken;
                 commitCheckpoint.Should().BeGreaterThan(checkpoint);
@@ -1130,7 +1123,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         private const string _bucketAId = "a";
         private const string _bucketBId = "b";
 
-        private string _streamId;
+        private string? _streamId;
 
         protected override void Context()
         {
@@ -1172,29 +1165,27 @@ namespace NEventStore.Persistence.AcceptanceTests
     [Serializable]
     public class Pippo
     {
-        public String S { get; set; }
+        public String? S { get; set; }
     }
 
 #if MSTEST
     [TestClass]
 #endif
-    public class when_gettingfromcheckpoint_amount_of_commits_exceeds_pagesize : PersistenceEngineConcern
+    public class when_gettingFromCheckpoint_amount_of_commits_exceeds_PageSize : PersistenceEngineConcern
     {
-        private ICommit[] _commits;
+        private ICommit[]? _commits;
         private int _moreThanPageSize;
 
         protected override void Because()
         {
             _moreThanPageSize = ConfiguredPageSizeForTesting + 1;
             var eventStore = new OptimisticEventStore(Persistence, null);
-            // TODO: Not sure how to set the actual pagesize to the const defined above
+            // TODO: Not sure how to set the actual page size to the const defined above
             for (int i = 0; i < _moreThanPageSize; i++)
             {
-                using (IEventStream stream = eventStore.OpenStream(Guid.NewGuid()))
-                {
-                    stream.Add(new EventMessage { Body = new Pippo() { S = "Hi " + i } });
-                    stream.CommitChanges(Guid.NewGuid());
-                }
+                using IEventStream stream = eventStore.OpenStream(Guid.NewGuid());
+                stream.Add(new EventMessage { Body = new Pippo() { S = "Hi " + i } });
+                stream.CommitChanges(Guid.NewGuid());
             }
             _commits = Persistence.GetFrom(0).ToArray();
         }
@@ -1202,7 +1193,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void Should_have_expected_number_of_commits()
         {
-            _commits.Length.Should().Be(_moreThanPageSize);
+            _commits!.Length.Should().Be(_moreThanPageSize);
         }
     }
 
@@ -1223,11 +1214,11 @@ namespace NEventStore.Persistence.AcceptanceTests
                 1,
                 DateTime.UtcNow,
                 new Dictionary<string, object>(),
-                new EventMessage[] { new EventMessage { Body = new string('a', bodyLength) } });
+                [new EventMessage { Body = new string('a', bodyLength) }]);
             Persistence.Commit(attempt);
 
             ICommit commits = Persistence.GetFrom(0).Single();
-            commits.Events.Single().Body.ToString().Length.Should().Be(bodyLength);
+            commits.Events.Single().Body.ToString()!.Length.Should().Be(bodyLength);
         }
     }
 
@@ -1245,11 +1236,11 @@ namespace NEventStore.Persistence.AcceptanceTests
         , IDisposable
 #endif
     {
-        protected PersistenceEngineFixture Fixture { get; private set; }
+        protected PersistenceEngineFixture? Fixture { get; private set; }
 
         protected IPersistStreams Persistence
         {
-            get { return Fixture.Persistence; }
+            get { return Fixture!.Persistence; }
         }
 
         protected int ConfiguredPageSizeForTesting
@@ -1260,7 +1251,6 @@ namespace NEventStore.Persistence.AcceptanceTests
         /// <summary>
         /// Can be used by XUNIT to initialize the tests.
         /// </summary>
-        /// <param name="data"></param>
         public void SetFixture(PersistenceEngineFixture data)
         {
             Fixture = data;
@@ -1291,7 +1281,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         /// We need a way to also have some configuration before the PersistenceEngineFixture is created.
         /// </para>
         /// <para>
-        /// We'de decided to use the test constructor to do the job, it's your responsibility to guarantee
+        /// We've decided to use the test constructor to do the job, it's your responsibility to guarantee
         /// One time initialization (for anything that need it, if you have multiple tests on a fixture)
         /// depending on the framework you are using.
         /// </para>

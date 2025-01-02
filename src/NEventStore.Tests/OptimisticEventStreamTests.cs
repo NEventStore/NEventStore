@@ -1,25 +1,21 @@
 using FakeItEasy;
 using FluentAssertions;
-
 using NEventStore.Persistence;
 using NEventStore.Persistence.AcceptanceTests;
 using NEventStore.Persistence.AcceptanceTests.BDD;
 #if MSTEST
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 #endif
-#if NUNIT
+#if XUNIT
+using Xunit;
+using Xunit.Should;
+#endif
 
 #pragma warning disable 169 // ReSharper enable InconsistentNaming
 #pragma warning disable IDE1006 // Naming Styles
 
 namespace NEventStore
 {
-#endif
-#if XUNIT
-    using Xunit;
-    using Xunit.Should;
-#endif
-
 #if MSTEST
     [TestClass]
 #endif
@@ -184,7 +180,9 @@ namespace NEventStore
 
         protected override void Because()
         {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             _thrown = Catch.Exception(() => Stream.Add(null));
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
         [Fact]
@@ -203,7 +201,9 @@ namespace NEventStore
 
         protected override void Because()
         {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             _thrown = Catch.Exception(() => Stream.Add(new EventMessage { Body = null }));
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
         [Fact]
@@ -834,9 +834,6 @@ namespace NEventStore
             get { return _stream ??= new OptimisticEventStream(BucketId, StreamId, Persistence); }
             set { _stream = value; }
         }
-
-        public void SetFixture(FakeTimeFixture data)
-        { }
 
         protected ICommit BuildCommitStub(long checkpointToken, int revision, int sequence, int eventCount)
         {
