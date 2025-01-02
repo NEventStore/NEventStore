@@ -63,12 +63,14 @@ namespace NEventStore.Diagnostics
         }
 
         /// <inheritdoc/>
+        [Obsolete("DateTime is problematic in distributed systems. Use GetFromTo(Int64 fromCheckpointToken, Int64 toCheckpointToken) instead. This method will be removed in a later version.")]
         public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime startDate, DateTime endDate)
         {
             return _persistence.GetFromTo(bucketId, startDate, endDate);
         }
 
         /// <inheritdoc/>
+        [Obsolete("DateTime is problematic in distributed systems. Use GetFrom(Int64 checkpointToken) instead. This method will be removed in a later version.")]
         public IEnumerable<ICommit> GetFrom(string bucketId, DateTime startDate)
         {
             return _persistence.GetFrom(bucketId, startDate);
@@ -99,6 +101,12 @@ namespace NEventStore.Diagnostics
         }
 
         /// <inheritdoc/>
+        public ISnapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
+        {
+            return _persistence.GetSnapshot(bucketId, streamId, maxRevision);
+        }
+
+        /// <inheritdoc/>
         public bool AddSnapshot(ISnapshot snapshot)
         {
             bool result = _persistence.AddSnapshot(snapshot);
@@ -111,15 +119,33 @@ namespace NEventStore.Diagnostics
         }
 
         /// <inheritdoc/>
-        public ISnapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
-        {
-            return _persistence.GetSnapshot(bucketId, streamId, maxRevision);
-        }
-
-        /// <inheritdoc/>
         public virtual IEnumerable<IStreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
         {
             return _persistence.GetStreamsToSnapshot(bucketId, maxThreshold);
+        }
+
+        /// <inheritdoc/>
+        public Task<ISnapshot> GetSnapshotAsync(string bucketId, string streamId, int maxRevision, CancellationToken cancellationToken)
+        {
+            return _persistence.GetSnapshotAsync(bucketId, streamId, maxRevision, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task<bool> AddSnapshotAsync(ISnapshot snapshot, CancellationToken cancellationToken)
+        {
+            bool result = await _persistence.AddSnapshotAsync(snapshot, cancellationToken).ConfigureAwait(false);
+            if (result)
+            {
+                _counters.CountSnapshot();
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc/>
+        public Task GetStreamsToSnapshotAsync(string bucketId, int maxThreshold, IAsyncObserver<IStreamHead> asyncObserver, CancellationToken cancellationToken)
+        {
+            return _persistence.GetStreamsToSnapshotAsync(bucketId, maxThreshold, asyncObserver, cancellationToken);
         }
 
         /// <inheritdoc/>

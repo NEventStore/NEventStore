@@ -41,6 +41,7 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
+        [Obsolete("DateTime is problematic in distributed systems. Use GetFrom(Int64 checkpointToken) instead. This method will be removed in a later version.")]
         public IEnumerable<ICommit> GetFrom(string bucketId, DateTime startDate)
         {
             ThrowWhenDisposed();
@@ -52,6 +53,7 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
+        [Obsolete("DateTime is problematic in distributed systems. Use GetFromTo(Int64 fromCheckpointToken, Int64 toCheckpointToken) instead. This method will be removed in a later version.")]
         public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime startDate, DateTime endDate)
         {
             ThrowWhenDisposed();
@@ -164,17 +166,6 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public IEnumerable<IStreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
-        {
-            ThrowWhenDisposed();
-            if (Logger.IsEnabled(LogLevel.Debug))
-            {
-                Logger.LogDebug(Resources.GettingStreamsToSnapshot, bucketId, maxThreshold);
-            }
-            return this[bucketId].GetStreamsToSnapshot(maxThreshold);
-        }
-
-        /// <inheritdoc/>
         public ISnapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
         {
             ThrowWhenDisposed();
@@ -194,6 +185,58 @@ namespace NEventStore.Persistence.InMemory
                 Logger.LogDebug(Resources.AddingSnapshot, snapshot.BucketId, snapshot.StreamId, snapshot.StreamRevision);
             }
             return this[snapshot.BucketId].AddSnapshot(snapshot);
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<IStreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
+        {
+            ThrowWhenDisposed();
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug(Resources.GettingStreamsToSnapshot, bucketId, maxThreshold);
+            }
+            return this[bucketId].GetStreamsToSnapshot(maxThreshold);
+        }
+
+        /// <inheritdoc/>
+        public Task<ISnapshot> GetSnapshotAsync(string bucketId, string streamId, int maxRevision, CancellationToken cancellationToken)
+        {
+            ThrowWhenDisposed();
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug(Resources.GettingSnapshotForStream, bucketId, streamId, maxRevision);
+            }
+            return Task.FromResult(this[bucketId].GetSnapshot(streamId, maxRevision));
+        }
+
+        /// <inheritdoc/>
+        public Task<bool> AddSnapshotAsync(ISnapshot snapshot, CancellationToken cancellationToken)
+        {
+            ThrowWhenDisposed();
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug(Resources.AddingSnapshot, snapshot.BucketId, snapshot.StreamId, snapshot.StreamRevision);
+            }
+            return Task.FromResult(this[snapshot.BucketId].AddSnapshot(snapshot));
+        }
+
+        /// <inheritdoc/>
+        public async Task GetStreamsToSnapshotAsync(string bucketId, int maxThreshold, IAsyncObserver<IStreamHead> asyncObserver, CancellationToken cancellationToken)
+        {
+            var data = GetStreamsToSnapshot(bucketId, maxThreshold);
+            if (data?.Any() == true)
+            {
+                foreach (var commit in data)
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        await asyncObserver.OnErrorAsync(0, new OperationCanceledException());
+                        break;
+                    }
+                    await asyncObserver.OnNextAsync(commit);
+                }
+                await asyncObserver.OnCompletedAsync(0);
+            }
         }
 
         /// <inheritdoc/>
