@@ -11,7 +11,7 @@ namespace NEventStore.Persistence
     /// </remarks>
     public interface IPersistStreams : IDisposable
         , ICommitEvents, IAccessSnapshots
-        , ICommitEventsAsync
+        , ICommitEventsAsync, IAccessSnapshotsAsync
     {
         /// <summary>
         ///     Gets a value indicating whether this instance has been disposed of.

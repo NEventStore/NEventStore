@@ -110,6 +110,24 @@ namespace NEventStore.Persistence
         }
 
         /// <inheritdoc/>
+        public Task<ISnapshot> GetSnapshotAsync(string bucketId, string streamId, int maxRevision, CancellationToken cancellationToken)
+        {
+            return _original.GetSnapshotAsync(bucketId, streamId, maxRevision, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public Task<bool> AddSnapshotAsync(ISnapshot snapshot, CancellationToken cancellationToken)
+        {
+            return _original.AddSnapshotAsync(snapshot, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public Task GetStreamsToSnapshotAsync(string bucketId, int maxThreshold, IAsyncObserver<IStreamHead> asyncObserver, CancellationToken cancellationToken)
+        {
+            return _original.GetStreamsToSnapshotAsync(bucketId, maxThreshold, asyncObserver, cancellationToken);
+        }
+
+        /// <inheritdoc/>
         public void Initialize()
         {
             _original.Initialize();
