@@ -37,9 +37,11 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             return Persistence.CommitAsync(attempt, CancellationToken.None);
         }
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
-            _persisted = Persistence.GetFrom(_streamId!, 0, int.MaxValue).First();
+            var observer = new CommitStreamObserver();
+            await Persistence.GetFromAsync(_streamId!, 0, int.MaxValue, observer, CancellationToken.None);
+            _persisted = observer.Commits[0];
         }
 
         [Fact]
@@ -69,9 +71,11 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             return Persistence.CommitAsync(_attempt, CancellationToken.None);
         }
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
-            _persisted = Persistence.GetFrom(_streamId!, 0, int.MaxValue).First();
+            var observer = new CommitStreamObserver();
+            await Persistence.GetFromAsync(_streamId!, 0, int.MaxValue, observer, CancellationToken.None);
+            _persisted = observer.Commits[0];
         }
 
         [Fact]
@@ -149,9 +153,11 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             _streamId = _oldest!.StreamId;
         }
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
-            _committed = Persistence.GetFrom(_streamId!, LoadFromCommitContainingRevision, UpToCommitWithContainingRevision).ToArray();
+            var observer = new CommitStreamObserver();
+            await Persistence.GetFromAsync(_streamId!, LoadFromCommitContainingRevision, UpToCommitWithContainingRevision, observer, CancellationToken.None);
+            _committed = observer.Commits.ToArray();
         }
 
         [Fact]
@@ -188,9 +194,11 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             _streamId = _oldest!.StreamId;
         }
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
-            _committed = Persistence.GetFrom(_streamId!, LoadFromCommitContainingRevision, UpToCommitWithContainingRevision).ToArray();
+            var observer = new CommitStreamObserver();
+            await Persistence.GetFromAsync(_streamId!, LoadFromCommitContainingRevision, UpToCommitWithContainingRevision, observer, CancellationToken.None);
+            _committed = observer.Commits.ToArray();
         }
 
         [Fact]
@@ -387,9 +395,11 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             _committed = (await Persistence.CommitManyAsync(ConfiguredPageSizeForTesting + 2, _streamId)).ToArray();
         }
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
-            _loaded = Persistence.GetFrom(_streamId!, 0, int.MaxValue).ToArray();
+            var observer = new CommitStreamObserver();
+            await Persistence.GetFromAsync(_streamId!, 0, int.MaxValue, observer, CancellationToken.None);
+            _loaded = observer.Commits.ToArray();
         }
 
         [Fact]
