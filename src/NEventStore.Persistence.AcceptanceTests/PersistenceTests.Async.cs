@@ -433,9 +433,9 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             return Persistence.CommitSingleAsync(_streamId);
         }
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
-            _added = Persistence.AddSnapshot(_snapshot!);
+            _added = await Persistence.AddSnapshotAsync(_snapshot!, CancellationToken.None);
         }
 
         [Fact]
@@ -475,13 +475,13 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             _snapshot = new Snapshot(_streamId, 1, "Snapshot");
             await Persistence.CommitSingleAsync(_streamId);
 
-            Persistence.AddSnapshot(_snapshot);
+            await Persistence.AddSnapshotAsync(_snapshot, CancellationToken.None);
         }
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
             _updatedSnapshot = new Snapshot(_streamId!, 1, "Updated Snapshot");
-            _thrown = Catch.Exception(() => _added = Persistence.AddSnapshot(_updatedSnapshot));
+            _thrown = await Catch.ExceptionAsync(async () => _added = await Persistence.AddSnapshotAsync(_updatedSnapshot, CancellationToken.None));
         }
 
         [Fact]
@@ -523,11 +523,11 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             var commit2 = await Persistence.CommitNextAsync(commit1!); // rev 3-4
             await Persistence.CommitNextAsync(commit2!); // rev 5-6
 
-            Persistence.AddSnapshot(new Snapshot(_streamId, 1, string.Empty)); //Too far back
+            await Persistence.AddSnapshotAsync(new Snapshot(_streamId, 1, string.Empty), CancellationToken.None); //Too far back
             _correct = new Snapshot(_streamId, 3, "Snapshot");
-            Persistence.AddSnapshot(_correct);
+            await Persistence.AddSnapshotAsync(_correct, CancellationToken.None);
             _tooFarForward = new Snapshot(_streamId, 5, string.Empty);
-            Persistence.AddSnapshot(_tooFarForward);
+            await Persistence.AddSnapshotAsync(_tooFarForward, CancellationToken.None);
         }
 
         protected override void Because()
@@ -572,9 +572,9 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             _newest = await Persistence.CommitNextAsync(_oldest2!);
         }
 
-        protected override void Because()
+        protected override Task BecauseAsync()
         {
-            Persistence.AddSnapshot(new Snapshot(_streamId!, _newest!.StreamRevision, SnapshotData));
+            return Persistence.AddSnapshotAsync(new Snapshot(_streamId!, _newest!.StreamRevision, SnapshotData), CancellationToken.None);
         }
 
         [Fact]
@@ -600,7 +600,7 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             _streamId = Guid.NewGuid().ToString();
             _oldest = await Persistence.CommitSingleAsync(_streamId);
             _oldest2 = await Persistence.CommitNextAsync(_oldest!);
-            Persistence.AddSnapshot(new Snapshot(_streamId, _oldest2!.StreamRevision, SnapshotData));
+            await Persistence.AddSnapshotAsync(new Snapshot(_streamId, _oldest2!.StreamRevision, SnapshotData), CancellationToken.None);
         }
 
         protected override Task BecauseAsync()
@@ -1040,15 +1040,15 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             await Persistence.CommitAsync(_streamId.BuildAttempt(bucketId: _bucketBId), CancellationToken.None);
         }
 
-        protected override void Because()
+        protected override Task BecauseAsync()
         {
-            Persistence.AddSnapshot(_snapshot!);
+            return Persistence.AddSnapshotAsync(_snapshot!, CancellationToken.None);
         }
 
         [Fact]
-        public void should_affect_snapshots_from_another_bucket()
+        public async Task should_affect_snapshots_from_another_bucket()
         {
-            Persistence.GetSnapshot(_bucketAId, _streamId!, _snapshot!.StreamRevision).Should().BeNull();
+            (await Persistence.GetSnapshotAsync(_bucketAId, _streamId!, _snapshot!.StreamRevision, CancellationToken.None)).Should().BeNull();
         }
     }
 
@@ -1169,15 +1169,19 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
         }
 
         [Fact]
-        public void should_purge_all_streams_to_snapshot_in_bucket_a()
+        public async Task should_purge_all_streams_to_snapshot_in_bucket_a()
         {
-            Persistence.GetStreamsToSnapshot(_bucketAId, 0).Count().Should().Be(0);
+            var observer = new StreamHeadObserver();
+            await Persistence.GetStreamsToSnapshotAsync(_bucketAId, 0, observer, CancellationToken.None);
+            observer.StreamHeads.Count.Should().Be(0);
         }
 
         [Fact]
-        public void should_purge_all_streams_to_snapshot_in_bucket_b()
+        public async Task should_purge_all_streams_to_snapshot_in_bucket_b()
         {
-            Persistence.GetStreamsToSnapshot(_bucketBId, 0).Count().Should().Be(0);
+            var observer = new StreamHeadObserver();
+            await Persistence.GetStreamsToSnapshotAsync(_bucketBId, 0, observer, CancellationToken.None);
+            observer.StreamHeads.Count.Should().Be(0);
         }
     }
 

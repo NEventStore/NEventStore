@@ -108,7 +108,7 @@ namespace NEventStore.Async
                 .ReturnsLazily(async (string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellation) =>
                 {
                     await asyncObserver.OnNextAsync(_commit);
-                    await asyncObserver.OnCompletedAsync(1);
+                    await asyncObserver.OnCompletedAsync();
                 });
         }
 
