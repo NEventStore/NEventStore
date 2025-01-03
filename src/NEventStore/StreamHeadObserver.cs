@@ -1,4 +1,5 @@
-﻿using System.Runtime.ExceptionServices;
+﻿using NEventStore.Persistence;
+using System.Runtime.ExceptionServices;
 
 namespace NEventStore
 {
@@ -6,12 +7,12 @@ namespace NEventStore
     /// Represents an async observer that can receive and stores commits from a stream.
     /// Can be used as base class for other observers.
     /// </summary>
-    public class CommitStreamObserver : IAsyncObserver<ICommit>
+    public class StreamHeadObserver : IAsyncObserver<IStreamHead>
     {
         /// <summary>
         /// The list of commits read from the stream
         /// </summary>
-        public IList<ICommit> Commits { get; } = [];
+        public IList<IStreamHead> StreamHeads { get; } = [];
 
         /// <summary>
         /// Indicates if the read operation has completed
@@ -21,9 +22,9 @@ namespace NEventStore
         /// <summary>
         /// Store the commits received from the stream
         /// </summary>
-        public virtual Task OnNextAsync(ICommit value)
+        public virtual Task OnNextAsync(IStreamHead value)
         {
-            Commits.Add(value);
+            StreamHeads.Add(value);
             return Task.CompletedTask;
         }
 

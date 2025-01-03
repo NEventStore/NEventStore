@@ -130,7 +130,7 @@ namespace NEventStore
         /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        public static Task GetStreamsToSnapshot(this IAccessSnapshotsAsync accessSnapshots, int maxThreshold, IAsyncObserver<IStreamHead> asyncObserver, CancellationToken cancellationToken)
+        public static Task GetStreamsToSnapshotAsync(this IAccessSnapshotsAsync accessSnapshots, int maxThreshold, IAsyncObserver<IStreamHead> asyncObserver, CancellationToken cancellationToken)
         {
             if (accessSnapshots == null)
             {

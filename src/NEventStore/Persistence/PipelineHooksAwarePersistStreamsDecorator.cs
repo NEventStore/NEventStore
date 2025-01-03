@@ -217,14 +217,14 @@ namespace NEventStore.Persistence
                 _observer = observer;
             }
 
-            public Task OnCompletedAsync(Int64 checkpoint)
+            public Task OnCompletedAsync()
             {
-                return _observer.OnCompletedAsync(checkpoint);
+                return _observer.OnCompletedAsync();
             }
 
-            public Task OnErrorAsync(Int64 checkpoint, Exception error)
+            public Task OnErrorAsync(Exception error)
             {
-                return _observer.OnErrorAsync(checkpoint, error);
+                return _observer.OnErrorAsync(error);
             }
 
             public Task OnNextAsync(ICommit value)

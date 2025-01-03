@@ -126,9 +126,12 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
         }
 
         [Fact]
-        public void should_cause_the_stream_to_be_found_in_the_list_of_streams_to_snapshot()
+        public async Task should_cause_the_stream_to_be_found_in_the_list_of_streams_to_snapshot()
         {
-            Persistence.GetStreamsToSnapshot(1).FirstOrDefault(x => x.StreamId == _streamId).Should().NotBeNull();
+            var observer = new StreamHeadObserver();
+            await Persistence.GetStreamsToSnapshotAsync(1, observer, CancellationToken.None);
+            observer.StreamHeads
+                .FirstOrDefault(x => x.StreamId == _streamId).Should().NotBeNull();
         }
     }
 
@@ -433,9 +436,9 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             return Persistence.CommitSingleAsync(_streamId);
         }
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
-            _added = Persistence.AddSnapshot(_snapshot!);
+            _added = await Persistence.AddSnapshotAsync(_snapshot!, CancellationToken.None);
         }
 
         [Fact]
@@ -445,9 +448,9 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
         }
 
         [Fact]
-        public void should_be_able_to_retrieve_the_snapshot()
+        public async Task should_be_able_to_retrieve_the_snapshot()
         {
-            Persistence.GetSnapshot(_streamId!, _snapshot!.StreamRevision).Should().NotBeNull();
+            (await Persistence.GetSnapshotAsync(_streamId!, _snapshot!.StreamRevision, CancellationToken.None)).Should().NotBeNull();
         }
     }
 
@@ -475,13 +478,13 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             _snapshot = new Snapshot(_streamId, 1, "Snapshot");
             await Persistence.CommitSingleAsync(_streamId);
 
-            Persistence.AddSnapshot(_snapshot);
+            await Persistence.AddSnapshotAsync(_snapshot, CancellationToken.None);
         }
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
             _updatedSnapshot = new Snapshot(_streamId!, 1, "Updated Snapshot");
-            _thrown = Catch.Exception(() => _added = Persistence.AddSnapshot(_updatedSnapshot));
+            _thrown = await Catch.ExceptionAsync(async () => _added = await Persistence.AddSnapshotAsync(_updatedSnapshot, CancellationToken.None));
         }
 
         [Fact]
@@ -491,9 +494,9 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
         }
 
         [Fact]
-        public void should_be_able_to_retrieve_the_correct_snapshot_original_or_updated_depends_on_driver_implementation()
+        public async Task should_be_able_to_retrieve_the_correct_snapshot_original_or_updated_depends_on_driver_implementation()
         {
-            var snapshot = Persistence.GetSnapshot(_streamId!, _snapshot!.StreamRevision);
+            var snapshot = await Persistence.GetSnapshotAsync(_streamId!, _snapshot!.StreamRevision, CancellationToken.None);
             snapshot.Should().NotBeNull();
             if (_added)
             {
@@ -523,16 +526,16 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             var commit2 = await Persistence.CommitNextAsync(commit1!); // rev 3-4
             await Persistence.CommitNextAsync(commit2!); // rev 5-6
 
-            Persistence.AddSnapshot(new Snapshot(_streamId, 1, string.Empty)); //Too far back
+            await Persistence.AddSnapshotAsync(new Snapshot(_streamId, 1, string.Empty), CancellationToken.None); //Too far back
             _correct = new Snapshot(_streamId, 3, "Snapshot");
-            Persistence.AddSnapshot(_correct);
+            await Persistence.AddSnapshotAsync(_correct, CancellationToken.None);
             _tooFarForward = new Snapshot(_streamId, 5, string.Empty);
-            Persistence.AddSnapshot(_tooFarForward);
+            await Persistence.AddSnapshotAsync(_tooFarForward, CancellationToken.None);
         }
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
-            _snapshot = Persistence.GetSnapshot(_streamId!, _tooFarForward!.StreamRevision - 1);
+            _snapshot = await Persistence.GetSnapshotAsync(_streamId!, _tooFarForward!.StreamRevision - 1, CancellationToken.None);
         }
 
         [Fact]
@@ -572,15 +575,18 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             _newest = await Persistence.CommitNextAsync(_oldest2!);
         }
 
-        protected override void Because()
+        protected override Task BecauseAsync()
         {
-            Persistence.AddSnapshot(new Snapshot(_streamId!, _newest!.StreamRevision, SnapshotData));
+            return Persistence.AddSnapshotAsync(new Snapshot(_streamId!, _newest!.StreamRevision, SnapshotData), CancellationToken.None);
         }
 
         [Fact]
-        public void should_no_longer_find_the_stream_in_the_set_of_streams_to_be_snapshot()
+        public async Task should_no_longer_find_the_stream_in_the_set_of_streams_to_be_snapshot()
         {
-            Persistence.GetStreamsToSnapshot(1).Any(x => x.StreamId == _streamId).Should().BeFalse();
+            var observer = new StreamHeadObserver();
+            await Persistence.GetStreamsToSnapshotAsync(1, observer, CancellationToken.None);
+            observer.StreamHeads
+                .Any(x => x.StreamId == _streamId).Should().BeFalse();
         }
     }
 
@@ -600,7 +606,7 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             _streamId = Guid.NewGuid().ToString();
             _oldest = await Persistence.CommitSingleAsync(_streamId);
             _oldest2 = await Persistence.CommitNextAsync(_oldest!);
-            Persistence.AddSnapshot(new Snapshot(_streamId, _oldest2!.StreamRevision, SnapshotData));
+            await Persistence.AddSnapshotAsync(new Snapshot(_streamId, _oldest2!.StreamRevision, SnapshotData), CancellationToken.None);
         }
 
         protected override Task BecauseAsync()
@@ -610,15 +616,21 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
 
         // Because Raven and Mongo update the stream head asynchronously, this test will occasionally fail
         [Fact]
-        public void should_find_the_stream_in_the_set_of_streams_to_be_snapshot_when_within_the_threshold()
+        public async Task should_find_the_stream_in_the_set_of_streams_to_be_snapshot_when_within_the_threshold()
         {
-            Persistence.GetStreamsToSnapshot(WithinThreshold).FirstOrDefault(x => x.StreamId == _streamId).Should().NotBeNull();
+            var observer = new StreamHeadObserver();
+            await Persistence.GetStreamsToSnapshotAsync(WithinThreshold, observer, CancellationToken.None);
+            observer.StreamHeads
+                .FirstOrDefault(x => x.StreamId == _streamId).Should().NotBeNull();
         }
 
         [Fact]
-        public void should_not_find_the_stream_in_the_set_of_streams_to_be_snapshot_when_over_the_threshold()
+        public async Task should_not_find_the_stream_in_the_set_of_streams_to_be_snapshot_when_over_the_threshold()
         {
-            Persistence.GetStreamsToSnapshot(OverThreshold).Any(x => x.StreamId == _streamId).Should().BeFalse();
+            var observer = new StreamHeadObserver();
+            await Persistence.GetStreamsToSnapshotAsync(OverThreshold, observer, CancellationToken.None);
+            observer.StreamHeads
+                .Any(x => x.StreamId == _streamId).Should().BeFalse();
         }
     }
 
@@ -898,9 +910,12 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
         }
 
         [Fact]
-        public void should_not_find_any_streams_to_snapshot()
+        public async Task should_not_find_any_streams_to_snapshot()
         {
-            Persistence.GetStreamsToSnapshot(0).Count().Should().Be(0);
+            var observer = new StreamHeadObserver();
+            await Persistence.GetStreamsToSnapshotAsync(0, observer, CancellationToken.None);
+            observer.StreamHeads
+                .Count().Should().Be(0);
         }
     }
 
@@ -1040,15 +1055,15 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             await Persistence.CommitAsync(_streamId.BuildAttempt(bucketId: _bucketBId), CancellationToken.None);
         }
 
-        protected override void Because()
+        protected override Task BecauseAsync()
         {
-            Persistence.AddSnapshot(_snapshot!);
+            return Persistence.AddSnapshotAsync(_snapshot!, CancellationToken.None);
         }
 
         [Fact]
-        public void should_affect_snapshots_from_another_bucket()
+        public async Task should_affect_snapshots_from_another_bucket()
         {
-            Persistence.GetSnapshot(_bucketAId, _streamId!, _snapshot!.StreamRevision).Should().BeNull();
+            (await Persistence.GetSnapshotAsync(_bucketAId, _streamId!, _snapshot!.StreamRevision, CancellationToken.None)).Should().BeNull();
         }
     }
 
@@ -1169,15 +1184,19 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
         }
 
         [Fact]
-        public void should_purge_all_streams_to_snapshot_in_bucket_a()
+        public async Task should_purge_all_streams_to_snapshot_in_bucket_a()
         {
-            Persistence.GetStreamsToSnapshot(_bucketAId, 0).Count().Should().Be(0);
+            var observer = new StreamHeadObserver();
+            await Persistence.GetStreamsToSnapshotAsync(_bucketAId, 0, observer, CancellationToken.None);
+            observer.StreamHeads.Count.Should().Be(0);
         }
 
         [Fact]
-        public void should_purge_all_streams_to_snapshot_in_bucket_b()
+        public async Task should_purge_all_streams_to_snapshot_in_bucket_b()
         {
-            Persistence.GetStreamsToSnapshot(_bucketBId, 0).Count().Should().Be(0);
+            var observer = new StreamHeadObserver();
+            await Persistence.GetStreamsToSnapshotAsync(_bucketBId, 0, observer, CancellationToken.None);
+            observer.StreamHeads.Count.Should().Be(0);
         }
     }
 
