@@ -1,8 +1,7 @@
+using System.Collections;
+
 namespace NEventStore
 {
-    using System.Collections;
-    using System.Collections.Generic;
-
     internal class EnumerableCounter<T> : IEnumerable<T>
     {
         private readonly IEnumerable<T> _enumerable;

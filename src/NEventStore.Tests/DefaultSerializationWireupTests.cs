@@ -1,34 +1,31 @@
 ﻿#pragma warning disable IDE1006 // Naming Styles
 
-namespace NEventStore
-{
-    using NEventStore.Persistence.AcceptanceTests;
-    using NEventStore.Persistence.AcceptanceTests.BDD;
-    using System;
-    using FluentAssertions;
+using NEventStore.Persistence.AcceptanceTests;
+using NEventStore.Persistence.AcceptanceTests.BDD;
+using FluentAssertions;
 #if MSTEST
-	using Microsoft.VisualStudio.TestTools.UnitTesting;	
+using Microsoft.VisualStudio.TestTools.UnitTesting;	
 #endif
 #if NUNIT
-    using NUnit.Framework;
-    using NEventStore.Persistence.InMemory;
-    using NEventStore.Tests;
-    using NEventStore.Persistence;
+using NEventStore.Persistence.InMemory;
+using NEventStore.Tests;
+using NEventStore.Persistence;
 #endif
 #if XUNIT
-	using Xunit;
-	using Xunit.Should;
+using Xunit;
+using Xunit.Should;
 #endif
 
+namespace NEventStore
+{
 #if MSTEST
-		[TestClass]
+        [TestClass]
 #endif
-
-    public class when_building_an_event_store_without_an_explicit_serializer : SpecificationBase
+        public class when_building_an_event_store_without_an_explicit_serializer : SpecificationBase
     {
-        private TestableWireup _wireup;
-        private Exception _exception;
-        private IStoreEvents _eventStore;
+        private TestableWireup? _wireup;
+        private Exception? _exception;
+        private IStoreEvents? _eventStore;
 
         protected override void Context()
         {
@@ -39,12 +36,12 @@ namespace NEventStore
 
         protected override void Because()
         {
-            _exception = Catch.Exception(() => _eventStore = _wireup.Build());
+            _exception = Catch.Exception(() => _eventStore = _wireup!.Build());
         }
 
         protected override void Cleanup()
         {
-            _eventStore.Dispose();
+            _eventStore?.Dispose();
         }
 
         [Fact]
@@ -57,10 +54,10 @@ namespace NEventStore
         [Fact]
         public void should_have_InMemoryPersistenceEngine_as_default_serializer()
         {
-            var defaultPersistence = _wireup.Container.Resolve<IPersistStreams>();
+            var defaultPersistence = _wireup!.Container.Resolve<IPersistStreams>();
             defaultPersistence.Should().BeOfType(typeof(InMemoryPersistenceEngine));
 
-            // cannot check eventstore.Advance type because the persistence is wrapped
+            // cannot check eventstore.Advanced type because the persistence is wrapped
             // by a PipelineHooksPersistenceAwareDecorator
             // _eventStore.Advanced.Should().BeOfType(typeof(InMemoryPersistenceEngine));
         }
