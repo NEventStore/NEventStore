@@ -18,6 +18,9 @@
 - `BinarySerializer` moved to its own package: `NEventStore.Serialization.Binary`.
 - improved methods signature with nullability annotations.
 - `Wireup.With()` renamed `Wireup.Register()`.
+- `OptimisticEventStream` constructors replaced by initialization functions:
+  - `new OptimisticEventStream(string bucketId, string streamId, ICommitEvents persistence, int minRevision, int maxRevision)` -> `new OptimisticEventStream(string bucketId, string streamId, ICommitEvents persistence).Initialize(int minRevision, int maxRevision)`.
+  - `new OptimisticEventStream(ISnapshot snapshot, ICommitEvents persistence, int maxRevision)` -> `new OptimisticEventStream(string bucketId, string streamId, ICommitEvents persistence).Initialize(ISnapshot snapshot, int maxRevision)`.
 
 ## 9.2.0
 

@@ -878,7 +878,8 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
 
         protected override void Because()
         {
-            _thrown = Catch.Exception(() => Persistence.GetFrom(Bucket.Default, DateTime.MinValue).FirstOrDefault());
+            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+            _thrown = Catch.Exception(() => Persistence.GetFrom(Bucket.Default, 0).FirstOrDefault());
         }
 
         [Fact]
@@ -906,7 +907,7 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
         [Fact]
         public void should_not_find_any_commits_stored()
         {
-            Persistence.GetFrom(Bucket.Default, DateTime.MinValue).Count().Should().Be(0);
+            Persistence.GetFrom(Bucket.Default, 0).Count().Should().Be(0);
         }
 
         [Fact]
@@ -915,7 +916,7 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             var observer = new StreamHeadObserver();
             await Persistence.GetStreamsToSnapshotAsync(0, observer, CancellationToken.None);
             observer.StreamHeads
-                .Count().Should().Be(0);
+                .Count.Should().Be(0);
         }
     }
 
@@ -1002,7 +1003,7 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
 
         protected override async Task BecauseAsync()
         {
-            _thrown = await Catch.ExceptionAsync(() => Persistence.CommitAsync(_attemptForBucketB, CancellationToken.None));
+            _thrown = await Catch.ExceptionAsync(() => Persistence.CommitAsync(_attemptForBucketB!, CancellationToken.None));
         }
 
         [Fact]
@@ -1174,13 +1175,13 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
         [Fact]
         public void should_purge_all_commits_stored_in_bucket_a()
         {
-            Persistence.GetFrom(_bucketAId, DateTime.MinValue).Count().Should().Be(0);
+            Persistence.GetFrom(_bucketAId, 0).Count().Should().Be(0);
         }
 
         [Fact]
         public void should_purge_all_commits_stored_in_bucket_b()
         {
-            Persistence.GetFrom(_bucketBId, DateTime.MinValue).Count().Should().Be(0);
+            Persistence.GetFrom(_bucketBId, 0).Count().Should().Be(0);
         }
 
         [Fact]

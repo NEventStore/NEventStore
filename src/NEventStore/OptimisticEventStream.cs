@@ -43,41 +43,75 @@ namespace NEventStore
         public IDictionary<string, object> UncommittedHeaders { get; } = new Dictionary<string, object>();
 
         /// <summary>
-        /// Initializes a new instance of the OptimisticEventStream class.
+        /// Create a new instance of the OptimisticEventStream class.
         /// </summary>
         public OptimisticEventStream(string bucketId, string streamId, ICommitEvents persistence)
         {
+            if (string.IsNullOrWhiteSpace(bucketId))
+            {
+                throw new ArgumentException($"'{nameof(bucketId)}' cannot be null or whitespace.", nameof(bucketId));
+            }
+
+            if (string.IsNullOrWhiteSpace(streamId))
+            {
+                throw new ArgumentException($"'{nameof(streamId)}' cannot be null or whitespace.", nameof(streamId));
+            }
+
             BucketId = bucketId;
             StreamId = streamId;
-            _persistence = persistence;
+            _persistence = persistence ?? throw new ArgumentNullException(nameof(persistence));
             _committedImmutableWrapper = new ImmutableCollection<EventMessage>(_committed);
             _eventsImmutableWrapper = new ImmutableCollection<EventMessage>(_events);
             _committedHeadersImmutableWrapper = new ImmutableDictionary<string, object>(_committedHeaders);
         }
 
-        /// <summary>
-        /// Initializes a new instance of the OptimisticEventStream class.
-        /// </summary>
-        /// <exception cref="StreamNotFoundException"></exception>
-        public OptimisticEventStream(string bucketId, string streamId, ICommitEvents persistence, int minRevision, int maxRevision)
-            : this(bucketId, streamId, persistence)
+        private void EnsureStreamIsNew()
         {
-            IEnumerable<ICommit> commits = persistence.GetFrom(bucketId, streamId, minRevision, maxRevision);
-            PopulateStream(minRevision, maxRevision, commits);
-
-            if (minRevision > 0 && _committed.Count == 0)
+            if (_committed.Count > 0 || _events.Count > 0)
             {
-                throw new StreamNotFoundException(String.Format(CultureInfo.InvariantCulture, Messages.StreamNotFoundException, streamId, BucketId));
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Cannot call Initialize on a stream already used: Bucked: {0}, Stream: {1}, Committed Events: {2}, New Events: {3}", BucketId, StreamId, _committed.Count, _events.Count));
             }
         }
 
         /// <summary>
         /// Initializes a new instance of the OptimisticEventStream class.
         /// </summary>
-        public OptimisticEventStream(ISnapshot snapshot, ICommitEvents persistence, int maxRevision)
-            : this(snapshot.BucketId, snapshot.StreamId, persistence)
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="StreamNotFoundException"></exception>
+        public void Initialize(int minRevision, int maxRevision)
         {
-            IEnumerable<ICommit> commits = persistence.GetFrom(snapshot.BucketId, snapshot.StreamId, snapshot.StreamRevision, maxRevision);
+            EnsureStreamIsNew();
+            IEnumerable<ICommit> commits = _persistence.GetFrom(BucketId, StreamId, minRevision, maxRevision);
+            PopulateStream(minRevision, maxRevision, commits);
+
+            if (minRevision > 0 && _committed.Count == 0)
+            {
+                throw new StreamNotFoundException(String.Format(CultureInfo.InvariantCulture, Messages.StreamNotFoundException, StreamId, BucketId));
+            }
+        }
+
+        private void EnsureSnapshotIsForThisStream(ISnapshot snapshot)
+        {
+            if (BucketId != snapshot.BucketId || StreamId != snapshot.StreamId)
+            {
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "The snapshot is for a different stream. Stream BucketId: {0}, StreamId: {1}; Snapshot BucketId: {2}, StreamId: {3}", BucketId, StreamId, snapshot.BucketId, snapshot.StreamId));
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the OptimisticEventStream class.
+        /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        public void Initialize(ISnapshot snapshot, int maxRevision)
+        {
+            if (snapshot is null)
+            {
+                throw new ArgumentNullException(nameof(snapshot));
+            }
+            EnsureSnapshotIsForThisStream(snapshot);
+            EnsureStreamIsNew();
+            IEnumerable<ICommit> commits = _persistence.GetFrom(snapshot.BucketId, snapshot.StreamId, snapshot.StreamRevision, maxRevision);
             PopulateStream(snapshot.StreamRevision + 1, maxRevision, commits);
             StreamRevision = snapshot.StreamRevision + _committed.Count;
         }
@@ -300,7 +334,7 @@ namespace NEventStore
                 CommitSequence + 1,
                 SystemTime.UtcNow,
                 UncommittedHeaders.ToDictionary(x => x.Key, x => x.Value),
-                _events.ToArray()); // check this for performance: preallocate the array size.
+                _events.ToArray()); // check this for performance: pre-allocate the array size.
         }
 
         /// <inheritdoc/>

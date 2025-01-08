@@ -47,7 +47,8 @@ namespace NEventStore
 
         protected override void Because()
         {
-            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, MinRevision, MaxRevision);
+            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence);
+            Stream.Initialize(MinRevision, MaxRevision);
         }
 
         [Fact]
@@ -96,6 +97,94 @@ namespace NEventStore
 #if MSTEST
     [TestClass]
 #endif
+    public class when_initializing_an_already_initialized_stream: on_the_event_stream
+    {
+        private const int MinRevision = 2;
+        private const int MaxRevision = 7;
+        private readonly int _eachCommitHas = 2; // events
+        private ICommit[]? _committed;
+        private Exception? _thrownInitializeRevisionRange;
+        private Exception? _thrownInitializeSnapshot;
+
+        protected override void Context()
+        {
+            _committed =
+            [
+                BuildCommitStub(1, 2, 1, _eachCommitHas), // 1-2
+                BuildCommitStub(2, 4, 2, _eachCommitHas), // 3-4
+                BuildCommitStub(3, 6, 3, _eachCommitHas), // 5-6
+                BuildCommitStub(4, 8, 4, _eachCommitHas) // 7-8
+            ];
+
+            _committed[0].Headers["Common"] = string.Empty;
+            _committed[1].Headers["Common"] = string.Empty;
+            _committed[2].Headers["Common"] = string.Empty;
+            _committed[3].Headers["Common"] = string.Empty;
+            _committed[0].Headers["Unique"] = string.Empty;
+
+            A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, MinRevision, MaxRevision)).Returns(_committed);
+
+            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence);
+            Stream.Initialize(MinRevision, MaxRevision);
+        }
+
+        protected override void Because()
+        {
+            _thrownInitializeRevisionRange = Catch.Exception(() => Stream.Initialize(MinRevision, MaxRevision));
+            _thrownInitializeSnapshot = Catch.Exception(() => Stream.Initialize(new Snapshot(BucketId, StreamId, MinRevision, new object()), MaxRevision));
+        }
+
+        [Fact]
+        public void cannot_initialize_a_stream_using_revision_range()
+        {
+            _thrownInitializeRevisionRange.Should().BeOfType<InvalidOperationException>();
+        }
+
+        [Fact]
+        public void cannot_initialize_a_stream_using_snapshot()
+        {
+            _thrownInitializeSnapshot.Should().BeOfType<InvalidOperationException>();
+        }
+    }
+
+#if MSTEST
+    [TestClass]
+#endif
+    public class when_initializing_an_already_used_stream_with_revision_range : on_the_event_stream
+    {
+        private const int MinRevision = 2;
+        private const int MaxRevision = 7;
+        private Exception? _thrownInitializeRevisionRange;
+        private Exception? _thrownInitializeSnapshot;
+
+        protected override void Context()
+        {
+            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence);
+            Stream.Add(new EventMessage { Body = "Test" });
+        }
+
+        protected override void Because()
+        {
+            _thrownInitializeRevisionRange = Catch.Exception(() => Stream.Initialize(MinRevision, MaxRevision));
+            _thrownInitializeSnapshot = Catch.Exception(() => Stream.Initialize(new Snapshot(BucketId, StreamId, MinRevision, new object()), MaxRevision));
+        }
+
+        [Fact]
+        public void cannot_initialize_a_stream_using_revision_range()
+        {
+            _thrownInitializeRevisionRange.Should().BeOfType<InvalidOperationException>();
+        }
+
+        [Fact]
+        public void cannot_initialize_a_stream_using_snapshot()
+        {
+            _thrownInitializeSnapshot.Should().BeOfType<InvalidOperationException>();
+        }
+    }
+
+#if MSTEST
+    [TestClass]
+#endif
     public class when_the_head_event_revision_is_less_than_the_max_desired_revision : on_the_event_stream
     {
         private readonly int _eventsPerCommit = 2;
@@ -116,7 +205,8 @@ namespace NEventStore
 
         protected override void Because()
         {
-            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, 0, int.MaxValue);
+            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence);
+            Stream.Initialize(0, int.MaxValue);
         }
 
         [Fact]
@@ -155,7 +245,8 @@ namespace NEventStore
 
         protected override void Because()
         {
-            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, 0, 6);
+            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence);
+            Stream.Initialize(0, 6);
         }
 
         [Fact]
@@ -483,7 +574,8 @@ namespace NEventStore
 
             A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, 0, int.MaxValue)).Returns(_committed);
 
-            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, 0, int.MaxValue);
+            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence);
+            Stream.Initialize(0, int.MaxValue);
         }
 
         protected override void Because()
@@ -518,7 +610,8 @@ namespace NEventStore
             A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, StreamRevision, int.MaxValue)).Returns(_committed);
             A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, StreamRevision + 1, int.MaxValue)).Returns(_discoveredOnCommit);
 
-            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, StreamRevision, int.MaxValue);
+            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence);
+            Stream.Initialize(StreamRevision, int.MaxValue);
             Stream.Add(_uncommitted);
         }
 
@@ -665,7 +758,8 @@ namespace NEventStore
                    attempt.Headers,
                    attempt.Events));
 
-            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, MinRevision, MaxRevision);
+            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence);
+            Stream.Initialize(MinRevision, MaxRevision);
         }
 
         protected override void Because()
@@ -738,7 +832,8 @@ namespace NEventStore
                     attempt.Headers,
                     attempt.Events));
 
-            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, MinRevision, MaxRevision);
+            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence);
+            Stream.Initialize(MinRevision, MaxRevision);
         }
 
         protected override void Because()

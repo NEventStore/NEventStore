@@ -112,7 +112,9 @@ namespace NEventStore
             {
                 Logger.LogTrace(Resources.OpeningStreamAtRevision, streamId, bucketId, minRevision, maxRevision);
             }
-            return new OptimisticEventStream(bucketId, streamId, this, minRevision, maxRevision);
+            var stream = new OptimisticEventStream(bucketId, streamId, this);
+            stream.Initialize(minRevision, maxRevision);
+            return stream;
         }
 
         /// <inheritdoc/>
@@ -128,7 +130,9 @@ namespace NEventStore
                 Logger.LogTrace(Resources.OpeningStreamWithSnapshot, snapshot.StreamId, snapshot.BucketId, snapshot.StreamRevision, maxRevision);
             }
             maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
-            return new OptimisticEventStream(snapshot, this, maxRevision);
+            var stream = new OptimisticEventStream(snapshot.BucketId, snapshot.StreamId, this);
+            stream.Initialize(snapshot, maxRevision);
+            return stream;
         }
 
         /// <inheritdoc/>

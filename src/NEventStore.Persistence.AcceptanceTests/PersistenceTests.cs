@@ -857,7 +857,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         protected override void Because()
         {
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            _thrown = Catch.Exception(() => Persistence.GetFrom(Bucket.Default, DateTime.MinValue).FirstOrDefault());
+            _thrown = Catch.Exception(() => Persistence.GetFrom(Bucket.Default, 0).FirstOrDefault());
         }
 
         [Fact]
@@ -885,7 +885,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_not_find_any_commits_stored()
         {
-            Persistence.GetFrom(Bucket.Default, DateTime.MinValue).Count().Should().Be(0);
+            Persistence.GetFrom(Bucket.Default,0).Count().Should().Be(0);
         }
 
         [Fact]
@@ -1140,13 +1140,13 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_purge_all_commits_stored_in_bucket_a()
         {
-            Persistence.GetFrom(_bucketAId, DateTime.MinValue).Count().Should().Be(0);
+            Persistence.GetFrom(_bucketAId, 0).Count().Should().Be(0);
         }
 
         [Fact]
         public void should_purge_all_commits_stored_in_bucket_b()
         {
-            Persistence.GetFrom(_bucketBId, DateTime.MinValue).Count().Should().Be(0);
+            Persistence.GetFrom(_bucketBId, 0).Count().Should().Be(0);
         }
 
         [Fact]
