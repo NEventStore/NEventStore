@@ -67,6 +67,17 @@ namespace NEventStore
         void CommitChanges(Guid commitId);
 
         /// <summary>
+        ///     Commits the changes to durable storage.
+        /// </summary>
+        /// <param name="commitId">The value which uniquely identifies the commit.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+        /// <exception cref="DuplicateCommitException" />
+        /// <exception cref="ConcurrencyException" />
+        /// <exception cref="StorageException" />
+        /// <exception cref="StorageUnavailableException" />
+        Task CommitChangesAsync(Guid commitId, CancellationToken cancellationToken);
+
+        /// <summary>
         ///     Clears the uncommitted changes.
         /// </summary>
         void ClearChanges();

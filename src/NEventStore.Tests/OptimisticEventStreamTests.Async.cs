@@ -14,7 +14,7 @@ using Xunit.Should;
 #pragma warning disable 169 // ReSharper enable InconsistentNaming
 #pragma warning disable IDE1006 // Naming Styles
 
-namespace NEventStore
+namespace NEventStore.Async
 {
 #if MSTEST
     [TestClass]
@@ -42,13 +42,21 @@ namespace NEventStore
             _committed[3].Headers["Common"] = string.Empty;
             _committed[0].Headers["Unique"] = string.Empty;
 
-            A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, MinRevision, MaxRevision)).Returns(_committed);
+            A.CallTo(() => PersistenceAsync.GetFromAsync(BucketId, StreamId, MinRevision, MaxRevision, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None))
+               .ReturnsLazily(async (string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellation) =>
+               {
+                   foreach (var _commit in _committed)
+                   {
+                       await asyncObserver.OnNextAsync(_commit).ConfigureAwait(false);
+                   }
+                   await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
+               });
         }
 
-        protected override void Because()
+        protected override Task BecauseAsync()
         {
             Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, PersistenceAsync);
-            Stream.Initialize(MinRevision, MaxRevision);
+            return Stream.InitializeAsync(MinRevision, MaxRevision, CancellationToken.None);
         }
 
         [Fact]
@@ -106,7 +114,7 @@ namespace NEventStore
         private Exception? _thrownInitializeRevisionRange;
         private Exception? _thrownInitializeSnapshot;
 
-        protected override void Context()
+        protected override Task ContextAsync()
         {
             _committed =
             [
@@ -122,16 +130,24 @@ namespace NEventStore
             _committed[3].Headers["Common"] = string.Empty;
             _committed[0].Headers["Unique"] = string.Empty;
 
-            A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, MinRevision, MaxRevision)).Returns(_committed);
+            A.CallTo(() => PersistenceAsync.GetFromAsync(BucketId, StreamId, MinRevision, MaxRevision, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None))
+               .ReturnsLazily(async (string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellation) =>
+               {
+                   foreach (var _commit in _committed)
+                   {
+                       await asyncObserver.OnNextAsync(_commit).ConfigureAwait(false);
+                   }
+                   await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
+               });
 
             Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, PersistenceAsync);
-            Stream.Initialize(MinRevision, MaxRevision);
+            return Stream.InitializeAsync(MinRevision, MaxRevision, CancellationToken.None);
         }
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
-            _thrownInitializeRevisionRange = Catch.Exception(() => Stream.Initialize(MinRevision, MaxRevision));
-            _thrownInitializeSnapshot = Catch.Exception(() => Stream.Initialize(new Snapshot(BucketId, StreamId, MinRevision, new object()), MaxRevision));
+            _thrownInitializeRevisionRange = await Catch.ExceptionAsync(() => Stream.InitializeAsync(MinRevision, MaxRevision, CancellationToken.None)).ConfigureAwait(false);
+            _thrownInitializeSnapshot = await Catch.ExceptionAsync(() => Stream.InitializeAsync(new Snapshot(BucketId, StreamId, MinRevision, new object()), MaxRevision, CancellationToken.None)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -163,10 +179,10 @@ namespace NEventStore
             Stream.Add(new EventMessage { Body = "Test" });
         }
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
-            _thrownInitializeRevisionRange = Catch.Exception(() => Stream.Initialize(MinRevision, MaxRevision));
-            _thrownInitializeSnapshot = Catch.Exception(() => Stream.Initialize(new Snapshot(BucketId, StreamId, MinRevision, new object()), MaxRevision));
+            _thrownInitializeRevisionRange = await Catch.ExceptionAsync(() => Stream.InitializeAsync(MinRevision, MaxRevision, CancellationToken.None)).ConfigureAwait(false);
+            _thrownInitializeSnapshot = await Catch.ExceptionAsync(() => Stream.InitializeAsync(new Snapshot(BucketId, StreamId, MinRevision, new object()), MaxRevision, CancellationToken.None)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -200,13 +216,21 @@ namespace NEventStore
                 BuildCommitStub(4, 8, 4, _eventsPerCommit) // 7-8
             ];
 
-            A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, 0, int.MaxValue)).Returns(_committed);
+            A.CallTo(() => PersistenceAsync.GetFromAsync(BucketId, StreamId, 0, int.MaxValue, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None))
+               .ReturnsLazily(async (string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellation) =>
+               {
+                   foreach (var _commit in _committed)
+                   {
+                       await asyncObserver.OnNextAsync(_commit).ConfigureAwait(false);
+                   }
+                   await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
+               });
         }
 
-        protected override void Because()
+        protected override Task BecauseAsync()
         {
             Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, PersistenceAsync);
-            Stream.Initialize(0, int.MaxValue);
+            return Stream.InitializeAsync(0, int.MaxValue, CancellationToken.None);
         }
 
         [Fact]
@@ -240,13 +264,21 @@ namespace NEventStore
                 BuildCommitStub(4, 8, 4, _eventsPerCommit) // 7-8
             ];
 
-            A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, 0, 6)).Returns(_committed);
+            A.CallTo(() => PersistenceAsync.GetFromAsync(BucketId, StreamId, 0, 6, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None))
+               .ReturnsLazily(async (string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellation) =>
+               {
+                   foreach (var _commit in _committed)
+                   {
+                       await asyncObserver.OnNextAsync(_commit).ConfigureAwait(false);
+                   }
+                   await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
+               });
         }
 
-        protected override void Because()
+        protected override Task BecauseAsync()
         {
             Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, PersistenceAsync);
-            Stream.Initialize(0, 6);
+            return Stream.InitializeAsync(0, 6, CancellationToken.None);
         }
 
         [Fact]
@@ -391,15 +423,15 @@ namespace NEventStore
 #endif
     public class when_committing_an_empty_changeset : on_the_event_stream
     {
-        protected override void Because()
+        protected override Task BecauseAsync()
         {
-            Stream.CommitChanges(Guid.NewGuid());
+            return Stream.CommitChangesAsync(Guid.NewGuid(), CancellationToken.None);
         }
 
         [Fact]
         public void should_not_call_the_underlying_infrastructure()
         {
-            A.CallTo(() => Persistence.Commit(A<CommitAttempt>._)).MustNotHaveHappened();
+            A.CallTo(() => PersistenceAsync.CommitAsync(A<CommitAttempt>._, CancellationToken.None)).MustNotHaveHappened();
         }
 
         [Fact]
@@ -427,9 +459,9 @@ namespace NEventStore
 
         protected override void Context()
         {
-            A.CallTo(() => Persistence.Commit(A<CommitAttempt>._))
-                .Invokes((CommitAttempt _) => _constructed = _)
-                .ReturnsLazily((CommitAttempt attempt) => new Commit(
+            A.CallTo(() => PersistenceAsync.CommitAsync(A<CommitAttempt>._, CancellationToken.None))
+                .Invokes((CommitAttempt commit, CancellationToken _) => _constructed = commit)
+                .ReturnsLazily((CommitAttempt attempt, CancellationToken _) => new Commit(
                     attempt.BucketId,
                     attempt.StreamId,
                     attempt.StreamRevision,
@@ -446,15 +478,15 @@ namespace NEventStore
             }
         }
 
-        protected override void Because()
+        protected override Task BecauseAsync()
         {
-            Stream.CommitChanges(_commitId);
+            return Stream.CommitChangesAsync(_commitId, CancellationToken.None);
         }
 
         [Fact]
         public void should_provide_a_commit_to_the_underlying_infrastructure()
         {
-            A.CallTo(() => Persistence.Commit(A<CommitAttempt>._)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => PersistenceAsync.CommitAsync(A<CommitAttempt>._, CancellationToken.None)).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -567,20 +599,28 @@ namespace NEventStore
         private Guid _duplicateCommitId;
         private Exception? _thrown;
 
-        protected override void Context()
+        protected override Task ContextAsync()
         {
             _committed = [BuildCommitStub(1, 1, 1, 1)];
             _duplicateCommitId = _committed[0].CommitId;
 
-            A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, 0, int.MaxValue)).Returns(_committed);
+            A.CallTo(() => PersistenceAsync.GetFromAsync(BucketId, StreamId, 0, int.MaxValue, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None))
+               .ReturnsLazily(async (string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellation) =>
+               {
+                   foreach (var _commit in _committed)
+                   {
+                       await asyncObserver.OnNextAsync(_commit).ConfigureAwait(false);
+                   }
+                   await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
+               });
 
             Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, PersistenceAsync);
-            Stream.Initialize(0, int.MaxValue);
+            return Stream.InitializeAsync(0, int.MaxValue, CancellationToken.None);
         }
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
-            _thrown = Catch.Exception(() => Stream.CommitChanges(_duplicateCommitId));
+            _thrown = await Catch.ExceptionAsync(() => Stream.CommitChangesAsync(_duplicateCommitId, CancellationToken.None)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -601,23 +641,39 @@ namespace NEventStore
         private ICommit[]? _discoveredOnCommit;
         private Exception? _thrown;
 
-        protected override void Context()
+        protected override async Task ContextAsync()
         {
             _committed = [BuildCommitStub(1, 1, 1, 1)];
             _discoveredOnCommit = [BuildCommitStub(2, 3, 2, 2)];
 
-            A.CallTo(() => Persistence.Commit(A<CommitAttempt>._)).Throws(new ConcurrencyException());
-            A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, StreamRevision, int.MaxValue)).Returns(_committed);
-            A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, StreamRevision + 1, int.MaxValue)).Returns(_discoveredOnCommit);
+            A.CallTo(() => PersistenceAsync.CommitAsync(A<CommitAttempt>._, CancellationToken.None)).Throws(new ConcurrencyException());
+            A.CallTo(() => PersistenceAsync.GetFromAsync(BucketId, StreamId, StreamRevision, int.MaxValue, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None))
+               .ReturnsLazily(async (string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellation) =>
+               {
+                   foreach (var _commit in _committed)
+                   {
+                       await asyncObserver.OnNextAsync(_commit).ConfigureAwait(false);
+                   }
+                   await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
+               });
+            A.CallTo(() => PersistenceAsync.GetFromAsync(BucketId, StreamId, StreamRevision +1, int.MaxValue, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None))
+               .ReturnsLazily(async (string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellation) =>
+               {
+                   foreach (var _commit in _discoveredOnCommit)
+                   {
+                       await asyncObserver.OnNextAsync(_commit).ConfigureAwait(false);
+                   }
+                   await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
+               });
 
             Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, PersistenceAsync);
-            Stream.Initialize(StreamRevision, int.MaxValue);
+            await Stream.InitializeAsync(StreamRevision, int.MaxValue, CancellationToken.None);
             Stream.Add(_uncommitted);
         }
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
-            _thrown = Catch.Exception(() => Stream.CommitChanges(Guid.NewGuid()));
+            _thrown = await Catch.ExceptionAsync(() => Stream.CommitChangesAsync(Guid.NewGuid(), CancellationToken.None)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -629,7 +685,7 @@ namespace NEventStore
         [Fact]
         public void should_query_the_underlying_storage_to_discover_the_new_commits()
         {
-            A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, StreamRevision + 1, int.MaxValue)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => PersistenceAsync.GetFromAsync(BucketId, StreamId, StreamRevision + 1, int.MaxValue, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None)).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -663,9 +719,9 @@ namespace NEventStore
             Stream.Dispose();
         }
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
-            _thrown = Catch.Exception(() => Stream.CommitChanges(Guid.NewGuid()));
+            _thrown = await Catch.ExceptionAsync(() => Stream.CommitChangesAsync(Guid.NewGuid(), CancellationToken.None)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -735,7 +791,7 @@ namespace NEventStore
         private Exception? _thrown1;
         private Exception? _thrown2;
 
-        protected override void Context()
+        protected override Task ContextAsync()
         {
             _committed =
             [
@@ -745,9 +801,17 @@ namespace NEventStore
                 BuildCommitStub(4, 8, 4, _eventsPerCommit) // 7-8
             ];
 
-            A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, MinRevision, MaxRevision)).Returns(_committed);
-            A.CallTo(() => Persistence.Commit(A<CommitAttempt>._))
-               .ReturnsLazily((CommitAttempt attempt) => new Commit(
+            A.CallTo(() => PersistenceAsync.GetFromAsync(BucketId, StreamId, MinRevision, MaxRevision, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None))
+               .ReturnsLazily(async (string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellation) =>
+               {
+                   foreach (var _commit in _committed)
+                   {
+                       await asyncObserver.OnNextAsync(_commit).ConfigureAwait(false);
+                   }
+                   await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
+               });
+            A.CallTo(() => PersistenceAsync.CommitAsync(A<CommitAttempt>._, CancellationToken.None))
+               .ReturnsLazily((CommitAttempt attempt, CancellationToken _) => new Commit(
                    attempt.BucketId,
                    attempt.StreamId,
                    attempt.StreamRevision,
@@ -759,16 +823,16 @@ namespace NEventStore
                    attempt.Events));
 
             Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, PersistenceAsync);
-            Stream.Initialize(MinRevision, MaxRevision);
+            return Stream.InitializeAsync(MinRevision, MaxRevision, CancellationToken.None);
         }
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
             Stream.Add(new EventMessage() { Body = "Test" });
             // this should fail and cause the stream to be reloaded
-            _thrown1 = Catch.Exception(() => Stream.CommitChanges(Guid.NewGuid()));
+            _thrown1 = await Catch.ExceptionAsync(() => Stream.CommitChangesAsync(Guid.NewGuid(), CancellationToken.None)).ConfigureAwait(false);
             // this should succeed, events will be appended at the end
-            _thrown2 = Catch.Exception(() => Stream.CommitChanges(Guid.NewGuid()));
+            _thrown2 = await Catch.ExceptionAsync(() => Stream.CommitChangesAsync(Guid.NewGuid(), CancellationToken.None)).ConfigureAwait(false);
         }
 
         [Fact]
@@ -808,7 +872,7 @@ namespace NEventStore
         private Exception? _thrown1;
         private Exception? _thrown2;
 
-        protected override void Context()
+        protected override Task ContextAsync()
         {
             _committed =
             [
@@ -819,9 +883,17 @@ namespace NEventStore
             ];
 
             // the persistence returns all the data in the stream
-            A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, MinRevision, MaxRevision)).Returns(_committed);
-            A.CallTo(() => Persistence.Commit(A<CommitAttempt>._))
-                .ReturnsLazily((CommitAttempt attempt) => new Commit(
+            A.CallTo(() => PersistenceAsync.GetFromAsync(BucketId, StreamId, MinRevision, MaxRevision, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None))
+               .ReturnsLazily(async (string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellation) =>
+               {
+                   foreach (var _commit in _committed)
+                   {
+                       await asyncObserver.OnNextAsync(_commit).ConfigureAwait(false);
+                   }
+                   await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
+               });
+            A.CallTo(() => PersistenceAsync.CommitAsync(A<CommitAttempt>._, CancellationToken.None))
+                .ReturnsLazily((CommitAttempt attempt, CancellationToken _) => new Commit(
                     attempt.BucketId,
                     attempt.StreamId,
                     attempt.StreamRevision,
@@ -833,16 +905,16 @@ namespace NEventStore
                     attempt.Events));
 
             Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, PersistenceAsync);
-            Stream.Initialize(MinRevision, MaxRevision);
+            return Stream.InitializeAsync(MinRevision, MaxRevision, CancellationToken.None);
         }
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
             Stream.Add(new EventMessage() { Body = "Test" });
             // this should fail and cause the stream to be reloaded
-            _thrown1 = Catch.Exception(() => Stream.CommitChanges(Guid.NewGuid()));
+            _thrown1 = await Catch.ExceptionAsync(() => Stream.CommitChangesAsync(Guid.NewGuid(), CancellationToken.None)).ConfigureAwait(false);
             // this should succeed, events will be appended at the end
-            _thrown2 = Catch.Exception(() => Stream.CommitChanges(Guid.NewGuid()));
+            _thrown2 = await Catch.ExceptionAsync(() => Stream.CommitChangesAsync(Guid.NewGuid(), CancellationToken.None)).ConfigureAwait(false);
         }
 
         [Fact]

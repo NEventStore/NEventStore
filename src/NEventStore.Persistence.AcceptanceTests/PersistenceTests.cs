@@ -1240,7 +1240,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
         protected IPersistStreams Persistence
         {
-            get { return Fixture!.Persistence; }
+            get { return Fixture!.Persistence!; }
         }
 
         protected int ConfiguredPageSizeForTesting
@@ -1306,7 +1306,7 @@ namespace NEventStore.Persistence.AcceptanceTests
 
     public partial class PersistenceEngineFixture : IDisposable
     {
-        public IPersistStreams Persistence { get; private set; }
+        public IPersistStreams? Persistence { get; private set; }
 
         private readonly Func<int, IPersistStreams> _createPersistence;
 

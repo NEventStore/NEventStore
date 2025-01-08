@@ -155,13 +155,13 @@ namespace NEventStore.Persistence.InMemory
                         {
                             Checkpoint = commit.CheckpointToken
                         };
-                        await observer.OnErrorAsync(ex);
+                        await observer.OnErrorAsync(ex).ConfigureAwait(false);
                         break;
                     }
-                    await observer.OnNextAsync(commit);
+                    await observer.OnNextAsync(commit).ConfigureAwait(false);
                 }
-                await observer.OnCompletedAsync();
             }
+            await observer.OnCompletedAsync().ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -237,13 +237,13 @@ namespace NEventStore.Persistence.InMemory
                     {
                         var operationCanceledException = new OperationCanceledException();
                         var ex = new AsyncObserverException("Operation Cancellation Requested", operationCanceledException);
-                        await asyncObserver.OnErrorAsync(operationCanceledException);
+                        await asyncObserver.OnErrorAsync(ex).ConfigureAwait(false);
                         break;
                     }
-                    await asyncObserver.OnNextAsync(commit);
+                    await asyncObserver.OnNextAsync(commit).ConfigureAwait(false);
                 }
-                await asyncObserver.OnCompletedAsync();
             }
+            await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
         }
 
         /// <inheritdoc/>

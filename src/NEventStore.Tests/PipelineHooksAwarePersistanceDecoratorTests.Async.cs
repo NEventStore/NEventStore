@@ -107,8 +107,8 @@ namespace NEventStore.Async
             A.CallTo(() => persistence.GetFromAsync(Bucket.Default, _commit.StreamId, 0, int.MaxValue, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None))
                 .ReturnsLazily(async (string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellation) =>
                 {
-                    await asyncObserver.OnNextAsync(_commit);
-                    await asyncObserver.OnCompletedAsync();
+                    await asyncObserver.OnNextAsync(_commit).ConfigureAwait(false);
+                    await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
                 });
         }
 

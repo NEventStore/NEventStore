@@ -1215,16 +1215,16 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
         private ICommit[]? _commits;
         private int _moreThanPageSize;
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
             _moreThanPageSize = ConfiguredPageSizeForTesting + 1;
             var eventStore = new OptimisticEventStore(Persistence, null);
             // TODO: Not sure how to set the actual page size to the const defined above
             for (int i = 0; i < _moreThanPageSize; i++)
             {
-                using IEventStream stream = eventStore.OpenStream(Guid.NewGuid());
+                using IEventStream stream = await eventStore.OpenStreamAsync(Guid.NewGuid()).ConfigureAwait(false);
                 stream.Add(new EventMessage { Body = new Pippo() { S = "Hi " + i } });
-                stream.CommitChanges(Guid.NewGuid());
+                await stream.CommitChangesAsync(Guid.NewGuid(), CancellationToken.None).ConfigureAwait(false);
             }
             _commits = Persistence.GetFrom(0).ToArray();
         }
@@ -1279,7 +1279,7 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
 
         protected IPersistStreams Persistence
         {
-            get { return Fixture!.Persistence; }
+            get { return Fixture!.Persistence!; }
         }
 
         protected int ConfiguredPageSizeForTesting
@@ -1345,7 +1345,7 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
 
     public partial class PersistenceEngineFixtureAsync : IDisposable
     {
-        public IPersistStreams Persistence { get; private set; }
+        public IPersistStreams? Persistence { get; private set; }
 
         private readonly Func<int, IPersistStreams> _createPersistence;
 
