@@ -208,20 +208,23 @@ namespace NEventStore.Async
             A.CallTo(() => _hook2.SelectCommit(_commit)).Returns(_commit);
             pipelineHooks.Add(_hook2);
 
-            A.CallTo(() => persistence.GetFromTo(_start, _end)).Returns([_commit]);
+            A.CallTo(() => persistence.GetFromToAsync(_start, _end, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None))
+                .ReturnsLazily(async (long fromCheckpointToken, long toCheckpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellation) =>
+                {
+                    await asyncObserver.OnNextAsync(_commit).ConfigureAwait(false);
+                    await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
+                });
         }
 
-        protected override void Because()
+        protected override Task BecauseAsync()
         {
-            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            // Forces enumeration of commits
-            Decorator.GetFromTo(_start, _end).ToList();
+            return Decorator.GetFromToAsync(_start, _end, new CommitStreamObserver(), CancellationToken.None);
         }
 
         [Fact]
         public void should_call_the_underlying_persistence_to_get_events()
         {
-            A.CallTo(() => persistence.GetFromTo(_start, _end)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => persistence.GetFromToAsync(_start, _end, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None)).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -257,20 +260,23 @@ namespace NEventStore.Async
             A.CallTo(() => _hook2.SelectCommit(_commit)).Returns(_commit);
             pipelineHooks.Add(_hook2);
 
-            A.CallTo(() => persistence.GetFromTo(Bucket.Default, _start, _end)).Returns([_commit]);
+            A.CallTo(() => persistence.GetFromToAsync(Bucket.Default, _start, _end, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None))
+                .ReturnsLazily(async (string bucketId, long fromCheckpointToken, long toCheckpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellation) =>
+                {
+                    await asyncObserver.OnNextAsync(_commit).ConfigureAwait(false);
+                    await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
+                });
         }
 
-        protected override void Because()
+        protected override Task BecauseAsync()
         {
-            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            // Forces enumeration of commits
-            Decorator.GetFromTo(Bucket.Default, _start, _end).ToList();
+            return Decorator.GetFromToAsync(Bucket.Default, _start, _end, new CommitStreamObserver(), CancellationToken.None);
         }
 
         [Fact]
         public void should_call_the_underlying_persistence_to_get_events()
         {
-            A.CallTo(() => persistence.GetFromTo(Bucket.Default, _start, _end)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => persistence.GetFromToAsync(Bucket.Default, _start, _end, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None)).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -326,18 +332,23 @@ namespace NEventStore.Async
             A.CallTo(() => _hook2.SelectCommit(_commit)).Returns(_commit);
             pipelineHooks.Add(_hook2);
 
-            A.CallTo(() => persistence.GetFrom(0)).Returns([_commit]);
+            A.CallTo(() => persistence.GetFromAsync(0, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None))
+                .ReturnsLazily(async (long checkpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellation) =>
+                {
+                    await asyncObserver.OnNextAsync(_commit).ConfigureAwait(false);
+                    await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
+                });
         }
 
-        protected override void Because()
+        protected override Task BecauseAsync()
         {
-            Decorator.GetFrom(0).ToList();
+            return Decorator.GetFromAsync(0, new CommitStreamObserver(), CancellationToken.None);
         }
 
         [Fact]
         public void should_call_the_underlying_persistence_to_get_events()
         {
-            A.CallTo(() => persistence.GetFrom(0)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => persistence.GetFromAsync(0, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None)).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -369,18 +380,23 @@ namespace NEventStore.Async
             A.CallTo(() => _hook2.SelectCommit(_commit)).Returns(_commit);
             pipelineHooks.Add(_hook2);
 
-            A.CallTo(() => persistence.GetFrom(Bucket.Default, 0)).Returns([_commit]);
+            A.CallTo(() => persistence.GetFromAsync(Bucket.Default, 0, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None))
+                .ReturnsLazily(async (string bucketId, long checkpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellation) =>
+                {
+                    await asyncObserver.OnNextAsync(_commit).ConfigureAwait(false);
+                    await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
+                });
         }
 
-        protected override void Because()
+        protected override Task BecauseAsync()
         {
-            Decorator.GetFrom(Bucket.Default, 0).ToList();
+            return Decorator.GetFromAsync(Bucket.Default, 0, new CommitStreamObserver(), CancellationToken.None);
         }
 
         [Fact]
         public void should_call_the_underlying_persistence_to_get_events()
         {
-            A.CallTo(() => persistence.GetFrom(Bucket.Default, 0)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => persistence.GetFromAsync(Bucket.Default, 0, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None)).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -404,9 +420,9 @@ namespace NEventStore.Async
             pipelineHooks.Add(_hook);
         }
 
-        protected override void Because()
+        protected override Task BecauseAsync()
         {
-            Decorator.Purge();
+            return Decorator.PurgeAsync(CancellationToken.None);
         }
 
         [Fact]
@@ -430,9 +446,9 @@ namespace NEventStore.Async
             pipelineHooks.Add(_hook);
         }
 
-        protected override void Because()
+        protected override Task BecauseAsync()
         {
-            Decorator.Purge(_bucketId);
+            return Decorator.PurgeAsync(_bucketId, CancellationToken.None);
         }
 
         [Fact]
@@ -457,9 +473,9 @@ namespace NEventStore.Async
             pipelineHooks.Add(_hook);
         }
 
-        protected override void Because()
+        protected override Task BecauseAsync()
         {
-            Decorator.DeleteStream(_bucketId, _streamId);
+            return Decorator.DeleteStreamAsync(_bucketId, _streamId, CancellationToken.None);
         }
 
         [Fact]
@@ -477,7 +493,7 @@ namespace NEventStore.Async
         private ICommit? _commit;
         private IPipelineHook? _hook1;
         private IPipelineHook? _hook2;
-        private List<ICommit>? _commits;
+        private IList<ICommit>? _commits;
 
         protected override void Context()
         {
@@ -491,18 +507,25 @@ namespace NEventStore.Async
             A.CallTo(() => _hook2.SelectCommit(_commit)).Returns(_commit);
             pipelineHooks.Add(_hook2);
 
-            A.CallTo(() => persistence.GetFrom(0)).Returns([_commit]);
+            A.CallTo(() => persistence.GetFromAsync(0, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None))
+                .ReturnsLazily(async (long checkpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellation) =>
+                {
+                    await asyncObserver.OnNextAsync(_commit).ConfigureAwait(false);
+                    await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
+                });
         }
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
-            _commits = Decorator.GetFrom(0).ToList();
+            var observer = new CommitStreamObserver();
+            await Decorator.GetFromAsync(0, observer, CancellationToken.None).ConfigureAwait(false);
+            _commits = observer.Commits;
         }
 
         [Fact]
         public void should_call_the_underlying_persistence_to_get_events()
         {
-            A.CallTo(() => persistence.GetFrom(0)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => persistence.GetFromAsync(0, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None)).MustHaveHappenedOnceExactly();
         }
 
         [Fact]

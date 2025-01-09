@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Concurrent;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
@@ -81,6 +82,13 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
+        public Task GetFromAsync(Int64 checkpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
+        {
+            var data = GetFrom(checkpointToken);
+            return ObserveCommits(asyncObserver, data, cancellationToken);
+        }
+
+        /// <inheritdoc/>
         public IEnumerable<ICommit> GetFromTo(Int64 fromCheckpointToken, Int64 toCheckpointToken)
         {
             ThrowWhenDisposed();
@@ -97,6 +105,13 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
+        public Task GetFromToAsync(Int64 fromCheckpointToken, Int64 toCheckpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
+        {
+            var data = GetFromTo(fromCheckpointToken, toCheckpointToken);
+            return ObserveCommits(asyncObserver, data, cancellationToken);
+        }
+
+        /// <inheritdoc/>
         public IEnumerable<ICommit> GetFrom(string bucketId, Int64 checkpointToken)
         {
             ThrowWhenDisposed();
@@ -108,6 +123,13 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
+        public Task GetFromAsync(string bucketId, Int64 checkpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
+        {
+            var data = GetFrom(bucketId, checkpointToken);
+            return ObserveCommits(asyncObserver, data, cancellationToken);
+        }
+
+        /// <inheritdoc/>
         public IEnumerable<ICommit> GetFromTo(string bucketId, Int64 fromCheckpointToken, Int64 toCheckpointToken)
         {
             ThrowWhenDisposed();
@@ -116,6 +138,13 @@ namespace NEventStore.Persistence.InMemory
                 Logger.LogDebug(Resources.GettingCommitsFromBucketAndFromToCheckpoint, bucketId, fromCheckpointToken, toCheckpointToken);
             }
             return this[bucketId].GetFromTo(fromCheckpointToken, toCheckpointToken);
+        }
+
+        /// <inheritdoc/>
+        public Task GetFromToAsync(string bucketId, long fromCheckpointToken, long toCheckpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
+        {
+            var data = GetFromTo(bucketId, fromCheckpointToken, toCheckpointToken);
+            return ObserveCommits(asyncObserver, data, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -141,9 +170,14 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public async Task GetFromAsync(string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> observer, CancellationToken cancellationToken)
+        public Task GetFromAsync(string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> observer, CancellationToken cancellationToken)
         {
             var data = GetFrom(bucketId, streamId, minRevision, maxRevision);
+            return ObserveCommits(observer, data, cancellationToken);
+        }
+
+        private static async Task ObserveCommits(IAsyncObserver<ICommit> observer, IEnumerable<ICommit> data, CancellationToken cancellationToken)
+        {
             if (data?.Any() == true)
             {
                 foreach (var commit in data)
@@ -268,6 +302,20 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
+        public Task PurgeAsync(CancellationToken cancellationToken)
+        {
+            Purge();
+            return Task.CompletedTask;
+        }
+
+        /// <inheritdoc/>
+        public Task PurgeAsync(string bucketId, CancellationToken cancellationToken)
+        {
+            Purge(bucketId);
+            return Task.CompletedTask;
+        }
+
+        /// <inheritdoc/>
         public void Drop()
         {
             _buckets.Clear();
@@ -285,6 +333,13 @@ namespace NEventStore.Persistence.InMemory
                 return;
             }
             bucket.DeleteStream(streamId);
+        }
+
+        /// <inheritdoc/>
+        public Task DeleteStreamAsync(string bucketId, string streamId, CancellationToken cancellationToken)
+        {
+            DeleteStream(bucketId, streamId);
+            return Task.CompletedTask;
         }
 
         /// <inheritdoc/>

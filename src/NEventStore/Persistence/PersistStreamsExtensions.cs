@@ -16,8 +16,19 @@ namespace NEventStore.Persistence
         }
 
         /// <summary>
+        /// Deletes a stream from the default bucket.
+        /// </summary>
+        /// <param name="persistStreams">The IPersistStreams instance.</param>
+        /// <param name="streamId">The stream id to be deleted.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+        public static Task DeleteStream(this IPersistStreams persistStreams, string streamId, CancellationToken cancellationToken)
+        {
+            return persistStreams.DeleteStreamAsync(Bucket.Default, streamId, cancellationToken);
+        }
+
+        /// <summary>
         /// Returns a single commit from any bucket.
-        /// Wrapper for the <see cref="IPersistStreams.GetFromTo(long, long)"/> function in order to
+        /// Wrapper for the <see cref="IPersistStreamsSync.GetFromTo(long, long)"/> function in order to
         /// return a single commit.
         /// </summary>
         /// <param name="persistStreams">The IPersistStreams instance.</param>
@@ -26,6 +37,22 @@ namespace NEventStore.Persistence
         public static ICommit GetCommit(this IPersistStreams persistStreams, Int64 checkpointToken)
         {
             return persistStreams.GetFromTo(checkpointToken - 1, checkpointToken).SingleOrDefault();
+        }
+
+        /// <summary>
+        /// Returns a single commit from any bucket.
+        /// Wrapper for the <see cref="IPersistStreamsSync.GetFromTo(long, long)"/> function in order to
+        /// return a single commit.
+        /// </summary>
+        /// <param name="persistStreams">The IPersistStreams instance.</param>
+        /// <param name="checkpointToken">The checkpoint token that mark the commit to read.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+        /// <returns>A single commit.</returns>
+        public static async Task<ICommit> GetCommitAsync(this IPersistStreams persistStreams, Int64 checkpointToken, CancellationToken cancellationToken)
+        {
+            var observer = new CommitStreamObserver();
+            await persistStreams.GetFromToAsync(checkpointToken - 1, checkpointToken, observer, cancellationToken).ConfigureAwait(false);
+            return observer.Commits.SingleOrDefault();
         }
     }
 }

@@ -94,7 +94,7 @@ namespace NEventStore
         {
             private const int HeadStreamRevision = 42;
             private const int HeadCommitSequence = 42;
-            private const int DupliateCommitSequence = HeadCommitSequence;
+            private const int DuplicateCommitSequence = HeadCommitSequence;
             private CommitAttempt? Attempt;
             private ICommit? Committed;
 
@@ -103,7 +103,7 @@ namespace NEventStore
             protected override void Context()
             {
                 Committed = BuildCommitStub(1, HeadStreamRevision, HeadCommitSequence);
-                Attempt = BuildCommitAttemptStub(HeadStreamRevision + 1, DupliateCommitSequence);
+                Attempt = BuildCommitAttemptStub(HeadStreamRevision + 1, DuplicateCommitSequence);
 
                 Hook.PostCommit(Committed);
             }

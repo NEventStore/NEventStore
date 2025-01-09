@@ -47,10 +47,6 @@ namespace NEventStore
         /// <exception cref="StorageUnavailableException" />
         public static ISnapshot GetSnapshot(this IAccessSnapshots accessSnapshots, string bucketId, Guid streamId, int maxRevision)
         {
-            if (accessSnapshots == null)
-            {
-                throw new ArgumentException("accessSnapshots is null");
-            }
             return accessSnapshots.GetSnapshot(bucketId, streamId.ToString(), maxRevision);
         }
 
@@ -64,10 +60,6 @@ namespace NEventStore
         /// <exception cref="StorageUnavailableException" />
         public static IEnumerable<IStreamHead> GetStreamsToSnapshot(this IAccessSnapshots accessSnapshots, int maxThreshold)
         {
-            if (accessSnapshots == null)
-            {
-                throw new ArgumentException("accessSnapshots is null");
-            }
             return accessSnapshots.GetStreamsToSnapshot(Bucket.Default, maxThreshold);
         }
 
@@ -114,10 +106,6 @@ namespace NEventStore
         /// <exception cref="StorageUnavailableException" />
         public static Task<ISnapshot> GetSnapshotAsync(this IAccessSnapshotsAsync accessSnapshots, string bucketId, Guid streamId, int maxRevision, CancellationToken cancellationToken)
         {
-            if (accessSnapshots == null)
-            {
-                throw new ArgumentException("accessSnapshots is null");
-            }
             return accessSnapshots.GetSnapshotAsync(bucketId, streamId.ToString(), maxRevision, cancellationToken);
         }
 
@@ -132,10 +120,6 @@ namespace NEventStore
         /// <exception cref="StorageUnavailableException" />
         public static Task GetStreamsToSnapshotAsync(this IAccessSnapshotsAsync accessSnapshots, int maxThreshold, IAsyncObserver<IStreamHead> asyncObserver, CancellationToken cancellationToken)
         {
-            if (accessSnapshots == null)
-            {
-                throw new ArgumentException("accessSnapshots is null");
-            }
             return accessSnapshots.GetStreamsToSnapshotAsync(Bucket.Default, maxThreshold, asyncObserver, cancellationToken);
         }
     }

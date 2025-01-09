@@ -723,9 +723,11 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             _committed = (await Persistence.CommitManyAsync(ConfiguredPageSizeForTesting + 1)).Select(c => c.CommitId).ToList();
         }
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
-            _loaded = Persistence.GetFrom(checkPoint).Select(c => c.CommitId).ToList();
+            var observer = new CommitStreamObserver();
+            await Persistence.GetFromAsync(checkPoint, observer, CancellationToken.None).ConfigureAwait(false);
+            _loaded = observer.Commits.Select(c => c.CommitId).ToList();
         }
 
         [Fact]
@@ -758,9 +760,11 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             _committedOnBucket1.AddRange((await Persistence.CommitManyAsync(4, null, "b1")).Select(c => c.CommitId));
         }
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
-            _loaded = Persistence.GetFrom("b1", checkPoint).Select(c => c.CommitId).ToList();
+            var observer = new CommitStreamObserver();
+            await Persistence.GetFromAsync("b1", checkPoint, observer, CancellationToken.None).ConfigureAwait(false);
+            _loaded = observer.Commits.Select(c => c.CommitId).ToList();
         }
 
         [Fact]
@@ -801,9 +805,11 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             endCheckpoint = (2 * (ConfiguredPageSizeForTesting + 1)) - 1;
         }
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
-            _loaded = Persistence.GetFromTo(startCheckpoint, endCheckpoint).Select(c => c.CommitId).ToList();
+            var observer = new CommitStreamObserver();
+            await Persistence.GetFromToAsync(startCheckpoint, endCheckpoint, observer, CancellationToken.None).ConfigureAwait(false);
+            _loaded = observer.Commits.Select(c => c.CommitId).ToList();
         }
 
         [Fact]
@@ -842,9 +848,11 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             endCheckpoint = ((2 * (ConfiguredPageSizeForTesting + 1)) + 4) - 1;
         }
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
-            _loaded = Persistence.GetFromTo("b1", startCheckpoint, endCheckpoint).Select(c => c.CommitId).ToList();
+            var observer = new CommitStreamObserver();
+            await Persistence.GetFromToAsync("b1", startCheckpoint, endCheckpoint, observer, CancellationToken.None).ConfigureAwait(false);
+            _loaded = observer.Commits.Select(c => c.CommitId).ToList();
         }
 
         [Fact]
@@ -876,10 +884,10 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
     {
         private Exception? _thrown;
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            _thrown = Catch.Exception(() => Persistence.GetFrom(Bucket.Default, 0).FirstOrDefault());
+            _thrown = await Catch.ExceptionAsync(() => Persistence.GetFromAsync(Bucket.Default, 0, new CommitStreamObserver(), CancellationToken.None));
         }
 
         [Fact]
@@ -899,15 +907,17 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             return Persistence.CommitSingleAsync();
         }
 
-        protected override void Because()
+        protected override Task BecauseAsync()
         {
-            Persistence.Purge();
+            return Persistence.PurgeAsync(CancellationToken.None);
         }
 
         [Fact]
-        public void should_not_find_any_commits_stored()
+        public async Task should_not_find_any_commits_stored()
         {
-            Persistence.GetFrom(Bucket.Default, 0).Count().Should().Be(0);
+            var observer = new CommitStreamObserver();
+            await Persistence.GetFromAsync(Bucket.Default, 0, observer, CancellationToken.None).ConfigureAwait(false);
+            observer.Commits.Count.Should().Be(0);
         }
 
         [Fact]
@@ -1126,9 +1136,11 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             await Persistence.CommitAsync(Guid.NewGuid().ToString().BuildAttempt(bucketId: bucketAId), CancellationToken.None);
         }
 
-        protected override void Because()
+        protected override async Task BecauseAsync()
         {
-            _commits = Persistence.GetFrom(0).ToArray();
+            var observer = new CommitStreamObserver();
+            await Persistence.GetFromAsync(0, observer, CancellationToken.None).ConfigureAwait(false);
+            _commits = observer.Commits.ToArray();
         }
 
         [Fact]
@@ -1167,21 +1179,25 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             await Persistence.CommitAsync(_streamId.BuildAttempt(bucketId: _bucketBId), CancellationToken.None);
         }
 
-        protected override void Because()
+        protected override Task BecauseAsync()
         {
-            Persistence.Purge();
+            return Persistence.PurgeAsync(CancellationToken.None);
         }
 
         [Fact]
-        public void should_purge_all_commits_stored_in_bucket_a()
+        public async Task should_purge_all_commits_stored_in_bucket_a()
         {
-            Persistence.GetFrom(_bucketAId, 0).Count().Should().Be(0);
+            var observer = new CommitStreamObserver();
+            await Persistence.GetFromAsync(_bucketAId, 0, observer, CancellationToken.None).ConfigureAwait(false);
+            observer.Commits.Count.Should().Be(0);
         }
 
         [Fact]
-        public void should_purge_all_commits_stored_in_bucket_b()
+        public async Task should_purge_all_commits_stored_in_bucket_b()
         {
-            Persistence.GetFrom(_bucketBId, 0).Count().Should().Be(0);
+            var observer = new CommitStreamObserver();
+            await Persistence.GetFromAsync(_bucketBId, 0, observer, CancellationToken.None).ConfigureAwait(false);
+            observer.Commits.Count.Should().Be(0);
         }
 
         [Fact]
@@ -1226,7 +1242,10 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
                 stream.Add(new EventMessage { Body = new Pippo() { S = "Hi " + i } });
                 await stream.CommitChangesAsync(Guid.NewGuid(), CancellationToken.None).ConfigureAwait(false);
             }
-            _commits = Persistence.GetFrom(0).ToArray();
+
+            var observer = new CommitStreamObserver();
+            await Persistence.GetFromAsync(0, observer, CancellationToken.None).ConfigureAwait(false);
+            _commits = observer.Commits.ToArray();
         }
 
         [Fact]
@@ -1256,7 +1275,10 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
                 [new EventMessage { Body = new string('a', bodyLength) }]);
             await Persistence.CommitAsync(attempt, CancellationToken.None);
 
-            ICommit commits = Persistence.GetFrom(0).Single();
+            var observer = new CommitStreamObserver();
+            await Persistence.GetFromAsync(0, observer, CancellationToken.None).ConfigureAwait(false);
+            ICommit commits = observer.Commits.Single();
+
             commits.Events.Single().Body.ToString()!.Length.Should().Be(bodyLength);
         }
     }

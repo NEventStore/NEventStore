@@ -2,7 +2,7 @@
 
 ## vNext
 
-- pesistence async (IPersistStreams) ?
+- persistence: async (IPersistStreams) ?
 - persistence: read using cursors ?
 - system.text.json ?
 - Improved comments and added more nullability checks.
@@ -46,7 +46,7 @@
 ## 9.0.0
 
 - Added support for .net 6 [#493](https://github.com/NEventStore/NEventStore/issues/493).
-- Change / Optimization: Commit and CommitAttempt do not create internal readonly collections anymore, it can be useless given the fact we can change properties of events.
+- Change / Optimization: Commit and CommitAttempt do not create internal read-only collections anymore, it can be useless given the fact we can change properties of events.
 - NEventStore.Serialization.Json: accepts a JsonSerializerSettings to configure the serializer.
 
 ## 8.0.0
@@ -59,13 +59,13 @@
 
 ### Breaking Changes
 
-- Droppped support for .Net Framework 4.5, only .Net 4.6.1+ will be supported in 8.x. .Net Framewrok support will be dropped in a future revision.
+- Dropped support for .Net Framework 4.5, only .Net 4.6.1+ will be supported in 8.x. .Net Framework support will be dropped in a future revision.
 - Logging switched to Microsoft.Extensions.Logging, old logging code and configuration functions have been removed.
 
 ## 7.0.0
 
 - The IPersistStreams interface got some major changes:
-	- Added new GetFromTo(Int64, Int64) and GetFromTo(Strimg, Int64, Int64) methods to the IPersistStreams interface.
+	- Added new GetFromTo(Int64, Int64) and GetFromTo(String, Int64, Int64) methods to the IPersistStreams interface.
 	- Extension methods PersistStreamsExtensions.GetFrom(DateTime) and PersistStreamsExtensions.GetFromTo(DateTime, DateTime) were marked obsolete and will be removed.
 	- A new PersistStreamsExtensions.GetCommit(Int64) method was added to retrieve a single commit [#445](https://github.com/NEventStore/NEventStore/issues/445).
 - PollingClient was moved to its own NEventStore.PollingClient NuGet package [#467](https://github.com/NEventStore/NEventStore/issues/467).
@@ -88,8 +88,8 @@ Minor optimizations were made if no pipeline hooks are used.
 
 ### Breaking Changes
 
-- **PipelineHookBase**: changed the way the Dispose pattern was implemented to be compliant with the framework guildelines. Move all the dispose logic to the overridden Dispose(bool disposing) method of your pipeline hook class.
-- **OptimisticPipelineHook** optmization is not configured and enabled by default (if not enlisting in ambient transactions) anymore; it now must be explicitly enabled calling UseOptimisticPipelineHook() when configuring NEventStore. Do not use it if you plan to use transactions. To restore the previous behavior call .UseOptimisticPipelineHook() when configuring NEventStore.
+- **PipelineHookBase**: changed the way the Dispose pattern was implemented to be compliant with the framework guidelines. Move all the dispose logic to the overridden Dispose(bool disposing) method of your pipeline hook class.
+- **OptimisticPipelineHook** optimization is not configured and enabled by default (if not enlisting in ambient transactions) anymore; it now must be explicitly enabled calling UseOptimisticPipelineHook() when configuring NEventStore. Do not use it if you plan to use transactions. To restore the previous behavior call .UseOptimisticPipelineHook() when configuring NEventStore.
 - **EnlistInAmbientTransaction** has been removed from the core NEventStore library. It will be added to specific persistence drivers implementations.
 
 ## 6.0.0
@@ -108,7 +108,7 @@ More information on this topic in the issue: [Race condition in sync and async d
 - **PollingClient was removed because it used to depend on Rx**: you can [read more information here](src/NEventStore/Client/README.MD). The new polling client class is called PollingClient2, this however should be considered as a sample implementation you can use to derive your own.
 - **JsonSerializer and BsonSerializer were moved in a separate assembly**: if you need them, you should reference the NEventStore.Serialization.Json assembly or implement your own serializers that depend on the Json.Net version you need.
 - **EventMessage** class is now sealed.
-- **OptimistcEventStream throws exceptions if a null message or a message with null body is added to the stream**. Previously if you called Add with null event message or add with an eventmessage with null body, the add operation was ignored without any warning or error. 
+- **OptimisticEventStream throws exceptions if a null message or a message with null body is added to the stream**. Previously if you called Add with null event message or add with an event message with null body, the add operation was ignored without any warning or error. 
 
 ## 6.0.0-rc-1
 
@@ -118,7 +118,7 @@ New features:
 
 Bug fixed:
 
-- adding events in the middle of a commit should throw ConsuccencyException ([#420](https://github.com/NEventStore/NEventStore/issues/420)).
+- adding events in the middle of a commit should throw ConcurrencyException ([#420](https://github.com/NEventStore/NEventStore/issues/420)).
 
 ## 6.0.0-rc-0
 
@@ -136,7 +136,7 @@ More information on this topic in the issue: [Race condition in sync and async d
 - **PollingClient was removed because it used to depend on Rx**: you can [read more information here](src/NEventStore/Client/README.MD). The new polling client class is called PollingClient2, this however should be considered as a sample implementation you can use to derive your own.
 - **JsonSerializer and BsonSerializer were moved in a separate assembly**: if you need them, you should reference the NEventStore.Serialization.Json assembly or implement your own serializers that depend on the Json.Net version you need.
 - **EventMessage** class is now sealed.
-- **OptimistcEventStream throws exceptions if a null message or a message with null body is added to the stream**. Previously if you called Add with null event message or add with an eventmessage with null body, the add operation was ignored without any warning or error. 
+- **OptimisticEventStream throws exceptions if a null message or a message with null body is added to the stream**. Previously if you called Add with null event message or add with an event message with null body, the add operation was ignored without any warning or error. 
 
 ### Other Notes
 

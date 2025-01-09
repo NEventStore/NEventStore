@@ -49,9 +49,23 @@ namespace NEventStore.Persistence
         }
 
         /// <inheritdoc/>
+        public Task GetFromAsync(Int64 checkpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
+        {
+            var pipelineHookObserver = new PipelineHookObserver(_pipelineHooks, asyncObserver);
+            return _original.GetFromAsync(checkpointToken, pipelineHookObserver, cancellationToken);
+        }
+
+        /// <inheritdoc/>
         public IEnumerable<ICommit> GetFromTo(Int64 fromCheckpointToken, Int64 toCheckpointToken)
         {
             return ExecuteHooks(_original.GetFromTo(fromCheckpointToken, toCheckpointToken));
+        }
+
+        /// <inheritdoc/>
+        public Task GetFromToAsync(Int64 fromCheckpointToken, Int64 toCheckpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
+        {
+            var pipelineHookObserver = new PipelineHookObserver(_pipelineHooks, asyncObserver);
+            return _original.GetFromToAsync(fromCheckpointToken, toCheckpointToken, pipelineHookObserver, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -61,9 +75,23 @@ namespace NEventStore.Persistence
         }
 
         /// <inheritdoc/>
+        public Task GetFromAsync(string bucketId, Int64 checkpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
+        {
+            var pipelineHookObserver = new PipelineHookObserver(_pipelineHooks, asyncObserver);
+            return _original.GetFromAsync(bucketId, checkpointToken, pipelineHookObserver, cancellationToken);
+        }
+
+        /// <inheritdoc/>
         public IEnumerable<ICommit> GetFromTo(string bucketId, Int64 fromCheckpointToken, Int64 toCheckpointToken)
         {
             return ExecuteHooks(_original.GetFromTo(bucketId, fromCheckpointToken, toCheckpointToken));
+        }
+
+        /// <inheritdoc/>
+        public Task GetFromToAsync(string bucketId, long fromCheckpointToken, long toCheckpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
+        {
+            var pipelineHookObserver = new PipelineHookObserver(_pipelineHooks, asyncObserver);
+            return _original.GetFromToAsync(bucketId, fromCheckpointToken, toCheckpointToken, pipelineHookObserver, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -154,6 +182,26 @@ namespace NEventStore.Persistence
         }
 
         /// <inheritdoc/>
+        public async Task PurgeAsync(CancellationToken cancellationToken)
+        {
+            await _original.PurgeAsync(cancellationToken).ConfigureAwait(false);
+            foreach (var pipelineHook in _pipelineHooks)
+            {
+                pipelineHook.OnPurge();
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task PurgeAsync(string bucketId, CancellationToken cancellationToken)
+        {
+            await _original.PurgeAsync(bucketId, cancellationToken).ConfigureAwait(false);
+            foreach (var pipelineHook in _pipelineHooks)
+            {
+                pipelineHook.OnPurge(bucketId);
+            }
+        }
+
+        /// <inheritdoc/>
         public void Drop()
         {
             _original.Drop();
@@ -163,6 +211,16 @@ namespace NEventStore.Persistence
         public void DeleteStream(string bucketId, string streamId)
         {
             _original.DeleteStream(bucketId, streamId);
+            foreach (var pipelineHook in _pipelineHooks)
+            {
+                pipelineHook.OnDeleteStream(bucketId, streamId);
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task DeleteStreamAsync(string bucketId, string streamId, CancellationToken cancellationToken)
+        {
+            await _original.DeleteStreamAsync(bucketId, streamId, cancellationToken).ConfigureAwait(false);
             foreach (var pipelineHook in _pipelineHooks)
             {
                 pipelineHook.OnDeleteStream(bucketId, streamId);

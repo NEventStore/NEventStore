@@ -83,9 +83,21 @@ namespace NEventStore.Diagnostics
         }
 
         /// <inheritdoc/>
+        public Task GetFromAsync(Int64 checkpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
+        {
+            return _persistence.GetFromAsync(checkpointToken, asyncObserver, cancellationToken);
+        }
+
+        /// <inheritdoc/>
         public IEnumerable<ICommit> GetFromTo(Int64 fromCheckpointToken, Int64 toCheckpointToken)
         {
             return _persistence.GetFromTo(fromCheckpointToken, toCheckpointToken);
+        }
+
+        /// <inheritdoc/>
+        public Task GetFromToAsync(Int64 fromCheckpointToken, Int64 toCheckpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
+        {
+            return _persistence.GetFromToAsync(fromCheckpointToken, toCheckpointToken, asyncObserver, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -95,9 +107,21 @@ namespace NEventStore.Diagnostics
         }
 
         /// <inheritdoc/>
+        public Task GetFromAsync(string bucketId, Int64 checkpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
+        {
+            return _persistence.GetFromAsync(bucketId, checkpointToken, asyncObserver, cancellationToken);
+        }
+
+        /// <inheritdoc/>
         public IEnumerable<ICommit> GetFromTo(string bucketId, Int64 fromCheckpointToken, Int64 toCheckpointToken)
         {
             return _persistence.GetFromTo(bucketId, fromCheckpointToken, toCheckpointToken);
+        }
+
+        /// <inheritdoc/>
+        public Task GetFromToAsync(string bucketId, long fromCheckpointToken, long toCheckpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
+        {
+            return _persistence.GetFromToAsync(bucketId, fromCheckpointToken, toCheckpointToken, asyncObserver, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -161,6 +185,18 @@ namespace NEventStore.Diagnostics
         }
 
         /// <inheritdoc/>
+        public Task PurgeAsync(CancellationToken cancellationToken)
+        {
+            return _persistence.PurgeAsync(cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public Task PurgeAsync(string bucketId, CancellationToken cancellationToken)
+        {
+            return _persistence.PurgeAsync(bucketId, cancellationToken);
+        }
+
+        /// <inheritdoc/>
         public void Drop()
         {
             _persistence.Drop();
@@ -170,6 +206,12 @@ namespace NEventStore.Diagnostics
         public void DeleteStream(string bucketId, string streamId)
         {
             _persistence.DeleteStream(bucketId, streamId);
+        }
+
+        /// <inheritdoc/>
+        public Task DeleteStreamAsync(string bucketId, string streamId, CancellationToken cancellationToken)
+        {
+            return _persistence.DeleteStreamAsync(bucketId, streamId, cancellationToken);
         }
 
         /// <inheritdoc/>

@@ -20,11 +20,6 @@ namespace NEventStore
         /// <exception cref="StorageUnavailableException" />
         public static IEnumerable<ICommit> GetFrom(this ICommitEvents commitEvents, string streamId, int minRevision, int maxRevision)
         {
-            if (commitEvents == null)
-            {
-                throw new ArgumentNullException(nameof(commitEvents));
-            }
-
             return commitEvents.GetFrom(Bucket.Default, streamId, minRevision, maxRevision);
         }
 
@@ -42,11 +37,6 @@ namespace NEventStore
         /// <exception cref="StorageUnavailableException" />
         public static Task GetFromAsync(this ICommitEventsAsync commitEvents, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> observer, CancellationToken cancellationToken)
         {
-            if (commitEvents == null)
-            {
-                throw new ArgumentNullException(nameof(commitEvents));
-            }
-
             return commitEvents.GetFromAsync(Bucket.Default, streamId, minRevision, maxRevision, observer, cancellationToken);
         }
     }
