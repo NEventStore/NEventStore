@@ -192,7 +192,11 @@ namespace NEventStore.Persistence.InMemory
                         await observer.OnErrorAsync(ex, cancellationToken).ConfigureAwait(false);
                         break;
                     }
-                    await observer.OnNextAsync(commit, cancellationToken).ConfigureAwait(false);
+                    var goOn = await observer.OnNextAsync(commit, cancellationToken).ConfigureAwait(false);
+                    if (!goOn)
+                    {
+                        break;
+                    }
                 }
             }
             await observer.OnCompletedAsync(cancellationToken).ConfigureAwait(false);
@@ -274,7 +278,11 @@ namespace NEventStore.Persistence.InMemory
                         await asyncObserver.OnErrorAsync(ex, cancellationToken).ConfigureAwait(false);
                         break;
                     }
-                    await asyncObserver.OnNextAsync(commit, cancellationToken).ConfigureAwait(false);
+                    var goOn = await asyncObserver.OnNextAsync(commit, cancellationToken).ConfigureAwait(false);
+                    if (!goOn)
+                    {
+                        break;
+                    }
                 }
             }
             await asyncObserver.OnCompletedAsync(cancellationToken).ConfigureAwait(false);

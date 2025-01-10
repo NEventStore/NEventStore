@@ -21,10 +21,10 @@ namespace NEventStore
         /// <summary>
         /// Store the commits received from the stream
         /// </summary>
-        public virtual Task OnNextAsync(ICommit value, CancellationToken cancellationToken)
+        public virtual Task<bool> OnNextAsync(ICommit value, CancellationToken cancellationToken)
         {
             Commits.Add(value);
-            return Task.CompletedTask;
+            return Task.FromResult(true);
         }
 
         /// <summary>

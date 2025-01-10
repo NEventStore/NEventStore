@@ -1,20 +1,20 @@
 ﻿namespace NEventStore
 {
     /// <summary>
-    ///   Represents an async observer that can receive notifications of commits.
+    /// Represents an async observer that can receive notifications of commits.
     /// </summary>
     public class LambdaAsyncObserver<T> : IAsyncObserver<T>
     {
-        private readonly Func<T, CancellationToken, Task> _onNextAsync;
+        private readonly Func<T, CancellationToken, Task<bool>> _onNextAsync;
         private readonly Func<Exception, CancellationToken, Task>? _onErrorAsync;
         private readonly Func<CancellationToken, Task>? _onCompletedAsync;
 
         /// <summary>
-        ///  Initializes a new instance of the LambdaAsyncObserver class.
+        /// Initializes a new instance of the LambdaAsyncObserver class.
         /// </summary>
         /// <exception cref="ArgumentNullException"></exception>
         public LambdaAsyncObserver(
-            Func<T, CancellationToken, Task> onNextAsync,
+            Func<T, CancellationToken, Task<bool>> onNextAsync,
             Func<Exception, CancellationToken, Task>? onErrorAsync = null,
             Func<CancellationToken, Task>? onCompletedAsync = null)
         {
@@ -36,7 +36,7 @@
         }
 
         /// <inheritdoc/>
-        public Task OnNextAsync(T value, CancellationToken cancellationToken)
+        public Task<bool> OnNextAsync(T value, CancellationToken cancellationToken)
         {
             return _onNextAsync(value, cancellationToken);
         }

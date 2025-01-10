@@ -285,14 +285,14 @@ namespace NEventStore.Persistence
                 return _observer.OnErrorAsync(error, cancellationToken);
             }
 
-            public Task OnNextAsync(ICommit value, CancellationToken cancellationToken)
+            public Task<bool> OnNextAsync(ICommit value, CancellationToken cancellationToken)
             {
                 var commit = ExecuteHooks(value);
                 if (commit != null)
                 {
                     return _observer.OnNextAsync(commit, cancellationToken);
                 }
-                return Task.CompletedTask;
+                return Task.FromResult(true);
             }
 
             private ICommit? ExecuteHooks(ICommit commit)

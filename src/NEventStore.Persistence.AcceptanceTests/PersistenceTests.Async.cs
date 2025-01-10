@@ -217,6 +217,157 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
         }
     }
 
+    public class when_observer_stops_reading_the_stream_after_2_commits : PersistenceEngineConcernAsync
+    {
+        private ICommit? _oldest, _oldest2, _oldest3;
+        private string? _streamId;
+
+        protected override async Task ContextAsync()
+        {
+            _oldest = await Persistence.CommitSingleAsync(); // 2 events, revision 1-2
+            _oldest2 = await Persistence.CommitNextAsync(_oldest!); // 2 events, revision 3-4
+            _oldest3 = await Persistence.CommitNextAsync(_oldest2!); // 2 events, revision 5-6
+            await Persistence.CommitNextAsync(_oldest3!); // 2 events, revision 7-8
+
+            _streamId = _oldest!.StreamId;
+        }
+
+        [Fact]
+        public async Task ICommitEvents_GetFromAsync_stops_after_2_commits()
+        {
+            bool _observerCompleted = false;
+            var _committed = new List<ICommit>();
+            var observer = new LambdaAsyncObserver<ICommit>(
+                onNextAsync: (c, _) =>
+                {
+                    if (_committed.Count <= 1)
+                    {
+                        _committed.Add(c);
+                        return Task.FromResult(true);
+                    }
+                    // do not read more than 2 commits
+                    return Task.FromResult(false);
+                },
+                onCompletedAsync: (_) =>
+                {
+                    _observerCompleted = true;
+                    return Task.CompletedTask;
+                });
+            await Persistence.GetFromAsync(Bucket.Default, _streamId!, 0, int.MaxValue, observer, CancellationToken.None);
+
+            _committed!.Count.Should().Be(2);
+            _observerCompleted.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task IPersistStreams_GetFromAsync_Checkpoint_stops_after_2_commits()
+        {
+            bool _observerCompleted = false;
+            var _committed = new List<ICommit>();
+            var observer = new LambdaAsyncObserver<ICommit>(
+                onNextAsync: (c, _) =>
+                {
+                    if (_committed.Count <= 1)
+                    {
+                        _committed.Add(c);
+                        return Task.FromResult(true);
+                    }
+                    // do not read more than 2 commits
+                    return Task.FromResult(false);
+                },
+                onCompletedAsync: (_) =>
+                {
+                    _observerCompleted = true;
+                    return Task.CompletedTask;
+                });
+            await Persistence.GetFromAsync(0, observer, CancellationToken.None);
+
+            _committed!.Count.Should().Be(2);
+            _observerCompleted.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task IPersistStreams_GetFromToAsync_Checkpoint_stops_after_2_commits()
+        {
+            bool _observerCompleted = false;
+            var _committed = new List<ICommit>();
+            var observer = new LambdaAsyncObserver<ICommit>(
+                onNextAsync: (c, _) =>
+                {
+                    if (_committed.Count <= 1)
+                    {
+                        _committed.Add(c);
+                        return Task.FromResult(true);
+                    }
+                    // do not read more than 2 commits
+                    return Task.FromResult(false);
+                },
+                onCompletedAsync: (_) =>
+                {
+                    _observerCompleted = true;
+                    return Task.CompletedTask;
+                });
+            await Persistence.GetFromToAsync(0, long.MaxValue, observer, CancellationToken.None);
+
+            _committed!.Count.Should().Be(2);
+            _observerCompleted.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task IPersistStreams_GetFromAsync_Bucket_Checkpoint_stops_after_2_commits()
+        {
+            bool _observerCompleted = false;
+            var _committed = new List<ICommit>();
+            var observer = new LambdaAsyncObserver<ICommit>(
+                onNextAsync: (c, _) =>
+                {
+                    if (_committed.Count <= 1)
+                    {
+                        _committed.Add(c);
+                        return Task.FromResult(true);
+                    }
+                    // do not read more than 2 commits
+                    return Task.FromResult(false);
+                },
+                onCompletedAsync: (_) =>
+                {
+                    _observerCompleted = true;
+                    return Task.CompletedTask;
+                });
+            await Persistence.GetFromAsync(Bucket.Default, 0, observer, CancellationToken.None);
+
+            _committed!.Count.Should().Be(2);
+            _observerCompleted.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task IPersistStreams_GetFromToAsync_Bucket_Checkpoint_stops_after_2_commits()
+        {
+            bool _observerCompleted = false;
+            var _committed = new List<ICommit>();
+            var observer = new LambdaAsyncObserver<ICommit>(
+                onNextAsync: (c, _) =>
+                {
+                    if (_committed.Count <= 1)
+                    {
+                        _committed.Add(c);
+                        return Task.FromResult(true);
+                    }
+                    // do not read more than 2 commits
+                    return Task.FromResult(false);
+                },
+                onCompletedAsync: (_) =>
+                {
+                    _observerCompleted = true;
+                    return Task.CompletedTask;
+                });
+            await Persistence.GetFromToAsync(Bucket.Default, 0, long.MaxValue, observer, CancellationToken.None);
+
+            _committed!.Count.Should().Be(2);
+            _observerCompleted.Should().BeTrue();
+        }
+    }
+
 #if MSTEST
     [TestClass]
 #endif

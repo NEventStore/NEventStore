@@ -2,12 +2,12 @@
 
 ## vNext
 
-- persistence: async (IPersistStreams) ?
-- persistence: read using cursors ?
 - system.text.json ?
+- Async Methods to read from and write to streams (IStoreEvents, IEventStream, IPersistStreams, IPersistStreamsAsync, ICommitEventsAsync, IAccessSnapshotsAsync).
+- AsyncPollingClient: a new polling client implementation that uses Async interfaces.
 - Improved comments and added more nullability checks.
 - Minor performance improvements.
-- Updated Testing Packages (NUnit, FluentAssertions, Microsoft.NET.Test and so on...)
+- Updated Testing Packages (NUnit, FluentAssertions, Microsoft.NET.Test and so on...).
 
 ### Breaking Changes
 

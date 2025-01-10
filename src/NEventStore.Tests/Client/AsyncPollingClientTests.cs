@@ -15,18 +15,18 @@ using Xunit;
 using Xunit.Should;
 #endif
 
-namespace NEventStore.PollingClient
+namespace NEventStore.PollingClient.Async
 {
 #if MSTEST
     [TestClass]
 #endif
-    public class CreatingPollingClient2Tests
+    public class Creating_AsyncPollingClient_Tests
     {
         [Fact]
         public void When_persist_streams_is_null_then_should_throw()
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Catch.Exception(() => new PollingClient2(null, _ => PollingClient2.HandlingResult.MoveToNext)).Should().BeOfType<ArgumentNullException>();
+            Catch.Exception(() => new AsyncPollingClient(null, new CommitStreamObserver()).Should().BeOfType<ArgumentNullException>());
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
@@ -34,7 +34,7 @@ namespace NEventStore.PollingClient
         public void When_interval_less_than_zero_then_should_throw()
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Catch.Exception(() => new PollingClient2(A.Fake<IPersistStreams>(), null)).Should().BeOfType<ArgumentNullException>();
+            Catch.Exception(() => new AsyncPollingClient(A.Fake<IPersistStreams>(), null)).Should().BeOfType<ArgumentNullException>();
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
     }
@@ -42,24 +42,20 @@ namespace NEventStore.PollingClient
 #if MSTEST
     [TestClass]
 #endif
-    public class base_handling_committed_events : using_polling_client2
+    public class base_handling_committed_events : using_AsyncPollingClient
     {
         private readonly List<ICommit> commits = [];
 
         protected override void Context()
         {
+            Observer = new LambdaAsyncObserver<ICommit>((c, _) => { commits.Add(c); return Task.FromResult(true); });
             base.Context();
-            HandleFunction = c =>
-            {
-                commits.Add(c);
-                return PollingClient2.HandlingResult.MoveToNext;
-            };
             StoreEvents.Advanced.CommitSingle();
         }
 
         protected override void Because()
         {
-            Sut.StartFrom(0);
+            Sut.Start(0);
         }
 
         [Fact]
@@ -73,24 +69,20 @@ namespace NEventStore.PollingClient
 #if MSTEST
     [TestClass]
 #endif
-    public class base_handling_committed_events_and_new_events : using_polling_client2
+    public class base_handling_committed_events_and_new_events : using_AsyncPollingClient
     {
         private readonly List<ICommit> commits = [];
 
         protected override void Context()
         {
+            Observer = new LambdaAsyncObserver<ICommit>((c, _) => { commits.Add(c); return Task.FromResult(true); });
             base.Context();
-            HandleFunction = c =>
-            {
-                commits.Add(c);
-                return PollingClient2.HandlingResult.MoveToNext;
-            };
             StoreEvents.Advanced.CommitSingle();
         }
 
         protected override void Because()
         {
-            Sut.StartFrom(0);
+            Sut.Start(0);
             for (int i = 0; i < 15; i++)
             {
                 StoreEvents.Advanced.CommitSingle();
@@ -108,18 +100,14 @@ namespace NEventStore.PollingClient
 #if MSTEST
     [TestClass]
 #endif
-    public class verify_stopping_commit_polling_client : using_polling_client2
+    public class verify_stopping_commit_polling_client : using_AsyncPollingClient
     {
         private readonly List<ICommit> commits = [];
 
         protected override void Context()
         {
+            Observer = new LambdaAsyncObserver<ICommit>((c, _) => { commits.Add(c); return Task.FromResult(false); });
             base.Context();
-            HandleFunction = c =>
-            {
-                commits.Add(c);
-                return PollingClient2.HandlingResult.Stop;
-            };
             StoreEvents.Advanced.CommitSingle();
             StoreEvents.Advanced.CommitSingle();
             StoreEvents.Advanced.CommitSingle();
@@ -127,7 +115,7 @@ namespace NEventStore.PollingClient
 
         protected override void Because()
         {
-            Sut.StartFrom(0);
+            Sut.Start(0);
         }
 
         [Fact]
@@ -141,100 +129,22 @@ namespace NEventStore.PollingClient
 #if MSTEST
     [TestClass]
 #endif
-    public class verify_retry_commit_polling_client : using_polling_client2
+    public class verify_manual_polling : using_AsyncPollingClient
     {
         private readonly List<ICommit> commits = [];
 
         protected override void Context()
         {
+            Observer = new LambdaAsyncObserver<ICommit>((c, _) => { commits.Add(c); return Task.FromResult(true); });
             base.Context();
-            HandleFunction = c =>
-            {
-                commits.Add(c);
-                if (commits.Count < 3)
-                    return PollingClient2.HandlingResult.Retry;
-
-                return PollingClient2.HandlingResult.MoveToNext;
-            };
-            StoreEvents.Advanced.CommitSingle();
-        }
-
-        protected override void Because()
-        {
-            Sut.StartFrom(0);
-        }
-
-        [Fact]
-        public void commits_are_retried()
-        {
-            WaitForCondition(() => commits.Count >= 3, timeoutInSeconds: 1);
-            commits.Count.Should().Be(3);
-            commits.All(c => c.CheckpointToken == 1).Should().BeTrue();
-        }
-    }
-
-#if MSTEST
-    [TestClass]
-#endif
-    public class verify_retry_then_move_next : using_polling_client2
-    {
-        private readonly List<ICommit> commits = [];
-
-        protected override void Context()
-        {
-            base.Context();
-            HandleFunction = c =>
-            {
-                commits.Add(c);
-                if (commits.Count < 3 && c.CheckpointToken == 1)
-                    return PollingClient2.HandlingResult.Retry;
-
-                return PollingClient2.HandlingResult.MoveToNext;
-            };
             StoreEvents.Advanced.CommitSingle();
             StoreEvents.Advanced.CommitSingle();
         }
 
-        protected override void Because()
+        protected override Task BecauseAsync()
         {
-            Sut.StartFrom(0);
-        }
-
-        [Fact]
-        public void commits_are_retried_then_move_next()
-        {
-            WaitForCondition(() => commits.Count >= 4, timeoutInSeconds: 1);
-            commits.Count.Should().Be(4);
-            commits
-                .Select(c => c.CheckpointToken)
-                .SequenceEqual([1L, 1L, 1, 2])
-                .Should().BeTrue();
-        }
-    }
-
-#if MSTEST
-    [TestClass]
-#endif
-    public class verify_manual_polling : using_polling_client2
-    {
-        private readonly List<ICommit> commits = [];
-
-        protected override void Context()
-        {
-            base.Context();
-            HandleFunction = c =>
-            {
-                commits.Add(c);
-                return PollingClient2.HandlingResult.MoveToNext;
-            };
-            StoreEvents.Advanced.CommitSingle();
-            StoreEvents.Advanced.CommitSingle();
-        }
-
-        protected override void Because()
-        {
-            Sut.ConfigurePollingFunction();
-            Sut.PollNow();
+            Sut.ConfigurePollingClient();
+            return Sut.PollAsync(CancellationToken.None);
         }
 
         [Fact]
@@ -249,13 +159,13 @@ namespace NEventStore.PollingClient
         }
     }
 
-    public abstract class using_polling_client2 : SpecificationBase
+    public abstract class using_AsyncPollingClient : SpecificationBase
     {
         protected const int PollingInterval = 100;
-        protected PollingClient2? sut;
+        protected AsyncPollingClient? sut;
         private IStoreEvents? _storeEvents;
 
-        protected PollingClient2 Sut
+        protected AsyncPollingClient Sut
         {
             get { return sut!; }
         }
@@ -265,13 +175,12 @@ namespace NEventStore.PollingClient
             get { return _storeEvents!; }
         }
 
-        protected Func<ICommit, PollingClient2.HandlingResult>? HandleFunction;
+        protected IAsyncObserver<ICommit> Observer { get; set; } = new CommitStreamObserver();
 
         protected override void Context()
         {
-            HandleFunction = _ => PollingClient2.HandlingResult.MoveToNext;
             _storeEvents = Wireup.Init().UsingInMemoryPersistence().Build();
-            sut = new PollingClient2(_storeEvents.Advanced, c => HandleFunction(c), PollingInterval);
+            sut = new AsyncPollingClient(_storeEvents.Advanced, Observer, PollingInterval);
         }
 
         protected override void Cleanup()

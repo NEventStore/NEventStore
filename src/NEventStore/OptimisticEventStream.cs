@@ -105,7 +105,7 @@ namespace NEventStore
                 onNextAsync: (commit, _) =>
                 {
                     InnerPopulateStream(minRevision, maxRevision, commit);
-                    return Task.CompletedTask;
+                    return Task.FromResult(true);
                 });
             await _persistenceAsync.GetFromAsync(BucketId, StreamId, minRevision, maxRevision, observer, cancellationToken).ConfigureAwait(false);
 
@@ -160,7 +160,7 @@ namespace NEventStore
                 onNextAsync: (commit, _) =>
                 {
                     InnerPopulateStream(minRevision, maxRevision, commit);
-                    return Task.CompletedTask;
+                    return Task.FromResult(true);
                 });
             await _persistenceAsync.GetFromAsync(snapshot.BucketId, snapshot.StreamId, snapshot.StreamRevision, maxRevision, observer, cancellationToken).ConfigureAwait(false);
             StreamRevision = snapshot.StreamRevision + _committed.Count;
@@ -308,7 +308,7 @@ namespace NEventStore
                 onNextAsync: (commit, _) =>
                 {
                     InnerPopulateStream(refreshFromRevision, maxRevision, commit);
-                    return Task.CompletedTask;
+                    return Task.FromResult(true);
                 });
             return _persistenceAsync.GetFromAsync(BucketId, StreamId, refreshFromRevision, maxRevision, observer, cancellationToken);
         }

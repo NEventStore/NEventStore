@@ -8,11 +8,11 @@ You are encouraged to write your own PollingClient that suits your needs, you ca
 
 ## New Polling client without RX	
 
-To remove dependecy from RX library, the old PollingClient was removed from the project. 
+To remove dependency from RX library, the old PollingClient was removed from the project. 
 
 The entire code for OldPollingClient is included in this README, If you still need it in your project you can simply include this class in your code as well as the dependencies from RX.
 
-With the new PollingClient2 you should simply pass a Func that will be called to handle the commit, you can use Rx if you like that approach approach, or even better you can use TPL Dataflow that is probably more suited.
+With the new PollingClient2 you should simply pass a Function that will be called to handle the commit, you can use Rx if you like that approach approach, or even better you can use TPL Dataflow that is probably more suited.
 
 If you want to use the new polling client with RX you can look at PollingClientRx inside Test project.
 

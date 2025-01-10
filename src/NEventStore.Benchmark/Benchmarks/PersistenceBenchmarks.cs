@@ -116,7 +116,7 @@ namespace NEventStore.Benchmark.Benchmarks
                 (c, _) =>
                 {
                     // Console.WriteLine(c.Events.First().Body);
-                    return Task.CompletedTask;
+                    return Task.FromResult(true);
                 }), CancellationToken.None);
 #pragma warning restore RCS1163 // Unused parameter
         }
