@@ -21,7 +21,7 @@ namespace NEventStore
         /// <summary>
         /// Store the commits received from the stream
         /// </summary>
-        public virtual Task OnNextAsync(ICommit value)
+        public virtual Task OnNextAsync(ICommit value, CancellationToken cancellationToken)
         {
             Commits.Add(value);
             return Task.CompletedTask;
@@ -31,7 +31,7 @@ namespace NEventStore
         /// Throws an exception when an error occurs while reading commits from the stream
         /// </summary>
         /// <exception cref="AsyncObserverException"></exception>
-        public virtual Task OnErrorAsync(Exception ex)
+        public virtual Task OnErrorAsync(Exception ex, CancellationToken cancellationToken)
         {
             // todo: lo the error.
             // Preserve the stack trace and rethrow the exception
@@ -40,7 +40,7 @@ namespace NEventStore
         }
 
         /// <inheritdoc/>
-        public virtual Task OnCompletedAsync()
+        public virtual Task OnCompletedAsync(CancellationToken cancellationToken)
         {
             ReadCompleted = true;
             return Task.CompletedTask;

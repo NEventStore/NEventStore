@@ -275,22 +275,22 @@ namespace NEventStore.Persistence
                 _observer = observer;
             }
 
-            public Task OnCompletedAsync()
+            public Task OnCompletedAsync(CancellationToken cancellationToken)
             {
-                return _observer.OnCompletedAsync();
+                return _observer.OnCompletedAsync(cancellationToken);
             }
 
-            public Task OnErrorAsync(Exception error)
+            public Task OnErrorAsync(Exception error, CancellationToken cancellationToken)
             {
-                return _observer.OnErrorAsync(error);
+                return _observer.OnErrorAsync(error, cancellationToken);
             }
 
-            public Task OnNextAsync(ICommit value)
+            public Task OnNextAsync(ICommit value, CancellationToken cancellationToken)
             {
                 var commit = ExecuteHooks(value);
                 if (commit != null)
                 {
-                    return _observer.OnNextAsync(commit);
+                    return _observer.OnNextAsync(commit, cancellationToken);
                 }
                 return Task.CompletedTask;
             }

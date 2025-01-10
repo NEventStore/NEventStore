@@ -47,9 +47,9 @@ namespace NEventStore.Async
                {
                    foreach (var _commit in _committed)
                    {
-                       await asyncObserver.OnNextAsync(_commit).ConfigureAwait(false);
+                       await asyncObserver.OnNextAsync(_commit, cancellation).ConfigureAwait(false);
                    }
-                   await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
+                   await asyncObserver.OnCompletedAsync(cancellation).ConfigureAwait(false);
                });
         }
 
@@ -135,9 +135,9 @@ namespace NEventStore.Async
                {
                    foreach (var _commit in _committed)
                    {
-                       await asyncObserver.OnNextAsync(_commit).ConfigureAwait(false);
+                       await asyncObserver.OnNextAsync(_commit, cancellation).ConfigureAwait(false);
                    }
-                   await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
+                   await asyncObserver.OnCompletedAsync(cancellation).ConfigureAwait(false);
                });
 
             Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, PersistenceAsync);
@@ -221,9 +221,9 @@ namespace NEventStore.Async
                {
                    foreach (var _commit in _committed)
                    {
-                       await asyncObserver.OnNextAsync(_commit).ConfigureAwait(false);
+                       await asyncObserver.OnNextAsync(_commit, cancellation).ConfigureAwait(false);
                    }
-                   await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
+                   await asyncObserver.OnCompletedAsync(cancellation).ConfigureAwait(false);
                });
         }
 
@@ -269,9 +269,9 @@ namespace NEventStore.Async
                {
                    foreach (var _commit in _committed)
                    {
-                       await asyncObserver.OnNextAsync(_commit).ConfigureAwait(false);
+                       await asyncObserver.OnNextAsync(_commit, cancellation).ConfigureAwait(false);
                    }
-                   await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
+                   await asyncObserver.OnCompletedAsync(cancellation).ConfigureAwait(false);
                });
         }
 
@@ -609,9 +609,9 @@ namespace NEventStore.Async
                {
                    foreach (var _commit in _committed)
                    {
-                       await asyncObserver.OnNextAsync(_commit).ConfigureAwait(false);
+                       await asyncObserver.OnNextAsync(_commit, cancellation).ConfigureAwait(false);
                    }
-                   await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
+                   await asyncObserver.OnCompletedAsync(cancellation).ConfigureAwait(false);
                });
 
             Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, PersistenceAsync);
@@ -652,18 +652,18 @@ namespace NEventStore.Async
                {
                    foreach (var _commit in _committed)
                    {
-                       await asyncObserver.OnNextAsync(_commit).ConfigureAwait(false);
+                       await asyncObserver.OnNextAsync(_commit, cancellation).ConfigureAwait(false);
                    }
-                   await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
+                   await asyncObserver.OnCompletedAsync(cancellation).ConfigureAwait(false);
                });
             A.CallTo(() => PersistenceAsync.GetFromAsync(BucketId, StreamId, StreamRevision +1, int.MaxValue, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None))
                .ReturnsLazily(async (string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellation) =>
                {
                    foreach (var _commit in _discoveredOnCommit)
                    {
-                       await asyncObserver.OnNextAsync(_commit).ConfigureAwait(false);
+                       await asyncObserver.OnNextAsync(_commit, cancellation).ConfigureAwait(false);
                    }
-                   await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
+                   await asyncObserver.OnCompletedAsync(cancellation).ConfigureAwait(false);
                });
 
             Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, PersistenceAsync);
@@ -806,9 +806,9 @@ namespace NEventStore.Async
                {
                    foreach (var _commit in _committed)
                    {
-                       await asyncObserver.OnNextAsync(_commit).ConfigureAwait(false);
+                       await asyncObserver.OnNextAsync(_commit, cancellation).ConfigureAwait(false);
                    }
-                   await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
+                   await asyncObserver.OnCompletedAsync(cancellation).ConfigureAwait(false);
                });
             A.CallTo(() => PersistenceAsync.CommitAsync(A<CommitAttempt>._, CancellationToken.None))
                .ReturnsLazily((CommitAttempt attempt, CancellationToken _) => new Commit(
@@ -888,9 +888,9 @@ namespace NEventStore.Async
                {
                    foreach (var _commit in _committed)
                    {
-                       await asyncObserver.OnNextAsync(_commit).ConfigureAwait(false);
+                       await asyncObserver.OnNextAsync(_commit, cancellation).ConfigureAwait(false);
                    }
-                   await asyncObserver.OnCompletedAsync().ConfigureAwait(false);
+                   await asyncObserver.OnCompletedAsync(cancellation).ConfigureAwait(false);
                });
             A.CallTo(() => PersistenceAsync.CommitAsync(A<CommitAttempt>._, CancellationToken.None))
                 .ReturnsLazily((CommitAttempt attempt, CancellationToken _) => new Commit(

@@ -102,7 +102,7 @@ namespace NEventStore
             EnsureStreamIsNew();
             _isPartialStream = false;
             var observer = new LambdaAsyncObserver<ICommit>(
-                onNextAsync: commit =>
+                onNextAsync: (commit, _) =>
                 {
                     InnerPopulateStream(minRevision, maxRevision, commit);
                     return Task.CompletedTask;
@@ -157,7 +157,7 @@ namespace NEventStore
             int minRevision = snapshot.StreamRevision + 1;
             _isPartialStream = false;
             var observer = new LambdaAsyncObserver<ICommit>(
-                onNextAsync: commit =>
+                onNextAsync: (commit, _) =>
                 {
                     InnerPopulateStream(minRevision, maxRevision, commit);
                     return Task.CompletedTask;
@@ -305,7 +305,7 @@ namespace NEventStore
             const int maxRevision = int.MaxValue;
             _isPartialStream = false;
             var observer = new LambdaAsyncObserver<ICommit>(
-                onNextAsync: commit =>
+                onNextAsync: (commit, _) =>
                 {
                     InnerPopulateStream(refreshFromRevision, maxRevision, commit);
                     return Task.CompletedTask;

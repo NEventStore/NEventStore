@@ -8,15 +8,16 @@
         /// <summary>
         ///    Provides the observer with new data.
         /// </summary>
-        Task OnNextAsync(T value);
+        Task OnNextAsync(T value, CancellationToken cancellationToken);
         /// <summary>
         ///   Notifies the observer that the provider has experienced an error condition.
         /// </summary>
         /// <param name="ex">The error that has occurred.</param>
-        Task OnErrorAsync(Exception ex);
+        /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+        Task OnErrorAsync(Exception ex, CancellationToken cancellationToken);
         /// <summary>
         ///   Notifies the observer that the provider has finished sending push-based notifications.
         /// </summary>
-        Task OnCompletedAsync();
+        Task OnCompletedAsync(CancellationToken cancellationToken);
     }
 }
