@@ -1,52 +1,66 @@
+using NEventStore.PollingClient;
+using Microsoft.Extensions.Logging;
+
 namespace NEventStore.PollingClientExample
 {
-    using System;
-    using NEventStore.PollingClient;
-    using Microsoft.Extensions.Logging;
-
     internal static class MainProgram
     {
-        private static readonly byte[] EncryptionKey = { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf };
-
         private static void Main()
         {
-            using (var store = WireupEventStore())
+            using var store = WireupEventStore();
+            // append some commits to the EventStore
+            AppendToStream(store, "Stream1");
+            AppendToStream(store, "Stream2");
+            AppendToStream(store, "Stream1");
+
+            Console.WriteLine("--------------------------");
+            Console.WriteLine("Starting PollingClient2...");
+            Console.WriteLine();
+
+            // now test the polling client
+            Int64 checkpointToken = LoadCheckpoint();
+            var client = new PollingClient2(store.Advanced, commit =>
             {
-                // append some commits to the EventStore
-                AppendToStream(store, "Stream1");
-                AppendToStream(store, "Stream2");
-                AppendToStream(store, "Stream1");
+                // Project the commit etc
+                Console.WriteLine("BucketId={0};StreamId={1};CommitSequence={2}", commit.BucketId, commit.StreamId, commit.CommitSequence);
+                // Track the most recent checkpoint
+                checkpointToken = commit.CheckpointToken;
+                return PollingClient2.HandlingResult.MoveToNext;
+            },
+            waitInterval: 3000);
 
-                // now test the polling client
-                Int64 checkpointToken = LoadCheckpoint();
-                var client = new PollingClient2(store.Advanced, commit =>
-                {
-                    // Project the commit etc
-                    Console.WriteLine(Resources.CommitInfo, commit.BucketId, commit.StreamId, commit.CommitSequence);
-                    // Track the most recent checkpoint
-                    checkpointToken = commit.CheckpointToken;
-                    return PollingClient2.HandlingResult.MoveToNext;
-                },
-                waitInterval: 3000);
+            client.StartFrom(checkpointToken);
+            Console.WriteLine("Wait for the Stream to end, then press any key to continue...");
+            Console.ReadKey();
+            client.Stop();
 
-                client.StartFrom(checkpointToken);
+            Console.WriteLine();
+            Console.WriteLine("------------------------------");
+            Console.WriteLine("Starting AsyncPollingClient...");
+            Console.WriteLine();
 
-                Console.WriteLine(Resources.PressAnyKey);
-                Console.ReadKey();
-                client.Stop();
-                SaveCheckpoint(checkpointToken);
-            }
+            checkpointToken = LoadCheckpoint();
+            var observer = new LambdaAsyncObserver<ICommit>((commit, _) =>
+            {
+                // Project the commit etc
+                Console.WriteLine("BucketId={0};StreamId={1};CommitSequence={2}", commit.BucketId, commit.StreamId, commit.CommitSequence);
+                // Track the most recent checkpoint
+                checkpointToken = commit.CheckpointToken;
+                return Task.FromResult(true);
+            });
+            var asyncClient = new AsyncPollingClient(store.Advanced, observer, waitInterval: 3000, holeDetectionWaitInterval: 100);
+            asyncClient.Start(checkpointToken);
+
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
+            asyncClient.StopAsync()
+                .GetAwaiter().GetResult();
         }
 
         private static Int64 LoadCheckpoint()
         {
             // Load the checkpoint value from disk / local db/ etc
             return 0;
-        }
-
-        private static void SaveCheckpoint(Int64 checkpointToken)
-        {
-            //Save checkpointValue to disk / whatever.
         }
 
         private static IStoreEvents WireupEventStore()
@@ -71,13 +85,11 @@ namespace NEventStore.PollingClientExample
 
         private static void AppendToStream(IStoreEvents store, string streamId)
         {
-            using (var stream = store.OpenStream(streamId))
-            {
-                var @event = new SomeDomainEvent { Value = "event" };
+            using var stream = store.OpenStream(streamId);
+            var @event = new SomeDomainEvent { Value = "event" };
 
-                stream.Add(new EventMessage { Body = @event });
-                stream.CommitChanges(Guid.NewGuid());
-            }
+            stream.Add(new EventMessage { Body = @event });
+            stream.CommitChanges(Guid.NewGuid());
         }
     }
 }

@@ -254,6 +254,9 @@ namespace NEventStore.PollingClient
             }
         }
 
+        /// <summary>
+        /// Poll the store for new commits.
+        /// </summary>
         public async Task PollAsync(CancellationToken token)
         {
             if (Interlocked.CompareExchange(ref _isPolling, 1, 0) == 0)
@@ -319,6 +322,9 @@ namespace NEventStore.PollingClient
             _isDisposed = true;
         }
 
+        /// <summary>
+        /// Finalizer.
+        /// </summary>
         ~AsyncPollingClient()
         {
             Dispose(false);

@@ -2,7 +2,6 @@
 
 ## vNext
 
-- system.text.json ?
 - Async Methods to read from and write to streams (IStoreEvents, IEventStream, IPersistStreams, IPersistStreamsAsync, ICommitEventsAsync, IAccessSnapshotsAsync).
 - AsyncPollingClient: a new polling client implementation that uses Async interfaces.
 - Improved comments and added more nullability checks.

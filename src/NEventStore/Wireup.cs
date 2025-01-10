@@ -118,15 +118,16 @@ namespace NEventStore
             var upconverter = context.Resolve<EventUpconverterPipelineHook>();
 
             ICollection<IPipelineHook> hooks = context.Resolve<ICollection<IPipelineHook>>() ?? [];
+            var pipelineHooks = new List<IPipelineHook>(hooks);
             if (concurrency != null)
             {
-                hooks.Add(concurrency);
+                pipelineHooks.Add(concurrency);
             }
             if (upconverter != null)
             {
-                hooks.Add(upconverter);
+                pipelineHooks.Add(upconverter);
             }
-            return new OptimisticEventStore(context.Resolve<IPersistStreams>()!, hooks);
+            return new OptimisticEventStore(context.Resolve<IPersistStreams>()!, pipelineHooks);
         }
     }
 }
