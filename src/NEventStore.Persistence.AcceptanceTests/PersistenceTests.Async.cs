@@ -1369,7 +1369,7 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
     }
 
     [Serializable]
-    public class Pippo
+    public class TestEventForAsync
     {
         public String? S { get; set; }
     }
@@ -1390,7 +1390,7 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             for (int i = 0; i < _moreThanPageSize; i++)
             {
                 using IEventStream stream = await eventStore.OpenStreamAsync(Guid.NewGuid()).ConfigureAwait(false);
-                stream.Add(new EventMessage { Body = new Pippo() { S = "Hi " + i } });
+                stream.Add(new EventMessage { Body = new TestEventForAsync() { S = "Hi " + i } });
                 await stream.CommitChangesAsync(Guid.NewGuid(), CancellationToken.None).ConfigureAwait(false);
             }
 

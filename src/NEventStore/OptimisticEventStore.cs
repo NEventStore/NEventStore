@@ -45,6 +45,10 @@ namespace NEventStore
         }
 
         /// <inheritdoc/>
+        /// <remarks>
+        /// Pipeline hooks can prevent commits to be persisted by returning false from the PreCommit method.
+        /// If the pipeline hook prevents the commit from being persisted, the commit will not be persisted and null will be returned.
+        /// </remarks>
         public virtual ICommit? Commit(CommitAttempt attempt)
         {
             Guard.NotNull(() => attempt, attempt);
@@ -93,6 +97,10 @@ namespace NEventStore
         }
 
         /// <inheritdoc/>
+        /// <remarks>
+        /// Pipeline hooks can prevent commits to be persisted by returning false from the PreCommit method.
+        /// If the pipeline hook prevents the commit from being persisted, the commit will not be persisted and null will be returned.
+        /// </remarks>
         public async Task<ICommit?> CommitAsync(CommitAttempt attempt, CancellationToken cancellationToken)
         {
             Guard.NotNull(() => attempt, attempt);

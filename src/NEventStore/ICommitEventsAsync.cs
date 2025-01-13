@@ -38,6 +38,10 @@ namespace NEventStore
         /// <exception cref="ConcurrencyException" />
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
+        /// <remarks>
+        /// This interface returns a nullable ICommit object because it's implemented by <see cref="OptimisticEventStore"/>
+        /// that can return null if the pipeline hooks decide to abort the commit.
+        /// </remarks>
         Task<ICommit?> CommitAsync(CommitAttempt attempt, CancellationToken cancellationToken);
     }
 }

@@ -1163,7 +1163,7 @@ namespace NEventStore.Persistence.AcceptanceTests
     }
 
     [Serializable]
-    public class Pippo
+    public class TestEvent
     {
         public String? S { get; set; }
     }
@@ -1184,7 +1184,7 @@ namespace NEventStore.Persistence.AcceptanceTests
             for (int i = 0; i < _moreThanPageSize; i++)
             {
                 using IEventStream stream = eventStore.OpenStream(Guid.NewGuid());
-                stream.Add(new EventMessage { Body = new Pippo() { S = "Hi " + i } });
+                stream.Add(new EventMessage { Body = new TestEvent() { S = "Hi " + i } });
                 stream.CommitChanges(Guid.NewGuid());
             }
             _commits = Persistence.GetFrom(0).ToArray();
