@@ -33,7 +33,6 @@ namespace NEventStore
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"></exception>
         public virtual ContainerRegistration Register<TService>(TService instance)
-            where TService : class
         {
             if (Equals(instance, null))
             {
@@ -57,7 +56,6 @@ namespace NEventStore
         /// Resolves a service from the container.
         /// </summary>
         public virtual TService? Resolve<TService>()
-            where TService : class
         {
             if (Logger.IsEnabled(LogLevel.Debug))
             {
@@ -66,7 +64,8 @@ namespace NEventStore
 
             if (_registrations.TryGetValue(typeof(TService), out ContainerRegistration registration))
             {
-                return (registration.Resolve(this)) as TService;
+                var obj = registration.Resolve(this);
+                return obj != null ? (TService)obj : default;
             }
 
             if (Logger.IsEnabled(LogLevel.Debug))
