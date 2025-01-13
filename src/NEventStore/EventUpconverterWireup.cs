@@ -113,7 +113,7 @@ namespace NEventStore
                 throw new ArgumentNullException(nameof(converter));
             }
 
-            _registered[typeof(TSource)] = @event => converter.Convert(@event as TSource);
+            _registered[typeof(TSource)] = @event => converter.Convert((TSource)@event);
 
             return this;
         }

@@ -15,7 +15,7 @@ namespace NEventStore
         /// <summary>
         /// Registers a service with the container.
         /// </summary>
-        public virtual ContainerRegistration Register<TService>(Func<NanoContainer, TService> resolve)
+        public virtual ContainerRegistration Register<TService>(Func<NanoContainer, TService?> resolve)
             where TService : class
         {
             if (Logger.IsEnabled(LogLevel.Debug))
@@ -83,14 +83,14 @@ namespace NEventStore
     public class ContainerRegistration
     {
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(ContainerRegistration));
-        private readonly Func<NanoContainer, object>? _resolve;
+        private readonly Func<NanoContainer, object?>? _resolve;
         private object? _instance;
         private bool _instancePerCall;
 
         /// <summary>
         /// Initializes a new instance of the ContainerRegistration class.
         /// </summary>
-        public ContainerRegistration(Func<NanoContainer, object> resolve)
+        public ContainerRegistration(Func<NanoContainer, object?> resolve)
         {
             if (resolve is null)
             {

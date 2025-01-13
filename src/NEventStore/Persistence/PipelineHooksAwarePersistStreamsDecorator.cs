@@ -120,7 +120,7 @@ namespace NEventStore.Persistence
         }
 
         /// <inheritdoc/>
-        public ISnapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
+        public ISnapshot? GetSnapshot(string bucketId, string streamId, int maxRevision)
         {
             return _original.GetSnapshot(bucketId, streamId, maxRevision);
         }
@@ -138,7 +138,7 @@ namespace NEventStore.Persistence
         }
 
         /// <inheritdoc/>
-        public Task<ISnapshot> GetSnapshotAsync(string bucketId, string streamId, int maxRevision, CancellationToken cancellationToken)
+        public Task<ISnapshot?> GetSnapshotAsync(string bucketId, string streamId, int maxRevision, CancellationToken cancellationToken)
         {
             return _original.GetSnapshotAsync(bucketId, streamId, maxRevision, cancellationToken);
         }

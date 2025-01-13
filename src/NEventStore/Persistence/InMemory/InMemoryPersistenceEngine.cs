@@ -209,7 +209,7 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public ISnapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
+        public ISnapshot? GetSnapshot(string bucketId, string streamId, int maxRevision)
         {
             ThrowWhenDisposed();
             if (Logger.IsEnabled(LogLevel.Debug))
@@ -242,7 +242,7 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public Task<ISnapshot> GetSnapshotAsync(string bucketId, string streamId, int maxRevision, CancellationToken cancellationToken)
+        public Task<ISnapshot?> GetSnapshotAsync(string bucketId, string streamId, int maxRevision, CancellationToken cancellationToken)
         {
             ThrowWhenDisposed();
             if (Logger.IsEnabled(LogLevel.Debug))
@@ -638,7 +638,7 @@ namespace NEventStore.Persistence.InMemory
                 }
             }
 
-            public ISnapshot GetSnapshot(string streamId, int maxRevision)
+            public ISnapshot? GetSnapshot(string streamId, int maxRevision)
             {
                 lock (_commits)
                 {

@@ -16,7 +16,7 @@ namespace NEventStore
         /// <returns>If found, it returns the snapshot; otherwise null is returned.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        public static ISnapshot GetSnapshot(this IAccessSnapshots accessSnapshots, Guid streamId, int maxRevision)
+        public static ISnapshot? GetSnapshot(this IAccessSnapshots accessSnapshots, Guid streamId, int maxRevision)
         {
             return GetSnapshot(accessSnapshots, streamId.ToString(), maxRevision);
         }
@@ -30,7 +30,7 @@ namespace NEventStore
         /// <returns>If found, it returns the snapshot; otherwise null is returned.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        public static ISnapshot GetSnapshot(this IAccessSnapshots accessSnapshots, string streamId, int maxRevision)
+        public static ISnapshot? GetSnapshot(this IAccessSnapshots accessSnapshots, string streamId, int maxRevision)
         {
             return accessSnapshots.GetSnapshot(Bucket.Default, streamId, maxRevision);
         }
@@ -45,7 +45,7 @@ namespace NEventStore
         /// <returns>If found, it returns the snapshot; otherwise null is returned.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        public static ISnapshot GetSnapshot(this IAccessSnapshots accessSnapshots, string bucketId, Guid streamId, int maxRevision)
+        public static ISnapshot? GetSnapshot(this IAccessSnapshots accessSnapshots, string bucketId, Guid streamId, int maxRevision)
         {
             return accessSnapshots.GetSnapshot(bucketId, streamId.ToString(), maxRevision);
         }
@@ -73,7 +73,7 @@ namespace NEventStore
         /// <returns>If found, it returns the snapshot; otherwise null is returned.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        public static Task<ISnapshot> GetSnapshotAsync(this IAccessSnapshotsAsync accessSnapshots, Guid streamId, int maxRevision, CancellationToken cancellationToken)
+        public static Task<ISnapshot?> GetSnapshotAsync(this IAccessSnapshotsAsync accessSnapshots, Guid streamId, int maxRevision, CancellationToken cancellationToken)
         {
             return GetSnapshotAsync(accessSnapshots, streamId.ToString(), maxRevision, cancellationToken);
         }
@@ -88,7 +88,7 @@ namespace NEventStore
         /// <returns>If found, it returns the snapshot; otherwise null is returned.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        public static Task<ISnapshot> GetSnapshotAsync(this IAccessSnapshotsAsync accessSnapshots, string streamId, int maxRevision, CancellationToken cancellationToken)
+        public static Task<ISnapshot?> GetSnapshotAsync(this IAccessSnapshotsAsync accessSnapshots, string streamId, int maxRevision, CancellationToken cancellationToken)
         {
             return accessSnapshots.GetSnapshotAsync(Bucket.Default, streamId, maxRevision, cancellationToken);
         }
@@ -104,7 +104,7 @@ namespace NEventStore
         /// <returns>If found, it returns the snapshot; otherwise null is returned.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        public static Task<ISnapshot> GetSnapshotAsync(this IAccessSnapshotsAsync accessSnapshots, string bucketId, Guid streamId, int maxRevision, CancellationToken cancellationToken)
+        public static Task<ISnapshot?> GetSnapshotAsync(this IAccessSnapshotsAsync accessSnapshots, string bucketId, Guid streamId, int maxRevision, CancellationToken cancellationToken)
         {
             return accessSnapshots.GetSnapshotAsync(bucketId, streamId.ToString(), maxRevision, cancellationToken);
         }

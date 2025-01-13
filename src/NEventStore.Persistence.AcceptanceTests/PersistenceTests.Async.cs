@@ -651,11 +651,11 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             snapshot.Should().NotBeNull();
             if (_added)
             {
-                snapshot.Payload.Should().Be(_updatedSnapshot!.Payload, "The snapshot was added, I expected to get the most updated version");
+                snapshot!.Payload.Should().Be(_updatedSnapshot!.Payload, "The snapshot was added, I expected to get the most updated version");
             }
             else
             {
-                snapshot.Payload.Should().Be(_snapshot.Payload, "The snapshot was not added, I expected to get the original version");
+                snapshot!.Payload.Should().Be(_snapshot.Payload, "The snapshot was not added, I expected to get the original version");
             }
         }
     }
