@@ -1130,6 +1130,10 @@ namespace NEventStore.Persistence.AcceptanceTests
             _streamId = Guid.NewGuid().ToString();
             Persistence.Commit(_streamId.BuildAttempt(bucketId: _bucketAId));
             Persistence.Commit(_streamId.BuildAttempt(bucketId: _bucketBId));
+            var _snapshotA = new Snapshot(bucketId: _bucketAId, _streamId, 1, "SnapshotA");
+            Persistence.AddSnapshot(_snapshotA);
+            var _snapshotB = new Snapshot(bucketId: _bucketBId, _streamId, 1, "SnapshotB");
+            Persistence.AddSnapshot(_snapshotB);
         }
 
         protected override void Because()

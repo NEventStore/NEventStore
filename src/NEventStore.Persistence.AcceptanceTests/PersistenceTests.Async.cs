@@ -1328,6 +1328,10 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             _streamId = Guid.NewGuid().ToString();
             await Persistence.CommitAsync(_streamId.BuildAttempt(bucketId: _bucketAId), CancellationToken.None);
             await Persistence.CommitAsync(_streamId.BuildAttempt(bucketId: _bucketBId), CancellationToken.None);
+            var _snapshotA = new Snapshot(bucketId: _bucketAId, _streamId, 1, "SnapshotA");
+            await Persistence.AddSnapshotAsync(_snapshotA, CancellationToken.None);
+            var _snapshotB = new Snapshot(bucketId: _bucketBId, _streamId, 1, "SnapshotB");
+            await Persistence.AddSnapshotAsync(_snapshotB, CancellationToken.None);
         }
 
         protected override Task BecauseAsync()
