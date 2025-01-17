@@ -1,9 +1,10 @@
 # NEventStore Versions
 
-## vNext
+## 10.0.0
 
-- Async Methods to read from and write to streams (IStoreEvents, IEventStream, IPersistStreams, IPersistStreamsAsync, ICommitEventsAsync, IAccessSnapshotsAsync).
-- AsyncPollingClient: a new polling client implementation that uses Async interfaces.
+- Async Methods to read from and write to streams (IStoreEvents, IEventStream, IPersistStreams, IPersistStreamsAsync, ICommitEventsAsync, IAccessSnapshotsAsync). [#513](https://github.com/NEventStore/NEventStore/issues/513)
+- AsyncPollingClient: a new polling client implementation that uses Async interfaces. [#505](https://github.com/NEventStore/NEventStore/issues/505)
+- Removed the BinarySerializer (BinaryFormatter) from the core package and moved it to its own package [#510](https://github.com/NEventStore/NEventStore/issues/510)
 - Improved comments and added more nullability checks.
 - Minor performance improvements.
 - Updated Testing Packages (NUnit, FluentAssertions, Microsoft.NET.Test and so on...).
@@ -15,7 +16,7 @@
 - `PipelineHooksAwarePersistanceDecorator` renamed to `PipelineHooksAwarePersistStreamsDecorator`.
 - `IPipelineHook.Select` method renamed to `IPipelineHook.SelectCommit`.
 - `BinarySerializer` moved to its own package: `NEventStore.Serialization.Binary`.
-- improved methods signature with nullability annotations.
+- Improved methods signature with nullability annotations.
 - `Wireup.With()` renamed `Wireup.Register()`.
 - `OptimisticEventStream` constructors replaced by initialization functions:
   - `new OptimisticEventStream(string bucketId, string streamId, ICommitEvents persistence, int minRevision, int maxRevision)` -> `new OptimisticEventStream(string bucketId, string streamId, ICommitEvents persistence).Initialize(int minRevision, int maxRevision)`.
@@ -159,7 +160,7 @@ Note: Version 5 is not backwards compatible with v4. Updating to v5 without doin
 1.The concept of a 'Bucket' has been added as a container for streams allowing multi-tenancy, partitions, multiple-bounded contexts, sagas, etc to be stored in the one store. The API changes have been such that, using extension methods, operations will work on the default bucket, unless a bucket Id has been explicitly supplied. This should mean minimal code changes for the user.
 1.Stream Ids are now string based and are limited to 1000 characters.
 In the SQL engines the stream Id's are limited to 40 characters and are hashed versions of the actual StreamId.
-The hashing function can be overridden during wireup.
+The hashing function can be overridden during wire-up.
 
 ### New Features
 
