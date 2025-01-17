@@ -3,12 +3,12 @@ using NEventStore.Persistence;
 namespace NEventStore
 {
     /// <summary>
-    ///    Provides extension methods for <see cref="IAccessSnapshots"/> and <see cref="IAccessSnapshotsAsync"/>.
+    /// Provides extension methods for <see cref="IAccessSnapshots"/> and <see cref="IAccessSnapshotsAsync"/>.
     /// </summary>
     public static class AccessSnapshotsExtensions
     {
         /// <summary>
-        ///     Gets the most recent snapshot which was taken on or before the revision indicated from the default bucket.
+        /// Gets the most recent snapshot which was taken on or before the revision indicated from the default bucket.
         /// </summary>
         /// <param name="accessSnapshots">The <see cref="IAccessSnapshots"/> instance.</param>
         /// <param name="streamId">The stream to be searched for a snapshot.</param>
@@ -22,7 +22,7 @@ namespace NEventStore
         }
 
         /// <summary>
-        ///     Gets the most recent snapshot which was taken on or before the revision indicated from the default bucket.
+        /// Gets the most recent snapshot which was taken on or before the revision indicated from the default bucket.
         /// </summary>
         /// <param name="accessSnapshots">The <see cref="IAccessSnapshots"/> instance.</param>
         /// <param name="streamId">The stream to be searched for a snapshot.</param>
@@ -36,7 +36,7 @@ namespace NEventStore
         }
 
         /// <summary>
-        ///     Gets the most recent snapshot which was taken on or before the revision indicated.
+        /// Gets the most recent snapshot which was taken on or before the revision indicated.
         /// </summary>
         /// <param name="accessSnapshots">The <see cref="IAccessSnapshots"/> instance.</param>
         /// <param name="bucketId">The value which uniquely identifies bucket the stream belongs to.</param>
@@ -51,7 +51,7 @@ namespace NEventStore
         }
 
         /// <summary>
-        ///     Gets identifiers for all streams whose head and last snapshot revisions differ by at least the threshold specified for the default bucket.
+        /// Gets identifiers for all streams whose head and last snapshot revisions differ by at least the threshold specified for the default bucket.
         /// </summary>
         /// <param name="accessSnapshots">The <see cref="IAccessSnapshots"/> instance.</param>
         /// <param name="maxThreshold">The maximum difference between the head and most recent snapshot revisions.</param>
@@ -64,7 +64,7 @@ namespace NEventStore
         }
 
         /// <summary>
-        ///     Gets the most recent snapshot which was taken on or before the revision indicated from the default bucket.
+        /// Gets the most recent snapshot which was taken on or before the revision indicated from the default bucket.
         /// </summary>
         /// <param name="accessSnapshots">The <see cref="IAccessSnapshotsAsync"/> instance.</param>
         /// <param name="streamId">The stream to be searched for a snapshot.</param>
@@ -73,13 +73,13 @@ namespace NEventStore
         /// <returns>If found, it returns the snapshot; otherwise null is returned.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        public static Task<ISnapshot?> GetSnapshotAsync(this IAccessSnapshotsAsync accessSnapshots, Guid streamId, int maxRevision, CancellationToken cancellationToken)
+        public static Task<ISnapshot?> GetSnapshotAsync(this IAccessSnapshotsAsync accessSnapshots, Guid streamId, int maxRevision, CancellationToken cancellationToken = default)
         {
             return GetSnapshotAsync(accessSnapshots, streamId.ToString(), maxRevision, cancellationToken);
         }
 
         /// <summary>
-        ///     Gets the most recent snapshot which was taken on or before the revision indicated from the default bucket.
+        /// Gets the most recent snapshot which was taken on or before the revision indicated from the default bucket.
         /// </summary>
         /// <param name="accessSnapshots">The <see cref="IAccessSnapshotsAsync"/> instance.</param>
         /// <param name="streamId">The stream to be searched for a snapshot.</param>
@@ -88,13 +88,13 @@ namespace NEventStore
         /// <returns>If found, it returns the snapshot; otherwise null is returned.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        public static Task<ISnapshot?> GetSnapshotAsync(this IAccessSnapshotsAsync accessSnapshots, string streamId, int maxRevision, CancellationToken cancellationToken)
+        public static Task<ISnapshot?> GetSnapshotAsync(this IAccessSnapshotsAsync accessSnapshots, string streamId, int maxRevision, CancellationToken cancellationToken = default)
         {
             return accessSnapshots.GetSnapshotAsync(Bucket.Default, streamId, maxRevision, cancellationToken);
         }
 
         /// <summary>
-        ///     Gets the most recent snapshot which was taken on or before the revision indicated.
+        /// Gets the most recent snapshot which was taken on or before the revision indicated.
         /// </summary>
         /// <param name="accessSnapshots">The <see cref="IAccessSnapshotsAsync"/> instance.</param>
         /// <param name="bucketId">The value which uniquely identifies bucket the stream belongs to.</param>
@@ -104,13 +104,13 @@ namespace NEventStore
         /// <returns>If found, it returns the snapshot; otherwise null is returned.</returns>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        public static Task<ISnapshot?> GetSnapshotAsync(this IAccessSnapshotsAsync accessSnapshots, string bucketId, Guid streamId, int maxRevision, CancellationToken cancellationToken)
+        public static Task<ISnapshot?> GetSnapshotAsync(this IAccessSnapshotsAsync accessSnapshots, string bucketId, Guid streamId, int maxRevision, CancellationToken cancellationToken = default)
         {
             return accessSnapshots.GetSnapshotAsync(bucketId, streamId.ToString(), maxRevision, cancellationToken);
         }
 
         /// <summary>
-        ///     Gets identifiers for all streams whose head and last snapshot revisions differ by at least the threshold specified for the default bucket.
+        /// Gets identifiers for all streams whose head and last snapshot revisions differ by at least the threshold specified for the default bucket.
         /// </summary>
         /// <param name="accessSnapshots">The <see cref="IAccessSnapshotsAsync"/> instance.</param>
         /// <param name="maxThreshold">The maximum difference between the head and most recent snapshot revisions.</param>
@@ -118,7 +118,7 @@ namespace NEventStore
         /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        public static Task GetStreamsToSnapshotAsync(this IAccessSnapshotsAsync accessSnapshots, int maxThreshold, IAsyncObserver<IStreamHead> asyncObserver, CancellationToken cancellationToken)
+        public static Task GetStreamsToSnapshotAsync(this IAccessSnapshotsAsync accessSnapshots, int maxThreshold, IAsyncObserver<IStreamHead> asyncObserver, CancellationToken cancellationToken = default)
         {
             return accessSnapshots.GetStreamsToSnapshotAsync(Bucket.Default, maxThreshold, asyncObserver, cancellationToken);
         }

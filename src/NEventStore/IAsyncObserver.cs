@@ -13,13 +13,13 @@
         /// <returns>
         /// true = continue reading, false = stop reading
         /// </returns>
-        Task<bool> OnNextAsync(T value, CancellationToken cancellationToken);
+        Task<bool> OnNextAsync(T value, CancellationToken cancellationToken = default);
         /// <summary>
         /// Notifies the observer that the provider has experienced an error condition.
         /// </summary>
         /// <param name="ex">The error that has occurred.</param>
         /// <param name="cancellationToken">the cancellation token of the original request.</param>
-        Task OnErrorAsync(Exception ex, CancellationToken cancellationToken);
+        Task OnErrorAsync(Exception ex, CancellationToken cancellationToken = default);
         /// <summary>
         /// Notifies the observer that the provider has finished sending push-based notifications.
         /// It can happen because:
@@ -27,6 +27,6 @@
         /// - the reading operation has been cancelled.
         /// </summary>
         /// <param name="cancellationToken">the cancellation token of the original request.</param>
-        Task OnCompletedAsync(CancellationToken cancellationToken);
+        Task OnCompletedAsync(CancellationToken cancellationToken = default);
     }
 }

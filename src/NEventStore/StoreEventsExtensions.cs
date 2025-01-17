@@ -3,12 +3,12 @@ using NEventStore.Persistence;
 namespace NEventStore
 {
     /// <summary>
-    ///    Provides extension methods for <see cref="IStoreEvents"/>.
+    /// Provides extension methods for <see cref="IStoreEvents"/>.
     /// </summary>
     public static class StoreEventsExtensions
     {
         /// <summary>
-        ///     Creates a new stream.
+        /// Creates a new stream.
         /// </summary>
         /// <param name="storeEvents">The store events instance.</param>
         /// <param name="streamId">The value which uniquely identifies the stream to be created.</param>
@@ -19,7 +19,7 @@ namespace NEventStore
         }
 
         /// <summary>
-        ///     Creates a new stream.
+        /// Creates a new stream.
         /// </summary>
         /// <param name="storeEvents">The store events instance.</param>
         /// <param name="streamId">The value which uniquely identifies the stream to be created.</param>
@@ -31,7 +31,7 @@ namespace NEventStore
         }
 
         /// <summary>
-        ///     Creates a new stream.
+        /// Creates a new stream.
         /// </summary>
         /// <param name="storeEvents">The store events instance.</param>
         /// <param name="bucketId">The value which uniquely identifies bucket the stream belongs to.</param>
@@ -44,8 +44,8 @@ namespace NEventStore
         }
 
         /// <summary>
-        ///     Reads the stream indicated from the minimum revision specified up to the maximum revision specified or creates
-        ///     an empty stream if no commits are found and a minimum revision of zero is provided.
+        /// Reads the stream indicated from the minimum revision specified up to the maximum revision specified or creates
+        /// an empty stream if no commits are found and a minimum revision of zero is provided.
         /// </summary>
         /// <param name="storeEvents">The store events instance.</param>
         /// <param name="streamId">The value which uniquely identifies the stream from which the events will be read.</param>
@@ -62,8 +62,8 @@ namespace NEventStore
         }
 
         /// <summary>
-        ///     Reads the stream indicated from the minimum revision specified up to the maximum revision specified or creates
-        ///     an empty stream if no commits are found and a minimum revision of zero is provided.
+        /// Reads the stream indicated from the minimum revision specified up to the maximum revision specified or creates
+        /// an empty stream if no commits are found and a minimum revision of zero is provided.
         /// </summary>
         /// <param name="storeEvents">The store events instance.</param>
         /// <param name="streamId">The value which uniquely identifies the stream from which the events will be read.</param>
@@ -80,8 +80,8 @@ namespace NEventStore
         }
 
         /// <summary>
-        ///     Reads the stream indicated from the minimum revision specified up to the maximum revision specified or creates
-        ///     an empty stream if no commits are found and a minimum revision of zero is provided.
+        /// Reads the stream indicated from the minimum revision specified up to the maximum revision specified or creates
+        /// an empty stream if no commits are found and a minimum revision of zero is provided.
         /// </summary>
         /// <param name="storeEvents">The store events instance.</param>
         /// <param name="bucketId">The value which uniquely identifies bucket the stream belongs to.</param>
@@ -99,8 +99,8 @@ namespace NEventStore
         }
 
         /// <summary>
-        ///     Reads the stream indicated from the minimum revision specified up to the maximum revision specified or creates
-        ///     an empty stream if no commits are found and a minimum revision of zero is provided.
+        /// Reads the stream indicated from the minimum revision specified up to the maximum revision specified or creates
+        /// an empty stream if no commits are found and a minimum revision of zero is provided.
         /// </summary>
         /// <param name="storeEvents">The store events instance.</param>
         /// <param name="streamId">The value which uniquely identifies the stream from which the events will be read.</param>
@@ -111,15 +111,15 @@ namespace NEventStore
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
         /// <exception cref="StreamNotFoundException" />
-        public static Task<IEventStream> OpenStreamAsync(this IStoreEvents storeEvents, Guid streamId, int minRevision = int.MinValue, int maxRevision = int.MaxValue, CancellationToken? cancellationToken = null)
+        public static Task<IEventStream> OpenStreamAsync(this IStoreEvents storeEvents, Guid streamId, int minRevision = int.MinValue, int maxRevision = int.MaxValue, CancellationToken cancellationToken = default)
         {
             EnsureStoreEventsNotNull(storeEvents);
             return OpenStreamAsync(storeEvents, Bucket.Default, streamId, minRevision, maxRevision, cancellationToken);
         }
 
         /// <summary>
-        ///     Reads the stream indicated from the minimum revision specified up to the maximum revision specified or creates
-        ///     an empty stream if no commits are found and a minimum revision of zero is provided.
+        /// Reads the stream indicated from the minimum revision specified up to the maximum revision specified or creates
+        /// an empty stream if no commits are found and a minimum revision of zero is provided.
         /// </summary>
         /// <param name="storeEvents">The store events instance.</param>
         /// <param name="streamId">The value which uniquely identifies the stream from which the events will be read.</param>
@@ -130,16 +130,15 @@ namespace NEventStore
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
         /// <exception cref="StreamNotFoundException" />
-        public static Task<IEventStream> OpenStreamAsync(this IStoreEvents storeEvents, string streamId, int minRevision = int.MinValue, int maxRevision = int.MaxValue, CancellationToken? cancellationToken = null)
+        public static Task<IEventStream> OpenStreamAsync(this IStoreEvents storeEvents, string streamId, int minRevision = int.MinValue, int maxRevision = int.MaxValue, CancellationToken cancellationToken = default)
         {
             EnsureStoreEventsNotNull(storeEvents);
-            cancellationToken ??= CancellationToken.None;
-            return storeEvents.OpenStreamAsync(Bucket.Default, streamId, minRevision, maxRevision, cancellationToken.Value);
+            return storeEvents.OpenStreamAsync(Bucket.Default, streamId, minRevision, maxRevision, cancellationToken);
         }
 
         /// <summary>
-        ///     Reads the stream indicated from the minimum revision specified up to the maximum revision specified or creates
-        ///     an empty stream if no commits are found and a minimum revision of zero is provided.
+        /// Reads the stream indicated from the minimum revision specified up to the maximum revision specified or creates
+        /// an empty stream if no commits are found and a minimum revision of zero is provided.
         /// </summary>
         /// <param name="storeEvents">The store events instance.</param>
         /// <param name="bucketId">The value which uniquely identifies bucket the stream belongs to.</param>
@@ -151,11 +150,10 @@ namespace NEventStore
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
         /// <exception cref="StreamNotFoundException" />
-        public static Task<IEventStream> OpenStreamAsync(this IStoreEvents storeEvents, string bucketId, Guid streamId, int minRevision = int.MinValue, int maxRevision = int.MaxValue, CancellationToken? cancellationToken = null)
+        public static Task<IEventStream> OpenStreamAsync(this IStoreEvents storeEvents, string bucketId, Guid streamId, int minRevision = int.MinValue, int maxRevision = int.MaxValue, CancellationToken cancellationToken = default)
         {
             EnsureStoreEventsNotNull(storeEvents);
-            cancellationToken ??= CancellationToken.None;
-            return storeEvents.OpenStreamAsync(bucketId, streamId.ToString(), minRevision, maxRevision, cancellationToken.Value);
+            return storeEvents.OpenStreamAsync(bucketId, streamId.ToString(), minRevision, maxRevision, cancellationToken);
         }
 
         private static void EnsureStoreEventsNotNull(IStoreEvents storeEvents)

@@ -584,7 +584,7 @@ namespace NEventStore.Persistence.InMemory
                 return _commits.Skip(startingCommitIndex).Take(numberToTake);
             }
 
-            public ICommit Commit(CommitAttempt attempt, Int64 checkpoint)
+            public Commit Commit(CommitAttempt attempt, Int64 checkpoint)
             {
                 lock (_commits)
                 {

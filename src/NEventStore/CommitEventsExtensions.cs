@@ -3,13 +3,13 @@ using NEventStore.Persistence;
 namespace NEventStore
 {
     /// <summary>
-    ///    Provides extension methods for <see cref="ICommitEvents"/> and <see cref="ICommitEventsAsync"/> instances.
+    /// Provides extension methods for <see cref="ICommitEvents"/> and <see cref="ICommitEventsAsync"/> instances.
     /// </summary>
     public static class CommitEventsExtensions
     {
         /// <summary>
-        ///     Gets the corresponding commits from the stream indicated starting at the revision specified until the
-        ///     end of the stream sorted in ascending order--from oldest to newest from the default bucket.
+        /// Gets the corresponding commits from the stream indicated starting at the revision specified until the
+        /// end of the stream sorted in ascending order--from oldest to newest from the default bucket.
         /// </summary>
         /// <param name="commitEvents">The <see cref="ICommitEvents"/> instance.</param>
         /// <param name="streamId">The stream from which the events will be read.</param>
@@ -24,8 +24,8 @@ namespace NEventStore
         }
 
         /// <summary>
-        ///     Gets the corresponding commits from the stream indicated starting at the revision specified until the
-        ///     end of the stream sorted in ascending order--from oldest to newest from the default bucket.
+        /// Gets the corresponding commits from the stream indicated starting at the revision specified until the
+        /// end of the stream sorted in ascending order--from oldest to newest from the default bucket.
         /// </summary>
         /// <param name="commitEvents">The <see cref="ICommitEventsAsync"/> instance.</param>
         /// <param name="streamId">The stream from which the events will be read.</param>
@@ -35,7 +35,7 @@ namespace NEventStore
         /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        public static Task GetFromAsync(this ICommitEventsAsync commitEvents, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> observer, CancellationToken cancellationToken)
+        public static Task GetFromAsync(this ICommitEventsAsync commitEvents, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> observer, CancellationToken cancellationToken = default)
         {
             return commitEvents.GetFromAsync(Bucket.Default, streamId, minRevision, maxRevision, observer, cancellationToken);
         }
