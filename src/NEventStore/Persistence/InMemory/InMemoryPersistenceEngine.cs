@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Concurrent;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
@@ -84,8 +83,7 @@ namespace NEventStore.Persistence.InMemory
         /// <inheritdoc/>
         public Task GetFromAsync(Int64 checkpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
         {
-            var data = GetFrom(checkpointToken);
-            return ObserveCommits(asyncObserver, data, cancellationToken);
+            return ObserveDataStream(() => GetFrom(checkpointToken), asyncObserver, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -107,8 +105,7 @@ namespace NEventStore.Persistence.InMemory
         /// <inheritdoc/>
         public Task GetFromToAsync(Int64 fromCheckpointToken, Int64 toCheckpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
         {
-            var data = GetFromTo(fromCheckpointToken, toCheckpointToken);
-            return ObserveCommits(asyncObserver, data, cancellationToken);
+            return ObserveDataStream(() => GetFromTo(fromCheckpointToken, toCheckpointToken), asyncObserver, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -125,8 +122,7 @@ namespace NEventStore.Persistence.InMemory
         /// <inheritdoc/>
         public Task GetFromAsync(string bucketId, Int64 checkpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
         {
-            var data = GetFrom(bucketId, checkpointToken);
-            return ObserveCommits(asyncObserver, data, cancellationToken);
+            return ObserveDataStream(() => GetFrom(bucketId, checkpointToken), asyncObserver, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -143,8 +139,7 @@ namespace NEventStore.Persistence.InMemory
         /// <inheritdoc/>
         public Task GetFromToAsync(string bucketId, long fromCheckpointToken, long toCheckpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
         {
-            var data = GetFromTo(bucketId, fromCheckpointToken, toCheckpointToken);
-            return ObserveCommits(asyncObserver, data, cancellationToken);
+            return ObserveDataStream(() => GetFromTo(bucketId, fromCheckpointToken, toCheckpointToken), asyncObserver, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -172,34 +167,39 @@ namespace NEventStore.Persistence.InMemory
         /// <inheritdoc/>
         public Task GetFromAsync(string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> observer, CancellationToken cancellationToken)
         {
-            var data = GetFrom(bucketId, streamId, minRevision, maxRevision);
-            return ObserveCommits(observer, data, cancellationToken);
+            return ObserveDataStream(() => GetFrom(bucketId, streamId, minRevision, maxRevision), observer, cancellationToken);
         }
 
-        private static async Task ObserveCommits(IAsyncObserver<ICommit> observer, IEnumerable<ICommit> data, CancellationToken cancellationToken)
+        private static async Task ObserveDataStream<T>(Func<IEnumerable<T>> dataProvider, IAsyncObserver<T> observer, CancellationToken cancellationToken)
         {
-            if (data?.Any() == true)
+            try
             {
-                foreach (var commit in data)
+                var data = dataProvider();
+                if (data?.Any() == true)
                 {
-                    if (cancellationToken.IsCancellationRequested)
+                    foreach (var commit in data)
                     {
-                        var operationCanceledException = new OperationCanceledException();
-                        var ex = new AsyncObserverException("Operation Cancellation Requested", operationCanceledException)
+                        if (cancellationToken.IsCancellationRequested)
                         {
-                            Checkpoint = commit.CheckpointToken
-                        };
-                        await observer.OnErrorAsync(ex, cancellationToken).ConfigureAwait(false);
-                        break;
-                    }
-                    var goOn = await observer.OnNextAsync(commit, cancellationToken).ConfigureAwait(false);
-                    if (!goOn)
-                    {
-                        break;
+                            throw new OperationCanceledException("Operation Cancellation Requested");
+                        }
+                        var goOn = await observer.OnNextAsync(commit, cancellationToken).ConfigureAwait(false);
+                        if (!goOn)
+                        {
+                            break;
+                        }
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            throw new OperationCanceledException("Operation Cancellation Requested");
+                        }
                     }
                 }
+                await observer.OnCompletedAsync(cancellationToken).ConfigureAwait(false);
             }
-            await observer.OnCompletedAsync(cancellationToken).ConfigureAwait(false);
+            catch (Exception ex)
+            {
+                await observer.OnErrorAsync(ex, cancellationToken).ConfigureAwait(false);
+            }
         }
 
         /// <inheritdoc/>
@@ -266,26 +266,34 @@ namespace NEventStore.Persistence.InMemory
         /// <inheritdoc/>
         public async Task GetStreamsToSnapshotAsync(string bucketId, int maxThreshold, IAsyncObserver<IStreamHead> asyncObserver, CancellationToken cancellationToken)
         {
-            var data = GetStreamsToSnapshot(bucketId, maxThreshold);
-            if (data?.Any() == true)
+            try
             {
-                foreach (var commit in data)
+                var data = GetStreamsToSnapshot(bucketId, maxThreshold);
+                if (data?.Any() == true)
                 {
-                    if (cancellationToken.IsCancellationRequested)
+                    foreach (var commit in data)
                     {
-                        var operationCanceledException = new OperationCanceledException();
-                        var ex = new AsyncObserverException("Operation Cancellation Requested", operationCanceledException);
-                        await asyncObserver.OnErrorAsync(ex, cancellationToken).ConfigureAwait(false);
-                        break;
-                    }
-                    var goOn = await asyncObserver.OnNextAsync(commit, cancellationToken).ConfigureAwait(false);
-                    if (!goOn)
-                    {
-                        break;
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            throw new OperationCanceledException("Operation Cancellation Requested");
+                        }
+                        var goOn = await asyncObserver.OnNextAsync(commit, cancellationToken).ConfigureAwait(false);
+                        if (!goOn)
+                        {
+                            break;
+                        }
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            throw new OperationCanceledException("Operation Cancellation Requested");
+                        }
                     }
                 }
+                await asyncObserver.OnCompletedAsync(cancellationToken).ConfigureAwait(false);
             }
-            await asyncObserver.OnCompletedAsync(cancellationToken).ConfigureAwait(false);
+            catch (Exception ex)
+            {
+                await asyncObserver.OnErrorAsync(ex, cancellationToken).ConfigureAwait(false);
+            }
         }
 
         /// <inheritdoc/>

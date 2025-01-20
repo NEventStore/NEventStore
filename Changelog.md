@@ -3,6 +3,7 @@
 ## 10.0.0
 
 - Async Methods to read from and write to streams (IStoreEvents, IEventStream, IPersistStreams, IPersistStreamsAsync, ICommitEventsAsync, IAccessSnapshotsAsync). [#513](https://github.com/NEventStore/NEventStore/issues/513)
+  - methods that read from a stream in an async way follow the Observer pattern and requires you to pass in an `IAsyncObservable` that will receive data as soon as they are available.
 - AsyncPollingClient: a new polling client implementation that uses Async interfaces. [#505](https://github.com/NEventStore/NEventStore/issues/505)
 - Removed the BinarySerializer (BinaryFormatter) from the core package and moved it to its own package [#510](https://github.com/NEventStore/NEventStore/issues/510)
 - Improved comments and added more nullability checks.
@@ -16,7 +17,8 @@
 - `PipelineHooksAwarePersistanceDecorator` renamed to `PipelineHooksAwarePersistStreamsDecorator`.
 - `IPipelineHook.Select` method renamed to `IPipelineHook.SelectCommit`.
 - `BinarySerializer` moved to its own package: `NEventStore.Serialization.Binary`.
-- Improved methods signature with nullability annotations.
+  - for net8.0+ call `AppContext.SetSwitch("System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization", true);` to enable unsafe BinaryFormatter usage.
+- Improved many method signature with nullability annotations.
 - `Wireup.With()` renamed `Wireup.Register()`.
 - `OptimisticEventStream` constructors replaced by initialization functions:
   - `new OptimisticEventStream(string bucketId, string streamId, ICommitEvents persistence, int minRevision, int maxRevision)` -> `new OptimisticEventStream(string bucketId, string streamId, ICommitEvents persistence).Initialize(int minRevision, int maxRevision)`.

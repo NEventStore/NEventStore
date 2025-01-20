@@ -29,12 +29,16 @@ namespace NEventStore
         }
 
         /// <summary>
-        /// Throws an exception when an error occurs while reading commits from the stream
+        /// <para>Notifies the observer that the provider has experienced an error condition.</para>
+        /// <para>
+        /// Preserve the stack trace and rethrow the exception that occurred while reading commits from the stream.
+        /// </para>
+        /// <para>
+        /// Override this method to log and handle the error.
+        /// </para>
         /// </summary>
-        /// <exception cref="AsyncObserverException"></exception>
         public virtual Task OnErrorAsync(Exception ex, CancellationToken cancellationToken)
         {
-            // todo: lo the error.
             // Preserve the stack trace and rethrow the exception
             ExceptionDispatchInfo.Capture(ex).Throw();
             return Task.CompletedTask;
