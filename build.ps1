@@ -20,7 +20,7 @@ $nugetversion = $json.SemVer
 
 # Build
 Write-Host "Building: "$nugetversion
-dotnet build ./src/NEventStore.Core.sln -c $configuration --no-restore
+dotnet build ./src/NEventStore.Core.sln -c $configuration --no-restore -p:ContinuousIntegrationBuild=True
 
 # Testing
 if ($runtests -eq "y") {
