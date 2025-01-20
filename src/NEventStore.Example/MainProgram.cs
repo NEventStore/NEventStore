@@ -64,7 +64,7 @@ namespace NEventStore.Example
 #if NET462
                .TrackPerformanceInstance("example")
 #endif
-               .HookIntoPipelineUsing([new AuthorizationPipelineHook()])
+               .HookIntoPipelineUsing(new AuthorizationPipelineHook())
                .Build();
         }
 

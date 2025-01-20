@@ -1,11 +1,10 @@
 ﻿#if NUNIT
 
+using NUnit.Framework;
+using NUnit.Framework.Interfaces;
+
 namespace NEventStore.Persistence.AcceptanceTests.BDD
 {
-    using NUnit.Framework;
-    using NUnit.Framework.Interfaces;
-    using System;
-
     /// <summary>
     /// <para>
     /// base class for BDD testing in a Given-When-Then style
@@ -80,7 +79,7 @@ namespace NEventStore.Persistence.AcceptanceTests.BDD
 
     /// <summary>
     /// <para>
-    /// Attribute used to identity the tests
+    /// Attribute used to identify the tests
     /// </para>
     /// <para>
     /// for custom actions:
