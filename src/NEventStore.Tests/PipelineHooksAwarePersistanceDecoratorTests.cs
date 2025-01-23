@@ -45,6 +45,8 @@ namespace NEventStore
         private DateTime _date;
         private IPipelineHook? _hook1;
         private IPipelineHook? _hook2;
+        private IPipelineHookAsync? _hook1Async;
+        private IPipelineHookAsync? _hook2Async;
 
         protected override void Context()
         {
@@ -58,6 +60,14 @@ namespace NEventStore
             _hook2 = A.Fake<IPipelineHook>();
             A.CallTo(() => _hook2.SelectCommit(_commit)).Returns(_commit);
             pipelineHooks.Add(_hook2);
+
+            _hook1Async = A.Fake<IPipelineHookAsync>();
+            A.CallTo(() => _hook1Async.SelectCommitAsync(_commit, A<CancellationToken>.Ignored)).Returns(Task.FromResult<ICommit?>(_commit));
+            pipelineHooksAsync.Add(_hook1Async);
+
+            _hook2Async = A.Fake<IPipelineHookAsync>();
+            A.CallTo(() => _hook2Async.SelectCommitAsync(_commit, A<CancellationToken>.Ignored)).Returns(Task.FromResult<ICommit?>(_commit));
+            pipelineHooksAsync.Add(_hook2Async);
 
             A.CallTo(() => persistence.GetFrom(Bucket.Default, _date)).Returns([_commit]);
         }
@@ -81,6 +91,13 @@ namespace NEventStore
             A.CallTo(() => _hook1!.SelectCommit(_commit!)).MustHaveHappenedOnceExactly();
             A.CallTo(() => _hook2!.SelectCommit(_commit!)).MustHaveHappenedOnceExactly();
         }
+
+        [Fact]
+        public void should_pass_all_events_through_the_async_pipeline_hooks()
+        {
+            A.CallTo(() => _hook1Async!.SelectCommitAsync(_commit!, A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => _hook2Async!.SelectCommitAsync(_commit!, A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly();
+        }
     }
 
 #if MSTEST
@@ -91,6 +108,8 @@ namespace NEventStore
         private Commit? _commit;
         private IPipelineHook? _hook1;
         private IPipelineHook? _hook2;
+        private IPipelineHookAsync? _hook1Async;
+        private IPipelineHookAsync? _hook2Async;
 
         protected override void Context()
         {
@@ -103,6 +122,14 @@ namespace NEventStore
             _hook2 = A.Fake<IPipelineHook>();
             A.CallTo(() => _hook2.SelectCommit(_commit)).Returns(_commit);
             pipelineHooks.Add(_hook2);
+
+            _hook1Async = A.Fake<IPipelineHookAsync>();
+            A.CallTo(() => _hook1Async.SelectCommitAsync(_commit, A<CancellationToken>.Ignored)).Returns(Task.FromResult<ICommit?>(_commit));
+            pipelineHooksAsync.Add(_hook1Async);
+
+            _hook2Async = A.Fake<IPipelineHookAsync>();
+            A.CallTo(() => _hook2Async.SelectCommitAsync(_commit, A<CancellationToken>.Ignored)).Returns(Task.FromResult<ICommit?>(_commit));
+            pipelineHooksAsync.Add(_hook2Async);
 
             A.CallTo(() => persistence.GetFrom(Bucket.Default, _commit.StreamId, 0, int.MaxValue))
                 .Returns([_commit]);
@@ -127,6 +154,13 @@ namespace NEventStore
             A.CallTo(() => _hook1!.SelectCommit(_commit!)).MustHaveHappenedOnceExactly();
             A.CallTo(() => _hook2!.SelectCommit(_commit!)).MustHaveHappenedOnceExactly();
         }
+
+        [Fact]
+        public void should_pass_all_events_through_the_async_pipeline_hooks()
+        {
+            A.CallTo(() => _hook1Async!.SelectCommitAsync(_commit!, A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => _hook2Async!.SelectCommitAsync(_commit!, A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly();
+        }
     }
 
 #if MSTEST
@@ -138,6 +172,8 @@ namespace NEventStore
         private DateTime _end;
         private IPipelineHook? _hook1;
         private IPipelineHook? _hook2;
+        private IPipelineHookAsync? _hook1Async;
+        private IPipelineHookAsync? _hook2Async;
         private DateTime _start;
 
         protected override void Context()
@@ -153,6 +189,14 @@ namespace NEventStore
             _hook2 = A.Fake<IPipelineHook>();
             A.CallTo(() => _hook2.SelectCommit(_commit)).Returns(_commit);
             pipelineHooks.Add(_hook2);
+
+            _hook1Async = A.Fake<IPipelineHookAsync>();
+            A.CallTo(() => _hook1Async.SelectCommitAsync(_commit, A<CancellationToken>.Ignored)).Returns(Task.FromResult<ICommit?>(_commit));
+            pipelineHooksAsync.Add(_hook1Async);
+
+            _hook2Async = A.Fake<IPipelineHookAsync>();
+            A.CallTo(() => _hook2Async.SelectCommitAsync(_commit, A<CancellationToken>.Ignored)).Returns(Task.FromResult<ICommit?>(_commit));
+            pipelineHooksAsync.Add(_hook2Async);
 
             A.CallTo(() => persistence.GetFromTo(Bucket.Default, _start, _end)).Returns([_commit]);
         }
@@ -176,6 +220,13 @@ namespace NEventStore
             A.CallTo(() => _hook1!.SelectCommit(_commit!)).MustHaveHappenedOnceExactly();
             A.CallTo(() => _hook2!.SelectCommit(_commit!)).MustHaveHappenedOnceExactly();
         }
+
+        [Fact]
+        public void should_pass_all_events_through_the_async_pipeline_hooks()
+        {
+            A.CallTo(() => _hook1Async!.SelectCommitAsync(_commit!, A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => _hook2Async!.SelectCommitAsync(_commit!, A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly();
+        }
     }
 
 #if MSTEST
@@ -187,6 +238,8 @@ namespace NEventStore
         private Int64 _end;
         private IPipelineHook? _hook1;
         private IPipelineHook? _hook2;
+        private IPipelineHookAsync? _hook1Async;
+        private IPipelineHookAsync? _hook2Async;
         private Int64 _start;
 
         protected override void Context()
@@ -202,6 +255,14 @@ namespace NEventStore
             _hook2 = A.Fake<IPipelineHook>();
             A.CallTo(() => _hook2.SelectCommit(_commit)).Returns(_commit);
             pipelineHooks.Add(_hook2);
+
+            _hook1Async = A.Fake<IPipelineHookAsync>();
+            A.CallTo(() => _hook1Async.SelectCommitAsync(_commit, A<CancellationToken>.Ignored)).Returns(Task.FromResult<ICommit?>(_commit));
+            pipelineHooksAsync.Add(_hook1Async);
+
+            _hook2Async = A.Fake<IPipelineHookAsync>();
+            A.CallTo(() => _hook2Async.SelectCommitAsync(_commit, A<CancellationToken>.Ignored)).Returns(Task.FromResult<ICommit?>(_commit));
+            pipelineHooksAsync.Add(_hook2Async);
 
             A.CallTo(() => persistence.GetFromTo(_start, _end)).Returns([_commit]);
         }
@@ -225,6 +286,13 @@ namespace NEventStore
             A.CallTo(() => _hook1!.SelectCommit(_commit!)).MustHaveHappenedOnceExactly();
             A.CallTo(() => _hook2!.SelectCommit(_commit!)).MustHaveHappenedOnceExactly();
         }
+
+        [Fact]
+        public void should_pass_all_events_through_the_async_pipeline_hooks()
+        {
+            A.CallTo(() => _hook1Async!.SelectCommitAsync(_commit!, A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => _hook2Async!.SelectCommitAsync(_commit!, A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly();
+        }
     }
 
 #if MSTEST
@@ -236,6 +304,8 @@ namespace NEventStore
         private Int64 _end;
         private IPipelineHook? _hook1;
         private IPipelineHook? _hook2;
+        private IPipelineHookAsync? _hook1Async;
+        private IPipelineHookAsync? _hook2Async;
         private Int64 _start;
 
         protected override void Context()
@@ -251,6 +321,14 @@ namespace NEventStore
             _hook2 = A.Fake<IPipelineHook>();
             A.CallTo(() => _hook2.SelectCommit(_commit)).Returns(_commit);
             pipelineHooks.Add(_hook2);
+
+            _hook1Async = A.Fake<IPipelineHookAsync>();
+            A.CallTo(() => _hook1Async.SelectCommitAsync(_commit, A<CancellationToken>.Ignored)).Returns(Task.FromResult<ICommit?>(_commit));
+            pipelineHooksAsync.Add(_hook1Async);
+
+            _hook2Async = A.Fake<IPipelineHookAsync>();
+            A.CallTo(() => _hook2Async.SelectCommitAsync(_commit, A<CancellationToken>.Ignored)).Returns(Task.FromResult<ICommit?>(_commit));
+            pipelineHooksAsync.Add(_hook2Async);
 
             A.CallTo(() => persistence.GetFromTo(Bucket.Default, _start, _end)).Returns([_commit]);
         }
@@ -273,6 +351,13 @@ namespace NEventStore
         {
             A.CallTo(() => _hook1!.SelectCommit(_commit!)).MustHaveHappenedOnceExactly();
             A.CallTo(() => _hook2!.SelectCommit(_commit!)).MustHaveHappenedOnceExactly();
+        }
+
+        [Fact]
+        public void should_pass_all_events_through_the_async_pipeline_hooks()
+        {
+            A.CallTo(() => _hook1Async!.SelectCommitAsync(_commit!, A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => _hook2Async!.SelectCommitAsync(_commit!, A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly();
         }
     }
 
@@ -308,6 +393,8 @@ namespace NEventStore
         private ICommit? _commit;
         private IPipelineHook? _hook1;
         private IPipelineHook? _hook2;
+        private IPipelineHookAsync? _hook1Async;
+        private IPipelineHookAsync? _hook2Async;
 
         protected override void Context()
         {
@@ -320,6 +407,14 @@ namespace NEventStore
             _hook2 = A.Fake<IPipelineHook>();
             A.CallTo(() => _hook2.SelectCommit(_commit)).Returns(_commit);
             pipelineHooks.Add(_hook2);
+
+            _hook1Async = A.Fake<IPipelineHookAsync>();
+            A.CallTo(() => _hook1Async.SelectCommitAsync(_commit, A<CancellationToken>.Ignored)).Returns(Task.FromResult<ICommit?>(_commit));
+            pipelineHooksAsync.Add(_hook1Async);
+
+            _hook2Async = A.Fake<IPipelineHookAsync>();
+            A.CallTo(() => _hook2Async.SelectCommitAsync(_commit, A<CancellationToken>.Ignored)).Returns(Task.FromResult<ICommit?>(_commit));
+            pipelineHooksAsync.Add(_hook2Async);
 
             A.CallTo(() => persistence.GetFrom(0)).Returns([_commit]);
         }
@@ -341,6 +436,13 @@ namespace NEventStore
             A.CallTo(() => _hook1!.SelectCommit(_commit!)).MustHaveHappenedOnceExactly();
             A.CallTo(() => _hook2!.SelectCommit(_commit!)).MustHaveHappenedOnceExactly();
         }
+
+        [Fact]
+        public void should_pass_all_events_through_the_async_pipeline_hooks()
+        {
+            A.CallTo(() => _hook1Async!.SelectCommitAsync(_commit!, A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => _hook2Async!.SelectCommitAsync(_commit!, A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly();
+        }
     }
 
 #if MSTEST
@@ -351,6 +453,8 @@ namespace NEventStore
         private ICommit? _commit;
         private IPipelineHook? _hook1;
         private IPipelineHook? _hook2;
+        private IPipelineHookAsync? _hook1Async;
+        private IPipelineHookAsync? _hook2Async;
 
         protected override void Context()
         {
@@ -363,6 +467,14 @@ namespace NEventStore
             _hook2 = A.Fake<IPipelineHook>();
             A.CallTo(() => _hook2.SelectCommit(_commit)).Returns(_commit);
             pipelineHooks.Add(_hook2);
+
+            _hook1Async = A.Fake<IPipelineHookAsync>();
+            A.CallTo(() => _hook1Async.SelectCommitAsync(_commit, A<CancellationToken>.Ignored)).Returns(Task.FromResult<ICommit?>(_commit));
+            pipelineHooksAsync.Add(_hook1Async);
+
+            _hook2Async = A.Fake<IPipelineHookAsync>();
+            A.CallTo(() => _hook2Async.SelectCommitAsync(_commit, A<CancellationToken>.Ignored)).Returns(Task.FromResult<ICommit?>(_commit));
+            pipelineHooksAsync.Add(_hook2Async);
 
             A.CallTo(() => persistence.GetFrom(Bucket.Default, 0)).Returns([_commit]);
         }
@@ -384,6 +496,13 @@ namespace NEventStore
             A.CallTo(() => _hook1!.SelectCommit(_commit!)).MustHaveHappenedOnceExactly();
             A.CallTo(() => _hook2!.SelectCommit(_commit!)).MustHaveHappenedOnceExactly();
         }
+
+        [Fact]
+        public void should_pass_all_events_through_the_async_pipeline_hooks()
+        {
+            A.CallTo(() => _hook1Async!.SelectCommitAsync(_commit!, A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => _hook2Async!.SelectCommitAsync(_commit!, A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly();
+        }
     }
 
 #if MSTEST
@@ -392,11 +511,15 @@ namespace NEventStore
     public class when_purging : using_underlying_persistence
     {
         private IPipelineHook? _hook;
+        private IPipelineHookAsync? _hookAsync;
 
         protected override void Context()
         {
             _hook = A.Fake<IPipelineHook>();
             pipelineHooks.Add(_hook);
+
+            _hookAsync = A.Fake<IPipelineHookAsync>();
+            pipelineHooksAsync.Add(_hookAsync);
         }
 
         protected override void Because()
@@ -409,6 +532,12 @@ namespace NEventStore
         {
             A.CallTo(() => _hook!.OnPurge(null)).MustHaveHappenedOnceExactly();
         }
+
+        [Fact]
+        public void should_call_the_async_pipeline_hook_purge()
+        {
+            A.CallTo(() => _hookAsync!.OnPurgeAsync(null, A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly();
+        }
     }
 
 #if MSTEST
@@ -417,12 +546,16 @@ namespace NEventStore
     public class when_purging_a_bucket : using_underlying_persistence
     {
         private IPipelineHook? _hook;
+        private IPipelineHookAsync? _hookAsync;
         private const string _bucketId = "Bucket";
 
         protected override void Context()
         {
             _hook = A.Fake<IPipelineHook>();
             pipelineHooks.Add(_hook);
+
+            _hookAsync = A.Fake<IPipelineHookAsync>();
+            pipelineHooksAsync.Add(_hookAsync);
         }
 
         protected override void Because()
@@ -435,6 +568,12 @@ namespace NEventStore
         {
             A.CallTo(() => _hook!.OnPurge(_bucketId)).MustHaveHappenedOnceExactly();
         }
+
+        [Fact]
+        public void should_call_the_async_pipeline_hook_purge()
+        {
+            A.CallTo(() => _hookAsync!.OnPurgeAsync(_bucketId, A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly();
+        }
     }
 
 #if MSTEST
@@ -443,6 +582,7 @@ namespace NEventStore
     public class when_deleting_a_stream : using_underlying_persistence
     {
         private IPipelineHook? _hook;
+        private IPipelineHookAsync? _hookAsync;
         private const string _bucketId = "Bucket";
         private const string _streamId = "Stream";
 
@@ -450,6 +590,9 @@ namespace NEventStore
         {
             _hook = A.Fake<IPipelineHook>();
             pipelineHooks.Add(_hook);
+
+            _hookAsync = A.Fake<IPipelineHookAsync>();
+            pipelineHooksAsync.Add(_hookAsync);
         }
 
         protected override void Because()
@@ -462,16 +605,24 @@ namespace NEventStore
         {
             A.CallTo(() => _hook!.OnDeleteStream(_bucketId, _streamId)).MustHaveHappenedOnceExactly();
         }
+
+        [Fact]
+        public void should_call_the_async_pipeline_hook_purge()
+        {
+            A.CallTo(() => _hookAsync!.OnDeleteStreamAsync(_bucketId, _streamId, A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly();
+        }
     }
 
 #if MSTEST
     [TestClass]
 #endif
-    public class when_reading_the_all_events_from_checkpoint_with_filtering_PipelineHook : using_underlying_persistence
+    public class when_reading_the_all_events_from_checkpoint_with_filtering_PipelineHook_Sync : using_underlying_persistence
     {
         private ICommit? _commit;
         private IPipelineHook? _hook1;
         private IPipelineHook? _hook2;
+        private IPipelineHookAsync? _hook1Async;
+        private IPipelineHookAsync? _hook2Async;
         private List<ICommit>? _commits;
 
         protected override void Context()
@@ -485,6 +636,14 @@ namespace NEventStore
             _hook2 = A.Fake<IPipelineHook>();
             A.CallTo(() => _hook2.SelectCommit(_commit)).Returns(_commit);
             pipelineHooks.Add(_hook2);
+
+            _hook1Async = A.Fake<IPipelineHookAsync>();
+            A.CallTo(() => _hook1Async.SelectCommitAsync(_commit, A<CancellationToken>.Ignored)).Returns(Task.FromResult<ICommit?>(_commit));
+            pipelineHooksAsync.Add(_hook1Async);
+
+            _hook2Async = A.Fake<IPipelineHookAsync>();
+            A.CallTo(() => _hook2Async.SelectCommitAsync(_commit, A<CancellationToken>.Ignored)).Returns(Task.FromResult<ICommit?>(_commit));
+            pipelineHooksAsync.Add(_hook2Async);
 
             A.CallTo(() => persistence.GetFrom(0)).Returns([_commit]);
         }
@@ -513,6 +672,95 @@ namespace NEventStore
         }
 
         [Fact]
+        public void should_not_pass_the_events_through_the_first_async_pipeline_hooks()
+        {
+            A.CallTo(() => _hook1Async!.SelectCommitAsync(_commit!, A<CancellationToken>.Ignored)).MustNotHaveHappened();
+        }
+
+        [Fact]
+        public void should_not_pass_the_events_through_the_second_async_pipeline_hooks()
+        {
+            A.CallTo(() => _hook2Async!.SelectCommitAsync(_commit!, A<CancellationToken>.Ignored)).MustNotHaveHappened();
+        }
+
+        [Fact]
+        public void commit_list_should_be_empty()
+        {
+            _commits.Should().BeEmpty();
+        }
+    }
+
+#if MSTEST
+    [TestClass]
+#endif
+    public class when_reading_the_all_events_from_checkpoint_with_filtering_PipelineHook_Async : using_underlying_persistence
+    {
+        private ICommit? _commit;
+        private IPipelineHook? _hook1;
+        private IPipelineHook? _hook2;
+        private IPipelineHookAsync? _hook1Async;
+        private IPipelineHookAsync? _hook2Async;
+        private List<ICommit>? _commits;
+
+        protected override void Context()
+        {
+            _commit = new Commit(Bucket.Default, streamId, 1, Guid.NewGuid(), 1, DateTime.Now, 1, null, null);
+
+            _hook1 = A.Fake<IPipelineHook>();
+            A.CallTo(() => _hook1.SelectCommit(_commit)).Returns(_commit);
+            pipelineHooks.Add(_hook1);
+
+            _hook2 = A.Fake<IPipelineHook>();
+            A.CallTo(() => _hook2.SelectCommit(_commit)).Returns(_commit);
+            pipelineHooks.Add(_hook2);
+
+            _hook1Async = A.Fake<IPipelineHookAsync>();
+            A.CallTo(() => _hook1Async.SelectCommitAsync(_commit, A<CancellationToken>.Ignored)).Returns(Task.FromResult<ICommit?>(null));
+            pipelineHooksAsync.Add(_hook1Async);
+
+            _hook2Async = A.Fake<IPipelineHookAsync>();
+            A.CallTo(() => _hook2Async.SelectCommitAsync(_commit, A<CancellationToken>.Ignored)).Returns(Task.FromResult<ICommit?>(_commit));
+            pipelineHooksAsync.Add(_hook2Async);
+
+            A.CallTo(() => persistence.GetFrom(0)).Returns([_commit]);
+        }
+
+        protected override void Because()
+        {
+            _commits = Decorator.GetFrom(0).ToList();
+        }
+
+        [Fact]
+        public void should_call_the_underlying_persistence_to_get_events()
+        {
+            A.CallTo(() => persistence.GetFrom(0)).MustHaveHappenedOnceExactly();
+        }
+
+        [Fact]
+        public void should_pass_all_events_through_the_first_pipeline_hooks()
+        {
+            A.CallTo(() => _hook1!.SelectCommit(_commit!)).MustHaveHappenedOnceExactly();
+        }
+
+        [Fact]
+        public void should_pass_the_events_through_the_second_pipeline_hooks()
+        {
+            A.CallTo(() => _hook2!.SelectCommit(_commit!)).MustHaveHappenedOnceExactly();
+        }
+
+        [Fact]
+        public void should_pass_the_events_through_the_first_async_pipeline_hooks()
+        {
+            A.CallTo(() => _hook1Async!.SelectCommitAsync(_commit!, A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly();
+        }
+
+        [Fact]
+        public void should_not_pass_the_events_through_the_second_async_pipeline_hooks()
+        {
+            A.CallTo(() => _hook2Async!.SelectCommitAsync(_commit!, A<CancellationToken>.Ignored)).MustNotHaveHappened();
+        }
+
+        [Fact]
         public void commit_list_should_be_empty()
         {
             _commits.Should().BeEmpty();
@@ -524,11 +772,12 @@ namespace NEventStore
         private PipelineHooksAwarePersistStreamsDecorator? decorator;
         protected readonly IPersistStreams persistence = A.Fake<IPersistStreams>();
         protected readonly List<IPipelineHook> pipelineHooks = [];
+        protected readonly List<IPipelineHookAsync> pipelineHooksAsync = [];
         protected readonly string streamId = Guid.NewGuid().ToString();
 
         public PipelineHooksAwarePersistStreamsDecorator Decorator
         {
-            get { return decorator ??= new PipelineHooksAwarePersistStreamsDecorator(persistence, pipelineHooks.Select(x => x)); }
+            get { return decorator ??= new PipelineHooksAwarePersistStreamsDecorator(persistence, pipelineHooks.Select(x => x), pipelineHooksAsync.Select(x => x)); }
             set { decorator = value; }
         }
     }

@@ -562,6 +562,7 @@ namespace NEventStore
         private IPersistStreams? persistence;
 
         private List<IPipelineHook>? pipelineHooks;
+        private List<IPipelineHookAsync>? pipelineHooksAsync;
         private OptimisticEventStore? store;
         protected string streamId = Guid.NewGuid().ToString();
 
@@ -575,9 +576,14 @@ namespace NEventStore
             get { return pipelineHooks ??= []; }
         }
 
+        protected List<IPipelineHookAsync> PipelineHooksAsync
+        {
+            get { return pipelineHooksAsync ??= []; }
+        }
+
         protected OptimisticEventStore Store
         {
-            get { return store ??= new OptimisticEventStore(Persistence, PipelineHooks.Select(x => x)); }
+            get { return store ??= new OptimisticEventStore(Persistence, PipelineHooks.Select(x => x), PipelineHooksAsync.Select(x => x)); }
         }
 
         protected override void Cleanup()

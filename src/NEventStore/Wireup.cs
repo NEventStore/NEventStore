@@ -84,6 +84,21 @@ namespace NEventStore
         }
 
         /// <summary>
+        /// <para>Add pipeline hooks to the processing pipeline.</para>
+        /// <para>Asynchronous hooks are executed after the synchronous hooks.</para>
+        /// </summary>
+        public virtual Wireup HookIntoPipelineUsing(params IPipelineHookAsync[] hooks)
+        {
+            if (Logger.IsEnabled(LogLevel.Information))
+            {
+                Logger.LogInformation(Resources.WireupHookIntoPipeline, string.Join(", ", hooks.Select(h => h.GetType())));
+            }
+            ICollection<IPipelineHookAsync> collection = (hooks ?? []).Where(x => x != null).ToArray();
+            Container.Register(collection);
+            return this;
+        }
+
+        /// <summary>
         /// Builds the configured event store.
         /// </summary>
         public virtual IStoreEvents Build()
@@ -127,7 +142,8 @@ namespace NEventStore
             {
                 pipelineHooks.Add(upconverter);
             }
-            return new OptimisticEventStore(context.Resolve<IPersistStreams>()!, pipelineHooks);
+            ICollection<IPipelineHookAsync> hooksAsync = context.Resolve<ICollection<IPipelineHookAsync>>() ?? [];
+            return new OptimisticEventStore(context.Resolve<IPersistStreams>()!, pipelineHooks, hooksAsync);
         }
     }
 }

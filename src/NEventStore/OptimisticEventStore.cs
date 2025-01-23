@@ -12,6 +12,7 @@ namespace NEventStore
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(OptimisticEventStore));
         private readonly IPersistStreams _persistence;
         private readonly IEnumerable<IPipelineHook> _pipelineHooks;
+        private readonly IEnumerable<IPipelineHookAsync>? _pipelineHooksAsync;
 
         /// <inheritdoc/>
         public virtual IPersistStreams Advanced { get => _persistence; }
@@ -20,7 +21,7 @@ namespace NEventStore
         /// Initializes a new instance of the OptimisticEventStore class.
         /// </summary>
         /// <exception cref="ArgumentNullException"></exception>
-        public OptimisticEventStore(IPersistStreams persistence, IEnumerable<IPipelineHook>? pipelineHooks)
+        public OptimisticEventStore(IPersistStreams persistence, IEnumerable<IPipelineHook>? pipelineHooks, IEnumerable<IPipelineHookAsync>? pipelineHooksAsync)
         {
             if (persistence == null)
             {
@@ -28,9 +29,10 @@ namespace NEventStore
             }
 
             _pipelineHooks = pipelineHooks ?? [];
+            _pipelineHooksAsync = pipelineHooksAsync ?? [];
             if (_pipelineHooks.Any())
             {
-                _persistence = new PipelineHooksAwarePersistStreamsDecorator(persistence, _pipelineHooks);
+                _persistence = new PipelineHooksAwarePersistStreamsDecorator(persistence, _pipelineHooks, _pipelineHooksAsync);
             }
             else
             {

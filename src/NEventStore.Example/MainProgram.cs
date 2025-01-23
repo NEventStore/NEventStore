@@ -101,7 +101,7 @@ namespace NEventStore.Example
         {
             var latestSnapshot = store!.Advanced.GetSnapshot(StreamId, int.MaxValue)
                 ?? throw new InvalidOperationException("No snapshot found.");
-            
+
             using var stream = store.OpenStream(latestSnapshot, int.MaxValue);
             var @event = new SomeDomainEvent { Value = "Third event (first one after a snapshot)." };
 

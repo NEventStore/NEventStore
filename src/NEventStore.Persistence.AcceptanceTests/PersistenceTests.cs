@@ -1183,7 +1183,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         protected override void Because()
         {
             _moreThanPageSize = ConfiguredPageSizeForTesting + 1;
-            var eventStore = new OptimisticEventStore(Persistence, null);
+            var eventStore = new OptimisticEventStore(Persistence, null, null);
             // TODO: Not sure how to set the actual page size to the const defined above
             for (int i = 0; i < _moreThanPageSize; i++)
             {
