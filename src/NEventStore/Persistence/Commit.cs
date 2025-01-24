@@ -10,7 +10,7 @@ namespace NEventStore.Persistence
         /// <summary>
         /// Initializes a new instance of the Commit class.
         /// </summary>
-         public Commit(
+        public Commit(
             string bucketId,
             string streamId,
             int streamRevision,
@@ -18,8 +18,8 @@ namespace NEventStore.Persistence
             int commitSequence,
             DateTime commitStamp,
             Int64 checkpointToken,
-            IDictionary<string, object> headers,
-            ICollection<EventMessage> events)
+            IDictionary<string, object>? headers,
+            ICollection<EventMessage>? events)
         {
             BucketId = bucketId;
             StreamId = streamId;

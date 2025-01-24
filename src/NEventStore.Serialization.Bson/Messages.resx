@@ -123,12 +123,6 @@
   <data name="SerializingGraph" xml:space="preserve">
     <value>Serializing object graph of type '{0}'.</value>
   </data>
-  <data name="InvalidKeyLength" xml:space="preserve">
-    <value>The encryption key must be exactly 16 bytes.</value>
-  </data>
-  <data name="InspectingTextStream" xml:space="preserve">
-    <value>Inspecting text-based stream contents.</value>
-  </data>
   <data name="RegisteringKnownType" xml:space="preserve">
     <value>Registering type '{0}' as a known type.</value>
   </data>

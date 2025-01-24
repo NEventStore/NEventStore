@@ -37,7 +37,7 @@ namespace NEventStore
                     _assembliesToScan.AddRange(GetAllAssemblies());
                 }
 
-                IDictionary<Type, Func<object, object>> converters = GetConverters(_assembliesToScan);
+                var converters = GetConverters(_assembliesToScan);
                 if (converters.Count > 0)
                 {
                     return new EventUpconverterPipelineHook(converters);
@@ -113,7 +113,7 @@ namespace NEventStore
                 throw new ArgumentNullException(nameof(converter));
             }
 
-            _registered[typeof(TSource)] = @event => converter.Convert(@event as TSource);
+            _registered[typeof(TSource)] = @event => converter.Convert((TSource)@event);
 
             return this;
         }

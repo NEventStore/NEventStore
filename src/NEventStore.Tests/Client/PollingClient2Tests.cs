@@ -1,9 +1,5 @@
 ﻿#pragma warning disable IDE1006 // Naming Styles
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using FakeItEasy;
 using NEventStore.Persistence;
 using NEventStore.Persistence.AcceptanceTests;
@@ -13,39 +9,42 @@ using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 #endif
 #if NUNIT
-using NUnit.Framework;
 #endif
 #if XUNIT
-	using Xunit;
-	using Xunit.Should;
+using Xunit;
+using Xunit.Should;
 #endif
 
 namespace NEventStore.PollingClient
 {
 #if MSTEST
-	[TestClass]
+    [TestClass]
 #endif
     public class CreatingPollingClient2Tests
     {
         [Fact]
         public void When_persist_streams_is_null_then_should_throw()
         {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             Catch.Exception(() => new PollingClient2(null, _ => PollingClient2.HandlingResult.MoveToNext)).Should().BeOfType<ArgumentNullException>();
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
         [Fact]
         public void When_interval_less_than_zero_then_should_throw()
         {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             Catch.Exception(() => new PollingClient2(A.Fake<IPersistStreams>(), null)).Should().BeOfType<ArgumentNullException>();
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
     }
 
 #if MSTEST
-	[TestClass]
+    [TestClass]
 #endif
     public class base_handling_committed_events : using_polling_client2
     {
-        private readonly List<ICommit> commits = new List<ICommit>();
+        private readonly List<ICommit> commits = [];
 
         protected override void Context()
         {
@@ -72,11 +71,11 @@ namespace NEventStore.PollingClient
     }
 
 #if MSTEST
-	[TestClass]
+    [TestClass]
 #endif
     public class base_handling_committed_events_and_new_events : using_polling_client2
     {
-        private readonly List<ICommit> commits = new List<ICommit>();
+        private readonly List<ICommit> commits = [];
 
         protected override void Context()
         {
@@ -107,11 +106,11 @@ namespace NEventStore.PollingClient
     }
 
 #if MSTEST
-	[TestClass]
+    [TestClass]
 #endif
     public class verify_stopping_commit_polling_client : using_polling_client2
     {
-        private readonly List<ICommit> commits = new List<ICommit>();
+        private readonly List<ICommit> commits = [];
 
         protected override void Context()
         {
@@ -140,11 +139,11 @@ namespace NEventStore.PollingClient
     }
 
 #if MSTEST
-	[TestClass]
+    [TestClass]
 #endif
     public class verify_retry_commit_polling_client : using_polling_client2
     {
-        private readonly List<ICommit> commits = new List<ICommit>();
+        private readonly List<ICommit> commits = [];
 
         protected override void Context()
         {
@@ -175,11 +174,11 @@ namespace NEventStore.PollingClient
     }
 
 #if MSTEST
-	[TestClass]
+    [TestClass]
 #endif
     public class verify_retry_then_move_next : using_polling_client2
     {
-        private readonly List<ICommit> commits = new List<ICommit>();
+        private readonly List<ICommit> commits = [];
 
         protected override void Context()
         {
@@ -208,17 +207,17 @@ namespace NEventStore.PollingClient
             commits.Count.Should().Be(4);
             commits
                 .Select(c => c.CheckpointToken)
-                .SequenceEqual(new[] { 1L, 1L, 1, 2 })
+                .SequenceEqual([1L, 1L, 1, 2])
                 .Should().BeTrue();
         }
     }
 
 #if MSTEST
-	[TestClass]
+    [TestClass]
 #endif
-    public class verify_manual_plling : using_polling_client2
+    public class verify_manual_polling : using_polling_client2
     {
-        private readonly List<ICommit> commits = new List<ICommit>();
+        private readonly List<ICommit> commits = [];
 
         protected override void Context()
         {
@@ -245,7 +244,7 @@ namespace NEventStore.PollingClient
             commits.Count.Should().Be(2);
             commits
                 .Select(c => c.CheckpointToken)
-                .SequenceEqual(new[] { 1L, 2L })
+                .SequenceEqual([1L, 2L])
                 .Should().BeTrue();
         }
     }
@@ -253,20 +252,20 @@ namespace NEventStore.PollingClient
     public abstract class using_polling_client2 : SpecificationBase
     {
         protected const int PollingInterval = 100;
-        protected PollingClient2 sut;
-        private IStoreEvents _storeEvents;
+        protected PollingClient2? sut;
+        private IStoreEvents? _storeEvents;
 
         protected PollingClient2 Sut
         {
-            get { return sut; }
+            get { return sut!; }
         }
 
         protected IStoreEvents StoreEvents
         {
-            get { return _storeEvents; }
+            get { return _storeEvents!; }
         }
 
-        protected Func<ICommit, PollingClient2.HandlingResult> HandleFunction;
+        protected Func<ICommit, PollingClient2.HandlingResult>? HandleFunction;
 
         protected override void Context()
         {
@@ -277,7 +276,7 @@ namespace NEventStore.PollingClient
 
         protected override void Cleanup()
         {
-            _storeEvents.Dispose();
+            _storeEvents?.Dispose();
             Sut.Dispose();
         }
 

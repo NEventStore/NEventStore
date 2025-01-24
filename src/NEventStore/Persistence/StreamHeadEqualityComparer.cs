@@ -1,39 +1,29 @@
-namespace NEventStore.Persistence
-{
-    using System.Collections.Generic;
-
+namespace NEventStore.Persistence {
     /// <summary>
     /// Represents a strategy for comparing stream heads.
     /// </summary>
-    public sealed class StreamHeadEqualityComparer : IEqualityComparer<IStreamHead>
-    {
+    public sealed class StreamHeadEqualityComparer : IEqualityComparer<IStreamHead> {
         /// <inheritdoc/>
-        public bool Equals(IStreamHead x, IStreamHead y)
-        {
-            if (ReferenceEquals(x, y))
-            {
+        public bool Equals(IStreamHead x, IStreamHead y) {
+            if (ReferenceEquals(x, y)) {
                 return true;
             }
-            if (x is null)
-            {
+            if (x is null) {
                 return false;
             }
-            if (y is null)
-            {
+            if (y is null) {
                 return false;
             }
-            if (x.GetType() != y.GetType())
-            {
+            if (x.GetType() != y.GetType()) {
                 return false;
             }
-            return string.Equals(x.StreamId, y.StreamId, StringComparison.Ordinal) && string.Equals(x.BucketId, y.BucketId, StringComparison.Ordinal);
+            return string.Equals(x.StreamId, y.StreamId, StringComparison.Ordinal)
+                && string.Equals(x.BucketId, y.BucketId, StringComparison.Ordinal);
         }
 
         /// <inheritdoc/>
-        public int GetHashCode(IStreamHead obj)
-        {
-            unchecked
-            {
+        public int GetHashCode(IStreamHead obj) {
+            unchecked {
                 return ((obj.StreamId?.GetHashCode() ?? 0) * 397) ^ (obj.BucketId?.GetHashCode() ?? 0);
             }
         }

@@ -88,47 +88,11 @@ namespace NEventStore.Serialization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Registering type &apos;{0}&apos; as a known type..
-        /// </summary>
-        internal static string RegisteringKnownType {
-            get {
-                return ResourceManager.GetString("RegisteringKnownType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Serializing object graph of type &apos;{0}&apos;..
         /// </summary>
         internal static string SerializingGraph {
             get {
                 return ResourceManager.GetString("SerializingGraph", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Objects of type &apos;{0}&apos; are considered to be an array: &apos;{1}&apos;..
-        /// </summary>
-        internal static string TypeIsArray {
-            get {
-                return ResourceManager.GetString("TypeIsArray", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The object to be serialized is of type &apos;{0}&apos;.  Using a typed serializer for the unknown type..
-        /// </summary>
-        internal static string UsingTypedSerializer {
-            get {
-                return ResourceManager.GetString("UsingTypedSerializer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The object to be serialized is of type &apos;{0}&apos;.  Using an untyped serializer for the known type..
-        /// </summary>
-        internal static string UsingUntypedSerializer {
-            get {
-                return ResourceManager.GetString("UsingUntypedSerializer", resourceCulture);
             }
         }
     }

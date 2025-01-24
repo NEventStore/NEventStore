@@ -15,14 +15,14 @@ namespace NEventStore
         /// <summary>
         /// Registers a service with the container.
         /// </summary>
-        public virtual ContainerRegistration Register<TService>(Func<NanoContainer, TService> resolve)
+        public virtual ContainerRegistration Register<TService>(Func<NanoContainer, TService?> resolve)
             where TService : class
         {
             if (Logger.IsEnabled(LogLevel.Debug))
             {
                 Logger.LogDebug(Messages.RegisteringWireupCallback, typeof(TService));
             }
-            var registration = new ContainerRegistration(c => (object)resolve(c));
+            var registration = new ContainerRegistration(c => resolve(c));
             _registrations[typeof(TService)] = registration;
             return registration;
         }
@@ -55,7 +55,7 @@ namespace NEventStore
         /// <summary>
         /// Resolves a service from the container.
         /// </summary>
-        public virtual TService Resolve<TService>()
+        public virtual TService? Resolve<TService>()
         {
             if (Logger.IsEnabled(LogLevel.Debug))
             {
@@ -64,7 +64,8 @@ namespace NEventStore
 
             if (_registrations.TryGetValue(typeof(TService), out ContainerRegistration registration))
             {
-                return (TService)registration.Resolve(this);
+                var obj = registration.Resolve(this);
+                return obj != null ? (TService)obj : default;
             }
 
             if (Logger.IsEnabled(LogLevel.Debug))
@@ -81,15 +82,20 @@ namespace NEventStore
     public class ContainerRegistration
     {
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(ContainerRegistration));
-        private readonly Func<NanoContainer, object> _resolve;
-        private object _instance;
+        private readonly Func<NanoContainer, object?>? _resolve;
+        private object? _instance;
         private bool _instancePerCall;
 
         /// <summary>
         /// Initializes a new instance of the ContainerRegistration class.
         /// </summary>
-        public ContainerRegistration(Func<NanoContainer, object> resolve)
+        public ContainerRegistration(Func<NanoContainer, object?> resolve)
         {
+            if (resolve is null)
+            {
+                throw new ArgumentNullException(nameof(resolve));
+            }
+
             if (Logger.IsEnabled(LogLevel.Trace))
             {
                 Logger.LogTrace(Messages.AddingWireupCallback);
@@ -102,6 +108,11 @@ namespace NEventStore
         /// </summary>
         public ContainerRegistration(object instance)
         {
+            if (instance is null)
+            {
+                throw new ArgumentNullException(nameof(instance));
+            }
+
             if (Logger.IsEnabled(LogLevel.Trace))
             {
                 Logger.LogTrace(Messages.AddingWireupRegistration, instance.GetType());
@@ -114,6 +125,10 @@ namespace NEventStore
         /// </summary>
         public virtual ContainerRegistration InstancePerCall()
         {
+            if (_resolve == null)
+            {
+                throw new InvalidOperationException("Cannot configure InstancePerCall() on instance registrations.");
+            }
             if (Logger.IsEnabled(LogLevel.Trace))
             {
                 Logger.LogTrace(Messages.ConfiguringInstancePerCall);
@@ -125,7 +140,7 @@ namespace NEventStore
         /// <summary>
         /// Resolves the registration.
         /// </summary>
-        public virtual object Resolve(NanoContainer container)
+        public virtual object? Resolve(NanoContainer container)
         {
             if (Logger.IsEnabled(LogLevel.Trace))
             {
@@ -137,7 +152,7 @@ namespace NEventStore
                 {
                     Logger.LogTrace(Messages.BuildingNewInstance);
                 }
-                return _resolve(container);
+                return _resolve!(container);
             }
 
             if (Logger.IsEnabled(LogLevel.Trace))
@@ -154,7 +169,7 @@ namespace NEventStore
             {
                 Logger.LogTrace(Messages.BuildingAndStoringNewInstance);
             }
-            return _instance = _resolve(container);
+            return _instance = _resolve!(container);
         }
     }
 }

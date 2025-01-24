@@ -2,7 +2,7 @@ namespace NEventStore.Example
 {
     public class AuthorizationPipelineHook : PipelineHookBase
     {
-        public override ICommit Select(ICommit committed)
+        public override ICommit? SelectCommit(ICommit committed)
         {
             // return null if the user isn't authorized to see this commit
             return committed;

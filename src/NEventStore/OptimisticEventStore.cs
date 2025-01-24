@@ -7,11 +7,12 @@ namespace NEventStore
     /// <summary>
     ///    An implementation of a store that supports optimistic concurrency.
     /// </summary>
-    public class OptimisticEventStore : IStoreEvents, ICommitEvents
+    public class OptimisticEventStore : IStoreEvents, ICommitEvents, ICommitEventsAsync
     {
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(OptimisticEventStore));
         private readonly IPersistStreams _persistence;
         private readonly IEnumerable<IPipelineHook> _pipelineHooks;
+        private readonly IEnumerable<IPipelineHookAsync>? _pipelineHooksAsync;
 
         /// <inheritdoc/>
         public virtual IPersistStreams Advanced { get => _persistence; }
@@ -20,17 +21,18 @@ namespace NEventStore
         /// Initializes a new instance of the OptimisticEventStore class.
         /// </summary>
         /// <exception cref="ArgumentNullException"></exception>
-        public OptimisticEventStore(IPersistStreams persistence, IEnumerable<IPipelineHook> pipelineHooks)
+        public OptimisticEventStore(IPersistStreams persistence, IEnumerable<IPipelineHook>? pipelineHooks, IEnumerable<IPipelineHookAsync>? pipelineHooksAsync)
         {
             if (persistence == null)
             {
                 throw new ArgumentNullException(nameof(persistence));
             }
 
-            _pipelineHooks = pipelineHooks ?? Array.Empty<IPipelineHook>();
+            _pipelineHooks = pipelineHooks ?? [];
+            _pipelineHooksAsync = pipelineHooksAsync ?? [];
             if (_pipelineHooks.Any())
             {
-                _persistence = new PipelineHooksAwarePersistanceDecorator(persistence, _pipelineHooks);
+                _persistence = new PipelineHooksAwarePersistStreamsDecorator(persistence, _pipelineHooks, _pipelineHooksAsync);
             }
             else
             {
@@ -45,7 +47,11 @@ namespace NEventStore
         }
 
         /// <inheritdoc/>
-        public virtual ICommit Commit(CommitAttempt attempt)
+        /// <remarks>
+        /// Pipeline hooks can prevent commits to be persisted by returning false from the PreCommit method.
+        /// If the pipeline hook prevents the commit from being persisted, the commit will not be persisted and null will be returned.
+        /// </remarks>
+        public virtual ICommit? Commit(CommitAttempt attempt)
         {
             Guard.NotNull(() => attempt, attempt);
             foreach (var hook in _pipelineHooks)
@@ -70,15 +76,70 @@ namespace NEventStore
             {
                 Logger.LogTrace(Resources.CommittingAttempt, attempt.CommitId, attempt.Events?.Count ?? 0);
             }
-            ICommit commit = _persistence.Commit(attempt);
+            var commit = _persistence.Commit(attempt);
 
+            if (commit != null)
+            {
+                foreach (var hook in _pipelineHooks)
+                {
+                    if (Logger.IsEnabled(LogLevel.Trace))
+                    {
+                        Logger.LogTrace(Resources.InvokingPostCommitPipelineHooks, attempt.CommitId, hook.GetType());
+                    }
+                    hook.PostCommit(commit);
+                }
+            }
+            return commit;
+        }
+
+        /// <inheritdoc/>
+        public virtual Task GetFromAsync(string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> observer, CancellationToken cancellationToken)
+        {
+            return _persistence.GetFromAsync(bucketId, streamId, minRevision, maxRevision, observer, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        /// <remarks>
+        /// Pipeline hooks can prevent commits to be persisted by returning false from the PreCommit method.
+        /// If the pipeline hook prevents the commit from being persisted, the commit will not be persisted and null will be returned.
+        /// </remarks>
+        public async Task<ICommit?> CommitAsync(CommitAttempt attempt, CancellationToken cancellationToken)
+        {
+            Guard.NotNull(() => attempt, attempt);
             foreach (var hook in _pipelineHooks)
             {
                 if (Logger.IsEnabled(LogLevel.Trace))
                 {
-                    Logger.LogTrace(Resources.InvokingPostCommitPipelineHooks, attempt.CommitId, hook.GetType());
+                    Logger.LogTrace(Resources.InvokingPreCommitHooks, attempt.CommitId, hook.GetType());
                 }
-                hook.PostCommit(commit);
+                if (hook.PreCommit(attempt))
+                {
+                    continue;
+                }
+
+                if (Logger.IsEnabled(LogLevel.Information))
+                {
+                    Logger.LogInformation(Resources.CommitRejectedByPipelineHook, hook.GetType(), attempt.CommitId);
+                }
+                return null;
+            }
+
+            if (Logger.IsEnabled(LogLevel.Trace))
+            {
+                Logger.LogTrace(Resources.CommittingAttempt, attempt.CommitId, attempt.Events?.Count ?? 0);
+            }
+            var commit = await _persistence.CommitAsync(attempt, cancellationToken).ConfigureAwait(false);
+
+            if (commit != null)
+            {
+                foreach (var hook in _pipelineHooks)
+                {
+                    if (Logger.IsEnabled(LogLevel.Trace))
+                    {
+                        Logger.LogTrace(Resources.InvokingPostCommitPipelineHooks, attempt.CommitId, hook.GetType());
+                    }
+                    hook.PostCommit(commit);
+                }
             }
             return commit;
         }
@@ -97,7 +158,7 @@ namespace NEventStore
             {
                 Logger.LogDebug(Resources.CreatingStream, streamId, bucketId);
             }
-            return new OptimisticEventStream(bucketId, streamId, this);
+            return new OptimisticEventStream(bucketId, streamId, this, this);
         }
 
         /// <inheritdoc/>
@@ -109,7 +170,23 @@ namespace NEventStore
             {
                 Logger.LogTrace(Resources.OpeningStreamAtRevision, streamId, bucketId, minRevision, maxRevision);
             }
-            return new OptimisticEventStream(bucketId, streamId, this, minRevision, maxRevision);
+            var stream = new OptimisticEventStream(bucketId, streamId, this, this);
+            stream.Initialize(minRevision, maxRevision);
+            return stream;
+        }
+
+        /// <inheritdoc/>
+        public async Task<IEventStream> OpenStreamAsync(string bucketId, string streamId, int minRevision, int maxRevision, CancellationToken cancellationToken)
+        {
+            maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
+
+            if (Logger.IsEnabled(LogLevel.Trace))
+            {
+                Logger.LogTrace(Resources.OpeningStreamAtRevision, streamId, bucketId, minRevision, maxRevision);
+            }
+            var stream = new OptimisticEventStream(bucketId, streamId, this, this);
+            await stream.InitializeAsync(minRevision, maxRevision, cancellationToken).ConfigureAwait(false);
+            return stream;
         }
 
         /// <inheritdoc/>
@@ -125,7 +202,27 @@ namespace NEventStore
                 Logger.LogTrace(Resources.OpeningStreamWithSnapshot, snapshot.StreamId, snapshot.BucketId, snapshot.StreamRevision, maxRevision);
             }
             maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
-            return new OptimisticEventStream(snapshot, this, maxRevision);
+            var stream = new OptimisticEventStream(snapshot.BucketId, snapshot.StreamId, this, this);
+            stream.Initialize(snapshot, maxRevision);
+            return stream;
+        }
+
+        /// <inheritdoc/>
+        public async Task<IEventStream> OpenStreamAsync(ISnapshot snapshot, int maxRevision, CancellationToken cancellationToken)
+        {
+            if (snapshot == null)
+            {
+                throw new ArgumentNullException(nameof(snapshot));
+            }
+
+            if (Logger.IsEnabled(LogLevel.Trace))
+            {
+                Logger.LogTrace(Resources.OpeningStreamWithSnapshot, snapshot.StreamId, snapshot.BucketId, snapshot.StreamRevision, maxRevision);
+            }
+            maxRevision = maxRevision <= 0 ? int.MaxValue : maxRevision;
+            var stream = new OptimisticEventStream(snapshot.BucketId, snapshot.StreamId, this, this);
+            await stream.InitializeAsync(snapshot, maxRevision, cancellationToken).ConfigureAwait(false);
+            return stream;
         }
 
         /// <inheritdoc/>

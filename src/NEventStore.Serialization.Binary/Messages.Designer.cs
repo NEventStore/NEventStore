@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace NEventStore.PollingClientExample {
+namespace NEventStore.Serialization.Binary {
     using System;
     
     
@@ -19,17 +19,17 @@ namespace NEventStore.PollingClientExample {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    internal class Messages {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
+        internal Messages() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace NEventStore.PollingClientExample {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("NEventStore.PollingClientExample.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("NEventStore.Serialization.Binary.Messages", typeof(Messages).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,38 +61,20 @@ namespace NEventStore.PollingClientExample {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BucketId={0};StreamId={1};CommitSequence={2}.
+        ///   Looks up a localized string similar to Deserializing stream to object of type &apos;{0}&apos;..
         /// </summary>
-        internal static string CommitInfo {
+        internal static string DeserializingStream {
             get {
-                return ResourceManager.GetString("CommitInfo", resourceCulture);
+                return ResourceManager.GetString("DeserializingStream", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Messages from commit have been dispatched: .
+        ///   Looks up a localized string similar to Serializing object graph of type &apos;{0}&apos;..
         /// </summary>
-        internal static string MessagesDispatched {
+        internal static string SerializingGraph {
             get {
-                return ResourceManager.GetString("MessagesDispatched", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Press any key to continue....
-        /// </summary>
-        internal static string PressAnyKey {
-            get {
-                return ResourceManager.GetString("PressAnyKey", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to If for some reason we are unable to dispatch, we&apos;d just handle it here..
-        /// </summary>
-        internal static string UnableToDispatch {
-            get {
-                return ResourceManager.GetString("UnableToDispatch", resourceCulture);
+                return ResourceManager.GetString("SerializingGraph", resourceCulture);
             }
         }
     }
