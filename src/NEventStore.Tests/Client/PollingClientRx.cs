@@ -17,7 +17,10 @@
             IPersistStreams persistStreams,
             Int32 waitInterval = 5000)
         {
-            if (persistStreams == null) throw new ArgumentNullException(nameof(persistStreams));
+            if (persistStreams is null)
+            {
+                throw new ArgumentNullException(nameof(persistStreams));
+            }
             if (waitInterval <= 0)
             {
                 throw new ArgumentException("Must be greater than 0", nameof(waitInterval));

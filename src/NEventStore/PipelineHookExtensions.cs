@@ -13,5 +13,15 @@ namespace NEventStore
         {
             pipelineHook.OnPurge(null);
         }
+
+        /// <summary>
+        ///     Invoked when all buckets have been purged.
+        /// </summary>
+        /// <param name="pipelineHook">The pipeline hook.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+        public static Task OnPurgeAsync(this IPipelineHookAsync pipelineHook, CancellationToken cancellationToken)
+        {
+            return pipelineHook.OnPurgeAsync(null, cancellationToken);
+        }
     }
 }

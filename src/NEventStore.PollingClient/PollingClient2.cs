@@ -2,11 +2,12 @@
 using NEventStore.Persistence;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
+using System.Globalization;
 
 namespace NEventStore.PollingClient
 {
     /// <summary>
-    /// This is the new polling client that does not depends on RX.
+    /// A Polling Client that uses the Synchronous API of the store.
     /// </summary>
     public class PollingClient2 : IDisposable
     {
@@ -39,12 +40,12 @@ namespace NEventStore.PollingClient
         private readonly Thread _pollingThread;
         private readonly System.Timers.Timer _pollingWakeUpTimer;
 
-        private Func<IEnumerable<ICommit>> _pollingFunc;
+        private Func<IEnumerable<ICommit>>? _pollingFunc;
 
         private Int64 _checkpointToken;
 
         /// <summary>
-        /// Created an NEventStore Polling Client
+        /// Creates an NEventStore Polling Client
         /// </summary>
         /// <param name="persistStreams">the store to check</param>
         /// <param name="callback">callback to execute at each commit</param>
@@ -61,7 +62,7 @@ namespace NEventStore.PollingClient
             _logger = LogFactory.BuildLogger(GetType());
             _waitInterval = waitInterval;
             _pollingWakeUpTimer = new System.Timers.Timer();
-            _pollingWakeUpTimer.Elapsed += (sender, e) => WakeUpPoller();
+            _pollingWakeUpTimer.Elapsed += (sender, e) => WakeUpPollingClient();
             _pollingWakeUpTimer.Interval = _waitInterval;
 
             //Create polling thread
@@ -83,7 +84,7 @@ namespace NEventStore.PollingClient
         /// that the last polling encounter an error. This is needed to detect a polling client stuck as an example
         /// with deserialization problems.
         /// </summary>
-        public String LastPollingError { get; private set; }
+        public String? LastPollingError { get; private set; }
 
         /// <summary>
         /// Start the polling client.
@@ -116,7 +117,7 @@ namespace NEventStore.PollingClient
         /// <summary>
         /// Configure the polling function to get commits from the store.
         /// </summary>
-        public void ConfigurePollingFunction(string bucketId = null)
+        internal void ConfigurePollingFunction(string? bucketId = null)
         {
             if (bucketId == null)
                 _pollingFunc = () => _persistStreams.GetFrom(_checkpointToken);
@@ -132,7 +133,7 @@ namespace NEventStore.PollingClient
             _stopRequest = true;
             _pollingWakeUpTimer?.Stop();
 
-            WakeUpPoller();
+            WakeUpPollingClient();
         }
 
         /// <summary>
@@ -140,13 +141,13 @@ namespace NEventStore.PollingClient
         /// </summary>
         public void PollNow()
         {
-            WakeUpPoller();
+            WakeUpPollingClient();
         }
 
         /// <summary>
         /// Add an object to wake up the polling client.
         /// </summary>
-        private void WakeUpPoller()
+        private void WakeUpPollingClient()
         {
             //Avoid adding more than one wake up object.
             if (Interlocked.CompareExchange(ref _isPolling, 1, 0) == 0)
@@ -165,14 +166,14 @@ namespace NEventStore.PollingClient
 
         /// <summary>
         /// This blocking collection is used to Wake up the polling thread
-        /// and to ensure that only the polling thread is polling from 
+        /// and to ensure that only the polling thread is polling from
         /// event stream.
         /// </summary>
-        private readonly BlockingCollection<Object> _pollCollection = new BlockingCollection<object>();
+        private readonly BlockingCollection<Object> _pollCollection = [];
 
         private void InnerPollingLoop(object obj)
         {
-            foreach (var pollRequest in _pollCollection.GetConsumingEnumerable())
+            foreach (var _ in _pollCollection.GetConsumingEnumerable())
             {
                 //check stop request
                 if (_stopRequest)
@@ -189,8 +190,8 @@ namespace NEventStore.PollingClient
         private DateTime _lastPollingErrorLogTimestamp = DateTime.MinValue;
 
         /// <summary>
-        /// This is the inner polling function that does the polling and 
-        /// returns true if there were errors that should stop the poller.
+        /// This is the inner polling function that does the polling and
+        /// returns true if there were errors that should stop the polling client.
         /// </summary>
         /// <returns>Returns true if we need to stop the outer cycle.</returns>
         private bool InnerPoll()
@@ -217,7 +218,7 @@ namespace NEventStore.PollingClient
                     {
                         if (_logger.IsEnabled(LogLevel.Trace))
                         {
-                            _logger.LogTrace("Commit callback ask retry for checkpointToken {0} - last dispatched {1}", commit.CheckpointToken, _checkpointToken);
+                            _logger.LogTrace("Commit callback ask retry for checkpointToken: {CommitCheckpointToken} - last dispatched: {LastDispatchedCheckpointToken}", commit.CheckpointToken, _checkpointToken);
                         }
                         break;
                     }
@@ -236,10 +237,10 @@ namespace NEventStore.PollingClient
                 // These exceptions are expected to be transient
                 LastPollingError = ex.Message;
 
-                // These exceptions are expected to be transient, we log at maximum a log each minute.
+                // These exceptions are expected to be transient, we log at maximum a log entry each minute.
                 if (DateTime.UtcNow.Subtract(_lastPollingErrorLogTimestamp).TotalMinutes > 1)
                 {
-                    _logger.LogError(String.Format("Error during polling client {0}", ex.ToString()));
+                    _logger.LogError(String.Format(CultureInfo.InvariantCulture, "Error during polling client {0}", ex.ToString()));
                     _lastPollingErrorLogTimestamp = DateTime.UtcNow;
                 }
 

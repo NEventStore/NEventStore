@@ -23,7 +23,7 @@ namespace NEventStore.Serialization
         {
             if (!KeyIsValid(encryptionKey, KeyLength))
             {
-                throw new ArgumentException(Messages.InvalidKeyLength, "encryptionKey");
+                throw new ArgumentException(Messages.InvalidKeyLength, nameof(encryptionKey));
             }
 
             _encryptionKey = encryptionKey;
@@ -31,49 +31,43 @@ namespace NEventStore.Serialization
         }
 
         /// <inheritdoc/>
-        public virtual void Serialize<T>(Stream output, T graph)
+        public virtual void Serialize<T>(Stream output, T graph) where T: notnull
         {
             if (Logger.IsEnabled(LogLevel.Trace))
             {
                 Logger.LogTrace(Messages.SerializingGraph, typeof(T));
             }
 
-            using (var rijndael = new RijndaelManaged())
-            {
-                rijndael.Key = _encryptionKey;
-                rijndael.Mode = CipherMode.CBC;
-                rijndael.GenerateIV();
+            using var rijndael = new RijndaelManaged();
+            rijndael.Key = _encryptionKey;
+            rijndael.Mode = CipherMode.CBC;
+            rijndael.GenerateIV();
 
-                using (ICryptoTransform encryptor = rijndael.CreateEncryptor())
-                using (var wrappedOutput = new IndisposableStream(output))
-                using (var encryptionStream = new CryptoStream(wrappedOutput, encryptor, CryptoStreamMode.Write))
-                {
-                    wrappedOutput.Write(rijndael.IV, 0, rijndael.IV.Length);
-                    _inner.Serialize(encryptionStream, graph);
-                    encryptionStream.Flush();
-                    encryptionStream.FlushFinalBlock();
-                }
-            }
+            using ICryptoTransform encryptor = rijndael.CreateEncryptor();
+            using var wrappedOutput = new NonDisposableStream(output);
+            using var encryptionStream = new CryptoStream(wrappedOutput, encryptor, CryptoStreamMode.Write);
+            wrappedOutput.Write(rijndael.IV, 0, rijndael.IV.Length);
+            _inner.Serialize(encryptionStream, graph);
+            encryptionStream.Flush();
+            encryptionStream.FlushFinalBlock();
         }
 
         /// <inheritdoc/>
-        public virtual T Deserialize<T>(Stream input)
+        public virtual T? Deserialize<T>(Stream input)
         {
             if (Logger.IsEnabled(LogLevel.Trace))
             {
                 Logger.LogTrace(Messages.DeserializingStream, typeof(T));
             }
 
-            using (var rijndael = new RijndaelManaged())
-            {
-                rijndael.Key = _encryptionKey;
-                rijndael.IV = GetInitVectorFromStream(input, rijndael.IV.Length);
-                rijndael.Mode = CipherMode.CBC;
+            using var rijndael = new RijndaelManaged();
+            rijndael.Key = _encryptionKey;
+            rijndael.IV = GetInitVectorFromStream(input, rijndael.IV.Length);
+            rijndael.Mode = CipherMode.CBC;
 
-                using (ICryptoTransform decryptor = rijndael.CreateDecryptor())
-                using (var decryptedStream = new CryptoStream(input, decryptor, CryptoStreamMode.Read))
-                    return _inner.Deserialize<T>(decryptedStream);
-            }
+            using ICryptoTransform decrypter = rijndael.CreateDecryptor();
+            using var decryptedStream = new CryptoStream(input, decrypter, CryptoStreamMode.Read);
+            return _inner.Deserialize<T>(decryptedStream);
         }
 
         private static bool KeyIsValid(ICollection key, int length)

@@ -15,7 +15,7 @@ namespace NEventStore
         private bool _initialize;
 #if NET462
         private bool _tracking;
-        private string _trackingInstanceName;
+        private string? _trackingInstanceName;
 #endif
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace NEventStore
             {
                 Logger.LogInformation(Messages.RegisteringPersistenceEngine, instance.GetType());
             }
-            With(instance);
+            Register(instance);
             return this;
         }
 
@@ -72,17 +72,14 @@ namespace NEventStore
         /// <exception cref="ArgumentNullException"></exception>
         public virtual PersistenceWireup TrackPerformanceInstance(string instanceName)
         {
-            if (instanceName == null)
-            {
-                throw new ArgumentNullException(nameof(instanceName), Messages.InstanceCannotBeNull);
-            }
+            _tracking = true;
+            _trackingInstanceName = instanceName
+                ?? throw new ArgumentNullException(nameof(instanceName), Messages.InstanceCannotBeNull);
 
             if (Logger.IsEnabled(LogLevel.Information))
             {
                 Logger.LogInformation(Messages.ConfiguringEnginePerformanceTracking);
             }
-            _tracking = true;
-            _trackingInstanceName = instanceName;
             return this;
         }
 #endif
@@ -123,7 +120,8 @@ namespace NEventStore
                 Logger.LogInformation(Messages.BuildingEngine);
             }
 
-            var engine = Container.Resolve<IPersistStreams>();
+            var engine = Container.Resolve<IPersistStreams>()
+                ?? throw new InvalidOperationException("IPersistStreams not registered");
 
             if (_initialize)
             {
@@ -137,7 +135,7 @@ namespace NEventStore
 #if NET462
             if (_tracking)
             {
-                Container.Register<IPersistStreams>(new PerformanceCounterPersistenceEngine(engine, _trackingInstanceName));
+                Container.Register<IPersistStreams>(new PerformanceCounterPersistenceEngine(engine, _trackingInstanceName!));
             }
 #endif
             return base.Build();

@@ -18,8 +18,6 @@ namespace NEventStore.Diagnostics
         /// <summary>
         /// Initializes a new instance of the PerformanceCounterPersistenceEngine class.
         /// </summary>
-        /// <param name="persistence"></param>
-        /// <param name="instanceName"></param>
         public PerformanceCounterPersistenceEngine(IPersistStreams persistence, string instanceName)
         {
             _persistence = persistence;
@@ -33,31 +31,49 @@ namespace NEventStore.Diagnostics
         }
 
         /// <inheritdoc/>
-        public ICommit Commit(CommitAttempt attempt)
-        {
-            Stopwatch clock = Stopwatch.StartNew();
-            ICommit commit = _persistence.Commit(attempt);
-            clock.Stop();
-            _counters.CountCommit(attempt.Events.Count, clock.ElapsedMilliseconds);
-            return commit;
-        }
-
-        /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
-        {
-            return _persistence.GetFromTo(bucketId, start, end);
-        }
-
-        /// <inheritdoc/>
         public IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
         {
             return _persistence.GetFrom(bucketId, streamId, minRevision, maxRevision);
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFrom(string bucketId, DateTime start)
+        public ICommit? Commit(CommitAttempt attempt)
         {
-            return _persistence.GetFrom(bucketId, start);
+            Stopwatch clock = Stopwatch.StartNew();
+            var commit = _persistence.Commit(attempt);
+            clock.Stop();
+            _counters.CountCommit(attempt.Events.Count, clock.ElapsedMilliseconds);
+            return commit;
+        }
+
+        /// <inheritdoc/>
+        public Task GetFromAsync(string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> observer, CancellationToken cancellationToken)
+        {
+            return _persistence.GetFromAsync(bucketId, streamId, minRevision, maxRevision, observer, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task<ICommit?> CommitAsync(CommitAttempt attempt, CancellationToken cancellationToken)
+        {
+            Stopwatch clock = Stopwatch.StartNew();
+            var commit = await _persistence.CommitAsync(attempt, cancellationToken).ConfigureAwait(false);
+            clock.Stop();
+            _counters.CountCommit(attempt.Events.Count, clock.ElapsedMilliseconds);
+            return commit;
+        }
+
+        /// <inheritdoc/>
+        [Obsolete("DateTime is problematic in distributed systems. Use GetFromTo(Int64 fromCheckpointToken, Int64 toCheckpointToken) instead. This method will be removed in a later version.")]
+        public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime startDate, DateTime endDate)
+        {
+            return _persistence.GetFromTo(bucketId, startDate, endDate);
+        }
+
+        /// <inheritdoc/>
+        [Obsolete("DateTime is problematic in distributed systems. Use GetFrom(Int64 checkpointToken) instead. This method will be removed in a later version.")]
+        public IEnumerable<ICommit> GetFrom(string bucketId, DateTime startDate)
+        {
+            return _persistence.GetFrom(bucketId, startDate);
         }
 
         /// <inheritdoc/>
@@ -67,9 +83,21 @@ namespace NEventStore.Diagnostics
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFromTo(Int64 from, Int64 to)
+        public Task GetFromAsync(Int64 checkpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
         {
-            return _persistence.GetFromTo(from, to);
+            return _persistence.GetFromAsync(checkpointToken, asyncObserver, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<ICommit> GetFromTo(Int64 fromCheckpointToken, Int64 toCheckpointToken)
+        {
+            return _persistence.GetFromTo(fromCheckpointToken, toCheckpointToken);
+        }
+
+        /// <inheritdoc/>
+        public Task GetFromToAsync(Int64 fromCheckpointToken, Int64 toCheckpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
+        {
+            return _persistence.GetFromToAsync(fromCheckpointToken, toCheckpointToken, asyncObserver, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -79,9 +107,27 @@ namespace NEventStore.Diagnostics
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFromTo(string bucketId, Int64 from, Int64 to)
+        public Task GetFromAsync(string bucketId, Int64 checkpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
         {
-            return _persistence.GetFromTo(bucketId, from, to);
+            return _persistence.GetFromAsync(bucketId, checkpointToken, asyncObserver, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<ICommit> GetFromTo(string bucketId, Int64 fromCheckpointToken, Int64 toCheckpointToken)
+        {
+            return _persistence.GetFromTo(bucketId, fromCheckpointToken, toCheckpointToken);
+        }
+
+        /// <inheritdoc/>
+        public Task GetFromToAsync(string bucketId, long fromCheckpointToken, long toCheckpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
+        {
+            return _persistence.GetFromToAsync(bucketId, fromCheckpointToken, toCheckpointToken, asyncObserver, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public ISnapshot? GetSnapshot(string bucketId, string streamId, int maxRevision)
+        {
+            return _persistence.GetSnapshot(bucketId, streamId, maxRevision);
         }
 
         /// <inheritdoc/>
@@ -97,15 +143,33 @@ namespace NEventStore.Diagnostics
         }
 
         /// <inheritdoc/>
-        public ISnapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
-        {
-            return _persistence.GetSnapshot(bucketId, streamId, maxRevision);
-        }
-
-        /// <inheritdoc/>
         public virtual IEnumerable<IStreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
         {
             return _persistence.GetStreamsToSnapshot(bucketId, maxThreshold);
+        }
+
+        /// <inheritdoc/>
+        public Task<ISnapshot?> GetSnapshotAsync(string bucketId, string streamId, int maxRevision, CancellationToken cancellationToken)
+        {
+            return _persistence.GetSnapshotAsync(bucketId, streamId, maxRevision, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task<bool> AddSnapshotAsync(ISnapshot snapshot, CancellationToken cancellationToken)
+        {
+            bool result = await _persistence.AddSnapshotAsync(snapshot, cancellationToken).ConfigureAwait(false);
+            if (result)
+            {
+                _counters.CountSnapshot();
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc/>
+        public Task GetStreamsToSnapshotAsync(string bucketId, int maxThreshold, IAsyncObserver<IStreamHead> asyncObserver, CancellationToken cancellationToken)
+        {
+            return _persistence.GetStreamsToSnapshotAsync(bucketId, maxThreshold, asyncObserver, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -121,6 +185,18 @@ namespace NEventStore.Diagnostics
         }
 
         /// <inheritdoc/>
+        public Task PurgeAsync(CancellationToken cancellationToken)
+        {
+            return _persistence.PurgeAsync(cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public Task PurgeAsync(string bucketId, CancellationToken cancellationToken)
+        {
+            return _persistence.PurgeAsync(bucketId, cancellationToken);
+        }
+
+        /// <inheritdoc/>
         public void Drop()
         {
             _persistence.Drop();
@@ -130,6 +206,12 @@ namespace NEventStore.Diagnostics
         public void DeleteStream(string bucketId, string streamId)
         {
             _persistence.DeleteStream(bucketId, streamId);
+        }
+
+        /// <inheritdoc/>
+        public Task DeleteStreamAsync(string bucketId, string streamId, CancellationToken cancellationToken)
+        {
+            return _persistence.DeleteStreamAsync(bucketId, streamId, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -156,7 +238,6 @@ namespace NEventStore.Diagnostics
         /// <summary>
         /// Dispose the performance counter and the wrapped persistence engine.
         /// </summary>
-        /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
             if (!disposing)

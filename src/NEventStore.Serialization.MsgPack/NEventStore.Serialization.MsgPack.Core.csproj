@@ -50,7 +50,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MessagePack" Version="3.1.0" />
+    <PackageReference Include="MessagePack" Version="3.1.1" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NEventStore\NEventStore.Core.csproj" />

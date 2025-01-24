@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using Microsoft.Extensions.Logging;
 using NEventStore.Logging;
 
@@ -14,12 +15,13 @@ namespace NEventStore
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(OptimisticEventStream));
         private readonly ICollection<EventMessage> _committed = new LinkedList<EventMessage>();
         private readonly ImmutableCollection<EventMessage> _committedImmutableWrapper;
-        private readonly Dictionary<string, object> _committedHeaders = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> _committedHeaders = [];
         private readonly ImmutableDictionary<string, object> _committedHeadersImmutableWrapper;
         private readonly ICollection<EventMessage> _events = new LinkedList<EventMessage>();
         private readonly ImmutableCollection<EventMessage> _eventsImmutableWrapper;
-        private readonly ICollection<Guid> _identifiers = new HashSet<Guid>();
+        private readonly HashSet<Guid> _identifiers = [];
         private readonly ICommitEvents _persistence;
+        private readonly ICommitEventsAsync _persistenceAsync;
         private bool _disposed;
         // a stream is considered partial if we haven't read all the events in a commit
         private bool _isPartialStream;
@@ -42,42 +44,125 @@ namespace NEventStore
         public IDictionary<string, object> UncommittedHeaders { get; } = new Dictionary<string, object>();
 
         /// <summary>
-        /// Initializes a new instance of the OptimisticEventStream class.
+        /// Create a new instance of the OptimisticEventStream class.
         /// </summary>
-        public OptimisticEventStream(string bucketId, string streamId, ICommitEvents persistence)
+        public OptimisticEventStream(string bucketId, string streamId, ICommitEvents persistence, ICommitEventsAsync persistenceAsync)
         {
+            if (string.IsNullOrWhiteSpace(bucketId))
+            {
+                throw new ArgumentException($"'{nameof(bucketId)}' cannot be null or whitespace.", nameof(bucketId));
+            }
+
+            if (string.IsNullOrWhiteSpace(streamId))
+            {
+                throw new ArgumentException($"'{nameof(streamId)}' cannot be null or whitespace.", nameof(streamId));
+            }
+
             BucketId = bucketId;
             StreamId = streamId;
-            _persistence = persistence;
+            _persistence = persistence ?? throw new ArgumentNullException(nameof(persistence));
+            _persistenceAsync = persistenceAsync ?? throw new ArgumentNullException(nameof(persistenceAsync));
             _committedImmutableWrapper = new ImmutableCollection<EventMessage>(_committed);
             _eventsImmutableWrapper = new ImmutableCollection<EventMessage>(_events);
             _committedHeadersImmutableWrapper = new ImmutableDictionary<string, object>(_committedHeaders);
         }
 
-        /// <summary>
-        /// Initializes a new instance of the OptimisticEventStream class.
-        /// </summary>
-        /// <exception cref="StreamNotFoundException"></exception>
-        public OptimisticEventStream(string bucketId, string streamId, ICommitEvents persistence, int minRevision, int maxRevision)
-            : this(bucketId, streamId, persistence)
+        private void EnsureStreamIsNew()
         {
-            IEnumerable<ICommit> commits = persistence.GetFrom(bucketId, streamId, minRevision, maxRevision);
-            PopulateStream(minRevision, maxRevision, commits);
-
-            if (minRevision > 0 && _committed.Count == 0)
+            if (_committed.Count > 0 || _events.Count > 0)
             {
-                throw new StreamNotFoundException(String.Format(Messages.StreamNotFoundException, streamId, BucketId));
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Cannot call Initialize on a stream already used: Bucked: {0}, Stream: {1}, Committed Events: {2}, New Events: {3}", BucketId, StreamId, _committed.Count, _events.Count));
             }
         }
 
         /// <summary>
         /// Initializes a new instance of the OptimisticEventStream class.
         /// </summary>
-        public OptimisticEventStream(ISnapshot snapshot, ICommitEvents persistence, int maxRevision)
-            : this(snapshot.BucketId, snapshot.StreamId, persistence)
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="StreamNotFoundException"></exception>
+        public void Initialize(int minRevision, int maxRevision)
         {
-            IEnumerable<ICommit> commits = persistence.GetFrom(snapshot.BucketId, snapshot.StreamId, snapshot.StreamRevision, maxRevision);
+            EnsureStreamIsNew();
+            IEnumerable<ICommit> commits = _persistence.GetFrom(BucketId, StreamId, minRevision, maxRevision);
+            PopulateStream(minRevision, maxRevision, commits);
+
+            if (minRevision > 0 && _committed.Count == 0)
+            {
+                throw new StreamNotFoundException(String.Format(CultureInfo.InvariantCulture, Messages.StreamNotFoundException, StreamId, BucketId));
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the OptimisticEventStream class.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="StreamNotFoundException"></exception>
+        public async Task InitializeAsync(int minRevision, int maxRevision, CancellationToken cancellationToken)
+        {
+            EnsureStreamIsNew();
+            _isPartialStream = false;
+            var observer = new LambdaAsyncObserver<ICommit>(
+                onNextAsync: (commit, _) =>
+                {
+                    InnerPopulateStream(minRevision, maxRevision, commit);
+                    return Task.FromResult(true);
+                });
+            await _persistenceAsync.GetFromAsync(BucketId, StreamId, minRevision, maxRevision, observer, cancellationToken).ConfigureAwait(false);
+
+            if (minRevision > 0 && _committed.Count == 0)
+            {
+                throw new StreamNotFoundException(String.Format(CultureInfo.InvariantCulture, Messages.StreamNotFoundException, StreamId, BucketId));
+            }
+        }
+
+        private void EnsureSnapshotIsForThisStream(ISnapshot snapshot)
+        {
+            if (BucketId != snapshot.BucketId || StreamId != snapshot.StreamId)
+            {
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "The snapshot is for a different stream. Stream BucketId: {0}, StreamId: {1}; Snapshot BucketId: {2}, StreamId: {3}", BucketId, StreamId, snapshot.BucketId, snapshot.StreamId));
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the OptimisticEventStream class.
+        /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        public void Initialize(ISnapshot snapshot, int maxRevision)
+        {
+            if (snapshot is null)
+            {
+                throw new ArgumentNullException(nameof(snapshot));
+            }
+            EnsureSnapshotIsForThisStream(snapshot);
+            EnsureStreamIsNew();
+            IEnumerable<ICommit> commits = _persistence.GetFrom(snapshot.BucketId, snapshot.StreamId, snapshot.StreamRevision, maxRevision);
             PopulateStream(snapshot.StreamRevision + 1, maxRevision, commits);
+            StreamRevision = snapshot.StreamRevision + _committed.Count;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the OptimisticEventStream class.
+        /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        public async Task InitializeAsync(ISnapshot snapshot, int maxRevision, CancellationToken cancellationToken)
+        {
+            if (snapshot is null)
+            {
+                throw new ArgumentNullException(nameof(snapshot));
+            }
+            EnsureSnapshotIsForThisStream(snapshot);
+            EnsureStreamIsNew();
+            int minRevision = snapshot.StreamRevision + 1;
+            _isPartialStream = false;
+            var observer = new LambdaAsyncObserver<ICommit>(
+                onNextAsync: (commit, _) =>
+                {
+                    InnerPopulateStream(minRevision, maxRevision, commit);
+                    return Task.FromResult(true);
+                });
+            await _persistenceAsync.GetFromAsync(snapshot.BucketId, snapshot.StreamId, snapshot.StreamRevision, maxRevision, observer, cancellationToken).ConfigureAwait(false);
             StreamRevision = snapshot.StreamRevision + _committed.Count;
         }
 
@@ -119,6 +204,7 @@ namespace NEventStore
                 RefreshStreamAfterConcurrencyException();
 
                 throw new ConcurrencyException(string.Format(
+                    CultureInfo.InvariantCulture,
                     Resources.CannotAddCommitsToPartiallyLoadedStream,
                     StreamId,
                     BucketId,
@@ -128,7 +214,7 @@ namespace NEventStore
 
             if (_identifiers.Contains(commitId))
             {
-                throw new DuplicateCommitException(String.Format(Messages.DuplicateCommitIdException, StreamId, BucketId, commitId));
+                throw new DuplicateCommitException(String.Format(CultureInfo.InvariantCulture, Messages.DuplicateCommitIdException, StreamId, BucketId, commitId));
             }
 
             if (!HasChanges())
@@ -153,11 +239,78 @@ namespace NEventStore
             }
         }
 
+        /// <inheritdoc/>
+        public async Task CommitChangesAsync(Guid commitId, CancellationToken cancellationToken)
+        {
+            if (Logger.IsEnabled(LogLevel.Trace))
+            {
+                Logger.LogTrace(Resources.AttemptingToCommitChanges, StreamId, BucketId);
+            }
+
+            if (_isPartialStream)
+            {
+                if (Logger.IsEnabled(LogLevel.Debug))
+                {
+                    Logger.LogDebug(Resources.CannotAddCommitsToPartiallyLoadedStream, StreamId, BucketId, StreamRevision);
+                }
+
+                await RefreshStreamAfterConcurrencyExceptionAsync(cancellationToken).ConfigureAwait(false);
+
+                throw new ConcurrencyException(string.Format(
+                    CultureInfo.InvariantCulture,
+                    Resources.CannotAddCommitsToPartiallyLoadedStream,
+                    StreamId,
+                    BucketId,
+                    StreamRevision
+                    ));
+            }
+
+            if (_identifiers.Contains(commitId))
+            {
+                throw new DuplicateCommitException(String.Format(CultureInfo.InvariantCulture, Messages.DuplicateCommitIdException, StreamId, BucketId, commitId));
+            }
+
+            if (!HasChanges())
+            {
+                return;
+            }
+
+            try
+            {
+                await PersistChangesAsync(commitId, cancellationToken).ConfigureAwait(false);
+            }
+            catch (ConcurrencyException cex)
+            {
+                if (Logger.IsEnabled(LogLevel.Debug))
+                {
+                    Logger.LogDebug(Resources.UnderlyingStreamHasChanged, StreamId, BucketId, cex.Message);
+                }
+
+                await RefreshStreamAfterConcurrencyExceptionAsync(cancellationToken).ConfigureAwait(false);
+
+                throw;
+            }
+        }
+
         private void RefreshStreamAfterConcurrencyException()
         {
             int refreshFromRevision = StreamRevision + 1;
             IEnumerable<ICommit> commits = _persistence.GetFrom(BucketId, StreamId, refreshFromRevision, int.MaxValue);
             PopulateStream(refreshFromRevision, int.MaxValue, commits);
+        }
+
+        private Task RefreshStreamAfterConcurrencyExceptionAsync(CancellationToken cancellationToken)
+        {
+            int refreshFromRevision = StreamRevision + 1;
+            const int maxRevision = int.MaxValue;
+            _isPartialStream = false;
+            var observer = new LambdaAsyncObserver<ICommit>(
+                onNextAsync: (commit, _) =>
+                {
+                    InnerPopulateStream(refreshFromRevision, maxRevision, commit);
+                    return Task.FromResult(true);
+                });
+            return _persistenceAsync.GetFromAsync(BucketId, StreamId, refreshFromRevision, maxRevision, observer, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -171,35 +324,46 @@ namespace NEventStore
             UncommittedHeaders.Clear();
         }
 
+        private void PopulateStream(int minRevision, int maxRevision, ICommit commit)
+        {
+            _isPartialStream = false;
+            InnerPopulateStream(minRevision, maxRevision, commit);
+        }
+
         private void PopulateStream(int minRevision, int maxRevision, IEnumerable<ICommit> commits)
         {
             _isPartialStream = false;
-            foreach (var commit in commits ?? Enumerable.Empty<ICommit>())
+            foreach (var commit in commits ?? [])
             {
-                _identifiers.Add(commit.CommitId);
-
-                int currentRevision = commit.StreamRevision - commit.Events.Count + 1;
-                // just in case the persistence returned more commits than it should be
-                if (currentRevision > maxRevision)
-                {
-                    _isPartialStream = true;
-                    if (Logger.IsEnabled(LogLevel.Debug))
-                    {
-                        Logger.LogDebug(Resources.IgnoringBeyondRevision, commit.CommitId, StreamId, maxRevision);
-                    }
-                    return;
-                }
-
-                if (Logger.IsEnabled(LogLevel.Trace))
-                {
-                    Logger.LogTrace(Resources.AddingCommitsToStream, commit.CommitId, commit.Events.Count, StreamId, BucketId);
-                }
-
-                CommitSequence = commit.CommitSequence;
-
-                CopyToCommittedHeaders(commit);
-                CopyToEvents(minRevision, maxRevision, currentRevision, commit);
+                InnerPopulateStream(minRevision, maxRevision, commit);
             }
+        }
+
+        private void InnerPopulateStream(int minRevision, int maxRevision, ICommit commit)
+        {
+            _identifiers.Add(commit.CommitId);
+
+            int currentRevision = commit.StreamRevision - commit.Events.Count + 1;
+            // just in case the persistence returned more commits than it should be
+            if (currentRevision > maxRevision)
+            {
+                _isPartialStream = true;
+                if (Logger.IsEnabled(LogLevel.Debug))
+                {
+                    Logger.LogDebug(Resources.IgnoringBeyondRevision, commit.CommitId, StreamId, maxRevision);
+                }
+                return;
+            }
+
+            if (Logger.IsEnabled(LogLevel.Trace))
+            {
+                Logger.LogTrace(Resources.AddingCommitsToStream, commit.CommitId, commit.Events.Count, StreamId, BucketId);
+            }
+
+            CommitSequence = commit.CommitSequence;
+
+            CopyToCommittedHeaders(commit);
+            CopyToEvents(minRevision, maxRevision, currentRevision, commit);
         }
 
         private void CopyToCommittedHeaders(ICommit commit)
@@ -265,10 +429,28 @@ namespace NEventStore
             {
                 Logger.LogDebug(Resources.PersistingCommit, commitId, StreamId, BucketId, attempt.Events?.Count ?? 0);
             }
-            ICommit commit = _persistence.Commit(attempt);
+            var commit = _persistence.Commit(attempt);
+            if (commit != null)
+            {
+                PopulateStream(StreamRevision + 1, attempt.StreamRevision, commit);
+                ClearChanges();
+            }
+        }
 
-            PopulateStream(StreamRevision + 1, attempt.StreamRevision, new[] { commit });
-            ClearChanges();
+        private async Task PersistChangesAsync(Guid commitId, CancellationToken cancellationToken)
+        {
+            CommitAttempt attempt = BuildCommitAttempt(commitId);
+
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug(Resources.PersistingCommit, commitId, StreamId, BucketId, attempt.Events?.Count ?? 0);
+            }
+            var commit = await _persistenceAsync.CommitAsync(attempt, cancellationToken).ConfigureAwait(false);
+            if (commit != null)
+            {
+                PopulateStream(StreamRevision + 1, attempt.StreamRevision, commit);
+                ClearChanges();
+            }
         }
 
         private CommitAttempt BuildCommitAttempt(Guid commitId)
@@ -285,7 +467,7 @@ namespace NEventStore
                 CommitSequence + 1,
                 SystemTime.UtcNow,
                 UncommittedHeaders.ToDictionary(x => x.Key, x => x.Value),
-                _events.ToArray()); // check this for performance: preallocate the array size.
+                _events.ToArray()); // check this for performance: pre-allocate the array size.
         }
 
         /// <inheritdoc/>

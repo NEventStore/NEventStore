@@ -29,7 +29,8 @@ namespace NEventStore
             {
                 Logger.LogDebug(Messages.ConfiguringCompression);
             }
-            var wrapped = Container.Resolve<ISerialize>();
+            var wrapped = Container.Resolve<ISerialize>()
+                ?? throw new InvalidOperationException("Serialize not configured.");
 
             if (Logger.IsEnabled(LogLevel.Information))
             {
@@ -48,7 +49,8 @@ namespace NEventStore
             {
                 Logger.LogDebug(Messages.ConfiguringEncryption);
             }
-            var wrapped = Container.Resolve<ISerialize>();
+            var wrapped = Container.Resolve<ISerialize>()
+                ?? throw new InvalidOperationException("Serialize not configured.");
 
             if (Logger.IsEnabled(LogLevel.Information))
             {

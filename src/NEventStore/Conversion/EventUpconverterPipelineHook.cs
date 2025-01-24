@@ -1,12 +1,9 @@
+using Microsoft.Extensions.Logging;
+using NEventStore.Logging;
+using NEventStore.Persistence;
+
 namespace NEventStore.Conversion
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Microsoft.Extensions.Logging;
-    using NEventStore.Logging;
-    using NEventStore.Persistence;
-
     /// <summary>
     /// Represents a pipeline hook that upconverts events.
     /// </summary>
@@ -18,7 +15,6 @@ namespace NEventStore.Conversion
         /// <summary>
         /// Initializes a new instance of the EventUpconverterPipelineHook class.
         /// </summary>
-        /// <param name="converters"></param>
         /// <exception cref="ArgumentNullException"></exception>
         public EventUpconverterPipelineHook(IDictionary<Type, Func<object, object>> converters)
         {
@@ -26,7 +22,7 @@ namespace NEventStore.Conversion
         }
 
         /// <inheritdoc/>
-        public override ICommit Select(ICommit committed)
+        public override ICommit? SelectCommit(ICommit committed)
         {
             bool converted = false;
             var eventMessages = committed
@@ -66,7 +62,8 @@ namespace NEventStore.Conversion
 
         private object Convert(object source)
         {
-            if (!_converters.TryGetValue(source.GetType(), out Func<object, object> converter))
+            Type sourceType = source.GetType();
+            if (!_converters.TryGetValue(sourceType, out Func<object, object> converter))
             {
                 return source;
             }
@@ -74,7 +71,7 @@ namespace NEventStore.Conversion
             object target = converter(source);
             if (Logger.IsEnabled(LogLevel.Debug))
             {
-                Logger.LogDebug(Resources.ConvertingEvent, source.GetType(), target.GetType());
+                Logger.LogDebug(Resources.ConvertingEvent, sourceType, target.GetType());
             }
 
             return Convert(target);

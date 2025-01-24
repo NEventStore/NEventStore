@@ -11,26 +11,24 @@ namespace NEventStore
     /// </summary>
     public class Wireup
     {
-        private readonly NanoContainer _container;
-        private readonly Wireup _inner;
+        private readonly NanoContainer? _container;
+        private readonly Wireup? _inner;
         private readonly ILogger Logger = LogFactory.BuildLogger(typeof(Wireup));
 
         /// <summary>
         /// Initializes a new instance of the Wireup class.
         /// </summary>
-        /// <param name="container"></param>
         protected Wireup(NanoContainer container)
         {
-            _container = container;
+            _container = container ?? throw new ArgumentNullException(nameof(container));
         }
 
         /// <summary>
         /// Initializes a new instance of the Wireup class.
         /// </summary>
-        /// <param name="inner"></param>
         protected Wireup(Wireup inner)
         {
-            _inner = inner;
+            _inner = inner ?? throw new ArgumentNullException(nameof(inner));
         }
 
         /// <summary>
@@ -38,7 +36,7 @@ namespace NEventStore
         /// </summary>
         protected NanoContainer Container
         {
-            get { return _container ?? _inner.Container; }
+            get { return _container ?? _inner!.Container; }
         }
 
         /// <summary>
@@ -57,7 +55,7 @@ namespace NEventStore
         /// <summary>
         /// Registers a service with the container.
         /// </summary>
-        public virtual Wireup With<T>(T instance) where T : class
+        public virtual Wireup Register<T>(T instance) where T : class
         {
             Container.Register(instance);
             return this;
@@ -68,7 +66,7 @@ namespace NEventStore
         /// </summary>
         public virtual Wireup HookIntoPipelineUsing(IEnumerable<IPipelineHook> hooks)
         {
-            return HookIntoPipelineUsing((hooks ?? Array.Empty<IPipelineHook>()).ToArray());
+            return HookIntoPipelineUsing((hooks ?? []).ToArray());
         }
 
         /// <summary>
@@ -80,7 +78,22 @@ namespace NEventStore
             {
                 Logger.LogInformation(Resources.WireupHookIntoPipeline, string.Join(", ", hooks.Select(h => h.GetType())));
             }
-            ICollection<IPipelineHook> collection = (hooks ?? Array.Empty<IPipelineHook>()).Where(x => x != null).ToArray();
+            ICollection<IPipelineHook> collection = (hooks ?? []).Where(x => x != null).ToArray();
+            Container.Register(collection);
+            return this;
+        }
+
+        /// <summary>
+        /// <para>Add pipeline hooks to the processing pipeline.</para>
+        /// <para>Asynchronous hooks are executed after the synchronous hooks.</para>
+        /// </summary>
+        public virtual Wireup HookIntoPipelineUsing(params IPipelineHookAsync[] hooks)
+        {
+            if (Logger.IsEnabled(LogLevel.Information))
+            {
+                Logger.LogInformation(Resources.WireupHookIntoPipeline, string.Join(", ", hooks.Select(h => h.GetType())));
+            }
+            ICollection<IPipelineHookAsync> collection = (hooks ?? []).Where(x => x != null).ToArray();
             Container.Register(collection);
             return this;
         }
@@ -95,7 +108,8 @@ namespace NEventStore
                 return _inner.Build();
             }
 
-            return Container.Resolve<IStoreEvents>();
+            return Container.Resolve<IStoreEvents>()
+                ?? throw new InvalidOperationException("IStoreEvents was not registered.");
         }
 
         /// <summary>
@@ -118,13 +132,18 @@ namespace NEventStore
             var concurrency = context.Resolve<OptimisticPipelineHook>();
             var upconverter = context.Resolve<EventUpconverterPipelineHook>();
 
-            ICollection<IPipelineHook> hooks = context.Resolve<ICollection<IPipelineHook>>() ?? Array.Empty<IPipelineHook>();
-            hooks = new IPipelineHook[] { concurrency, upconverter }
-                .Concat(hooks)
-                .Where(x => x != null)
-                .ToArray();
-
-            return new OptimisticEventStore(context.Resolve<IPersistStreams>(), hooks);
+            ICollection<IPipelineHook> hooks = context.Resolve<ICollection<IPipelineHook>>() ?? [];
+            var pipelineHooks = new List<IPipelineHook>(hooks);
+            if (concurrency != null)
+            {
+                pipelineHooks.Add(concurrency);
+            }
+            if (upconverter != null)
+            {
+                pipelineHooks.Add(upconverter);
+            }
+            ICollection<IPipelineHookAsync> hooksAsync = context.Resolve<ICollection<IPipelineHookAsync>>() ?? [];
+            return new OptimisticEventStore(context.Resolve<IPersistStreams>()!, pipelineHooks, hooksAsync);
         }
     }
 }

@@ -1,10 +1,6 @@
 ﻿#pragma warning disable IDE1006 // Naming Styles
 
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NEventStore.Helpers;
 using NEventStore.Persistence.AcceptanceTests.BDD;
 using FluentAssertions;
@@ -31,12 +27,9 @@ namespace NEventStore.PollingClient
     {
         private int _outOfSequenceTimeoutInMilliseconds;
 
-        private CommitSequencer InitCommitSequencer(Func<ICommit, PollingClient2.HandlingResult> callBack = null)
+        private CommitSequencer InitCommitSequencer(Func<ICommit, PollingClient2.HandlingResult>? callBack = null)
         {
-            if (callBack == null)
-            {
-                callBack = _ => PollingClient2.HandlingResult.MoveToNext;
-            }
+            callBack ??= _ => PollingClient2.HandlingResult.MoveToNext;
             _outOfSequenceTimeoutInMilliseconds = 2000;
             return new CommitSequencer(c => callBack(c), 0, _outOfSequenceTimeoutInMilliseconds);
         }

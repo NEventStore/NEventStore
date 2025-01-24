@@ -19,7 +19,7 @@ namespace NEventStore.Serialization.Json {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Messages {
@@ -70,24 +70,6 @@ namespace NEventStore.Serialization.Json {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Inspecting text-based stream contents..
-        /// </summary>
-        internal static string InspectingTextStream {
-            get {
-                return ResourceManager.GetString("InspectingTextStream", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The encryption key must be exactly 16 bytes..
-        /// </summary>
-        internal static string InvalidKeyLength {
-            get {
-                return ResourceManager.GetString("InvalidKeyLength", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Registering type &apos;{0}&apos; as a known type..
         /// </summary>
         internal static string RegisteringKnownType {
@@ -102,15 +84,6 @@ namespace NEventStore.Serialization.Json {
         internal static string SerializingGraph {
             get {
                 return ResourceManager.GetString("SerializingGraph", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Objects of type &apos;{0}&apos; are considered to be an array: &apos;{1}&apos;..
-        /// </summary>
-        internal static string TypeIsArray {
-            get {
-                return ResourceManager.GetString("TypeIsArray", resourceCulture);
             }
         }
         

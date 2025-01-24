@@ -10,7 +10,7 @@ namespace NEventStore
         /// <summary>
         ///     The callback to be used to resolve the current moment in time.
         /// </summary>
-        public static Func<DateTime> Resolver;
+        public static Func<DateTime>? Resolver { get; set; }
 
         /// <summary>
         ///     Gets the current moment in time.

@@ -5,14 +5,14 @@ namespace NEventStore.Serialization
     /// <summary>
     ///    Represents a stream that wraps another stream and prevents it from being disposed.
     /// </summary>
-    internal class IndisposableStream : Stream
+    internal class NonDisposableStream : Stream
     {
         private readonly Stream _stream;
 
         /// <summary>
-        ///   Initializes a new instance of the IndisposableStream class.
+        ///   Initializes a new instance of the NonDisposableStream class.
         /// </summary>
-        public IndisposableStream(Stream stream)
+        public NonDisposableStream(Stream stream)
         {
             _stream = stream;
         }
@@ -43,7 +43,9 @@ namespace NEventStore.Serialization
             set { _stream.Position = value; }
         }
 
+#pragma warning disable CA2215 // Dispose methods should call base class dispose
         protected override void Dispose(bool disposing)
+#pragma warning restore CA2215 // Dispose methods should call base class dispose
         {
             // no-op
         }

@@ -2,8 +2,6 @@
 
 namespace NEventStore.Persistence
 {
-    using System.Collections.Generic;
-
     /// <summary>
     ///     Indicates the most recent information representing the head of a given stream.
     /// </summary>
@@ -17,7 +15,6 @@ namespace NEventStore.Persistence
         /// <param name="headRevision">The value which indicates the revision, length, or number of events committed to the stream.</param>
         /// <param name="snapshotRevision">The value which indicates the revision at which the last snapshot was taken.</param>
         public StreamHead(string bucketId, string streamId, int headRevision, int snapshotRevision)
-            : this()
         {
             BucketId = bucketId;
             StreamId = streamId;
@@ -29,12 +26,6 @@ namespace NEventStore.Persistence
         /// Stream Head Equality Comparer
         /// </summary>
         public static IEqualityComparer<StreamHead> StreamIdBucketIdComparer { get; } = new StreamHeadEqualityComparer();
-
-        /// <summary>
-        ///     Initializes a new instance of the StreamHead class.
-        /// </summary>
-        protected StreamHead()
-        { }
 
         /// <summary>
         ///     Gets the value which uniquely identifies the stream where the last snapshot exceeds the allowed threshold.

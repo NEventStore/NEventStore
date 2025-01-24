@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Globalization;
 using Microsoft.Extensions.Logging;
 using NEventStore.Logging;
 
@@ -40,47 +41,27 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
+        [Obsolete("DateTime is problematic in distributed systems. Use GetFrom(Int64 checkpointToken) instead. This method will be removed in a later version.")]
+        public IEnumerable<ICommit> GetFrom(string bucketId, DateTime startDate)
         {
             ThrowWhenDisposed();
             if (Logger.IsEnabled(LogLevel.Debug))
             {
-                Logger.LogDebug(Resources.GettingAllCommitsFromRevision, streamId, bucketId, minRevision, maxRevision);
+                Logger.LogDebug(Resources.GettingAllCommitsFromTime, bucketId, startDate);
             }
-            return this[bucketId].GetFrom(streamId, minRevision, maxRevision);
+            return this[bucketId].GetFrom(startDate);
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFrom(string bucketId, DateTime start)
+        [Obsolete("DateTime is problematic in distributed systems. Use GetFromTo(Int64 fromCheckpointToken, Int64 toCheckpointToken) instead. This method will be removed in a later version.")]
+        public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime startDate, DateTime endDate)
         {
             ThrowWhenDisposed();
             if (Logger.IsEnabled(LogLevel.Debug))
             {
-                Logger.LogDebug(Resources.GettingAllCommitsFromTime, bucketId, start);
+                Logger.LogDebug(Resources.GettingAllCommitsFromToTime, startDate, endDate);
             }
-            return this[bucketId].GetFrom(start);
-        }
-
-        /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFrom(string bucketId, Int64 checkpointToken)
-        {
-            ThrowWhenDisposed();
-            if (Logger.IsEnabled(LogLevel.Debug))
-            {
-                Logger.LogDebug(Resources.GettingAllCommitsFromBucketAndCheckpoint, bucketId, checkpointToken);
-            }
-            return this[bucketId].GetFrom(checkpointToken);
-        }
-
-        /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFromTo(string bucketId, Int64 from, Int64 to)
-        {
-            ThrowWhenDisposed();
-            if (Logger.IsEnabled(LogLevel.Debug))
-            {
-                Logger.LogDebug(Resources.GettingCommitsFromBucketAndFromToCheckpoint, bucketId, from, to);
-            }
-            return this[bucketId].GetFromTo(from, to);
+            return this[bucketId].GetFromTo(startDate, endDate);
         }
 
         /// <inheritdoc/>
@@ -100,34 +81,80 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFromTo(Int64 from, Int64 to)
+        public Task GetFromAsync(Int64 checkpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
+        {
+            return ObserveDataStream(() => GetFrom(checkpointToken), asyncObserver, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<ICommit> GetFromTo(Int64 fromCheckpointToken, Int64 toCheckpointToken)
         {
             ThrowWhenDisposed();
             if (Logger.IsEnabled(LogLevel.Debug))
             {
-                Logger.LogDebug(Resources.GettingCommitsFromToCheckpoint, from, to);
+                Logger.LogDebug(Resources.GettingCommitsFromToCheckpoint, fromCheckpointToken, toCheckpointToken);
             }
             return _buckets
                 .Values
                 .SelectMany(b => b.GetCommits())
-                .Where(c => c.CheckpointToken.CompareTo(from) > 0 && c.CheckpointToken.CompareTo(to) <= 0)
+                .Where(c => c.CheckpointToken.CompareTo(fromCheckpointToken) > 0 && c.CheckpointToken.CompareTo(toCheckpointToken) <= 0)
                 .OrderBy(c => c.CheckpointToken)
                 .ToArray();
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ICommit> GetFromTo(string bucketId, DateTime start, DateTime end)
+        public Task GetFromToAsync(Int64 fromCheckpointToken, Int64 toCheckpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
+        {
+            return ObserveDataStream(() => GetFromTo(fromCheckpointToken, toCheckpointToken), asyncObserver, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<ICommit> GetFrom(string bucketId, Int64 checkpointToken)
         {
             ThrowWhenDisposed();
             if (Logger.IsEnabled(LogLevel.Debug))
             {
-                Logger.LogDebug(Resources.GettingAllCommitsFromToTime, start, end);
+                Logger.LogDebug(Resources.GettingAllCommitsFromBucketAndCheckpoint, bucketId, checkpointToken);
             }
-            return this[bucketId].GetFromTo(start, end);
+            return this[bucketId].GetFrom(checkpointToken);
         }
 
         /// <inheritdoc/>
-        public ICommit Commit(CommitAttempt attempt)
+        public Task GetFromAsync(string bucketId, Int64 checkpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
+        {
+            return ObserveDataStream(() => GetFrom(bucketId, checkpointToken), asyncObserver, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<ICommit> GetFromTo(string bucketId, Int64 fromCheckpointToken, Int64 toCheckpointToken)
+        {
+            ThrowWhenDisposed();
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug(Resources.GettingCommitsFromBucketAndFromToCheckpoint, bucketId, fromCheckpointToken, toCheckpointToken);
+            }
+            return this[bucketId].GetFromTo(fromCheckpointToken, toCheckpointToken);
+        }
+
+        /// <inheritdoc/>
+        public Task GetFromToAsync(string bucketId, long fromCheckpointToken, long toCheckpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
+        {
+            return ObserveDataStream(() => GetFromTo(bucketId, fromCheckpointToken, toCheckpointToken), asyncObserver, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<ICommit> GetFrom(string bucketId, string streamId, int minRevision, int maxRevision)
+        {
+            ThrowWhenDisposed();
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug(Resources.GettingAllCommitsFromRevision, streamId, bucketId, minRevision, maxRevision);
+            }
+            return this[bucketId].GetFrom(streamId, minRevision, maxRevision);
+        }
+
+        /// <inheritdoc/>
+        public ICommit? Commit(CommitAttempt attempt)
         {
             ThrowWhenDisposed();
             if (Logger.IsEnabled(LogLevel.Debug))
@@ -138,18 +165,51 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public IEnumerable<IStreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
+        public Task GetFromAsync(string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> observer, CancellationToken cancellationToken)
         {
-            ThrowWhenDisposed();
-            if (Logger.IsEnabled(LogLevel.Debug))
+            return ObserveDataStream(() => GetFrom(bucketId, streamId, minRevision, maxRevision), observer, cancellationToken);
+        }
+
+        private static async Task ObserveDataStream<T>(Func<IEnumerable<T>> dataProvider, IAsyncObserver<T> observer, CancellationToken cancellationToken)
+        {
+            try
             {
-                Logger.LogDebug(Resources.GettingStreamsToSnapshot, bucketId, maxThreshold);
+                var data = dataProvider();
+                if (data?.Any() == true)
+                {
+                    foreach (var commit in data)
+                    {
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            throw new OperationCanceledException("Operation Cancellation Requested");
+                        }
+                        var goOn = await observer.OnNextAsync(commit, cancellationToken).ConfigureAwait(false);
+                        if (!goOn)
+                        {
+                            break;
+                        }
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            throw new OperationCanceledException("Operation Cancellation Requested");
+                        }
+                    }
+                }
+                await observer.OnCompletedAsync(cancellationToken).ConfigureAwait(false);
             }
-            return this[bucketId].GetStreamsToSnapshot(maxThreshold);
+            catch (Exception ex)
+            {
+                await observer.OnErrorAsync(ex, cancellationToken).ConfigureAwait(false);
+            }
         }
 
         /// <inheritdoc/>
-        public ISnapshot GetSnapshot(string bucketId, string streamId, int maxRevision)
+        public Task<ICommit?> CommitAsync(CommitAttempt attempt, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(Commit(attempt));
+        }
+
+        /// <inheritdoc/>
+        public ISnapshot? GetSnapshot(string bucketId, string streamId, int maxRevision)
         {
             ThrowWhenDisposed();
             if (Logger.IsEnabled(LogLevel.Debug))
@@ -171,6 +231,72 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
+        public IEnumerable<IStreamHead> GetStreamsToSnapshot(string bucketId, int maxThreshold)
+        {
+            ThrowWhenDisposed();
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug(Resources.GettingStreamsToSnapshot, bucketId, maxThreshold);
+            }
+            return this[bucketId].GetStreamsToSnapshot(maxThreshold);
+        }
+
+        /// <inheritdoc/>
+        public Task<ISnapshot?> GetSnapshotAsync(string bucketId, string streamId, int maxRevision, CancellationToken cancellationToken)
+        {
+            ThrowWhenDisposed();
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug(Resources.GettingSnapshotForStream, bucketId, streamId, maxRevision);
+            }
+            return Task.FromResult(this[bucketId].GetSnapshot(streamId, maxRevision));
+        }
+
+        /// <inheritdoc/>
+        public Task<bool> AddSnapshotAsync(ISnapshot snapshot, CancellationToken cancellationToken)
+        {
+            ThrowWhenDisposed();
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug(Resources.AddingSnapshot, snapshot.BucketId, snapshot.StreamId, snapshot.StreamRevision);
+            }
+            return Task.FromResult(this[snapshot.BucketId].AddSnapshot(snapshot));
+        }
+
+        /// <inheritdoc/>
+        public async Task GetStreamsToSnapshotAsync(string bucketId, int maxThreshold, IAsyncObserver<IStreamHead> asyncObserver, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var data = GetStreamsToSnapshot(bucketId, maxThreshold);
+                if (data?.Any() == true)
+                {
+                    foreach (var commit in data)
+                    {
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            throw new OperationCanceledException("Operation Cancellation Requested");
+                        }
+                        var goOn = await asyncObserver.OnNextAsync(commit, cancellationToken).ConfigureAwait(false);
+                        if (!goOn)
+                        {
+                            break;
+                        }
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            throw new OperationCanceledException("Operation Cancellation Requested");
+                        }
+                    }
+                }
+                await asyncObserver.OnCompletedAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                await asyncObserver.OnErrorAsync(ex, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        /// <inheritdoc/>
         public void Purge()
         {
             ThrowWhenDisposed();
@@ -188,8 +314,21 @@ namespace NEventStore.Persistence.InMemory
         /// <inheritdoc/>
         public void Purge(string bucketId)
         {
-            Bucket _;
-            _buckets.TryRemove(bucketId, out _);
+            _buckets.TryRemove(bucketId, out var _);
+        }
+
+        /// <inheritdoc/>
+        public Task PurgeAsync(CancellationToken cancellationToken)
+        {
+            Purge();
+            return Task.CompletedTask;
+        }
+
+        /// <inheritdoc/>
+        public Task PurgeAsync(string bucketId, CancellationToken cancellationToken)
+        {
+            Purge(bucketId);
+            return Task.CompletedTask;
         }
 
         /// <inheritdoc/>
@@ -210,6 +349,13 @@ namespace NEventStore.Persistence.InMemory
                 return;
             }
             bucket.DeleteStream(streamId);
+        }
+
+        /// <inheritdoc/>
+        public Task DeleteStreamAsync(string bucketId, string streamId, CancellationToken cancellationToken)
+        {
+            DeleteStream(bucketId, streamId);
+            return Task.CompletedTask;
         }
 
         /// <inheritdoc/>
@@ -264,8 +410,8 @@ namespace NEventStore.Persistence.InMemory
         {
             protected bool Equals(IdentityForConcurrencyConflictDetection other)
             {
-                return string.Equals(this.streamId, other.streamId)
-                        && string.Equals(this.bucketId, other.bucketId)
+                return string.Equals(this.streamId, other.streamId, StringComparison.Ordinal)
+                        && string.Equals(this.bucketId, other.bucketId, StringComparison.Ordinal)
                         && this.commitSequence == other.commitSequence;
             }
 
@@ -321,8 +467,8 @@ namespace NEventStore.Persistence.InMemory
         {
             protected bool Equals(IdentityForDuplicationDetection other)
             {
-                return string.Equals(this.streamId, other.streamId)
-                        && string.Equals(this.bucketId, other.bucketId)
+                return string.Equals(this.streamId, other.streamId, StringComparison.Ordinal)
+                        && string.Equals(this.bucketId, other.bucketId, StringComparison.Ordinal)
                         && this.commitId.Equals(other.commitId);
             }
 
@@ -376,9 +522,9 @@ namespace NEventStore.Persistence.InMemory
 
         private class Bucket
         {
-            private readonly List<InMemoryCommit> _commits = new();
-            private readonly ICollection<IdentityForDuplicationDetection> _potentialDuplicates = new HashSet<IdentityForDuplicationDetection>();
-            private readonly ICollection<IdentityForConcurrencyConflictDetection> _potentialConflicts = new HashSet<IdentityForConcurrencyConflictDetection>();
+            private readonly List<InMemoryCommit> _commits = [];
+            private readonly HashSet<IdentityForDuplicationDetection> _potentialDuplicates = [];
+            private readonly HashSet<IdentityForConcurrencyConflictDetection> _potentialConflicts = [];
 
             public IEnumerable<InMemoryCommit> GetCommits()
             {
@@ -390,7 +536,7 @@ namespace NEventStore.Persistence.InMemory
 
             private readonly ICollection<IStreamHead> _heads = new LinkedList<IStreamHead>();
             private readonly ICollection<ISnapshot> _snapshots = new LinkedList<ISnapshot>();
-            private readonly Dictionary<Guid, DateTime> _stamps = new();
+            private readonly Dictionary<Guid, DateTime> _stamps = [];
 
             public IEnumerable<ICommit> GetFrom(string streamId, int minRevision, int maxRevision)
             {
@@ -408,7 +554,7 @@ namespace NEventStore.Persistence.InMemory
                 Guid commitId = _stamps.Where(x => x.Value >= start).Select(x => x.Key).FirstOrDefault();
                 if (commitId == Guid.Empty)
                 {
-                    return Enumerable.Empty<ICommit>();
+                    return [];
                 }
 
                 InMemoryCommit startingCommit = _commits.FirstOrDefault(x => x.CommitId == commitId);
@@ -435,7 +581,7 @@ namespace NEventStore.Persistence.InMemory
                 Guid lastCommitId = selectedCommitIds.LastOrDefault();
                 if (lastCommitId == Guid.Empty && lastCommitId == Guid.Empty)
                 {
-                    return Enumerable.Empty<ICommit>();
+                    return [];
                 }
                 InMemoryCommit startingCommit = _commits.FirstOrDefault(x => x.CommitId == firstCommitId);
                 InMemoryCommit endingCommit = _commits.FirstOrDefault(x => x.CommitId == lastCommitId);
@@ -443,10 +589,10 @@ namespace NEventStore.Persistence.InMemory
                 int endingCommitIndex = (endingCommit == null) ? _commits.Count - 1 : _commits.IndexOf(endingCommit);
                 int numberToTake = endingCommitIndex - startingCommitIndex + 1;
 
-                return _commits.Skip(_commits.IndexOf(startingCommit)).Take(numberToTake);
+                return _commits.Skip(startingCommitIndex).Take(numberToTake);
             }
 
-            public ICommit Commit(CommitAttempt attempt, Int64 checkpoint)
+            public Commit Commit(CommitAttempt attempt, Int64 checkpoint)
             {
                 lock (_commits)
                 {
@@ -484,7 +630,9 @@ namespace NEventStore.Persistence.InMemory
             {
                 if (_potentialDuplicates.Contains(new IdentityForDuplicationDetection(attempt)))
                 {
-                    throw new DuplicateCommitException(String.Format(Messages.DuplicateCommitIdException, attempt.StreamId, attempt.BucketId, attempt.CommitId));
+                    throw new DuplicateCommitException(String.Format(
+                        CultureInfo.InvariantCulture,
+                        Messages.DuplicateCommitIdException, attempt.StreamId, attempt.BucketId, attempt.CommitId));
                 }
             }
 
@@ -498,7 +646,7 @@ namespace NEventStore.Persistence.InMemory
                 }
             }
 
-            public ISnapshot GetSnapshot(string streamId, int maxRevision)
+            public ISnapshot? GetSnapshot(string streamId, int maxRevision)
             {
                 lock (_commits)
                 {

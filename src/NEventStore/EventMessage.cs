@@ -16,7 +16,7 @@
         /// </summary>
         public EventMessage()
         {
-            Headers = new Dictionary<string, object>();
+            Headers = [];
         }
 
         /// <summary>

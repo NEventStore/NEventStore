@@ -13,16 +13,16 @@ namespace NEventStore.Serialization.Bson
     {
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(BsonSerializer));
 
-        private readonly IEnumerable<Type> _knownTypes = new[] { typeof(List<EventMessage>), typeof(Dictionary<string, object>) };
+        private readonly IEnumerable<Type> _knownTypes = [typeof(List<EventMessage>), typeof(Dictionary<string, object>)];
 
-        private readonly Newtonsoft.Json.JsonSerializer _typedSerializer = new Newtonsoft.Json.JsonSerializer
+        private readonly JsonSerializer _typedSerializer = new()
         {
             TypeNameHandling = TypeNameHandling.All,
             DefaultValueHandling = DefaultValueHandling.Ignore,
             NullValueHandling = NullValueHandling.Ignore
         };
 
-        private readonly Newtonsoft.Json.JsonSerializer _untypedSerializer = new Newtonsoft.Json.JsonSerializer
+        private readonly JsonSerializer _untypedSerializer = new()
         {
             TypeNameHandling = TypeNameHandling.Auto,
             DefaultValueHandling = DefaultValueHandling.Ignore,
@@ -32,7 +32,7 @@ namespace NEventStore.Serialization.Bson
         /// <summary>
         /// Initializes a new instance of the BsonSerializer class.
         /// </summary>
-        public BsonSerializer(params Type[] knownTypes)
+        public BsonSerializer(params Type[]? knownTypes)
         {
             if (knownTypes?.Length == 0)
             {
@@ -50,33 +50,48 @@ namespace NEventStore.Serialization.Bson
             }
         }
 
-        public virtual void Serialize<T>(Stream output, T graph)
+        /// <inheritdoc/>
+        public virtual void Serialize<T>(Stream output, T graph) where T: notnull
         {
-            using (var writer = new BsonDataWriter(output) { DateTimeKindHandling = DateTimeKind.Utc })
+            if (Logger.IsEnabled(LogLevel.Trace))
             {
-                Serialize(writer, graph);
+                Logger.LogTrace(Messages.SerializingGraph, typeof(T));
             }
+            using var writer = new BsonDataWriter(output) { DateTimeKindHandling = DateTimeKind.Utc };
+            Serialize(writer, graph);
         }
 
-        public virtual T Deserialize<T>(Stream input)
+        /// <inheritdoc/>
+        public virtual T? Deserialize<T>(Stream input)
         {
-            using (var reader = new BsonDataReader(input, IsArray(typeof(T)), DateTimeKind.Utc))
+            if (Logger.IsEnabled(LogLevel.Trace))
             {
-                return Deserialize<T>(reader);
+                Logger.LogTrace(Messages.DeserializingStream, typeof(T));
             }
+            using var reader = new BsonDataReader(input, IsArray(typeof(T)), DateTimeKind.Utc);
+            return Deserialize<T>(reader);
         }
 
+        /// <summary>
+        /// Serialize an object to a JsonWriter.
+        /// </summary>
         protected virtual void Serialize(JsonWriter writer, object graph)
         {
             GetSerializer(graph.GetType()).Serialize(writer, graph);
         }
 
-        protected virtual T Deserialize<T>(JsonReader reader)
+        /// <summary>
+        /// Deserialize an object from a JsonReader.
+        /// </summary>
+        protected virtual T? Deserialize<T>(JsonReader reader)
         {
             Type type = typeof(T);
-            return (T)GetSerializer(type).Deserialize(reader, type);
+            return (T?)GetSerializer(type).Deserialize(reader, type);
         }
 
+        /// <summary>
+        /// Get the serializer for the given type.
+        /// </summary>
         protected virtual Newtonsoft.Json.JsonSerializer GetSerializer(Type typeToSerialize)
         {
             if (_knownTypes.Contains(typeToSerialize))
