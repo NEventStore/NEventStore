@@ -1,3 +1,4 @@
+
 namespace NEventStore
 {
     /// <summary>
@@ -19,15 +20,15 @@ namespace NEventStore
 
         /// <inheritdoc/>
         public virtual void PostCommit(ICommit committed)
-        {}
+        { }
 
         /// <inheritdoc/>
         public virtual void OnPurge(string? bucketId)
-        {}
+        { }
 
         /// <inheritdoc/>
         public virtual void OnDeleteStream(string bucketId, string streamId)
-        {}
+        { }
 
         /// <inheritdoc/>
         public void Dispose()

@@ -1,5 +1,11 @@
 # NEventStore Versions
 
+## 10.0.1
+
+### BugFix
+
+- Async Pipeline Hooks: initialization and PreCommit/PostCommit invocation bugs [#516](https://github.com/NEventStore/NEventStore/issues/516)
+
 ## 10.0.0
 
 - Async Methods to read from and write to streams (IStoreEvents, IEventStream, IPersistStreams, IPersistStreamsAsync, ICommitEventsAsync, IAccessSnapshotsAsync). [#513](https://github.com/NEventStore/NEventStore/issues/513)

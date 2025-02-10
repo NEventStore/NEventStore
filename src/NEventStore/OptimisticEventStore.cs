@@ -12,7 +12,7 @@ namespace NEventStore
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(OptimisticEventStore));
         private readonly IPersistStreams _persistence;
         private readonly IEnumerable<IPipelineHook> _pipelineHooks;
-        private readonly IEnumerable<IPipelineHookAsync>? _pipelineHooksAsync;
+        private readonly IEnumerable<IPipelineHookAsync> _pipelineHooksAsync;
 
         /// <inheritdoc/>
         public virtual IPersistStreams Advanced { get => _persistence; }
@@ -30,7 +30,7 @@ namespace NEventStore
 
             _pipelineHooks = pipelineHooks ?? [];
             _pipelineHooksAsync = pipelineHooksAsync ?? [];
-            if (_pipelineHooks.Any())
+            if (_pipelineHooks.Any() || _pipelineHooksAsync.Any())
             {
                 _persistence = new PipelineHooksAwarePersistStreamsDecorator(persistence, _pipelineHooks, _pipelineHooksAsync);
             }
@@ -71,6 +71,23 @@ namespace NEventStore
                 }
                 return null;
             }
+            foreach (var hook in _pipelineHooksAsync)
+            {
+                if (Logger.IsEnabled(LogLevel.Trace))
+                {
+                    Logger.LogTrace(Resources.InvokingPreCommitHooks, attempt.CommitId, hook.GetType());
+                }
+                if (hook.PreCommitAsync(attempt, CancellationToken.None).GetAwaiter().GetResult())
+                {
+                    continue;
+                }
+
+                if (Logger.IsEnabled(LogLevel.Information))
+                {
+                    Logger.LogInformation(Resources.CommitRejectedByPipelineHook, hook.GetType(), attempt.CommitId);
+                }
+                return null;
+            }
 
             if (Logger.IsEnabled(LogLevel.Trace))
             {
@@ -87,6 +104,14 @@ namespace NEventStore
                         Logger.LogTrace(Resources.InvokingPostCommitPipelineHooks, attempt.CommitId, hook.GetType());
                     }
                     hook.PostCommit(commit);
+                }
+                foreach (var hook in _pipelineHooksAsync)
+                {
+                    if (Logger.IsEnabled(LogLevel.Trace))
+                    {
+                        Logger.LogTrace(Resources.InvokingPostCommitPipelineHooks, attempt.CommitId, hook.GetType());
+                    }
+                    hook.PostCommitAsync(commit, CancellationToken.None).GetAwaiter().GetResult();
                 }
             }
             return commit;
@@ -123,6 +148,23 @@ namespace NEventStore
                 }
                 return null;
             }
+            foreach (var hook in _pipelineHooksAsync)
+            {
+                if (Logger.IsEnabled(LogLevel.Trace))
+                {
+                    Logger.LogTrace(Resources.InvokingPreCommitHooks, attempt.CommitId, hook.GetType());
+                }
+                if (await hook.PreCommitAsync(attempt, cancellationToken).ConfigureAwait(false))
+                {
+                    continue;
+                }
+
+                if (Logger.IsEnabled(LogLevel.Information))
+                {
+                    Logger.LogInformation(Resources.CommitRejectedByPipelineHook, hook.GetType(), attempt.CommitId);
+                }
+                return null;
+            }
 
             if (Logger.IsEnabled(LogLevel.Trace))
             {
@@ -139,6 +181,14 @@ namespace NEventStore
                         Logger.LogTrace(Resources.InvokingPostCommitPipelineHooks, attempt.CommitId, hook.GetType());
                     }
                     hook.PostCommit(commit);
+                }
+                foreach (var hook in _pipelineHooksAsync)
+                {
+                    if (Logger.IsEnabled(LogLevel.Trace))
+                    {
+                        Logger.LogTrace(Resources.InvokingPostCommitPipelineHooks, attempt.CommitId, hook.GetType());
+                    }
+                    await hook.PostCommitAsync(commit, cancellationToken).ConfigureAwait(false);
                 }
             }
             return commit;

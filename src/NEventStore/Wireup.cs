@@ -62,7 +62,7 @@ namespace NEventStore
         }
 
         /// <summary>
-        /// Add a pipeline hook to the processing pipeline.
+        /// Add pipeline hooks to the processing pipeline.
         /// </summary>
         public virtual Wireup HookIntoPipelineUsing(IEnumerable<IPipelineHook> hooks)
         {
@@ -81,6 +81,14 @@ namespace NEventStore
             ICollection<IPipelineHook> collection = (hooks ?? []).Where(x => x != null).ToArray();
             Container.Register(collection);
             return this;
+        }
+
+        /// <summary>
+        /// Add pipeline hooks to the processing pipeline.
+        /// </summary>
+        public virtual Wireup HookIntoPipelineUsing(IEnumerable<IPipelineHookAsync> hooks)
+        {
+            return HookIntoPipelineUsing((hooks ?? []).ToArray());
         }
 
         /// <summary>

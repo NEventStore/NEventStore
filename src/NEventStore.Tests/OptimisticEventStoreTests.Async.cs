@@ -188,6 +188,10 @@ namespace NEventStore.Async
             var hook = A.Fake<IPipelineHook>();
             A.CallTo(() => hook.SelectCommit(_committed)).Returns(_committed);
             PipelineHooks.Add(hook);
+
+            var hookAsync = A.Fake<IPipelineHookAsync>();
+            A.CallTo(() => hookAsync.SelectCommitAsync(_committed, A<CancellationToken>.Ignored)).Returns(Task.FromResult<ICommit?>(_committed));
+            PipelineHooksAsync.Add(hookAsync);
         }
 
         protected override async Task BecauseAsync()
@@ -205,6 +209,12 @@ namespace NEventStore.Async
         public void should_provide_the_commits_to_the_selection_hooks()
         {
             PipelineHooks.ForEach(x => A.CallTo(() => x.SelectCommit(_committed!)).MustHaveHappenedOnceExactly());
+        }
+
+        [Fact]
+        public void should_provide_the_commits_to_the_async_selection_hooks()
+        {
+            PipelineHooksAsync.ForEach(x => A.CallTo(() => x.SelectCommitAsync(_committed!, A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly());
         }
 
         [Fact]
@@ -481,8 +491,11 @@ namespace NEventStore.Async
 
             var hook = A.Fake<IPipelineHook>();
             A.CallTo(() => hook.PreCommit(_populatedAttempt)).Returns(true);
-
             PipelineHooks.Add(hook);
+
+            var hookAsync = A.Fake<IPipelineHookAsync>();
+            A.CallTo(() => hookAsync.PreCommitAsync(_populatedAttempt, A<CancellationToken>.Ignored)).Returns(Task.FromResult(true));
+            PipelineHooksAsync.Add(hookAsync);
         }
 
         protected override Task BecauseAsync()
@@ -497,6 +510,12 @@ namespace NEventStore.Async
         }
 
         [Fact]
+        public void should_provide_the_commit_to_the_async_PreCommit_hooks()
+        {
+            PipelineHooksAsync.ForEach(x => A.CallTo(() => x.PreCommitAsync(_populatedAttempt!, A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly());
+        }
+
+        [Fact]
         public void should_provide_the_commit_attempt_to_the_configured_persistence_mechanism()
         {
             A.CallTo(() => Persistence.CommitAsync(_populatedAttempt!, CancellationToken.None)).MustHaveHappenedOnceExactly();
@@ -506,6 +525,12 @@ namespace NEventStore.Async
         public void should_provide_the_commit_to_the_PostCommit_hooks()
         {
             PipelineHooks.ForEach(x => A.CallTo(() => x.PostCommit(_populatedCommit!)).MustHaveHappenedOnceExactly());
+        }
+
+        [Fact]
+        public void should_provide_the_commit_to_the_async_PostCommit_hooks()
+        {
+            PipelineHooksAsync.ForEach(x => A.CallTo(() => x.PostCommitAsync(_populatedCommit!, A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly());
         }
     }
 
@@ -524,8 +549,11 @@ namespace NEventStore.Async
 
             var hook = A.Fake<IPipelineHook>();
             A.CallTo(() => hook.PreCommit(_attempt)).Returns(false);
-
             PipelineHooks.Add(hook);
+
+            var hookAsync = A.Fake<IPipelineHookAsync>();
+            A.CallTo(() => hookAsync.PreCommitAsync(_attempt, A<CancellationToken>.Ignored)).Returns(Task.FromResult(true));
+            PipelineHooksAsync.Add(hookAsync);
         }
 
         protected override Task BecauseAsync()
@@ -543,6 +571,58 @@ namespace NEventStore.Async
         public void should_not_provide_the_commit_to_the_PostCommit_hooks()
         {
             PipelineHooks.ForEach(x => A.CallTo(() => x.PostCommit(_commit!)).MustNotHaveHappened());
+        }
+
+        [Fact]
+        public void should_not_provide_the_commit_to_the_async_PostCommit_hooks()
+        {
+            PipelineHooksAsync.ForEach(x => A.CallTo(() => x.PostCommitAsync(_commit!, A<CancellationToken>.Ignored)).MustNotHaveHappened());
+        }
+    }
+
+#if MSTEST
+    [TestClass]
+#endif
+    public class when_an_async_PreCommit_hook_rejects_a_commit : using_persistence
+    {
+        private CommitAttempt? _attempt;
+        private ICommit? _commit;
+
+        protected override void Context()
+        {
+            _attempt = BuildCommitAttemptStub(1, 1);
+            _commit = BuildCommitStub(1, 1, 1);
+
+            var hook = A.Fake<IPipelineHook>();
+            A.CallTo(() => hook.PreCommit(_attempt)).Returns(true);
+            PipelineHooks.Add(hook);
+
+            var hookAsync = A.Fake<IPipelineHookAsync>();
+            A.CallTo(() => hookAsync.PreCommitAsync(_attempt, A<CancellationToken>.Ignored)).Returns(Task.FromResult(false));
+            PipelineHooksAsync.Add(hookAsync);
+        }
+
+        protected override Task BecauseAsync()
+        {
+            return Store.CommitAsync(_attempt!, CancellationToken.None);
+        }
+
+        [Fact]
+        public void should_not_call_the_underlying_infrastructure()
+        {
+            A.CallTo(() => Persistence.CommitAsync(_attempt!, CancellationToken.None)).MustNotHaveHappened();
+        }
+
+        [Fact]
+        public void should_not_provide_the_commit_to_the_PostCommit_hooks()
+        {
+            PipelineHooks.ForEach(x => A.CallTo(() => x.PostCommit(_commit!)).MustNotHaveHappened());
+        }
+
+        [Fact]
+        public void should_not_provide_the_commit_to_the_async_PostCommit_hooks()
+        {
+            PipelineHooksAsync.ForEach(x => A.CallTo(() => x.PostCommitAsync(_commit!, A<CancellationToken>.Ignored)).MustNotHaveHappened());
         }
     }
 
@@ -563,6 +643,26 @@ namespace NEventStore.Async
         }
     }
 
+#if MSTEST
+    [TestClass]
+#endif
+    public class when_accessing_the_underlying_persistence_with_async_pipeline_hooks : using_persistence
+    {
+        protected override void Because()
+        {
+            PipelineHooksAsync.Add(A.Fake<IPipelineHookAsync>());
+        }
+
+        [Fact]
+        public void should_return_a_reference_to_the_underlying_persistence_infrastructure_decorator()
+        {
+            Store.Advanced.Should().BeOfType<PipelineHooksAwarePersistStreamsDecorator>();
+        }
+    }
+
+#if MSTEST
+    [TestClass]
+#endif
     public class when_accessing_the_underlying_persistence_without_pipeline_hooks : using_persistence
     {
         [Fact]
