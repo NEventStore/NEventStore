@@ -3,6 +3,7 @@
 ## 10.1.0
 
 - Improved `IEventStream` interface: `CommitChanges()` and `CommitChangesAsync()` now return `ICommit` instead of `void`.
+- Updated MessagePack serializer to 3.1.3
 
 ### Breaking Changes
 
