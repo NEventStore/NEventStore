@@ -1381,6 +1381,51 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
 #if MSTEST
     [TestClass]
 #endif
+    public class when_calling_CommitChanges : PersistenceEngineConcern
+    {
+        private Guid? _commitId;
+        private ICommit? _persistedCommit;
+        private ICommit[]? _commits;
+
+        protected override async Task BecauseAsync()
+        {
+            var eventStore = new OptimisticEventStore(Persistence, null, null);
+            using IEventStream stream = await eventStore.OpenStreamAsync(Guid.NewGuid()).ConfigureAwait(false);
+            stream.Add(new EventMessage { Body = new TestEvent() { S = "Hi " } });
+            _commitId = Guid.NewGuid();
+            _persistedCommit = await stream.CommitChangesAsync(_commitId.Value).ConfigureAwait(false);
+
+            var observer = new CommitStreamObserver();
+            await Persistence.GetFromAsync(0, observer, CancellationToken.None).ConfigureAwait(false);
+            _commits = observer.Commits.ToArray();
+        }
+
+        [Fact]
+        public void A_Commit_had_been_persisted()
+        {
+            _persistedCommit.Should().NotBeNull();
+            _persistedCommit!.CommitId.Should().Be(_commitId!.Value);
+            _persistedCommit.CommitSequence.Should().Be(1);
+            _persistedCommit.Events.Count.Should().Be(1);
+            _persistedCommit.Events.Single().Body.Should().BeOfType<TestEvent>();
+            ((TestEvent)_persistedCommit.Events.Single().Body!).S.Should().Be("Hi ");
+        }
+
+        [Fact]
+        public void Should_have_expected_number_of_commits()
+        {
+            _commits!.Length.Should().Be(1);
+            // if should have the right event
+            _commits[0].CommitId.Should().Be(_commitId!.Value);
+            _commits[0].Events.Count.Should().Be(1);
+            _commits[0].Events.Single().Body.Should().BeOfType<TestEvent>();
+            ((TestEvent)_commits[0].Events.Single().Body!).S.Should().Be("Hi ");
+        }
+    }
+
+#if MSTEST
+    [TestClass]
+#endif
     public class when_gettingFromCheckpoint_amount_of_commits_exceeds_PageSize : PersistenceEngineConcernAsync
     {
         private ICommit[]? _commits;
