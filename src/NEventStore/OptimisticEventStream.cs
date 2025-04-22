@@ -187,7 +187,7 @@ namespace NEventStore
         }
 
         /// <inheritdoc/>
-        public void CommitChanges(Guid commitId)
+        public ICommit? CommitChanges(Guid commitId)
         {
             if (Logger.IsEnabled(LogLevel.Trace))
             {
@@ -219,12 +219,12 @@ namespace NEventStore
 
             if (!HasChanges())
             {
-                return;
+                return null;
             }
 
             try
             {
-                PersistChanges(commitId);
+                return PersistChanges(commitId);
             }
             catch (ConcurrencyException cex)
             {
@@ -240,7 +240,7 @@ namespace NEventStore
         }
 
         /// <inheritdoc/>
-        public async Task CommitChangesAsync(Guid commitId, CancellationToken cancellationToken)
+        public async Task<ICommit?> CommitChangesAsync(Guid commitId, CancellationToken cancellationToken)
         {
             if (Logger.IsEnabled(LogLevel.Trace))
             {
@@ -272,12 +272,12 @@ namespace NEventStore
 
             if (!HasChanges())
             {
-                return;
+                return null;
             }
 
             try
             {
-                await PersistChangesAsync(commitId, cancellationToken).ConfigureAwait(false);
+                return await PersistChangesAsync(commitId, cancellationToken).ConfigureAwait(false);
             }
             catch (ConcurrencyException cex)
             {
@@ -421,7 +421,7 @@ namespace NEventStore
             return false;
         }
 
-        private void PersistChanges(Guid commitId)
+        private ICommit? PersistChanges(Guid commitId)
         {
             CommitAttempt attempt = BuildCommitAttempt(commitId);
 
@@ -435,9 +435,10 @@ namespace NEventStore
                 PopulateStream(StreamRevision + 1, attempt.StreamRevision, commit);
                 ClearChanges();
             }
+            return commit;
         }
 
-        private async Task PersistChangesAsync(Guid commitId, CancellationToken cancellationToken)
+        private async Task<ICommit?> PersistChangesAsync(Guid commitId, CancellationToken cancellationToken)
         {
             CommitAttempt attempt = BuildCommitAttempt(commitId);
 
@@ -451,6 +452,7 @@ namespace NEventStore
                 PopulateStream(StreamRevision + 1, attempt.StreamRevision, commit);
                 ClearChanges();
             }
+            return commit;
         }
 
         private CommitAttempt BuildCommitAttempt(Guid commitId)

@@ -60,22 +60,24 @@ namespace NEventStore
         /// Commits the changes to durable storage.
         /// </summary>
         /// <param name="commitId">The value which uniquely identifies the commit.</param>
+        /// <returns>The commit which has been persisted to durable storage.</returns>
         /// <exception cref="DuplicateCommitException" />
         /// <exception cref="ConcurrencyException" />
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        void CommitChanges(Guid commitId);
+        ICommit? CommitChanges(Guid commitId);
 
         /// <summary>
         /// Commits the changes to durable storage.
         /// </summary>
         /// <param name="commitId">The value which uniquely identifies the commit.</param>
         /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+        /// <returns>The commit which has been persisted to durable storage.</returns>
         /// <exception cref="DuplicateCommitException" />
         /// <exception cref="ConcurrencyException" />
         /// <exception cref="StorageException" />
         /// <exception cref="StorageUnavailableException" />
-        Task CommitChangesAsync(Guid commitId, CancellationToken cancellationToken = default);
+        Task<ICommit?> CommitChangesAsync(Guid commitId, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Clears the uncommitted changes.
