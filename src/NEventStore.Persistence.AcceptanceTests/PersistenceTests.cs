@@ -583,7 +583,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         private const int OverThreshold = 3;
         private const string SnapshotData = "snapshot";
         private ICommit? _oldest, _oldest2;
-        private string ?_streamId;
+        private string? _streamId;
 
         protected override void Context()
         {
@@ -885,7 +885,7 @@ namespace NEventStore.Persistence.AcceptanceTests
         [Fact]
         public void should_not_find_any_commits_stored()
         {
-            Persistence.GetFrom(Bucket.Default,0).Count().Should().Be(0);
+            Persistence.GetFrom(Bucket.Default, 0).Count().Should().Be(0);
         }
 
         [Fact]
@@ -1170,6 +1170,49 @@ namespace NEventStore.Persistence.AcceptanceTests
     public class TestEvent
     {
         public String? S { get; set; }
+    }
+
+#if MSTEST
+    [TestClass]
+#endif
+    public class when_calling_CommitChanges : PersistenceEngineConcern
+    {
+        private Guid? _commitId;
+        private ICommit? _persistedCommit;
+        private ICommit[]? _commits;
+
+        protected override void Because()
+        {
+            var eventStore = new OptimisticEventStore(Persistence, null, null);
+            using IEventStream stream = eventStore.OpenStream(Guid.NewGuid());
+            stream.Add(new EventMessage { Body = new TestEvent() { S = "Hi " } });
+            _commitId = Guid.NewGuid();
+            _persistedCommit = stream.CommitChanges(_commitId.Value);
+
+            _commits = Persistence.GetFrom(0).ToArray();
+        }
+
+        [Fact]
+        public void A_Commit_had_been_persisted()
+        {
+            _persistedCommit.Should().NotBeNull();
+            _persistedCommit!.CommitId.Should().Be(_commitId!.Value);
+            _persistedCommit.CommitSequence.Should().Be(1);
+            _persistedCommit.Events.Count.Should().Be(1);
+            _persistedCommit.Events.Single().Body.Should().BeOfType<TestEvent>();
+            ((TestEvent)_persistedCommit.Events.Single().Body!).S.Should().Be("Hi ");
+        }
+
+        [Fact]
+        public void Should_have_expected_number_of_commits()
+        {
+            _commits!.Length.Should().Be(1);
+            // if should have the right event
+            _commits[0].CommitId.Should().Be(_commitId!.Value);
+            _commits[0].Events.Count.Should().Be(1);
+            _commits[0].Events.Single().Body.Should().BeOfType<TestEvent>();
+            ((TestEvent)_commits[0].Events.Single().Body!).S.Should().Be("Hi ");
+        }
     }
 
 #if MSTEST
