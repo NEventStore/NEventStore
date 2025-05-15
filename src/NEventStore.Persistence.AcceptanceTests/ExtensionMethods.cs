@@ -154,7 +154,7 @@ namespace NEventStore.Persistence.AcceptanceTests
             const int streamRevision = 2;
             const int commitSequence = 2;
             Guid commitId = Guid.NewGuid();
-            var headers = new Dictionary<string, object> { { "Key", "Value" }, { "Key2", (long)1234 }, { "Key3", null } };
+            var headers = new Dictionary<string, object> { { "Key", "Value" }, { "Key2", (long)1234 }, { "Key3", null! } };
             var events = new[]
             {
                 new EventMessage
