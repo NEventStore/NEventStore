@@ -1,5 +1,11 @@
 # NEventStore Versions
 
+## 10.1.1
+
+### BugFix
+
+- Fixed Assemblies Version Numbers (AssemblyInfo files).
+
 ## 10.1.0
 
 - Improved `IEventStream` interface: `CommitChanges()` and `CommitChangesAsync()` now return `ICommit` instead of `void`.
