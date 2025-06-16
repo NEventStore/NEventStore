@@ -4,7 +4,7 @@ namespace NEventStore.Serialization
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
     using NEventStore.Logging;
-
+#if NETFRAMEWORK
     public class BinarySerializer : ISerialize
     {
         private static readonly ILog Logger = LogFactory.BuildLogger(typeof (BinarySerializer));
@@ -22,4 +22,5 @@ namespace NEventStore.Serialization
             return (T) _formatter.Deserialize(input);
         }
     }
+#endif
 }

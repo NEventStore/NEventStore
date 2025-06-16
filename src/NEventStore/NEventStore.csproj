@@ -1,336 +1,78 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{03946843-F343-419C-88EF-3E446D08DFA6}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFrameworks>net462;net8</TargetFrameworks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>NEventStore</RootNamespace>
     <AssemblyName>NEventStore</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\NEventStore.snk</AssemblyOriginatorKeyFile>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\src\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
-    <TargetFrameworkProfile />
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\NEventStore.xml</DocumentationFile>
-    <NoWarn>1591</NoWarn>
-    <Prefer32Bit>false</Prefer32Bit>
+  <PropertyGroup>
+    <PackageId>NEventStore</PackageId>
+    <Title>NEventStore</Title>
+    <Authors>NEventStore Dev Team</Authors>
+    <PackageProjectUrl>http://neventstore.org</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Description>The purpose of the EventStore is to represent a series of events as a stream. NEventStore is a persistence agnostic event sourcing library for .NET. The primary use is most often associated with CQRS.</Description>
+    <PackageTags>events, event sourcing, cqrs, storage, persistence, database</PackageTags>
+    <PackageReleaseNotes>v6.x is not backwards compatible with v5.x. Please check the release notes on github.</PackageReleaseNotes>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\NEventStore.xml</DocumentationFile>
-    <NoWarn>1591</NoWarn>
-    <Prefer32Bit>false</Prefer32Bit>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8'">
+    <DefineConstants Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">TRACE;DEBUG;NETSTANDARD2_1</DefineConstants>
+    <DefineConstants Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">NETSTANDARD2_1</DefineConstants>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="..\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="..\GlobalSuppressions.cs">
-      <Link>Properties\GlobalSuppressions.cs</Link>
-    </Compile>
-    <Compile Include="..\VersionAssemblyInfo.cs">
-      <Link>Properties\VersionAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="AccessSnapshotsExtensions.cs" />
-    <Compile Include="AsynchronousDispatchSchedulerWireup.cs" />
-    <Compile Include="Bucket.cs" />
-    <Compile Include="Client\Messages.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Messages.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Client\PollingClient.cs" />
-    <Compile Include="Client\ClientBase.cs" />
-    <Compile Include="Client\IObserveCommits.cs" />
-    <Compile Include="Client\TaskHelpers.cs" />
-    <Compile Include="CommitAttemptExtensions.cs" />
-    <Compile Include="CommitEqualityComparer.cs" />
-    <Compile Include="CommitEventsExtensions.cs" />
-    <Compile Include="CommonDomain\Core\AggregateBase.cs" />
-    <Compile Include="CommonDomain\Core\ConflictDetector.cs" />
-    <Compile Include="CommonDomain\Core\ConventionEventRouter.cs" />
-    <Compile Include="CommonDomain\Core\ExtensionMethods.cs" />
-    <Compile Include="CommonDomain\Core\HandlerForDomainEventNotFoundException.cs" />
-    <Compile Include="CommonDomain\Core\RegistrationEventRouter.cs" />
-    <Compile Include="CommonDomain\Core\SagaBase.cs" />
-    <Compile Include="CommonDomain\IAggregate.cs" />
-    <Compile Include="CommonDomain\IDetectConflicts.cs" />
-    <Compile Include="CommonDomain\IMemento.cs" />
-    <Compile Include="CommonDomain\IRouteEvents.cs" />
-    <Compile Include="CommonDomain\ISaga.cs" />
-    <Compile Include="CommonDomain\Persistence\ConflictingCommandException.cs" />
-    <Compile Include="CommonDomain\Persistence\EventStore\EventStoreRepository.cs" />
-    <Compile Include="CommonDomain\Persistence\EventStore\ExceptionMessages.Designer.cs" />
-    <Compile Include="CommonDomain\Persistence\EventStore\SagaEventStoreRepository.cs" />
-    <Compile Include="CommonDomain\Persistence\IConstructAggregates.cs" />
-    <Compile Include="CommonDomain\Persistence\IConstructSagas.cs" />
-    <Compile Include="CommonDomain\Persistence\IRepository.cs" />
-    <Compile Include="CommonDomain\Persistence\ISagaRepository.cs" />
-    <Compile Include="CommonDomain\Persistence\PersistenceException.cs" />
-    <Compile Include="CommonDomain\Persistence\RepositoryExtensions.cs" />
-    <Compile Include="CommonDomain\Persistence\SagaRepositoryExtensions.cs" />
-    <Compile Include="CommonDomain\StringExtensions.cs" />
-    <Compile Include="ConcurrencyException.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Conversion\EventUpconverterPipelineHook.cs" />
-    <Compile Include="Diagnostics\PerformanceCounterPersistenceEngine.cs" />
-    <Compile Include="Diagnostics\PerformanceCounters.cs" />
-    <Compile Include="DispatcherSchedulerStartup.cs" />
-    <Compile Include="Dispatcher\AsynchronousDispatchScheduler.cs" />
-    <Compile Include="Dispatcher\DelegateMessageDispatcher.cs" />
-    <Compile Include="Dispatcher\IDispatchCommits.cs" />
-    <Compile Include="Dispatcher\NoopDispatcherScheduler.cs" />
-    <Compile Include="Dispatcher\NullDispatcher.cs" />
-    <Compile Include="Dispatcher\SynchronousDispatchScheduler.cs" />
-    <Compile Include="DispatchSchedulerPipelineHook.cs" />
-    <Compile Include="EventUpconverterWireup.cs" />
-    <Compile Include="EventUpconverterWireupExtensions.cs" />
-    <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="Conversion\IUpconvertEvents.cs" />
-    <Compile Include="Guard.cs" />
-    <Compile Include="ICheckpoint.cs" />
-    <Compile Include="ICommit.cs" />
-    <Compile Include="ImmutableCollection.cs" />
-    <Compile Include="LongCheckpoint.cs" />
-    <Compile Include="ISnapshot.cs" />
-    <Compile Include="LoggingWireupExtensions.cs" />
-    <Compile Include="Logging\ConsoleWindowLogger.cs" />
-    <Compile Include="Logging\ExtensionMethods.cs" />
-    <Compile Include="Logging\ILog.cs" />
-    <Compile Include="IPipelineHook.cs" />
-    <Compile Include="Logging\LogFactory.cs" />
-    <Compile Include="Conversion\MultipleConvertersFoundException.cs" />
-    <Compile Include="Logging\OutputWindowLogger.cs" />
-    <Compile Include="Messages.Designer.cs">
-      <DependentUpon>Messages.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="NanoContainer.cs" />
-    <Compile Include="NoopDispatchSchedulerWireup.cs" />
-    <Compile Include="OptimisticEventStore.cs" />
-    <Compile Include="OptimisticEventStream.cs" />
-    <Compile Include="OptimisticPipelineHook.cs" />
-    <Compile Include="PersistenceWireup.cs" />
-    <Compile Include="PersistenceWireupExtensions.cs" />
-    <Compile Include="Persistence\Commit.cs" />
-    <Compile Include="Persistence\InMemory\InMemoryPersistenceEngine.cs" />
-    <Compile Include="Persistence\InMemory\InMemoryPersistenceFactory.cs" />
-    <Compile Include="Persistence\IStreamHead.cs" />
-    <Compile Include="Persistence\PersistStreamsExtensions.cs" />
-    <Compile Include="Persistence\PipelineHooksAwarePersistanceDecorator.cs" />
-    <Compile Include="Persistence\Sql\CommitExtensions.cs" />
-    <Compile Include="Persistence\Sql\ConfigurationConnectionFactory.cs" />
-    <Compile Include="Persistence\Sql\ConnectionScope.cs" />
-    <Compile Include="Persistence\Sql\DelegateStreamIdHasher.cs" />
-    <Compile Include="Persistence\Sql\ExtensionMethods.cs" />
-    <Compile Include="Persistence\Sql\IConnectionFactory.cs" />
-    <Compile Include="Persistence\Sql\IDbStatement.cs" />
-    <Compile Include="Persistence\Sql\ISqlDialect.cs" />
-    <Compile Include="Persistence\Sql\IStreamIdHasher.cs" />
-    <Compile Include="Persistence\Sql\Messages.Designer.cs">
-      <DependentUpon>Messages.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Persistence\Sql\Sha1StreamIdHasher.cs" />
-    <Compile Include="Persistence\Sql\SnapshotExtensions.cs" />
-    <Compile Include="Persistence\Sql\SqlDialects\CommonDbStatement.cs" />
-    <Compile Include="Persistence\Sql\SqlDialects\CommonSqlDialect.cs" />
-    <Compile Include="Persistence\Sql\SqlDialects\CommonSqlStatements.Designer.cs">
-      <DependentUpon>CommonSqlStatements.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Persistence\Sql\SqlDialects\DelimitedDbStatement.cs" />
-    <Compile Include="Persistence\Sql\SqlDialects\MsSqlDialect.cs" />
-    <Compile Include="Persistence\Sql\SqlDialects\MsSqlStatements.Designer.cs">
-      <DependentUpon>MsSqlStatements.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Persistence\Sql\SqlDialects\MySqlDialect.cs" />
-    <Compile Include="Persistence\Sql\SqlDialects\MySqlStatements.Designer.cs">
-      <DependentUpon>MySqlStatements.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Persistence\Sql\SqlDialects\NextPageDelegate.cs" />
-    <Compile Include="Persistence\Sql\SqlDialects\OracleDbStatement.cs" />
-    <Compile Include="Persistence\Sql\SqlDialects\OracleNativeDialect.cs" />
-    <Compile Include="Persistence\Sql\SqlDialects\OracleNativeStatements.Designer.cs">
-      <DependentUpon>OracleNativeStatements.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Persistence\Sql\SqlDialects\PagedEnumerationCollection.cs" />
-    <Compile Include="Persistence\Sql\SqlDialects\PostgreSqlDialect.cs" />
-    <Compile Include="Persistence\Sql\SqlDialects\PostgreSqlStatements.Designer.cs">
-      <DependentUpon>PostgreSqlStatements.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Persistence\Sql\SqlDialects\SqliteDialect.cs" />
-    <Compile Include="Persistence\Sql\SqlDialects\SqliteStatements.Designer.cs">
-      <DependentUpon>SqliteStatements.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Persistence\Sql\SqlPersistenceEngine.cs" />
-    <Compile Include="Persistence\Sql\SqlPersistenceFactory.cs" />
-    <Compile Include="Persistence\Sql\StreamHeadExtensions.cs" />
-    <Compile Include="Persistence\Sql\ThreadScope.cs" />
-    <Compile Include="Persistence\Sql\UniqueKeyViolationException.cs" />
-    <Compile Include="Persistence\StorageUnavailableException.cs" />
-    <Compile Include="Persistence\StreamHeadEqualityComparer.cs" />
-    <Compile Include="PipelineHookBase.cs" />
-    <Compile Include="PipelineHookExtensions.cs" />
-    <Compile Include="Resources.Designer.cs">
-      <DependentUpon>Resources.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="SnapshotSerializationWireup.cs" />
-    <Compile Include="SerializationWireup.cs" />
-    <Compile Include="SerializationWireupExtensions.cs" />
-    <Compile Include="Serialization\BinarySerializer.cs" />
-    <Compile Include="Serialization\ByteStreamDocumentSerializer.cs" />
-    <Compile Include="Serialization\DocumentObjectSerializer.cs" />
-    <Compile Include="Serialization\GzipSerializer.cs" />
-    <Compile Include="Serialization\IDocumentSerializer.cs" />
-    <Compile Include="Serialization\IndisposableStream.cs" />
-    <Compile Include="Serialization\BsonSerializer.cs" />
-    <Compile Include="Serialization\ISerializeSnapshots.cs" />
-    <Compile Include="Serialization\JsonSerializer.cs" />
-    <Compile Include="Serialization\Messages.Designer.cs">
-      <DependentUpon>Messages.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Serialization\RijndaelSerializer.cs" />
-    <Compile Include="Persistence\Sql\SqlPersistenceWireup.cs" />
-    <Compile Include="Persistence\Sql\SqlPersistenceWireupExtensions.cs" />
-    <Compile Include="StoreEventsExtensions.cs" />
-    <Compile Include="StreamNotFoundException.cs" />
-    <Compile Include="Dispatcher\IScheduleDispatches.cs" />
-    <Compile Include="ICommitEvents.cs" />
-    <Compile Include="IEventStream.cs" />
-    <Compile Include="IStoreEvents.cs" />
-    <Compile Include="EventMessage.cs" />
-    <Compile Include="CommitAttempt.cs" />
-    <Compile Include="IAccessSnapshots.cs" />
-    <Compile Include="Persistence\IPersistenceFactory.cs" />
-    <Compile Include="Serialization\ISerialize.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DuplicateCommitException.cs" />
-    <Compile Include="Persistence\IPersistStreams.cs" />
-    <Compile Include="Persistence\StorageException.cs" />
-    <Compile Include="Serialization\SerializationExtensions.cs" />
-    <Compile Include="Persistence\StreamHead.cs" />
-    <Compile Include="Snapshot.cs" />
-    <Compile Include="DispatcherWireupExtensions.cs" />
-    <Compile Include="SynchronousDispatchSchedulerWireup.cs" />
-    <Compile Include="SystemTime.cs" />
-    <Compile Include="Wireup.cs" />
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net462'">
+    <DefineConstants Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">TRACE;DEBUG</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8'">
+    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="4.3.0" />
+    <PackageReference Include="System.Threading.Thread" Version="4.3.0" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\CustomDictionary.xml">
-      <Link>Properties\CustomDictionary.xml</Link>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.configuration" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Runtime.Serialization" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Client\Messages.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CommonDomain\Persistence\EventStore\ExceptionMessages.resx" />
-    <EmbeddedResource Include="Messages.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Persistence\Sql\Messages.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Persistence\Sql\SqlDialects\CommonSqlStatements.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>CommonSqlStatements.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Persistence\Sql\SqlDialects\MsSqlStatements.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>MsSqlStatements.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Persistence\Sql\SqlDialects\MySqlStatements.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>MySqlStatements.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Persistence\Sql\SqlDialects\OracleNativeStatements.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>OracleNativeStatements.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Persistence\Sql\SqlDialects\PostgreSqlStatements.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>PostgreSqlStatements.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Persistence\Sql\SqlDialects\SqliteStatements.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>SqliteStatements.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Serialization\Messages.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <Content Include="..\CustomDictionary.xml" Link="Properties\CustomDictionary.xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json">
-      <Version>13.0.1</Version>
-    </PackageReference>
-    <PackageReference Include="Rx-Linq">
-      <Version>2.1.30214</Version>
-    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.6" />
+    <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="9.0.6" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+    <PackageReference Include="System.Reactive.Linq" Version="3.1.1" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+  <ItemGroup>
+    <Compile Update="Messages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Messages.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Serialization\Messages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Messages.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Messages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Serialization\Messages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>
