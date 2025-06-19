@@ -3,5 +3,10 @@
     <LangVersion>13.0</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>http://neventstore.org</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/NEventStore/NEventStore</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Copyright>NEventStore Dev Team</Copyright>
   </PropertyGroup>
 </Project>

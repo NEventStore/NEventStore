@@ -9,7 +9,6 @@
     <PackageId>NEventStore.Serialization.Binary</PackageId>
     <Title>NEventStore Binary Serializers</Title>
     <Authors>NEventStore Dev Team</Authors>
-    <PackageProjectUrl>http://neventstore.org</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Description>This package contains Bson serializers for NEventStore library. These serializers were removed from the core package to limit dependencies from external libraries.</Description>
     <PackageTags>events, event sourcing, cqrs, storage, persistence, database</PackageTags>
@@ -22,12 +21,8 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <ContinuousIntegrationBuild Condition="'$(TF_BUILD)' == 'true'">True</ContinuousIntegrationBuild>
     <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">True</ContinuousIntegrationBuild>
-    <Copyright>NEventStore Dev Team</Copyright>
     <PackageIcon>icon.png</PackageIcon>
     <PackageReadmeFile>Readme.md</PackageReadmeFile>
-    <RepositoryUrl>https://github.com/NEventStore/NEventStore</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageLicenseFile>license.txt</PackageLicenseFile>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
     <AnalysisLevel>latest-recommended</AnalysisLevel>
@@ -37,10 +32,6 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\icon.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-    <None Include="..\..\license.txt">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
