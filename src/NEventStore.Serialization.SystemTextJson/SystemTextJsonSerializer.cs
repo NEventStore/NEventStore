@@ -1,20 +1,22 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using NEventStore.Logging;
 using Microsoft.Extensions.Logging;
+using NEventStore.Logging;
 using NEventStore.Serialization.Json;
+using NEventStore.Serialization.SystemTextJson.Converters;
 
 namespace NEventStore.Serialization.SystemTextJson
 {
     /// <summary>
-    /// The System.Text.Json JSON serializer.
+    /// JSON serializer using the System.Text.Json library
     /// </summary>
     public class SystemTextJsonSerializer : ISerialize
     {
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(SystemTextJsonSerializer));
 
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
+        private readonly JsonSerializerOptions _writeOptions;
+        private readonly JsonSerializerOptions _readOptions;
 
         /// <summary>
         /// NEventStore Json Serialization using System.Text.Json
@@ -23,12 +25,28 @@ namespace NEventStore.Serialization.SystemTextJson
         /// Allows to customize some Serializer options, however some of them will
         /// be under control of this specific implementation and will be overwritten no matter
         /// what the user specifies:
-        /// - DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        /// <br/>
+        /// <br/>
+        /// - <see cref="JsonSerializerOptions.DefaultIgnoreCondition"/> = <see cref="JsonIgnoreCondition.WhenWritingNull" />
+        /// <br/>
+        /// - Always include <see cref="SystemTextJsonTypeInfoResolver"/> in <see cref="JsonSerializerOptions.TypeInfoResolverChain"/>
+        /// <br/>
+        /// - Always include <see cref="SnapshotJsonConverter"/> and <see cref="EventMessageJsonConverter"/> in
+        /// <see cref="JsonSerializerOptions.Converters"/> when serializing
+        /// - Always include <see cref="DictionaryOfStringAndObjectJsonConverter"/> in
+        /// <see cref="JsonSerializerOptions.Converters"/> when deserializing
         /// </param>
         public SystemTextJsonSerializer(JsonSerializerOptions? jsonSerializerOptions)
         {
-            _jsonSerializerOptions = jsonSerializerOptions ?? new JsonSerializerOptions();
-            _jsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+            _writeOptions = new JsonSerializerOptions(jsonSerializerOptions ?? new JsonSerializerOptions());
+            _writeOptions.TypeInfoResolverChain.Insert(0, new SystemTextJsonTypeInfoResolver());
+            _writeOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+            _writeOptions.Converters.Add(new SnapshotJsonConverter());
+            _writeOptions.Converters.Add(new EventMessageJsonConverter());
+
+            // We don't need to include the Dictionary<string, object> converter when writing, only when reading
+            _readOptions = new JsonSerializerOptions(_writeOptions);
+            _readOptions.Converters.Add(new DictionaryOfStringAndObjectJsonConverter());
         }
 
         /// <inheritdoc/>
@@ -61,7 +79,7 @@ namespace NEventStore.Serialization.SystemTextJson
         /// </summary>
         protected virtual void Serialize(Utf8JsonWriter writer, object graph)
         {
-            JsonSerializer.Serialize(writer, graph, _jsonSerializerOptions);
+            JsonSerializer.Serialize(writer, graph, _writeOptions);
         }
 
         /// <summary>
@@ -69,7 +87,7 @@ namespace NEventStore.Serialization.SystemTextJson
         /// </summary>
         protected virtual T? Deserialize<T>(Utf8JsonReader reader)
         {
-            return JsonSerializer.Deserialize<T>(ref reader, _jsonSerializerOptions);
+            return JsonSerializer.Deserialize<T>(ref reader, _readOptions);
         }
     }
 }
