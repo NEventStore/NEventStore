@@ -1,5 +1,10 @@
 # NEventStore Versions
 
+## vNext
+
+- Updated MessagePack serializer to 3.1.4
+- Updated Newtonsoft.Json to 14.0.4
+
 ## 10.1.1
 
 ### BugFix
