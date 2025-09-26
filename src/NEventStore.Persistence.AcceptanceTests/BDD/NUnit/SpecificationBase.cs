@@ -2,6 +2,8 @@
 
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using Assert = NUnit.Framework.Assert;
+using TestContext = NUnit.Framework.TestContext;
 
 namespace NEventStore.Persistence.AcceptanceTests.BDD
 {

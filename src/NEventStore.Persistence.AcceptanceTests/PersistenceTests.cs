@@ -6,9 +6,11 @@ using NEventStore.Persistence.AcceptanceTests.BDD;
 using FluentAssertions;
 #if MSTEST
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 #endif
 #if NUNIT
 using NUnit.Framework;
+using Assert = NUnit.Framework.Assert;
 #endif
 #if XUNIT
 using Xunit;
