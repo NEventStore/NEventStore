@@ -38,4 +38,4 @@
 Before making changes, check for additional rules that override the general conventions above when in conflict:
 
 - **Scoped instructions** live in [`.github/instructions/`](.github/instructions/). Each `*.instructions.md` file declares the file glob it applies to in its `applyTo` front-matter field. Read any file whose glob matches the area you are changing.
-- **Reusable skills** (step-by-step workflows for recurring tasks) live in [`.github/skills/`](.github/skills/). Each skill is a subdirectory containing a `SKILL.md`. Read the relevant skill before performing the task it describes.
+- **Reusable skills** (step-by-step workflows for recurring tasks) live in [`.agents/skills/`](.agents/skills/). Each skill is a subdirectory containing a `SKILL.md`. Read the relevant skill before performing the task it describes.
