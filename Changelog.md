@@ -4,6 +4,7 @@
 
 - Updated MessagePack serializer to 3.1.4
 - Updated Newtonsoft.Json to 14.0.4
+- Refactor performance benchmarks into focused, low-noise scenarios [#523](https://github.com/NEventStore/NEventStore/issues/523)
 
 ## 10.1.1
 

@@ -113,7 +113,7 @@ namespace NEventStore.Persistence.AcceptanceTests.Async
             difference.Days.Should().Be(0);
             difference.Hours.Should().Be(0);
             difference.Minutes.Should().Be(0);
-            difference.Should().BeLessOrEqualTo(TimeSpan.FromSeconds(1));
+            difference.Should().BeLessThanOrEqualTo(TimeSpan.FromSeconds(1));
         }
 
         [Fact]
