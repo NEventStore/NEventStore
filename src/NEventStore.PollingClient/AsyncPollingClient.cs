@@ -14,7 +14,7 @@ namespace NEventStore.PollingClient
         /// During normal operations Commits might arrive out of order, or there can be holes in the sequence for whatever reason.
         /// In a rebuild scenario the stream is stable and commits will be read in the correct order, holes can be safely skipped.
         /// </summary>
-        private class CommitSequencer : IAsyncObserver<ICommit>
+        private sealed class CommitSequencer : IAsyncObserver<ICommit>
         {
             private readonly AsyncPollingClientObserver _observer;
             private readonly ILogger _logger = LogFactory.BuildLogger(typeof(CommitSequencer));
@@ -33,17 +33,17 @@ namespace NEventStore.PollingClient
                 _observer.ProcessedCheckpoint = checkpoint;
             }
 
-            public Task OnCompletedAsync(CancellationToken cancellationToken)
+            public Task OnCompletedAsync(CancellationToken cancellationToken = default)
             {
                 return _observer.OnCompletedAsync(cancellationToken);
             }
 
-            public Task OnErrorAsync(Exception ex, CancellationToken cancellationToken)
+            public Task OnErrorAsync(Exception ex, CancellationToken cancellationToken = default)
             {
                 return _observer.OnErrorAsync(ex, cancellationToken);
             }
 
-            public Task<bool> OnNextAsync(ICommit value, CancellationToken cancellationToken)
+            public Task<bool> OnNextAsync(ICommit value, CancellationToken cancellationToken = default)
             {
                 if (value.CheckpointToken != _observer.ProcessedCheckpoint + 1)
                 {
@@ -74,7 +74,7 @@ namespace NEventStore.PollingClient
         /// - Track the last processed commit.
         /// - Track if the user request to stop the polling from inside the observer.
         /// </summary>
-        private class AsyncPollingClientObserver : IAsyncObserver<ICommit>
+        private sealed class AsyncPollingClientObserver : IAsyncObserver<ICommit>
         {
             private readonly IAsyncObserver<ICommit> _observer;
 
@@ -88,17 +88,17 @@ namespace NEventStore.PollingClient
             {
                 _observer = observer;
             }
-            public Task OnCompletedAsync(CancellationToken cancellationToken)
+            public Task OnCompletedAsync(CancellationToken cancellationToken = default)
             {
                 return _observer.OnCompletedAsync(cancellationToken);
             }
 
-            public Task OnErrorAsync(Exception ex, CancellationToken cancellationToken)
+            public Task OnErrorAsync(Exception ex, CancellationToken cancellationToken = default)
             {
                 return _observer.OnErrorAsync(ex, cancellationToken);
             }
 
-            public async Task<bool> OnNextAsync(ICommit value, CancellationToken cancellationToken)
+            public async Task<bool> OnNextAsync(ICommit value, CancellationToken cancellationToken = default)
             {
                 StopPolling = false;
                 var goOn = await _observer.OnNextAsync(value, cancellationToken).ConfigureAwait(false);
@@ -116,7 +116,7 @@ namespace NEventStore.PollingClient
         private Func<long, CancellationToken, Task>? _pollingFunc;
         private Int64 _checkpointToken;
         private CancellationTokenSource? _cancellationTokeSource;
-        private bool _stopped = true;
+        private Task? _pollingTask;
         private int _isPolling;
         private CommitSequencer? _commitSequencer;
 
@@ -209,35 +209,42 @@ namespace NEventStore.PollingClient
         private void StartPollingThread(CancellationToken cancellationToken)
         {
             if (_pollingFunc == null) return;
-            _stopped = false;
-            Task.Run(async () =>
-            {
-                try
-                {
-                    while (!cancellationToken.IsCancellationRequested && !_commitObserver.StopPolling)
-                    {
-                        await PollAsync(cancellationToken).ConfigureAwait(false);
+            // Keep a direct handle to the worker task so StopAsync/Dispose can await the actual
+            // polling loop instead of repeatedly sleeping and hoping the worker has observed the
+            // cancellation request. That makes shutdown bounded by the in-flight poll itself,
+            // which is the real lifetime contract callers care about.
+            _pollingTask = Task.Run(() => PollingLoopAsync(cancellationToken), CancellationToken.None);
+        }
 
-                        if (!cancellationToken.IsCancellationRequested)
-                        {
-                            await Task.Delay(_waitInterval, cancellationToken).ConfigureAwait(false);
-                        }
-                    }
-                }
-                finally
+        private async Task PollingLoopAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                while (!cancellationToken.IsCancellationRequested && !_commitObserver.StopPolling)
                 {
-                    _stopped = true;
-                }
-            }, cancellationToken)
-                .ContinueWith(t =>
-                {
-                    if (t.IsFaulted)
+                    // Poll again immediately after consuming commits so catch-up paths can drain the
+                    // store as fast as the observer allows. The idle delay is only useful when the
+                    // previous poll did not advance the checkpoint and we genuinely need to back off.
+                    bool madeProgress = await PollAsyncInternal(cancellationToken).ConfigureAwait(false);
+                    if (!madeProgress && !cancellationToken.IsCancellationRequested && !_commitObserver.StopPolling)
                     {
-                        var ex = t.Exception.Flatten().InnerException;
-                        _logger.LogError($"Error during Poll, first exception: {ex.Message}.\n{ex}");
-                        LastPollingError = ex.Message;
+                        await Task.Delay(_waitInterval, cancellationToken).ConfigureAwait(false);
                     }
-                }, cancellationToken);
+                }
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                // Cancellation is the normal stop path. Swallow it here so StopAsync can await the
+                // worker task directly without turning routine shutdown into an error.
+            }
+            catch (Exception ex)
+            {
+                if (_logger.IsEnabled(LogLevel.Error))
+                {
+                    _logger.LogError(ex, "Error during Polling operation");
+                }
+                LastPollingError = ex.Message;
+            }
         }
 
         /// <summary>
@@ -245,12 +252,26 @@ namespace NEventStore.PollingClient
         /// </summary>
         public async Task StopAsync()
         {
-            _cancellationTokeSource?.Cancel();
-            _cancellationTokeSource = null;
+            var cancellationTokenSource = _cancellationTokeSource;
+            var pollingTask = _pollingTask;
 
-            while (!_stopped)
+            cancellationTokenSource?.Cancel();
+            _cancellationTokeSource = null;
+            _pollingTask = null;
+
+            if (pollingTask == null)
             {
-                await Task.Delay(100).ConfigureAwait(false);
+                return;
+            }
+
+            try
+            {
+                await pollingTask.ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                // The polling loop swallows cooperative cancellation, but keep this catch to avoid
+                // leaking a cancellation fault if a future refactor changes where the exception is observed.
             }
         }
 
@@ -259,22 +280,32 @@ namespace NEventStore.PollingClient
         /// </summary>
         public async Task PollAsync(CancellationToken token)
         {
+            await PollAsyncInternal(token).ConfigureAwait(false);
+        }
+
+        private async Task<bool> PollAsyncInternal(CancellationToken token)
+        {
             if (Interlocked.CompareExchange(ref _isPolling, 1, 0) == 0)
             {
                 try
                 {
                     LastActivityTimestamp = DateTime.UtcNow;
+                    bool madeProgress = false;
                     if (_commitSequencer == null)
                     {
+                        long checkpointBeforePoll = _checkpointToken;
                         await _pollingFunc!(_checkpointToken, token).ConfigureAwait(false);
                         _checkpointToken = _commitObserver.ProcessedCheckpoint;
+                        madeProgress = _checkpointToken != checkpointBeforePoll;
                     }
                     else
                     {
                         do
                         {
+                            long checkpointBeforePoll = _checkpointToken;
                             await _pollingFunc!(_checkpointToken, token).ConfigureAwait(false);
                             _checkpointToken = _commitObserver.ProcessedCheckpoint;
+                            madeProgress |= _checkpointToken != checkpointBeforePoll;
                             if (_commitObserver.StopPolling)
                             {
                                 break;
@@ -287,12 +318,16 @@ namespace NEventStore.PollingClient
                         }
                         while (!token.IsCancellationRequested && _commitSequencer.NumOfRetries > 0);
                     }
+
+                    return madeProgress;
                 }
                 finally
                 {
                     Interlocked.Exchange(ref _isPolling, 0);
                 }
             }
+
+            return false;
         }
 
         private Boolean _isDisposed;
@@ -317,7 +352,7 @@ namespace NEventStore.PollingClient
             }
             if (isDisposing)
             {
-                StopAsync().Wait();
+                StopAsync().GetAwaiter().GetResult();
             }
             _isDisposed = true;
         }
