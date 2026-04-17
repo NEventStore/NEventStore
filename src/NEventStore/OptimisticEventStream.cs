@@ -24,7 +24,14 @@ namespace NEventStore
         private readonly ImmutableDictionary<string, object> _committedHeadersImmutableWrapper;
         private readonly List<EventMessage> _events = [];
         private readonly ImmutableCollection<EventMessage> _eventsImmutableWrapper;
-        private readonly HashSet<Guid> _identifiers = [];
+        // Duplicate commit identifiers are enforced at the persistence boundary rather than inside
+        // this stream instance. A stream can be reopened from any revision range, so the commits
+        // loaded into this object are not guaranteed to be the complete history for the stream.
+        // Keeping a local cache of loaded CommitIds would therefore only reject the subset of
+        // duplicates that happened to be observed by this instance and would miss duplicates from
+        // earlier unseen commits. The persistence engine is the only component that can validate
+        // the full BucketId + StreamId + CommitId identity across reopened streams and concurrent
+        // writers, so the stream delegates that invariant there.
         private readonly ICommitEvents _persistence;
         private readonly ICommitEventsAsync _persistenceAsync;
         private bool _disposed;
@@ -217,11 +224,6 @@ namespace NEventStore
                     ));
             }
 
-            if (_identifiers.Contains(commitId))
-            {
-                throw new DuplicateCommitException(String.Format(CultureInfo.InvariantCulture, Messages.DuplicateCommitIdException, StreamId, BucketId, commitId));
-            }
-
             if (!HasChanges())
             {
                 return null;
@@ -268,11 +270,6 @@ namespace NEventStore
                     BucketId,
                     StreamRevision
                     ));
-            }
-
-            if (_identifiers.Contains(commitId))
-            {
-                throw new DuplicateCommitException(String.Format(CultureInfo.InvariantCulture, Messages.DuplicateCommitIdException, StreamId, BucketId, commitId));
             }
 
             if (!HasChanges())
@@ -347,8 +344,6 @@ namespace NEventStore
 
         private void InnerPopulateStream(int minRevision, int maxRevision, ICommit commit)
         {
-            _identifiers.Add(commit.CommitId);
-
             int currentRevision = commit.StreamRevision - commit.Events.Count + 1;
             // just in case the persistence returned more commits than it should be
             if (currentRevision > maxRevision)

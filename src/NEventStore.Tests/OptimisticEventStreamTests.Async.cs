@@ -680,50 +680,6 @@ namespace NEventStore.Async
         }
     }
 
-    /// <summary>
-    ///     This behavior is primarily to support a NoSQL storage solution where CommitId is not being used as the "primary key"
-    ///     in a NoSQL environment, we'll most likely use StreamId + CommitSequence, which also enables optimistic concurrency.
-    /// </summary>
-#if MSTEST
-    [TestClass]
-#endif
-    public class when_committing_with_an_identifier_that_was_previously_read : on_the_event_stream
-    {
-        private ICommit[]? _committed;
-        private Guid _duplicateCommitId;
-        private Exception? _thrown;
-
-        protected override Task ContextAsync()
-        {
-            _committed = [BuildCommitStub(1, 1, 1, 1)];
-            _duplicateCommitId = _committed[0].CommitId;
-
-            A.CallTo(() => PersistenceAsync.GetFromAsync(BucketId, StreamId, 0, int.MaxValue, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None))
-               .ReturnsLazily(async (string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellation) =>
-               {
-                   foreach (var _commit in _committed)
-                   {
-                       await asyncObserver.OnNextAsync(_commit, cancellation).ConfigureAwait(false);
-                   }
-                   await asyncObserver.OnCompletedAsync(cancellation).ConfigureAwait(false);
-               });
-
-            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, PersistenceAsync);
-            return Stream.InitializeAsync(0, int.MaxValue, CancellationToken.None);
-        }
-
-        protected override async Task BecauseAsync()
-        {
-            _thrown = await Catch.ExceptionAsync(() => Stream.CommitChangesAsync(_duplicateCommitId, CancellationToken.None)).ConfigureAwait(false);
-        }
-
-        [Fact]
-        public void should_throw_a_DuplicateCommitException()
-        {
-            _thrown.Should().BeOfType<DuplicateCommitException>();
-        }
-    }
-
 #if MSTEST
     [TestClass]
 #endif

@@ -644,42 +644,6 @@ namespace NEventStore
         }
     }
 
-    /// <summary>
-    ///     This behavior is primarily to support a NoSQL storage solution where CommitId is not being used as the "primary key"
-    ///     in a NoSQL environment, we'll most likely use StreamId + CommitSequence, which also enables optimistic concurrency.
-    /// </summary>
-#if MSTEST
-    [TestClass]
-#endif
-    public class when_committing_with_an_identifier_that_was_previously_read : on_the_event_stream
-    {
-        private ICommit[]? _committed;
-        private Guid _duplicateCommitId;
-        private Exception? _thrown;
-
-        protected override void Context()
-        {
-            _committed = [BuildCommitStub(1, 1, 1, 1)];
-            _duplicateCommitId = _committed[0].CommitId;
-
-            A.CallTo(() => Persistence.GetFrom(BucketId, StreamId, 0, int.MaxValue)).Returns(_committed);
-
-            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, PersistenceAsync);
-            Stream.Initialize(0, int.MaxValue);
-        }
-
-        protected override void Because()
-        {
-            _thrown = Catch.Exception(() => Stream.CommitChanges(_duplicateCommitId));
-        }
-
-        [Fact]
-        public void should_throw_a_DuplicateCommitException()
-        {
-            _thrown.Should().BeOfType<DuplicateCommitException>();
-        }
-    }
-
 #if MSTEST
     [TestClass]
 #endif
