@@ -9,6 +9,7 @@
 - Optimize commit-attempt construction in `OptimisticEventStream` [#525](https://github.com/NEventStore/NEventStore/issues/525)
 - Rework in-memory persistence reads to use direct indexes instead of full-store scans [#526](https://github.com/NEventStore/NEventStore/issues/526)
 - Replace scan-heavy stream-head and snapshot lookups in the in-memory engine [#527](https://github.com/NEventStore/NEventStore/issues/527)
+- Replace linked-list event storage in `OptimisticEventStream` with allocation-efficient list storage [#528](https://github.com/NEventStore/NEventStore/issues/528)
 
 ## 10.1.1
 

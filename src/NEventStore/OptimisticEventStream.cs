@@ -13,11 +13,16 @@ namespace NEventStore
     public sealed class OptimisticEventStream : IEventStream
     {
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(OptimisticEventStream));
-        private readonly ICollection<EventMessage> _committed = new LinkedList<EventMessage>();
+        // This stream mostly appends events, counts them, and copies them into arrays when building commit
+        // attempts. A contiguous List<T> matches that access pattern better than a linked list because it
+        // avoids one allocation per node and makes the eventual CopyTo path cheaper. The public contract
+        // still stays ICollection<EventMessage> through the immutable wrappers, so callers do not observe
+        // the storage swap.
+        private readonly List<EventMessage> _committed = [];
         private readonly ImmutableCollection<EventMessage> _committedImmutableWrapper;
         private readonly Dictionary<string, object> _committedHeaders = [];
         private readonly ImmutableDictionary<string, object> _committedHeadersImmutableWrapper;
-        private readonly ICollection<EventMessage> _events = new LinkedList<EventMessage>();
+        private readonly List<EventMessage> _events = [];
         private readonly ImmutableCollection<EventMessage> _eventsImmutableWrapper;
         private readonly HashSet<Guid> _identifiers = [];
         private readonly ICommitEvents _persistence;
@@ -333,6 +338,7 @@ namespace NEventStore
         private void PopulateStream(int minRevision, int maxRevision, IEnumerable<ICommit> commits)
         {
             _isPartialStream = false;
+            PreSizeCommittedEventsBuffer(commits, minRevision, maxRevision);
             foreach (var commit in commits ?? [])
             {
                 InnerPopulateStream(minRevision, maxRevision, commit);
@@ -363,6 +369,7 @@ namespace NEventStore
             CommitSequence = commit.CommitSequence;
 
             CopyToCommittedHeaders(commit);
+            EnsureCommittedCapacityForRange(currentRevision, commit.Events.Count, minRevision, maxRevision);
             CopyToEvents(minRevision, maxRevision, currentRevision, commit);
         }
 
@@ -400,6 +407,91 @@ namespace NEventStore
                 _committed.Add(@event);
                 StreamRevision = currentRevision - 1;
             }
+        }
+
+        private void PreSizeCommittedEventsBuffer(IEnumerable<ICommit> commits, int minRevision, int maxRevision)
+        {
+            // We only pre-size when the persistence result is already an in-memory collection that can be
+            // safely enumerated twice. That keeps the optimization local to known collections such as the
+            // in-memory engine and test stubs without forcing deferred providers into an unexpected second
+            // read just to estimate capacity.
+            if (commits is IReadOnlyCollection<ICommit> readOnlyCommits)
+            {
+                EnsureCommittedCapacity(readOnlyCommits, minRevision, maxRevision);
+                return;
+            }
+
+            if (commits is ICollection<ICommit> commitsCollection)
+            {
+                EnsureCommittedCapacity(commitsCollection, minRevision, maxRevision);
+            }
+        }
+
+        private void EnsureCommittedCapacity(IEnumerable<ICommit> commits, int minRevision, int maxRevision)
+        {
+            var additionalEventCount = 0;
+            foreach (var commit in commits)
+            {
+                var firstEventRevision = commit.StreamRevision - commit.Events.Count + 1;
+                additionalEventCount += CountEventsInRequestedRange(firstEventRevision, commit.Events.Count, minRevision, maxRevision);
+            }
+
+            if (additionalEventCount > 0)
+            {
+                SetCommittedCapacityAtLeast(_committed.Count + additionalEventCount);
+            }
+        }
+
+        private void EnsureCommittedCapacityForRange(int firstEventRevision, int eventCount, int minRevision, int maxRevision)
+        {
+            var additionalEventCount = CountEventsInRequestedRange(firstEventRevision, eventCount, minRevision, maxRevision);
+            if (additionalEventCount > 0)
+            {
+                SetCommittedCapacityAtLeast(_committed.Count + additionalEventCount);
+            }
+        }
+
+        private void SetCommittedCapacityAtLeast(int requiredCapacity)
+        {
+            // Capacity is used instead of List<T>.EnsureCapacity so the optimization still compiles on the
+            // older target frameworks supported by NEventStore. The growth strategy stays geometric rather
+            // than setting Capacity to the exact requested size because the async read path materializes one
+            // commit at a time. Exact growth would force a full-array copy on nearly every append there and
+            // turn stream opens back into an O(n^2) allocation pattern for long streams.
+            if (_committed.Capacity >= requiredCapacity)
+            {
+                return;
+            }
+
+            var newCapacity = _committed.Capacity == 0 ? 4 : _committed.Capacity;
+            while (newCapacity < requiredCapacity)
+            {
+                var doubledCapacity = newCapacity * 2;
+                if (doubledCapacity <= 0)
+                {
+                    newCapacity = requiredCapacity;
+                    break;
+                }
+
+                newCapacity = doubledCapacity;
+            }
+
+            _committed.Capacity = newCapacity;
+        }
+
+        private static int CountEventsInRequestedRange(int firstEventRevision, int eventCount, int minRevision, int maxRevision)
+        {
+            if (eventCount == 0)
+            {
+                return 0;
+            }
+
+            var lastEventRevision = firstEventRevision + eventCount - 1;
+            var firstIncludedRevision = Math.Max(firstEventRevision, minRevision);
+            var lastIncludedRevision = Math.Min(lastEventRevision, maxRevision);
+            return firstIncludedRevision > lastIncludedRevision
+                ? 0
+                : lastIncludedRevision - firstIncludedRevision + 1;
         }
 
         private bool HasChanges()

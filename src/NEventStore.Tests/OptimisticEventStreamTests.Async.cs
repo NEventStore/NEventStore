@@ -105,6 +105,45 @@ namespace NEventStore.Async
 #if MSTEST
     [TestClass]
 #endif
+    public class when_initializing_an_empty_stream : on_the_event_stream
+    {
+        protected override void Context()
+        {
+            A.CallTo(() => PersistenceAsync.GetFromAsync(BucketId, StreamId, 0, int.MaxValue, A<IAsyncObserver<ICommit>>.Ignored, CancellationToken.None))
+               .ReturnsLazily(static async (string _, string _, int _, int _, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellation) =>
+               {
+                   await asyncObserver.OnCompletedAsync(cancellation).ConfigureAwait(false);
+               });
+        }
+
+        protected override Task BecauseAsync()
+        {
+            Stream = new OptimisticEventStream(BucketId, StreamId, Persistence, PersistenceAsync);
+            return Stream.InitializeAsync(0, int.MaxValue, CancellationToken.None);
+        }
+
+        [Fact]
+        public void should_leave_the_stream_revision_at_zero()
+        {
+            Stream.StreamRevision.Should().Be(0);
+        }
+
+        [Fact]
+        public void should_leave_the_commit_sequence_at_zero()
+        {
+            Stream.CommitSequence.Should().Be(0);
+        }
+
+        [Fact]
+        public void should_not_materialize_any_committed_events()
+        {
+            Stream.CommittedEvents.Should().BeEmpty();
+        }
+    }
+
+#if MSTEST
+    [TestClass]
+#endif
     public class when_initializing_an_already_initialized_stream: on_the_event_stream
     {
         private const int MinRevision = 2;
@@ -585,6 +624,59 @@ namespace NEventStore.Async
         public void should_copy_the_uncommitted_headers_to_the_committed_stream_headers()
         {
             Stream.CommittedHeaders.Count.Should().Be(_headers.Count);
+        }
+    }
+
+#if MSTEST
+    [TestClass]
+#endif
+    public class when_committing_multiple_uncommitted_changes : on_the_event_stream
+    {
+        private readonly Guid _commitId = Guid.NewGuid();
+        private readonly EventMessage _firstEvent = new() { Body = "first" };
+        private readonly EventMessage _secondEvent = new() { Body = "second" };
+        private CommitAttempt? _constructed;
+
+        protected override void Context()
+        {
+            A.CallTo(() => PersistenceAsync.CommitAsync(A<CommitAttempt>._, CancellationToken.None))
+                .Invokes((CommitAttempt attempt, CancellationToken _) => _constructed = attempt)
+                .ReturnsLazily((CommitAttempt attempt, CancellationToken _) => new Commit(
+                    attempt.BucketId,
+                    attempt.StreamId,
+                    attempt.StreamRevision,
+                    attempt.CommitId,
+                    attempt.CommitSequence,
+                    attempt.CommitStamp,
+                    1,
+                    attempt.Headers,
+                    attempt.Events));
+
+            Stream.Add(_firstEvent);
+            Stream.Add(_secondEvent);
+        }
+
+        protected override Task BecauseAsync()
+        {
+            return Stream.CommitChangesAsync(_commitId, CancellationToken.None);
+        }
+
+        [Fact]
+        public void should_build_the_commit_with_all_uncommitted_events_in_order()
+        {
+            _constructed!.Events.Should().ContainInOrder(_firstEvent, _secondEvent);
+        }
+
+        [Fact]
+        public void should_move_all_committed_events_to_the_stream_in_order()
+        {
+            Stream.CommittedEvents.Should().ContainInOrder(_firstEvent, _secondEvent);
+        }
+
+        [Fact]
+        public void should_advance_the_stream_revision_by_the_number_of_committed_events()
+        {
+            Stream.StreamRevision.Should().Be(2);
         }
     }
 
