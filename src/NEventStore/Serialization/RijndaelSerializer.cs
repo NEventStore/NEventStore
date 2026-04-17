@@ -78,8 +78,27 @@ namespace NEventStore.Serialization
         private static byte[] GetInitVectorFromStream(Stream encrypted, int initVectorSizeInBytes)
         {
             var buffer = new byte[initVectorSizeInBytes];
-            encrypted.Read(buffer, 0, buffer.Length);
+            // The encrypted payload starts with the raw IV bytes. Consume that prefix completely
+            // before constructing the decrypting CryptoStream so the inner serializer always reads
+            // from decrypted payload bytes only, even when the underlying stream satisfies reads
+            // in smaller chunks than requested.
+            ReadExact(encrypted, buffer, initVectorSizeInBytes);
             return buffer;
+        }
+
+        private static void ReadExact(Stream stream, byte[] buffer, int count)
+        {
+            int offset = 0;
+            while (offset < count)
+            {
+                int read = stream.Read(buffer, offset, count - offset);
+                if (read == 0)
+                {
+                    throw new EndOfStreamException("Encrypted stream ended before the initialization vector was fully read.");
+                }
+
+                offset += read;
+            }
         }
     }
 }
