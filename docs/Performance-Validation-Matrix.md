@@ -54,6 +54,7 @@ These existing suites are the baseline reference points for all later performanc
 ### Issue #529: Audit duplicate commit-id enforcement before changing stream-level identifier tracking
 
 - Existing correctness suites: `PersistenceTests(.Async)` scenarios for persisting the same commit twice and reusing a commit ID on the same stream; `OptimisticEventStreamTests(.Async)` scenarios for committing with an identifier that was previously read.
+- Audit note: [Performance-DuplicateCommitId-Audit.md](C:/Work/NEventStore/NEventStore/docs/Performance-DuplicateCommitId-Audit.md) records the provider evidence and recommends removing `_identifiers` in a follow-up change, not in the audit issue itself.
 - Mandatory additions: No implementation change is allowed until an audit note documents duplicate-commit-ID guarantees for the in-repo in-memory persistence engine and any supported external providers. If the chosen direction changes `_identifiers` behavior, add sync and async tests for duplicate commit IDs after reopening a stream and after partial-stream reads.
 - Benchmark evidence: none for the audit-only issue. Any later implementation should reuse the write benchmarks from `#525`/`#528`.
 - Completion gate: provider evidence is documented, the follow-up direction is explicit, and the required follow-up tests are named before any code change lands.
