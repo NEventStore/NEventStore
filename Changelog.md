@@ -11,6 +11,7 @@
 - Replace scan-heavy stream-head and snapshot lookups in the in-memory engine [#527](https://github.com/NEventStore/NEventStore/issues/527)
 - Replace linked-list event storage in `OptimisticEventStream` with allocation-efficient list storage [#528](https://github.com/NEventStore/NEventStore/issues/528)
 - Audit duplicate commit-id enforcement and document the follow-up direction for `_identifiers` [#529](https://github.com/NEventStore/NEventStore/issues/529)
+- Lazily allocate `EventMessage.Headers` while preserving serializer and stream compatibility [#530](https://github.com/NEventStore/NEventStore/issues/530)
 
 ## 10.1.1
 

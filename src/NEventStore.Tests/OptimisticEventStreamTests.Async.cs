@@ -510,6 +510,7 @@ namespace NEventStore.Async
                     1,
                     attempt.Headers,
                     attempt.Events));
+            _uncommitted.Headers["event-key"] = "event-value";
             Stream.Add(_uncommitted);
             foreach (var item in _headers)
             {
@@ -583,6 +584,12 @@ namespace NEventStore.Async
         }
 
         [Fact]
+        public void should_preserve_event_message_headers_on_the_commit()
+        {
+            _constructed!.Events.First().Headers["event-key"].Should().Be("event-value");
+        }
+
+        [Fact]
         public void should_contain_a_copy_of_the_headers_provided()
         {
             _constructed!.Headers.Should().NotBeEmpty();
@@ -606,6 +613,12 @@ namespace NEventStore.Async
         public void should_add_the_uncommitted_events_the_committed_events()
         {
             Stream.CommittedEvents.Last().Should().Be(_uncommitted);
+        }
+
+        [Fact]
+        public void should_keep_event_message_headers_after_committing_to_the_stream()
+        {
+            Stream.CommittedEvents.Last().Headers["event-key"].Should().Be("event-value");
         }
 
         [Fact]

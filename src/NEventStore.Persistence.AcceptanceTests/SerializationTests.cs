@@ -109,6 +109,59 @@ namespace NEventStore.Serialization.AcceptanceTests
         {
             _deserialized!.Last().Body.Should().BeOfType<SimpleMessage>();
         }
+
+        [Fact]
+        public void should_deserialize_event_messages_with_a_non_null_headers_dictionary()
+        {
+            _deserialized!.Should().OnlyContain(message => message.Headers != null);
+        }
+
+        [Fact]
+        public void should_deserialize_event_messages_with_empty_headers_when_none_were_serialized()
+        {
+            _deserialized!.Should().OnlyContain(message => message.Headers.Count == 0);
+        }
+    }
+
+#if MSTEST
+    [TestClass]
+#endif
+    public class when_serializing_an_event_message_with_headers : SerializationConcern
+    {
+        private readonly EventMessage _message = new EventMessage { Body = "some value" };
+        private EventMessage? _deserialized;
+        private byte[]? _serialized;
+
+        protected override void Context()
+        {
+            _message.Headers["HeaderKey"] = "SomeValue";
+            _message.Headers["AnotherHeader"] = "AnotherValue";
+            _serialized = Serializer.Serialize(_message);
+        }
+
+        protected override void Because()
+        {
+            _deserialized = Serializer.Deserialize<EventMessage>(_serialized!);
+        }
+
+        [Fact]
+        public void should_deserialize_the_headers_dictionary()
+        {
+            _deserialized!.Headers.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void should_deserialize_the_same_number_of_headers()
+        {
+            _deserialized!.Headers.Count.Should().Be(_message.Headers.Count);
+        }
+
+        [Fact]
+        public void should_deserialize_string_header_values()
+        {
+            _deserialized!.Headers["HeaderKey"].Should().Be("SomeValue");
+            _deserialized.Headers["AnotherHeader"].Should().Be("AnotherValue");
+        }
     }
 
 #if MSTEST
