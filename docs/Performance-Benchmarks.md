@@ -2,6 +2,8 @@
 
 This document defines the focused benchmark regression set introduced for performance foundation issue `#523`.
 
+For the correctness-validation plan that maps these benchmarks to the later performance workstreams, see [Performance-Validation-Matrix.md](Performance-Validation-Matrix.md).
+
 ## Regression Set
 
 The benchmark project now covers these scenario groups:
