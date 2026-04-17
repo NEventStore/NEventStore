@@ -515,6 +515,8 @@ namespace NEventStore
         public void should_contain_a_copy_of_the_headers_provided()
         {
             _constructed!.Headers.Should().NotBeEmpty();
+            _constructed.Headers.Should().NotBeSameAs(Stream.UncommittedHeaders);
+            _constructed.Headers.Count.Should().Be(_headers.Count);
         }
 
         [Fact]

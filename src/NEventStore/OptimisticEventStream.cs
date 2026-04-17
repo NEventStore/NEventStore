@@ -368,9 +368,9 @@ namespace NEventStore
 
         private void CopyToCommittedHeaders(ICommit commit)
         {
-            foreach (var key in commit.Headers.Keys)
+            foreach (var header in commit.Headers)
             {
-                _committedHeaders[key] = commit.Headers[key];
+                _committedHeaders[header.Key] = header.Value;
             }
         }
 
@@ -461,6 +461,7 @@ namespace NEventStore
             {
                 Logger.LogTrace(Resources.BuildingCommitAttempt, commitId, StreamId, BucketId);
             }
+
             return new CommitAttempt(
                 BucketId,
                 StreamId,
@@ -468,8 +469,26 @@ namespace NEventStore
                 commitId,
                 CommitSequence + 1,
                 SystemTime.UtcNow,
-                UncommittedHeaders.ToDictionary(x => x.Key, x => x.Value),
-                _events.ToArray()); // check this for performance: pre-allocate the array size.
+                CopyUncommittedHeaders(),
+                CopyUncommittedEvents());
+        }
+
+        private Dictionary<string, object> CopyUncommittedHeaders()
+        {
+            var headers = new Dictionary<string, object>(UncommittedHeaders.Count);
+            foreach (var header in UncommittedHeaders)
+            {
+                headers[header.Key] = header.Value;
+            }
+
+            return headers;
+        }
+
+        private EventMessage[] CopyUncommittedEvents()
+        {
+            var events = new EventMessage[_events.Count];
+            _events.CopyTo(events, 0);
+            return events;
         }
 
         /// <inheritdoc/>
