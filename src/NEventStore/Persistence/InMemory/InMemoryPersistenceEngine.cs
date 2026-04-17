@@ -671,8 +671,16 @@ namespace NEventStore.Persistence.InMemory
             private readonly HashSet<IdentityForDuplicationDetection> _potentialDuplicates = [];
             private readonly HashSet<IdentityForConcurrencyConflictDetection> _potentialConflicts = [];
 
-            private readonly ICollection<IStreamHead> _heads = new LinkedList<IStreamHead>();
-            private readonly ICollection<ISnapshot> _snapshots = new LinkedList<ISnapshot>();
+            // Stream-head reads and updates are keyed by StreamId, so keep a direct dictionary
+            // instead of repeatedly scanning a linked list. We still replace the entire StreamHead
+            // object on each update so callers always observe an immutable snapshot of the stream's
+            // current metadata instead of a mutable shared instance.
+            private readonly Dictionary<string, StreamHead> _headsByStreamId = [];
+            // Snapshots are also queried by StreamId first and then by the greatest revision that is
+            // <= maxRevision. Grouping them per stream lets us avoid scanning snapshots that belong
+            // to unrelated streams, while keeping each stream's list sorted by StreamRevision so the
+            // "latest prior snapshot" lookup remains a binary-search operation.
+            private readonly Dictionary<string, List<ISnapshot>> _snapshotsByStreamId = [];
             private readonly Dictionary<Guid, DateTime> _stamps = [];
 
             public IEnumerable<ICommit> GetFrom(string streamId, int minRevision, int maxRevision)
@@ -789,14 +797,18 @@ namespace NEventStore.Persistence.InMemory
                     InsertCommit(commit);
                     _potentialDuplicates.Add(new IdentityForDuplicationDetection(commit));
                     _potentialConflicts.Add(new IdentityForConcurrencyConflictDetection(commit));
-                    IStreamHead head = _heads.FirstOrDefault(x => x.StreamId == commit.StreamId);
-                    _heads.Remove(head);
                     if (Logger.IsEnabled(LogLevel.Debug))
                     {
                         Logger.LogDebug(Resources.UpdatingStreamHead, commit.StreamId, commit.BucketId);
                     }
-                    int snapshotRevision = head?.SnapshotRevision ?? 0;
-                    _heads.Add(new StreamHead(commit.BucketId, commit.StreamId, commit.StreamRevision, snapshotRevision));
+
+                    // A commit advances the head revision but must preserve whatever snapshot
+                    // revision was already recorded for the stream. Resetting that value would make
+                    // GetStreamsToSnapshot believe the stream has never been snapshotted.
+                    int snapshotRevision = _headsByStreamId.TryGetValue(commit.StreamId, out StreamHead? head)
+                        ? head.SnapshotRevision
+                        : 0;
+                    UpdateStreamHead(commit.BucketId, commit.StreamId, commit.StreamRevision, snapshotRevision);
                     return commit;
                 }
             }
@@ -815,9 +827,20 @@ namespace NEventStore.Persistence.InMemory
             {
                 lock (_sync)
                 {
-                    return _heads
-                        .Where(x => x.HeadRevision >= x.SnapshotRevision + maxThreshold)
-                        .Select(stream => new StreamHead(stream.BucketId, stream.StreamId, stream.HeadRevision, stream.SnapshotRevision));
+                    // Materialize the result while holding the lock. Returning a deferred iterator
+                    // over the internal dictionary would expose callers to collection mutation after
+                    // the lock is released and would break the multi-thread-safe IPersistStreams
+                    // contract.
+                    var streamsToSnapshot = new List<IStreamHead>(_headsByStreamId.Count);
+                    foreach (StreamHead stream in _headsByStreamId.Values)
+                    {
+                        if (stream.HeadRevision >= stream.SnapshotRevision + maxThreshold)
+                        {
+                            streamsToSnapshot.Add(new StreamHead(stream.BucketId, stream.StreamId, stream.HeadRevision, stream.SnapshotRevision));
+                        }
+                    }
+
+                    return streamsToSnapshot.ToArray();
                 }
             }
 
@@ -825,10 +848,13 @@ namespace NEventStore.Persistence.InMemory
             {
                 lock (_sync)
                 {
-                    return _snapshots
-                        .Where(x => x.StreamId == streamId && x.StreamRevision <= maxRevision)
-                        .OrderByDescending(x => x.StreamRevision)
-                        .FirstOrDefault();
+                    if (!_snapshotsByStreamId.TryGetValue(streamId, out List<ISnapshot>? snapshots))
+                    {
+                        return null;
+                    }
+
+                    int snapshotIndex = FindLastSnapshotAtOrBeforeRevision(snapshots, maxRevision);
+                    return snapshotIndex < 0 ? null : snapshots[snapshotIndex];
                 }
             }
 
@@ -836,23 +862,31 @@ namespace NEventStore.Persistence.InMemory
             {
                 lock (_sync)
                 {
-                    IStreamHead currentHead = _heads.FirstOrDefault(h => h.StreamId == snapshot.StreamId);
-                    if (currentHead == null)
+                    if (!_headsByStreamId.TryGetValue(snapshot.StreamId, out StreamHead? currentHead))
                     {
                         return false;
+                    }
+
+                    if (!_snapshotsByStreamId.TryGetValue(snapshot.StreamId, out List<ISnapshot>? snapshots))
+                    {
+                        snapshots = [];
+                        _snapshotsByStreamId.Add(snapshot.StreamId, snapshots);
                     }
 
                     // if the snapshot is already there do NOT add it (follow the SQL implementation)
                     // and the original GetSnapshot behavior which was to return the first one that was
                     // added to the collection
-                    if (_snapshots.Any(s => s.StreamId == snapshot.StreamId && s.StreamRevision == snapshot.StreamRevision))
+                    int snapshotIndex = FindSnapshotInsertIndex(snapshots, snapshot.StreamRevision);
+                    if (snapshotIndex < snapshots.Count && snapshots[snapshotIndex].StreamRevision == snapshot.StreamRevision)
                     {
                         return false;
                     }
 
-                    _snapshots.Add(snapshot);
-                    _heads.Remove(currentHead);
-                    _heads.Add(new StreamHead(currentHead.BucketId, currentHead.StreamId, currentHead.HeadRevision, snapshot.StreamRevision));
+                    snapshots.Insert(snapshotIndex, snapshot);
+
+                    // Preserve the historic behavior where adding any snapshot, even an older one,
+                    // updates the stream head's SnapshotRevision to that exact revision.
+                    UpdateStreamHead(currentHead.BucketId, currentHead.StreamId, currentHead.HeadRevision, snapshot.StreamRevision);
                 }
                 return true;
             }
@@ -864,8 +898,11 @@ namespace NEventStore.Persistence.InMemory
                     var removedCommits = _commitsByCheckpoint.ToArray();
                     _commitsByCheckpoint.Clear();
                     _commitsByStreamId.Clear();
-                    _snapshots.Clear();
-                    _heads.Clear();
+                    // Purge is the hard reset path for the bucket, so every secondary index must be
+                    // cleared together with the primary commit indexes. Leaving any of them behind
+                    // would surface stale stream heads or snapshots after the bucket is supposedly empty.
+                    _snapshotsByStreamId.Clear();
+                    _headsByStreamId.Clear();
                     _stamps.Clear();
                     _potentialConflicts.Clear();
                     _potentialDuplicates.Clear();
@@ -895,20 +932,22 @@ namespace NEventStore.Persistence.InMemory
                     }
 
                     _commitsByStreamId.Remove(streamId);
-
-                    ISnapshot[] snapshots = _snapshots.Where(s => s.StreamId == streamId).ToArray();
-                    foreach (var snapshot in snapshots)
-                    {
-                        _snapshots.Remove(snapshot);
-                    }
-                    IStreamHead streamHead = _heads.SingleOrDefault(s => s.StreamId == streamId);
-                    if (streamHead != null)
-                    {
-                        _heads.Remove(streamHead);
-                    }
+                    // Stream deletion must remove every metadata shortcut for that stream in the
+                    // same critical section as the commit removal. Otherwise later lookups could
+                    // still find a head or snapshot that no longer has backing commits.
+                    _snapshotsByStreamId.Remove(streamId);
+                    _headsByStreamId.Remove(streamId);
 
                     return commits;
                 }
+            }
+
+            private void UpdateStreamHead(string bucketId, string streamId, int headRevision, int snapshotRevision)
+            {
+                // Store a fresh value object for each update so callers never get a reference that
+                // can be mutated behind their back, and so head reads always reflect a coherent pair
+                // of HeadRevision and SnapshotRevision values from the same write.
+                _headsByStreamId[streamId] = new StreamHead(bucketId, streamId, headRevision, snapshotRevision);
             }
 
             private void InsertCommit(InMemoryCommit commit)
@@ -988,6 +1027,48 @@ namespace NEventStore.Persistence.InMemory
                 }
 
                 return low;
+            }
+
+            private static int FindSnapshotInsertIndex(List<ISnapshot> snapshots, int revision)
+            {
+                int low = 0;
+                int high = snapshots.Count;
+
+                while (low < high)
+                {
+                    int mid = low + ((high - low) / 2);
+                    if (snapshots[mid].StreamRevision < revision)
+                    {
+                        low = mid + 1;
+                    }
+                    else
+                    {
+                        high = mid;
+                    }
+                }
+
+                return low;
+            }
+
+            private static int FindLastSnapshotAtOrBeforeRevision(List<ISnapshot> snapshots, int revision)
+            {
+                int low = 0;
+                int high = snapshots.Count;
+
+                while (low < high)
+                {
+                    int mid = low + ((high - low) / 2);
+                    if (snapshots[mid].StreamRevision <= revision)
+                    {
+                        low = mid + 1;
+                    }
+                    else
+                    {
+                        high = mid;
+                    }
+                }
+
+                return low - 1;
             }
 
             private static int FindFirstCheckpointAfter(List<InMemoryCommit> commits, long checkpoint)

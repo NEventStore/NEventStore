@@ -5,6 +5,10 @@
 - Updated MessagePack serializer to 3.1.4
 - Updated Newtonsoft.Json to 14.0.4
 - Refactor performance benchmarks into focused, low-noise scenarios [#523](https://github.com/NEventStore/NEventStore/issues/523)
+- Add a performance validation matrix for optimization workstreams [#524](https://github.com/NEventStore/NEventStore/issues/524)
+- Optimize commit-attempt construction in `OptimisticEventStream` [#525](https://github.com/NEventStore/NEventStore/issues/525)
+- Rework in-memory persistence reads to use direct indexes instead of full-store scans [#526](https://github.com/NEventStore/NEventStore/issues/526)
+- Replace scan-heavy stream-head and snapshot lookups in the in-memory engine [#527](https://github.com/NEventStore/NEventStore/issues/527)
 
 ## 10.1.1
 
