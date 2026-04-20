@@ -11,7 +11,9 @@ namespace NEventStore.Serialization.Json
     public class JsonSerializer : ISerialize
     {
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(JsonSerializer));
-        private readonly IEnumerable<Type> _knownTypes = [typeof(List<EventMessage>), typeof(Dictionary<string, object>)];
+        private static readonly Type[] DefaultKnownTypes = [typeof(List<EventMessage>), typeof(Dictionary<string, object>)];
+
+        private readonly HashSet<Type> _knownTypes;
 
         private readonly Newtonsoft.Json.JsonSerializer _typedSerializer;
 
@@ -39,7 +41,10 @@ namespace NEventStore.Serialization.Json
                 knownTypes = null;
             }
 
-            _knownTypes = knownTypes ?? _knownTypes;
+            // Serializer selection happens on every serialize/deserialize call. Keep the known
+            // type contract unchanged, but normalize it once into a HashSet so modern package
+            // assets and compatibility assets avoid repeated enumerable scans in the hot path.
+            _knownTypes = new HashSet<Type>(knownTypes ?? DefaultKnownTypes);
 
             _typedSerializer = Newtonsoft.Json.JsonSerializer.Create(jsonSerializerSettings);
             _typedSerializer.TypeNameHandling = TypeNameHandling.All;

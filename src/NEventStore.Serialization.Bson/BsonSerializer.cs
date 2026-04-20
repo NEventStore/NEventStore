@@ -13,7 +13,9 @@ namespace NEventStore.Serialization.Bson
     {
         private static readonly ILogger Logger = LogFactory.BuildLogger(typeof(BsonSerializer));
 
-        private readonly IEnumerable<Type> _knownTypes = [typeof(List<EventMessage>), typeof(Dictionary<string, object>)];
+        private static readonly Type[] DefaultKnownTypes = [typeof(List<EventMessage>), typeof(Dictionary<string, object>)];
+
+        private readonly HashSet<Type> _knownTypes;
 
         private readonly JsonSerializer _typedSerializer = new()
         {
@@ -39,7 +41,10 @@ namespace NEventStore.Serialization.Bson
                 knownTypes = null;
             }
 
-            _knownTypes = knownTypes ?? _knownTypes;
+            // BSON uses the same typed/untyped serializer split as JSON. Normalize known types once
+            // at construction time so each serialize/deserialize call can use O(1) membership
+            // checks without changing payload shape or custom known-type semantics.
+            _knownTypes = new HashSet<Type>(knownTypes ?? DefaultKnownTypes);
 
             if (Logger.IsEnabled(LogLevel.Debug))
             {
