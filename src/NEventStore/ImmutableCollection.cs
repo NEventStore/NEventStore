@@ -20,7 +20,47 @@ namespace NEventStore
 
         public void CopyTo(Array array, int index)
         {
-            CopyTo(array.Cast<T>().ToArray(), index);
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            if (array.Rank != 1)
+            {
+                throw new ArgumentException("Only single dimensional arrays are supported.", nameof(array));
+            }
+
+            if (array.GetLowerBound(0) != 0)
+            {
+                throw new ArgumentException("Arrays with non-zero lower bounds are not supported.", nameof(array));
+            }
+
+            if ((uint)index > (uint)array.Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+
+            if (array.Length - index < _inner.Count)
+            {
+                throw new ArgumentException("The destination array does not have enough space.", nameof(array));
+            }
+
+            if (array is T[] typedArray)
+            {
+                // Calls through the non-generic ICollection interface can still pass a T[].
+                // Keep those on the typed CopyTo path instead of using Array.SetValue per item.
+                _inner.CopyTo(typedArray, index);
+                return;
+            }
+
+            // ICollection.CopyTo accepts non-generic arrays such as object[]. The previous
+            // implementation used Cast<T>().ToArray(), which allocated a temporary array and
+            // populated that temporary instead of the caller-provided destination. SetValue keeps
+            // the compatibility surface while copying directly into the requested array.
+            foreach (var item in _inner)
+            {
+                array.SetValue(item, index++);
+            }
         }
 
         public int Count

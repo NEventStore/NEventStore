@@ -1,5 +1,6 @@
 using FakeItEasy;
 using FluentAssertions;
+using System.Collections;
 using NEventStore.Persistence;
 using NEventStore.Persistence.AcceptanceTests;
 using NEventStore.Persistence.AcceptanceTests.BDD;
@@ -781,6 +782,83 @@ namespace NEventStore
         public void should_throw_an_exception_when_removing_from_the_uncommitted_collection()
         {
             Catch.Exception(() => Stream.UncommittedEvents.Remove(new EventMessage())).Should().BeOfType<NotSupportedException>();
+        }
+
+        [Fact]
+        public void should_copy_to_a_non_generic_array_without_mutating_the_collection()
+        {
+            var eventMessage = new EventMessage { Body = "copy" };
+            ICollection<EventMessage> collection = BuildUncommittedEventsCollection(eventMessage);
+            var copied = new object[collection.Count];
+
+            ((ICollection)collection).CopyTo(copied, 0);
+
+            copied.Should().Equal(eventMessage);
+            collection.Should().ContainSingle().Which.Should().BeSameAs(eventMessage);
+        }
+
+        [Fact]
+        public void should_copy_to_a_typed_array_through_the_generic_collection_contract()
+        {
+            var eventMessage = new EventMessage { Body = "generic-copy" };
+            ICollection<EventMessage> collection = BuildUncommittedEventsCollection(eventMessage);
+            var copied = new EventMessage[collection.Count];
+
+            collection.CopyTo(copied, 0);
+
+            copied.Should().Equal(eventMessage);
+        }
+
+        [Fact]
+        public void should_copy_to_a_typed_array_through_the_non_generic_collection_contract()
+        {
+            var eventMessage = new EventMessage { Body = "non-generic-copy" };
+            ICollection<EventMessage> collection = BuildUncommittedEventsCollection(eventMessage);
+            var copied = new EventMessage[collection.Count];
+
+            ((ICollection)collection).CopyTo(copied, 0);
+
+            copied.Should().Equal(eventMessage);
+        }
+
+        [Fact]
+        public void should_respect_the_requested_start_index_when_copying_to_a_non_generic_array()
+        {
+            var eventMessage = new EventMessage { Body = "indexed-copy" };
+            ICollection<EventMessage> collection = BuildUncommittedEventsCollection(eventMessage);
+            var copied = new object[collection.Count + 1];
+
+            ((ICollection)collection).CopyTo(copied, 1);
+
+            copied[0].Should().BeNull();
+            copied[1].Should().BeSameAs(eventMessage);
+        }
+
+        [Fact]
+        public void should_throw_when_the_non_generic_destination_array_is_too_small()
+        {
+            ICollection<EventMessage> collection = BuildUncommittedEventsCollection(new EventMessage { Body = "too-small" });
+            var copied = Array.Empty<object>();
+
+            Catch.Exception(() => ((ICollection)collection).CopyTo(copied, 0))
+                .Should().BeOfType<ArgumentException>();
+        }
+
+        [Fact]
+        public void should_throw_when_the_non_generic_destination_array_cannot_store_event_messages()
+        {
+            ICollection<EventMessage> collection = BuildUncommittedEventsCollection(new EventMessage { Body = "wrong-array-type" });
+            var copied = new string[collection.Count];
+
+            Catch.Exception(() => ((ICollection)collection).CopyTo(copied, 0))
+                .Should().BeOfType<InvalidCastException>();
+        }
+
+        private static ICollection<EventMessage> BuildUncommittedEventsCollection(EventMessage eventMessage)
+        {
+            var stream = new OptimisticEventStream(BucketId, Guid.NewGuid().ToString(), A.Fake<ICommitEvents>(), A.Fake<ICommitEventsAsync>());
+            stream.Add(eventMessage);
+            return stream.UncommittedEvents;
         }
     }
 

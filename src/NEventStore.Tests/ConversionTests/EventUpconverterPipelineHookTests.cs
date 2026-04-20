@@ -82,6 +82,46 @@ namespace NEventStore.ConversionTests
         }
     }
 
+#if MSTEST
+    [TestClass]
+#endif
+    public class when_opening_a_commit_that_has_mixed_convertible_events : using_event_converter
+    {
+        private readonly Guid _id = Guid.NewGuid();
+        private EventMessage? _first;
+        private EventMessage? _third;
+        private ICommit? _commit;
+        private ICommit? _converted;
+
+        protected override void Context()
+        {
+            _first = new EventMessage { Body = new NonConvertingEvent() };
+            _third = new EventMessage { Body = new NonConvertingEvent() };
+            _commit = CreateCommit(
+                _first,
+                new EventMessage { Body = new ConvertingEvent(_id) },
+                _third);
+        }
+
+        protected override void Because()
+        {
+            _converted = EventUpconverter.SelectCommit(_commit!);
+        }
+
+        [Fact]
+        public void should_convert_only_the_convertible_event()
+        {
+            _converted!.Events.ElementAt(1).Body.Should().BeOfType<ConvertingEvent3>();
+        }
+
+        [Fact]
+        public void should_preserve_unconverted_event_instances()
+        {
+            _converted!.Events.First().Should().BeSameAs(_first);
+            _converted.Events.Last().Should().BeSameAs(_third);
+        }
+    }
+
     // ReSharper disable InconsistentNaming
 #if MSTEST
     [TestClass]
@@ -163,17 +203,17 @@ namespace NEventStore.ConversionTests
                 Assembly.GetCallingAssembly().GetReferencedAssemblies().Select(Assembly.Load).Concat([Assembly.GetCallingAssembly()]);
         }
 
-        protected static ICommit CreateCommit(EventMessage eventMessage)
+        protected static ICommit CreateCommit(params EventMessage[] eventMessages)
         {
             return new Commit(Bucket.Default,
                 Guid.NewGuid().ToString(),
-                1,
+                eventMessages.Length,
                 Guid.NewGuid(),
                 1,
                 DateTime.MinValue,
                 1,
                 null,
-                [eventMessage]);
+                eventMessages);
         }
     }
 

@@ -2,6 +2,7 @@
 
 ## vNext
 
+- Added net8.0, net9.0, net10.0 support.
 - Updated MessagePack serializer to 3.1.4
 - Updated Newtonsoft.Json to 14.0.4
 - Refactor performance benchmarks into focused, low-noise scenarios [#523](https://github.com/NEventStore/NEventStore/issues/523)
@@ -15,6 +16,7 @@
 - Improve async polling catch-up and shutdown responsiveness [#531](https://github.com/NEventStore/NEventStore/issues/531)
 - Expand serializer round-trip benchmarks and harden chunked-read handling in `RijndaelSerializer` [#532](https://github.com/NEventStore/NEventStore/issues/532)
 - Add optional modern .NET targets to the core and polling packages [#534](https://github.com/NEventStore/NEventStore/issues/534)
+- Add modern-target fast paths for serialization output buffering and async polling observer dispatch [#535](https://github.com/NEventStore/NEventStore/issues/535)
 
 ## 10.1.1
 

@@ -76,6 +76,8 @@ namespace NEventStore.PollingClient
         /// </summary>
         private sealed class AsyncPollingClientObserver : IAsyncObserver<ICommit>
         {
+            private static readonly Task<bool> ContinuePollingTask = Task.FromResult(true);
+            private static readonly Task<bool> StopPollingTask = Task.FromResult(false);
             private readonly IAsyncObserver<ICommit> _observer;
 
             public bool StopPolling { get; private set; }
@@ -98,13 +100,48 @@ namespace NEventStore.PollingClient
                 return _observer.OnErrorAsync(ex, cancellationToken);
             }
 
+#if NET8_0_OR_GREATER
+            public Task<bool> OnNextAsync(ICommit value, CancellationToken cancellationToken = default)
+            {
+                StopPolling = false;
+                var goOnTask = _observer.OnNextAsync(value, cancellationToken);
+
+                // The common catch-up path often uses observers that complete synchronously after
+                // recording the commit. Modern targets can detect that completed task and update
+                // checkpoint/stop state without allocating an async state machine per commit.
+                // Faulted or incomplete tasks intentionally flow through the awaited path so
+                // exception and cancellation behavior stays identical to the compatibility target.
+                if (goOnTask.IsCompletedSuccessfully)
+                {
+                    return ToCompletedTask(CompleteOnNext(value, goOnTask.Result));
+                }
+
+                return CompleteOnNextAsync(value, goOnTask);
+            }
+#else
             public async Task<bool> OnNextAsync(ICommit value, CancellationToken cancellationToken = default)
             {
                 StopPolling = false;
                 var goOn = await _observer.OnNextAsync(value, cancellationToken).ConfigureAwait(false);
+                return CompleteOnNext(value, goOn);
+            }
+#endif
+
+            private bool CompleteOnNext(ICommit value, bool goOn)
+            {
                 StopPolling = !goOn;
                 ProcessedCheckpoint = value.CheckpointToken;
                 return goOn;
+            }
+
+            private async Task<bool> CompleteOnNextAsync(ICommit value, Task<bool> goOnTask)
+            {
+                return CompleteOnNext(value, await goOnTask.ConfigureAwait(false));
+            }
+
+            private static Task<bool> ToCompletedTask(bool goOn)
+            {
+                return goOn ? ContinuePollingTask : StopPollingTask;
             }
         }
 
@@ -278,9 +315,12 @@ namespace NEventStore.PollingClient
         /// <summary>
         /// Poll the store for new commits.
         /// </summary>
-        public async Task PollAsync(CancellationToken token)
+        public Task PollAsync(CancellationToken token)
         {
-            await PollAsyncInternal(token).ConfigureAwait(false);
+            // The public manual-poll API does not expose whether the checkpoint advanced, but
+            // the polling loop needs that signal internally. Returning the Task<bool> as Task
+            // preserves the public contract while avoiding an extra async wrapper allocation.
+            return PollAsyncInternal(token);
         }
 
         private async Task<bool> PollAsyncInternal(CancellationToken token)

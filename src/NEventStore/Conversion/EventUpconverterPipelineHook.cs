@@ -24,24 +24,29 @@ namespace NEventStore.Conversion
         /// <inheritdoc/>
         public override ICommit? SelectCommit(ICommit committed)
         {
-            bool converted = false;
-            var eventMessages = committed
-                .Events
-                .Select(eventMessage =>
+            EventMessage[]? eventMessages = null;
+            int index = 0;
+            foreach (var eventMessage in committed.Events)
+            {
+                object convert = Convert(eventMessage.Body);
+                if (!ReferenceEquals(convert, eventMessage.Body))
                 {
-                    object convert = Convert(eventMessage.Body);
-                    if (ReferenceEquals(convert, eventMessage.Body))
-                    {
-                        return eventMessage;
-                    }
-                    converted = true;
-                    return new EventMessage { Headers = eventMessage.Headers, Body = convert };
-                })
-                .ToArray();
-            if (!converted)
+                    // Most streams that flow through an upconverter do not necessarily contain
+                    // events handled by the registered converters. Defer the output array until the
+                    // first actual conversion so the no-conversion read path returns the original
+                    // commit without allocating or copying every event message.
+                    eventMessages ??= CopyEventMessages(committed.Events);
+                    eventMessages[index] = new EventMessage { Headers = eventMessage.Headers, Body = convert };
+                }
+
+                index++;
+            }
+
+            if (eventMessages == null)
             {
                 return committed;
             }
+
             return new Commit(committed.BucketId,
                 committed.StreamId,
                 committed.StreamRevision,
@@ -51,6 +56,13 @@ namespace NEventStore.Conversion
                 committed.CheckpointToken,
                 committed.Headers,
                 eventMessages);
+        }
+
+        private static EventMessage[] CopyEventMessages(ICollection<EventMessage> events)
+        {
+            var eventMessages = new EventMessage[events.Count];
+            events.CopyTo(eventMessages, 0);
+            return eventMessages;
         }
 
         /// <inheritdoc/>
