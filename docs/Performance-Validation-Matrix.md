@@ -79,3 +79,10 @@ These existing suites are the baseline reference points for all later performanc
 - Mandatory additions: If copy-heavy utilities or wrappers change, add focused tests in each affected serializer project for large payload round trips and wrapper equivalence. The current benchmark suite only establishes JSON and gzip-wrapped JSON baselines, so extend serializer benchmarks to cover the serializer or wrapper being optimized before claiming a performance win.
 - Benchmark evidence: `SerializerRoundTripBenchmarks`, expanded as needed for the serializer/wrapper under change.
 - Completion gate: compatibility-sensitive serializer tests remain green, benchmark baselines exist for the changed serializer path, and before/after numbers are recorded with the implementation.
+
+### Issue #537: Establish benchmark baselines and regression gate policy for modern fast paths
+
+- Existing correctness suites: no functional behavior changes are expected. Keep the full Release test suite as the regression check for the documentation and governance update.
+- Mandatory additions: Add a checked-in Phase 5 regression gate policy and a curated baseline artifact under `docs/performance-baselines/`; raw BenchmarkDotNet output remains under ignored `artifacts/benchmarks/results/`.
+- Benchmark evidence: full joined benchmark run via `dotnet .\src\NEventStore.Benchmark\bin\Release\net8.0\NEventStore.Benchmark.dll --filter * --join`.
+- Completion gate: the policy lists gate scenarios, thresholds, review reporting format, and exception workflow, and the checked-in baseline records the source report names and representative gate rows.

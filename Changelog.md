@@ -18,6 +18,7 @@
 - Add optional modern .NET targets to the core and polling packages [#534](https://github.com/NEventStore/NEventStore/issues/534)
 - Add modern-target fast paths for serialization output buffering and async polling observer dispatch [#535](https://github.com/NEventStore/NEventStore/issues/535)
 - Add optional modern .NET targets to JSON, BSON, and MessagePack serializer packages and reduce known-type lookup overhead [#536](https://github.com/NEventStore/NEventStore/issues/536)
+- Establish Phase 5 benchmark baseline and regression gate policy for modern fast paths [#537](https://github.com/NEventStore/NEventStore/issues/537)
 
 ## 10.1.1
 
