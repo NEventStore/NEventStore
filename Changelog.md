@@ -14,6 +14,7 @@
 - Lazily allocate `EventMessage.Headers` while preserving serializer and stream compatibility [#530](https://github.com/NEventStore/NEventStore/issues/530)
 - Improve async polling catch-up and shutdown responsiveness [#531](https://github.com/NEventStore/NEventStore/issues/531)
 - Expand serializer round-trip benchmarks and harden chunked-read handling in `RijndaelSerializer` [#532](https://github.com/NEventStore/NEventStore/issues/532)
+- Add optional modern .NET targets to the core and polling packages [#534](https://github.com/NEventStore/NEventStore/issues/534)
 
 ## 10.1.1
 

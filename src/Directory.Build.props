@@ -3,5 +3,10 @@
     <LangVersion>13.0</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!-- Phase 5 modern package targets are centralized so core, polling, and
+         future serializer fast paths can stay aligned as supported .NET
+         releases move forward. Keep legacy compatibility TFMs in each package
+         project so compatibility assets remain an explicit package decision. -->
+    <ModernTargetFrameworks>net8.0;net9.0;net10.0</ModernTargetFrameworks>
   </PropertyGroup>
 </Project>
