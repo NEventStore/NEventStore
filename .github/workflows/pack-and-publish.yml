@@ -1,0 +1,101 @@
+name: Pack and Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Branch or ref to pack (branch name or tag)
+        required: true
+        type: string
+        default: master
+      publish:
+        description: Publish packages to NuGet
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  pack-and-publish:
+    name: Pack and optional Publish
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.branch }}
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            8.x
+            9.x
+            10.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v5
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Build.props', '**/packages.config') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore dotnet tools
+        run: dotnet tool restore
+
+      - name: Restore NuGet packages
+        run: dotnet restore ./src/NEventStore.Core.sln --verbosity m
+
+      - name: Run GitVersion
+        id: gitversion
+        shell: pwsh
+        run: |
+          $gitVersion = dotnet tool run dotnet-gitversion | ConvertFrom-Json
+          "semver=$($gitVersion.SemVer)" >> $env:GITHUB_OUTPUT
+
+      - name: Build
+        run: dotnet build ./src/NEventStore.Core.sln -c Release --no-restore -p:ContinuousIntegrationBuild=True
+
+      - name: Pack
+        shell: pwsh
+        run: |
+          $semver = '${{ steps.gitversion.outputs.semver }}'
+          dotnet pack ./src/NEventStore/NEventStore.Core.csproj -c Release --no-build -o artifacts --property:PackageVersion=$semver
+          dotnet pack ./src/NEventStore.PollingClient/NEventStore.PollingClient.csproj -c Release --no-build -o artifacts --property:PackageVersion=$semver
+          dotnet pack ./src/NEventStore.Serialization.Json/NEventStore.Serialization.Json.Core.csproj -c Release --no-build -o artifacts --property:PackageVersion=$semver
+          dotnet pack ./src/NEventStore.Serialization.Bson/NEventStore.Serialization.Bson.Core.csproj -c Release --no-build -o artifacts --property:PackageVersion=$semver
+          dotnet pack ./src/NEventStore.Serialization.MsgPack/NEventStore.Serialization.MsgPack.Core.csproj -c Release --no-build -o artifacts --property:PackageVersion=$semver
+          dotnet pack ./src/NEventStore.Serialization.Binary/NEventStore.Serialization.Binary.Core.csproj -c Release --no-build -o artifacts --property:PackageVersion=$semver
+
+      - name: Upload NuGet artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: nuget-packages-${{ steps.gitversion.outputs.semver }}
+          path: artifacts/**/*.nupkg
+          if-no-files-found: error
+
+      - name: Publish to NuGet
+        if: ${{ inputs.publish == 'true' }}
+        shell: pwsh
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:NUGET_API_KEY)) {
+            throw 'NUGET_API_KEY secret is required to publish packages.'
+          }
+
+          Get-ChildItem -Path artifacts -Filter *.nupkg -Recurse |
+            Where-Object { $_.Name -notlike '*.symbols.nupkg' } |
+            ForEach-Object {
+              dotnet nuget push $_.FullName --api-key $env:NUGET_API_KEY --source https://api.nuget.org/v3/index.json --skip-duplicate
+            }
+
+          Get-ChildItem -Path artifacts -Filter *.snupkg -Recurse |
+            ForEach-Object {
+              dotnet nuget push $_.FullName --api-key $env:NUGET_API_KEY --source https://api.nuget.org/v3/index.json --skip-duplicate
+            }

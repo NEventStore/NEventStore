@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: ["master", "develop", "feature/**", "release/**", "hotfix/**"]
+    tags: ["*"]
+  pull_request:
+    branches: ["master", "develop"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Build & Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0  # required by GitVersion
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            8.x
+            9.x
+            10.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v5
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Build.props', '**/packages.config') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore dotnet tools
+        run: dotnet tool restore
+
+      - name: Restore NuGet packages
+        run: dotnet restore ./src/NEventStore.Core.sln --verbosity m
+
+      - name: Run GitVersion
+        run: dotnet tool run dotnet-gitversion /updateAssemblyInfo
+
+      - name: Build
+        run: dotnet build ./src/NEventStore.Core.sln -c Release --no-restore -p:ContinuousIntegrationBuild=True
+
+      # Windows: run all TFMs (including net472 which requires Windows)
+      - name: Test (all TFMs)
+        if: runner.os == 'Windows'
+        run: dotnet test ./src/NEventStore.Core.sln -c Release --no-build --logger "trx;LogFilePrefix=testresults"
+
+      # Linux: run modern TFMs only — .NET Framework TFMs cannot run on Linux
+      - name: Test (modern TFMs)
+        if: runner.os == 'Linux'
+        run: |
+          for tfm in net8.0 net9.0 net10.0; do
+            echo "--- Testing $tfm ---"
+            dotnet test ./src/NEventStore.Core.sln -c Release --no-build --framework "$tfm" --logger "trx;LogFilePrefix=testresults-$tfm"
+          done
+        shell: bash
+

@@ -3,7 +3,7 @@
     <LangVersion>14.0</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <!-- Phase 5 modern package targets are centralized so core, polling, and
+    <!-- Modern package targets are centralized so core, polling, and
          future serializer fast paths can stay aligned as supported .NET
          releases move forward. Keep legacy compatibility TFMs in each package
          project so compatibility assets remain an explicit package decision. -->

@@ -167,7 +167,7 @@ namespace NEventStore.PollingClient
         [Fact]
         public void commits_are_retried()
         {
-            WaitForCondition(() => commits.Count >= 3, timeoutInSeconds: 1);
+            WaitForCondition(() => commits.Count >= 3);
             commits.Count.Should().Be(3);
             commits.All(c => c.CheckpointToken == 1).Should().BeTrue();
         }

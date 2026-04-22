@@ -17,6 +17,12 @@ Build Status (AppVeyor)
 
 Branches: 
 
+GitHub Actions:
+
+- master [![CI](https://github.com/NEventStore/NEventStore/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/NEventStore/NEventStore/actions/workflows/ci.yml)
+- develop [![CI](https://github.com/NEventStore/NEventStore/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/NEventStore/NEventStore/actions/workflows/ci.yml)
+
+AppVeyor:
 - master [![Build status](https://ci.appveyor.com/api/projects/status/frg36pb2oh1j2ddi/branch/master?svg=true)](https://ci.appveyor.com/project/AGiorgetti/neventstore/branch/master)
 - develop [![Build status](https://ci.appveyor.com/api/projects/status/frg36pb2oh1j2ddi/branch/develop?svg=true)](https://ci.appveyor.com/project/AGiorgetti/neventstore/branch/develop)
 

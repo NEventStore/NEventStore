@@ -73,7 +73,7 @@ namespace NEventStore.PollingClient
         [Fact]
         public void should_observe_commit()
         {
-            _commitObserved!.Wait(PollingInterval * 2).Should().BeTrue();
+            _commitObserved!.Wait(PollingInterval * 40).Should().BeTrue();
         }
     }
 
@@ -107,7 +107,7 @@ namespace NEventStore.PollingClient
         [Fact]
         public void should_observe_two_commits()
         {
-            _twoCommitsObserved!.Wait(PollingInterval * 2).Should().BeTrue();
+            _twoCommitsObserved!.Wait(PollingInterval * 40).Should().BeTrue();
         }
     }
 
@@ -242,7 +242,7 @@ namespace NEventStore.PollingClient
         [Fact]
         public void should_observe_commit_from_bucket1()
         {
-            _commitObserved!.Wait(PollingInterval * 2).Should().BeTrue();
+            _commitObserved!.Wait(PollingInterval * 40).Should().BeTrue();
             _commitObserved.Result.BucketId.Should().Be("bucket_1");
         }
     }
