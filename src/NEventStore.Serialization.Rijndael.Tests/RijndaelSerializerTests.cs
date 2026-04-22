@@ -44,9 +44,6 @@ namespace NEventStore.Serialization.Rijndael.Tests
 
         protected override void Context()
         {
-#if NET8_0_OR_GREATER
-            AppContext.SetSwitch("System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization", true);
-#endif
             _message.Headers["payload"] = "large";
         }
 

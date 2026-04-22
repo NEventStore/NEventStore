@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net472</TargetFrameworks>
+    <TargetFrameworks>net472;$(ModernTargetFrameworks)</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <RootNamespace>NEventStore.Persistence.AcceptanceTests</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>

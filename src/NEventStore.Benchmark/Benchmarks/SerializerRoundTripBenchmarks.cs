@@ -40,7 +40,8 @@ namespace NEventStore.Benchmark.Benchmarks
         [GlobalSetup]
         public void GlobalSetup()
         {
-            AppContext.SetSwitch("System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization", true);
+            // BinarySerializer: added EnableUnsafeBinaryFormatterSerialization in .csproj
+            // AppContext.SetSwitch("System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization", true);
 
             _binarySerializer = CreateBinarySerializer();
             _bsonSerializer = new BsonSerializer();

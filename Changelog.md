@@ -2,7 +2,7 @@
 
 ## vNext
 
-- Added net8.0, net9.0, net10.0 support.
+- Added net8.0, net9.0, net10.0 explicit support.
 - Updated MessagePack serializer to 3.1.4
 - Updated Newtonsoft.Json to 14.0.4
 - Refactor performance benchmarks into focused, low-noise scenarios [#523](https://github.com/NEventStore/NEventStore/issues/523)
@@ -60,6 +60,7 @@
 - `IPipelineHook.Select` method renamed to `IPipelineHook.SelectCommit`.
 - `BinarySerializer` moved to its own package: `NEventStore.Serialization.Binary`.
   - for net8.0+ call `AppContext.SetSwitch("System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization", true);` to enable unsafe BinaryFormatter usage.
+  - or add `<EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>` to a PropertyGroup in your .csproj file.
 - Improved many method signature with nullability annotations.
 - `Wireup.With()` renamed `Wireup.Register()`.
 - `OptimisticEventStream` constructors replaced by initialization functions:

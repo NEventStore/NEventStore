@@ -12,7 +12,8 @@ namespace NEventStore.Serialization.AcceptanceTests
         public SerializerFixture()
         {
 #if NET8_0_OR_GREATER
-            AppContext.SetSwitch("System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization", true);
+            // BinarySerializer: added EnableUnsafeBinaryFormatterSerialization in .csproj
+            // AppContext.SetSwitch("System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization", true);
 #endif
 #pragma warning disable CS0618 // Type or member is obsolete
             _createSerializer = () => new RijndaelSerializer(new BinarySerializer(), EncryptionKey);
