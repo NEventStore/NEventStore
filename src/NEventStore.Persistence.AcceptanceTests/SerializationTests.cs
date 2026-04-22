@@ -13,19 +13,7 @@ using Xunit.Should;
 
 #pragma warning disable 169 // ReSharper disable InconsistentNaming
 #pragma warning disable IDE1006 // Naming Styles
-
-using NEventStore.Persistence.AcceptanceTests;
-using NEventStore.Persistence.AcceptanceTests.BDD;
-using FluentAssertions;
-#if MSTEST
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
-#if NUNIT
-#endif
-#if XUNIT
-using Xunit;
-using Xunit.Should;
-#endif
+#pragma warning disable S101 // Types should be named in PascalCase
 
 namespace NEventStore.Serialization.AcceptanceTests
 {
@@ -90,12 +78,12 @@ namespace NEventStore.Serialization.AcceptanceTests
 #endif
     public class when_serializing_a_list_of_event_messages : SerializationConcern
     {
-        private readonly List<EventMessage> Messages =
-        [
+        private readonly List<EventMessage> Messages = new List<EventMessage>
+        {
             new EventMessage {Body = "some value"},
             new EventMessage {Body = 42},
             new EventMessage {Body = new SimpleMessage()}
-        ];
+        };
 
         private List<EventMessage>? _deserialized;
         private byte[]? _serialized;
@@ -128,7 +116,7 @@ namespace NEventStore.Serialization.AcceptanceTests
 #endif
     public class when_serializing_a_list_of_commit_headers : SerializationConcern
     {
-        private readonly Dictionary<string, object> _headers = new()
+        private readonly Dictionary<string, object> _headers = new Dictionary<string, object>
         {
             {"HeaderKey", "SomeValue"},
             {"AnotherKey", 42},
@@ -224,5 +212,6 @@ namespace NEventStore.Serialization.AcceptanceTests
     }
 }
 
+#pragma warning restore S101 // Types should be named in PascalCase
 #pragma warning restore 169 // ReSharper disable InconsistentNaming
 #pragma warning restore IDE1006 // Naming Styles
