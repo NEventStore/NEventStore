@@ -24,7 +24,7 @@
     <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">True</ContinuousIntegrationBuild>
     <Copyright>NEventStore Dev Team</Copyright>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageReadmeFile>Readme.md</PackageReadmeFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/NEventStore/NEventStore</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseFile>license.txt</PackageLicenseFile>
@@ -44,7 +44,7 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-    <None Include="..\..\Readme.md">
+    <None Include="README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>

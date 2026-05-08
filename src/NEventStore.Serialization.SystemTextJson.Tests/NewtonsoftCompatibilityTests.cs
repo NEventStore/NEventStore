@@ -81,6 +81,30 @@ namespace NEventStore.Serialization.SystemTextJson.Tests
         }
     }
 
+    public class when_deserializing_newtonsoft_headers_with_system_text_json : SpecificationBase
+    {
+        private readonly Dictionary<string, object> _headers = new()
+        {
+            ["HeaderKey"] = "SomeValue",
+            ["NumericKey"] = 42,
+            ["ComplexKey"] = new SimpleMessage().Populate(),
+        };
+
+        private Dictionary<string, object>? _deserialized;
+
+        protected override void Because()
+        {
+            var serialized = new NewtonsoftJsonSerializer(null).Serialize(_headers);
+            _deserialized = new SystemTextJson.SystemTextJsonSerializer().Deserialize<Dictionary<string, object>>(serialized);
+        }
+
+        [Fact]
+        public void should_deserialize_complex_header_types()
+        {
+            _deserialized!["ComplexKey"].Should().BeOfType<SimpleMessage>();
+        }
+    }
+
     public class when_deserializing_system_text_json_snapshot_payloads_with_newtonsoft : SpecificationBase
     {
         private readonly Snapshot _snapshot = new Snapshot(Guid.NewGuid().ToString(), 42, new Dictionary<string, List<int>>

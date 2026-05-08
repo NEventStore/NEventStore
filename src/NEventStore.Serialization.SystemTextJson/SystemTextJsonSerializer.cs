@@ -1,11 +1,10 @@
+using System.Collections;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
-using System.Linq;
-using System.Collections;
-using NEventStore.Logging;
 using Microsoft.Extensions.Logging;
+using NEventStore.Logging;
 using NEventStore.Serialization.Json;
 
 namespace NEventStore.Serialization.SystemTextJson
