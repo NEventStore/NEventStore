@@ -37,6 +37,7 @@
   <ItemGroup>
     <ProjectReference Include="..\NEventStore.Persistence.AcceptanceTests\NEventStore.Persistence.AcceptanceTests.Core.csproj" />
     <ProjectReference Include="..\NEventStore.Serialization.Json\NEventStore.Serialization.Json.Core.csproj" />
+    <ProjectReference Include="..\NEventStore.Serialization.SystemTextJson\NEventStore.Serialization.SystemTextJson.Core.csproj" />
     <ProjectReference Include="..\NEventStore\NEventStore.Core.csproj" />
   </ItemGroup>
 
