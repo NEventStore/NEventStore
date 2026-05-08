@@ -9,6 +9,7 @@
     <StartupObject />
     <AssemblyName>NEventStore.Serialization.Binary.Tests</AssemblyName>
     <RootNamespace>NEventStore.Serialization.Binary.Tests</RootNamespace>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -38,10 +39,6 @@
     <ProjectReference Include="..\NEventStore.Persistence.AcceptanceTests\NEventStore.Persistence.AcceptanceTests.Core.csproj" />
     <ProjectReference Include="..\NEventStore.Serialization.Binary\NEventStore.Serialization.Binary.Core.csproj" />
     <ProjectReference Include="..\NEventStore\NEventStore.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
 
 </Project>
