@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -187,6 +188,10 @@ namespace NEventStore.Serialization.SystemTextJson
         {
             private const string TypePropertyName = "$type";
             private const string ValuesPropertyName = "$values";
+            private static readonly ConcurrentDictionary<Type, string> TypeNames = new();
+            private static readonly ConcurrentDictionary<string, Type> ResolvedTypes = new();
+            private static readonly ConcurrentDictionary<Type, bool> SimpleTypes = new();
+            private static readonly ConcurrentDictionary<Type, bool> DictionaryTypes = new();
 
             public static void WriteObject(Utf8JsonWriter writer, object? value, JsonSerializerOptions options)
             {
@@ -307,46 +312,62 @@ namespace NEventStore.Serialization.SystemTextJson
 
             private static bool IsSimple(Type type)
             {
-                type = Nullable.GetUnderlyingType(type) ?? type;
-                return type.IsPrimitive ||
-                    type.IsEnum ||
-                    type == typeof(string) ||
-                    type == typeof(decimal) ||
-                    type == typeof(Guid) ||
-                    type == typeof(DateTime) ||
-                    type == typeof(DateTimeOffset) ||
-                    type == typeof(TimeSpan);
+                return SimpleTypes.GetOrAdd(type, static candidate =>
+                {
+                    candidate = Nullable.GetUnderlyingType(candidate) ?? candidate;
+                    return candidate.IsPrimitive ||
+                        candidate.IsEnum ||
+                        candidate == typeof(string) ||
+                        candidate == typeof(decimal) ||
+                        candidate == typeof(Guid) ||
+                        candidate == typeof(DateTime) ||
+                        candidate == typeof(DateTimeOffset) ||
+                        candidate == typeof(TimeSpan);
+                });
             }
 
             private static bool ShouldNormalizeTypeMetadata(Type type)
             {
-                return typeof(IDictionary).IsAssignableFrom(type);
+                return DictionaryTypes.GetOrAdd(type, static candidate => typeof(IDictionary).IsAssignableFrom(candidate));
             }
 
             private static string GetTypeName(Type type)
             {
-                return type.AssemblyQualifiedName ?? type.FullName ?? type.Name;
+                return TypeNames.GetOrAdd(type, static candidate => candidate.AssemblyQualifiedName ?? candidate.FullName ?? candidate.Name);
             }
 
             private static Type ResolveType(string typeName)
             {
+                if (ResolvedTypes.TryGetValue(typeName, out var cachedType))
+                {
+                    return cachedType;
+                }
+
                 var type = Type.GetType(typeName, throwOnError: false);
                 if (type is not null)
                 {
-                    return type;
+                    return ResolvedTypes.GetOrAdd(typeName, type);
                 }
 
-                var fullName = typeName.Split(',')[0].Trim();
+                var fullName = GetFullName(typeName);
                 foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
                 {
                     type = assembly.GetType(fullName, throwOnError: false);
                     if (type is not null)
                     {
-                        return type;
+                        return ResolvedTypes.GetOrAdd(typeName, type);
                     }
                 }
 
                 throw new JsonException($"Could not resolve serialized type '{typeName}'.");
+            }
+
+            private static string GetFullName(string typeName)
+            {
+                var commaIndex = typeName.IndexOf(',');
+                return commaIndex < 0
+                    ? typeName.Trim()
+                    : typeName.Substring(0, commaIndex).Trim();
             }
         }
     }
