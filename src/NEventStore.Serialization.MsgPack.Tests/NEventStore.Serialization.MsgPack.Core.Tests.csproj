@@ -27,10 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="packages.config" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Include="..\NEventStore.Persistence.AcceptanceTests\SerializationTests.cs" Link="SerializationTests.cs" />
   </ItemGroup>
     

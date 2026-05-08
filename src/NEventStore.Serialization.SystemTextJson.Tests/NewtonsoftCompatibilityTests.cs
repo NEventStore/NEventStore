@@ -19,7 +19,7 @@ namespace NEventStore.Serialization.SystemTextJson.Tests
         protected override void Because()
         {
             var serialized = new NewtonsoftJsonSerializer(null).Serialize(_messages);
-            _deserialized = new SystemTextJson.SystemTextJsonSerializer().Deserialize<List<EventMessage>>(serialized);
+            _deserialized = new SystemTextJsonSerializer().Deserialize<List<EventMessage>>(serialized);
         }
 
         [Fact]

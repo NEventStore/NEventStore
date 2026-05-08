@@ -25,10 +25,6 @@
     <PackageReference Include="NUnit" Version="4.5.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="6.2.0" />
   </ItemGroup>
-    
-  <ItemGroup>
-    <None Remove="packages.config" />
-  </ItemGroup>
 
   <ItemGroup>
     <Compile Include="..\NEventStore.Persistence.AcceptanceTests\SerializationTests.cs" Link="SerializationTests.cs" />

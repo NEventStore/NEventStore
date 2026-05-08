@@ -10,6 +10,8 @@ namespace NEventStore.Serialization.SystemTextJson.Tests
     /// </summary>
 #if NUNIT
     [TestFixture]
-    public class NUnitTestAdapterTestsDiscovery;
+    public class NUnitTestAdapterTestsDiscovery
+    {
+    }
 #endif
 }

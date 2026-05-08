@@ -24,7 +24,7 @@
 ### System.Text.Json Serializer
 
 Added a new System.Text.Json serializer package that supports the same type metadata format as the existing Newtonsoft.Json serializer, allowing users to swap between them without needing to re-serialize their data.
-WARNING: This is an experimental implementation and should be used with caution in production environments when swapping from Newtonsoft.Json, as there may be edge cases that have not yet been identified.()
+WARNING: This is an experimental implementation and should be used with caution in production environments when swapping from Newtonsoft.Json, as there may be edge cases that have not yet been identified.
 
 Thanks to: [Matt Mills](https://github.com/arootbeer) for the implementation idea.
 
