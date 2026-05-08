@@ -19,6 +19,14 @@
 - Add modern-target fast paths for serialization output buffering and async polling observer dispatch [#535](https://github.com/NEventStore/NEventStore/issues/535)
 - Add optional modern .NET targets to JSON, BSON, and MessagePack serializer packages and reduce known-type lookup overhead [#536](https://github.com/NEventStore/NEventStore/issues/536)
 - Establish Phase 5 benchmark baseline and regression gate policy for modern fast paths [#537](https://github.com/NEventStore/NEventStore/issues/537)
+- Added System.Text.Json serializer package with Newtonsoft-compatible type metadata and cross-serializer swap verification tests [#512](https://github.com/NEventStore/NEventStore/issues/512)
+
+### System.Text.Json Serializer
+
+Added a new System.Text.Json serializer package that supports the same type metadata format as the existing Newtonsoft.Json serializer, allowing users to swap between them without needing to re-serialize their data.
+WARNING: This is an experimental implementation and should be used with caution in production environments when swapping from Newtonsoft.Json, as there may be edge cases that have not yet been identified.()
+
+Thanks to: [Matt Mills](https://github.com/arootbeer) for the implementation idea.
 
 ## 10.1.1
 
