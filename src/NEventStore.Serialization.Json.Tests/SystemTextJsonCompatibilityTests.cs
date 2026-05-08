@@ -1,7 +1,7 @@
 using FluentAssertions;
 using NEventStore.Persistence.AcceptanceTests;
 using NEventStore.Persistence.AcceptanceTests.BDD;
-using SystemTextJsonSerializer = NEventStore.Serialization.SystemTextJson.SystemTextJsonSerializer;
+using NEventStore.Serialization.SystemTextJson;
 
 namespace NEventStore.Serialization.Json.Tests
 {

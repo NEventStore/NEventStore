@@ -6,7 +6,6 @@ using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 using NEventStore.Logging;
-using NEventStore.Serialization.Json;
 
 namespace NEventStore.Serialization.SystemTextJson
 {
@@ -29,6 +28,8 @@ namespace NEventStore.Serialization.SystemTextJson
         /// be under control of this specific implementation and will be overwritten no matter
         /// what the user specifies:
         /// - DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        /// - PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate
+        /// - SnapshotJsonConverter and ObjectJsonConverter will be added to the Converters collection
         /// </param>
         /// <param name="knownTypes">
         /// Every Type specified here will be serialized without root type metadata.

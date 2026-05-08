@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;$(ModernTargetFrameworks)</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>NEventStore.Serialization.SystemTextJson</RootNamespace>
     <AssemblyName>NEventStore.Serialization.SystemTextJson</AssemblyName>
@@ -50,7 +50,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="System.Text.Json" Version="8.0.6" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.203">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NEventStore\NEventStore.Core.csproj" />
@@ -66,7 +70,7 @@
     <EmbeddedResource Update="Messages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
-      <CustomToolNamespace>NEventStore.Serialization.Json</CustomToolNamespace>
+      <CustomToolNamespace>NEventStore.Serialization.SystemTextJson</CustomToolNamespace>
     </EmbeddedResource>
   </ItemGroup>
 </Project>
