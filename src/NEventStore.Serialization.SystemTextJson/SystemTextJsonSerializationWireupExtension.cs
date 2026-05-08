@@ -16,8 +16,14 @@ namespace NEventStore.Serialization.SystemTextJson
         /// be under control of this specific implementation and will be overwritten no matter
         /// what the user specifies:
         /// - DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        /// - PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate
+        /// - SnapshotJsonConverter and ObjectJsonConverter will be added to the Converters collection
         /// </param>
-        /// <param name="knownTypes">Root types serialized without type metadata.</param>
+        /// <param name="knownTypes">
+        /// Every Type specified here will be serialized without root type metadata.
+        /// Every other root type and polymorphic object value will be serialized with Newtonsoft-compatible
+        /// $type metadata.
+        /// </param>
         public static SerializationWireup UsingJsonSerialization(
             this PersistenceWireup wireup,
             JsonSerializerOptions? jsonSerializerOptions = null,
