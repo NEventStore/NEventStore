@@ -71,6 +71,7 @@ jobs:
           dotnet pack ./src/NEventStore.Serialization.Bson/NEventStore.Serialization.Bson.Core.csproj -c Release --no-build -o artifacts --property:PackageVersion=$semver
           dotnet pack ./src/NEventStore.Serialization.MsgPack/NEventStore.Serialization.MsgPack.Core.csproj -c Release --no-build -o artifacts --property:PackageVersion=$semver
           dotnet pack ./src/NEventStore.Serialization.Binary/NEventStore.Serialization.Binary.Core.csproj -c Release --no-build -o artifacts --property:PackageVersion=$semver
+          dotnet pack ./src/NEventStore.Serialization.SystemTextJson/NEventStore.Serialization.SystemTextJson.Core.csproj -c Release --no-build -o artifacts --property:PackageVersion=$semver
 
       - name: Upload NuGet artifacts
         uses: actions/upload-artifact@v7

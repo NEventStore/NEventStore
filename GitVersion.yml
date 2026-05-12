@@ -1,5 +1,14 @@
+workflow: GitFlow/v1
 mode: ContinuousDeployment
-branches: {}
+branches:
+  release:
+    regex: ^release[/-]
+    increment: None # Do not bump the version automatically, previus value: Patch
+  hotfix:
+    regex: ^hotfix[/-]
+    increment: None # previous value: Patch
+  unknown:
+    increment: Patch
 ignore:
   sha: []
 merge-message-formats: {}
