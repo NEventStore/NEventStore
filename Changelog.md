@@ -1,6 +1,6 @@
 # NEventStore Versions
 
-## vNext
+## 10.2.0
 
 - Added net8.0, net9.0, net10.0 explicit support.
 - Updated MessagePack serializer to 3.1.4
