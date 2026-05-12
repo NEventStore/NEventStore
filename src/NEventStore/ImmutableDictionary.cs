@@ -1,19 +1,17 @@
 ﻿using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 
-namespace NEventStore
-{
+namespace NEventStore {
     /// <summary>
     ///    Represents an immutable dictionary.
     /// </summary>
-    public sealed class ImmutableDictionary<TKey, TValue> : IDictionary<TKey, TValue>
-    {
+    public sealed class ImmutableDictionary<TKey, TValue> : IDictionary<TKey, TValue> {
         private readonly IDictionary<TKey, TValue> _inner;
 
         /// <summary>
         /// Initializes a new instance of the ImmutableDictionary class.
         /// </summary>
-        public ImmutableDictionary(IDictionary<TKey, TValue> inner)
-        {
+        public ImmutableDictionary(IDictionary<TKey, TValue> inner) {
             _inner = inner;
         }
 
@@ -47,8 +45,7 @@ namespace NEventStore
         /// Adds an element with the provided key and value to the dictionary.
         /// </summary>
         /// <exception cref="NotSupportedException"></exception>
-        public void Add(TKey key, TValue value)
-        {
+        public void Add(TKey key, TValue value) {
             throw new NotSupportedException(Resources.ReadOnlyCollection);
         }
 
@@ -56,8 +53,7 @@ namespace NEventStore
         /// Adds an item to the dictionary.
         /// </summary>
         /// <exception cref="NotSupportedException"></exception>
-        public void Add(KeyValuePair<TKey, TValue> item)
-        {
+        public void Add(KeyValuePair<TKey, TValue> item) {
             throw new NotSupportedException(Resources.ReadOnlyCollection);
         }
 
@@ -65,32 +61,28 @@ namespace NEventStore
         /// Removes all items from the dictionary.
         /// </summary>
         /// <exception cref="NotSupportedException"></exception>
-        public void Clear()
-        {
+        public void Clear() {
             throw new NotSupportedException(Resources.ReadOnlyCollection);
         }
 
         /// <summary>
         /// Determines whether the dictionary contains a specific value.
         /// </summary>
-        public bool Contains(KeyValuePair<TKey, TValue> item)
-        {
+        public bool Contains(KeyValuePair<TKey, TValue> item) {
             return _inner.Contains(item);
         }
 
         /// <summary>
         /// Determines whether the dictionary contains a specific key.
         /// </summary>
-        public bool ContainsKey(TKey key)
-        {
+        public bool ContainsKey(TKey key) {
             return _inner.ContainsKey(key);
         }
 
         /// <summary>
         /// Copies the elements of the dictionary to an array, starting at a particular array index.
         /// </summary>
-        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
-        {
+        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex) {
             _inner.CopyTo(array, arrayIndex);
         }
 
@@ -98,8 +90,7 @@ namespace NEventStore
         /// Removes the element with the specified key from the dictionary.
         /// </summary>
         /// <exception cref="NotSupportedException"></exception>
-        public bool Remove(TKey key)
-        {
+        public bool Remove(TKey key) {
             throw new NotSupportedException(Resources.ReadOnlyCollection);
         }
 
@@ -107,15 +98,18 @@ namespace NEventStore
         /// Removes the first occurrence of a specific object from the dictionary.
         /// </summary>
         /// <exception cref="NotSupportedException"></exception>
-        public bool Remove(KeyValuePair<TKey, TValue> item)
-        {
+        public bool Remove(KeyValuePair<TKey, TValue> item) {
             throw new NotSupportedException(Resources.ReadOnlyCollection);
         }
 
         /// <summary>
         /// Gets the value associated with the specified key.
         /// </summary>
+#if NET8_0_OR_GREATER
+        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
+#else
         public bool TryGetValue(TKey key, out TValue value)
+#endif
         {
             return _inner.TryGetValue(key, out value);
         }
@@ -123,13 +117,11 @@ namespace NEventStore
         /// <summary>
         /// Returns an enumerator that iterates through the dictionary.
         /// </summary>
-        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
-        {
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() {
             return _inner.GetEnumerator();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
+        IEnumerator IEnumerable.GetEnumerator() {
             return GetEnumerator();
         }
     }

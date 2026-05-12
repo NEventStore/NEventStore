@@ -50,7 +50,7 @@ namespace NEventStore
                 Logger.LogTrace(Resources.OptimisticConcurrencyCheck, attempt.StreamId);
             }
 
-            ICommit head = GetStreamHead(GetHeadKey(attempt));
+            var head = GetStreamHead(GetHeadKey(attempt));
             if (head == null)
             {
                 return true;
@@ -178,7 +178,7 @@ namespace NEventStore
         private void UpdateStreamHead(ICommit committed)
         {
             HeadKey headKey = GetHeadKey(committed);
-            ICommit head = GetStreamHead(headKey);
+            var head = GetStreamHead(headKey);
             if (AlreadyTracked(head))
             {
                 _maxItemsToTrack.Remove(headKey);
@@ -193,14 +193,14 @@ namespace NEventStore
         private void RemoveHead(HeadKey head)
         {
             _heads.Remove(head);
-            LinkedListNode<HeadKey> node = _maxItemsToTrack.Find(head); // There should only be ever one or none
+            var node = _maxItemsToTrack.Find(head); // There should only be ever one or none
             if (node != null)
             {
                 _maxItemsToTrack.Remove(node);
             }
         }
 
-        private static bool AlreadyTracked(ICommit head)
+        private static bool AlreadyTracked(ICommit? head)
         {
             return head != null;
         }
@@ -217,7 +217,7 @@ namespace NEventStore
                 return;
             }
 
-            HeadKey expired = _maxItemsToTrack.Last.Value;
+            HeadKey expired = _maxItemsToTrack.Last!.Value;
             if (Logger.IsEnabled(LogLevel.Trace))
             {
                 Logger.LogTrace(Resources.NoLongerTrackingStream, expired.StreamId, expired.BucketId);
@@ -233,11 +233,11 @@ namespace NEventStore
             return GetStreamHead(GetHeadKey(attempt)) != null;
         }
 
-        private ICommit GetStreamHead(HeadKey headKey)
+        private ICommit? GetStreamHead(HeadKey headKey)
         {
             lock (_maxItemsToTrack)
             {
-                _heads.TryGetValue(headKey, out ICommit head);
+                _heads.TryGetValue(headKey, out ICommit? head);
                 return head;
             }
         }
@@ -264,7 +264,7 @@ namespace NEventStore
                 StreamId = streamId;
             }
 
-            public bool Equals(HeadKey other)
+            public bool Equals(HeadKey? other)
             {
                 if (other is null)
                 {
@@ -278,7 +278,7 @@ namespace NEventStore
                     && String.Equals(StreamId, other.StreamId, StringComparison.Ordinal);
             }
 
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
                 if (obj is null)
                 {

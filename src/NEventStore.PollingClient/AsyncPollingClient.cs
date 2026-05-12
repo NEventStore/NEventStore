@@ -76,8 +76,10 @@ namespace NEventStore.PollingClient
         /// </summary>
         private sealed class AsyncPollingClientObserver : IAsyncObserver<ICommit>
         {
+#if NET8_0_OR_GREATER
             private static readonly Task<bool> ContinuePollingTask = Task.FromResult(true);
             private static readonly Task<bool> StopPollingTask = Task.FromResult(false);
+#endif
             private readonly IAsyncObserver<ICommit> _observer;
 
             public bool StopPolling { get; private set; }
@@ -134,6 +136,7 @@ namespace NEventStore.PollingClient
                 return goOn;
             }
 
+#if NET8_0_OR_GREATER
             private async Task<bool> CompleteOnNextAsync(ICommit value, Task<bool> goOnTask)
             {
                 return CompleteOnNext(value, await goOnTask.ConfigureAwait(false));
@@ -143,6 +146,7 @@ namespace NEventStore.PollingClient
             {
                 return goOn ? ContinuePollingTask : StopPollingTask;
             }
+#endif
         }
 
         private readonly ILogger _logger;
@@ -292,7 +296,14 @@ namespace NEventStore.PollingClient
             var cancellationTokenSource = _cancellationTokeSource;
             var pollingTask = _pollingTask;
 
+#if NET8_0_OR_GREATER
+            if (cancellationTokenSource != null)
+            {
+                await cancellationTokenSource.CancelAsync().ConfigureAwait(false);
+            }
+#else
             cancellationTokenSource?.Cancel();
+#endif
             _cancellationTokeSource = null;
             _pollingTask = null;
 

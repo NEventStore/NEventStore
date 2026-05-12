@@ -356,7 +356,7 @@ namespace NEventStore.Persistence.InMemory
             {
                 Logger.LogWarning(Resources.DeletingStream, streamId, bucketId);
             }
-            if (!_buckets.TryGetValue(bucketId, out Bucket bucket))
+            if (!_buckets.TryGetValue(bucketId, out Bucket? bucket))
             {
                 return;
             }
@@ -555,7 +555,7 @@ namespace NEventStore.Persistence.InMemory
                         && this.commitSequence == other.commitSequence;
             }
 
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
                 if (obj is null)
                 {
@@ -612,7 +612,7 @@ namespace NEventStore.Persistence.InMemory
                         && this.commitId.Equals(other.commitId);
             }
 
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
                 if (obj is null)
                 {

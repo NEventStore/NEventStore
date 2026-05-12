@@ -147,7 +147,9 @@ namespace NEventStore.Serialization
                 _bufferReturned = true;
             }
 
+#pragma warning disable CA2215 // Dispose methods should call base class dispose
             protected override void Dispose(bool disposing)
+#pragma warning restore CA2215 // Dispose methods should call base class dispose
             {
                 // Do not return the buffer from Dispose. Serializers commonly dispose the output
                 // stream they receive, but Serialize<T>() still has to read back the bytes after

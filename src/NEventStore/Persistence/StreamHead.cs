@@ -52,7 +52,7 @@ namespace NEventStore.Persistence
         /// </summary>
         /// <param name="obj">The object to compare with the current object.</param>
         /// <returns>If the two objects are equal, returns true; otherwise false.</returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is StreamHead commit
                 && commit.StreamId == StreamId;
