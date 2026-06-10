@@ -105,7 +105,7 @@ namespace NEventStore.Serialization.AcceptanceTests
         }
 
         [Fact]
-        public void should_deserialize_the_the_complex_types_within_the_event_messages()
+        public void should_deserialize_the_complex_types_within_the_event_messages()
         {
             _deserialized!.Last().Body.Should().BeOfType<SimpleMessage>();
         }

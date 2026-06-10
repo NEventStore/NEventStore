@@ -15,6 +15,11 @@ namespace NEventStore
         private readonly Dictionary<HeadKey, ICommit> _heads = []; //TODO use concurrent collections
         private readonly LinkedList<HeadKey> _maxItemsToTrack = new();
         private readonly int _maxStreamsToTrack;
+#if NET9_0_OR_GREATER
+        private readonly Lock _lock = new();
+#else
+        private readonly Object _lock = new();
+#endif
 
         /// <summary>
         ///    Initializes a new instance of the OptimisticPipelineHook class.
@@ -127,7 +132,7 @@ namespace NEventStore
         /// <inheritdoc/>
         public override void OnPurge(string? bucketId)
         {
-            lock (_maxItemsToTrack)
+            lock (_lock)
             {
                 if (bucketId == null)
                 {
@@ -146,7 +151,7 @@ namespace NEventStore
         /// <inheritdoc/>
         public override void OnDeleteStream(string bucketId, string streamId)
         {
-            lock (_maxItemsToTrack)
+            lock (_lock)
             {
                 RemoveHead(new HeadKey(bucketId, streamId));
             }
@@ -168,7 +173,7 @@ namespace NEventStore
                 return;
             }
 
-            lock (_maxItemsToTrack)
+            lock (_lock)
             {
                 UpdateStreamHead(committed);
                 TrackUpToCapacity(committed);
@@ -235,7 +240,7 @@ namespace NEventStore
 
         private ICommit? GetStreamHead(HeadKey headKey)
         {
-            lock (_maxItemsToTrack)
+            lock (_lock)
             {
                 _heads.TryGetValue(headKey, out ICommit? head);
                 return head;

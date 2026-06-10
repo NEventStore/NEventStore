@@ -7,7 +7,7 @@ namespace NEventStore.PollingClient
     /// <summary>
     /// A Polling Client that uses the Asynchronous API of the store.
     /// </summary>
-    public class AsyncPollingClient : IDisposable
+    public class AsyncPollingClient : IDisposable, IAsyncDisposable
     {
         /// <summary>
         /// Decorator used to enable Commit Re-Sequencing.
@@ -156,7 +156,7 @@ namespace NEventStore.PollingClient
         private readonly int _holeDetectionWaitInterval;
         private Func<long, CancellationToken, Task>? _pollingFunc;
         private Int64 _checkpointToken;
-        private CancellationTokenSource? _cancellationTokeSource;
+        private CancellationTokenSource? _cancellationTokenSource;
         private Task? _pollingTask;
         private int _isPolling;
         private CommitSequencer? _commitSequencer;
@@ -202,14 +202,33 @@ namespace NEventStore.PollingClient
         /// </summary>
         public String? LastPollingError { get; private set; }
 
+#if NET9_0_OR_GREATER
+        private readonly Lock _startLock = new Lock();
+#else
+        private readonly object _startLock = new object();
+#endif
+
         /// <summary>
         /// Start the polling client.
         /// </summary>
         public void Start(Int64 checkpointToken = 0)
         {
-            _cancellationTokeSource = new CancellationTokenSource();
-            ConfigurePollingClient(checkpointToken);
-            StartPollingThread(_cancellationTokeSource.Token);
+            lock (_startLock)
+            {
+                if (_isDisposed)
+                {
+                    throw new ObjectDisposedException(GetType().FullName);
+                }
+
+                if (_pollingTask is not null)
+                {
+                    throw new InvalidOperationException("The polling client is already started.");
+                }
+
+                _cancellationTokenSource = new CancellationTokenSource();
+                ConfigurePollingClient(checkpointToken);
+                StartPollingThread(_cancellationTokenSource.Token);
+            }
         }
 
         /// <summary>
@@ -217,9 +236,22 @@ namespace NEventStore.PollingClient
         /// </summary>
         public void Start(string bucketId, Int64 checkpointToken = 0)
         {
-            _cancellationTokeSource = new CancellationTokenSource();
-            ConfigurePollingClient(checkpointToken, bucketId);
-            StartPollingThread(_cancellationTokeSource.Token);
+            lock (_startLock)
+            {
+                if (_isDisposed)
+                {
+                    throw new ObjectDisposedException(GetType().FullName);
+                }
+
+                if (_pollingTask is not null)
+                {
+                    throw new InvalidOperationException("The polling client is already started.");
+                }
+
+                _cancellationTokenSource = new CancellationTokenSource();
+                ConfigurePollingClient(checkpointToken, bucketId);
+                StartPollingThread(_cancellationTokenSource.Token);
+            }
         }
 
         /// <summary>
@@ -293,7 +325,7 @@ namespace NEventStore.PollingClient
         /// </summary>
         public async Task StopAsync()
         {
-            var cancellationTokenSource = _cancellationTokeSource;
+            var cancellationTokenSource = _cancellationTokenSource;
             var pollingTask = _pollingTask;
 
 #if NET8_0_OR_GREATER
@@ -304,7 +336,7 @@ namespace NEventStore.PollingClient
 #else
             cancellationTokenSource?.Cancel();
 #endif
-            _cancellationTokeSource = null;
+            _cancellationTokenSource = null;
             _pollingTask = null;
 
             if (pollingTask == null)
@@ -409,11 +441,36 @@ namespace NEventStore.PollingClient
         }
 
         /// <summary>
-        /// Finalizer.
+        /// Dispose the polling client asynchronously.
         /// </summary>
-        ~AsyncPollingClient()
+        public async ValueTask DisposeAsync()
         {
-            Dispose(false);
+            await DisposeAsync(true).ConfigureAwait(false);
+            GC.SuppressFinalize(this);
         }
+
+        /// <summary>
+        /// Dispose the polling client asynchronously.
+        /// </summary>
+        protected virtual async Task DisposeAsync(Boolean isDisposing)
+        {
+            if (_isDisposed)
+            {
+                return;
+            }
+            if (isDisposing)
+            {
+                await StopAsync().ConfigureAwait(false);
+            }
+            _isDisposed = true;
+        }
+
+        ///// <summary>
+        ///// Finalizer.
+        ///// </summary>
+        //~AsyncPollingClient()
+        //{
+        //    Dispose(false);
+        //}
     }
 }

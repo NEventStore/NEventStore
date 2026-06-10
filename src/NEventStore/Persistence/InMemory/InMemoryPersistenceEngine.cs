@@ -15,9 +15,13 @@ namespace NEventStore.Persistence.InMemory
         // Keep a process-wide checkpoint-ordered index so global checkpoint reads do not need
         // to flatten every bucket and sort the combined result on each query.
         private readonly List<InMemoryCommit> _commitsByCheckpoint = [];
+#if NET9_0_OR_GREATER
+        private readonly Lock _commitsByCheckpointSync = new();
+#else
         private readonly object _commitsByCheckpointSync = new();
+#endif
         private bool _disposed;
-        private int _checkpoint;
+        private long _checkpoint;
 
         private Bucket this[string bucketId]
         {
@@ -155,6 +159,11 @@ namespace NEventStore.Persistence.InMemory
             return this[bucketId].GetFrom(streamId, minRevision, maxRevision);
         }
 
+        private long NextCheckpoint()
+        {
+            return Interlocked.Increment(ref _checkpoint);
+        }
+
         /// <inheritdoc/>
         public ICommit? Commit(CommitAttempt attempt)
         {
@@ -163,7 +172,7 @@ namespace NEventStore.Persistence.InMemory
             {
                 Logger.LogDebug(Resources.AttemptingToCommit, attempt.CommitId, attempt.StreamId, attempt.BucketId, attempt.CommitSequence);
             }
-            var commit = this[attempt.BucketId].Commit(attempt, Interlocked.Increment(ref _checkpoint));
+            var commit = this[attempt.BucketId].Commit(attempt, NextCheckpoint);
             RegisterCommit(commit);
             return commit;
         }
@@ -199,6 +208,10 @@ namespace NEventStore.Persistence.InMemory
                     }
                 }
                 await observer.OnCompletedAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                // Normal cooperative cancellation.
             }
             catch (Exception ex)
             {
@@ -318,11 +331,14 @@ namespace NEventStore.Persistence.InMemory
             {
                 _commitsByCheckpoint.Clear();
             }
+
+            Interlocked.Exchange(ref _checkpoint, 0);
         }
 
         /// <inheritdoc/>
         public void Purge(string bucketId)
         {
+            ThrowWhenDisposed();
             if (_buckets.TryRemove(bucketId, out Bucket? bucket))
             {
                 RemoveGlobalCommits(bucket.Purge());
@@ -346,12 +362,22 @@ namespace NEventStore.Persistence.InMemory
         /// <inheritdoc/>
         public void Drop()
         {
+            ThrowWhenDisposed();
+
             _buckets.Clear();
+
+            lock (_commitsByCheckpointSync)
+            {
+                _commitsByCheckpoint.Clear();
+            }
+
+            Interlocked.Exchange(ref _checkpoint, 0);
         }
 
         /// <inheritdoc/>
         public void DeleteStream(string bucketId, string streamId)
         {
+            ThrowWhenDisposed();
             if (Logger.IsEnabled(LogLevel.Warning))
             {
                 Logger.LogWarning(Resources.DeletingStream, streamId, bucketId);
@@ -662,7 +688,11 @@ namespace NEventStore.Persistence.InMemory
 
         private class Bucket
         {
+#if NET9_0_OR_GREATER
+            private readonly Lock _sync = new();
+#else
             private readonly object _sync = new();
+#endif
             // Maintain bucket-local commits in checkpoint order for checkpoint paging APIs.
             private readonly List<InMemoryCommit> _commitsByCheckpoint = [];
             // Maintain per-stream commits ordered by StreamRevision so stream reads can jump
@@ -761,7 +791,7 @@ namespace NEventStore.Persistence.InMemory
                 IEnumerable<Guid> selectedCommitIds = _stamps.Where(x => x.Value >= start && x.Value < end).Select(x => x.Key).ToArray();
                 Guid firstCommitId = selectedCommitIds.FirstOrDefault();
                 Guid lastCommitId = selectedCommitIds.LastOrDefault();
-                if (lastCommitId == Guid.Empty && lastCommitId == Guid.Empty)
+                if (firstCommitId == Guid.Empty && lastCommitId == Guid.Empty)
                 {
                     return [];
                 }
@@ -775,11 +805,16 @@ namespace NEventStore.Persistence.InMemory
                 }
             }
 
-            public InMemoryCommit Commit(CommitAttempt attempt, Int64 checkpoint)
+            public InMemoryCommit Commit(CommitAttempt attempt, Func<long> nextCheckpoint)
             {
                 lock (_sync)
                 {
                     DetectDuplicate(attempt);
+                    if (_potentialConflicts.Contains(new IdentityForConcurrencyConflictDetection(attempt)))
+                    {
+                        throw new ConcurrencyException();
+                    }
+                    long checkpoint = nextCheckpoint();
                     var commit = new InMemoryCommit(attempt.BucketId,
                         attempt.StreamId,
                         attempt.StreamRevision,
@@ -789,10 +824,7 @@ namespace NEventStore.Persistence.InMemory
                         checkpoint,
                         attempt.Headers,
                         attempt.Events);
-                    if (_potentialConflicts.Contains(new IdentityForConcurrencyConflictDetection(commit)))
-                    {
-                        throw new ConcurrencyException();
-                    }
+                    
                     _stamps[commit.CommitId] = commit.CommitStamp;
                     InsertCommit(commit);
                     _potentialDuplicates.Add(new IdentityForDuplicationDetection(commit));

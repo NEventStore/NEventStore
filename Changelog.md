@@ -23,7 +23,7 @@
 ### Issues Addressed
 
 - Added net8.0, net9.0, net10.0 explicit support.
-- Updated MessagePack serializer to 3.1.6
+- Updated MessagePack serializer to 3.1.7
 - Updated Newtonsoft.Json to 14.0.4
 - Refactor performance benchmarks into focused, low-noise scenarios [#523](https://github.com/NEventStore/NEventStore/issues/523)
 - Add a performance validation matrix for optimization workstreams [#524](https://github.com/NEventStore/NEventStore/issues/524)
