@@ -2,7 +2,6 @@
 using NEventStore.Persistence;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
-using System.Globalization;
 
 namespace NEventStore.PollingClient
 {
@@ -171,7 +170,7 @@ namespace NEventStore.PollingClient
         /// </summary>
         private readonly BlockingCollection<Object> _pollCollection = [];
 
-        private void InnerPollingLoop(object obj)
+        private void InnerPollingLoop(object? obj)
         {
             foreach (var _ in _pollCollection.GetConsumingEnumerable())
             {
@@ -240,7 +239,7 @@ namespace NEventStore.PollingClient
                 // These exceptions are expected to be transient, we log at maximum a log entry each minute.
                 if (DateTime.UtcNow.Subtract(_lastPollingErrorLogTimestamp).TotalMinutes > 1)
                 {
-                    _logger.LogError(String.Format(CultureInfo.InvariantCulture, "Error during polling client {0}", ex.ToString()));
+                    _logger.LogError(ex, "Error during polling client.");
                     _lastPollingErrorLogTimestamp = DateTime.UtcNow;
                 }
 

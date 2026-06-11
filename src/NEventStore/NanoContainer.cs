@@ -62,7 +62,7 @@ namespace NEventStore
                 Logger.LogDebug(Messages.ResolvingService, typeof(TService));
             }
 
-            if (_registrations.TryGetValue(typeof(TService), out ContainerRegistration registration))
+            if (_registrations.TryGetValue(typeof(TService), out ContainerRegistration? registration))
             {
                 var obj = registration.Resolve(this);
                 return obj != null ? (TService)obj : default;

@@ -117,3 +117,4 @@ nunit.TestResult.*
 
 # Custom
 artifacts/
+.tokensave

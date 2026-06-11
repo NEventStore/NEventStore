@@ -6,7 +6,7 @@ namespace NEventStore
     public sealed class CommitEqualityComparer : IEqualityComparer<ICommit>
     {
         /// <inheritdoc/>
-        public bool Equals(ICommit x, ICommit y)
+        public bool Equals(ICommit? x, ICommit? y)
         {
             if (ReferenceEquals(x, y))
             {

@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "root_dir": ".",
+  "exclude": [
+    "target/**",
+    ".git/**",
+    ".tokensave/**",
+    "**/node_modules/**",
+    "vendor/**",
+    "**/*.min.*",
+    "bin/**",
+    "build/**",
+    "out/**",
+    ".gradle/**",
+    "artifacts/**",
+    "**/obj/**"
+  ],
+  "include": [],
+  "max_file_size": 1048576,
+  "extract_docstrings": true,
+  "track_call_sites": true,
+  "git_ignore": false
+}

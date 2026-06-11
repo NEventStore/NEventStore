@@ -4,7 +4,7 @@ namespace NEventStore.Persistence {
     /// </summary>
     public sealed class StreamHeadEqualityComparer : IEqualityComparer<IStreamHead> {
         /// <inheritdoc/>
-        public bool Equals(IStreamHead x, IStreamHead y) {
+        public bool Equals(IStreamHead? x, IStreamHead? y) {
             if (ReferenceEquals(x, y)) {
                 return true;
             }

@@ -15,6 +15,11 @@ namespace NEventStore
         private readonly Dictionary<HeadKey, ICommit> _heads = []; //TODO use concurrent collections
         private readonly LinkedList<HeadKey> _maxItemsToTrack = new();
         private readonly int _maxStreamsToTrack;
+#if NET9_0_OR_GREATER
+        private readonly Lock _lock = new();
+#else
+        private readonly Object _lock = new();
+#endif
 
         /// <summary>
         ///    Initializes a new instance of the OptimisticPipelineHook class.
@@ -50,7 +55,7 @@ namespace NEventStore
                 Logger.LogTrace(Resources.OptimisticConcurrencyCheck, attempt.StreamId);
             }
 
-            ICommit head = GetStreamHead(GetHeadKey(attempt));
+            var head = GetStreamHead(GetHeadKey(attempt));
             if (head == null)
             {
                 return true;
@@ -127,7 +132,7 @@ namespace NEventStore
         /// <inheritdoc/>
         public override void OnPurge(string? bucketId)
         {
-            lock (_maxItemsToTrack)
+            lock (_lock)
             {
                 if (bucketId == null)
                 {
@@ -146,7 +151,7 @@ namespace NEventStore
         /// <inheritdoc/>
         public override void OnDeleteStream(string bucketId, string streamId)
         {
-            lock (_maxItemsToTrack)
+            lock (_lock)
             {
                 RemoveHead(new HeadKey(bucketId, streamId));
             }
@@ -168,7 +173,7 @@ namespace NEventStore
                 return;
             }
 
-            lock (_maxItemsToTrack)
+            lock (_lock)
             {
                 UpdateStreamHead(committed);
                 TrackUpToCapacity(committed);
@@ -178,7 +183,7 @@ namespace NEventStore
         private void UpdateStreamHead(ICommit committed)
         {
             HeadKey headKey = GetHeadKey(committed);
-            ICommit head = GetStreamHead(headKey);
+            var head = GetStreamHead(headKey);
             if (AlreadyTracked(head))
             {
                 _maxItemsToTrack.Remove(headKey);
@@ -193,14 +198,14 @@ namespace NEventStore
         private void RemoveHead(HeadKey head)
         {
             _heads.Remove(head);
-            LinkedListNode<HeadKey> node = _maxItemsToTrack.Find(head); // There should only be ever one or none
+            var node = _maxItemsToTrack.Find(head); // There should only be ever one or none
             if (node != null)
             {
                 _maxItemsToTrack.Remove(node);
             }
         }
 
-        private static bool AlreadyTracked(ICommit head)
+        private static bool AlreadyTracked(ICommit? head)
         {
             return head != null;
         }
@@ -217,7 +222,7 @@ namespace NEventStore
                 return;
             }
 
-            HeadKey expired = _maxItemsToTrack.Last.Value;
+            HeadKey expired = _maxItemsToTrack.Last!.Value;
             if (Logger.IsEnabled(LogLevel.Trace))
             {
                 Logger.LogTrace(Resources.NoLongerTrackingStream, expired.StreamId, expired.BucketId);
@@ -233,11 +238,11 @@ namespace NEventStore
             return GetStreamHead(GetHeadKey(attempt)) != null;
         }
 
-        private ICommit GetStreamHead(HeadKey headKey)
+        private ICommit? GetStreamHead(HeadKey headKey)
         {
-            lock (_maxItemsToTrack)
+            lock (_lock)
             {
-                _heads.TryGetValue(headKey, out ICommit head);
+                _heads.TryGetValue(headKey, out ICommit? head);
                 return head;
             }
         }
@@ -264,7 +269,7 @@ namespace NEventStore
                 StreamId = streamId;
             }
 
-            public bool Equals(HeadKey other)
+            public bool Equals(HeadKey? other)
             {
                 if (other is null)
                 {
@@ -278,7 +283,7 @@ namespace NEventStore
                     && String.Equals(StreamId, other.StreamId, StringComparison.Ordinal);
             }
 
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
                 if (obj is null)
                 {

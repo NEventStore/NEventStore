@@ -59,13 +59,13 @@ namespace NEventStore
             IEnumerable<KeyValuePair<Type, Func<object, object>>> c = from a in toScan
                                                                       from t in a.GetTypes()
                                                                       where !t.IsAbstract
-                                                                      let i = t.GetInterface(typeof(IUpconvertEvents<,>).FullName)
+                                                                      let i = t.GetInterface(typeof(IUpconvertEvents<,>).FullName!)
                                                                       where i != null
                                                                       let sourceType = i.GetGenericArguments().First()
                                                                       let convertMethod = i.GetMethods(BindingFlags.Public | BindingFlags.Instance).First()
                                                                       let instance = Activator.CreateInstance(t)
                                                                       select new KeyValuePair<Type, Func<object, object>>(
-                                                                          sourceType, e => convertMethod.Invoke(instance, new[] { e }));
+                                                                          sourceType, e => convertMethod.Invoke(instance, new[] { e })!);
             try
             {
                 return c.ToDictionary(x => x.Key, x => x.Value);

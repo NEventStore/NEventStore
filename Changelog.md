@@ -1,9 +1,29 @@
 # NEventStore Versions
 
-## vNext
+## 10.2.0
+
+### Added
+
+- Added .NET 10 target support while preserving netstandard2.0 and net462 compatibility.
+- Added a dedicated System.Text.Json serializer package for applications that prefer modern built-in JSON serialization.
+- Expanded performance benchmark coverage for stream writes, large stream writes, stream opens, in-memory reads, serializer round-trips, async polling, and commit attempts.
+
+### Improved
+
+- Updated modern target framework configuration so package projects can stay aligned as supported .NET releases move forward.
+- Updated SourceLink tooling for improved debugging/source navigation.
+- Enabled latest recommended .NET analyzer coverage across package projects.
+- Improved validation coverage around serializer compatibility, duplicate commit handling, polling behavior, and optimistic stream behavior.
+
+### Notes
+
+- Runtime dependency minimums remain conservative so consuming applications can choose newer Microsoft.Extensions.* and System.* package versions through top-level references or Central Package Management.
+- The binary serializer remains available for backward compatibility only. It should not be used with untrusted input; prefer System.Text.Json or Newtonsoft.Json for new applications.
+
+### Issues Addressed
 
 - Added net8.0, net9.0, net10.0 explicit support.
-- Updated MessagePack serializer to 3.1.4
+- Updated MessagePack serializer to 3.1.7
 - Updated Newtonsoft.Json to 14.0.4
 - Refactor performance benchmarks into focused, low-noise scenarios [#523](https://github.com/NEventStore/NEventStore/issues/523)
 - Add a performance validation matrix for optimization workstreams [#524](https://github.com/NEventStore/NEventStore/issues/524)
