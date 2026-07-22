@@ -31,7 +31,7 @@ jobs:
           fetch-depth: 0  # required by GitVersion
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: |
             8.x
