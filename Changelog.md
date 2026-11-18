@@ -1,5 +1,11 @@
 # NEventStore Versions
 
+## 10.2.1
+
+Maintenance release to address security issues in dependencies.
+
+- Updated MessagePack serializer to 3.1.12
+
 ## 10.2.0
 
 ### Added
