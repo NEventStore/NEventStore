@@ -88,7 +88,7 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public Task GetFromAsync(Int64 checkpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
+        public Task GetFromAsync(Int64 checkpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken = default)
         {
             return ObserveDataStream(() => GetFrom(checkpointToken), asyncObserver, cancellationToken);
         }
@@ -109,7 +109,7 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public Task GetFromToAsync(Int64 fromCheckpointToken, Int64 toCheckpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
+        public Task GetFromToAsync(Int64 fromCheckpointToken, Int64 toCheckpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken = default)
         {
             return ObserveDataStream(() => GetFromTo(fromCheckpointToken, toCheckpointToken), asyncObserver, cancellationToken);
         }
@@ -126,7 +126,7 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public Task GetFromAsync(string bucketId, Int64 checkpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
+        public Task GetFromAsync(string bucketId, Int64 checkpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken = default)
         {
             return ObserveDataStream(() => GetFrom(bucketId, checkpointToken), asyncObserver, cancellationToken);
         }
@@ -143,7 +143,7 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public Task GetFromToAsync(string bucketId, long fromCheckpointToken, long toCheckpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken)
+        public Task GetFromToAsync(string bucketId, long fromCheckpointToken, long toCheckpointToken, IAsyncObserver<ICommit> asyncObserver, CancellationToken cancellationToken = default)
         {
             return ObserveDataStream(() => GetFromTo(bucketId, fromCheckpointToken, toCheckpointToken), asyncObserver, cancellationToken);
         }
@@ -178,7 +178,7 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public Task GetFromAsync(string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> observer, CancellationToken cancellationToken)
+        public Task GetFromAsync(string bucketId, string streamId, int minRevision, int maxRevision, IAsyncObserver<ICommit> observer, CancellationToken cancellationToken = default)
         {
             return ObserveDataStream(() => GetFrom(bucketId, streamId, minRevision, maxRevision), observer, cancellationToken);
         }
@@ -220,7 +220,7 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public Task<ICommit?> CommitAsync(CommitAttempt attempt, CancellationToken cancellationToken)
+        public Task<ICommit?> CommitAsync(CommitAttempt attempt, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(Commit(attempt));
         }
@@ -259,7 +259,7 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public Task<ISnapshot?> GetSnapshotAsync(string bucketId, string streamId, int maxRevision, CancellationToken cancellationToken)
+        public Task<ISnapshot?> GetSnapshotAsync(string bucketId, string streamId, int maxRevision, CancellationToken cancellationToken = default)
         {
             ThrowWhenDisposed();
             if (Logger.IsEnabled(LogLevel.Debug))
@@ -270,7 +270,7 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public Task<bool> AddSnapshotAsync(ISnapshot snapshot, CancellationToken cancellationToken)
+        public Task<bool> AddSnapshotAsync(ISnapshot snapshot, CancellationToken cancellationToken = default)
         {
             ThrowWhenDisposed();
             if (Logger.IsEnabled(LogLevel.Debug))
@@ -281,7 +281,7 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public async Task GetStreamsToSnapshotAsync(string bucketId, int maxThreshold, IAsyncObserver<IStreamHead> asyncObserver, CancellationToken cancellationToken)
+        public async Task GetStreamsToSnapshotAsync(string bucketId, int maxThreshold, IAsyncObserver<IStreamHead> asyncObserver, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -346,14 +346,14 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public Task PurgeAsync(CancellationToken cancellationToken)
+        public Task PurgeAsync(CancellationToken cancellationToken = default)
         {
             Purge();
             return Task.CompletedTask;
         }
 
         /// <inheritdoc/>
-        public Task PurgeAsync(string bucketId, CancellationToken cancellationToken)
+        public Task PurgeAsync(string bucketId, CancellationToken cancellationToken = default)
         {
             Purge(bucketId);
             return Task.CompletedTask;
@@ -390,7 +390,7 @@ namespace NEventStore.Persistence.InMemory
         }
 
         /// <inheritdoc/>
-        public Task DeleteStreamAsync(string bucketId, string streamId, CancellationToken cancellationToken)
+        public Task DeleteStreamAsync(string bucketId, string streamId, CancellationToken cancellationToken = default)
         {
             DeleteStream(bucketId, streamId);
             return Task.CompletedTask;
@@ -402,11 +402,10 @@ namespace NEventStore.Persistence.InMemory
             get { return _disposed; }
         }
 
-#pragma warning disable RCS1163 // Unused parameter.
-#pragma warning disable IDE0060 // Remove unused parameter
-        private void Dispose(bool disposing)
-#pragma warning restore IDE0060 // Remove unused parameter
-#pragma warning restore RCS1163 // Unused parameter.
+        /// <summary>
+        /// Dispose
+        /// </summary>
+        protected virtual void Dispose(bool disposing)
         {
             _disposed = true;
             if (Logger.IsEnabled(LogLevel.Information))
@@ -434,7 +433,7 @@ namespace NEventStore.Persistence.InMemory
             {
                 // Checkpoints are monotonically increasing, but use a binary-search insert point
                 // so the index stays correct even if the storage strategy changes later.
-                int insertIndex = FindCheckpointInsertIndex(_commitsByCheckpoint, commit.CheckpointToken);
+                int insertIndex = CheckpointSearch.FindCheckpointInsertIndex(_commitsByCheckpoint, commit.CheckpointToken);
                 _commitsByCheckpoint.Insert(insertIndex, commit);
             }
         }
@@ -452,7 +451,7 @@ namespace NEventStore.Persistence.InMemory
                 // otherwise later reads would return stale commits that no longer exist in a bucket.
                 foreach (var commit in commits)
                 {
-                    int index = FindCommitIndex(_commitsByCheckpoint, commit.CheckpointToken);
+                    int index = CheckpointSearch.FindCommitIndex(_commitsByCheckpoint, commit.CheckpointToken);
                     if (index >= 0)
                     {
                         _commitsByCheckpoint.RemoveAt(index);
@@ -465,96 +464,104 @@ namespace NEventStore.Persistence.InMemory
         {
             // Reads are defined as (from, to], so find the first commit strictly after the lower
             // bound and the first commit strictly after the upper bound, then copy the slice.
-            int startIndex = FindFirstCheckpointAfter(commits, fromCheckpointExclusive);
+            int startIndex = CheckpointSearch.FindFirstCheckpointAfter(commits, fromCheckpointExclusive);
             if (startIndex >= commits.Count)
             {
                 return [];
             }
 
-            int endIndex = FindFirstCheckpointAfter(commits, toCheckpointInclusive);
-            int count = endIndex - startIndex;
-            if (count <= 0)
-            {
-                return [];
-            }
-
-            var results = new ICommit[count];
-            for (int i = 0; i < count; i++)
-            {
-                results[i] = commits[startIndex + i];
-            }
-
-            return results;
+            int endIndex = CheckpointSearch.FindFirstCheckpointAfter(commits, toCheckpointInclusive);
+            return CheckpointSearch.CopyCheckpointRange(commits, startIndex, endIndex);
         }
 
-        private static int FindFirstCheckpointAfter(List<InMemoryCommit> commits, long checkpoint)
+        private static class CheckpointSearch
         {
-            int low = 0;
-            int high = commits.Count;
-
-            while (low < high)
+            public static int FindFirstCheckpointAfter(List<InMemoryCommit> commits, long checkpoint)
             {
-                int mid = low + ((high - low) / 2);
-                if (commits[mid].CheckpointToken <= checkpoint)
+                int low = 0;
+                int high = commits.Count;
+
+                while (low < high)
                 {
-                    low = mid + 1;
-                }
-                else
-                {
-                    high = mid;
-                }
-            }
-
-            return low;
-        }
-
-        private static int FindCheckpointInsertIndex(List<InMemoryCommit> commits, long checkpoint)
-        {
-            int low = 0;
-            int high = commits.Count;
-
-            while (low < high)
-            {
-                int mid = low + ((high - low) / 2);
-                if (commits[mid].CheckpointToken < checkpoint)
-                {
-                    low = mid + 1;
-                }
-                else
-                {
-                    high = mid;
-                }
-            }
-
-            return low;
-        }
-
-        private static int FindCommitIndex(List<InMemoryCommit> commits, long checkpoint)
-        {
-            int low = 0;
-            int high = commits.Count - 1;
-
-            while (low <= high)
-            {
-                int mid = low + ((high - low) / 2);
-                long currentCheckpoint = commits[mid].CheckpointToken;
-                if (currentCheckpoint == checkpoint)
-                {
-                    return mid;
+                    int mid = low + ((high - low) / 2);
+                    if (commits[mid].CheckpointToken <= checkpoint)
+                    {
+                        low = mid + 1;
+                    }
+                    else
+                    {
+                        high = mid;
+                    }
                 }
 
-                if (currentCheckpoint < checkpoint)
-                {
-                    low = mid + 1;
-                }
-                else
-                {
-                    high = mid - 1;
-                }
-            }
+                    return low;
+                    }
 
-            return -1;
-        }
+                    public static int FindCheckpointInsertIndex(List<InMemoryCommit> commits, long checkpoint)
+                    {
+                        int low = 0;
+                        int high = commits.Count;
+
+                        while (low < high)
+                        {
+                            int mid = low + ((high - low) / 2);
+                            if (commits[mid].CheckpointToken < checkpoint)
+                            {
+                                low = mid + 1;
+                            }
+                            else
+                            {
+                                high = mid;
+                            }
+                        }
+
+                        return low;
+                    }
+
+                    public static int FindCommitIndex(List<InMemoryCommit> commits, long checkpoint)
+                    {
+                        int low = 0;
+                        int high = commits.Count - 1;
+
+                        while (low <= high)
+                        {
+                            int mid = low + ((high - low) / 2);
+                            long currentCheckpoint = commits[mid].CheckpointToken;
+                            if (currentCheckpoint == checkpoint)
+                            {
+                                return mid;
+                            }
+
+                            if (currentCheckpoint < checkpoint)
+                            {
+                                low = mid + 1;
+                            }
+                            else
+                            {
+                                high = mid - 1;
+                            }
+                        }
+
+                        return -1;
+                    }
+
+                    public static ICommit[] CopyCheckpointRange(List<InMemoryCommit> commits, int startIndex, int endIndexExclusive)
+                    {
+                        int count = endIndexExclusive - startIndex;
+                        if (count <= 0)
+                        {
+                            return [];
+                        }
+
+                        var results = new ICommit[count];
+                        for (int i = 0; i < count; i++)
+                        {
+                            results[i] = commits[startIndex + i];
+                        }
+
+                        return results;
+                    }
+                }
 
         private class InMemoryCommit : Commit
         {
@@ -686,7 +693,7 @@ namespace NEventStore.Persistence.InMemory
             }
         }
 
-        private class Bucket
+        private sealed class Bucket
         {
 #if NET9_0_OR_GREATER
             private readonly Lock _sync = new();
@@ -713,7 +720,7 @@ namespace NEventStore.Persistence.InMemory
             private readonly Dictionary<string, List<ISnapshot>> _snapshotsByStreamId = [];
             private readonly Dictionary<Guid, DateTime> _stamps = [];
 
-            public IEnumerable<ICommit> GetFrom(string streamId, int minRevision, int maxRevision)
+            public ICommit[] GetFrom(string streamId, int minRevision, int maxRevision)
             {
                 lock (_sync)
                 {
@@ -746,7 +753,7 @@ namespace NEventStore.Persistence.InMemory
                 }
             }
 
-            public IEnumerable<ICommit> GetFrom(DateTime start)
+            public ICommit[] GetFrom(DateTime start)
             {
                 Guid commitId = _stamps.Where(x => x.Value >= start).Select(x => x.Key).FirstOrDefault();
                 if (commitId == Guid.Empty)
@@ -762,31 +769,31 @@ namespace NEventStore.Persistence.InMemory
                         return [];
                     }
 
-                    int startIndex = FindCheckpointInsertIndex(_commitsByCheckpoint, startingCommit.CheckpointToken);
-                    return CopyCheckpointRange(_commitsByCheckpoint, startIndex, _commitsByCheckpoint.Count);
+                    int startIndex = CheckpointSearch.FindCheckpointInsertIndex(_commitsByCheckpoint, startingCommit.CheckpointToken);
+                    return CheckpointSearch.CopyCheckpointRange(_commitsByCheckpoint, startIndex, _commitsByCheckpoint.Count);
                 }
             }
 
-            public IEnumerable<ICommit> GetFrom(Int64 checkpoint)
+            public ICommit[] GetFrom(Int64 checkpoint)
             {
                 lock (_sync)
                 {
-                    int startIndex = FindFirstCheckpointAfter(_commitsByCheckpoint, checkpoint);
-                    return CopyCheckpointRange(_commitsByCheckpoint, startIndex, _commitsByCheckpoint.Count);
+                    int startIndex = CheckpointSearch.FindFirstCheckpointAfter(_commitsByCheckpoint, checkpoint);
+                    return CheckpointSearch.CopyCheckpointRange(_commitsByCheckpoint, startIndex, _commitsByCheckpoint.Count);
                 }
             }
 
-            public IEnumerable<ICommit> GetFromTo(Int64 from, Int64 to)
+            public ICommit[] GetFromTo(Int64 from, Int64 to)
             {
                 lock (_sync)
                 {
-                    int startIndex = FindFirstCheckpointAfter(_commitsByCheckpoint, from);
-                    int endIndex = FindFirstCheckpointAfter(_commitsByCheckpoint, to);
-                    return CopyCheckpointRange(_commitsByCheckpoint, startIndex, endIndex);
+                    int startIndex = CheckpointSearch.FindFirstCheckpointAfter(_commitsByCheckpoint, from);
+                    int endIndex = CheckpointSearch.FindFirstCheckpointAfter(_commitsByCheckpoint, to);
+                    return CheckpointSearch.CopyCheckpointRange(_commitsByCheckpoint, startIndex, endIndex);
                 }
             }
 
-            public IEnumerable<ICommit> GetFromTo(DateTime start, DateTime end)
+            public ICommit[] GetFromTo(DateTime start, DateTime end)
             {
                 IEnumerable<Guid> selectedCommitIds = _stamps.Where(x => x.Value >= start && x.Value < end).Select(x => x.Key).ToArray();
                 Guid firstCommitId = selectedCommitIds.FirstOrDefault();
@@ -799,9 +806,9 @@ namespace NEventStore.Persistence.InMemory
                 {
                     InMemoryCommit? startingCommit = _commitsByCheckpoint.FirstOrDefault(x => x.CommitId == firstCommitId);
                     InMemoryCommit? endingCommit = _commitsByCheckpoint.FirstOrDefault(x => x.CommitId == lastCommitId);
-                    int startingCommitIndex = startingCommit == null ? 0 : FindCheckpointInsertIndex(_commitsByCheckpoint, startingCommit.CheckpointToken);
-                    int endingCommitIndex = endingCommit == null ? _commitsByCheckpoint.Count - 1 : FindCheckpointInsertIndex(_commitsByCheckpoint, endingCommit.CheckpointToken);
-                    return CopyCheckpointRange(_commitsByCheckpoint, startingCommitIndex, endingCommitIndex + 1);
+                    int startingCommitIndex = startingCommit == null ? 0 : CheckpointSearch.FindCheckpointInsertIndex(_commitsByCheckpoint, startingCommit.CheckpointToken);
+                    int endingCommitIndex = endingCommit == null ? _commitsByCheckpoint.Count - 1 : CheckpointSearch.FindCheckpointInsertIndex(_commitsByCheckpoint, endingCommit.CheckpointToken);
+                    return CheckpointSearch.CopyCheckpointRange(_commitsByCheckpoint, startingCommitIndex, endingCommitIndex + 1);
                 }
             }
 
@@ -855,7 +862,7 @@ namespace NEventStore.Persistence.InMemory
                 }
             }
 
-            public IEnumerable<IStreamHead> GetStreamsToSnapshot(int maxThreshold)
+            public IStreamHead[] GetStreamsToSnapshot(int maxThreshold)
             {
                 lock (_sync)
                 {
@@ -923,7 +930,7 @@ namespace NEventStore.Persistence.InMemory
                 return true;
             }
 
-            public IReadOnlyCollection<InMemoryCommit> Purge()
+            public InMemoryCommit[] Purge()
             {
                 lock (_sync)
                 {
@@ -942,7 +949,7 @@ namespace NEventStore.Persistence.InMemory
                 }
             }
 
-            public IReadOnlyCollection<InMemoryCommit> DeleteStream(string streamId)
+            public InMemoryCommit[] DeleteStream(string streamId)
             {
                 lock (_sync)
                 {
@@ -954,7 +961,7 @@ namespace NEventStore.Persistence.InMemory
                     var commits = commitsForStream.ToArray();
                     foreach (var commit in commits)
                     {
-                        int checkpointIndex = FindCommitIndex(_commitsByCheckpoint, commit.CheckpointToken);
+                        int checkpointIndex = CheckpointSearch.FindCommitIndex(_commitsByCheckpoint, commit.CheckpointToken);
                         if (checkpointIndex >= 0)
                         {
                             _commitsByCheckpoint.RemoveAt(checkpointIndex);
@@ -986,7 +993,7 @@ namespace NEventStore.Persistence.InMemory
             {
                 // Update both indexes under the same bucket lock so checkpoint reads and
                 // stream-revision reads always observe the same commit set.
-                int checkpointIndex = FindCheckpointInsertIndex(_commitsByCheckpoint, commit.CheckpointToken);
+                int checkpointIndex = CheckpointSearch.FindCheckpointInsertIndex(_commitsByCheckpoint, commit.CheckpointToken);
                 _commitsByCheckpoint.Insert(checkpointIndex, commit);
 
                 if (!_commitsByStreamId.TryGetValue(commit.StreamId, out List<InMemoryCommit>? streamCommits))
@@ -995,25 +1002,8 @@ namespace NEventStore.Persistence.InMemory
                     _commitsByStreamId.Add(commit.StreamId, streamCommits);
                 }
 
-                int streamIndex = FindStreamRevisionInsertIndex(streamCommits, commit.StreamRevision);
+                int streamIndex = FindFirstCommitEndingAtOrAfterRevision(streamCommits, commit.StreamRevision);
                 streamCommits.Insert(streamIndex, commit);
-            }
-
-            private static ICommit[] CopyCheckpointRange(List<InMemoryCommit> commits, int startIndex, int endIndexExclusive)
-            {
-                int count = endIndexExclusive - startIndex;
-                if (count <= 0)
-                {
-                    return [];
-                }
-
-                var results = new ICommit[count];
-                for (int i = 0; i < count; i++)
-                {
-                    results[i] = commits[startIndex + i];
-                }
-
-                return results;
             }
 
             private static int FindFirstCommitEndingAtOrAfterRevision(List<InMemoryCommit> commits, int revision)
@@ -1021,27 +1011,6 @@ namespace NEventStore.Persistence.InMemory
                 // The stream index is sorted by each commit's ending revision, which is enough for
                 // the existing read contract because a commit belongs in the result if its ending
                 // revision is >= minRevision and its starting revision is <= maxRevision.
-                int low = 0;
-                int high = commits.Count;
-
-                while (low < high)
-                {
-                    int mid = low + ((high - low) / 2);
-                    if (commits[mid].StreamRevision < revision)
-                    {
-                        low = mid + 1;
-                    }
-                    else
-                    {
-                        high = mid;
-                    }
-                }
-
-                return low;
-            }
-
-            private static int FindStreamRevisionInsertIndex(List<InMemoryCommit> commits, int revision)
-            {
                 int low = 0;
                 int high = commits.Count;
 
@@ -1102,75 +1071,6 @@ namespace NEventStore.Persistence.InMemory
 
                 return low - 1;
             }
-
-            private static int FindFirstCheckpointAfter(List<InMemoryCommit> commits, long checkpoint)
-            {
-                int low = 0;
-                int high = commits.Count;
-
-                while (low < high)
-                {
-                    int mid = low + ((high - low) / 2);
-                    if (commits[mid].CheckpointToken <= checkpoint)
-                    {
-                        low = mid + 1;
-                    }
-                    else
-                    {
-                        high = mid;
                     }
                 }
-
-                return low;
             }
-
-            private static int FindCheckpointInsertIndex(List<InMemoryCommit> commits, long checkpoint)
-            {
-                int low = 0;
-                int high = commits.Count;
-
-                while (low < high)
-                {
-                    int mid = low + ((high - low) / 2);
-                    if (commits[mid].CheckpointToken < checkpoint)
-                    {
-                        low = mid + 1;
-                    }
-                    else
-                    {
-                        high = mid;
-                    }
-                }
-
-                return low;
-            }
-
-            private static int FindCommitIndex(List<InMemoryCommit> commits, long checkpoint)
-            {
-                int low = 0;
-                int high = commits.Count - 1;
-
-                while (low <= high)
-                {
-                    int mid = low + ((high - low) / 2);
-                    long currentCheckpoint = commits[mid].CheckpointToken;
-                    if (currentCheckpoint == checkpoint)
-                    {
-                        return mid;
-                    }
-
-                    if (currentCheckpoint < checkpoint)
-                    {
-                        low = mid + 1;
-                    }
-                    else
-                    {
-                        high = mid - 1;
-                    }
-                }
-
-                return -1;
-            }
-        }
-    }
-}

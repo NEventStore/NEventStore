@@ -247,7 +247,7 @@ namespace NEventStore
         }
 
         /// <inheritdoc/>
-        public async Task<ICommit?> CommitChangesAsync(Guid commitId, CancellationToken cancellationToken)
+        public async Task<ICommit?> CommitChangesAsync(Guid commitId, CancellationToken cancellationToken = default)
         {
             if (Logger.IsEnabled(LogLevel.Trace))
             {

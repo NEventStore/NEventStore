@@ -2,7 +2,7 @@
 
 ## 10.2.1
 
-Maintenance release to address security issues in dependencies.
+Maintenance release to address security issues in dependencies and remove compilation warnings.
 
 - Updated MessagePack serializer to 3.1.12
 
